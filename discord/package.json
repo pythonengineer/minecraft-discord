@@ -1,7 +1,7 @@
 {
   "name": "minecraft",
   "private": true,
-  "version": "rd-132211",
+  "version": "rd-132328",
   "type": "module",
   "scripts": {
     "dev": "vite",

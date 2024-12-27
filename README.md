@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord activities by converting the Java engine to modern WebGL-compatible JavaScript
 and providing a web server using *Vite* that can be linked to your Discord application.
 
-This version is **rd-132211**, the first version that was released on _**May 13, 2009**_.
+This version is **rd-132328**, the second version of the game which was released on _**May 13, 2009**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_pre-Classic_rd-132211).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_pre-Classic_rd-132328).
 
 ### Usage
 

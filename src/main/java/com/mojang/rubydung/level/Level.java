@@ -1,7 +1,7 @@
 package com.mojang.rubydung.level;
 
 import com.mojang.rubydung.HitResult;
-import com.mojang.rubydung.Vec3;
+import com.mojang.rubydung.character.Vec3;
 import com.mojang.rubydung.phys.AABB;
 
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
@@ -12,175 +12,171 @@ import java.io.DataOutputStream;
 import java.util.ArrayList;
 
 public class Level {
-    public final int width;
-    public final int height;
-    public final int depth;
-    private byte[] blocks;
-    private int[] lightDepths;
-    private ArrayList<LevelListener> levelListeners = new ArrayList();
+	public final int width;
+	public final int height;
+	public final int depth;
+	private byte[] blocks;
+	private int[] lightDepths;
+	private ArrayList<LevelListener> levelListeners = new ArrayList();
 
-    public Level(int w, int h, int d) {
-        this.width = w;
-        this.height = h;
-        this.depth = d;
-        this.blocks = new byte[w * h * d];
-        this.lightDepths = new int[w * h];
+	public Level(int w, int h, int d) {
+		this.width = w;
+		this.height = h;
+		this.depth = d;
+		this.blocks = new byte[w * h * d];
+		this.lightDepths = new int[w * h];
 
-        for (int x = 0; x < w; ++x) {
-            for (int y = 0; y < d; ++y) {
-                for (int z = 0; z < h; ++z) {
-                    int i = (y * this.height + z) * this.width + x;
-                    this.blocks[i] = (byte) (y <= d * 2 / 3 ? 1 : 0);
-                }
-            }
-        }
+		for(int x = 0; x < w; ++x) {
+			for(int y = 0; y < d; ++y) {
+				for(int z = 0; z < h; ++z) {
+					int i = (y * this.height + z) * this.width + x;
+					this.blocks[i] = (byte)(y <= d * 2 / 3 ? 1 : 0);
+				}
+			}
+		}
 
-        this.calcLightDepths(0, 0, w, h);
-        this.load();
-    }
+		this.calcLightDepths(0, 0, w, h);
+		this.load();
+	}
 
-    public void load() {
-        try {
-            VFile2 f = new VFile2("level.dat");
-            if (f.exists()) {
-                DataInputStream e = new DataInputStream(
-                        PlatformRuntime.newGZIPInputStream(new VFile2("level.dat").getInputStream()));
-                e.readFully(this.blocks);
-                e.close();
-            }
-            this.calcLightDepths(0, 0, this.width, this.height);
+	public void load() {
+		try {
+		    VFile2 f = new VFile2("level.dat");
+		    if (f.exists()) {
+		        DataInputStream e = new DataInputStream(
+		        PlatformRuntime.newGZIPInputStream(new VFile2("level.dat").getInputStream()));
+		        e.readFully(this.blocks);
+		        e.close();
+		    }
 
-            for (int i = 0; i < this.levelListeners.size(); ++i) {
-                ((LevelListener) this.levelListeners.get(i)).allChanged();
-            }
-        } catch (Exception var3) {
-            var3.printStackTrace();
-        }
+			this.calcLightDepths(0, 0, this.width, this.height);
 
-    }
+			for(int i = 0; i < this.levelListeners.size(); ++i) {
+				((LevelListener)this.levelListeners.get(i)).allChanged();
+			}
+		} catch (Exception var3) {
+			var3.printStackTrace();
+		}
 
-    public void save() {
-        try {
-            DataOutputStream e = new DataOutputStream(
-                    PlatformRuntime.newGZIPOutputStream(new VFile2("level.dat").getOutputStream()));
-            e.write(this.blocks);
-            e.close();
-        } catch (Exception var2) {
-            var2.printStackTrace();
-        }
+	}
 
-    }
+	public void save() {
+		try {
+		    DataOutputStream e = new DataOutputStream(
+		    PlatformRuntime.newGZIPOutputStream(new VFile2("level.dat").getOutputStream()));
+		    e.write(this.blocks);
+		    e.close();
+		} catch (Exception var2) {
+			var2.printStackTrace();
+		}
 
-    public void calcLightDepths(int x0, int y0, int x1, int y1) {
-        for (int x = x0; x < x0 + x1; ++x) {
-            for (int z = y0; z < y0 + y1; ++z) {
-                int oldDepth = this.lightDepths[x + z * this.width];
+	}
 
-                int y;
-                for (y = this.depth - 1; y > 0 && !this.isLightBlocker(x, y, z); --y) {
-                }
+	public void calcLightDepths(int x0, int y0, int x1, int y1) {
+		for(int x = x0; x < x0 + x1; ++x) {
+			for(int z = y0; z < y0 + y1; ++z) {
+				int oldDepth = this.lightDepths[x + z * this.width];
 
-                this.lightDepths[x + z * this.width] = y;
-                if (oldDepth != y) {
-                    int yl0 = oldDepth < y ? oldDepth : y;
-                    int yl1 = oldDepth > y ? oldDepth : y;
+				int y;
+				for(y = this.depth - 1; y > 0 && !this.isLightBlocker(x, y, z); --y) {
+				}
 
-                    for (int i = 0; i < this.levelListeners.size(); ++i) {
-                        ((LevelListener) this.levelListeners.get(i)).lightColumnChanged(x, z, yl0, yl1);
-                    }
-                }
-            }
-        }
+				this.lightDepths[x + z * this.width] = y;
+				if(oldDepth != y) {
+					int yl0 = oldDepth < y ? oldDepth : y;
+					int yl1 = oldDepth > y ? oldDepth : y;
 
-    }
+					for(int i = 0; i < this.levelListeners.size(); ++i) {
+						((LevelListener)this.levelListeners.get(i)).lightColumnChanged(x, z, yl0, yl1);
+					}
+				}
+			}
+		}
 
-    public void addListener(LevelListener levelListener) {
-        this.levelListeners.add(levelListener);
-    }
+	}
 
-    public void removeListener(LevelListener levelListener) {
-        this.levelListeners.remove(levelListener);
-    }
+	public void addListener(LevelListener levelListener) {
+		this.levelListeners.add(levelListener);
+	}
 
-    public boolean isTile(int x, int y, int z) {
-        return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height
-                ? this.blocks[(y * this.height + z) * this.width + x] == 1
-                : false;
-    }
+	public void removeListener(LevelListener levelListener) {
+		this.levelListeners.remove(levelListener);
+	}
 
-    public boolean isSolidTile(int x, int y, int z) {
-        return this.isTile(x, y, z);
-    }
+	public boolean isTile(int x, int y, int z) {
+		return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? this.blocks[(y * this.height + z) * this.width + x] == 1 : false;
+	}
 
-    public boolean isLightBlocker(int x, int y, int z) {
-        return this.isSolidTile(x, y, z);
-    }
+	public boolean isSolidTile(int x, int y, int z) {
+		return this.isTile(x, y, z);
+	}
 
-    public ArrayList<AABB> getCubes(AABB aABB) {
-        ArrayList aABBs = new ArrayList();
-        int x0 = (int) aABB.x0;
-        int x1 = (int) (aABB.x1 + 1.0F);
-        int y0 = (int) aABB.y0;
-        int y1 = (int) (aABB.y1 + 1.0F);
-        int z0 = (int) aABB.z0;
-        int z1 = (int) (aABB.z1 + 1.0F);
-        if (x0 < 0) {
-            x0 = 0;
-        }
+	public boolean isLightBlocker(int x, int y, int z) {
+		return this.isSolidTile(x, y, z);
+	}
 
-        if (y0 < 0) {
-            y0 = 0;
-        }
+	public ArrayList<AABB> getCubes(AABB aABB) {
+		ArrayList aABBs = new ArrayList();
+		int x0 = (int)aABB.x0;
+		int x1 = (int)(aABB.x1 + 1.0F);
+		int y0 = (int)aABB.y0;
+		int y1 = (int)(aABB.y1 + 1.0F);
+		int z0 = (int)aABB.z0;
+		int z1 = (int)(aABB.z1 + 1.0F);
+		if(x0 < 0) {
+			x0 = 0;
+		}
 
-        if (z0 < 0) {
-            z0 = 0;
-        }
+		if(y0 < 0) {
+			y0 = 0;
+		}
 
-        if (x1 > this.width) {
-            x1 = this.width;
-        }
+		if(z0 < 0) {
+			z0 = 0;
+		}
 
-        if (y1 > this.depth) {
-            y1 = this.depth;
-        }
+		if(x1 > this.width) {
+			x1 = this.width;
+		}
 
-        if (z1 > this.height) {
-            z1 = this.height;
-        }
+		if(y1 > this.depth) {
+			y1 = this.depth;
+		}
 
-        for (int x = x0; x < x1; ++x) {
-            for (int y = y0; y < y1; ++y) {
-                for (int z = z0; z < z1; ++z) {
-                    if (this.isSolidTile(x, y, z)) {
-                        aABBs.add(new AABB((float) x, (float) y, (float) z, (float) (x + 1), (float) (y + 1),
-                                (float) (z + 1)));
-                    }
-                }
-            }
-        }
+		if(z1 > this.height) {
+			z1 = this.height;
+		}
 
-        return aABBs;
-    }
+		for(int x = x0; x < x1; ++x) {
+			for(int y = y0; y < y1; ++y) {
+				for(int z = z0; z < z1; ++z) {
+					if(this.isSolidTile(x, y, z)) {
+						aABBs.add(new AABB((float)x, (float)y, (float)z, (float)(x + 1), (float)(y + 1), (float)(z + 1)));
+					}
+				}
+			}
+		}
 
-    public float getBrightness(int x, int y, int z) {
-        float dark = 0.8F;
-        float light = 1.0F;
-        return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height
-                ? (y < this.lightDepths[x + z * this.width] ? dark : light)
-                : light;
-    }
+		return aABBs;
+	}
 
-    public void setTile(int x, int y, int z, int type) {
-        if (x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
-            this.blocks[(y * this.height + z) * this.width + x] = (byte) type;
-            this.calcLightDepths(x, z, 1, 1);
+	public float getBrightness(int x, int y, int z) {
+		float dark = 0.8F;
+		float light = 1.0F;
+		return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? (y < this.lightDepths[x + z * this.width] ? dark : light) : light;
+	}
 
-            for (int i = 0; i < this.levelListeners.size(); ++i) {
-                ((LevelListener) this.levelListeners.get(i)).tileChanged(x, y, z);
-            }
+	public void setTile(int x, int y, int z, int type) {
+		if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
+			this.blocks[(y * this.height + z) * this.width + x] = (byte)type;
+			this.calcLightDepths(x, z, 1, 1);
 
-        }
-    }
+			for(int i = 0; i < this.levelListeners.size(); ++i) {
+				((LevelListener)this.levelListeners.get(i)).tileChanged(x, y, z);
+			}
+
+		}
+	}
 
     public HitResult clip(Vec3 vec31, Vec3 vec32) {
         if (!Float.isNaN(vec31.x) && !Float.isNaN(vec31.y) && !Float.isNaN(vec31.z)) {
