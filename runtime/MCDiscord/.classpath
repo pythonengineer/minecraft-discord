@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src_main_java"/>
+    <classpathentry kind="src" path="src_lwjgl_java"/>
+    <classpathentry kind="lib" path="deps_fix/lwjgl.jar"/>
+    <classpathentry kind="lib" path="deps_fix/lwjgl-egl.jar"/>
+    <classpathentry kind="lib" path="deps_fix/lwjgl-glfw.jar"/>
+    <classpathentry kind="lib" path="deps_fix/lwjgl-jemalloc.jar"/>
+    <classpathentry kind="lib" path="deps_fix/lwjgl-opengles.jar"/>
+    <classpathentry kind="lib" path="deps_fix/UnsafeMemcpy.jar"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk11">
+        <attributes>
+            <attribute name="module" value="true"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry kind="output" path="bin"/>
+</classpath>

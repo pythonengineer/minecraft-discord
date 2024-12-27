@@ -1,0 +1,14 @@
+.gradle
+.settings
+.classpath
+.project
+classes.js
+classes.js.map
+build
+bin
+runtime/_mcstorage*
+runtime/MCDiscord/bin*
+runtime/crash-reports/*
+runtime/options.txt
+runtime/filesystem/*
+runtime/downloads/*

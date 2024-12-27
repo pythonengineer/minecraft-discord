@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html style="width:100%;height:100%;background-color:black;">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta name="description" content="Minecraft on Discord" />
+        <meta name="keywords" content="minecraft" />
+        <meta property="og:locale" content="en-US" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Minecraft" />
+        <meta property="og:description" content="Minecraft on Discord" />
+        <title>Minecraft</title>
+        <!--<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>-->
+        <script type="text/javascript" src="classes.js?v=0"></script>
+        <script type="text/javascript">
+            "use strict";
+            window.addEventListener("load", function() {
+                if(window.location.href.indexOf("file:") === 0) {
+                    alert("HTTP please, do not open this file locally, run a local HTTP server and load it via HTTP");
+                } else {
+                    window.minecraftOpts = {
+                        container: "game_frame",
+                        crashOnUncaughtExceptions: true,
+                    };
+                    main();
+                }
+            });
+        </script>
+    </head>
+    <body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
+    </body>
+</html>
