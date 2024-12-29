@@ -13,7 +13,7 @@ public class ScaledResolution {
         this.scaledWidth = width;
         this.scaledHeight = height;
         this.scaleFactor = 1;
-        while (this.scaleFactor < 2 && this.scaledWidth / (this.scaleFactor + 1) >= 320
+        while (this.scaleFactor < 3 && this.scaledWidth / (this.scaleFactor + 1) >= 320
                 && this.scaledHeight / (this.scaleFactor + 1) >= 240) {
             ++this.scaleFactor;
         }

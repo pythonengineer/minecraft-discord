@@ -15,7 +15,6 @@ import net.lax1dude.eaglercraft.vector.Vector4f;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mojang.rubydung.level.Chunk;
 import com.mojang.rubydung.level.Tesselator;
 
 import net.lax1dude.eaglercraft.EagRuntime;
@@ -1082,6 +1081,9 @@ public class GL11 {
             case GL_FOG:
                 enableFog();
                 break;
+            case GL_LIGHTING:
+                enableLighting();
+                break;
             case GL_TEXTURE_2D:
                 if (currentList != null) {
                     currentList.toggleTex = true;
@@ -1091,6 +1093,8 @@ public class GL11 {
                 break;
             case GL_BLEND:
                 enableBlend();
+                break;
+            case GL_COLOR_MATERIAL:
                 break;
             default:
                 _wglEnable(var);
@@ -1102,6 +1106,9 @@ public class GL11 {
             case GL_FOG:
                 disableFog();
                 break;
+            case GL_LIGHTING:
+                disableLighting();
+                break;
             case GL_TEXTURE_2D:
                 if (currentList != null) {
                     return;
@@ -1110,6 +1117,8 @@ public class GL11 {
                 break;
             case GL_BLEND:
                 disableBlend();
+                break;
+            case GL_COLOR_MATERIAL:
                 break;
             default:
                 _wglDisable(var);
@@ -1176,11 +1185,13 @@ public class GL11 {
         ++stateLightingSerial[stateLightsStackPointer];
     }
 
-    public static final void setMCLightAmbient(float r, float g, float b) {
-        stateLightingAmbientR = r;
-        stateLightingAmbientG = g;
-        stateLightingAmbientB = b;
-        ++stateLightingAmbientSerial;
+    public static final void glLightModel(int type, FloatBuffer vector) {
+        if (type == GL11.GL_LIGHT_MODEL_AMBIENT) {
+            stateLightingAmbientR = vector.get();
+            stateLightingAmbientG = vector.get();
+            stateLightingAmbientB = vector.get();
+            ++stateLightingAmbientSerial;
+        }
     }
 
     public static final void enableColorMaterial() {
@@ -3154,14 +3165,14 @@ public class GL11 {
     }
 
     public static final void glEnd() {
-        Chunk.t.flush();
+        Tesselator.instance.flush();
     }
 
     public static final void glTexCoord2f(float u, float v) {
-        Chunk.t.tex(u, v);
+        Tesselator.instance.tex(u, v);
     }
 
     public static final void glVertex3f(float x, float y, float z) {
-        Chunk.t.vertex(x, y, z);
+        Tesselator.instance.vertex(x, y, z);
     }
 }

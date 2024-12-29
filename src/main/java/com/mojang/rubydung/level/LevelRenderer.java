@@ -2,19 +2,24 @@ package com.mojang.rubydung.level;
 
 import com.mojang.rubydung.HitResult;
 import com.mojang.rubydung.Player;
+import com.mojang.rubydung.Textures;
+import com.mojang.rubydung.level.tile.Tile;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 
 public class LevelRenderer implements LevelListener {
-	private static final int CHUNK_SIZE = 16;
+	public static final int MAX_REBUILDS_PER_FRAME = 8;
+	public static final int CHUNK_SIZE = 16;
 	private Level level;
 	private Chunk[] chunks;
 	private int xChunks;
 	private int yChunks;
 	private int zChunks;
-	Tesselator t = new Tesselator();
 
 	public LevelRenderer(Level level) {
 		this.level = level;
@@ -52,27 +57,61 @@ public class LevelRenderer implements LevelListener {
 
 	}
 
+	public List<Chunk> getAllDirtyChunks() {
+		ArrayList dirty = null;
+
+		for(int i = 0; i < this.chunks.length; ++i) {
+			Chunk chunk = this.chunks[i];
+			if(chunk.isDirty()) {
+				if(dirty == null) {
+					dirty = new ArrayList();
+				}
+
+				dirty.add(chunk);
+			}
+		}
+
+		return dirty;
+	}
+
 	public void render(Player player, int layer) {
-		Chunk.rebuiltThisFrame = 0;
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		int id = Textures.loadTexture("/terrain.png", 9728);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
 		Frustum frustum = Frustum.getFrustum();
 
 		for(int i = 0; i < this.chunks.length; ++i) {
-			if(frustum.cubeInFrustum(this.chunks[i].aabb)) {
+			if(frustum.isVisible(this.chunks[i].aabb)) {
 				this.chunks[i].render(layer);
 			}
+		}
+
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+	}
+
+	public void updateDirtyChunks(Player player) {
+		List dirty = this.getAllDirtyChunks();
+		if(dirty != null) {
+			Collections.sort(dirty, new DirtyChunkSorter(player, Frustum.getFrustum()));
+
+			for(int i = 0; i < 8 && i < dirty.size(); ++i) {
+				((Chunk)dirty.get(i)).rebuild();
+			}
+
 		}
 	}
 
 	public void renderHit(HitResult h) {
+		Tesselator t = Tesselator.instance;
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GL11.doPolygonOffset(-3.0F, -3.0F);
-		GL11.enablePolygonOffset();
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, (float)Math.sin((double)EagRuntime.currentTimeMillis() / 100.0D) * 0.2F + 0.4F);
-		this.t.init(DefaultVertexFormats.POSITION);
-		Tile.rock.renderFace(this.t, h.x, h.y, h.z, h.f);
-		this.t.flush();
-		GL11.disablePolygonOffset();
+        GL11.doPolygonOffset(-3.0F, -3.0F);
+        GL11.enablePolygonOffset();
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, ((float)Math.sin((double)EagRuntime.currentTimeMillis() / 100.0D) * 0.2F + 0.4F) * 0.5F);
+		t.init(DefaultVertexFormats.POSITION);
+		Tile.rock.renderFaceNoTexture(t, h.x, h.y, h.z, h.f);
+		t.flush();
+        GL11.disablePolygonOffset();
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 

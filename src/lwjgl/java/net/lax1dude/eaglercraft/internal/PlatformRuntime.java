@@ -117,7 +117,7 @@ public class PlatformRuntime {
 
         int windowWidth = mon.width() - 200;
         int windowHeight = mon.height() - 250;
-        String title = "Minecraft rd-132328";
+        String title = "Minecraft rd-160052";
 
         int winX = (mon.width() - windowWidth) / 2;
         int winY = (mon.height() - windowHeight - 20) / 2;

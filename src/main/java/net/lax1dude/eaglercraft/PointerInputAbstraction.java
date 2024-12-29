@@ -200,11 +200,11 @@ public class PointerInputAbstraction {
         }
     }
 
-    public static int getVCursorX() {
+    public static int getX() {
         return cursorX;
     }
 
-    public static int getVCursorY() {
+    public static int getY() {
         return cursorY;
     }
 

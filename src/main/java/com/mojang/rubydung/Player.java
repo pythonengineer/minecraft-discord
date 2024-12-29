@@ -13,8 +13,8 @@ public class Player extends Entity {
 		this.xo = this.x;
 		this.yo = this.y;
 		this.zo = this.z;
-        this.xRotO = this.xRot;
-        this.yRotO = this.yRot;
+		this.xRotO = this.xRot;
+		this.yRotO = this.yRot;
 		float xa = 0.0F;
 		float ya = 0.0F;
 		if(Keyboard.isKeyDown(Keyboard.KEY_R)) {
@@ -38,18 +38,18 @@ public class Player extends Entity {
 		}
 
 		if((Keyboard.isKeyDown(Keyboard.KEY_SPACE) || Keyboard.isKeyDown(Keyboard.KEY_LMETA)) && this.onGround) {
-			this.yd = 0.12F;
+			this.yd = 0.5F;
 		}
 
-		this.moveRelative(xa, ya, this.onGround ? 0.02F : 0.005F);
-		this.yd = (float)((double)this.yd - 0.005D);
+		this.moveRelative(xa, ya, this.onGround ? 0.1F : 0.02F);
+		this.yd = (float)((double)this.yd - 0.08D);
 		this.move(this.xd, this.yd, this.zd);
 		this.xd *= 0.91F;
 		this.yd *= 0.98F;
 		this.zd *= 0.91F;
 		if(this.onGround) {
-			this.xd *= 0.8F;
-			this.zd *= 0.8F;
+			this.xd *= 0.7F;
+			this.zd *= 0.7F;
 		}
 
 	}

@@ -2,22 +2,29 @@ package com.mojang.rubydung.level;
 
 import com.mojang.rubydung.HitResult;
 import com.mojang.rubydung.character.Vec3;
+import com.mojang.rubydung.level.tile.Tile;
 import com.mojang.rubydung.phys.AABB;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Level {
+	private static final int TILE_UPDATE_INTERVAL = 400;
 	public final int width;
 	public final int height;
 	public final int depth;
 	private byte[] blocks;
 	private int[] lightDepths;
 	private ArrayList<LevelListener> levelListeners = new ArrayList();
+	private EaglercraftRandom random = new EaglercraftRandom();
+	int unprocessed = 0;
+	int randValue = this.random.nextInt();
 
 	public Level(int w, int h, int d) {
 		this.width = w;
@@ -25,51 +32,106 @@ public class Level {
 		this.depth = d;
 		this.blocks = new byte[w * h * d];
 		this.lightDepths = new int[w * h];
+		boolean mapLoaded = this.load();
+		if(!mapLoaded) {
+			this.generateMap();
+		}
+
+		this.calcLightDepths(0, 0, w, h);
+	}
+
+	private void generateMap() {
+		int w = this.width;
+		int h = this.height;
+		int d = this.depth;
+		int[] heightmap1 = (new PerlinNoiseFilter(0)).read(w, h);
+		int[] heightmap2 = (new PerlinNoiseFilter(0)).read(w, h);
+		int[] cf = (new PerlinNoiseFilter(1)).read(w, h);
+		int[] rockMap = (new PerlinNoiseFilter(1)).read(w, h);
 
 		for(int x = 0; x < w; ++x) {
 			for(int y = 0; y < d; ++y) {
 				for(int z = 0; z < h; ++z) {
+					int dh1 = heightmap1[x + z * this.width];
+					int dh2 = heightmap2[x + z * this.width];
+					int cfh = cf[x + z * this.width];
+					if(cfh < 128) {
+						dh2 = dh1;
+					}
+
+					int dh = dh1;
+					if(dh2 > dh1) {
+						dh = dh2;
+					}
+
+					dh = dh / 8 + d / 3;
+					int rh = rockMap[x + z * this.width] / 8 + d / 3;
+					if(rh > dh - 2) {
+						rh = dh - 2;
+					}
+
 					int i = (y * this.height + z) * this.width + x;
-					this.blocks[i] = (byte)(y <= d * 2 / 3 ? 1 : 0);
+					int id = 0;
+					if(y == dh) {
+						id = Tile.grass.id;
+					}
+
+					if(y < dh) {
+						id = Tile.dirt.id;
+					}
+
+					if(y <= rh) {
+						id = Tile.rock.id;
+					}
+
+					this.blocks[i] = (byte)id;
 				}
 			}
 		}
 
-		this.calcLightDepths(0, 0, w, h);
-		this.load();
 	}
 
-	public void load() {
+	public boolean load() {
 		try {
-		    VFile2 f = new VFile2("level.dat");
-		    if (f.exists()) {
-		        DataInputStream e = new DataInputStream(
-		        PlatformRuntime.newGZIPInputStream(new VFile2("level.dat").getInputStream()));
-		        e.readFully(this.blocks);
-		        e.close();
-		    }
+            VFile2 f = new VFile2("level.dat");
+            if (f.exists()) {
+                DataInputStream e = new DataInputStream(
+                PlatformRuntime.newGZIPInputStream(new VFile2("level.dat").getInputStream()));
+                e.readFully(this.blocks);
+                e.close();
+            } else {
+                return false;
+            }
 
 			this.calcLightDepths(0, 0, this.width, this.height);
 
 			for(int i = 0; i < this.levelListeners.size(); ++i) {
 				((LevelListener)this.levelListeners.get(i)).allChanged();
 			}
-		} catch (Exception var3) {
-			var3.printStackTrace();
-		}
 
+			return true;
+		} catch (IOException var3) {
+			var3.printStackTrace();
+			return false;
+		}
 	}
 
 	public void save() {
 		try {
-		    DataOutputStream e = new DataOutputStream(
-		    PlatformRuntime.newGZIPOutputStream(new VFile2("level.dat").getOutputStream()));
-		    e.write(this.blocks);
-		    e.close();
-		} catch (Exception var2) {
+            DataOutputStream e = new DataOutputStream(
+            PlatformRuntime.newGZIPOutputStream(new VFile2("level.dat").getOutputStream()));
+            e.write(this.blocks);
+            e.close();
+		} catch (IOException var2) {
 			var2.printStackTrace();
 		}
+	}
 
+	public void delete() {
+        VFile2 f = new VFile2("level.dat");
+        if (f.exists()) {
+            f.delete();
+        }
 	}
 
 	public void calcLightDepths(int x0, int y0, int x1, int y1) {
@@ -103,16 +165,9 @@ public class Level {
 		this.levelListeners.remove(levelListener);
 	}
 
-	public boolean isTile(int x, int y, int z) {
-		return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? this.blocks[(y * this.height + z) * this.width + x] == 1 : false;
-	}
-
-	public boolean isSolidTile(int x, int y, int z) {
-		return this.isTile(x, y, z);
-	}
-
 	public boolean isLightBlocker(int x, int y, int z) {
-		return this.isSolidTile(x, y, z);
+		Tile tile = Tile.tiles[this.getTile(x, y, z)];
+		return tile == null ? false : tile.blocksLight();
 	}
 
 	public ArrayList<AABB> getCubes(AABB aABB) {
@@ -150,8 +205,9 @@ public class Level {
 		for(int x = x0; x < x1; ++x) {
 			for(int y = y0; y < y1; ++y) {
 				for(int z = z0; z < z1; ++z) {
-					if(this.isSolidTile(x, y, z)) {
-						aABBs.add(new AABB((float)x, (float)y, (float)z, (float)(x + 1), (float)(y + 1), (float)(z + 1)));
+					Tile tile = Tile.tiles[this.getTile(x, y, z)];
+					if(tile != null) {
+						aABBs.add(tile.getAABB(x, y, z));
 					}
 				}
 			}
@@ -160,33 +216,78 @@ public class Level {
 		return aABBs;
 	}
 
-	public float getBrightness(int x, int y, int z) {
-		float dark = 0.8F;
-		float light = 1.0F;
-		return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? (y < this.lightDepths[x + z * this.width] ? dark : light) : light;
+	public boolean setTile(int x, int y, int z, int type) {
+		if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
+			if(type == this.blocks[(y * this.height + z) * this.width + x]) {
+				return false;
+			} else {
+				this.blocks[(y * this.height + z) * this.width + x] = (byte)type;
+				this.calcLightDepths(x, z, 1, 1);
+
+				for(int i = 0; i < this.levelListeners.size(); ++i) {
+					((LevelListener)this.levelListeners.get(i)).tileChanged(x, y, z);
+				}
+
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 
-	public void setTile(int x, int y, int z, int type) {
-		if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
-			this.blocks[(y * this.height + z) * this.width + x] = (byte)type;
-			this.calcLightDepths(x, z, 1, 1);
+	public boolean isLit(int x, int y, int z) {
+		return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? y >= this.lightDepths[x + z * this.width] : true;
+	}
 
-			for(int i = 0; i < this.levelListeners.size(); ++i) {
-				((LevelListener)this.levelListeners.get(i)).tileChanged(x, y, z);
+	public int getTile(int x, int y, int z) {
+		return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? this.blocks[(y * this.height + z) * this.width + x] : 0;
+	}
+
+	public boolean isSolidTile(int x, int y, int z) {
+		Tile tile = Tile.tiles[this.getTile(x, y, z)];
+		return tile == null ? false : tile.isSolid();
+	}
+
+	public void tick() {
+	    int i1 = 1;
+	    int i2;
+	    for(i2 = 1; 1 << i1 < this.width; ++i1) {
+	    }
+
+	    while(1 << i2 < this.height) {
+	        ++i2;
+	    }
+
+	    int i3 = this.height - 1;
+	    int i4 = this.width - 1;
+	    int i5 = this.depth - 1;
+
+		this.unprocessed += this.width * this.height * this.depth;
+		int ticks = this.unprocessed / TILE_UPDATE_INTERVAL;
+		this.unprocessed -= ticks * TILE_UPDATE_INTERVAL;
+
+		for(int i = 0; i < ticks; ++i) {
+		    this.randValue = this.randValue * 3 + 1013904223;
+		    int y = this.randValue >> 2;
+		    int x = y & i4;
+		    int z = y >> i1 & i3;
+		    y = y >> i1 + i2 & i5;
+			Tile tile = Tile.tiles[this.getTile(x, y, z)];
+			if(tile != null) {
+				tile.tick(this, x, y, z, this.random);
 			}
-
 		}
 	}
 
     public HitResult clip(Vec3 vec31, Vec3 vec32) {
         if (!Float.isNaN(vec31.x) && !Float.isNaN(vec31.y) && !Float.isNaN(vec31.z)) {
             if (!Float.isNaN(vec32.x) && !Float.isNaN(vec32.y) && !Float.isNaN(vec32.z)) {
-                int i3 = (int) Math.floor((double) vec32.x);
-                int i4 = (int) Math.floor((double) vec32.y);
-                int i5 = (int) Math.floor((double) vec32.z);
-                int i6 = (int) Math.floor((double) vec31.x);
-                int i7 = (int) Math.floor((double) vec31.y);
-                int i8 = (int) Math.floor((double) vec31.z);
+                int i3 = (int)Math.floor((double)vec32.x);
+                int i4 = (int)Math.floor((double)vec32.y);
+                int i5 = (int)Math.floor((double)vec32.z);
+                int i6 = (int)Math.floor((double)vec31.x);
+                int i7 = (int)Math.floor((double)vec31.y);
+                int i8 = (int)Math.floor((double)vec31.z);
                 int i9 = 20;
 
                 byte b21;
@@ -207,27 +308,27 @@ public class Level {
                     float f11 = 999.0F;
                     float f12 = 999.0F;
                     if (i3 > i6) {
-                        f10 = (float) i6 + 1.0F;
+                        f10 = (float)i6 + 1.0F;
                     }
 
                     if (i3 < i6) {
-                        f10 = (float) i6;
+                        f10 = (float)i6;
                     }
 
                     if (i4 > i7) {
-                        f11 = (float) i7 + 1.0F;
+                        f11 = (float)i7 + 1.0F;
                     }
 
                     if (i4 < i7) {
-                        f11 = (float) i7;
+                        f11 = (float)i7;
                     }
 
                     if (i5 > i8) {
-                        f12 = (float) i8 + 1.0F;
+                        f12 = (float)i8 + 1.0F;
                     }
 
                     if (i5 < i8) {
-                        f12 = (float) i8;
+                        f12 = (float)i8;
                     }
 
                     float f13 = 999.0F;
@@ -280,21 +381,21 @@ public class Level {
                         vec31.z = f12;
                     }
 
-                    i6 = (int) Math.floor((double) vec31.x);
+                    i6 = (int)Math.floor((double)vec31.x);
                     if (b21 == 5) {
                         --i6;
                     }
 
-                    i7 = (int) Math.floor((double) vec31.y);
+                    i7 = (int)Math.floor((double)vec31.y);
                     if (b21 == 1) {
                         --i7;
                     }
 
-                    i8 = (int) Math.floor((double) vec31.z);
+                    i8 = (int)Math.floor((double)vec31.z);
                     if (b21 == 3) {
                         --i8;
                     }
-                } while (!this.isTile(i6, i7, i8));
+                } while (this.getTile(i6, i7, i8) == 0);
 
                 return new HitResult(i6, i7, i8, 0, b21);
             } else {

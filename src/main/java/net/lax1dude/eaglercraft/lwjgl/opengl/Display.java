@@ -102,6 +102,13 @@ public class Display {
         return PlatformInput.wasVisualViewportResized();
     }
 
+    public static void setFullscreen(boolean fullscreen) {
+        if (fullscreen) {
+            setDisplayMode(new DisplayMode(854, 480));
+        }
+        PlatformInput.setStartupFullscreen(fullscreen);
+    }
+
     public static boolean supportsFullscreen() {
         return PlatformInput.supportsFullscreen();
     }

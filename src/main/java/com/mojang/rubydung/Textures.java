@@ -9,7 +9,6 @@ import net.lax1dude.eaglercraft.opengl.ImageData;
 
 public class Textures {
 	private static HashMap<String, Integer> idMap = new HashMap();
-	private static int lastId = -9999999;
 
 	public static int loadTexture(String resourceName, int mode) {
 		try {
@@ -25,9 +24,9 @@ public class Textures {
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, mode);
 				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, mode);
-				ImageData img = ImageData.loadImageFile("/assets" + resourceName);
-				int w = img.width;
-				int h = img.height;
+                ImageData img = ImageData.loadImageFile("/assets" + resourceName);
+                int w = img.width;
+                int h = img.height;
                 IntBuffer textureBuffer = BufferUtils.createIntBuffer(w * h << 2);
                 textureBuffer.clear();
                 textureBuffer.put(img.pixels);

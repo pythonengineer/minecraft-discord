@@ -2,7 +2,10 @@ package net.lax1dude.eaglercraft.touch;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
+
 import com.mojang.rubydung.RubyDung;
+import com.mojang.rubydung.character.Zombie;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.
@@ -77,7 +80,7 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 18, 108, 18, 18, 2);
     }),
 
-    BACK(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
+    BACK(EnumTouchControlPos.TOP, -50, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
             RubyDung.rubydung.player.resetPos();
         }
@@ -135,8 +138,9 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 218, 184, 18, 18, 2);
     }),
 
-    PASTE(EnumTouchControlPos.TOP, 144, 0, 36, (enumIn, x, y) -> {
+    PASTE(EnumTouchControlPos.TOP, 58, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            RubyDung.rubydung.level.save();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -144,9 +148,9 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 218, 148, 18, 18, 2);
     }),
 
-    COPY(EnumTouchControlPos.TOP, 50, 0, 36, (enumIn, x, y) -> {
+    COPY(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            RubyDung.rubydung.level.save();
+            RubyDung.rubydung.level.delete();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -162,6 +166,16 @@ public enum EnumTouchControl {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
         int[] pos = enumIn.getLocation(res, TouchOverlayRenderer._fuck);
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 36, 20, 20, 20, 2);
+    }),
+
+    MOB(EnumTouchControlPos.TOP, -14, 0, 36, (enumIn, x, y) -> {
+        if (!TouchControls.isPressed(enumIn)) {
+            RubyDung.rubydung.addZombie();
+        }
+    }, (enumIn, x, y, pressed, res) -> {
+        GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
+        int[] pos = enumIn.getLocation(res, TouchOverlayRenderer._fuck);
+        TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 90, 18, 18, 2);
     }),
 
     FLY(EnumTouchControlPos.BOTTOM_LEFT, 16, 16, 36, (enumIn, x, y) -> {
@@ -313,6 +327,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -337,6 +352,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, true);
                 COPY.setVisible(renderer, true);
                 PICK.setVisible(renderer, false);
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -361,6 +377,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -382,9 +399,10 @@ public enum EnumTouchControl {
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
-                PASTE.setVisible(renderer, false);
+                PASTE.setVisible(renderer, true);
                 COPY.setVisible(renderer, true);
                 PICK.setVisible(renderer, true);
+                MOB.setVisible(renderer, true);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -406,9 +424,10 @@ public enum EnumTouchControl {
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
-                PASTE.setVisible(renderer, false);
+                PASTE.setVisible(renderer, true);
                 COPY.setVisible(renderer, true);
                 PICK.setVisible(renderer, true);
+                MOB.setVisible(renderer, true);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -433,6 +452,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, true);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -457,6 +477,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, true);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -481,6 +502,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, true);
                 FLY_DOWN.setVisible(renderer, true);
@@ -505,6 +527,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, true);
                 FLY_DOWN.setVisible(renderer, true);

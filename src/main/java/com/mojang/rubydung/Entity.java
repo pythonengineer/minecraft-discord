@@ -5,7 +5,7 @@ import com.mojang.rubydung.phys.AABB;
 import java.util.ArrayList;
 
 public class Entity {
-	private Level level;
+	protected Level level;
 	public float xo;
 	public float yo;
 	public float zo;
@@ -17,11 +17,14 @@ public class Entity {
 	public float zd;
 	public float yRot;
 	public float xRot;
-    public float yRotO;
-    public float xRotO;
+	public float yRotO;
+	public float xRotO;
 	public AABB bb;
 	public boolean onGround = false;
+	public boolean removed = false;
 	protected float heightOffset = 0.0F;
+	protected float bbWidth = 0.6F;
+	protected float bbHeight = 1.8F;
 
 	public Entity(Level level) {
 		this.level = level;
@@ -35,18 +38,27 @@ public class Entity {
 		this.setPos(x, y, z);
 	}
 
-	private void setPos(float x, float y, float z) {
+	public void remove() {
+		this.removed = true;
+	}
+
+	protected void setSize(float w, float h) {
+		this.bbWidth = w;
+		this.bbHeight = h;
+	}
+
+	protected void setPos(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		float w = 0.3F;
-		float h = 0.9F;
+		float w = this.bbWidth / 2.0F;
+		float h = this.bbHeight / 2.0F;
 		this.bb = new AABB(x - w, y - h, z - w, x + w, y + h, z + w);
 	}
 
 	public void turn(float xo, float yo) {
-        float orgXRot = this.xRot;
-        float orgYRot = this.yRot;
+	    float orgXRot = this.xRot;
+	    float orgYRot = this.yRot;
 		this.yRot = (float)((double)this.yRot + (double)xo * 0.15D);
 		this.xRot = (float)((double)this.xRot - (double)yo * 0.15D);
 		if(this.xRot < -90.0F) {
@@ -57,16 +69,16 @@ public class Entity {
 			this.xRot = 90.0F;
 		}
 
-        this.xRotO += this.xRot - orgXRot;
-        this.yRotO += this.yRot - orgYRot;
+		this.xRotO += this.xRot - orgXRot;
+		this.yRotO += this.yRot - orgYRot;
 	}
 
 	public void tick() {
 		this.xo = this.x;
 		this.yo = this.y;
 		this.zo = this.z;
-        this.xRotO = this.xRot;
-        this.yRotO = this.yRot;
+		this.xRotO = this.xRot;
+		this.yRotO = this.yRot;
 	}
 
 	public void move(float xa, float ya, float za) {
@@ -122,5 +134,12 @@ public class Entity {
 			this.xd += xa * cos - za * sin;
 			this.zd += za * cos + xa * sin;
 		}
+	}
+
+	public boolean isLit() {
+		int xTile = (int)this.x;
+		int yTile = (int)this.y;
+		int zTile = (int)this.z;
+		return this.level.isLit(xTile, yTile, zTile);
 	}
 }

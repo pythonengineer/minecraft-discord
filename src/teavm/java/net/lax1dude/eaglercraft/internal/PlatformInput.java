@@ -2409,8 +2409,9 @@ public class PlatformInput {
     }
 
     public static void setSize(int width, int height) {
-        // windowWidth = width;
-        // windowHeight = height;
+    }
+
+    public static void setStartupFullscreen(boolean fullscreen) {
     }
 
     static void initWindowSize(int sw, int sh, float dpi) {

@@ -164,7 +164,7 @@ public class Frustum {
 		return true;
 	}
 
-	public boolean cubeInFrustum(AABB aabb) {
+	public boolean isVisible(AABB aabb) {
 		return this.cubeInFrustum(aabb.x0, aabb.y0, aabb.z0, aabb.x1, aabb.y1, aabb.z1);
 	}
 }
