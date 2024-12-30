@@ -28,7 +28,7 @@ import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.internal.teavm.opts.JSMinecraftOptsRoot;
 import net.lax1dude.eaglercraft.log4j.ILogRedirector;
 import net.lax1dude.eaglercraft.log4j.LogManager;
-import com.mojang.rubydung.RubyDung;
+import com.mojang.minecraft.RubyDung;
 
 /**
  * Copyright (c) 2022-2024 lax1dude. All Rights Reserved.
@@ -245,7 +245,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"rd-160052\"\n");
+        str.append("minecraft.version = \"rd-161348\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

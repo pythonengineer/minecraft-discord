@@ -3,7 +3,7 @@ package net.lax1dude.eaglercraft;
 import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.touch.TouchControls;
-import com.mojang.rubydung.RubyDung;
+import com.mojang.minecraft.RubyDung;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.

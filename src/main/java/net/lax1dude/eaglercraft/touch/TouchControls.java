@@ -3,7 +3,7 @@ package net.lax1dude.eaglercraft.touch;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.touch.EnumTouchControl.TouchAction;
-import com.mojang.rubydung.RubyDung;
+import com.mojang.minecraft.RubyDung;
 
 import net.lax1dude.eaglercraft.ScaledResolution;
 

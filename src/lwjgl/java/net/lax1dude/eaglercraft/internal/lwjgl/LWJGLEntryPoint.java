@@ -9,7 +9,7 @@ import net.lax1dude.eaglercraft.internal.PlatformInput;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.lwjgl.LWJGLException;
 
-import com.mojang.rubydung.RubyDung;
+import com.mojang.minecraft.RubyDung;
 
 /**
  * Copyright (c) 2022-2023 lax1dude. All Rights Reserved.

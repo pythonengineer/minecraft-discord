@@ -15,7 +15,7 @@ import net.lax1dude.eaglercraft.vector.Vector4f;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mojang.rubydung.level.Tesselator;
+import com.mojang.minecraft.level.Tesselator;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.GLObjectMap;
@@ -1091,6 +1091,9 @@ public class GL11 {
                 }
                 enableTexture2D();
                 break;
+            case GL_ALPHA_TEST:
+                enableAlpha();
+                break;
             case GL_BLEND:
                 enableBlend();
                 break;
@@ -1115,6 +1118,9 @@ public class GL11 {
                 }
                 disableTexture2D();
                 break;
+            case GL_ALPHA_TEST:
+                disableAlpha();
+                break;
             case GL_BLEND:
                 disableBlend();
                 break;
@@ -1133,9 +1139,9 @@ public class GL11 {
         stateAlphaTest = true;
     }
 
-    public static final void alphaFunc(int func, float ref) {
+    public static final void glAlphaFunc(int func, float ref) {
         if (func != GL_GREATER) {
-            throw new UnsupportedOperationException("Only GL_GREATER alphaFunc is supported");
+            throw new UnsupportedOperationException("Only GL_GREATER glAlphaFunc is supported");
         } else {
             stateAlphaTestRef = ref;
         }
@@ -1186,12 +1192,13 @@ public class GL11 {
     }
 
     public static final void glLightModel(int type, FloatBuffer vector) {
-        if (type == GL11.GL_LIGHT_MODEL_AMBIENT) {
-            stateLightingAmbientR = vector.get();
-            stateLightingAmbientG = vector.get();
-            stateLightingAmbientB = vector.get();
-            ++stateLightingAmbientSerial;
+        if (type != GL11.GL_LIGHT_MODEL_AMBIENT) {
+            throw new UnsupportedOperationException("Only GL_LIGHT_MODEL_AMBIENT glLightModel is supported");
         }
+        stateLightingAmbientR = vector.get();
+        stateLightingAmbientG = vector.get();
+        stateLightingAmbientB = vector.get();
+        ++stateLightingAmbientSerial;
     }
 
     public static final void enableColorMaterial() {

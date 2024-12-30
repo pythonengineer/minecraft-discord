@@ -4,10 +4,10 @@ import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.opengl.GameOverlayFramebuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import com.mojang.rubydung.Textures;
+import com.mojang.minecraft.Textures;
 
 import net.lax1dude.eaglercraft.ScaledResolution;
-import com.mojang.rubydung.level.Tesselator;
+import com.mojang.minecraft.level.Tesselator;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 

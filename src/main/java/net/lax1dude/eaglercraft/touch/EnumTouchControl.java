@@ -4,8 +4,8 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
-import com.mojang.rubydung.RubyDung;
-import com.mojang.rubydung.character.Zombie;
+import com.mojang.minecraft.RubyDung;
+import com.mojang.minecraft.character.Zombie;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.
