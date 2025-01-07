@@ -292,6 +292,10 @@ public class PlatformInput {
         return glfwWindowShouldClose(win);
     }
 
+    public static void setTitle(String title) {
+        glfwSetWindowTitle(win, title);
+    }
+
     public static void setVSync(boolean enable) {
         vsync = enable;
     }

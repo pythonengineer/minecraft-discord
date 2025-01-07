@@ -1,10 +1,10 @@
 package com.mojang.minecraft.level.tile;
 
 import com.mojang.minecraft.level.Level;
-import com.mojang.minecraft.level.Tesselator;
 import com.mojang.minecraft.particle.Particle;
 import com.mojang.minecraft.particle.ParticleEngine;
 import com.mojang.minecraft.phys.AABB;
+import com.mojang.minecraft.renderer.Tesselator;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 

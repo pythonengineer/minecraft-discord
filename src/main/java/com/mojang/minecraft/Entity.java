@@ -142,4 +142,7 @@ public class Entity {
 		int zTile = (int)this.z;
 		return this.level.isLit(xTile, yTile, zTile);
 	}
+
+    public void render(float a) {
+    }
 }

@@ -614,6 +614,12 @@ public class PlatformInput {
                             mouseDX = 0.0D;
                             mouseDY = 0.0D;
                             pointerLockWaiting = false;
+                            for (int i = 0; i < buttonStates.length; ++i) {
+                                buttonStates[i] = false;
+                            }
+                            for (int i = 0; i < keyStates.length; ++i) {
+                                keyStates[i] = false;
+                            }
                         }
                     });
                     win.getDocument().addEventListener(pointerLockSupported == POINTER_LOCK_MOZ ? "mozpointerlockerror" : "pointerlockerror", pointerlockerr = new EventListener<Event>() {
@@ -1327,7 +1333,7 @@ public class PlatformInput {
     }
 
     public static int mouseGetEventButton() {
-        if (currentEvent == null || (currentEvent.type == EVENT_MOUSE_MOVE)) return -1;
+        if (currentEvent == null || (currentEvent.type == EVENT_MOUSE_MOVE) || !isPointerLockedImpl()) return -1;
         return currentEvent.button;
     }
 
@@ -2406,6 +2412,9 @@ public class PlatformInput {
             touchOffsetXTeaVM = 0;
             touchOffsetYTeaVM = 0;
         }
+    }
+
+    public static void setTitle(String title) {
     }
 
     public static void setSize(int width, int height) {

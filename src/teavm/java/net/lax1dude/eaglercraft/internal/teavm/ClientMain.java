@@ -28,7 +28,7 @@ import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.internal.teavm.opts.JSMinecraftOptsRoot;
 import net.lax1dude.eaglercraft.log4j.ILogRedirector;
 import net.lax1dude.eaglercraft.log4j.LogManager;
-import com.mojang.minecraft.RubyDung;
+import com.mojang.minecraft.Minecraft;
 
 /**
  * Copyright (c) 2022-2024 lax1dude. All Rights Reserved.
@@ -173,7 +173,7 @@ public class ClientMain {
             systemOut.println("ClientMain: [INFO] launching Minecraft main thread");
 
             try {
-                RubyDung.main(new String[0]);
+                Minecraft.main(new String[0]);
             } catch (Throwable t) {
                 systemErr.println("ClientMain: [ERROR] unhandled exception caused main thread to exit");
                 EagRuntime.debugPrintStackTraceToSTDERR(t);
@@ -245,7 +245,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"rd-161348\"\n");
+        str.append("minecraft.version = \"0.0.11a\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

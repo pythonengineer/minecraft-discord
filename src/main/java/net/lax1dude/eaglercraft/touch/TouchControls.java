@@ -3,7 +3,7 @@ package net.lax1dude.eaglercraft.touch;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.touch.EnumTouchControl.TouchAction;
-import com.mojang.minecraft.RubyDung;
+import com.mojang.minecraft.Minecraft;
 
 import net.lax1dude.eaglercraft.ScaledResolution;
 
@@ -34,7 +34,7 @@ public class TouchControls {
 
     public static void update(boolean screenTouched) {
         int h = Display.getDisplayMode().getHeight();
-        final ScaledResolution sr = RubyDung.scaledResolution;
+        final ScaledResolution sr = Minecraft.scaledResolution;
         int fac = sr.getScaleFactor();
         if (screenTouched) {
             int touchPoints = Touch.touchPointCount();
@@ -76,9 +76,9 @@ public class TouchControls {
 
     public static boolean handleTouchBegin(int uid, int pointX, int pointY) {
         pointY = Display.getDisplayMode().getHeight() - pointY - 1;
-        EnumTouchControl control = overlappingControl0(pointX, pointY, RubyDung.scaledResolution);
+        EnumTouchControl control = overlappingControl0(pointX, pointY, Minecraft.scaledResolution);
         if (control != null) {
-            int fac = RubyDung.scaledResolution.getScaleFactor();
+            int fac = Minecraft.scaledResolution.getScaleFactor();
             touchControls.put(uid, new TouchControlInput(pointX / fac, pointY / fac, control));
             return true;
         } else {
@@ -95,6 +95,7 @@ public class TouchControls {
     }
 
     public static void togglePick() {
+        Minecraft.minecraft.editMode = (Minecraft.minecraft.editMode + 1) % 2;
         isPickToggled = !isPickToggled;
     }
 
@@ -108,7 +109,7 @@ public class TouchControls {
     public static void handleInput() {
         if (!touchControls.isEmpty()) {
             Set<EnumTouchControl> newPressed = EnumSet.noneOf(EnumTouchControl.class);
-            TouchOverlayRenderer renderer = RubyDung.touchOverlayRenderer;
+            TouchOverlayRenderer renderer = Minecraft.touchOverlayRenderer;
             for (TouchControlInput input : touchControls.values()) {
                 TouchAction action = input.control.getAction();
                 if (action != null) {
@@ -135,7 +136,7 @@ public class TouchControls {
 
     public static EnumTouchControl overlappingControl(int tx, int ty) {
         ty = Display.getDisplayMode().getHeight() - ty - 1;
-        return overlappingControl0(tx, ty, RubyDung.scaledResolution);
+        return overlappingControl0(tx, ty, Minecraft.scaledResolution);
     }
 
     private static EnumTouchControl overlappingControl0(int pointX, int pointY, ScaledResolution sr) {

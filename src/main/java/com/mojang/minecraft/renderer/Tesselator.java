@@ -1,4 +1,4 @@
-package com.mojang.minecraft.level;
+package com.mojang.minecraft.renderer;
 
 import net.lax1dude.eaglercraft.opengl.VertexFormat;
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
@@ -9,6 +9,7 @@ public class Tesselator {
     public static WorldRenderer worldRenderer = new WorldRenderer(2097152);
     public static Tesselator instance = new Tesselator();
     private boolean hasColor;
+    private boolean noColor = false;
     private float r;
     private float g;
     private float b;
@@ -35,7 +36,9 @@ public class Tesselator {
     }
 
     public void init(VertexFormat fmt) {
+        this.clear();
         worldRenderer.begin(GL11.GL_QUADS, fmt);
+        this.noColor = false;
     }
 
     public void tex(float u, float v) {
@@ -43,10 +46,12 @@ public class Tesselator {
     }
 
     public void color(float r, float g, float b) {
-        this.hasColor = true;
-        this.r = r;
-        this.g = g;
-        this.b = b;
+        if (!this.noColor) {
+            this.hasColor = true;
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
     }
 
     public void vertexUV(float x, float y, float z, float u, float v) {
@@ -60,5 +65,16 @@ public class Tesselator {
         }
         worldRenderer.pos(x, y, z);
         worldRenderer.endVertex();
+    }
+
+    public void color(int c) {
+        float r = (float)(c >> 16 & 255) / 255.0F;
+        float g = (float)(c >> 8 & 255) / 255.0F;
+        float b = (float)(c & 255) / 255.0F;
+        this.color(r, g, b);
+    }
+
+    public void noColor() {
+        this.noColor = true;
     }
 }

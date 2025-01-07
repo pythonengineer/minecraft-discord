@@ -42,6 +42,14 @@ public class ImageData {
         this.alpha = alpha;
     }
 
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
     public ImageData fillAlpha() {
         for (int i = 0; i < pixels.length; ++i) {
             pixels[i] = pixels[i] | 0xFF000000;

@@ -4,10 +4,8 @@ import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.opengl.GameOverlayFramebuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import com.mojang.minecraft.Textures;
 
 import net.lax1dude.eaglercraft.ScaledResolution;
-import com.mojang.minecraft.level.Tesselator;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
@@ -16,6 +14,8 @@ import static net.lax1dude.eaglercraft.lwjgl.opengl.GL11.*;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.renderer.Tesselator;
 
 /**
  * Copyright (c) 2024 lax1dude. All Rights Reserved.
@@ -35,7 +35,7 @@ import com.google.common.collect.Sets;
  */
 public class TouchOverlayRenderer {
 
-    public static final int spriteSheet = Textures.loadTexture("/eagler/gui/touch_gui.png", GL_NEAREST);
+    public static final int spriteSheet = Minecraft.minecraft.textures.loadTexture("/eagler/gui/touch_gui.png", GL_NEAREST);
 
     static final int[] _fuck = new int[2];
 
@@ -44,7 +44,6 @@ public class TouchOverlayRenderer {
     private boolean invalidDeep = false;
     private int currentWidth = -1;
     private int currentHeight = -1;
-    private static Tesselator tessellator = new Tesselator();
 
     public TouchOverlayRenderer() {
         this.overlayFramebuffer = new GameOverlayFramebuffer(false);
@@ -132,6 +131,7 @@ public class TouchOverlayRenderer {
         GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GL11.enableAlpha();
         GL11.glColor4f(1.0f, 1.0f, 1.0f, MathHelper.clamp_float(1.0F, 0.0f, 1.0f));
+        Tesselator tessellator = Tesselator.instance;
         tessellator.init(DefaultVertexFormats.POSITION_TEX);
         tessellator.tex(0.0F, 0.0F);
         tessellator.vertex(0.0F, sh, 500.0F);
@@ -161,6 +161,7 @@ public class TouchOverlayRenderer {
             int scaleFac) {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
+        Tesselator tessellator = Tesselator.instance;
         tessellator.init(DefaultVertexFormats.POSITION_TEX);
         tessellator.tex((float)(minU + 0) * f, (float)(minV + maxV) * f1);
         tessellator.vertex(xCoord + 0.0F, yCoord + (float)maxV * scaleFac, 0.0F);

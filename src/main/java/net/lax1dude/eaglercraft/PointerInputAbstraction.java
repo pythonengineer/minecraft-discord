@@ -3,7 +3,7 @@ package net.lax1dude.eaglercraft;
 import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.touch.TouchControls;
-import com.mojang.minecraft.RubyDung;
+import com.mojang.minecraft.Minecraft;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.
@@ -23,7 +23,7 @@ import com.mojang.minecraft.RubyDung;
  */
 public class PointerInputAbstraction {
 
-    protected static RubyDung mc;
+    protected static Minecraft mc;
     protected static int oldMX = -1;
     protected static int oldMY = -1;
     protected static int oldTX = -1;
@@ -43,7 +43,7 @@ public class PointerInputAbstraction {
     protected static boolean draggingNotTouching = false;
     protected static boolean touchMode = false;
 
-    public static void init(RubyDung mcIn) {
+    public static void init(Minecraft mcIn) {
         mc = mcIn;
         oldMX = -1;
         oldMY = -1;

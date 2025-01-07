@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord activities by converting the Java engine to modern WebGL-compatible JavaScript
 and providing a web server using *Vite* that can be linked to your Discord application.
 
-This version is **rd-161348**, the fourth version of the game which was released on _**May 16, 2009**_.
+This version is **0.0.11a**, the first *Classic* version of the game which was released on _**May 17, 2009**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_pre-Classic_rd-161348).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.11a).
 
 ### Usage
 
@@ -34,7 +34,7 @@ You can delete the saved level file by tapping the button second from right at t
 
 The button to the right of the delete level file saves the level. The leftmost button resets your position and the button to the right of that spawns a human.
 
-Tap the block on the top left to switch blocks. The most bottom right button is jump and the one above it toggles block picking.
+Tap the block on the top left to switch blocks. The most bottom right button is jump and the one above it toggles block mode.
 
 ### Notes
 

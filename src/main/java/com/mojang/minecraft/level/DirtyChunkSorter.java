@@ -1,6 +1,7 @@
 package com.mojang.minecraft.level;
 
 import com.mojang.minecraft.Player;
+import com.mojang.minecraft.renderer.Frustum;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 

@@ -68,6 +68,7 @@ public class Display {
     }
 
     public static void setTitle(String string) {
+        PlatformInput.setTitle(string);
     }
 
     public static boolean isCloseRequested() {

@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
-import com.mojang.minecraft.RubyDung;
+import com.mojang.minecraft.Minecraft;
 import com.mojang.minecraft.character.Zombie;
 
 /**
@@ -82,7 +82,7 @@ public enum EnumTouchControl {
 
     BACK(EnumTouchControlPos.TOP, -50, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            RubyDung.rubydung.player.resetPos();
+            Minecraft.minecraft.player.resetPos();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -140,7 +140,7 @@ public enum EnumTouchControl {
 
     PASTE(EnumTouchControlPos.TOP, 58, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            RubyDung.rubydung.level.save();
+            Minecraft.minecraft.level.save();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -150,7 +150,7 @@ public enum EnumTouchControl {
 
     COPY(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            RubyDung.rubydung.level.delete();
+            Minecraft.minecraft.level.delete();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -170,7 +170,7 @@ public enum EnumTouchControl {
 
     MOB(EnumTouchControlPos.TOP, -14, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            RubyDung.rubydung.addZombie();
+            Minecraft.minecraft.addZombie();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);

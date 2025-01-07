@@ -9,7 +9,7 @@ import net.lax1dude.eaglercraft.internal.PlatformInput;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.lwjgl.LWJGLException;
 
-import com.mojang.minecraft.RubyDung;
+import com.mojang.minecraft.Minecraft;
 
 /**
  * Copyright (c) 2022-2023 lax1dude. All Rights Reserved.
@@ -46,7 +46,7 @@ public class LWJGLEntryPoint {
         EagRuntime.create();
 
         try {
-            RubyDung.main(new String[0]);
+            Minecraft.main(new String[0]);
         } catch (LWJGLException e) {
         }
     }

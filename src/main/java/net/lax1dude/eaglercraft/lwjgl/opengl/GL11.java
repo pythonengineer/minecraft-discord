@@ -15,7 +15,7 @@ import net.lax1dude.eaglercraft.vector.Vector4f;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mojang.minecraft.level.Tesselator;
+import com.mojang.minecraft.renderer.Tesselator;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.GLObjectMap;
