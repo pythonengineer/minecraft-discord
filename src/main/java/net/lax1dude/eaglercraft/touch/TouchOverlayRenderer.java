@@ -35,7 +35,7 @@ import com.mojang.minecraft.renderer.Tesselator;
  */
 public class TouchOverlayRenderer {
 
-    public static final int spriteSheet = Minecraft.minecraft.textures.loadTexture("/eagler/gui/touch_gui.png", GL_NEAREST);
+    public static final int spriteSheet = Minecraft.minecraft.textureManager.loadTexture("/eagler/gui/touch_gui.png", GL_NEAREST);
 
     static final int[] _fuck = new int[2];
 
@@ -87,7 +87,7 @@ public class TouchOverlayRenderer {
         GL11.disableDepth();
         GL11.disableBlend();
         GL11.enableAlpha();
-        GL11.depthMask(false);
+        GL11.glDepthMask(false);
         if (invalid) {
             GL11.glPushMatrix();
             invalidDeep |= overlayFramebuffer.beginRender(sw, sh);
@@ -131,8 +131,8 @@ public class TouchOverlayRenderer {
         GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GL11.enableAlpha();
         GL11.glColor4f(1.0f, 1.0f, 1.0f, MathHelper.clamp_float(1.0F, 0.0f, 1.0f));
-        Tesselator tessellator = Tesselator.instance;
-        tessellator.init(DefaultVertexFormats.POSITION_TEX);
+        Tesselator tessellator = Tesselator.tesselator;
+        tessellator.begin(DefaultVertexFormats.POSITION_TEX);
         tessellator.tex(0.0F, 0.0F);
         tessellator.vertex(0.0F, sh, 500.0F);
         tessellator.tex(1.0F, 0.0F);
@@ -141,10 +141,10 @@ public class TouchOverlayRenderer {
         tessellator.vertex(sw, 0.0F, 500.0F);
         tessellator.tex(0.0F, 1.0F);
         tessellator.vertex(0.0F, 0.0F, 500.0F);
-        tessellator.flush();
+        tessellator.end();
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GL11.enableDepth();
-        GL11.depthMask(true);
+        GL11.glDepthMask(true);
     }
 
     private EnumTouchLayoutState hashLayoutState() {
@@ -161,8 +161,8 @@ public class TouchOverlayRenderer {
             int scaleFac) {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
-        Tesselator tessellator = Tesselator.instance;
-        tessellator.init(DefaultVertexFormats.POSITION_TEX);
+        Tesselator tessellator = Tesselator.tesselator;
+        tessellator.begin(DefaultVertexFormats.POSITION_TEX);
         tessellator.tex((float)(minU + 0) * f, (float)(minV + maxV) * f1);
         tessellator.vertex(xCoord + 0.0F, yCoord + (float)maxV * scaleFac, 0.0F);
         tessellator.tex((float)(minU + maxU) * f, (float)(minV + maxV) * f1);
@@ -171,6 +171,6 @@ public class TouchOverlayRenderer {
         tessellator.vertex(xCoord + (float)maxU * scaleFac, yCoord + 0.0F, 0.0F);
         tessellator.tex((float)(minU + 0) * f, (float)(minV + 0) * f1);
         tessellator.vertex(xCoord + 0.0F, yCoord + 0.0F, 0.0F);
-        tessellator.flush();
+        tessellator.end();
     }
 }

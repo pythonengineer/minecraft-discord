@@ -5,6 +5,8 @@ import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
+import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayList;
+import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayList.ListOperation;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DrawUtils;
 import net.lax1dude.eaglercraft.opengl.VertexFormat;
@@ -1077,6 +1079,10 @@ public class GL11 {
     }
 
     public static final void glEnable(int var) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(var, true));
+            return;
+        }
         switch (var) {
             case GL_FOG:
                 enableFog();
@@ -1085,11 +1091,10 @@ public class GL11 {
                 enableLighting();
                 break;
             case GL_TEXTURE_2D:
-                if (currentList != null) {
-                    currentList.toggleTex = true;
-                    return;
-                }
                 enableTexture2D();
+                break;
+            case GL_DEPTH_TEST:
+                enableDepth();
                 break;
             case GL_ALPHA_TEST:
                 enableAlpha();
@@ -1098,6 +1103,7 @@ public class GL11 {
                 enableBlend();
                 break;
             case GL_COLOR_MATERIAL:
+                enableColorMaterial();
                 break;
             default:
                 _wglEnable(var);
@@ -1105,6 +1111,10 @@ public class GL11 {
     }
 
     public static final void glDisable(int var) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(var, false));
+            return;
+        }
         switch (var) {
             case GL_FOG:
                 disableFog();
@@ -1113,10 +1123,10 @@ public class GL11 {
                 disableLighting();
                 break;
             case GL_TEXTURE_2D:
-                if (currentList != null) {
-                    return;
-                }
                 disableTexture2D();
+                break;
+            case GL_DEPTH_TEST:
+                disableDepth();
                 break;
             case GL_ALPHA_TEST:
                 disableAlpha();
@@ -1125,6 +1135,7 @@ public class GL11 {
                 disableBlend();
                 break;
             case GL_COLOR_MATERIAL:
+                disableColorMaterial();
                 break;
             default:
                 _wglDisable(var);
@@ -1201,6 +1212,9 @@ public class GL11 {
         ++stateLightingAmbientSerial;
     }
 
+    public static final void glColorMaterial(int face, int mode) {
+    }
+
     public static final void enableColorMaterial() {
         stateMaterial = true;
     }
@@ -1272,7 +1286,7 @@ public class GL11 {
         }
     }
 
-    public static final void depthMask(boolean flagIn) {
+    public static final void glDepthMask(boolean flagIn) {
         if (flagIn != stateDepthMask) {
             _wglDepthMask(flagIn);
             stateDepthMask = flagIn;
@@ -1308,6 +1322,10 @@ public class GL11 {
     }
 
     public static final void glBlendFunc(int srcFactor, int dstFactor) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(GL_BLEND, srcFactor, dstFactor));
+            return;
+        }
         if (stateEnableOverlayFramebufferBlending) {
             tryBlendFuncSeparate(srcFactor, dstFactor, 0, 1);
             return;
@@ -1420,7 +1438,7 @@ public class GL11 {
         }
     }
 
-    public static final void cullFace(int mode) {
+    public static final void glCullFace(int mode) {
         if (stateCullFace != mode) {
             _wglCullFace(mode);
             stateCullFace = mode;
@@ -1557,18 +1575,18 @@ public class GL11 {
     }
 
     public static final void glBindTexture(int texture) {
-        glBindTexture(GL_TEXTURE_2D, texture);
-    }
-
-    public static final void glBindTexture(int mode, int texture) {
-        if (currentList != null) {
-            currentList.tex = texture;
-            return;
-        }
         if (texture != boundTexture[activeTexture]) {
             _wglBindTexture(GL_TEXTURE_2D, mapTexturesGL.get(texture));
             boundTexture[activeTexture] = texture;
         }
+    }
+
+    public static final void glBindTexture(int mode, int texture) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(texture));
+            return;
+        }
+        glBindTexture(texture);
     }
 
     public static final void bindTexture3D(int texture) {
@@ -1977,6 +1995,10 @@ public class GL11 {
     }
 
     public static final void glColor4f(float colorRed, float colorGreen, float colorBlue, float colorAlpha) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, colorAlpha));
+            return;
+        }
         stateColorR = colorRed;
         stateColorG = colorGreen;
         stateColorB = colorBlue;
@@ -1985,6 +2007,10 @@ public class GL11 {
     }
 
     public static final void glColor3f(float colorRed, float colorGreen, float colorBlue) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, 1.0f));
+            return;
+        }
         stateColorR = colorRed;
         stateColorG = colorGreen;
         stateColorB = colorBlue;
@@ -2211,6 +2237,7 @@ public class GL11 {
                 GL11.disableVertexAttribArray(++c);
             }
         }
+        dp.ops.clear();
         dp.attribs = -1;
         dp.mode = -1;
         dp.count = 0;
@@ -2269,42 +2296,52 @@ public class GL11 {
         if (dp == null) {
             throw new NullPointerException("Tried to call a display list that does not exist: " + displayList);
         }
-        if (dp.toggleTex) {
-            glEnable(GL_TEXTURE_2D);
-        }
-        if (dp.tex != 0) {
-            glBindTexture(GL_TEXTURE_2D, dp.tex);
-        }
-        if (dp.attribs != -1) {
-            FixedFunctionPipeline p = FixedFunctionPipeline.setupRenderDisplayList(dp.attribs).update();
-            bindGLBufferArray(dp.vertexArray);
-            if (dp.mode == GL_QUADS) {
-                int cnt = dp.count;
-                if (cnt > 0xFFFF) {
-                    if (!dp.bindQuad32) {
-                        dp.bindQuad16 = false;
-                        dp.bindQuad32 = true;
-                        attachQuad32EmulationBuffer(cnt, true);
-                    } else {
-                        attachQuad32EmulationBuffer(cnt, false);
-                    }
-                    p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_INT, 0);
+        for (int i = 0; i < dp.ops.size(); ++i) {
+            ListOperation op = dp.ops.get(i);
+            if (op.hasSetting) {
+                if (op.enabled) {
+                    glEnable(op.setting);
                 } else {
-                    if (!dp.bindQuad16) {
-                        dp.bindQuad16 = true;
-                        dp.bindQuad32 = false;
-                        attachQuad16EmulationBuffer(cnt, true);
-                    } else {
-                        attachQuad16EmulationBuffer(cnt, false);
-                    }
-                    p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_SHORT, 0);
+                    glDisable(op.setting);
                 }
-            } else {
-                p.drawArrays(dp.mode, 0, dp.count);
             }
-        }
-        if (dp.toggleTex) {
-            glDisable(GL_TEXTURE_2D);
+            if (op.hasTex) {
+                glBindTexture(GL_TEXTURE_2D, op.tex);
+            }
+            if (op.hasColor) {
+                glColor4f(op.r, op.g, op.b, op.a);
+            }
+            if (op.doBlend) {
+                glBlendFunc(op.srcFactor, op.dstFactor);
+            }
+            if (op.hasCount && dp.attribs != -1) {
+                FixedFunctionPipeline p = FixedFunctionPipeline.setupRenderDisplayList(dp.attribs).update();
+                bindGLBufferArray(dp.vertexArray);
+                int cnt = op.count;
+                if (dp.mode == GL_QUADS) {
+                    if (cnt > 0xFFFF) {
+                        if (!dp.bindQuad32) {
+                            dp.bindQuad16 = false;
+                            dp.bindQuad32 = true;
+                            attachQuad32EmulationBuffer(cnt, true);
+                        } else {
+                            attachQuad32EmulationBuffer(cnt, false);
+                        }
+                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_INT, op.offset);
+                    } else {
+                        if (!dp.bindQuad16) {
+                            dp.bindQuad16 = true;
+                            dp.bindQuad32 = false;
+                            attachQuad16EmulationBuffer(cnt, true);
+                        } else {
+                            attachQuad16EmulationBuffer(cnt, false);
+                        }
+                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_SHORT, op.offset);
+                    }
+                } else {
+                    p.drawArrays(dp.mode, op.offset, cnt);
+                }
+            }
         }
     }
 
@@ -2313,6 +2350,7 @@ public class GL11 {
         if (dp == null) {
             throw new NullPointerException("Tried to flush a display list that does not exist: " + displayList);
         }
+        dp.ops.clear();
         dp.attribs = -1;
         if (dp.vertexArray != null) {
             GL11.destroyGLBufferArray(dp.vertexArray);
@@ -2773,6 +2811,7 @@ public class GL11 {
             } else if (currentList.mode != mode) {
                 throw new UnsupportedOperationException("Inconsistent draw mode in display list (only one is allowed)");
             }
+            currentList.ops.add(currentList.new ListOperation(currentList.count, currentList.count + count));
             currentList.count += count;
             if (buffer.remaining() > displayListBuffer.remaining()) {
                 growDisplayListBuffer(buffer.remaining());
@@ -3172,14 +3211,14 @@ public class GL11 {
     }
 
     public static final void glEnd() {
-        Tesselator.instance.flush();
+        Tesselator.tesselator.end();
     }
 
     public static final void glTexCoord2f(float u, float v) {
-        Tesselator.instance.tex(u, v);
+        Tesselator.tesselator.tex(u, v);
     }
 
     public static final void glVertex3f(float x, float y, float z) {
-        Tesselator.instance.vertex(x, y, z);
+        Tesselator.tesselator.vertex(x, y, z);
     }
 }

@@ -82,7 +82,7 @@ public enum EnumTouchControl {
 
     BACK(EnumTouchControlPos.TOP, -50, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.player.resetPos();
+            Minecraft.minecraft.thePlayer.resetPos();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);

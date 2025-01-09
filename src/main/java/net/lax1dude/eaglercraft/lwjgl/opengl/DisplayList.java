@@ -1,5 +1,7 @@
 package net.lax1dude.eaglercraft.lwjgl.opengl;
 
+import java.util.ArrayList;
+
 import net.lax1dude.eaglercraft.internal.IBufferArrayGL;
 import net.lax1dude.eaglercraft.internal.IBufferGL;
 
@@ -20,14 +22,63 @@ import net.lax1dude.eaglercraft.internal.IBufferGL;
  *
  */
 public class DisplayList {
+
+    public class ListOperation {
+        boolean hasTex = false;
+        boolean hasColor = false;
+        boolean hasCount = false;
+        boolean hasSetting = false;
+        boolean doBlend = false;
+        boolean enabled;
+        int setting;
+        int count;
+        int offset;
+        int tex;
+        int srcFactor;
+        int dstFactor;
+        float r;
+        float g;
+        float b;
+        float a;
+
+        public ListOperation(int tex) {
+            this.hasTex = true;
+            this.tex = tex;
+        }
+
+        public ListOperation(int setting, boolean enabled) {
+            this.hasSetting = true;
+            this.setting = setting;
+            this.enabled = enabled;
+        }
+
+        public ListOperation(int offset, int count) {
+            this.hasCount = true;
+            this.offset = offset;
+            this.count = count;
+        }
+
+        public ListOperation(int mode, int srcFactor, int dstFactor) {
+            this.doBlend = true;
+            this.srcFactor = srcFactor;
+            this.dstFactor = dstFactor;
+        }
+
+        public ListOperation(float r, float g, float b, float a) {
+            this.hasColor = true;
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+        }
+    }
     IBufferArrayGL vertexArray = null;
     IBufferGL vertexBuffer = null;
     int attribs = -1;
     int mode = -1;
     int count = 0;
-    int tex;
     final int id;
-    boolean toggleTex = false;
+    ArrayList<ListOperation> ops = new ArrayList<ListOperation>();
     boolean bindQuad16 = false;
     boolean bindQuad32 = false;
 
