@@ -5,7 +5,6 @@ import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
-import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayList;
 import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayList.ListOperation;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DrawUtils;
@@ -1632,7 +1631,7 @@ public class GL11 {
         }
     }
 
-    public static final void colorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+    public static final void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         int bits = (red ? 1 : 0) | (green ? 2 : 0) | (blue ? 4 : 0) | (alpha ? 8 : 0);
         if (bits != colorMaskBits) {
             _wglColorMask(red, green, blue, alpha);
@@ -2327,7 +2326,7 @@ public class GL11 {
                         } else {
                             attachQuad32EmulationBuffer(cnt, false);
                         }
-                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_INT, op.offset);
+                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_INT, 0);
                     } else {
                         if (!dp.bindQuad16) {
                             dp.bindQuad16 = true;
@@ -2336,7 +2335,7 @@ public class GL11 {
                         } else {
                             attachQuad16EmulationBuffer(cnt, false);
                         }
-                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_SHORT, op.offset);
+                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_SHORT, 0);
                     }
                 } else {
                     p.drawArrays(dp.mode, op.offset, cnt);
@@ -3207,18 +3206,22 @@ public class GL11 {
     }
 
     public static final void glBegin(int mode, VertexFormat fmt) {
-        Tesselator.worldRenderer.begin(mode, fmt);
+        Tesselator.instance.begin(mode, fmt);
     }
 
     public static final void glEnd() {
-        Tesselator.tesselator.end();
+        Tesselator.instance.end();
     }
 
     public static final void glTexCoord2f(float u, float v) {
-        Tesselator.tesselator.tex(u, v);
+        Tesselator.instance.tex(u, v);
     }
 
     public static final void glVertex3f(float x, float y, float z) {
-        Tesselator.tesselator.vertex(x, y, z);
+        Tesselator.instance.vertex(x, y, z);
+    }
+
+    public static final void glVertex2f(float x, float y) {
+        Tesselator.instance.vertex(x, y, 0.0F);
     }
 }

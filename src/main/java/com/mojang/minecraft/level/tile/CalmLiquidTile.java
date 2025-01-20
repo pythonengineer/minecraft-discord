@@ -4,49 +4,49 @@ import com.mojang.minecraft.level.Level;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
-public final class CalmLiquidTile extends LiquidTile {
-    protected CalmLiquidTile(int var1, int var2) {
-        super(var1, var2);
-        this.tileId = var1 - 1;
-        this.calmTileId = var1;
+public class CalmLiquidTile extends LiquidTile {
+    protected CalmLiquidTile(int id, int liquidType) {
+        super(id, liquidType);
+        this.tileId = id - 1;
+        this.calmTileId = id;
         this.setTicking(false);
     }
 
-    public final void tick(Level var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+    public void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
     }
 
-    public final void neighborChanged(Level var1, int var2, int var3, int var4, int var5) {
-        boolean var6 = false;
-        if(var1.getTile(var2 - 1, var3, var4) == 0) {
-            var6 = true;
+    public void neighborChanged(Level level, int x, int y, int z, int type) {
+        boolean hasAirNeighbor = false;
+        if(level.getTile(x - 1, y, z) == 0) {
+            hasAirNeighbor = true;
         }
 
-        if(var1.getTile(var2 + 1, var3, var4) == 0) {
-            var6 = true;
+        if(level.getTile(x + 1, y, z) == 0) {
+            hasAirNeighbor = true;
         }
 
-        if(var1.getTile(var2, var3, var4 - 1) == 0) {
-            var6 = true;
+        if(level.getTile(x, y, z - 1) == 0) {
+            hasAirNeighbor = true;
         }
 
-        if(var1.getTile(var2, var3, var4 + 1) == 0) {
-            var6 = true;
+        if(level.getTile(x, y, z + 1) == 0) {
+            hasAirNeighbor = true;
         }
 
-        if(var1.getTile(var2, var3 - 1, var4) == 0) {
-            var6 = true;
+        if(level.getTile(x, y - 1, z) == 0) {
+            hasAirNeighbor = true;
         }
 
-        if(var6) {
-            var1.setTileNoUpdate(var2, var3, var4, this.tileId);
+        if(hasAirNeighbor) {
+            level.setTileNoUpdate(x, y, z, this.tileId);
         }
 
-        if(this.liquidType == 1 && var5 == Tile.lava.id) {
-            var1.setTileNoUpdate(var2, var3, var4, Tile.rock.id);
+        if(this.liquidType == 1 && type == Tile.lava.id) {
+            level.setTileNoUpdate(x, y, z, Tile.rock.id);
         }
 
-        if(this.liquidType == 2 && var5 == Tile.water.id) {
-            var1.setTileNoUpdate(var2, var3, var4, Tile.rock.id);
+        if(this.liquidType == 2 && type == Tile.water.id) {
+            level.setTileNoUpdate(x, y, z, Tile.rock.id);
         }
 
     }

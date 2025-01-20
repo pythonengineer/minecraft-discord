@@ -3,17 +3,14 @@ package com.mojang.minecraft.level;
 import com.mojang.minecraft.Player;
 import java.util.Comparator;
 
-public final class DistanceSorter implements Comparator {
-    private Player thePlayer;
+public class DistanceSorter implements Comparator<Chunk> {
+	private Player player;
 
-    public DistanceSorter(Player var1) {
-        this.thePlayer = var1;
-    }
+	public DistanceSorter(Player player) {
+		this.player = player;
+	}
 
-    public final int compare(Object var1, Object var2) {
-        Chunk var10001 = (Chunk)var1;
-        Chunk var4 = (Chunk)var2;
-        Chunk var3 = var10001;
-        return var3.distanceToSqr(this.thePlayer) < var4.distanceToSqr(this.thePlayer) ? -1 : 1;
-    }
+	public int compare(Chunk c0, Chunk c1) {
+		return c0.distanceToSqr(this.player) < c1.distanceToSqr(this.player) ? -1 : 1;
+	}
 }

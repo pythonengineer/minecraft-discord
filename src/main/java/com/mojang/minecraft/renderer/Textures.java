@@ -8,22 +8,22 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
 public class Textures {
-    private HashMap idMap = new HashMap();
+    private HashMap<String, Integer> idMap = new HashMap();
 
-    public final int loadTexture(String var1, int var2) {
+    public int loadTexture(String resourceName, int mode) {
         try {
-            if(this.idMap.containsKey(var1)) {
-                return ((Integer)this.idMap.get(var1)).intValue();
+            if(this.idMap.containsKey(resourceName)) {
+                return ((Integer)this.idMap.get(resourceName)).intValue();
             } else {
-                IntBuffer var14 = BufferUtils.createIntBuffer(1);
-                var14.clear();
-                GL11.glGenTextures(var14);
-                var2 = var14.get(0);
-                this.idMap.put(var1, Integer.valueOf(var2));
-                GL11.glBindTexture(var2);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-                ImageData img = ImageData.loadImageFile("/assets" + var1);
+                IntBuffer e = BufferUtils.createIntBuffer(1);
+                e.clear();
+                GL11.glGenTextures(e);
+                int id = e.get(0);
+                this.idMap.put(resourceName, Integer.valueOf(id));
+                GL11.glBindTexture(id);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, mode);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, mode);
+                ImageData img = ImageData.loadImageFile("/assets" + resourceName);
                 int w = img.getWidth();
                 int h = img.getHeight();
                 IntBuffer textureBuffer = BufferUtils.createIntBuffer(w * h << 2);
@@ -31,9 +31,9 @@ public class Textures {
                 textureBuffer.put(img.pixels);
                 textureBuffer.position(0).limit(img.pixels.length);
                 GL11.glTexImage2D(3553, 0, 6408, w, h, 0, 6408, 5121, textureBuffer);
-                return var2;
+                return id;
             }
-        } catch (Exception var10) {
+        } catch (Exception var16) {
             throw new RuntimeException("!!");
         }
     }

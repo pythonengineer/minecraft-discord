@@ -35,7 +35,7 @@ import com.mojang.minecraft.renderer.Tesselator;
  */
 public class TouchOverlayRenderer {
 
-    public static final int spriteSheet = Minecraft.minecraft.textureManager.loadTexture("/eagler/gui/touch_gui.png", GL_NEAREST);
+    public static final int spriteSheet = Minecraft.minecraft.textures.loadTexture("/eagler/gui/touch_gui.png", GL_NEAREST);
 
     static final int[] _fuck = new int[2];
 
@@ -131,7 +131,7 @@ public class TouchOverlayRenderer {
         GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GL11.enableAlpha();
         GL11.glColor4f(1.0f, 1.0f, 1.0f, MathHelper.clamp_float(1.0F, 0.0f, 1.0f));
-        Tesselator tessellator = Tesselator.tesselator;
+        Tesselator tessellator = Tesselator.instance;
         tessellator.begin(DefaultVertexFormats.POSITION_TEX);
         tessellator.tex(0.0F, 0.0F);
         tessellator.vertex(0.0F, sh, 500.0F);
@@ -161,7 +161,7 @@ public class TouchOverlayRenderer {
             int scaleFac) {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
-        Tesselator tessellator = Tesselator.tesselator;
+        Tesselator tessellator = Tesselator.instance;
         tessellator.begin(DefaultVertexFormats.POSITION_TEX);
         tessellator.tex((float)(minU + 0) * f, (float)(minV + maxV) * f1);
         tessellator.vertex(xCoord + 0.0F, yCoord + (float)maxV * scaleFac, 0.0F);

@@ -6,15 +6,15 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.WorldRenderer;
 
 public final class Tesselator {
-    public static WorldRenderer worldRenderer = new WorldRenderer(2097152);
-    public static Tesselator tesselator = new Tesselator();
+    private static WorldRenderer worldRenderer = new WorldRenderer(2097152);
+    public static Tesselator instance = new Tesselator();
     private boolean hasColor;
     private boolean noColor = false;
     private float r;
     private float g;
     private float b;
 
-    public final void end() {
+    public void end() {
         worldRenderer.finishDrawing();
         int cunt = worldRenderer.getVertexCount();
         if (cunt > 0) {
@@ -35,35 +35,39 @@ public final class Tesselator {
         this.b = 0.0f;
     }
 
-    public final void begin(VertexFormat fmt) {
+    public void begin(int mode, VertexFormat fmt) {
         this.clear();
-        worldRenderer.begin(GL11.GL_QUADS, fmt);
+        worldRenderer.begin(mode, fmt);
         this.noColor = false;
     }
 
-    public final void color(int var1, int var2, int var3) {
-        this.color((byte)var1, (byte)var2, (byte)var3);
+    public void begin(VertexFormat fmt) {
+        this.begin(GL11.GL_QUADS, fmt);
     }
 
-    public final void color(byte var1, byte var2, byte var3) {
-        if (!this.noColor) {
-            this.hasColor = true;
-            this.r = (float)(var1 & 255) / 255.0F;
-            this.g = (float)(var2 & 255) / 255.0F;
-            this.b = (float)(var3 & 255) / 255.0F;
-        }
-    }
-
-    public final void tex(float u, float v) {
+    public void tex(float u, float v) {
         worldRenderer.tex(u, v);
     }
 
-    public final void vertexUV(float var1, float var2, float var3, float var4, float var5) {
-        this.tex(var4, var5);
-        this.vertex(var1, var2, var3);
+    public void color(int r, int g, int b) {
+        this.color((byte)r, (byte)g, (byte)b);
     }
 
-    public final void vertex(float x, float y, float z) {
+    public void color(byte r, byte g, byte b) {
+        if(!this.noColor) {
+            this.hasColor = true;
+            this.r = (float)(r & 255) / 255.0F;
+            this.g = (float)(g & 255) / 255.0F;
+            this.b = (float)(b & 255) / 255.0F;
+        }
+    }
+
+    public void vertexUV(float x, float y, float z, float u, float v) {
+        this.tex(u, v);
+        this.vertex(x, y, z);
+    }
+
+    public void vertex(float x, float y, float z) {
         if (this.hasColor) {
             worldRenderer.color(this.r, this.g, this.b, 1);
         }
@@ -71,14 +75,14 @@ public final class Tesselator {
         worldRenderer.endVertex();
     }
 
-    public final void color(int var1) {
-        int var2 = var1 >> 16 & 255;
-        int var3 = var1 >> 8 & 255;
-        var1 &= 255;
-        this.color(var2, var3, var1);
+    public void color(int c) {
+        int r = c >> 16 & 255;
+        int g = c >> 8 & 255;
+        int b = c & 255;
+        this.color(r, g, b);
     }
 
-    public final void noColor() {
+    public void noColor() {
         this.noColor = true;
     }
 }

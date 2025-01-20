@@ -2,8 +2,6 @@ package net.lax1dude.eaglercraft.lwjgl.input;
 
 import net.lax1dude.eaglercraft.internal.EnumFireKeyboardEvent;
 import net.lax1dude.eaglercraft.internal.PlatformInput;
-import net.lax1dude.eaglercraft.touch.EnumTouchControl;
-import net.lax1dude.eaglercraft.touch.TouchControls;
 
 /**
  * Copyright (c) 2022-2023 lax1dude, ayunami2000. All Rights Reserved.
@@ -453,37 +451,6 @@ public class Keyboard {
     }
 
     public static boolean isKeyDown(int key) {
-        switch (key) {
-            case KEY_UP:
-                if (TouchControls.isPressed(EnumTouchControl.DPAD_UP)
-                        || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)
-                        || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
-                    return true;
-                }
-                break;
-            case KEY_DOWN:
-                if (TouchControls.isPressed(EnumTouchControl.DPAD_DOWN)) {
-                    return true;
-                }
-                break;
-            case KEY_LEFT:
-                if (TouchControls.isPressed(EnumTouchControl.DPAD_LEFT)
-                        || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)) {
-                    return true;
-                }
-                break;
-            case KEY_RIGHT:
-                if (TouchControls.isPressed(EnumTouchControl.DPAD_RIGHT)
-                        || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
-                    return true;
-                }
-                break;
-            case KEY_SPACE:
-                if (TouchControls.isPressed(EnumTouchControl.JUMP)) {
-                    return true;
-                }
-                break;
-        }
         return PlatformInput.keyboardIsKeyDown(key);
     }
 

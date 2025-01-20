@@ -2,70 +2,114 @@ package com.mojang.minecraft;
 
 import com.mojang.minecraft.level.Level;
 
-import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
+public class Player extends Entity {
+	public static final int KEY_UP = 0;
+	public static final int KEY_DOWN = 1;
+	public static final int KEY_LEFT = 2;
+	public static final int KEY_RIGHT = 3;
+	public static final int KEY_JUMP = 4;
+	private boolean[] keys = new boolean[10];
 
-public final class Player extends Entity {
-	public Player(Level var1) {
-		super(var1);
+	public Player(Level level) {
+		super(level);
 		this.heightOffset = 1.62F;
 	}
 
-	public final void tick() {
+	public void setKey(int key, boolean state) {
+		byte id = -1;
+		if(key == 200 || key == 17) {
+			id = 0;
+		}
+
+		if(key == 208 || key == 31) {
+			id = 1;
+		}
+
+		if(key == 203 || key == 30) {
+			id = 2;
+		}
+
+		if(key == 205 || key == 32) {
+			id = 3;
+		}
+
+		if(key == 57 || key == 219) {
+			id = 4;
+		}
+
+		if(id >= 0) {
+			this.keys[id] = state;
+		}
+
+	}
+
+	public void releaseAllKeys() {
+		for(int i = 0; i < 10; ++i) {
+			this.keys[i] = false;
+		}
+
+	}
+
+	public void tick() {
 		this.xo = this.x;
 		this.yo = this.y;
 		this.zo = this.z;
-        this.xRotO = this.pitch;
-        this.yRotO = this.yaw;
-		float var1 = 0.0F;
-		float var2 = 0.0F;
-		boolean var3 = this.isInWater();
-		boolean var4 = this.isInLava();
-		if(Keyboard.isKeyDown(Keyboard.KEY_R)) {
-			this.resetPos();
+		float xa = 0.0F;
+		float ya = 0.0F;
+		boolean inWater = this.isInWater();
+		boolean inLava = this.isInLava();
+		if(this.keys[0]) {
+			--ya;
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			var2 = 0.0F - 1.0F;
+		if(this.keys[1]) {
+			++ya;
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			++var2;
+		if(this.keys[2]) {
+			--xa;
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
-			var1 = 0.0F - 1.0F;
+		if(this.keys[3]) {
+			++xa;
 		}
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			++var1;
-		}
-
-		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) || Keyboard.isKeyDown(Keyboard.KEY_LMETA)) {
-			if(var3) {
-				this.yd += 0.06F;
-			} else if(var4) {
+		if(this.keys[4]) {
+			if(inWater) {
+				this.yd += 0.04F;
+			} else if(inLava) {
 				this.yd += 0.04F;
 			} else if(this.onGround) {
-				this.yd = 0.5F;
+				this.yd = 0.42F;
+				this.keys[4] = false;
 			}
 		}
 
-		if(var3) {
-			this.moveRelative(var1, var2, 0.02F);
+		float yo;
+		if(inWater) {
+			yo = this.y;
+			this.moveRelative(xa, ya, 0.02F);
 			this.move(this.xd, this.yd, this.zd);
-			this.xd *= 0.7F;
-			this.yd *= 0.7F;
-			this.zd *= 0.7F;
+			this.xd *= 0.8F;
+			this.yd *= 0.8F;
+			this.zd *= 0.8F;
 			this.yd = (float)((double)this.yd - 0.02D);
-		} else if(var4) {
-			this.moveRelative(var1, var2, 0.02F);
+			if(this.horizontalCollision && this.isFree(this.xd, this.yd + 0.6F - this.y + yo, this.zd)) {
+				this.yd = 0.3F;
+			}
+		} else if(inLava) {
+			yo = this.y;
+			this.moveRelative(xa, ya, 0.02F);
 			this.move(this.xd, this.yd, this.zd);
 			this.xd *= 0.5F;
 			this.yd *= 0.5F;
 			this.zd *= 0.5F;
 			this.yd = (float)((double)this.yd - 0.02D);
+			if(this.horizontalCollision && this.isFree(this.xd, this.yd + 0.6F - this.y + yo, this.zd)) {
+				this.yd = 0.3F;
+			}
 		} else {
-			this.moveRelative(var1, var2, this.onGround ? 0.1F : 0.02F);
+			this.moveRelative(xa, ya, this.onGround ? 0.1F : 0.02F);
 			this.move(this.xd, this.yd, this.zd);
 			this.xd *= 0.91F;
 			this.yd *= 0.98F;
@@ -75,7 +119,7 @@ public final class Player extends Entity {
 				this.xd *= 0.6F;
 				this.zd *= 0.6F;
 			}
-
 		}
+
 	}
 }

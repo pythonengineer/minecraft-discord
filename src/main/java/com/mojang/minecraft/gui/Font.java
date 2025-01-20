@@ -7,111 +7,116 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
-public final class Font {
-    private int[] charWidths = new int[256];
-    private int fontTexture = 0;
+public class Font {
+	private int[] charWidths = new int[256];
+	private int fontTexture = 0;
 
-    public Font(String var1, Textures var2) {
-        ImageData var3;
+	public Font(String name, Textures textures) {
+        ImageData img;
         try {
-            var3 = ImageData.loadImageFile("/assets" + var1);
-        } catch (Exception var16) {
-            throw new RuntimeException(var16);
-        }
+            img = ImageData.loadImageFile("/assets" + name);
+		} catch (Exception var16) {
+			throw new RuntimeException(var16);
+		}
 
-        int var4 = var3.getWidth();
-        int var5 = var3.getHeight();
-        int[] var6 = new int[var4 * var5];
-        var3.getRGB(0, 0, var4, var5, var6, 0, var4);
+		int w = img.getWidth();
+		int h = img.getHeight();
+		int[] rawPixels = new int[w * h];
+		img.getRGB(0, 0, w, h, rawPixels, 0, w);
 
-        for(int var14 = 0; var14 < 128; ++var14) {
-            var5 = var14 % 16;
-            int var7 = var14 / 16;
-            int var8 = 0;
+		for(int i = 0; i < 128; ++i) {
+			int xt = i % 16;
+			int yt = i / 16;
+			int x = 0;
 
-            for(boolean var9 = false; var8 < 8 && !var9; ++var8) {
-                int var10 = (var5 << 3) + var8;
-                var9 = true;
+			for(boolean emptyColumn = false; x < 8 && !emptyColumn; ++x) {
+				int xPixel = xt * 8 + x;
+				emptyColumn = true;
 
-                for(int var11 = 0; var11 < 8 && var9; ++var11) {
-                    int var12 = ((var7 << 3) + var11) * var4;
-                    var12 = var6[var10 + var12] & 255;
-                    if(var12 > 128) {
-                        var9 = false;
-                    }
-                }
-            }
+				for(int y = 0; y < 8 && emptyColumn; ++y) {
+					int yPixel = (yt * 8 + y) * w;
+					int pixel = rawPixels[xPixel + yPixel] & 255;
+					if(pixel > 128) {
+						emptyColumn = false;
+					}
+				}
+			}
 
-            if(var14 == 32) {
-                var8 = 4;
-            }
+			if(i == 32) {
+				x = 4;
+			}
 
-            this.charWidths[var14] = var8;
-        }
+			this.charWidths[i] = x;
+		}
 
-        this.fontTexture = var2.loadTexture(var1, 9728);
-    }
+		this.fontTexture = textures.loadTexture(name, 9728);
+	}
 
-    public final void drawShadow(String var1, int var2, int var3, int var4) {
-        this.draw(var1, var2 + 1, var3 + 1, var4, true);
-        this.draw(var1, var2, var3, var4, false);
-    }
+	public void drawShadow(String str, int x, int y, int color) {
+		this.draw(str, x + 1, y + 1, color, true);
+		this.draw(str, x, y, color);
+	}
 
-    private void draw(String var1, int var2, int var3, int var4, boolean var5) {
-        char[] var12 = var1.toCharArray();
-        if(var5) {
-            var4 = (var4 & 16579836) >> 2;
-        }
+	public void draw(String str, int x, int y, int color) {
+		this.draw(str, x, y, color, false);
+	}
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTexture);
-        Tesselator var6 = Tesselator.tesselator;
-        var6.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-        var6.color(var4);
-        int var7 = 0;
+	public void draw(String str, int x, int y, int color, boolean darken) {
+		char[] chars = str.toCharArray();
+		if(darken) {
+			color = (color & 16579836) >> 2;
+		}
 
-        for(int var8 = 0; var8 < var12.length; ++var8) {
-            int var9;
-            if(var12[var8] == 38) {
-                var4 = "0123456789abcdef".indexOf(var12[var8 + 1]);
-                var9 = (var4 & 8) << 3;
-                int var10 = (var4 & 1) * 191 + var9;
-                int var11 = ((var4 & 2) >> 1) * 191 + var9;
-                var4 = ((var4 & 4) >> 2) * 191 + var9;
-                var4 = var4 << 16 | var11 << 8 | var10;
-                var8 += 2;
-                if(var5) {
-                    var4 = (var4 & 16579836) >> 2;
-                }
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTexture);
+		Tesselator t = Tesselator.instance;
+        t.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
+		t.color(color);
+		int xo = 0;
 
-                var6.color(var4);
-            }
+		for(int i = 0; i < chars.length; ++i) {
+			int ix;
+			int iy;
+			if(chars[i] == 38) {
+				ix = "0123456789abcdef".indexOf(chars[i + 1]);
+				iy = (ix & 8) * 8;
+				int b = (ix & 1) * 191 + iy;
+				int g = ((ix & 2) >> 1) * 191 + iy;
+				int r = ((ix & 4) >> 2) * 191 + iy;
+				color = r << 16 | g << 8 | b;
+				i += 2;
+				if(darken) {
+					color = (color & 16579836) >> 2;
+				}
 
-            var4 = var12[var8] % 16 << 3;
-            var9 = var12[var8] / 16 << 3;
-            var6.vertexUV((float)(var2 + var7), (float)(var3 + 8), 0.0F, (float)var4 / 128.0F, (float)(var9 + 8) / 128.0F);
-            var6.vertexUV((float)(var2 + var7 + 8), (float)(var3 + 8), 0.0F, (float)(var4 + 8) / 128.0F, (float)(var9 + 8) / 128.0F);
-            var6.vertexUV((float)(var2 + var7 + 8), (float)var3, 0.0F, (float)(var4 + 8) / 128.0F, (float)var9 / 128.0F);
-            var6.vertexUV((float)(var2 + var7), (float)var3, 0.0F, (float)var4 / 128.0F, (float)var9 / 128.0F);
-            var7 += this.charWidths[var12[var8]];
-        }
+				t.color(color);
+			}
 
-        var6.end();
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-    }
+			ix = chars[i] % 16 * 8;
+			iy = chars[i] / 16 * 8;
+			t.vertexUV((float)(x + xo), (float)(y + 8), 0.0F, (float)ix / 128.0F, (float)(iy + 8) / 128.0F);
+			t.vertexUV((float)(x + xo + 8), (float)(y + 8), 0.0F, (float)(ix + 8) / 128.0F, (float)(iy + 8) / 128.0F);
+			t.vertexUV((float)(x + xo + 8), (float)y, 0.0F, (float)(ix + 8) / 128.0F, (float)iy / 128.0F);
+			t.vertexUV((float)(x + xo), (float)y, 0.0F, (float)ix / 128.0F, (float)iy / 128.0F);
+			xo += this.charWidths[chars[i]];
+		}
 
-    public final int getWidth(String var1) {
-        char[] var4 = var1.toCharArray();
-        int var2 = 0;
+		t.end();
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+	}
 
-        for(int var3 = 0; var3 < var4.length; ++var3) {
-            if(var4[var3] == 38) {
-                ++var3;
-            } else {
-                var2 += this.charWidths[var4[var3]];
-            }
-        }
+	public int width(String str) {
+		char[] chars = str.toCharArray();
+		int len = 0;
 
-        return var2;
-    }
+		for(int i = 0; i < chars.length; ++i) {
+			if(chars[i] == 38) {
+				++i;
+			} else {
+				len += this.charWidths[chars[i]];
+			}
+		}
+
+		return len;
+	}
 }

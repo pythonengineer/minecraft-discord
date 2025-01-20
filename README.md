@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord activities by converting the Java engine to modern WebGL-compatible JavaScript
 and providing a web server using *Vite* that can be linked to your Discord application.
 
-This version is **0.0.12a_03**, a *Classic* version of the game which was released on _**May 19, 2009**_.
+This version is **0.0.13a**, a *Classic* version of the game which was released on _**May 22, 2009**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.12a_03).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.13a).
 
 ### Usage
 
@@ -24,15 +24,9 @@ If you make any source code modifications, remember that caching exists and you 
 Uncommenting the Eruda script in `discord/index.html` will enable a web debugging console that works on Discord (and sometimes on mobile).
 You can also set `openDebugConsoleOnLaunch` to 'true' in `window.minecraftOpts` in the same file.
 
-### Gameplay changes (non-mobile)
+### Gameplay on mobile
 
-You can delete the saved level file by pressing backspace.
-
-### Gameplay changes (mobile)
-
-You can delete the saved level file by tapping the button second from right at the top.
-
-The button to the right of the delete level file saves the level. The leftmost button resets your position and the button to the right of that spawns a human.
+From left to right at the top are the buttons to reset player position, pause the game, spawn a human, and save the level.
 
 Tap the block on the top left to switch blocks. The most bottom right button is jump and the one above it toggles block mode.
 

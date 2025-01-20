@@ -10,120 +10,124 @@ public class LiquidTile extends Tile {
     protected int liquidType;
     protected int calmTileId;
     protected int tileId;
-    private int spreadSpeed = 1;
+    protected int spreadSpeed = 1;
 
-    protected LiquidTile(int var1, int var2) {
-        super(var1);
-        this.liquidType = var2;
-        this.textureIndex = 14;
-        if(var2 == 2) {
-            this.textureIndex = 30;
+    protected LiquidTile(int id, int liquidType) {
+        super(id);
+        this.liquidType = liquidType;
+        this.tex = 14;
+        if(liquidType == 2) {
+            this.tex = 30;
         }
 
-        if(var2 == 1) {
+        if(liquidType == 1) {
             this.spreadSpeed = 8;
         }
 
-        if(var2 == 2) {
+        if(liquidType == 2) {
             this.spreadSpeed = 2;
         }
 
-        this.tileId = var1;
-        this.calmTileId = var1 + 1;
-        float var3 = 0.1F;
-        this.setShape(0.0F, 0.0F - var3, 0.0F, 1.0F, 1.0F - var3, 1.0F);
+        this.tileId = id;
+        this.calmTileId = id + 1;
+        float dd = 0.1F;
+        this.setShape(0.0F, 0.0F - dd, 0.0F, 1.0F, 1.0F - dd, 1.0F);
         this.setTicking(true);
     }
 
-    public void tick(Level var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        this.updateWater(var1, var2, var3, var4, 0);
+    public void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
+        this.updateWater(level, x, y, z, 0);
     }
 
-    private boolean updateWater(Level var1, int var2, int var3, int var4, int var5) {
-        boolean var6 = false;
+    public boolean updateWater(Level level, int x, int y, int z, int depth) {
+        boolean hasChanged = false;
 
-        boolean var7;
+        boolean change;
         do {
-            --var3;
-            if(var1.getTile(var2, var3, var4) != 0) {
+            --y;
+            if(level.getTile(x, y, z) != 0) {
                 break;
             }
 
-            var7 = var1.setTile(var2, var3, var4, this.tileId);
-            if(var7) {
-                var6 = true;
+            change = level.setTile(x, y, z, this.tileId);
+            if(change) {
+                hasChanged = true;
             }
-        } while(var7 && this.liquidType != 2);
+        } while(change && this.liquidType != 2);
 
-        ++var3;
-        if(this.liquidType == 1 || !var6) {
-            var6 |= this.checkWater(var1, var2 - 1, var3, var4, var5);
-            var6 |= this.checkWater(var1, var2 + 1, var3, var4, var5);
-            var6 |= this.checkWater(var1, var2, var3, var4 - 1, var5);
-            var6 |= this.checkWater(var1, var2, var3, var4 + 1, var5);
+        ++y;
+        if(this.liquidType == 1 || !hasChanged) {
+            hasChanged |= this.checkWater(level, x - 1, y, z, depth);
+            hasChanged |= this.checkWater(level, x + 1, y, z, depth);
+            hasChanged |= this.checkWater(level, x, y, z - 1, depth);
+            hasChanged |= this.checkWater(level, x, y, z + 1, depth);
         }
 
-        if(!var6) {
-            var1.setTileNoUpdate(var2, var3, var4, this.calmTileId);
+        if(!hasChanged) {
+            level.setTileNoUpdate(x, y, z, this.calmTileId);
         }
 
-        return var6;
+        return hasChanged;
     }
 
-    private boolean checkWater(Level var1, int var2, int var3, int var4, int var5) {
-        boolean var6 = false;
-        int var7 = var1.getTile(var2, var3, var4);
-        if(var7 == 0) {
-            boolean var8 = var1.setTile(var2, var3, var4, this.tileId);
-            if(var8 && var5 < this.spreadSpeed) {
-                var6 = false | this.updateWater(var1, var2, var3, var4, var5 + 1);
+    private boolean checkWater(Level level, int x, int y, int z, int depth) {
+        boolean hasChanged = false;
+        int type = level.getTile(x, y, z);
+        if(type == 0) {
+            boolean changed = level.setTile(x, y, z, this.tileId);
+            if(changed && depth < this.spreadSpeed) {
+                hasChanged |= this.updateWater(level, x, y, z, depth + 1);
             }
         }
 
-        return var6;
+        return hasChanged;
     }
 
-    protected final boolean shouldRenderFace(Level var1, int var2, int var3, int var4, int var5) {
-        if(var5 != 2) {
-            return false;
+    protected boolean shouldRenderFace(Level level, int x, int y, int z, int layer, int face) {
+        if(x >= 0 && y >= 0 && z >= 0 && x < level.width && z < level.height) {
+            if(layer != 2 && this.liquidType == 1) {
+                return false;
+            } else {
+                int id = level.getTile(x, y, z);
+                return id != this.tileId && id != this.calmTileId ? super.shouldRenderFace(level, x, y, z, -1, face) : false;
+            }
         } else {
-            var5 = var1.getTile(var2, var3, var4);
-            return var5 != this.tileId && var5 != this.calmTileId ? super.shouldRenderFace(var1, var2, var3, var4, -1) : false;
+            return false;
         }
     }
 
-    public final void renderFace(Tesselator var1, int var2, int var3, int var4, int var5) {
-        super.renderFace(var1, var2, var3, var4, var5);
-        super.renderBackFace(var1, var2, var3, var4, var5);
+    public void renderFace(Tesselator t, int x, int y, int z, int face) {
+        super.renderFace(t, x, y, z, face);
+        super.renderBackFace(t, x, y, z, face);
     }
 
-    public final boolean mayPick() {
+    public boolean mayPick() {
         return false;
     }
 
-    public final AABB getBoundingBox(int var1, int var2, int var3) {
+    public AABB getAABB(int x, int y, int z) {
         return null;
     }
 
-    public final boolean blocksLight() {
+    public boolean blocksLight() {
         return true;
     }
 
-    public final boolean isSolid() {
+    public boolean isSolid() {
         return false;
     }
 
-    public final int getLiquidType() {
+    public int getLiquidType() {
         return this.liquidType;
     }
 
-    public void neighborChanged(Level var1, int var2, int var3, int var4, int var5) {
-        if(this.liquidType == 1 && var5 == Tile.lava.id) {
-            var1.setTileNoUpdate(var2, var3, var4, Tile.rock.id);
+    public void neighborChanged(Level level, int x, int y, int z, int type) {
+        if(this.liquidType == 1 && (type == Tile.lava.id || type == Tile.calmLava.id)) {
+            level.setTileNoUpdate(x, y, z, Tile.rock.id);
         }
 
-        if(this.liquidType == 2 && var5 == Tile.water.id) {
-            var1.setTileNoUpdate(var2, var3, var4, Tile.rock.id);
+        if(this.liquidType == 2 && (type == Tile.water.id || type == Tile.calmWater.id)) {
+            level.setTileNoUpdate(x, y, z, Tile.rock.id);
         }
 
     }

@@ -82,7 +82,7 @@ public enum EnumTouchControl {
 
     BACK(EnumTouchControlPos.TOP, -50, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.thePlayer.resetPos();
+            Minecraft.minecraft.player.resetPos();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -102,8 +102,9 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 72, 18, 18, 2);
     }),
 
-    PAUSE(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
+    PAUSE(EnumTouchControlPos.TOP, -14, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            Minecraft.minecraft.releaseMouse();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -140,7 +141,7 @@ public enum EnumTouchControl {
 
     PASTE(EnumTouchControlPos.TOP, 58, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.level.save();
+            Minecraft.minecraft.attemptSaveLevel();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -150,7 +151,6 @@ public enum EnumTouchControl {
 
     COPY(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.level.delete();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -168,7 +168,7 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 36, 20, 20, 20, 2);
     }),
 
-    MOB(EnumTouchControlPos.TOP, -14, 0, 36, (enumIn, x, y) -> {
+    MOB(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
             Minecraft.minecraft.addZombie();
         }
@@ -395,12 +395,12 @@ public enum EnumTouchControl {
                 BACK.setVisible(renderer, true);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
-                PAUSE.setVisible(renderer, false);
+                PAUSE.setVisible(renderer, true);
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, true);
-                COPY.setVisible(renderer, true);
+                COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
                 MOB.setVisible(renderer, true);
                 FLY.setVisible(renderer, false);
@@ -420,12 +420,12 @@ public enum EnumTouchControl {
                 BACK.setVisible(renderer, true);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
-                PAUSE.setVisible(renderer, false);
+                PAUSE.setVisible(renderer, true);
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, true);
-                COPY.setVisible(renderer, true);
+                COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
                 MOB.setVisible(renderer, true);
                 FLY.setVisible(renderer, false);

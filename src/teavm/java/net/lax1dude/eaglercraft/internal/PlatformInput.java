@@ -43,6 +43,8 @@ import net.lax1dude.eaglercraft.internal.teavm.LegacyKeycodeTranslator;
 import net.lax1dude.eaglercraft.internal.teavm.OffsetTouch;
 import net.lax1dude.eaglercraft.internal.teavm.SortedTouchEvent;
 import net.lax1dude.eaglercraft.internal.teavm.WebGLBackBuffer;
+import net.lax1dude.eaglercraft.touch.EnumTouchControl;
+import net.lax1dude.eaglercraft.touch.TouchControls;
 
 /**
  * Copyright (c) 2022-2024 lax1dude, ayunami2000. All Rights Reserved.
@@ -167,7 +169,7 @@ public class PlatformInput {
     private static double mouseDX = 0.0D;
     private static double mouseDY = 0.0D;
     private static double mouseDWheel = 0.0D;
-    private static boolean enableRepeatEvents = true;
+    private static boolean enableRepeatEvents = false;
     private static boolean isWindowFocused = true;
     private static boolean isMouseOverWindow = true;
     static boolean unpressCTRL = false;
@@ -206,6 +208,7 @@ public class PlatformInput {
     private static boolean[] buttonStates = new boolean[8];
     private static boolean[] keyStates = new boolean[256];
 
+    private static int touchPressed = Keyboard.KEY_NONE;
     private static int functionKeyModifier = Keyboard.KEY_F;
 
     // Can't support webkit vendor prefix since there's no
@@ -1029,7 +1032,56 @@ public class PlatformInput {
         }
     }
 
+    public static void dpadTouchNext() {
+        if (TouchControls.isPressed(EnumTouchControl.DPAD_UP)
+         || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)
+         || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
+            if (touchPressed != Keyboard.KEY_UP) {
+                touchPressed = Keyboard.KEY_UP;
+                keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
+            }
+        } else if (touchPressed == Keyboard.KEY_UP) {
+            keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
+            touchPressed = Keyboard.KEY_NONE;
+        } else if (TouchControls.isPressed(EnumTouchControl.DPAD_DOWN)) {
+            if (touchPressed != Keyboard.KEY_DOWN) {
+                touchPressed = Keyboard.KEY_DOWN;
+                keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
+            }
+        } else if (touchPressed == Keyboard.KEY_DOWN) {
+            keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
+            touchPressed = Keyboard.KEY_NONE;
+        } else if (TouchControls.isPressed(EnumTouchControl.DPAD_LEFT)
+              || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)) {
+            if (touchPressed != Keyboard.KEY_LEFT) {
+                touchPressed = Keyboard.KEY_LEFT;
+                keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
+            }
+        } else if (touchPressed == Keyboard.KEY_LEFT) {
+            keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
+            touchPressed = Keyboard.KEY_NONE;
+        } else if (TouchControls.isPressed(EnumTouchControl.DPAD_RIGHT)
+              || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
+            if (touchPressed != Keyboard.KEY_RIGHT) {
+                touchPressed = Keyboard.KEY_RIGHT;
+                keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
+            }
+        } else if (touchPressed == Keyboard.KEY_RIGHT) {
+            keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
+            touchPressed = Keyboard.KEY_NONE;
+        } else if (TouchControls.isPressed(EnumTouchControl.JUMP)) {
+            if (touchPressed != Keyboard.KEY_SPACE) {
+                touchPressed = Keyboard.KEY_SPACE;
+                keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
+            }
+        } else if (touchPressed == Keyboard.KEY_SPACE) {
+            keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
+            touchPressed = Keyboard.KEY_NONE;
+        }
+    }
+
     public static boolean keyboardNext() {
+        dpadTouchNext();
         synchronized (keyEvents) {
             if (unpressCTRL) { // un-press ctrl after copy/paste permission
                 keyEvents.clear();
@@ -1333,7 +1385,7 @@ public class PlatformInput {
     }
 
     public static int mouseGetEventButton() {
-        if (currentEvent == null || (currentEvent.type == EVENT_MOUSE_MOVE) || !isPointerLockedImpl()) return -1;
+        if (currentEvent == null || (currentEvent.type == EVENT_MOUSE_MOVE)) return -1;
         return currentEvent.button;
     }
 
