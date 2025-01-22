@@ -1,110 +1,93 @@
 package com.mojang.minecraft.level;
 
+import com.mojang.minecraft.Minecraft;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
-import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
+public final class LevelIO {
+	private Minecraft minecraft;
 
-public class LevelIO {
-	private static final int MAGIC_NUMBER = 656127880;
-	private static final int CURRENT_VERSION = 1;
-	private LevelLoaderListener levelLoaderListener;
-	public String error = null;
-
-	public LevelIO(LevelLoaderListener levelLoaderListener) {
-		this.levelLoaderListener = levelLoaderListener;
+	public LevelIO(Minecraft minecraft1) {
+		this.minecraft = minecraft1;
 	}
 
-	public boolean load(Level level, DataInputStream in) {
-		this.levelLoaderListener.beginLevelLoading("Loading level");
-		this.levelLoaderListener.levelLoadUpdate("Reading..");
+	public final boolean save(Level level1, String string2, String string3, String string4, String string5, int i6) {
+		return false;
+	}
+
+	public final boolean load(Level level1, String string2, String string3, int i4) {
+		return false;
+	}
+
+	public final boolean load(Level level1, DataInputStream dataInputStream11) {
+		this.minecraft.beginLevelLoading("Loading level");
+		this.minecraft.levelLoadUpdate("Reading..");
 
 		try {
-			int magic = in.readInt();
-			if(magic != 656127880) {
-				this.error = "Bad level file format";
+			if(dataInputStream11.readInt() != 656127880) {
+				return false;
+			} else if(dataInputStream11.readByte() > 1) {
 				return false;
 			} else {
-				byte version = in.readByte();
-				if(version > 1) {
-					this.error = "Bad level file format";
-					return false;
-				} else {
-					String name = in.readUTF();
-					String creator = in.readUTF();
-					long createTime = in.readLong();
-					short width = in.readShort();
-					short height = in.readShort();
-					short depth = in.readShort();
-					byte[] blocks = new byte[width * height * depth];
-					in.readFully(blocks);
-					in.close();
-					level.setData(width, depth, height, blocks);
-					level.name = name;
-					level.creator = creator;
-					level.createTime = createTime;
-					return true;
-				}
+				String string12 = dataInputStream11.readUTF();
+				String string3 = dataInputStream11.readUTF();
+				long j8 = dataInputStream11.readLong();
+				short s4 = dataInputStream11.readShort();
+				short s5 = dataInputStream11.readShort();
+				short s6 = dataInputStream11.readShort();
+				byte[] b7 = new byte[s4 * s5 * s6];
+				dataInputStream11.readFully(b7);
+				dataInputStream11.close();
+				level1.setData(s4, s6, s5, b7);
+				level1.name = string12;
+				level1.creator = string3;
+				level1.createTime = j8;
+				return true;
 			}
-		} catch (Exception var14) {
-			var14.printStackTrace();
-			this.error = "Failed to load level: " + var14.toString();
+		} catch (Exception exception10) {
+			exception10.printStackTrace();
+			(new StringBuilder()).append("Failed to load level: ").append(exception10.toString()).toString();
 			return false;
 		}
 	}
 
-	public boolean loadLegacy(Level level, DataInputStream in) {
-		this.levelLoaderListener.beginLevelLoading("Loading level");
-		this.levelLoaderListener.levelLoadUpdate("Reading..");
+	public final boolean loadLegacy(Level level1, DataInputStream dataInputStream6) {
+		this.minecraft.beginLevelLoading("Loading level");
+		this.minecraft.levelLoadUpdate("Reading..");
 
 		try {
-			String name = "--";
-			String creator = "unknown";
-			long createTime = 0L;
-			short width = 256;
-			short height = 256;
-			byte depth = 64;
-			byte[] blocks = new byte[width * height * depth];
-			in.readFully(blocks);
-			in.close();
-			level.setData(width, depth, height, blocks);
-			level.name = name;
-			level.creator = creator;
-			level.createTime = createTime;
+			String string7 = "--";
+			String string3 = "unknown";
+			byte[] b4 = new byte[256 << 8 << 6];
+			dataInputStream6.readFully(b4);
+			dataInputStream6.close();
+			level1.setData(256, 64, 256, b4);
+			level1.name = string7;
+			level1.creator = string3;
+			level1.createTime = 0L;
 			return true;
-		} catch (Exception var12) {
-			var12.printStackTrace();
-			this.error = "Failed to load level: " + var12.toString();
+		} catch (Exception exception5) {
+			exception5.printStackTrace();
+			(new StringBuilder()).append("Failed to load level: ").append(exception5.toString()).toString();
 			return false;
 		}
 	}
 
-	public void save(Level level, DataOutputStream out) {
+	public static void save(Level level0, DataOutputStream dataOutputStream3) {
 		try {
-		    out.writeInt(656127880);
-		    out.writeByte(1);
-		    out.writeUTF(level.name);
-		    out.writeUTF(level.creator);
-		    out.writeLong(level.createTime);
-		    out.writeShort(level.width);
-		    out.writeShort(level.height);
-		    out.writeShort(level.depth);
-		    out.write(level.blocks);
-		    out.close();
-		} catch (Exception var4) {
-			var4.printStackTrace();
+			dataOutputStream3.writeInt(656127880);
+			dataOutputStream3.writeByte(1);
+			dataOutputStream3.writeUTF(level0.name);
+			dataOutputStream3.writeUTF(level0.creator);
+			dataOutputStream3.writeLong(level0.createTime);
+			dataOutputStream3.writeShort(level0.width);
+			dataOutputStream3.writeShort(level0.height);
+			dataOutputStream3.writeShort(level0.depth);
+			dataOutputStream3.write(level0.blocks);
+			dataOutputStream3.close();
+		} catch (Exception exception2) {
+			exception2.printStackTrace();
 		}
-
 	}
-
-    public void delete() {
-        VFile2 f = new VFile2("level.dat");
-        if (f.exists()) {
-            f.delete();
-        }
-    }
 }

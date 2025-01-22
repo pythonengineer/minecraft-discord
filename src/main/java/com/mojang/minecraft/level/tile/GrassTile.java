@@ -4,32 +4,32 @@ import com.mojang.minecraft.level.Level;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
-public class GrassTile extends Tile {
-	protected GrassTile(int id) {
-		super(id);
+public final class GrassTile extends Tile {
+	protected GrassTile(int i1) {
+		super(2);
 		this.tex = 3;
 		this.setTicking(true);
 	}
 
-	protected int getTexture(int face) {
-		return face == 1 ? 0 : (face == 0 ? 2 : 3);
+	protected final int getTexture(int i1) {
+		return i1 == 1 ? 0 : (i1 == 0 ? 2 : 3);
 	}
 
-	public void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
-		if(random.nextInt(4) == 0) {
-			if(!level.isLit(x, y + 1, z)) {
-				level.setTile(x, y, z, Tile.dirt.id);
+	public final void tick(Level level1, int i2, int i3, int i4, EaglercraftRandom random5) {
+		if(random5.nextInt(4) == 0) {
+			if(!level1.isLit(i2, i3 + 1, i4)) {
+				level1.setTile(i2, i3, i4, Tile.dirt.id);
 			} else {
-				for(int i = 0; i < 4; ++i) {
-					int xt = x + random.nextInt(3) - 1;
-					int yt = y + random.nextInt(5) - 3;
-					int zt = z + random.nextInt(3) - 1;
-					if(level.getTile(xt, yt, zt) == Tile.dirt.id && level.isLit(xt, yt + 1, zt)) {
-						level.setTile(xt, yt, zt, Tile.grass.id);
+				for(int i9 = 0; i9 < 4; ++i9) {
+					int i6 = i2 + random5.nextInt(3) - 1;
+					int i7 = i3 + random5.nextInt(5) - 3;
+					int i8 = i4 + random5.nextInt(3) - 1;
+					if(level1.getTile(i6, i7, i8) == Tile.dirt.id && level1.isLit(i6, i7 + 1, i8)) {
+						level1.setTile(i6, i7, i8, Tile.grass.id);
 					}
 				}
-			}
 
+			}
 		}
 	}
 }

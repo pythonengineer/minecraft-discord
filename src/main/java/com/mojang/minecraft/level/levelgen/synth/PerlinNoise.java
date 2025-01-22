@@ -2,33 +2,26 @@ package com.mojang.minecraft.level.levelgen.synth;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
-public class PerlinNoise extends Synth {
-	private ImprovedNoise[] noiseLevels;
-	private int levels;
+public final class PerlinNoise extends Synth {
+    private ImprovedNoise[] noiseLevels = new ImprovedNoise[8];
+    private int levels = 8;
 
-	public PerlinNoise(int levels) {
-		this(new EaglercraftRandom(), levels);
-	}
+    public PerlinNoise(EaglercraftRandom random1, int i2) {
+        for(i2 = 0; i2 < 8; ++i2) {
+            this.noiseLevels[i2] = new ImprovedNoise(random1);
+        }
 
-	public PerlinNoise(EaglercraftRandom random, int levels) {
-		this.levels = levels;
-		this.noiseLevels = new ImprovedNoise[levels];
+    }
 
-		for(int i = 0; i < levels; ++i) {
-			this.noiseLevels[i] = new ImprovedNoise(random);
-		}
+    public final double getValue(double d1, double d3) {
+        double d5 = 0.0D;
+        double d7 = 1.0D;
 
-	}
+        for(int i9 = 0; i9 < this.levels; ++i9) {
+            d5 += this.noiseLevels[i9].getValue(d1 / d7, d3 / d7) * d7;
+            d7 *= 2.0D;
+        }
 
-	public double getValue(double x, double y) {
-		double value = 0.0D;
-		double pow = 1.0D;
-
-		for(int i = 0; i < this.levels; ++i) {
-			value += this.noiseLevels[i].getValue(x / pow, y / pow) * pow;
-			pow *= 2.0D;
-		}
-
-		return value;
-	}
+        return d5;
+    }
 }

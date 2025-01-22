@@ -2344,6 +2344,12 @@ public class GL11 {
         }
     }
 
+    public static final void glCallLists(IntBuffer buffer) {
+        for (int i = 0; i < buffer.limit(); ++i) {
+            glCallList(buffer.get());
+        }
+    }
+
     public static final void flushDisplayList(int displayList) {
         DisplayList dp = displayLists.get(displayList);
         if (dp == null) {
@@ -2515,6 +2521,12 @@ public class GL11 {
             if (d.vertexBuffer != null) {
                 _wglDeleteBuffers(d.vertexBuffer);
             }
+        }
+    }
+
+    public static final void glDeleteLists(int id, int range) {
+        for (int i = id; i < id + range; ++i) {
+            glDeleteLists(i);
         }
     }
 

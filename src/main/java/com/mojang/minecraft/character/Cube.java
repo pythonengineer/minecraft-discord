@@ -60,7 +60,7 @@ public class Cube {
     public void setPos(float x, float y, float z) {
         this.x = x;
         this.y = y;
-        this.z = z;
+        this.z = 0.0F;
     }
 
     public void render() {

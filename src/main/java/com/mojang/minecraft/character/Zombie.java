@@ -32,7 +32,7 @@ public class Zombie extends Entity {
 		float xa = 0.0F;
 		float ya = 0.0F;
 		if(this.y < -100.0F) {
-			this.remove();
+            super.removed = true;
 		}
 
 		this.rot += this.rotA;

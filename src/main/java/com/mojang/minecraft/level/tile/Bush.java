@@ -6,62 +6,64 @@ import com.mojang.minecraft.renderer.Tesselator;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
-public class Bush extends Tile {
-	protected Bush(int id) {
-		super(id);
+public final class Bush extends Tile {
+	protected Bush(int i1) {
+		super(6);
 		this.tex = 15;
 		this.setTicking(true);
 	}
 
-	public void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
-		int below = level.getTile(x, y - 1, z);
-		if(!level.isLit(x, y, z) || below != Tile.dirt.id && below != Tile.grass.id) {
-			level.setTile(x, y, z, 0);
+	public final void tick(Level level1, int i2, int i3, int i4, EaglercraftRandom random5) {
+		int i6 = level1.getTile(i2, i3 - 1, i4);
+		if(!level1.isLit(i2, i3, i4) || i6 != Tile.dirt.id && i6 != Tile.grass.id) {
+			level1.setTile(i2, i3, i4, 0);
 		}
 
 	}
 
-	public void render(Tesselator t, Level level, int layer, int x, int y, int z) {
-		if(!(level.isLit(x, y, z) ^ layer != 1)) {
-			int tex = this.getTexture(15);
-			float u0 = (float)(tex % 16) / 16.0F;
-			float u1 = u0 + 0.999F / 16.0F;
-			float v0 = (float)(tex / 16) / 16.0F;
-			float v1 = v0 + 0.999F / 16.0F;
-			byte rots = 2;
-			t.color((int)255, (int)255, (int)255);
+	public final boolean render(Tesselator tesselator1, Level level2, int i3, int i4, int i5, int i6) {
+		if(level2.isLit(i4, i5, i6) ^ i3 != 1) {
+			return false;
+		} else {
+			int i15;
+			float f17;
+			float f18 = (f17 = (float)((i15 = this.getTexture(15)) % 16) / 16.0F) + 0.0624375F;
+			float f16;
+			float f7 = (f16 = (float)(i15 / 16) / 16.0F) + 0.0624375F;
+			tesselator1.color((int)255, (int)255, (int)255);
 
-			for(int r = 0; r < rots; ++r) {
-				float xa = (float)(Math.sin((double)r * Math.PI / (double)rots + Math.PI * 0.25D) * 0.5D);
-				float za = (float)(Math.cos((double)r * Math.PI / (double)rots + Math.PI * 0.25D) * 0.5D);
-				float x0 = (float)x + 0.5F - xa;
-				float x1 = (float)x + 0.5F + xa;
-				float y0 = (float)y + 0.0F;
-				float y1 = (float)y + 1.0F;
-				float z0 = (float)z + 0.5F - za;
-				float z1 = (float)z + 0.5F + za;
-				t.vertexUV(x0, y1, z0, u1, v0);
-				t.vertexUV(x1, y1, z1, u0, v0);
-				t.vertexUV(x1, y0, z1, u0, v1);
-				t.vertexUV(x0, y0, z0, u1, v1);
-				t.vertexUV(x1, y1, z1, u1, v0);
-				t.vertexUV(x0, y1, z0, u0, v0);
-				t.vertexUV(x0, y0, z0, u0, v1);
-				t.vertexUV(x1, y0, z1, u1, v1);
+			for(int i8 = 0; i8 < 2; ++i8) {
+				float f9 = (float)(Math.sin((double)i8 * Math.PI / (double)2 + 0.7853981633974483D) * 0.5D);
+				float f10 = (float)(Math.cos((double)i8 * Math.PI / (double)2 + 0.7853981633974483D) * 0.5D);
+				float f11 = (float)i4 + 0.5F - f9;
+				f9 += (float)i4 + 0.5F;
+				float f12 = (float)i5;
+				float f13 = (float)i5 + 1.0F;
+				float f14 = (float)i6 + 0.5F - f10;
+				f10 += (float)i6 + 0.5F;
+				tesselator1.vertexUV(f11, f13, f14, f18, f16);
+				tesselator1.vertexUV(f9, f13, f10, f17, f16);
+				tesselator1.vertexUV(f9, f12, f10, f17, f7);
+				tesselator1.vertexUV(f11, f12, f14, f18, f7);
+				tesselator1.vertexUV(f9, f13, f10, f18, f16);
+				tesselator1.vertexUV(f11, f13, f14, f17, f16);
+				tesselator1.vertexUV(f11, f12, f14, f17, f7);
+				tesselator1.vertexUV(f9, f12, f10, f18, f7);
 			}
 
+			return true;
 		}
 	}
 
-	public AABB getAABB(int x, int y, int z) {
+	public final AABB getAABB(int i1, int i2, int i3) {
 		return null;
 	}
 
-	public boolean blocksLight() {
+	public final boolean blocksLight() {
 		return false;
 	}
 
-	public boolean isSolid() {
+	public final boolean isSolid() {
 		return false;
 	}
 }

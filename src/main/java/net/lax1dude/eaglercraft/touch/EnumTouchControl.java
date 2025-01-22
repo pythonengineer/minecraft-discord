@@ -2,10 +2,8 @@ package net.lax1dude.eaglercraft.touch;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
-import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 import com.mojang.minecraft.Minecraft;
-import com.mojang.minecraft.character.Zombie;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.
@@ -141,7 +139,6 @@ public enum EnumTouchControl {
 
     PASTE(EnumTouchControlPos.TOP, 58, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.attemptSaveLevel();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -399,7 +396,7 @@ public enum EnumTouchControl {
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
-                PASTE.setVisible(renderer, true);
+                PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
                 MOB.setVisible(renderer, true);
@@ -424,7 +421,7 @@ public enum EnumTouchControl {
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
-                PASTE.setVisible(renderer, true);
+                PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
                 MOB.setVisible(renderer, true);

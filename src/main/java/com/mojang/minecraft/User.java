@@ -1,9 +1,11 @@
 package com.mojang.minecraft;
 
-public class User {
-	public String name;
+public final class User {
+    public String name;
+    public String sessionId;
 
-	public User(String name) {
-		this.name = name;
-	}
+    public User(String string1, String string2) {
+        this.name = string1;
+        this.sessionId = string2;
+    }
 }

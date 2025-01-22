@@ -1,5 +1,7 @@
 package com.mojang.minecraft.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,63 +22,94 @@ public class Screen {
 	protected Minecraft minecraft;
 	protected int width;
 	protected int height;
+    protected List buttons = new ArrayList();
 
     protected int touchModeCursorPosX = -1;
     protected int touchModeCursorPosY = -1;
     private long lastTouchEvent;
 
-	public void render(int xMouse, int yMouse) {
+    public void render(int i1, int i2) {
+        for(int i3 = 0; i3 < this.buttons.size(); ++i3) {
+            Button button4;
+            if((button4 = (Button)this.buttons.get(i3)).visible) {
+                if(!button4.enabled) {
+                    fill(button4.x - 1, button4.y - 1, button4.x + button4.w + 1, button4.y + button4.h + 1, -8355680);
+                    fill(button4.x, button4.y, button4.x + button4.w, button4.y + button4.h, -7303024);
+                    this.drawCenteredString(button4.msg, button4.x + button4.w / 2, button4.y + (button4.h - 8) / 2, -6250336);
+                } else {
+                    fill(button4.x - 1, button4.y - 1, button4.x + button4.w + 1, button4.y + button4.h + 1, 0xFF000000);
+                    if(i1 >= button4.x && i2 >= button4.y && i1 < button4.x + button4.w && i2 < button4.y + button4.h) {
+                        fill(button4.x - 1, button4.y - 1, button4.x + button4.w + 1, button4.y + button4.h + 1, -6250336);
+                        fill(button4.x, button4.y, button4.x + button4.w, button4.y + button4.h, -8355680);
+                        this.drawCenteredString(button4.msg, button4.x + button4.w / 2, button4.y + (button4.h - 8) / 2, 16777120);
+                    } else {
+                        fill(button4.x, button4.y, button4.x + button4.w, button4.y + button4.h, -9408400);
+                        this.drawCenteredString(button4.msg, button4.x + button4.w / 2, button4.y + (button4.h - 8) / 2, 14737632);
+                    }
+                }
+            }
+        }
 	}
 
-	public void init(Minecraft minecraft, int width, int height) {
-		this.minecraft = minecraft;
-		this.width = width;
-		this.height = height;
-		this.init();
-	}
+    protected void keyPressed(char c1, int i2) {
+        if(i2 == 1) {
+            this.minecraft.setScreen((Screen)null);
+            this.minecraft.grabMouse();
+        }
+
+    }
+
+    protected void buttonClicked(Button button1) {
+    }
+
+    public final void init(Minecraft minecraft1, int i2, int i3) {
+        this.minecraft = minecraft1;
+        this.width = i2;
+        this.height = i3;
+        this.init();
+    }
 
 	public void init() {
 	}
 
-	protected void fill(int x0, int y0, int x1, int y1, int col) {
-		float a = (float)(col >> 24 & 255) / 255.0F;
-		float r = (float)(col >> 16 & 255) / 255.0F;
-		float g = (float)(col >> 8 & 255) / 255.0F;
-		float b = (float)(col & 255) / 255.0F;
-		Tesselator t = Tesselator.instance;
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glColor4f(r, g, b, a);
-		t.begin(DefaultVertexFormats.POSITION);
-		t.vertex((float)x0, (float)y1, 0.0F);
-		t.vertex((float)x1, (float)y1, 0.0F);
-		t.vertex((float)x1, (float)y0, 0.0F);
-		t.vertex((float)x0, (float)y0, 0.0F);
-		t.end();
-		GL11.glDisable(GL11.GL_BLEND);
-	}
+    protected static void fill(int i0, int i1, int i2, int i3, int i4) {
+        float f5 = (float)(i4 >>> 24) / 255.0F;
+        float f6 = (float)(i4 >> 16 & 255) / 255.0F;
+        float f7 = (float)(i4 >> 8 & 255) / 255.0F;
+        float f9 = (float)(i4 & 255) / 255.0F;
+        Tesselator tesselator8 = Tesselator.instance;
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(f6, f7, f9, f5);
+        tesselator8.begin(DefaultVertexFormats.POSITION);
+        tesselator8.vertex((float)i0, (float)i3, 0.0F);
+        tesselator8.vertex((float)i2, (float)i3, 0.0F);
+        tesselator8.vertex((float)i2, (float)i1, 0.0F);
+        tesselator8.vertex((float)i0, (float)i1, 0.0F);
+        tesselator8.end();
+        GL11.glDisable(GL11.GL_BLEND);
+    }
 
-	protected void fillGradient(int x0, int y0, int x1, int y1, int col1, int col2) {
-		float a1 = (float)(col1 >> 24 & 255) / 255.0F;
-		float r1 = (float)(col1 >> 16 & 255) / 255.0F;
-		float g1 = (float)(col1 >> 8 & 255) / 255.0F;
-		float b1 = (float)(col1 & 255) / 255.0F;
-		float a2 = (float)(col2 >> 24 & 255) / 255.0F;
-		float r2 = (float)(col2 >> 16 & 255) / 255.0F;
-		float g2 = (float)(col2 >> 8 & 255) / 255.0F;
-		float b2 = (float)(col2 & 255) / 255.0F;
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		GL11.glColor4f(r1, g1, b1, a1);
-		GL11.glVertex2f((float)x1, (float)y0);
-		GL11.glVertex2f((float)x0, (float)y0);
-		GL11.glColor4f(r2, g2, b2, a2);
-		GL11.glVertex2f((float)x0, (float)y1);
-		GL11.glVertex2f((float)x1, (float)y1);
-		GL11.glEnd();
-		GL11.glDisable(GL11.GL_BLEND);
-	}
+    protected static void fillGradient(int i0, int i1, int i2, int i3, int i4, int i5) {
+        float f9 = (float)96 / 255.0F;
+        float f10 = (float)5 / 255.0F;
+        float f11 = (float)5 / 255.0F;
+        float f12 = (float)160 / 255.0F;
+        float f6 = (float)48 / 255.0F;
+        float f7 = (float)48 / 255.0F;
+        float f8 = (float)96 / 255.0F;
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        GL11.glColor4f(f10, f11, 0.0F, f9);
+        GL11.glVertex2f((float)i2, 0.0F);
+        GL11.glVertex2f(0.0F, 0.0F);
+        GL11.glColor4f(f6, f7, f8, f12);
+        GL11.glVertex2f(0.0F, (float)i3);
+        GL11.glVertex2f((float)i2, (float)i3);
+        GL11.glEnd();
+        GL11.glDisable(GL11.GL_BLEND);
+    }
 
 	public void drawCenteredString(String str, int x, int y, int color) {
 		Font font = this.minecraft.font;
@@ -216,14 +249,36 @@ public class Screen {
         return ret != null && ret[2] == 1;
     }
 
-	protected void keyPressed(char eventCharacter, int eventKey) {
-	}
-
 	protected void mouseClicked(int x, int y, int button) {
+        int i3 = y;
+        int i2 = x;
+        int i4 = button;
+        Screen screen6 = this;
+        if(i4 != 0) {
+            return;
+        }
+
+        i4 = 0;
+
+        while(true) {
+            if(i4 >= screen6.buttons.size()) {
+                break;
+            }
+
+            Button button5 = (Button)screen6.buttons.get(i4);
+            if(i2 >= button5.x && i3 >= button5.y && i2 < button5.x + button5.w && i3 < button5.y + button5.h) {
+                screen6.buttonClicked(button5);
+            }
+
+            ++i4;
+        }
 	}
 
-	public void tick() {
-	}
+    public void tick() {
+    }
+
+    public void closeScreen() {
+    }
 
     public static int applyEaglerScale(float scaleFac, int coord, int screenDim) {
         return (int) ((coord - (1.0f - scaleFac) * screenDim * 0.5f) / scaleFac);

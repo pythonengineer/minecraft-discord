@@ -9,280 +9,186 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 import java.util.ArrayList;
 
-public class Level {
-    private static final int TILE_UPDATE_INTERVAL = 200;
-    public int width;
-    public int height;
-    public int depth;
-    byte[] blocks;
-    private int[] lightDepths;
-    private ArrayList<LevelListener> levelListeners = new ArrayList();
-    private EaglercraftRandom random = new EaglercraftRandom();
-    private int randValue = this.random.nextInt();
-    public String name;
-    public String creator;
-    public long createTime;
-    int unprocessed = 0;
-    private static final int multiplier = 1664525;
-    private static final int addend = 1013904223;
+public final class Level {
+	public int width;
+	public int height;
+	public int depth;
+	public byte[] blocks;
+	private int[] heightMap;
+	ArrayList levelListeners = new ArrayList();
+	public EaglercraftRandom random = new EaglercraftRandom();
+	public int randValue = this.random.nextInt();
+	public String name;
+	public String creator;
+	public long createTime;
+	public int unprocessed = 0;
 
-    public void setData(int w, int d, int h, byte[] blocks) {
-        this.width = w;
-        this.height = h;
-        this.depth = d;
-        this.blocks = blocks;
-        this.lightDepths = new int[w * h];
-        this.calcLightDepths(0, 0, w, h);
+	public final void setData(int i1, int i2, int i3, byte[] b4) {
+		this.width = i1;
+		this.height = i3;
+		this.depth = i2;
+		this.blocks = b4;
+		this.heightMap = new int[i1 * i3];
+		this.calcLightDepths(0, 0, i1, i3);
 
-        for(int i = 0; i < this.levelListeners.size(); ++i) {
-            ((LevelListener)this.levelListeners.get(i)).allChanged();
-        }
+		for(i1 = 0; i1 < this.levelListeners.size(); ++i1) {
+			((LevelRenderer)this.levelListeners.get(i1)).allChanged();
+		}
 
-    }
+	}
 
-    public void calcLightDepths(int x0, int y0, int x1, int y1) {
-        for(int x = x0; x < x0 + x1; ++x) {
-            for(int z = y0; z < y0 + y1; ++z) {
-                int oldDepth = this.lightDepths[x + z * this.width];
+	private void calcLightDepths(int i1, int i2, int i3, int i4) {
+		for(int i5 = i1; i5 < i1 + i3; ++i5) {
+			for(int i6 = i2; i6 < i2 + i4; ++i6) {
+				int i7 = this.heightMap[i5 + i6 * this.width];
 
-                int y;
-                for(y = this.depth - 1; y > 0 && !this.isLightBlocker(x, y, z); --y) {
-                }
+				int i8;
+				Tile tile14;
+				for(i8 = this.depth - 1; i8 > 0 && !((tile14 = Tile.tiles[this.getTile(i5, i8, i6)]) == null ? false : tile14.blocksLight()); --i8) {
+				}
 
-                this.lightDepths[x + z * this.width] = y + 1;
-                if(oldDepth != y) {
-                    int yl0 = oldDepth < y ? oldDepth : y;
-                    int yl1 = oldDepth > y ? oldDepth : y;
+				this.heightMap[i5 + i6 * this.width] = i8 + 1;
+				if(i7 != i8) {
+					int i9 = i7 < i8 ? i7 : i8;
+					i7 = i7 > i8 ? i7 : i8;
 
-                    for(int i = 0; i < this.levelListeners.size(); ++i) {
-                        ((LevelListener)this.levelListeners.get(i)).lightColumnChanged(x, z, yl0, yl1);
-                    }
-                }
-            }
-        }
+					for(i8 = 0; i8 < this.levelListeners.size(); ++i8) {
+						((LevelRenderer)this.levelListeners.get(i8)).setDirty(i5 - 1, i9 - 1, i6 - 1, i5 + 1, i7 + 1, i6 + 1);
+					}
+				}
+			}
+		}
 
-    }
+	}
 
-    public void addListener(LevelListener levelListener) {
-        this.levelListeners.add(levelListener);
-    }
+	public final ArrayList getCubes(AABB aABB1) {
+		ArrayList arrayList2 = new ArrayList();
+		int i3 = (int)Math.floor((double)aABB1.x0);
+		int i4 = (int)Math.floor((double)(aABB1.x1 + 1.0F));
+		int i5 = (int)Math.floor((double)aABB1.y0);
+		int i6 = (int)Math.floor((double)(aABB1.y1 + 1.0F));
+		int i7 = (int)Math.floor((double)aABB1.z0);
+		int i12 = (int)Math.floor((double)(aABB1.z1 + 1.0F));
 
-    public void removeListener(LevelListener levelListener) {
-        this.levelListeners.remove(levelListener);
-    }
+		for(i3 = i3; i3 < i4; ++i3) {
+			for(int i8 = i5; i8 < i6; ++i8) {
+				for(int i9 = i7; i9 < i12; ++i9) {
+					AABB aABB10;
+					if(i3 >= 0 && i8 >= 0 && i9 >= 0 && i3 < this.width && i8 < this.depth && i9 < this.height) {
+						Tile tile11;
+						if((tile11 = Tile.tiles[this.getTile(i3, i8, i9)]) != null && (aABB10 = tile11.getAABB(i3, i8, i9)) != null) {
+							arrayList2.add(aABB10);
+						}
+					} else if((i3 < 0 || i8 < 0 || i9 < 0 || i3 >= this.width || i9 >= this.height) && (aABB10 = Tile.unbreakable.getAABB(i3, i8, i9)) != null) {
+						arrayList2.add(aABB10);
+					}
+				}
+			}
+		}
 
-    public boolean isLightBlocker(int x, int y, int z) {
-        Tile tile = Tile.tiles[this.getTile(x, y, z)];
-        return tile == null ? false : tile.blocksLight();
-    }
+		return arrayList2;
+	}
 
-    public ArrayList<AABB> getCubes(AABB box) {
-        ArrayList boxes = new ArrayList();
-        int x0 = (int)Math.floor((double)box.x0);
-        int x1 = (int)Math.floor((double)(box.x1 + 1.0F));
-        int y0 = (int)Math.floor((double)box.y0);
-        int y1 = (int)Math.floor((double)(box.y1 + 1.0F));
-        int z0 = (int)Math.floor((double)box.z0);
-        int z1 = (int)Math.floor((double)(box.z1 + 1.0F));
+	public final boolean setTile(int i1, int i2, int i3, int i4) {
+		if(i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height) {
+			if(i4 == this.blocks[(i2 * this.height + i3) * this.width + i1]) {
+				return false;
+			} else {
+				this.blocks[(i2 * this.height + i3) * this.width + i1] = (byte)i4;
+				this.updateNeighborAt(i1 - 1, i2, i3, i4);
+				this.updateNeighborAt(i1 + 1, i2, i3, i4);
+				this.updateNeighborAt(i1, i2 - 1, i3, i4);
+				this.updateNeighborAt(i1, i2 + 1, i3, i4);
+				this.updateNeighborAt(i1, i2, i3 - 1, i4);
+				this.updateNeighborAt(i1, i2, i3 + 1, i4);
+				this.calcLightDepths(i1, i3, 1, 1);
 
-        for(int x = x0; x < x1; ++x) {
-            for(int y = y0; y < y1; ++y) {
-                for(int z = z0; z < z1; ++z) {
-                    if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
-                        Tile var14 = Tile.tiles[this.getTile(x, y, z)];
-                        if(var14 != null) {
-                            AABB aabb1 = var14.getAABB(x, y, z);
-                            if(aabb1 != null) {
-                                boxes.add(aabb1);
-                            }
-                        }
-                    } else if(x < 0 || y < 0 || z < 0 || x >= this.width || z >= this.height) {
-                        AABB aabb = Tile.unbreakable.getAABB(x, y, z);
-                        if(aabb != null) {
-                            boxes.add(aabb);
-                        }
-                    }
-                }
-            }
-        }
+				for(i4 = 0; i4 < this.levelListeners.size(); ++i4) {
+					((LevelRenderer)this.levelListeners.get(i4)).setDirty(i1 - 1, i2 - 1, i3 - 1, i1 + 1, i2 + 1, i3 + 1);
+				}
 
-        return boxes;
-    }
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
 
-    public boolean setTile(int x, int y, int z, int type) {
-        if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
-            if(type == this.blocks[(y * this.height + z) * this.width + x]) {
-                return false;
-            } else {
-                this.blocks[(y * this.height + z) * this.width + x] = (byte)type;
-                this.neighborChanged(x - 1, y, z, type);
-                this.neighborChanged(x + 1, y, z, type);
-                this.neighborChanged(x, y - 1, z, type);
-                this.neighborChanged(x, y + 1, z, type);
-                this.neighborChanged(x, y, z - 1, type);
-                this.neighborChanged(x, y, z + 1, type);
-                this.calcLightDepths(x, z, 1, 1);
+	public final boolean setTileNoUpdate(int i1, int i2, int i3, int i4) {
+		if(i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height) {
+			if(i4 == this.blocks[(i2 * this.height + i3) * this.width + i1]) {
+				return false;
+			} else {
+				this.blocks[(i2 * this.height + i3) * this.width + i1] = (byte)i4;
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
 
-                for(int i = 0; i < this.levelListeners.size(); ++i) {
-                    ((LevelListener)this.levelListeners.get(i)).tileChanged(x, y, z);
-                }
+	private void updateNeighborAt(int i1, int i2, int i3, int i4) {
+		if(i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height) {
+			Tile tile5;
+			if((tile5 = Tile.tiles[this.blocks[(i2 * this.height + i3) * this.width + i1]]) != null) {
+				tile5.neighborChanged(this, i1, i2, i3, i4);
+			}
 
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
+		}
+	}
 
-    public boolean setTileNoUpdate(int x, int y, int z, int type) {
-        if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
-            if(type == this.blocks[(y * this.height + z) * this.width + x]) {
-                return false;
-            } else {
-                this.blocks[(y * this.height + z) * this.width + x] = (byte)type;
-                return true;
-            }
-        } else {
-            return false;
-        }
-    }
+	public final boolean isLit(int i1, int i2, int i3) {
+		return i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height ? i2 >= this.heightMap[i1 + i3 * this.width] : true;
+	}
 
-    private void neighborChanged(int x, int y, int z, int type) {
-        if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height) {
-            Tile tile = Tile.tiles[this.blocks[(y * this.height + z) * this.width + x]];
-            if(tile != null) {
-                tile.neighborChanged(this, x, y, z, type);
-            }
+	public final int getTile(int i1, int i2, int i3) {
+		return i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height ? this.blocks[(i2 * this.height + i3) * this.width + i1] : 0;
+	}
 
-        }
-    }
+	public final boolean containsLiquid(AABB aABB1, int i2) {
+		int i3 = (int)Math.floor((double)aABB1.x0);
+		int i4 = (int)Math.floor((double)(aABB1.x1 + 1.0F));
+		int i5 = (int)Math.floor((double)aABB1.y0);
+		int i6 = (int)Math.floor((double)(aABB1.y1 + 1.0F));
+		int i7 = (int)Math.floor((double)aABB1.z0);
+		int i11 = (int)Math.floor((double)(aABB1.z1 + 1.0F));
+		if(i3 < 0) {
+			i3 = 0;
+		}
 
-    public boolean isLit(int x, int y, int z) {
-        return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? y >= this.lightDepths[x + z * this.width] : true;
-    }
+		if(i5 < 0) {
+			i5 = 0;
+		}
 
-    public int getTile(int x, int y, int z) {
-        return x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.depth && z < this.height ? this.blocks[(y * this.height + z) * this.width + x] : 0;
-    }
+		if(i7 < 0) {
+			i7 = 0;
+		}
 
-    public boolean isSolidTile(int x, int y, int z) {
-        Tile tile = Tile.tiles[this.getTile(x, y, z)];
-        return tile == null ? false : tile.isSolid();
-    }
+		if(i4 > this.width) {
+			i4 = this.width;
+		}
 
-    public void tick() {
-        this.unprocessed += this.width * this.height * this.depth;
-        int ticks = this.unprocessed / TILE_UPDATE_INTERVAL;
-        this.unprocessed -= ticks * TILE_UPDATE_INTERVAL;
+		if(i6 > this.depth) {
+			i6 = this.depth;
+		}
 
-        for(int i = 0; i < ticks; ++i) {
-            this.randValue = this.randValue * 1664525 + 1013904223;
-            int x = this.randValue >> 16 & this.width - 1;
-            this.randValue = this.randValue * 1664525 + 1013904223;
-            int y = this.randValue >> 16 & this.depth - 1;
-            this.randValue = this.randValue * 1664525 + 1013904223;
-            int z = this.randValue >> 16 & this.height - 1;
-            byte id = this.blocks[(y * this.height + z) * this.width + x];
-            if(Tile.shouldTick[id]) {
-                Tile.tiles[id].tick(this, x, y, z, this.random);
-            }
-        }
+		if(i11 > this.height) {
+			i11 = this.height;
+		}
 
-    }
+		for(i3 = i3; i3 < i4; ++i3) {
+			for(int i8 = i5; i8 < i6; ++i8) {
+				for(int i9 = i7; i9 < i11; ++i9) {
+					Tile tile10;
+					if((tile10 = Tile.tiles[this.getTile(i3, i8, i9)]) != null && tile10.getLiquidType() == i2) {
+						return true;
+					}
+				}
+			}
+		}
 
-    public float getGroundLevel() {
-        return 32.0F;
-    }
-
-    public boolean containsAnyLiquid(AABB box) {
-        int x0 = (int)Math.floor((double)box.x0);
-        int x1 = (int)Math.floor((double)(box.x1 + 1.0F));
-        int y0 = (int)Math.floor((double)box.y0);
-        int y1 = (int)Math.floor((double)(box.y1 + 1.0F));
-        int z0 = (int)Math.floor((double)box.z0);
-        int z1 = (int)Math.floor((double)(box.z1 + 1.0F));
-        if(x0 < 0) {
-            x0 = 0;
-        }
-
-        if(y0 < 0) {
-            y0 = 0;
-        }
-
-        if(z0 < 0) {
-            z0 = 0;
-        }
-
-        if(x1 > this.width) {
-            x1 = this.width;
-        }
-
-        if(y1 > this.depth) {
-            y1 = this.depth;
-        }
-
-        if(z1 > this.height) {
-            z1 = this.height;
-        }
-
-        for(int x = x0; x < x1; ++x) {
-            for(int y = y0; y < y1; ++y) {
-                for(int z = z0; z < z1; ++z) {
-                    Tile tile = Tile.tiles[this.getTile(x, y, z)];
-                    if(tile != null && tile.getLiquidType() > 0) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public boolean containsLiquid(AABB box, int liquidId) {
-        int x0 = (int)Math.floor((double)box.x0);
-        int x1 = (int)Math.floor((double)(box.x1 + 1.0F));
-        int y0 = (int)Math.floor((double)box.y0);
-        int y1 = (int)Math.floor((double)(box.y1 + 1.0F));
-        int z0 = (int)Math.floor((double)box.z0);
-        int z1 = (int)Math.floor((double)(box.z1 + 1.0F));
-        if(x0 < 0) {
-            x0 = 0;
-        }
-
-        if(y0 < 0) {
-            y0 = 0;
-        }
-
-        if(z0 < 0) {
-            z0 = 0;
-        }
-
-        if(x1 > this.width) {
-            x1 = this.width;
-        }
-
-        if(y1 > this.depth) {
-            y1 = this.depth;
-        }
-
-        if(z1 > this.height) {
-            z1 = this.height;
-        }
-
-        for(int x = x0; x < x1; ++x) {
-            for(int y = y0; y < y1; ++y) {
-                for(int z = z0; z < z1; ++z) {
-                    Tile tile = Tile.tiles[this.getTile(x, y, z)];
-                    if(tile != null && tile.getLiquidType() == liquidId) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
+		return false;
+	}
 
     public HitResult clip(Vec3 vec31, Vec3 vec32) {
         if (!Float.isNaN(vec31.x) && !Float.isNaN(vec31.y) && !Float.isNaN(vec31.z)) {

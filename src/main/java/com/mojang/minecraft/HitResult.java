@@ -1,65 +1,51 @@
 package com.mojang.minecraft;
 
-public class HitResult {
-    public int type;
+public final class HitResult {
     public int x;
     public int y;
     public int z;
     public int f;
 
-    public HitResult(int type, int x, int y, int z, int f) {
-        this.type = type;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.f = f;
+    public HitResult(int i1, int i2, int i3, int i4, int i5) {
+        this.x = i2;
+        this.y = i3;
+        this.z = i4;
+        this.f = i5;
     }
 
-    public boolean isCloserThan(Player player, HitResult o, int editMode) {
-        float dist = this.distanceTo(player, 0);
-        float dist2 = o.distanceTo(player, 0);
-        if(dist < dist2) {
-            return true;
-        } else {
-            dist = this.distanceTo(player, editMode);
-            dist2 = o.distanceTo(player, editMode);
-            return dist < dist2;
-        }
-    }
-
-    private float distanceTo(Player player, int editMode) {
-        int xx = this.x;
-        int yy = this.y;
-        int zz = this.z;
-        if(editMode == 1) {
+    float distanceTo(Player player1, int i2) {
+        int i3 = this.x;
+        int i4 = this.y;
+        int i5 = this.z;
+        if(i2 == 1) {
             if(this.f == 0) {
-                --yy;
+                --i4;
             }
 
             if(this.f == 1) {
-                ++yy;
+                ++i4;
             }
 
             if(this.f == 2) {
-                --zz;
+                --i5;
             }
 
             if(this.f == 3) {
-                ++zz;
+                ++i5;
             }
 
             if(this.f == 4) {
-                --xx;
+                --i3;
             }
 
             if(this.f == 5) {
-                ++xx;
+                ++i3;
             }
         }
 
-        float xd = (float)xx - player.x;
-        float yd = (float)yy - player.y;
-        float zd = (float)zz - player.z;
-        return xd * xd + yd * yd + zd * zd;
+        float f6 = (float)i3 - player1.x;
+        float f8 = (float)i4 - player1.y;
+        float f7 = (float)i5 - player1.z;
+        return f6 * f6 + f8 * f8 + f7 * f7;
     }
 }

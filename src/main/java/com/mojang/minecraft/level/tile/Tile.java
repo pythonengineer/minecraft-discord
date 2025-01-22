@@ -10,306 +10,314 @@ import com.mojang.minecraft.renderer.Tesselator;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class Tile {
-    public static final int NOT_LIQUID = 0;
-    public static final int LIQUID_WATER = 1;
-    public static final int LIQUID_LAVA = 2;
-    public static final Tile[] tiles = new Tile[256];
-    public static final boolean[] shouldTick = new boolean[256];
-    public static final Tile empty = null;
-    public static final Tile rock = new Tile(1, 1);
-    public static final Tile grass = new GrassTile(2);
-    public static final Tile dirt = new DirtTile(3, 2);
-    public static final Tile stoneBrick = new Tile(4, 16);
-    public static final Tile wood = new Tile(5, 4);
-    public static final Tile bush = new Bush(6);
-    public static final Tile unbreakable = new Tile(7, 17);
-    public static final Tile water = new LiquidTile(8, 1);
-    public static final Tile calmWater = new CalmLiquidTile(9, 1);
-    public static final Tile lava = new LiquidTile(10, 2);
-    public static final Tile calmLava = new CalmLiquidTile(11, 2);
-    public int tex;
-    public final int id;
-    protected float xx0;
-    protected float yy0;
-    protected float zz0;
-    protected float xx1;
-    protected float yy1;
-    protected float zz1;
+	public static final Tile[] tiles = new Tile[256];
+	public static final boolean[] shouldTick = new boolean[256];
+	public static final Tile rock = new Tile(1, 1);
+	public static final Tile grass = new GrassTile(2);
+	public static final Tile dirt = new DirtTile(3, 2);
+	public static final Tile unbreakable;
+	public static final Tile water;
+	public static final Tile calmWater;
+	public static final Tile lava;
+	public static final Tile calmLava;
+	public int tex;
+	public final int id;
+	private float xx0;
+	private float yy0;
+	private float zz0;
+	private float xx1;
+	private float yy1;
+	private float zz1;
 
-    protected Tile(int id) {
-        tiles[id] = this;
-        this.id = id;
-        this.setShape(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-    }
+	protected Tile(int i1) {
+		tiles[i1] = this;
+		this.id = i1;
+		this.setShape(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+	}
 
-    protected void setTicking(boolean tick) {
-        shouldTick[this.id] = tick;
-    }
+	protected final void setTicking(boolean z1) {
+		shouldTick[this.id] = z1;
+	}
 
-    protected void setShape(float x0, float y0, float z0, float x1, float y1, float z1) {
-        this.xx0 = x0;
-        this.yy0 = y0;
-        this.zz0 = z0;
-        this.xx1 = x1;
-        this.yy1 = y1;
-        this.zz1 = z1;
-    }
+	protected final void setShape(float f1, float f2, float f3, float f4, float f5, float f6) {
+		this.xx0 = 0.0F;
+		this.yy0 = f2;
+		this.zz0 = 0.0F;
+		this.xx1 = 1.0F;
+		this.yy1 = f5;
+		this.zz1 = 1.0F;
+	}
 
-    protected Tile(int id, int tex) {
-        this(id);
-        this.tex = tex;
-    }
+	protected Tile(int i1, int i2) {
+		this(i1);
+		this.tex = i2;
+	}
 
-    public void render(Tesselator t, Level level, int layer, int x, int y, int z) {
-        byte c1 = -1;
-        byte c2 = -52;
-        byte c3 = -103;
-        if(this.shouldRenderFace(level, x, y - 1, z, layer, 0)) {
-            t.color(c1, c1, c1);
-            this.renderFace(t, x, y, z, 0);
-        }
+	public boolean render(Tesselator tesselator1, Level level2, int i3, int i4, int i5, int i6) {
+		boolean z7 = false;
+		if(this.shouldRenderFace(level2, i4, i5 - 1, i6, i3, 0)) {
+			tesselator1.color((byte)-1, (byte)-1, (byte)-1);
+			this.renderFace(tesselator1, i4, i5, i6, 0);
+			z7 = true;
+		}
 
-        if(this.shouldRenderFace(level, x, y + 1, z, layer, 1)) {
-            t.color(c1, c1, c1);
-            this.renderFace(t, x, y, z, 1);
-        }
+		if(this.shouldRenderFace(level2, i4, i5 + 1, i6, i3, 1)) {
+			tesselator1.color((byte)-1, (byte)-1, (byte)-1);
+			this.renderFace(tesselator1, i4, i5, i6, 1);
+			z7 = true;
+		}
 
-        if(this.shouldRenderFace(level, x, y, z - 1, layer, 2)) {
-            t.color(c2, c2, c2);
-            this.renderFace(t, x, y, z, 2);
-        }
+		if(this.shouldRenderFace(level2, i4, i5, i6 - 1, i3, 2)) {
+			tesselator1.color((byte)-52, (byte)-52, (byte)-52);
+			this.renderFace(tesselator1, i4, i5, i6, 2);
+			z7 = true;
+		}
 
-        if(this.shouldRenderFace(level, x, y, z + 1, layer, 3)) {
-            t.color(c2, c2, c2);
-            this.renderFace(t, x, y, z, 3);
-        }
+		if(this.shouldRenderFace(level2, i4, i5, i6 + 1, i3, 3)) {
+			tesselator1.color((byte)-52, (byte)-52, (byte)-52);
+			this.renderFace(tesselator1, i4, i5, i6, 3);
+			z7 = true;
+		}
 
-        if(this.shouldRenderFace(level, x - 1, y, z, layer, 4)) {
-            t.color(c3, c3, c3);
-            this.renderFace(t, x, y, z, 4);
-        }
+		if(this.shouldRenderFace(level2, i4 - 1, i5, i6, i3, 4)) {
+			tesselator1.color((byte)-103, (byte)-103, (byte)-103);
+			this.renderFace(tesselator1, i4, i5, i6, 4);
+			z7 = true;
+		}
 
-        if(this.shouldRenderFace(level, x + 1, y, z, layer, 5)) {
-            t.color(c3, c3, c3);
-            this.renderFace(t, x, y, z, 5);
-        }
+		if(this.shouldRenderFace(level2, i4 + 1, i5, i6, i3, 5)) {
+			tesselator1.color((byte)-103, (byte)-103, (byte)-103);
+			this.renderFace(tesselator1, i4, i5, i6, 5);
+			z7 = true;
+		}
 
-    }
+		return z7;
+	}
 
-    protected boolean shouldRenderFace(Level level, int x, int y, int z, int layer, int face) {
-        boolean layerOk = true;
-        if(layer == 2) {
-            return false;
-        } else {
-            if(layer >= 0) {
-                layerOk = level.isLit(x, y, z) ^ layer == 1;
-            }
+	protected boolean shouldRenderFace(Level level1, int i2, int i3, int i4, int i5, int i6) {
+		boolean z7 = true;
+		if(i5 == 2) {
+			return false;
+		} else {
+			if(i5 >= 0) {
+				z7 = level1.isLit(i2, i3, i4) ^ i5 == 1;
+			}
 
-            return !level.isSolidTile(x, y, z) && layerOk;
-        }
-    }
+			Tile tile8;
+			return !((tile8 = tiles[level1.getTile(i2, i3, i4)]) == null ? false : tile8.isSolid()) && z7;
+		}
+	}
 
-    protected int getTexture(int face) {
-        return this.tex;
-    }
+	protected int getTexture(int i1) {
+		return this.tex;
+	}
 
-    public void renderFace(Tesselator t, int x, int y, int z, int face) {
-        int tex = this.getTexture(face);
-        int xt = tex % 16 * 16;
-        int yt = tex / 16 * 16;
-        float u0 = (float)xt / 256.0F;
-        float u1 = ((float)xt + 15.99F) / 256.0F;
-        float v0 = (float)yt / 256.0F;
-        float v1 = ((float)yt + 15.99F) / 256.0F;
-        float x0 = (float)x + this.xx0;
-        float x1 = (float)x + this.xx1;
-        float y0 = (float)y + this.yy0;
-        float y1 = (float)y + this.yy1;
-        float z0 = (float)z + this.zz0;
-        float z1 = (float)z + this.zz1;
-        if(face == 0) {
-            t.vertexUV(x0, y0, z1, u0, v1);
-            t.vertexUV(x0, y0, z0, u0, v0);
-            t.vertexUV(x1, y0, z0, u1, v0);
-            t.vertexUV(x1, y0, z1, u1, v1);
-        } else if(face == 1) {
-            t.vertexUV(x1, y1, z1, u1, v1);
-            t.vertexUV(x1, y1, z0, u1, v0);
-            t.vertexUV(x0, y1, z0, u0, v0);
-            t.vertexUV(x0, y1, z1, u0, v1);
-        } else if(face == 2) {
-            t.vertexUV(x0, y1, z0, u1, v0);
-            t.vertexUV(x1, y1, z0, u0, v0);
-            t.vertexUV(x1, y0, z0, u0, v1);
-            t.vertexUV(x0, y0, z0, u1, v1);
-        } else if(face == 3) {
-            t.vertexUV(x0, y1, z1, u0, v0);
-            t.vertexUV(x0, y0, z1, u0, v1);
-            t.vertexUV(x1, y0, z1, u1, v1);
-            t.vertexUV(x1, y1, z1, u1, v0);
-        } else if(face == 4) {
-            t.vertexUV(x0, y1, z1, u1, v0);
-            t.vertexUV(x0, y1, z0, u0, v0);
-            t.vertexUV(x0, y0, z0, u0, v1);
-            t.vertexUV(x0, y0, z1, u1, v1);
-        } else if(face == 5) {
-            t.vertexUV(x1, y0, z1, u0, v1);
-            t.vertexUV(x1, y0, z0, u1, v1);
-            t.vertexUV(x1, y1, z0, u1, v0);
-            t.vertexUV(x1, y1, z1, u0, v0);
-        }
-    }
+	public void renderFace(Tesselator tesselator1, int i2, int i3, int i4, int i5) {
+		int i6;
+		int i7 = (i6 = this.getTexture(i5)) % 16 << 4;
+		i6 = i6 / 16 << 4;
+		float f8 = (float)i7 / 256.0F;
+		float f17 = ((float)i7 + 15.99F) / 256.0F;
+		float f9 = (float)i6 / 256.0F;
+		float f16 = ((float)i6 + 15.99F) / 256.0F;
+		float f10 = (float)i2 + this.xx0;
+		float f14 = (float)i2 + this.xx1;
+		float f11 = (float)i3 + this.yy0;
+		float f15 = (float)i3 + this.yy1;
+		float f12 = (float)i4 + this.zz0;
+		float f13 = (float)i4 + this.zz1;
+		if(i5 == 0) {
+			tesselator1.vertexUV(f10, f11, f13, f8, f16);
+			tesselator1.vertexUV(f10, f11, f12, f8, f9);
+			tesselator1.vertexUV(f14, f11, f12, f17, f9);
+			tesselator1.vertexUV(f14, f11, f13, f17, f16);
+		} else if(i5 == 1) {
+			tesselator1.vertexUV(f14, f15, f13, f17, f16);
+			tesselator1.vertexUV(f14, f15, f12, f17, f9);
+			tesselator1.vertexUV(f10, f15, f12, f8, f9);
+			tesselator1.vertexUV(f10, f15, f13, f8, f16);
+		} else if(i5 == 2) {
+			tesselator1.vertexUV(f10, f15, f12, f17, f9);
+			tesselator1.vertexUV(f14, f15, f12, f8, f9);
+			tesselator1.vertexUV(f14, f11, f12, f8, f16);
+			tesselator1.vertexUV(f10, f11, f12, f17, f16);
+		} else if(i5 == 3) {
+			tesselator1.vertexUV(f10, f15, f13, f8, f9);
+			tesselator1.vertexUV(f10, f11, f13, f8, f16);
+			tesselator1.vertexUV(f14, f11, f13, f17, f16);
+			tesselator1.vertexUV(f14, f15, f13, f17, f9);
+		} else if(i5 == 4) {
+			tesselator1.vertexUV(f10, f15, f13, f17, f9);
+			tesselator1.vertexUV(f10, f15, f12, f8, f9);
+			tesselator1.vertexUV(f10, f11, f12, f8, f16);
+			tesselator1.vertexUV(f10, f11, f13, f17, f16);
+		} else if(i5 == 5) {
+			tesselator1.vertexUV(f14, f11, f13, f8, f16);
+			tesselator1.vertexUV(f14, f11, f12, f17, f16);
+			tesselator1.vertexUV(f14, f15, f12, f17, f9);
+			tesselator1.vertexUV(f14, f15, f13, f8, f9);
+		}
+	}
 
-    public void renderBackFace(Tesselator t, int x, int y, int z, int face) {
-        int tex = this.getTexture(face);
-        float u0 = (float)(tex % 16) / 16.0F;
-        float u1 = u0 + 0.999F / 16.0F;
-        float v0 = (float)(tex / 16) / 16.0F;
-        float v1 = v0 + 0.999F / 16.0F;
-        float x0 = (float)x + this.xx0;
-        float x1 = (float)x + this.xx1;
-        float y0 = (float)y + this.yy0;
-        float y1 = (float)y + this.yy1;
-        float z0 = (float)z + this.zz0;
-        float z1 = (float)z + this.zz1;
-        if(face == 0) {
-            t.vertexUV(x1, y0, z1, u1, v1);
-            t.vertexUV(x1, y0, z0, u1, v0);
-            t.vertexUV(x0, y0, z0, u0, v0);
-            t.vertexUV(x0, y0, z1, u0, v1);
-        }
+	public final void renderBackFace(Tesselator tesselator1, int i2, int i3, int i4, int i5) {
+		int i6;
+		float f7;
+		float f8 = (f7 = (float)((i6 = this.getTexture(i5)) % 16) / 16.0F) + 0.0624375F;
+		float f16;
+		float f9 = (f16 = (float)(i6 / 16) / 16.0F) + 0.0624375F;
+		float f10 = (float)i2 + this.xx0;
+		float f14 = (float)i2 + this.xx1;
+		float f11 = (float)i3 + this.yy0;
+		float f15 = (float)i3 + this.yy1;
+		float f12 = (float)i4 + this.zz0;
+		float f13 = (float)i4 + this.zz1;
+		if(i5 == 0) {
+			tesselator1.vertexUV(f14, f11, f13, f8, f9);
+			tesselator1.vertexUV(f14, f11, f12, f8, f16);
+			tesselator1.vertexUV(f10, f11, f12, f7, f16);
+			tesselator1.vertexUV(f10, f11, f13, f7, f9);
+		}
 
-        if(face == 1) {
-            t.vertexUV(x0, y1, z1, u0, v1);
-            t.vertexUV(x0, y1, z0, u0, v0);
-            t.vertexUV(x1, y1, z0, u1, v0);
-            t.vertexUV(x1, y1, z1, u1, v1);
-        }
+		if(i5 == 1) {
+			tesselator1.vertexUV(f10, f15, f13, f7, f9);
+			tesselator1.vertexUV(f10, f15, f12, f7, f16);
+			tesselator1.vertexUV(f14, f15, f12, f8, f16);
+			tesselator1.vertexUV(f14, f15, f13, f8, f9);
+		}
 
-        if(face == 2) {
-            t.vertexUV(x0, y0, z0, u1, v1);
-            t.vertexUV(x1, y0, z0, u0, v1);
-            t.vertexUV(x1, y1, z0, u0, v0);
-            t.vertexUV(x0, y1, z0, u1, v0);
-        }
+		if(i5 == 2) {
+			tesselator1.vertexUV(f10, f11, f12, f8, f9);
+			tesselator1.vertexUV(f14, f11, f12, f7, f9);
+			tesselator1.vertexUV(f14, f15, f12, f7, f16);
+			tesselator1.vertexUV(f10, f15, f12, f8, f16);
+		}
 
-        if(face == 3) {
-            t.vertexUV(x1, y1, z1, u1, v0);
-            t.vertexUV(x1, y0, z1, u1, v1);
-            t.vertexUV(x0, y0, z1, u0, v1);
-            t.vertexUV(x0, y1, z1, u0, v0);
-        }
+		if(i5 == 3) {
+			tesselator1.vertexUV(f14, f15, f13, f8, f16);
+			tesselator1.vertexUV(f14, f11, f13, f8, f9);
+			tesselator1.vertexUV(f10, f11, f13, f7, f9);
+			tesselator1.vertexUV(f10, f15, f13, f7, f16);
+		}
 
-        if(face == 4) {
-            t.vertexUV(x0, y0, z1, u1, v1);
-            t.vertexUV(x0, y0, z0, u0, v1);
-            t.vertexUV(x0, y1, z0, u0, v0);
-            t.vertexUV(x0, y1, z1, u1, v0);
-        }
+		if(i5 == 4) {
+			tesselator1.vertexUV(f10, f11, f13, f8, f9);
+			tesselator1.vertexUV(f10, f11, f12, f7, f9);
+			tesselator1.vertexUV(f10, f15, f12, f7, f16);
+			tesselator1.vertexUV(f10, f15, f13, f8, f16);
+		}
 
-        if(face == 5) {
-            t.vertexUV(x1, y1, z1, u0, v0);
-            t.vertexUV(x1, y1, z0, u1, v0);
-            t.vertexUV(x1, y0, z0, u1, v1);
-            t.vertexUV(x1, y0, z1, u0, v1);
-        }
+		if(i5 == 5) {
+			tesselator1.vertexUV(f14, f15, f13, f7, f16);
+			tesselator1.vertexUV(f14, f15, f12, f8, f16);
+			tesselator1.vertexUV(f14, f11, f12, f8, f9);
+			tesselator1.vertexUV(f14, f11, f13, f7, f9);
+		}
 
-    }
+	}
 
-    public void renderFaceNoTexture(Player player, Tesselator t, int x, int y, int z, int face) {
-        float x0 = (float)x + 0.0F;
-        float x1 = (float)x + 1.0F;
-        float y0 = (float)y + 0.0F;
-        float y1 = (float)y + 1.0F;
-        float z0 = (float)z + 0.0F;
-        float z1 = (float)z + 1.0F;
-        if(face == 0 && (float)y > player.y) {
-            t.vertex(x0, y0, z1);
-            t.vertex(x0, y0, z0);
-            t.vertex(x1, y0, z0);
-            t.vertex(x1, y0, z1);
-        }
+	public static void renderFaceNoTexture(Player player0, Tesselator tesselator1, int i2, int i3, int i4, int i5) {
+		float f6 = (float)i2;
+		float f7 = (float)i2 + 1.0F;
+		float f8 = (float)i3;
+		float f9 = (float)i3 + 1.0F;
+		float f10 = (float)i4;
+		float f11 = (float)i4 + 1.0F;
+		if(i5 == 0 && (float)i3 > player0.y) {
+			tesselator1.vertex(f6, f8, f11);
+			tesselator1.vertex(f6, f8, f10);
+			tesselator1.vertex(f7, f8, f10);
+			tesselator1.vertex(f7, f8, f11);
+		}
 
-        if(face == 1 && (float)y < player.y) {
-            t.vertex(x1, y1, z1);
-            t.vertex(x1, y1, z0);
-            t.vertex(x0, y1, z0);
-            t.vertex(x0, y1, z1);
-        }
+		if(i5 == 1 && (float)i3 < player0.y) {
+			tesselator1.vertex(f7, f9, f11);
+			tesselator1.vertex(f7, f9, f10);
+			tesselator1.vertex(f6, f9, f10);
+			tesselator1.vertex(f6, f9, f11);
+		}
 
-        if(face == 2 && (float)z > player.z) {
-            t.vertex(x0, y1, z0);
-            t.vertex(x1, y1, z0);
-            t.vertex(x1, y0, z0);
-            t.vertex(x0, y0, z0);
-        }
+		if(i5 == 2 && (float)i4 > player0.z) {
+			tesselator1.vertex(f6, f9, f10);
+			tesselator1.vertex(f7, f9, f10);
+			tesselator1.vertex(f7, f8, f10);
+			tesselator1.vertex(f6, f8, f10);
+		}
 
-        if(face == 3 && (float)z < player.z) {
-            t.vertex(x0, y1, z1);
-            t.vertex(x0, y0, z1);
-            t.vertex(x1, y0, z1);
-            t.vertex(x1, y1, z1);
-        }
+		if(i5 == 3 && (float)i4 < player0.z) {
+			tesselator1.vertex(f6, f9, f11);
+			tesselator1.vertex(f6, f8, f11);
+			tesselator1.vertex(f7, f8, f11);
+			tesselator1.vertex(f7, f9, f11);
+		}
 
-        if(face == 4 && (float)x > player.x) {
-            t.vertex(x0, y1, z1);
-            t.vertex(x0, y1, z0);
-            t.vertex(x0, y0, z0);
-            t.vertex(x0, y0, z1);
-        }
+		if(i5 == 4 && (float)i2 > player0.x) {
+			tesselator1.vertex(f6, f9, f11);
+			tesselator1.vertex(f6, f9, f10);
+			tesselator1.vertex(f6, f8, f10);
+			tesselator1.vertex(f6, f8, f11);
+		}
 
-        if(face == 5 && (float)x < player.x) {
-            t.vertex(x1, y0, z1);
-            t.vertex(x1, y0, z0);
-            t.vertex(x1, y1, z0);
-            t.vertex(x1, y1, z1);
-        }
+		if(i5 == 5 && (float)i2 < player0.x) {
+			tesselator1.vertex(f7, f8, f11);
+			tesselator1.vertex(f7, f8, f10);
+			tesselator1.vertex(f7, f9, f10);
+			tesselator1.vertex(f7, f9, f11);
+		}
 
-    }
+	}
 
-    public final AABB getTileAABB(int x, int y, int z) {
-        return new AABB((float)x, (float)y, (float)z, (float)(x + 1), (float)(y + 1), (float)(z + 1));
-    }
+	public static AABB getTileAABB(int i0, int i1, int i2) {
+		return new AABB((float)i0, (float)i1, (float)i2, (float)(i0 + 1), (float)(i1 + 1), (float)(i2 + 1));
+	}
 
-    public AABB getAABB(int x, int y, int z) {
-        return new AABB((float)x, (float)y, (float)z, (float)(x + 1), (float)(y + 1), (float)(z + 1));
-    }
+	public AABB getAABB(int i1, int i2, int i3) {
+		return new AABB((float)i1, (float)i2, (float)i3, (float)(i1 + 1), (float)(i2 + 1), (float)(i3 + 1));
+	}
 
-    public boolean blocksLight() {
-        return true;
-    }
+	public boolean blocksLight() {
+		return true;
+	}
 
-    public boolean isSolid() {
-        return true;
-    }
+	public boolean isSolid() {
+		return true;
+	}
 
-    public boolean mayPick() {
-        return true;
-    }
+	public boolean mayTick() {
+		return true;
+	}
 
-    public void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
-    }
+	public void tick(Level level1, int i2, int i3, int i4, EaglercraftRandom random5) {
+	}
 
-    public void destroy(Level level, int x, int y, int z, ParticleEngine particleEngine) {
-        byte SD = 4;
+	public final void destroy(Level level1, int i2, int i3, int i4, ParticleEngine particleEngine5) {
+		for(int i6 = 0; i6 < 4; ++i6) {
+			for(int i7 = 0; i7 < 4; ++i7) {
+				for(int i8 = 0; i8 < 4; ++i8) {
+					float f9 = (float)i2 + ((float)i6 + 0.5F) / (float)4;
+					float f10 = (float)i3 + ((float)i7 + 0.5F) / (float)4;
+					float f11 = (float)i4 + ((float)i8 + 0.5F) / (float)4;
+                    particleEngine5.add(new Particle(level1, f9, f10, f11, f9 - (float)i2 - 0.5F, f10 - (float)i3 - 0.5F, f11 - (float)i4 - 0.5F, this.tex));
+				}
+			}
+		}
 
-        for(int xx = 0; xx < SD; ++xx) {
-            for(int yy = 0; yy < SD; ++yy) {
-                for(int zz = 0; zz < SD; ++zz) {
-                    float xp = (float)x + ((float)xx + 0.5F) / (float)SD;
-                    float yp = (float)y + ((float)yy + 0.5F) / (float)SD;
-                    float zp = (float)z + ((float)zz + 0.5F) / (float)SD;
-                    particleEngine.add(new Particle(level, xp, yp, zp, xp - (float)x - 0.5F, yp - (float)y - 0.5F, zp - (float)z - 0.5F, this.tex));
-                }
-            }
-        }
+	}
 
-    }
+	public int getLiquidType() {
+		return 0;
+	}
 
-    public int getLiquidType() {
-        return 0;
-    }
+	public void neighborChanged(Level level1, int i2, int i3, int i4, int i5) {
+	}
 
-    public void neighborChanged(Level level, int x, int y, int z, int type) {
-    }
+	static {
+		new Tile(4, 16);
+		new Tile(5, 4);
+		new Bush(6);
+		unbreakable = new Tile(7, 17);
+		water = new LiquidTile(8, 1);
+		calmWater = new CalmLiquidTile(9, 1);
+		lava = new LiquidTile(10, 2);
+		calmLava = new CalmLiquidTile(11, 2);
+	}
 }

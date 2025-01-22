@@ -9,108 +9,114 @@ import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 
-public class Chunk {
-    public AABB aabb;
-    public final Level level;
-    public final int x0;
-    public final int y0;
-    public final int z0;
-    public final int x1;
-    public final int y1;
-    public final int z1;
-    public final float x;
-    public final float y;
-    public final float z;
+public final class Chunk {
+	public AABB aabb;
+	private Level level;
+	private int x0;
+	private int y0;
+	private int z0;
+	private int x1;
+	private int y1;
+	private int z1;
+	private float x;
+	private float y;
+	private float z;
 	private boolean dirty = true;
 	private int lists = -1;
-    public long dirtiedTime = 0L;
-    public boolean visible;
-    private static Tesselator t = Tesselator.instance;
+	public boolean visible;
+	public boolean canRender;
+	private static Tesselator t = Tesselator.instance;
 	public static int updates = 0;
-	private static long totalTime = 0L;
 	private static int totalUpdates = 0;
 
-    public Chunk(Level level, int x0, int y0, int z0, int x1, int y1, int z1) {
-        this.level = level;
-        this.x0 = x0;
-        this.y0 = y0;
-        this.z0 = z0;
-        this.x1 = x1;
-        this.y1 = y1;
-        this.z1 = z1;
-        this.x = (float)(x0 + x1) / 2.0F;
-        this.y = (float)(y0 + y1) / 2.0F;
-        this.z = (float)(z0 + z1) / 2.0F;
-        this.aabb = new AABB((float)x0, (float)y0, (float)z0, (float)x1, (float)y1, (float)z1);
-        this.lists = GL11.glGenLists(3);
-    }
+	public Chunk(Level level1, int i2, int i3, int i4, int i5, int i6, int i7) {
+		this.level = level1;
+		this.x0 = i2;
+		this.y0 = i3;
+		this.z0 = i4;
+		this.x1 = i5;
+		this.y1 = i6;
+		this.z1 = i7;
+		this.x = (float)(i2 + i5) / 2.0F;
+		this.y = (float)(i3 + i6) / 2.0F;
+		this.z = (float)(i4 + i7) / 2.0F;
+		this.aabb = new AABB((float)i2, (float)i3, (float)i4, (float)i5, (float)i6, (float)i7);
+		this.lists = GL11.glGenLists(3);
+	}
 
-    private void rebuild(int layer) {
-        long before = EagRuntime.nanoTime();
-        GL11.glNewList(this.lists + layer, GL11.GL_COMPILE);
-		t.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-        int tiles = 0;
+	private void rebuild(int i1) {
+		GL11.glNewList(this.lists + i1, GL11.GL_COMPILE);
+        t.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
+		int i2 = 0;
+		boolean z3 = false;
 
-        for(int after = this.x0; after < this.x1; ++after) {
-            for(int y = this.y0; y < this.y1; ++y) {
-                for(int z = this.z0; z < this.z1; ++z) {
-                    int tileId = this.level.getTile(after, y, z);
-                    if(tileId > 0) {
-                        Tile.tiles[tileId].render(t, this.level, layer, after, y, z);
-                        ++tiles;
-                    }
-                }
-            }
-        }
+		for(int i4 = this.x0; i4 < this.x1; ++i4) {
+			for(int i5 = this.y0; i5 < this.y1; ++i5) {
+				for(int i6 = this.z0; i6 < this.z1; ++i6) {
+					int i7;
+					if((i7 = this.level.getTile(i4, i5, i6)) > 0) {
+						z3 |= Tile.tiles[i7].render(t, this.level, i1, i4, i5, i6);
+						++i2;
+					}
+				}
+			}
+		}
 
-        t.end();
-        GL11.glEndList();
-        long var9 = EagRuntime.nanoTime();
-        if(tiles > 0) {
-            totalTime += var9 - before;
-            ++totalUpdates;
-        }
+		if(z3) {
+			this.canRender = false;
+		}
+
+		t.end();
+		GL11.glEndList();
+		if(i2 > 0) {
+			++totalUpdates;
+		}
 
 	}
 
-    public void rebuild() {
-        ++updates;
-        this.rebuild(0);
-        this.rebuild(1);
-        this.rebuild(2);
-        this.dirty = false;
+	public final void rebuild() {
+		this.canRender = true;
+		++updates;
+		this.rebuild(0);
+		this.rebuild(1);
+		this.rebuild(2);
+		this.dirty = false;
 	}
 
-    public void render(int layer) {
-        GL11.glCallList(this.lists + layer);
-    }
+	public final int render(int i1) {
+		return this.lists + i1;
+	}
 
-    public final void setDirty() {
-        if(!this.dirty) {
-            this.dirtiedTime = EagRuntime.currentTimeMillis();
-        }
+	public final void setDirty() {
+		if(!this.dirty) {
+			EagRuntime.currentTimeMillis();
+		}
 
 		this.dirty = true;
 	}
 
-    public boolean isDirty() {
-        return this.dirty;
-    }
+	public final boolean isDirty() {
+		return this.dirty;
+	}
 
-    public float distanceToSqr(Player player) {
-        float xd = player.x - this.x;
-        float yd = player.y - this.y;
-        float zd = player.z - this.z;
-        return xd * xd + yd * yd + zd * zd;
-    }
+	public final float compare(Player player1) {
+		float f2 = player1.x - this.x;
+		float f3 = player1.y - this.y;
+		float f4 = player1.z - this.z;
+		return f2 * f2 + f3 * f3 + f4 * f4;
+	}
 
-    public void reset() {
-        this.dirty = true;
+	public final void reset() {
+		this.dirty = true;
 
-        for(int i = 0; i < 3; ++i) {
-            GL11.glNewList(this.lists + i, GL11.GL_COMPILE);
-            GL11.glEndList();
-        }
+		for(int i1 = 0; i1 < 3; ++i1) {
+			GL11.glNewList(this.lists + i1, GL11.GL_COMPILE);
+			GL11.glEndList();
+		}
 
-    }
+	}
+
+	public final void reset2() {
+		GL11.glDeleteLists(this.lists, 3);
+	}
 }
