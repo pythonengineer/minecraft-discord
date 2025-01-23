@@ -37,17 +37,16 @@ public final class CalmLiquidTile extends LiquidTile {
 			z6 = true;
 		}
 
-		if(z6) {
-			level1.setTileNoUpdate(i2, i3, i4, this.tileId);
-		}
+        if(this.liquidType == 1 && i5 == Tile.lava.id) {
+            level1.setTileNoUpdate(i2, i3, i4, Tile.rock.id);
+        } else if(this.liquidType == 2 && i5 == Tile.water.id) {
+            level1.setTileNoUpdate(i2, i3, i4, Tile.rock.id);
+        } else {
+            if(z6) {
+                level1.setTileNoUpdate(i2, i3, i4, this.tileId);
+                level1.addToTickNextTick(i2, i3, i4, this.tileId);
+            }
 
-		if(this.liquidType == 1 && i5 == Tile.lava.id) {
-			level1.setTileNoUpdate(i2, i3, i4, Tile.rock.id);
-		}
-
-		if(this.liquidType == 2 && i5 == Tile.water.id) {
-			level1.setTileNoUpdate(i2, i3, i4, Tile.rock.id);
-		}
-
+        }
 	}
 }

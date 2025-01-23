@@ -88,7 +88,11 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 36, 18, 18, 2);
     }),
 
-    BACK_DISABLED(EnumTouchControlPos.TOP, -18, 0, 36, null, (enumIn, x, y, pressed, res) -> {
+    BACK_DISABLED(EnumTouchControlPos.TOP, 58, 0, 36, (enumIn, x, y) -> {
+        if (!TouchControls.isPressed(enumIn)) {
+            Minecraft.minecraft.saveSpawn();
+        }
+    }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
         int[] pos = enumIn.getLocation(res, TouchOverlayRenderer._fuck);
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 54, 18, 18, 2);
@@ -390,7 +394,7 @@ public enum EnumTouchControl {
                 JUMP.setVisible(renderer, true);
                 SNEAK.setVisible(renderer, false);
                 BACK.setVisible(renderer, true);
-                BACK_DISABLED.setVisible(renderer, false);
+                BACK_DISABLED.setVisible(renderer, true);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
                 CHAT.setVisible(renderer, false);
@@ -415,7 +419,7 @@ public enum EnumTouchControl {
                 JUMP.setVisible(renderer, true);
                 SNEAK.setVisible(renderer, false);
                 BACK.setVisible(renderer, true);
-                BACK_DISABLED.setVisible(renderer, false);
+                BACK_DISABLED.setVisible(renderer, true);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
                 CHAT.setVisible(renderer, false);

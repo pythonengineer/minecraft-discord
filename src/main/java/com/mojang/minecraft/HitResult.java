@@ -1,5 +1,7 @@
 package com.mojang.minecraft;
 
+import com.mojang.minecraft.player.Player;
+
 public final class HitResult {
     public int x;
     public int y;

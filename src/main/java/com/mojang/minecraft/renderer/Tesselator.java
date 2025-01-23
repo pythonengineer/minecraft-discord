@@ -49,16 +49,26 @@ public final class Tesselator {
         worldRenderer.tex(u, v);
     }
 
-    public void color(int r, int g, int b) {
-        this.color((byte)r, (byte)g, (byte)b);
-    }
-
-    public void color(byte r, byte g, byte b) {
+    public final void color(float f1, float f2, float f3) {
         if(!this.noColor) {
             this.hasColor = true;
-            this.r = (float)(r & 255) / 255.0F;
-            this.g = (float)(g & 255) / 255.0F;
-            this.b = (float)(b & 255) / 255.0F;
+            this.r = f1;
+            this.g = f2;
+            this.b = f3;
+        }
+    }
+
+    public final void color(int i1, int i2, int i3) {
+        byte b10001 = (byte)i1;
+        byte b10002 = (byte)i2;
+        byte b6 = (byte)i3;
+        byte b5 = b10002;
+        byte b4 = b10001;
+        if(!this.noColor) {
+            this.hasColor = true;
+            this.r = (float)(b4 & 255) / 255.0F;
+            this.g = (float)(b5 & 255) / 255.0F;
+            this.b = (float)(b6 & 255) / 255.0F;
         }
     }
 

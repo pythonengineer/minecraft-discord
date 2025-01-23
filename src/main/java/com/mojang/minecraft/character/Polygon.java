@@ -21,8 +21,6 @@ public final class Polygon {
     }
 
     public void render() {
-        GL11.glColor3f(1.0F, 1.0F, 1.0F);
-
         for(int i = 3; i >= 0; --i) {
             Vertex v = this.vertices[i];
             GL11.glTexCoord2f(v.u / 63.999F, v.v / 31.999F);

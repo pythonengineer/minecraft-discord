@@ -31,7 +31,7 @@ import net.lax1dude.eaglercraft.log4j.LogManager;
 import com.mojang.minecraft.Minecraft;
 
 /**
- * Copyright (c) 2022-2024 lax1dude. All Rights Reserved.
+ * Copyright (c) 2022-2025 lax1dude. All Rights Reserved.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -245,7 +245,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"0.0.13a_03\"\n");
+        str.append("minecraft.version = \"0.0.14a_08\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

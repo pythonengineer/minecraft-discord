@@ -1,10 +1,10 @@
 package com.mojang.minecraft.level.tile;
 
-import com.mojang.minecraft.Player;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.particle.Particle;
 import com.mojang.minecraft.particle.ParticleEngine;
 import com.mojang.minecraft.phys.AABB;
+import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.renderer.Tesselator;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
@@ -15,11 +15,21 @@ public class Tile {
 	public static final Tile rock = new Tile(1, 1);
 	public static final Tile grass = new GrassTile(2);
 	public static final Tile dirt = new DirtTile(3, 2);
-	public static final Tile unbreakable;
-	public static final Tile water;
-	public static final Tile calmWater;
-	public static final Tile lava;
-	public static final Tile calmLava;
+	public static final Tile stoneBrick = new Tile(4, 16);
+	public static final Tile wood = new Tile(5, 4);
+	public static final Tile bush = new Bush(6);
+	public static final Tile unbreakable = new Tile(7, 17);
+	public static final Tile water = new LiquidTile(8, 1);
+	public static final Tile calmWater = new CalmLiquidTile(9, 1);
+	public static final Tile lava = new LiquidTile(10, 2);
+	public static final Tile calmLava = new CalmLiquidTile(11, 2);
+	public static final Tile sand = new FallingTile(12, 18);
+	public static final Tile gravel = new FallingTile(13, 19);
+	public static final Tile oreGold = new Tile(14, 32);
+	public static final Tile oreIron = new Tile(15, 33);
+	public static final Tile oreCoal = new Tile(16, 34);
+	public static final Tile log = new LogTile(17);
+	public static final Tile leaf = new LeafTile(18, 22);
 	public int tex;
 	public final int id;
 	private float xx0;
@@ -30,6 +40,7 @@ public class Tile {
 	private float zz1;
 
 	protected Tile(int i1) {
+		new EaglercraftRandom();
 		tiles[i1] = this;
 		this.id = i1;
 		this.setShape(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -55,38 +66,47 @@ public class Tile {
 
 	public boolean render(Tesselator tesselator1, Level level2, int i3, int i4, int i5, int i6) {
 		boolean z7 = false;
+		float f8 = 0.8F;
+		float f9 = 0.6F;
+		float f10;
 		if(this.shouldRenderFace(level2, i4, i5 - 1, i6, i3, 0)) {
-			tesselator1.color((byte)-1, (byte)-1, (byte)-1);
+			f10 = level2.getBrightness(i4, i5 - 1, i6);
+			tesselator1.color(f10 * 1.0F, f10 * 1.0F, f10 * 1.0F);
 			this.renderFace(tesselator1, i4, i5, i6, 0);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4, i5 + 1, i6, i3, 1)) {
-			tesselator1.color((byte)-1, (byte)-1, (byte)-1);
+			f10 = level2.getBrightness(i4, i5 + 1, i6);
+			tesselator1.color(f10 * 1.0F, f10 * 1.0F, f10 * 1.0F);
 			this.renderFace(tesselator1, i4, i5, i6, 1);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4, i5, i6 - 1, i3, 2)) {
-			tesselator1.color((byte)-52, (byte)-52, (byte)-52);
+			f10 = level2.getBrightness(i4, i5, i6 - 1);
+			tesselator1.color(f8 * f10, f8 * f10, f8 * f10);
 			this.renderFace(tesselator1, i4, i5, i6, 2);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4, i5, i6 + 1, i3, 3)) {
-			tesselator1.color((byte)-52, (byte)-52, (byte)-52);
+			f10 = level2.getBrightness(i4, i5, i6 + 1);
+			tesselator1.color(f8 * f10, f8 * f10, f8 * f10);
 			this.renderFace(tesselator1, i4, i5, i6, 3);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4 - 1, i5, i6, i3, 4)) {
-			tesselator1.color((byte)-103, (byte)-103, (byte)-103);
+			f10 = level2.getBrightness(i4 - 1, i5, i6);
+			tesselator1.color(f9 * f10, f9 * f10, f9 * f10);
 			this.renderFace(tesselator1, i4, i5, i6, 4);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4 + 1, i5, i6, i3, 5)) {
-			tesselator1.color((byte)-103, (byte)-103, (byte)-103);
+			f10 = level2.getBrightness(i4 + 1, i5, i6);
+			tesselator1.color(f9 * f10, f9 * f10, f9 * f10);
 			this.renderFace(tesselator1, i4, i5, i6, 5);
 			z7 = true;
 		}
@@ -94,18 +114,36 @@ public class Tile {
 		return z7;
 	}
 
-	protected boolean shouldRenderFace(Level level1, int i2, int i3, int i4, int i5, int i6) {
-		boolean z7 = true;
-		if(i5 == 2) {
-			return false;
-		} else {
-			if(i5 >= 0) {
-				z7 = level1.isLit(i2, i3, i4) ^ i5 == 1;
-			}
-
-			Tile tile8;
-			return !((tile8 = tiles[level1.getTile(i2, i3, i4)]) == null ? false : tile8.isSolid()) && z7;
+	public static boolean cullFace(Level level0, int i1, int i2, int i3, int i4) {
+		if(i4 == 0) {
+			--i2;
 		}
+
+		if(i4 == 1) {
+			++i2;
+		}
+
+		if(i4 == 2) {
+			--i3;
+		}
+
+		if(i4 == 3) {
+			++i3;
+		}
+
+		if(i4 == 4) {
+			--i1;
+		}
+
+		if(i4 == 5) {
+			++i1;
+		}
+
+		return !level0.isSolidTile(i1, i2, i3);
+	}
+
+	protected boolean shouldRenderFace(Level level1, int i2, int i3, int i4, int i5, int i6) {
+		return i5 == 1 ? false : !level1.isSolidTile(i2, i3, i4);
 	}
 
 	protected int getTexture(int i1) {
@@ -282,21 +320,22 @@ public class Tile {
 		return true;
 	}
 
-	public boolean mayTick() {
+	public boolean mayPick() {
 		return true;
 	}
 
 	public void tick(Level level1, int i2, int i3, int i4, EaglercraftRandom random5) {
 	}
 
-	public final void destroy(Level level1, int i2, int i3, int i4, ParticleEngine particleEngine5) {
+	public final void destroy(Level level1, int i2, int i3, int i4, ParticleEngine particleEngine) {
 		for(int i6 = 0; i6 < 4; ++i6) {
 			for(int i7 = 0; i7 < 4; ++i7) {
 				for(int i8 = 0; i8 < 4; ++i8) {
 					float f9 = (float)i2 + ((float)i6 + 0.5F) / (float)4;
 					float f10 = (float)i3 + ((float)i7 + 0.5F) / (float)4;
 					float f11 = (float)i4 + ((float)i8 + 0.5F) / (float)4;
-                    particleEngine5.add(new Particle(level1, f9, f10, f11, f9 - (float)i2 - 0.5F, f10 - (float)i3 - 0.5F, f11 - (float)i4 - 0.5F, this.tex));
+					Particle particle12 = new Particle(level1, f9, f10, f11, f9 - (float)i2 - 0.5F, f10 - (float)i3 - 0.5F, f11 - (float)i4 - 0.5F, this.tex);
+					particleEngine.particles.add(particle12);
 				}
 			}
 		}
@@ -310,14 +349,6 @@ public class Tile {
 	public void neighborChanged(Level level1, int i2, int i3, int i4, int i5) {
 	}
 
-	static {
-		new Tile(4, 16);
-		new Tile(5, 4);
-		new Bush(6);
-		unbreakable = new Tile(7, 17);
-		water = new LiquidTile(8, 1);
-		calmWater = new CalmLiquidTile(9, 1);
-		lava = new LiquidTile(10, 2);
-		calmLava = new CalmLiquidTile(11, 2);
+	public void onBlockAdded(Level level1, int i2, int i3, int i4) {
 	}
 }

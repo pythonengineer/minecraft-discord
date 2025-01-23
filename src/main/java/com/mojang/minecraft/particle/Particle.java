@@ -4,16 +4,16 @@ import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.renderer.Tesselator;
 
-public final class Particle extends Entity {
+public class Particle extends Entity {
 	private float xd;
 	private float yd;
 	private float zd;
 	public int tex;
-	float uo;
-	float vo;
+	private float uo;
+	private float vo;
 	private int age = 0;
 	private int lifetime = 0;
-	float size;
+	private float size;
 
 	public Particle(Level level1, float f2, float f3, float f4, float f5, float f6, float f7, int i8) {
 		super(level1);
@@ -36,12 +36,12 @@ public final class Particle extends Entity {
 		this.age = 0;
 	}
 
-	public final void tick() {
+	public void tick() {
 		this.xo = this.x;
 		this.yo = this.y;
 		this.zo = this.z;
 		if(this.age++ >= this.lifetime) {
-			super.removed = true;
+			this.remove();
 		}
 
 		this.yd = (float)((double)this.yd - 0.04D);
@@ -54,5 +54,20 @@ public final class Particle extends Entity {
 			this.zd *= 0.7F;
 		}
 
+	}
+
+	public void render(Tesselator tesselator1, float f2, float f3, float f4, float f5, float f6, float f7) {
+		float f8;
+		float f9 = (f8 = ((float)(this.tex % 16) + this.uo / 4.0F) / 16.0F) + 0.015609375F;
+		float f10;
+		float f11 = (f10 = ((float)(this.tex / 16) + this.vo / 4.0F) / 16.0F) + 0.015609375F;
+		float f12 = 0.1F * this.size;
+		float f13 = this.xo + (this.x - this.xo) * f2;
+		float f14 = this.yo + (this.y - this.yo) * f2;
+		float f15 = this.zo + (this.z - this.zo) * f2;
+		tesselator1.vertexUV(f13 - f3 * f12 - f6 * f12, f14 - f4 * f12, f15 - f5 * f12 - f7 * f12, f8, f11);
+		tesselator1.vertexUV(f13 - f3 * f12 + f6 * f12, f14 + f4 * f12, f15 - f5 * f12 + f7 * f12, f8, f10);
+		tesselator1.vertexUV(f13 + f3 * f12 + f6 * f12, f14 + f4 * f12, f15 + f5 * f12 + f7 * f12, f9, f10);
+		tesselator1.vertexUV(f13 + f3 * f12 - f6 * f12, f14 - f4 * f12, f15 + f5 * f12 - f7 * f12, f9, f11);
 	}
 }

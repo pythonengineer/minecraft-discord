@@ -1,13 +1,15 @@
 package com.mojang.minecraft.level;
 
-public class Coord {
-	public final int x;
-	public final int y;
-	public final int z;
+public final class Coord {
+    public int x;
+    public int y;
+    public int z;
+    public int id;
 
-	public Coord(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
+    public Coord(int i1, int i2, int i3, int i4) {
+        this.x = i1;
+        this.y = i2;
+        this.z = i3;
+        this.id = i4;
+    }
 }

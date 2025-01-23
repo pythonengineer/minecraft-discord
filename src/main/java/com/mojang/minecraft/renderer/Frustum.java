@@ -84,21 +84,17 @@ public final class Frustum {
 		f0[i1][3] /= f2;
 	}
 
-	public final boolean cubeInFrustum(AABB aABB1) {
-		float f6 = aABB1.z1;
-		float f5 = aABB1.y1;
-		float f4 = aABB1.x1;
-		float f3 = aABB1.z0;
-		float f2 = aABB1.y0;
-		float f9 = aABB1.x0;
-		Frustum frustum8 = this;
+    public final boolean cubeInFrustum(float f1, float f2, float f3, float f4, float f5, float f6) {
+        for(int i7 = 0; i7 < 6; ++i7) {
+            if(this.m_Frustum[i7][0] * f1 + this.m_Frustum[i7][1] * f2 + this.m_Frustum[i7][2] * f3 + this.m_Frustum[i7][3] <= 0.0F && this.m_Frustum[i7][0] * f4 + this.m_Frustum[i7][1] * f2 + this.m_Frustum[i7][2] * f3 + this.m_Frustum[i7][3] <= 0.0F && this.m_Frustum[i7][0] * f1 + this.m_Frustum[i7][1] * f5 + this.m_Frustum[i7][2] * f3 + this.m_Frustum[i7][3] <= 0.0F && this.m_Frustum[i7][0] * f4 + this.m_Frustum[i7][1] * f5 + this.m_Frustum[i7][2] * f3 + this.m_Frustum[i7][3] <= 0.0F && this.m_Frustum[i7][0] * f1 + this.m_Frustum[i7][1] * f2 + this.m_Frustum[i7][2] * f6 + this.m_Frustum[i7][3] <= 0.0F && this.m_Frustum[i7][0] * f4 + this.m_Frustum[i7][1] * f2 + this.m_Frustum[i7][2] * f6 + this.m_Frustum[i7][3] <= 0.0F && this.m_Frustum[i7][0] * f1 + this.m_Frustum[i7][1] * f5 + this.m_Frustum[i7][2] * f6 + this.m_Frustum[i7][3] <= 0.0F && this.m_Frustum[i7][0] * f4 + this.m_Frustum[i7][1] * f5 + this.m_Frustum[i7][2] * f6 + this.m_Frustum[i7][3] <= 0.0F) {
+                return false;
+            }
+        }
 
-		for(int i7 = 0; i7 < 6; ++i7) {
-			if(frustum8.m_Frustum[i7][0] * f9 + frustum8.m_Frustum[i7][1] * f2 + frustum8.m_Frustum[i7][2] * f3 + frustum8.m_Frustum[i7][3] <= 0.0F && frustum8.m_Frustum[i7][0] * f4 + frustum8.m_Frustum[i7][1] * f2 + frustum8.m_Frustum[i7][2] * f3 + frustum8.m_Frustum[i7][3] <= 0.0F && frustum8.m_Frustum[i7][0] * f9 + frustum8.m_Frustum[i7][1] * f5 + frustum8.m_Frustum[i7][2] * f3 + frustum8.m_Frustum[i7][3] <= 0.0F && frustum8.m_Frustum[i7][0] * f4 + frustum8.m_Frustum[i7][1] * f5 + frustum8.m_Frustum[i7][2] * f3 + frustum8.m_Frustum[i7][3] <= 0.0F && frustum8.m_Frustum[i7][0] * f9 + frustum8.m_Frustum[i7][1] * f2 + frustum8.m_Frustum[i7][2] * f6 + frustum8.m_Frustum[i7][3] <= 0.0F && frustum8.m_Frustum[i7][0] * f4 + frustum8.m_Frustum[i7][1] * f2 + frustum8.m_Frustum[i7][2] * f6 + frustum8.m_Frustum[i7][3] <= 0.0F && frustum8.m_Frustum[i7][0] * f9 + frustum8.m_Frustum[i7][1] * f5 + frustum8.m_Frustum[i7][2] * f6 + frustum8.m_Frustum[i7][3] <= 0.0F && frustum8.m_Frustum[i7][0] * f4 + frustum8.m_Frustum[i7][1] * f5 + frustum8.m_Frustum[i7][2] * f6 + frustum8.m_Frustum[i7][3] <= 0.0F) {
-				return false;
-			}
-		}
+        return true;
+    }
 
-		return true;
-	}
+    public final boolean isVisible(AABB aABB1) {
+        return this.cubeInFrustum(aABB1.x0, aABB1.y0, aABB1.z0, aABB1.x1, aABB1.y1, aABB1.z1);
+    }
 }

@@ -29,7 +29,7 @@ import net.lax1dude.eaglercraft.internal.PlatformOpenGL;
 import static net.lax1dude.eaglercraft.internal.PlatformOpenGL.*;
 
 /**
- * Copyright (c) 2022-2024 lax1dude. All Rights Reserved.
+ * Copyright (c) 2022-2025 lax1dude. All Rights Reserved.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -2498,6 +2498,12 @@ public class GL11 {
     public static final void glFogf(int param, float value) {
         if (param == GL_FOG_DENSITY) {
             setFogDensity(value);
+        } else if (param == GL_FOG_START) {
+            setFogStart(value);
+        } else if (param == GL_FOG_END) {
+            setFogEnd(value);
+        } else {
+            throw new UnsupportedOperationException("Unsupported glFogf param");
         }
     }
 

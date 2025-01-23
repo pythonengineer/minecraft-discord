@@ -14,7 +14,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GLSLHeader;
 
 /**
- * Copyright (c) 2022-2024 lax1dude. All Rights Reserved.
+ * Copyright (c) 2022-2025 lax1dude. All Rights Reserved.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -34,7 +34,7 @@ public class DrawUtils {
     public static final String vertexSource = "#line 2\r\n"
             + "\r\n"
             + "/*\r\n"
-            + " * Copyright (c) 2022-2024 lax1dude. All Rights Reserved.\r\n"
+            + " * Copyright (c) 2022-2025 lax1dude. All Rights Reserved.\r\n"
             + " * \r\n"
             + " * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND\r\n"
             + " * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED\r\n"

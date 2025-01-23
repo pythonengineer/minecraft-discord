@@ -18,7 +18,7 @@ import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 /**
- * Copyright (c) 2022-2024 lax1dude, ayunami2000. All Rights Reserved.
+ * Copyright (c) 2022-2025 lax1dude, ayunami2000. All Rights Reserved.
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -53,7 +53,7 @@ public class PlatformInput {
     private static int cursorDY = 0;
     private static int DWheel = 0;
 
-    private static int windowWidth = 640;
+    private static int windowWidth = 854;
     private static int windowHeight = 480;
 
     private static final List<KeyboardEvent> keyboardEventList = new LinkedList<>();
@@ -162,8 +162,8 @@ public class PlatformInput {
         int[] v1 = new int[1], v2 = new int[1];
         glfwGetFramebufferSize(glfwWindow, v1, v2);
 
-        windowWidth = v1[0];
-        windowHeight = v2[0];
+        //windowWidth = v1[0];
+        //windowHeight = v2[0];
         windowResized = true;
         windowResized2 = true;
 

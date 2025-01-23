@@ -30,7 +30,7 @@ public final class Bush extends Tile {
 			float f18 = (f17 = (float)((i15 = this.getTexture(15)) % 16) / 16.0F) + 0.0624375F;
 			float f16;
 			float f7 = (f16 = (float)(i15 / 16) / 16.0F) + 0.0624375F;
-			tesselator1.color((int)255, (int)255, (int)255);
+            tesselator1.color(255, 255, 255);
 
 			for(int i8 = 0; i8 < 2; ++i8) {
 				float f9 = (float)(Math.sin((double)i8 * Math.PI / (double)2 + 0.7853981633974483D) * 0.5D);

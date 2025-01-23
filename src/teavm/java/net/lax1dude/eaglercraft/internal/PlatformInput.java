@@ -47,7 +47,7 @@ import net.lax1dude.eaglercraft.touch.EnumTouchControl;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 
 /**
- * Copyright (c) 2022-2024 lax1dude, ayunami2000. All Rights Reserved.
+ * Copyright (c) 2022-2025 lax1dude, ayunami2000. All Rights Reserved.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -570,6 +570,14 @@ public class PlatformInput {
                 evt.stopPropagation();
                 double delta = -evt.getDeltaY();
                 mouseDWheel += delta;
+                int eventX = (int)(getOffsetX(evt, touchOffsetXTeaVM) * windowDPI);
+                int eventY = windowHeight - (int)(getOffsetY(evt, touchOffsetYTeaVM) * windowDPI) - 1;
+                synchronized (mouseEvents) {
+                    mouseEvents.add(new VMouseEvent(eventX, eventY, -1, (float)delta, EVENT_MOUSE_WHEEL));
+                    if (mouseEvents.size() > 64) {
+                        mouseEvents.remove(0);
+                    }
+                }
             }
         });
         win.addEventListener("blur", blur = new EventListener<Event>() {
