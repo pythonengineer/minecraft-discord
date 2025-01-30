@@ -6,7 +6,7 @@ import org.teavm.jso.core.JSArrayReader;
 
 /**
  * Copyright (c) 2024 lax1dude. All Rights Reserved.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -18,12 +18,24 @@ import org.teavm.jso.core.JSArrayReader;
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 public abstract class JSMinecraftOptsRoot implements JSObject {
 
     @JSBody(script = "return (typeof this.container === \"string\") ? this.container : null;")
     public native String getContainer();
+
+    @JSBody(params = {
+            "def"}, script = "return (typeof this.username === \"string\") ? this.username : def;")
+    public native String getUsername(String defaultValue);
+
+    @JSBody(params = {
+            "def"}, script = "return (typeof this.server === \"string\") ? this.server : def;")
+    public native String getServer(String defaultValue);
+
+    @JSBody(params = {
+            "def"}, script = "return (typeof this.port === \"int\") ? this.port : def;")
+    public native int getServerPort(int defaultValue);
 
     @JSBody(params = {
             "def"}, script = "return (typeof this.resourcePacksDB === \"string\") ? this.resourcePacksDB : def;")

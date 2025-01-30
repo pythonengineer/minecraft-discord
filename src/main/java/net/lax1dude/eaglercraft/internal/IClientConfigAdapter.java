@@ -18,6 +18,12 @@ package net.lax1dude.eaglercraft.internal;
  */
 public interface IClientConfigAdapter {
 
+    String getUsername();
+
+    String getServer();
+
+    int getServerPort();
+
     String getResourcePacksDB();
 
     boolean isCheckGLErrors();

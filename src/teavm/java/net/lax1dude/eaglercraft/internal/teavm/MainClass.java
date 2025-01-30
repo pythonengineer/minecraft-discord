@@ -1,5 +1,7 @@
 package net.lax1dude.eaglercraft.internal.teavm;
 
+import org.teavm.jso.JSBody;
+
 /**
  * Copyright (c) 2022-2025 lax1dude. All Rights Reserved.
  *
@@ -19,6 +21,7 @@ package net.lax1dude.eaglercraft.internal.teavm;
 public class MainClass {
 
     public static void main(String[] args) {
+        setStackTraceLimit();
         if (args.length == 0) {
             clientMain();
             return;
@@ -29,4 +32,7 @@ public class MainClass {
     private static void clientMain() {
         ClientMain._main();
     }
+
+    @JSBody(script = "Error.stackTraceLimit = 1024;")
+    private static native void setStackTraceLimit();
 }

@@ -11,7 +11,6 @@ public final class ImprovedNoise extends Synth {
 
     public ImprovedNoise(EaglercraftRandom random1) {
         this.p = new int[512];
-        System.out.println("New improvednoise!");
 
         int i2;
         for(i2 = 0; i2 < 256; this.p[i2] = i2++) {

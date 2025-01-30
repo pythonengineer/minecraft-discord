@@ -25,7 +25,7 @@ dependencies {
     compileOnly "org.teavm:teavm-core:0.9.2"
 }
 
-def folder = "discord"
+def folder = "discord/client"
 def name = "classes.js"
 
 teavm.js {

@@ -23,6 +23,21 @@ public class DesktopClientConfigAdapter implements IClientConfigAdapter {
     public static final IClientConfigAdapter instance = new DesktopClientConfigAdapter();
 
     @Override
+    public String getUsername() {
+        return "guest";
+    }
+
+    @Override
+    public String getServer() {
+        return "localhost";
+    }
+
+    @Override
+    public int getServerPort() {
+        return 3000;
+    }
+
+    @Override
     public String getResourcePacksDB() {
         return "resources";
     }

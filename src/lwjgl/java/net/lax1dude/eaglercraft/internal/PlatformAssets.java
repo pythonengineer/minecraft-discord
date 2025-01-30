@@ -16,7 +16,7 @@ import net.lax1dude.eaglercraft.opengl.ImageData;
 
 /**
  * Copyright (c) 2022-2023 lax1dude, ayunami2000. All Rights Reserved.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,12 +28,12 @@ import net.lax1dude.eaglercraft.opengl.ImageData;
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 public class PlatformAssets {
 
     static URL getDesktopResourceURL(String path) {
-        File f = new File("../discord", path);
+        File f = new File("../discord/client", path);
         if (f.isFile()) {
             try {
                 return f.toURI().toURL();
@@ -46,11 +46,11 @@ public class PlatformAssets {
     }
 
     public static boolean getResourceExists(String path) {
-        return (new File("../discord", path)).isFile();
+        return (new File("../discord/client", path)).isFile();
     }
 
     public static byte[] getResourceBytes(String path) {
-        File loadFile = new File("../discord", path);
+        File loadFile = new File("../discord/client", path);
         byte[] ret = new byte[(int) loadFile.length()];
         try (FileInputStream is = new FileInputStream(loadFile)) {
             int i, j = 0;

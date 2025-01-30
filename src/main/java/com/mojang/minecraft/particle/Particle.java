@@ -2,6 +2,7 @@ package com.mojang.minecraft.particle;
 
 import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.level.Level;
+import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.renderer.Tesselator;
 
 public class Particle extends Entity {
@@ -14,10 +15,12 @@ public class Particle extends Entity {
 	private int age = 0;
 	private int lifetime = 0;
 	private float size;
+	private float gravity;
 
-	public Particle(Level level1, float f2, float f3, float f4, float f5, float f6, float f7, int i8) {
+	public Particle(Level level1, float f2, float f3, float f4, float f5, float f6, float f7, Tile tile8) {
 		super(level1);
-		this.tex = i8;
+		this.tex = tile8.tex;
+		this.gravity = tile8.particleGravity;
 		this.setSize(0.2F, 0.2F);
 		this.heightOffset = this.bbHeight / 2.0F;
 		this.setPos(f2, f3, f4);
@@ -44,7 +47,7 @@ public class Particle extends Entity {
 			this.remove();
 		}
 
-		this.yd = (float)((double)this.yd - 0.04D);
+		this.yd = (float)((double)this.yd - 0.04D * (double)this.gravity);
 		this.move(this.xd, this.yd, this.zd);
 		this.xd *= 0.98F;
 		this.yd *= 0.98F;

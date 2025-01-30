@@ -1,6 +1,7 @@
 package com.mojang.minecraft.level.tile;
 
 import com.mojang.minecraft.level.Level;
+import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.particle.Particle;
 import com.mojang.minecraft.particle.ParticleEngine;
 import com.mojang.minecraft.phys.AABB;
@@ -12,24 +13,25 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 public class Tile {
 	public static final Tile[] tiles = new Tile[256];
 	public static final boolean[] shouldTick = new boolean[256];
-	public static final Tile rock = new Tile(1, 1);
-	public static final Tile grass = new GrassTile(2);
-	public static final Tile dirt = new DirtTile(3, 2);
-	public static final Tile stoneBrick = new Tile(4, 16);
-	public static final Tile wood = new Tile(5, 4);
-	public static final Tile bush = new Bush(6);
-	public static final Tile unbreakable = new Tile(7, 17);
-	public static final Tile water = new LiquidTile(8, 1);
-	public static final Tile calmWater = new CalmLiquidTile(9, 1);
-	public static final Tile lava = new LiquidTile(10, 2);
-	public static final Tile calmLava = new CalmLiquidTile(11, 2);
-	public static final Tile sand = new FallingTile(12, 18);
-	public static final Tile gravel = new FallingTile(13, 19);
-	public static final Tile oreGold = new Tile(14, 32);
-	public static final Tile oreIron = new Tile(15, 33);
-	public static final Tile oreCoal = new Tile(16, 34);
-	public static final Tile log = new LogTile(17);
-	public static final Tile leaf = new LeafTile(18, 22);
+	private static int[] tickSpeed = new int[256];
+	public static final Tile rock;
+	public static final Tile grass;
+	public static final Tile dirt;
+	public static final Tile stoneBrick;
+	public static final Tile wood;
+	public static final Tile bush;
+	public static final Tile unbreakable;
+	public static final Tile water;
+	public static final Tile calmWater;
+	public static final Tile lava;
+	public static final Tile calmLava;
+	public static final Tile sand;
+	public static final Tile gravel;
+	public static final Tile oreGold;
+	public static final Tile oreIron;
+	public static final Tile oreCoal;
+	public static final Tile log;
+	public static final Tile leaf;
 	public int tex;
 	public final int id;
 	private float xx0;
@@ -38,6 +40,7 @@ public class Tile {
 	private float xx1;
 	private float yy1;
 	private float zz1;
+	public float particleGravity;
 
 	protected Tile(int i1) {
 		new EaglercraftRandom();
@@ -64,54 +67,64 @@ public class Tile {
 		this.tex = i2;
 	}
 
+	public final void setTickSpeed(int i1) {
+		tickSpeed[this.id] = 16;
+	}
+
 	public boolean render(Tesselator tesselator1, Level level2, int i3, int i4, int i5, int i6) {
 		boolean z7 = false;
-		float f8 = 0.8F;
-		float f9 = 0.6F;
-		float f10;
+		float f8 = 0.0F;
+		float f9 = 0.8F;
+		float f10 = 0.6F;
+		float f11;
 		if(this.shouldRenderFace(level2, i4, i5 - 1, i6, i3, 0)) {
-			f10 = level2.getBrightness(i4, i5 - 1, i6);
-			tesselator1.color(f10 * 1.0F, f10 * 1.0F, f10 * 1.0F);
+			f8 = 0.5F;
+			f11 = this.getBrightness(level2, i4, i5 - 1, i6);
+			tesselator1.color(f8 * f11, f8 * f11, f8 * f11);
 			this.renderFace(tesselator1, i4, i5, i6, 0);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4, i5 + 1, i6, i3, 1)) {
-			f10 = level2.getBrightness(i4, i5 + 1, i6);
-			tesselator1.color(f10 * 1.0F, f10 * 1.0F, f10 * 1.0F);
+			f11 = this.getBrightness(level2, i4, i5 + 1, i6);
+			tesselator1.color(f11 * 1.0F, f11 * 1.0F, f11 * 1.0F);
 			this.renderFace(tesselator1, i4, i5, i6, 1);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4, i5, i6 - 1, i3, 2)) {
-			f10 = level2.getBrightness(i4, i5, i6 - 1);
-			tesselator1.color(f8 * f10, f8 * f10, f8 * f10);
+			f11 = this.getBrightness(level2, i4, i5, i6 - 1);
+			tesselator1.color(f9 * f11, f9 * f11, f9 * f11);
 			this.renderFace(tesselator1, i4, i5, i6, 2);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4, i5, i6 + 1, i3, 3)) {
-			f10 = level2.getBrightness(i4, i5, i6 + 1);
-			tesselator1.color(f8 * f10, f8 * f10, f8 * f10);
+			f11 = this.getBrightness(level2, i4, i5, i6 + 1);
+			tesselator1.color(f9 * f11, f9 * f11, f9 * f11);
 			this.renderFace(tesselator1, i4, i5, i6, 3);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4 - 1, i5, i6, i3, 4)) {
-			f10 = level2.getBrightness(i4 - 1, i5, i6);
-			tesselator1.color(f9 * f10, f9 * f10, f9 * f10);
+			f11 = this.getBrightness(level2, i4 - 1, i5, i6);
+			tesselator1.color(f10 * f11, f10 * f11, f10 * f11);
 			this.renderFace(tesselator1, i4, i5, i6, 4);
 			z7 = true;
 		}
 
 		if(this.shouldRenderFace(level2, i4 + 1, i5, i6, i3, 5)) {
-			f10 = level2.getBrightness(i4 + 1, i5, i6);
-			tesselator1.color(f9 * f10, f9 * f10, f9 * f10);
+			f11 = this.getBrightness(level2, i4 + 1, i5, i6);
+			tesselator1.color(f10 * f11, f10 * f11, f10 * f11);
 			this.renderFace(tesselator1, i4, i5, i6, 5);
 			z7 = true;
 		}
 
 		return z7;
+	}
+
+	protected float getBrightness(Level level1, int i2, int i3, int i4) {
+		return level1.getBrightness(i2, i3, i4);
 	}
 
 	public static boolean cullFace(Level level0, int i1, int i2, int i3, int i4) {
@@ -334,7 +347,7 @@ public class Tile {
 					float f9 = (float)i2 + ((float)i6 + 0.5F) / (float)4;
 					float f10 = (float)i3 + ((float)i7 + 0.5F) / (float)4;
 					float f11 = (float)i4 + ((float)i8 + 0.5F) / (float)4;
-					Particle particle12 = new Particle(level1, f9, f10, f11, f9 - (float)i2 - 0.5F, f10 - (float)i3 - 0.5F, f11 - (float)i4 - 0.5F, this.tex);
+					Particle particle12 = new Particle(level1, f9, f10, f11, f9 - (float)i2 - 0.5F, f10 - (float)i3 - 0.5F, f11 - (float)i4 - 0.5F, this);
 					particleEngine.particles.add(particle12);
 				}
 			}
@@ -342,13 +355,128 @@ public class Tile {
 
 	}
 
-	public int getLiquidType() {
-		return 0;
+	public Liquid getLiquidType() {
+		return Liquid.none;
 	}
 
 	public void neighborChanged(Level level1, int i2, int i3, int i4, int i5) {
 	}
 
 	public void onBlockAdded(Level level1, int i2, int i3, int i4) {
+	}
+
+	public int getTickDelay() {
+		return 0;
+	}
+
+	static {
+		Tile tile10000 = new Tile(1, 1);
+		float f1 = 1.0F;
+		float f0 = 1.0F;
+		Tile tile2 = tile10000;
+		tile10000.particleGravity = f1;
+		rock = tile2;
+		GrassTile grassTile11 = new GrassTile(2);
+		f1 = 1.0F;
+		f0 = 0.9F;
+		GrassTile grassTile3 = grassTile11;
+		grassTile11.particleGravity = f1;
+		grass = grassTile3;
+		DirtTile dirtTile12 = new DirtTile(3, 2);
+		f1 = 1.0F;
+		f0 = 0.8F;
+		DirtTile dirtTile4 = dirtTile12;
+		dirtTile12.particleGravity = f1;
+		dirt = dirtTile4;
+		tile10000 = new Tile(4, 16);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		tile2 = tile10000;
+		tile10000.particleGravity = f1;
+		stoneBrick = tile2;
+		tile10000 = new Tile(5, 4);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		tile2 = tile10000;
+		tile10000.particleGravity = f1;
+		wood = tile2;
+		Bush bush13 = new Bush(6);
+		f1 = 1.0F;
+		f0 = 0.7F;
+		Bush bush5 = bush13;
+		bush13.particleGravity = f1;
+		bush = bush5;
+		tile10000 = new Tile(7, 17);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		tile2 = tile10000;
+		tile10000.particleGravity = f1;
+		unbreakable = tile2;
+		LiquidTile liquidTile14 = new LiquidTile(8, Liquid.water);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		LiquidTile liquidTile6 = liquidTile14;
+		liquidTile14.particleGravity = f1;
+		water = liquidTile6;
+		CalmLiquidTile calmLiquidTile15 = new CalmLiquidTile(9, Liquid.water);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		CalmLiquidTile calmLiquidTile7 = calmLiquidTile15;
+		calmLiquidTile15.particleGravity = f1;
+		calmWater = calmLiquidTile7;
+		liquidTile14 = new LiquidTile(10, Liquid.lava);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		liquidTile6 = liquidTile14;
+		liquidTile14.particleGravity = f1;
+		lava = liquidTile6;
+		calmLiquidTile15 = new CalmLiquidTile(11, Liquid.lava);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		calmLiquidTile7 = calmLiquidTile15;
+		calmLiquidTile15.particleGravity = f1;
+		calmLava = calmLiquidTile7;
+		FallingTile fallingTile16 = new FallingTile(12, 18);
+		f1 = 1.0F;
+		f0 = 0.8F;
+		FallingTile fallingTile8 = fallingTile16;
+		fallingTile16.particleGravity = f1;
+		sand = fallingTile8;
+		fallingTile16 = new FallingTile(13, 19);
+		f1 = 1.0F;
+		f0 = 0.8F;
+		fallingTile8 = fallingTile16;
+		fallingTile16.particleGravity = f1;
+		gravel = fallingTile8;
+		tile10000 = new Tile(14, 32);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		tile2 = tile10000;
+		tile10000.particleGravity = f1;
+		oreGold = tile2;
+		tile10000 = new Tile(15, 33);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		tile2 = tile10000;
+		tile10000.particleGravity = f1;
+		oreIron = tile2;
+		tile10000 = new Tile(16, 34);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		tile2 = tile10000;
+		tile10000.particleGravity = f1;
+		oreCoal = tile2;
+		LogTile logTile17 = new LogTile(17);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		LogTile logTile9 = logTile17;
+		logTile17.particleGravity = f1;
+		log = logTile9;
+		LeafTile leafTile18 = new LeafTile(18, 22);
+		f1 = 0.4F;
+		f0 = 1.0F;
+		LeafTile leafTile10 = leafTile18;
+		leafTile18.particleGravity = f1;
+		leaf = leafTile10;
 	}
 }

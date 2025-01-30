@@ -1,6 +1,7 @@
 package com.mojang.minecraft.level;
 
 import com.mojang.minecraft.Entity;
+import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.HitResult;
 import com.mojang.minecraft.character.Vec3;
 import com.mojang.minecraft.level.tile.Tile;
@@ -11,13 +12,14 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Level implements Serializable {
 	public static final long serialVersionUID = 0L;
 	public int width;
 	public int height;
 	public int depth;
-	byte[] blocks;
+    public byte[] blocks;
 	public String name;
 	public String creator;
 	public long createTime;
@@ -40,6 +42,7 @@ public class Level implements Serializable {
 		} else {
 			this.levelListeners = new ArrayList();
 			this.heightMap = new int[this.width * this.height];
+            Arrays.fill(this.heightMap, this.depth);
 			this.calcLightDepths(0, 0, this.width, this.height);
 			this.random = new EaglercraftRandom();
 			this.randValue = this.random.nextInt();
@@ -61,6 +64,7 @@ public class Level implements Serializable {
 		this.depth = i2;
 		this.blocks = b4;
 		this.heightMap = new int[i1 * i3];
+        Arrays.fill(this.heightMap, this.depth);
 		this.calcLightDepths(0, 0, i1, i3);
 
 		for(i1 = 0; i1 < this.levelListeners.size(); ++i1) {
@@ -260,18 +264,19 @@ public class Level implements Serializable {
 		return (tile4 = Tile.tiles[this.getTile(i1, i2, i3)]) == null ? false : tile4.isSolid();
 	}
 
-	public void tick() {
-		++this.tickCount;
+    public void tickEntities() {
+        for(int i1 = 0; i1 < this.entities.size(); ++i1) {
+            ((Entity)this.entities.get(i1)).tick();
+            if(((Entity)this.entities.get(i1)).removed) {
+                this.entities.remove(i1--);
+            }
+        }
 
-		int i1;
-		for(i1 = 0; i1 < this.entities.size(); ++i1) {
-			((Entity)this.entities.get(i1)).tick();
-			if(((Entity)this.entities.get(i1)).removed) {
-				this.entities.remove(i1--);
-			}
-		}
+    }
 
-		i1 = 1;
+    public void tick() {
+        ++this.tickCount;
+        int i1 = 1;
 
 		int i2;
 		for(i2 = 1; 1 << i1 < this.width; ++i1) {
@@ -286,17 +291,22 @@ public class Level implements Serializable {
 		int i5 = this.depth - 1;
 		int i6;
 		int i7;
-		if(this.tickCount % 5 == 0) {
-			i6 = this.tickList.size();
+        if(this.tickCount % 5 == 0) {
+            i6 = this.tickList.size();
 
-			for(i7 = 0; i7 < i6; ++i7) {
-				Coord coord8 = (Coord)this.tickList.remove(0);
-				byte b9;
-				if(this.isInLevelBounds(coord8.x, coord8.y, coord8.z) && (b9 = this.blocks[(coord8.y * this.height + coord8.z) * this.width + coord8.x]) == coord8.id && b9 > 0) {
-					Tile.tiles[b9].tick(this, coord8.x, coord8.y, coord8.z, this.random);
-				}
-			}
-		}
+            for(i7 = 0; i7 < i6; ++i7) {
+                Coord coord8;
+                if((coord8 = (Coord)this.tickList.remove(0)).scheduledTime > 0) {
+                    --coord8.scheduledTime;
+                    this.tickList.add(coord8);
+                } else {
+                    byte b9;
+                    if(this.isInLevelBounds(coord8.x, coord8.y, coord8.z) && (b9 = this.blocks[(coord8.y * this.height + coord8.z) * this.width + coord8.x]) == coord8.id && b9 > 0) {
+                        Tile.tiles[b9].tick(this, coord8.x, coord8.y, coord8.z, this.random);
+                    }
+                }
+            }
+        }
 
 		this.unprocessed += this.width * this.height * this.depth;
 		i6 = this.unprocessed / 200;
@@ -375,9 +385,9 @@ public class Level implements Serializable {
 			for(i2 = i4; i2 < i5; ++i2) {
 				for(int i8 = i6; i8 < i7; ++i8) {
 					Tile tile9;
-					if((tile9 = Tile.tiles[this.getTile(i10, i2, i8)]) != null && tile9.getLiquidType() > 0) {
-						return true;
-					}
+                    if((tile9 = Tile.tiles[this.getTile(i10, i2, i8)]) != null && tile9.getLiquidType() != Liquid.none) {
+                        return true;
+                    }
 				}
 			}
 		}
@@ -385,7 +395,7 @@ public class Level implements Serializable {
 		return false;
 	}
 
-	public boolean containsLiquid(AABB aABB1, int i2) {
+    public boolean containsLiquid(AABB aABB1, Liquid liquid2) {
 		int i3 = (int)aABB1.x0;
 		int i4 = (int)aABB1.x1 + 1;
 		int i5 = (int)aABB1.y0;
@@ -432,9 +442,9 @@ public class Level implements Serializable {
 			for(i3 = i5; i3 < i6; ++i3) {
 				for(int i9 = i7; i9 < i8; ++i9) {
 					Tile tile10;
-					if((tile10 = Tile.tiles[this.getTile(i11, i3, i9)]) != null && tile10.getLiquidType() == i2) {
-						return true;
-					}
+                    if((tile10 = Tile.tiles[this.getTile(i11, i3, i9)]) != null && tile10.getLiquidType() == liquid2) {
+                        return true;
+                    }
 				}
 			}
 		}
@@ -442,9 +452,15 @@ public class Level implements Serializable {
 		return false;
 	}
 
-	public void addToTickNextTick(int i1, int i2, int i3, int i4) {
-		this.tickList.add(new Coord(i1, i2, i3, i4));
-	}
+    public void addToTickNextTick(int i1, int i2, int i3, int i4) {
+        Coord coord5 = new Coord(i1, i2, i3, i4);
+        if(i4 > 0) {
+            i3 = Tile.tiles[i4].getTickDelay();
+            coord5.scheduledTime = i3;
+        }
+
+        this.tickList.add(coord5);
+    }
 
 	public boolean isFree(AABB aABB1) {
 		for(int i2 = 0; i2 < this.entities.size(); ++i2) {
@@ -467,8 +483,8 @@ public class Level implements Serializable {
 
 	public int getHighestTile(int i1, int i2) {
 		int i3;
-		for(i3 = this.depth; (this.getTile(i1, i3 - 1, i2) == 0 || Tile.tiles[this.getTile(i1, i3 - 1, i2)].getLiquidType() != 0) && i3 > 0; --i3) {
-		}
+        for(i3 = this.depth; (this.getTile(i1, i3 - 1, i2) == 0 || Tile.tiles[this.getTile(i1, i3 - 1, i2)].getLiquidType() != Liquid.none) && i3 > 0; --i3) {
+        }
 
 		return i3;
 	}
@@ -481,7 +497,7 @@ public class Level implements Serializable {
 	}
 
 	public float getBrightness(int i1, int i2, int i3) {
-		return this.isLit(i1, i2, i3) ? 1.0F : 0.5F;
+        return this.isLit(i1, i2, i3) ? 1.0F : 0.6F;
 	}
 
 	public float getCaveness(float f1, float f2, float f3, float f4) {
@@ -534,57 +550,61 @@ public class Level implements Serializable {
 		}
 	}
 
-	public float getCaveness(Entity entity1) {
-		float f2 = (float)Math.cos((double)(-entity1.yRot) * Math.PI / 180.0D + Math.PI);
-		float f3 = (float)Math.sin((double)(-entity1.yRot) * Math.PI / 180.0D + Math.PI);
-		float f4 = (float)Math.cos((double)(-entity1.xRot) * Math.PI / 180.0D);
-		float f5 = (float)Math.sin((double)(-entity1.xRot) * Math.PI / 180.0D);
-		float f6 = entity1.x;
-		float f7 = entity1.y;
-		float f21 = entity1.z;
-		float f8 = 1.6F;
-		float f9 = 0.0F;
-		float f10 = 0.0F;
+    public float getCaveness(Entity entity1) {
+        float f2 = (float)Math.cos((double)(-entity1.yRot) * Math.PI / 180.0D + Math.PI);
+        float f3 = (float)Math.sin((double)(-entity1.yRot) * Math.PI / 180.0D + Math.PI);
+        float f4 = (float)Math.cos((double)(-entity1.xRot) * Math.PI / 180.0D);
+        float f5 = (float)Math.sin((double)(-entity1.xRot) * Math.PI / 180.0D);
+        float f6 = entity1.x;
+        float f7 = entity1.y;
+        float f21 = entity1.z;
+        float f8 = 1.6F;
+        float f9 = 0.0F;
+        float f10 = 0.0F;
 
-		for(int i11 = 0; i11 <= 10; ++i11) {
-			float f12 = ((float)i11 / (float)10 - 0.5F) * 2.0F;
+        for(int i11 = 0; i11 <= 200; ++i11) {
+            float f12 = ((float)i11 / (float)200 - 0.5F) * 2.0F;
 
-			for(int i13 = 0; i13 <= 10; ++i13) {
-				float f14 = ((float)i13 / (float)10 - 0.5F) * f8;
-				float f16 = f4 * f14 + f5;
-				f14 = f4 - f5 * f14;
-				float f17 = f2 * f12 + f3 * f14;
-				f16 = f16;
-				f14 = f2 * f14 - f3 * f12;
+            for(int i13 = 0; i13 <= 200; ++i13) {
+                float f14 = ((float)i13 / (float)200 - 0.5F) * f8;
+                float f16 = f4 * f14 + f5;
+                f14 = f4 - f5 * f14;
+                float f17 = f2 * f12 + f3 * f14;
+                f16 = f16;
+                f14 = f2 * f14 - f3 * f12;
 
-				for(int i15 = 0; i15 < 20; ++i15) {
-					float f18 = f6 + f17 * (float)i15 * 0.8F;
-					float f19 = f7 + f16 * (float)i15 * 0.8F;
-					float f20 = f21 + f14 * (float)i15 * 0.8F;
-					if(this.isSolidTile(f18, f19, f20)) {
-						break;
-					}
+                for(int i15 = 0; i15 < 10; ++i15) {
+                    float f18 = f6 + f17 * (float)i15 * 0.8F;
+                    float f19 = f7 + f16 * (float)i15 * 0.8F;
+                    float f20 = f21 + f14 * (float)i15 * 0.8F;
+                    if(this.isSolidTile(f18, f19, f20)) {
+                        break;
+                    }
 
-					++f9;
-					if(this.isLit((int)f18, (int)f19, (int)f20)) {
-						++f10;
-					}
-				}
-			}
-		}
+                    ++f9;
+                    if(this.isLit((int)f18, (int)f19, (int)f20)) {
+                        ++f10;
+                    }
+                }
+            }
+        }
 
-		if(f9 == 0.0F) {
-			return 0.0F;
-		} else {
-			float f22;
-			if((f22 = f10 / f9 / 0.1F) > 1.0F) {
-				f22 = 1.0F;
-			}
+        if(f9 == 0.0F) {
+            return 0.0F;
+        } else {
+            float f22;
+            if((f22 = f10 / f9 / 0.1F) > 1.0F) {
+                f22 = 1.0F;
+            }
 
-			f22 = 1.0F - f22;
-			return 1.0F - f22 * f22 * f22;
-		}
-	}
+            f22 = 1.0F - f22;
+            return 1.0F - f22 * f22 * f22;
+        }
+    }
+
+    public byte[] copyBlocks() {
+        return Arrays.copyOf(this.blocks, this.blocks.length);
+    }
 
     public HitResult clip(Vec3 vec31, Vec3 vec32) {
         if (!Float.isNaN(vec31.x) && !Float.isNaN(vec31.y) && !Float.isNaN(vec31.z)) {
@@ -703,7 +723,7 @@ public class Level implements Serializable {
                     if (b21 == 3) {
                         --i8;
                     }
-                } while ((tile = this.getTile(i6, i7, i8)) <= 0 || Tile.tiles[tile].getLiquidType() != 0);
+                } while ((tile = this.getTile(i6, i7, i8)) <= 0 || Tile.tiles[tile].getLiquidType() != Liquid.none);
 
                 return new HitResult(0, i6, i7, i8, b21);
             } else {

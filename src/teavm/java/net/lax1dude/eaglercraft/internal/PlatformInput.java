@@ -208,6 +208,7 @@ public class PlatformInput {
     private static boolean[] buttonStates = new boolean[8];
     private static boolean[] keyStates = new boolean[256];
 
+    private static boolean spacePressed = false;
     private static int touchPressed = Keyboard.KEY_NONE;
     private static int functionKeyModifier = Keyboard.KEY_F;
 
@@ -324,6 +325,7 @@ public class PlatformInput {
             public void handleEvent(MouseEvent evt) {
                 evt.preventDefault();
                 evt.stopPropagation();
+                handleWindowFocus();
                 if (tryGrabCursorHook()) return;
                 int b = evt.getButton();
                 b = b == 1 ? 2 : (b == 2 ? 1 : b);
@@ -386,6 +388,7 @@ public class PlatformInput {
             public void handleEvent(TouchEvent evt) {
                 evt.preventDefault();
                 evt.stopPropagation();
+                handleWindowFocus();
                 SortedTouchEvent sorted = new SortedTouchEvent(evt, touchUIDMapperCreate);
                 currentTouchState = sorted;
                 List<OffsetTouch> lst = sorted.getEventTouches();
@@ -763,6 +766,14 @@ public class PlatformInput {
         enumerateGamepads();
     }
 
+    private static void handleWindowFocus() {
+        if(!isWindowFocused) {
+            PlatformRuntime.logger.warn("Detected mouse input while the window was not focused, setting the window focused so the client doesn't pause");
+            isWindowFocused = true;
+        }
+        isMouseOverWindow = true;
+    }
+
     @JSFunctor
     private static interface KeyboardLayoutIterator extends JSObject {
         void call(String key, String val);
@@ -1077,14 +1088,15 @@ public class PlatformInput {
         } else if (touchPressed == Keyboard.KEY_RIGHT) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
-        } else if (TouchControls.isPressed(EnumTouchControl.JUMP)) {
-            if (touchPressed != Keyboard.KEY_SPACE) {
-                touchPressed = Keyboard.KEY_SPACE;
-                keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
+        }
+        if (TouchControls.isPressed(EnumTouchControl.JUMP)) {
+            if (!spacePressed) {
+                spacePressed = true;
+                keyEvents.add(new VKeyEvent(-1, 0, Keyboard.KEY_SPACE, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == Keyboard.KEY_SPACE) {
-            keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
-            touchPressed = Keyboard.KEY_NONE;
+        } else if (spacePressed) {
+            keyEvents.add(new VKeyEvent(-1, 0, Keyboard.KEY_SPACE, '\0', EVENT_KEY_UP));
+            spacePressed = false;
         }
     }
 
@@ -1949,7 +1961,7 @@ public class PlatformInput {
             if (touchKeyboardField != null) {
                 touchKeyboardField.blur();
                 touchKeyboardField.setValue("");
-                PlatformRuntime.sleep(10);
+                //PlatformRuntime.sleep(10);
                 if (touchKeyboardForm != null) {
                     touchKeyboardForm.removeChild(touchKeyboardField);
                 } else {

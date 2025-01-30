@@ -4,6 +4,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
 
 import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.gui.ChatScreen;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.
@@ -106,7 +107,7 @@ public enum EnumTouchControl {
 
     PAUSE(EnumTouchControlPos.TOP, -14, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.releaseMouse();
+            Minecraft.minecraft.pauseGame();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -114,8 +115,9 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 0, 18, 18, 2);
     }),
 
-    CHAT(EnumTouchControlPos.TOP, 18, 0, 36, (enumIn, x, y) -> {
+    CHAT(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            Minecraft.minecraft.setScreen(new ChatScreen());
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -318,7 +320,7 @@ public enum EnumTouchControl {
                 DPAD_UP_RIGHT.setVisible(renderer, false);
                 JUMP.setVisible(renderer, false);
                 SNEAK.setVisible(renderer, false);
-                BACK.setVisible(renderer, true);
+                BACK.setVisible(renderer, false);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, true);
                 PAUSE.setVisible(renderer, false);
@@ -343,15 +345,15 @@ public enum EnumTouchControl {
                 DPAD_UP_RIGHT.setVisible(renderer, false);
                 JUMP.setVisible(renderer, false);
                 SNEAK.setVisible(renderer, false);
-                BACK.setVisible(renderer, true);
+                BACK.setVisible(renderer, false);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, true);
                 PAUSE.setVisible(renderer, false);
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
-                PASTE.setVisible(renderer, true);
-                COPY.setVisible(renderer, true);
+                PASTE.setVisible(renderer, false);
+                COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
@@ -397,13 +399,21 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, true);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                CHAT.setVisible(renderer, false);
+                if (Minecraft.minecraft.sendQueue != null) {
+                    CHAT.setVisible(renderer, true);
+                } else {
+                    CHAT.setVisible(renderer, false);
+                }
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
-                MOB.setVisible(renderer, true);
+                if (Minecraft.minecraft.sendQueue != null) {
+                    MOB.setVisible(renderer, false);
+                } else {
+                    MOB.setVisible(renderer, true);
+                }
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -422,13 +432,21 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, true);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                CHAT.setVisible(renderer, false);
+                if (Minecraft.minecraft.sendQueue != null) {
+                    CHAT.setVisible(renderer, true);
+                } else {
+                    CHAT.setVisible(renderer, false);
+                }
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
-                MOB.setVisible(renderer, true);
+                if (Minecraft.minecraft.sendQueue != null) {
+                    MOB.setVisible(renderer, false);
+                } else {
+                    MOB.setVisible(renderer, true);
+                }
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);

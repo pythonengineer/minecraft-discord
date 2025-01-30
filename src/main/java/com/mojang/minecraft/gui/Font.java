@@ -61,49 +61,47 @@ public class Font {
 		this.draw(str, x, y, color, false);
 	}
 
-	public void draw(String str, int x, int y, int color, boolean darken) {
-		char[] chars = str.toCharArray();
-		if(darken) {
-			color = (color & 16579836) >> 2;
-		}
+    private void draw(String string1, int i2, int i3, int i4, boolean z5) {
+        char[] c12 = string1.toCharArray();
+        if(z5) {
+            i4 = (i4 & 16579836) >> 2;
+        }
 
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTexture);
-		Tesselator t = Tesselator.instance;
-        t.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-		t.color(color);
-		int xo = 0;
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTexture);
+        Tesselator tesselator6 = Tesselator.instance;
+        tesselator6.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
+        tesselator6.color(i4);
+        int i7 = 0;
 
-		for(int i = 0; i < chars.length; ++i) {
-			int ix;
-			int iy;
-			if(chars[i] == 38) {
-				ix = "0123456789abcdef".indexOf(chars[i + 1]);
-				iy = (ix & 8) * 8;
-				int b = (ix & 1) * 191 + iy;
-				int g = ((ix & 2) >> 1) * 191 + iy;
-				int r = ((ix & 4) >> 2) * 191 + iy;
-				color = r << 16 | g << 8 | b;
-				i += 2;
-				if(darken) {
-					color = (color & 16579836) >> 2;
-				}
+        for(int i8 = 0; i8 < c12.length; ++i8) {
+            int i9;
+            if(c12[i8] == 38) {
+                i9 = ((i4 = "0123456789abcdef".indexOf(c12[i8 + 1])) & 8) << 3;
+                int i10 = (i4 & 1) * 191 + i9;
+                int i11 = ((i4 & 2) >> 1) * 191 + i9;
+                i4 = ((i4 & 4) >> 2) * 191 + i9 << 16 | i11 << 8 | i10;
+                i8 += 2;
+                if(z5) {
+                    i4 = (i4 & 16579836) >> 2;
+                }
 
-				t.color(color);
-			}
+                tesselator6.color(i4);
+            }
 
-			ix = chars[i] % 16 * 8;
-			iy = chars[i] / 16 * 8;
-			t.vertexUV((float)(x + xo), (float)(y + 8), 0.0F, (float)ix / 128.0F, (float)(iy + 8) / 128.0F);
-			t.vertexUV((float)(x + xo + 8), (float)(y + 8), 0.0F, (float)(ix + 8) / 128.0F, (float)(iy + 8) / 128.0F);
-			t.vertexUV((float)(x + xo + 8), (float)y, 0.0F, (float)(ix + 8) / 128.0F, (float)iy / 128.0F);
-			t.vertexUV((float)(x + xo), (float)y, 0.0F, (float)ix / 128.0F, (float)iy / 128.0F);
-			xo += this.charWidths[chars[i]];
-		}
+            i4 = c12[i8] % 16 << 3;
+            i9 = c12[i8] / 16 << 3;
+            float f13 = 7.99F;
+            tesselator6.vertexUV((float)(i2 + i7), (float)i3 + f13, 0.0F, (float)i4 / 128.0F, ((float)i9 + f13) / 128.0F);
+            tesselator6.vertexUV((float)(i2 + i7) + f13, (float)i3 + f13, 0.0F, ((float)i4 + f13) / 128.0F, ((float)i9 + f13) / 128.0F);
+            tesselator6.vertexUV((float)(i2 + i7) + f13, (float)i3, 0.0F, ((float)i4 + f13) / 128.0F, (float)i9 / 128.0F);
+            tesselator6.vertexUV((float)(i2 + i7), (float)i3, 0.0F, (float)i4 / 128.0F, (float)i9 / 128.0F);
+            i7 += this.charWidths[c12[i8]];
+        }
 
-		t.end();
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-	}
+        tesselator6.end();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+    }
 
 	public int width(String str) {
 		char[] chars = str.toCharArray();

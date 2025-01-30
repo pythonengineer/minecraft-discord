@@ -2345,8 +2345,8 @@ public class GL11 {
     }
 
     public static final void glCallLists(IntBuffer buffer) {
-        for (int i = 0; i < buffer.limit(); ++i) {
-            glCallList(buffer.get());
+        for (int i = 0; i < buffer.remaining(); ++i) {
+            glCallList(buffer.get(i));
         }
     }
 

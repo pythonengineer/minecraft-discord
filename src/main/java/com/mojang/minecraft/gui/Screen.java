@@ -20,10 +20,9 @@ import net.lax1dude.eaglercraft.touch.TouchControls;
 
 public class Screen {
 	protected Minecraft minecraft;
-	protected int width;
-	protected int height;
+    protected int y;
+    protected int w;
     protected List buttons = new ArrayList();
-
     protected int touchModeCursorPosX = -1;
     protected int touchModeCursorPosY = -1;
     private long lastTouchEvent;
@@ -64,8 +63,8 @@ public class Screen {
 
     public final void init(Minecraft minecraft1, int i2, int i3) {
         this.minecraft = minecraft1;
-        this.width = i2;
-        this.height = i3;
+        this.y = i2;
+        this.w = i3;
         this.init();
     }
 
@@ -91,20 +90,21 @@ public class Screen {
     }
 
     protected static void fillGradient(int i0, int i1, int i2, int i3, int i4, int i5) {
-        float f9 = (float)96 / 255.0F;
-        float f10 = (float)5 / 255.0F;
-        float f11 = (float)5 / 255.0F;
-        float f12 = (float)160 / 255.0F;
-        float f6 = (float)48 / 255.0F;
-        float f7 = (float)48 / 255.0F;
-        float f8 = (float)96 / 255.0F;
+        float f10 = (float)(i4 >>> 24) / 255.0F;
+        float f11 = (float)(i4 >> 16 & 255) / 255.0F;
+        float f6 = (float)(i4 >> 8 & 255) / 255.0F;
+        float f12 = (float)(i4 & 255) / 255.0F;
+        float f7 = (float)(i5 >>> 24) / 255.0F;
+        float f8 = (float)(i5 >> 16 & 255) / 255.0F;
+        float f9 = (float)(i5 >> 8 & 255) / 255.0F;
+        float f13 = (float)(i5 & 255) / 255.0F;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        GL11.glColor4f(f10, f11, 0.0F, f9);
+        GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+        GL11.glColor4f(f11, f6, f12, f10);
         GL11.glVertex2f((float)i2, 0.0F);
         GL11.glVertex2f(0.0F, 0.0F);
-        GL11.glColor4f(f6, f7, f8, f12);
+        GL11.glColor4f(f8, f9, f13, f7);
         GL11.glVertex2f(0.0F, (float)i3);
         GL11.glVertex2f((float)i2, (float)i3);
         GL11.glEnd();
@@ -131,8 +131,8 @@ public class Screen {
 
 		while(Mouse.next()) {
 			if(noTouch && Mouse.getEventButtonState()) {
-				int xm = Mouse.getEventX() * this.width / this.minecraft.width;
-				int ym = this.height - Mouse.getEventY() * this.height / this.minecraft.height - 1;
+                int xm = Mouse.getEventX() * this.y / this.minecraft.width;
+                int ym = this.w - Mouse.getEventY() * this.w / this.minecraft.height - 1;
 				this.mouseClicked(xm, ym, Mouse.getEventButton());
 			}
 		}
@@ -188,13 +188,13 @@ public class Screen {
                     continue;
                 }
             }
-            i = applyEaglerScale(scaleFac, i * this.width / this.minecraft.width, this.width);
-            j = applyEaglerScale(scaleFac, this.height - j * this.height / this.minecraft.height - 1, this.height);
+            i = applyEaglerScale(scaleFac, i * this.y / this.minecraft.width, this.y);
+            j = applyEaglerScale(scaleFac, this.w - j * this.w / this.minecraft.height - 1, this.w);
             float rad = Touch.getEventTouchRadiusMixed(t);
-            float si = rad * this.width / this.minecraft.width / scaleFac;
+            float si = rad * this.y / this.minecraft.width / scaleFac;
             if (si < 1.0f)
                 si = 1.0f;
-            float sj = rad * this.height / this.minecraft.height / scaleFac;
+            float sj = rad * this.w / this.minecraft.height / scaleFac;
             if (sj < 1.0f)
                 sj = 1.0f;
             int[] ck = touchStarts.remove(u);

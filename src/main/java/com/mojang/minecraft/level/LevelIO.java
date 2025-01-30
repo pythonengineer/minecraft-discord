@@ -4,6 +4,8 @@ import com.mojang.minecraft.Minecraft;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 public final class LevelIO {
 	private Minecraft minecraft;
@@ -21,8 +23,13 @@ public final class LevelIO {
 	}
 
     public final Level load(DataInputStream dataInputStream10) {
-		this.minecraft.beginLevelLoading("Loading level");
-		this.minecraft.levelLoadUpdate("Reading..");
+        if(this.minecraft != null) {
+            this.minecraft.beginLevelLoading("Loading level");
+        }
+
+        if(this.minecraft != null) {
+            this.minecraft.levelLoadUpdate("Reading..");
+        }
 
 		try {
             if(dataInputStream10.readInt() != 656127880) {
@@ -82,8 +89,13 @@ public final class LevelIO {
 	}
 
 	public final Level loadLegacy(DataInputStream dataInputStream5) {
-		this.minecraft.beginLevelLoading("Loading level");
-		this.minecraft.levelLoadUpdate("Reading..");
+        if(this.minecraft != null) {
+            this.minecraft.beginLevelLoading("Loading level");
+        }
+
+        if(this.minecraft != null) {
+            this.minecraft.levelLoadUpdate("Reading..");
+        }
 
 		try {
 			String string7 = "--";
@@ -105,6 +117,9 @@ public final class LevelIO {
 	}
 
 	public static void save(Level level0, DataOutputStream dataOutputStream3) {
+	    if (level0 == null) {
+	        return;
+	    }
 		try {
 			dataOutputStream3.writeInt(656127880);
 			dataOutputStream3.writeByte(2);
@@ -123,4 +138,16 @@ public final class LevelIO {
 			exception2.printStackTrace();
 		}
 	}
+
+    public static byte[] loadBlocks(InputStream inputStream0) {
+        try {
+            DataInputStream dataInputStream3;
+            byte[] b1 = new byte[(dataInputStream3 = new DataInputStream(new GZIPInputStream(inputStream0))).readInt()];
+            dataInputStream3.readFully(b1);
+            dataInputStream3.close();
+            return b1;
+        } catch (Exception exception2) {
+            throw new RuntimeException(exception2);
+        }
+    }
 }

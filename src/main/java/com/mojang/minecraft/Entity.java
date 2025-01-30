@@ -1,6 +1,8 @@
 package com.mojang.minecraft;
 
 import com.mojang.minecraft.level.Level;
+import com.mojang.minecraft.level.liquid.Liquid;
+import com.mojang.minecraft.net.PlayerMove;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.renderer.Textures;
 
@@ -21,10 +23,8 @@ public class Entity implements Serializable {
 	public float zd;
 	public float yRot;
 	public float xRot;
-	public float yRotI;
-	public float xRotI;
-    public float yRotO;
-    public float xRotO;
+	public float yRotO;
+	public float xRotO;
 	public AABB bb;
 	public boolean onGround = false;
 	public boolean horizontalCollision = false;
@@ -39,19 +39,21 @@ public class Entity implements Serializable {
 	}
 
 	public void resetPos() {
-		float f1 = (float)this.level.xSpawn + 0.5F;
-		float f2 = (float)this.level.ySpawn;
+		if(this.level != null) {
+			float f1 = (float)this.level.xSpawn + 0.5F;
+			float f2 = (float)this.level.ySpawn;
 
-		for(float f3 = (float)this.level.zSpawn + 0.5F; f2 > 0.0F; ++f2) {
-			this.setPos(f1, f2, f3);
-			if(this.level.getCubes(this.bb).size() == 0) {
-				break;
+			for(float f3 = (float)this.level.zSpawn + 0.5F; f2 > 0.0F; ++f2) {
+				this.setPos(f1, f2, f3);
+				if(this.level.getCubes(this.bb).size() == 0) {
+					break;
+				}
 			}
-		}
 
-		this.xd = this.yd = this.zd = 0.0F;
-		this.yRot = this.level.rotSpawn;
-		this.xRot = 0.0F;
+			this.xd = this.yd = this.zd = 0.0F;
+			this.yRot = this.level.rotSpawn;
+			this.xRot = 0.0F;
+		}
 	}
 
 	public void remove() {
@@ -61,6 +63,25 @@ public class Entity implements Serializable {
 	public void setSize(float f1, float f2) {
 		this.bbWidth = f1;
 		this.bbHeight = f2;
+	}
+
+	public void setPos(PlayerMove playerMove1) {
+		if(playerMove1.moving) {
+			this.setPos(playerMove1.x, playerMove1.y, playerMove1.z);
+		} else {
+			this.setPos(this.x, this.y, this.z);
+		}
+
+		if(playerMove1.rotating) {
+			this.setRot(playerMove1.yRot, playerMove1.xRot);
+		} else {
+			this.setRot(this.yRot, this.xRot);
+		}
+	}
+
+	protected void setRot(float f1, float f2) {
+		this.yRot = f1;
+		this.xRot = f2;
 	}
 
 	public void setPos(float f1, float f2, float f3) {
@@ -73,23 +94,6 @@ public class Entity implements Serializable {
 	}
 
 	public void turn(float f1, float f2) {
-        float f3 = this.xRot;
-        float f4 = this.yRot;
-		this.yRot = (float)((double)this.yRot + (double)f1 * 0.15D);
-		this.xRot = (float)((double)this.xRot - (double)f2 * 0.15D);
-		if(this.xRot < -90.0F) {
-			this.xRot = -90.0F;
-		}
-
-		if(this.xRot > 90.0F) {
-			this.xRot = 90.0F;
-		}
-
-        this.xRotO += this.xRot - f3;
-        this.yRotO += this.yRot - f4;
-	}
-
-	public void interpolateTurn(float f1, float f2) {
 		float f3 = this.xRot;
 		float f4 = this.yRot;
 		this.yRot = (float)((double)this.yRot + (double)f1 * 0.15D);
@@ -102,20 +106,29 @@ public class Entity implements Serializable {
 			this.xRot = 90.0F;
 		}
 
-		this.xRotI = this.xRot - f3;
-		this.yRotI = this.yRot - f4;
-	    this.xRotO += this.xRot - f3;
-	    this.yRotO += this.yRot - f4;
+		this.xRotO += this.xRot - f3;
+		this.yRotO += this.yRot - f4;
+	}
+
+	public void interpolateTurn(float f1, float f2) {
+		this.yRot = (float)((double)this.yRot + (double)f1 * 0.15D);
+		this.xRot = (float)((double)this.xRot - (double)f2 * 0.15D);
+		if(this.xRot < -90.0F) {
+			this.xRot = -90.0F;
+		}
+
+		if(this.xRot > 90.0F) {
+			this.xRot = 90.0F;
+		}
+
 	}
 
 	public void tick() {
 		this.xo = this.x;
 		this.yo = this.y;
 		this.zo = this.z;
-		this.xRotI = 0.0F;
-		this.yRotI = 0.0F;
-	    this.xRotO = this.xRot;
-	    this.yRotO = this.yRot;
+		this.xRotO = this.xRot;
+		this.yRotO = this.yRot;
 	}
 
 	public boolean isFree(float f1, float f2, float f3) {
@@ -167,11 +180,11 @@ public class Entity implements Serializable {
 	}
 
 	public boolean isInWater() {
-		return this.level.containsLiquid(this.bb.grow(0.0F, -0.4F, 0.0F), 1);
+		return this.level.containsLiquid(this.bb.grow(0.0F, -0.4F, 0.0F), Liquid.water);
 	}
 
 	public boolean isInLava() {
-		return this.level.containsLiquid(this.bb, 2);
+		return this.level.containsLiquid(this.bb.grow(0.0F, -0.4F, 0.0F), Liquid.lava);
 	}
 
 	public void moveRelative(float f1, float f2, float f3) {
@@ -210,5 +223,14 @@ public class Entity implements Serializable {
 
 	public void setLevel(Level level1) {
 		this.level = level1;
+	}
+
+	public void moveTo(float f1, float f2, float f3, float f4, float f5) {
+		this.xo = this.x = f1;
+		this.yo = this.y = f2;
+		this.zo = this.z = f3;
+		this.xRot = f4;
+		this.yRot = f5;
+		this.setPos(f1, f2, f3);
 	}
 }

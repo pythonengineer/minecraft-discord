@@ -1,12 +1,13 @@
 package com.mojang.minecraft.level.tile;
 
 import com.mojang.minecraft.level.Level;
+import com.mojang.minecraft.level.liquid.Liquid;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public final class CalmLiquidTile extends LiquidTile {
-	protected CalmLiquidTile(int i1, int i2) {
-		super(i1, i2);
+	protected CalmLiquidTile(int i1, Liquid liquid2) {
+		super(i1, liquid2);
 		this.tileId = i1 - 1;
 		this.calmTileId = i1;
 		this.setTicking(false);
@@ -37,16 +38,18 @@ public final class CalmLiquidTile extends LiquidTile {
 			z6 = true;
 		}
 
-        if(this.liquidType == 1 && i5 == Tile.lava.id) {
-            level1.setTileNoUpdate(i2, i3, i4, Tile.rock.id);
-        } else if(this.liquidType == 2 && i5 == Tile.water.id) {
-            level1.setTileNoUpdate(i2, i3, i4, Tile.rock.id);
-        } else {
-            if(z6) {
-                level1.setTileNoUpdate(i2, i3, i4, this.tileId);
-                level1.addToTickNextTick(i2, i3, i4, this.tileId);
-            }
+		if(i5 != 0) {
+			Liquid liquid7 = Tile.tiles[i5].getLiquidType();
+			if(this.liquid == Liquid.water && liquid7 == Liquid.lava || liquid7 == Liquid.water && this.liquid == Liquid.lava) {
+				level1.setTile(i2, i3, i4, Tile.rock.id);
+				return;
+			}
+		}
 
-        }
+		if(z6) {
+			level1.setTileNoUpdate(i2, i3, i4, this.tileId);
+			level1.addToTickNextTick(i2, i3, i4, this.tileId);
+		}
+
 	}
 }

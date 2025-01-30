@@ -229,18 +229,19 @@ public final class LevelGen {
 				boolean z10 = perlinNoise6.getValue((double)i7, (double)i8) > 12.0D;
 				int i11;
 				int i12 = ((i11 = i1[i7 + i8 * i2]) * this.height + i8) * this.width + i7;
-				if((this.blocks[((i11 + 1) * this.height + i8) * this.width + i7] & 255) == 0) {
-					int i13 = Tile.grass.id;
-					if(i11 <= i4 / 2 - 1 && z10) {
-						i13 = Tile.gravel.id;
-					}
+                int i13;
+                if(((i13 = this.blocks[((i11 + 1) * this.height + i8) * this.width + i7] & 255) == Tile.water.id || i13 == Tile.calmWater.id) && i11 <= i4 / 2 - 1 && z10) {
+                    this.blocks[i12] = (byte)Tile.gravel.id;
+                }
 
-					if(i11 <= i4 / 2 - 1 && z9) {
-						i13 = Tile.sand.id;
-					}
+                if(i13 == 0) {
+                    int i14 = Tile.grass.id;
+                    if(i11 <= i4 / 2 - 1 && z9) {
+                        i14 = Tile.sand.id;
+                    }
 
-					this.blocks[i12] = (byte)i13;
-				}
+                    this.blocks[i12] = (byte)i14;
+                }
 			}
 		}
 
@@ -264,7 +265,7 @@ public final class LevelGen {
 					i9 += this.random.nextInt(6) - this.random.nextInt(6);
 					if(i8 >= 0 && i9 >= 0 && i8 < this.width && i9 < this.height) {
 						int i11 = i1[i8 + i9 * i2] + 1;
-						int i12 = this.random.nextInt(2) + 4;
+                        int i12 = this.random.nextInt(3) + 4;
 						boolean z13 = true;
 
 						int i14;
@@ -294,20 +295,21 @@ public final class LevelGen {
 							if((this.blocks[((i11 - 1) * this.height + i9) * this.width + i8] & 255) == Tile.grass.id && i11 < this.depth - i12 - 1) {
 								this.blocks[i14 - 1 * this.width * this.height] = (byte)Tile.dirt.id;
 
-								for(i16 = i11 - 2 + i12; i16 <= i11 + i12; ++i16) {
-									i17 = i16 - (i11 + i12);
+                                for(i16 = i11 - 3 + i12; i16 <= i11 + i12; ++i16) {
+                                    i17 = i16 - (i11 + i12);
+                                    int i18 = 1 - i17 / 2;
 
-									for(int i20 = i8 - 1; i20 <= i8 + 1; ++i20) {
-										int i21 = i20 - i8;
+                                    for(int i21 = i8 - i18; i21 <= i8 + i18; ++i21) {
+                                        int i22 = i21 - i8;
 
-										for(int i18 = i9 - 1; i18 <= i9 + 1; ++i18) {
-											int i19 = i18 - i9;
-											if(i17 != 0 || Math.abs(i21) != 1 || Math.abs(i19) != 1) {
-												this.blocks[(i16 * this.height + i18) * this.width + i20] = (byte)Tile.leaf.id;
-											}
-										}
-									}
-								}
+                                        for(int i19 = i9 - i18; i19 <= i9 + i18; ++i19) {
+                                            int i20 = i19 - i9;
+                                            if(Math.abs(i22) != i18 || Math.abs(i20) != i18 || this.random.nextInt(2) != 0 && i17 != 0) {
+                                                this.blocks[(i16 * this.height + i19) * this.width + i21] = (byte)Tile.leaf.id;
+                                            }
+                                        }
+                                    }
+                                }
 
 								for(i16 = 0; i16 < i12; ++i16) {
 									this.blocks[i14 + i16 * this.width * this.height] = (byte)Tile.log.id;

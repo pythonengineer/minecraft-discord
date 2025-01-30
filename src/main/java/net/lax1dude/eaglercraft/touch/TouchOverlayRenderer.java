@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.gui.ChatScreen;
 import com.mojang.minecraft.renderer.Tesselator;
 
 /**
@@ -48,7 +49,7 @@ public class TouchOverlayRenderer {
     public TouchOverlayRenderer() {
         this.overlayFramebuffer = new GameOverlayFramebuffer(false);
         EnumTouchControl.currentLayout = null;
-        EnumTouchControl.setLayoutState(this, EnumTouchLayoutState.IN_GAME);
+        EnumTouchControl.setLayoutState(this, EnumTouchLayoutState.IN_GUI);
     }
 
     public void invalidate() {
@@ -148,6 +149,10 @@ public class TouchOverlayRenderer {
     }
 
     private EnumTouchLayoutState hashLayoutState() {
+        if (Minecraft.minecraft.screen != null) {
+            return (Minecraft.minecraft.screen instanceof ChatScreen) ? EnumTouchLayoutState.IN_GUI_TYPING
+                    : EnumTouchLayoutState.IN_GUI;
+        }
         return showDiagButtons() ? EnumTouchLayoutState.IN_GAME_WALK : EnumTouchLayoutState.IN_GAME;
     }
 

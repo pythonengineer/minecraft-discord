@@ -1,7 +1,7 @@
 {
-  "name": "minecraft",
+  "name": "minecraft-client",
   "private": true,
-  "version": "0.0.14a_08",
+  "version": "0.0.16a_02",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "@discord/embedded-app-sdk": "^1.9.0"
   }
 }
