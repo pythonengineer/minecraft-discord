@@ -22,15 +22,15 @@ public final class Chunk {
 	private boolean[] skipRenderPass = new boolean[2];
 	public boolean isInFrustum = false;
 
-	public Chunk(Level level1, int i2, int i3, int i4, int i5) {
-		this.level = level1;
-		this.x0 = i2;
-		this.y0 = i3;
-		this.z0 = i4;
-		this.x1 = this.y1 = this.z1 = 16;
-		Math.sqrt((double)(this.x1 * this.x1 + this.y1 * this.y1 + this.z1 * this.z1));
-		this.lists = GL11.glGenLists(2);
-		this.reset();
+    public Chunk(Level level1, int i2, int i3, int i4, int i5, int i6) {
+        this.level = level1;
+        this.x0 = i2;
+        this.y0 = i3;
+        this.z0 = i4;
+        this.x1 = this.y1 = this.z1 = 16;
+        Math.sqrt((double)(this.x1 * this.x1 + this.y1 * this.y1 + this.z1 * this.z1));
+        this.lists = i6;
+        this.reset();
 	}
 
 	public final float a(Player player1) {
@@ -49,7 +49,7 @@ public final class Chunk {
 	}
 
 	public final void clear() {
-		GL11.glDeleteLists(this.lists, 2);
+        this.reset();
 		this.level = null;
 	}
 

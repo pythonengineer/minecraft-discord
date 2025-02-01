@@ -38,7 +38,10 @@ public final class NameLevelScreen extends Screen {
 	protected final void buttonClicked(Button button1) {
 		if(button1.enabled) {
 			if(button1.id == 0 && this.name.trim().length() > 1) {
-				this.minecraft.saveLevel(this.id, this.name.trim());
+                int i10001 = this.id;
+                String string4 = this.name.trim();
+                int i3 = i10001;
+                this.minecraft.levelIo.save(this.minecraft.level, this.minecraft.minecraftUri, this.minecraft.user.name, this.minecraft.user.sessionId, string4, i3);
 				this.minecraft.setScreen((Screen)null);
 				this.minecraft.grabMouse();
 			}

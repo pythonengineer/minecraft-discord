@@ -73,6 +73,7 @@ public class Level implements Serializable {
 
 		this.tickList.clear();
 		this.findSpawn();
+        System.gc();
 	}
 
 	public void findSpawn() {

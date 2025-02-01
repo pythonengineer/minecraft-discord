@@ -27,6 +27,7 @@ public final class LevelRenderer {
 	private int xChunks;
 	private int yChunks;
 	private int zChunks;
+    private int chunkRenderLists;
 	public int cloudTickCounter = 0;
 	private float lX = -9999.0F;
 	private float lY = -9999.0F;
@@ -35,6 +36,7 @@ public final class LevelRenderer {
 	public LevelRenderer(Textures textures1) {
 		this.textures = textures1;
 		this.surroundLists = GL11.glGenLists(2);
+        this.chunkRenderLists = GL11.glGenLists(4096 << 6 << 1);
 	}
 
 	public final void setLevel(Level level1) {
@@ -62,15 +64,18 @@ public final class LevelRenderer {
 		this.zChunks = this.level.height / 16;
 		this.sortedChunks = new Chunk[this.xChunks * this.yChunks * this.zChunks];
 		this.chunks = new Chunk[this.xChunks * this.yChunks * this.zChunks];
+        i1 = 0;
 
-		for(i1 = 0; i1 < this.xChunks; ++i1) {
-			for(int i2 = 0; i2 < this.yChunks; ++i2) {
-				for(int i3 = 0; i3 < this.zChunks; ++i3) {
-					this.sortedChunks[(i3 * this.yChunks + i2) * this.xChunks + i1] = new Chunk(this.level, i1 << 4, i2 << 4, i3 << 4, 16);
-					this.chunks[(i3 * this.yChunks + i2) * this.xChunks + i1] = this.sortedChunks[(i3 * this.yChunks + i2) * this.xChunks + i1];
-				}
-			}
-		}
+        int i4;
+        for(int i2 = 0; i2 < this.xChunks; ++i2) {
+            for(int i3 = 0; i3 < this.yChunks; ++i3) {
+                for(i4 = 0; i4 < this.zChunks; ++i4) {
+                    this.sortedChunks[(i4 * this.yChunks + i3) * this.xChunks + i2] = new Chunk(this.level, i2 << 4, i3 << 4, i4 << 4, 16, this.chunkRenderLists + i1);
+                    this.chunks[(i4 * this.yChunks + i3) * this.xChunks + i2] = this.sortedChunks[(i4 * this.yChunks + i3) * this.xChunks + i2];
+                    i1 += 2;
+                }
+            }
+        }
 
 		this.dirtyChunks.clear();
 		GL11.glNewList(this.surroundLists, GL11.GL_COMPILE);

@@ -1,11 +1,11 @@
 package com.mojang.minecraft.level.tile;
 
+import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.particle.Particle;
 import com.mojang.minecraft.particle.ParticleEngine;
 import com.mojang.minecraft.phys.AABB;
-import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.renderer.Tesselator;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
@@ -266,56 +266,56 @@ public class Tile {
 
 	}
 
-	public static void renderFaceNoTexture(Player player0, Tesselator tesselator1, int i2, int i3, int i4, int i5) {
-		float f6 = (float)i2;
-		float f7 = (float)i2 + 1.0F;
-		float f8 = (float)i3;
-		float f9 = (float)i3 + 1.0F;
-		float f10 = (float)i4;
-		float f11 = (float)i4 + 1.0F;
-		if(i5 == 0 && (float)i3 > player0.y) {
-			tesselator1.vertex(f6, f8, f11);
-			tesselator1.vertex(f6, f8, f10);
-			tesselator1.vertex(f7, f8, f10);
-			tesselator1.vertex(f7, f8, f11);
-		}
+    public static void renderFaceNoTexture(Entity entity0, Tesselator tesselator1, int i2, int i3, int i4, int i5) {
+        float f6 = (float)i2;
+        float f7 = (float)i2 + 1.0F;
+        float f8 = (float)i3;
+        float f9 = (float)i3 + 1.0F;
+        float f10 = (float)i4;
+        float f11 = (float)i4 + 1.0F;
+        if(i5 == 0 && (float)i3 > entity0.y) {
+            tesselator1.vertex(f6, f8, f11);
+            tesselator1.vertex(f6, f8, f10);
+            tesselator1.vertex(f7, f8, f10);
+            tesselator1.vertex(f7, f8, f11);
+        }
 
-		if(i5 == 1 && (float)i3 < player0.y) {
-			tesselator1.vertex(f7, f9, f11);
-			tesselator1.vertex(f7, f9, f10);
-			tesselator1.vertex(f6, f9, f10);
-			tesselator1.vertex(f6, f9, f11);
-		}
+        if(i5 == 1 && (float)i3 < entity0.y) {
+            tesselator1.vertex(f7, f9, f11);
+            tesselator1.vertex(f7, f9, f10);
+            tesselator1.vertex(f6, f9, f10);
+            tesselator1.vertex(f6, f9, f11);
+        }
 
-		if(i5 == 2 && (float)i4 > player0.z) {
-			tesselator1.vertex(f6, f9, f10);
-			tesselator1.vertex(f7, f9, f10);
-			tesselator1.vertex(f7, f8, f10);
-			tesselator1.vertex(f6, f8, f10);
-		}
+        if(i5 == 2 && (float)i4 > entity0.z) {
+            tesselator1.vertex(f6, f9, f10);
+            tesselator1.vertex(f7, f9, f10);
+            tesselator1.vertex(f7, f8, f10);
+            tesselator1.vertex(f6, f8, f10);
+        }
 
-		if(i5 == 3 && (float)i4 < player0.z) {
-			tesselator1.vertex(f6, f9, f11);
-			tesselator1.vertex(f6, f8, f11);
-			tesselator1.vertex(f7, f8, f11);
-			tesselator1.vertex(f7, f9, f11);
-		}
+        if(i5 == 3 && (float)i4 < entity0.z) {
+            tesselator1.vertex(f6, f9, f11);
+            tesselator1.vertex(f6, f8, f11);
+            tesselator1.vertex(f7, f8, f11);
+            tesselator1.vertex(f7, f9, f11);
+        }
 
-		if(i5 == 4 && (float)i2 > player0.x) {
-			tesselator1.vertex(f6, f9, f11);
-			tesselator1.vertex(f6, f9, f10);
-			tesselator1.vertex(f6, f8, f10);
-			tesselator1.vertex(f6, f8, f11);
-		}
+        if(i5 == 4 && (float)i2 > entity0.x) {
+            tesselator1.vertex(f6, f9, f11);
+            tesselator1.vertex(f6, f9, f10);
+            tesselator1.vertex(f6, f8, f10);
+            tesselator1.vertex(f6, f8, f11);
+        }
 
-		if(i5 == 5 && (float)i2 < player0.x) {
-			tesselator1.vertex(f7, f8, f11);
-			tesselator1.vertex(f7, f8, f10);
-			tesselator1.vertex(f7, f9, f10);
-			tesselator1.vertex(f7, f9, f11);
-		}
+        if(i5 == 5 && (float)i2 < entity0.x) {
+            tesselator1.vertex(f7, f8, f11);
+            tesselator1.vertex(f7, f8, f10);
+            tesselator1.vertex(f7, f9, f10);
+            tesselator1.vertex(f7, f9, f11);
+        }
 
-	}
+    }
 
 	public static AABB getTileAABB(int i0, int i1, int i2) {
 		return new AABB((float)i0, (float)i1, (float)i2, (float)(i0 + 1), (float)(i1 + 1), (float)(i2 + 1));

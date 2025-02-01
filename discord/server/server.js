@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
-import { initWsServer } from './websockify.js';
+import { initWsServer, newClientToken } from './websockify.js';
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -28,6 +28,8 @@ app.post("/api/token", async (req, res) => {
 
   // Retrieve the access_token from the response
   const { access_token } = await response.json();
+
+  newClientToken(access_token)
 
   // Return the access_token to our client as { access_token: "..."}
   res.send({access_token});

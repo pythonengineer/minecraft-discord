@@ -30,9 +30,6 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
 
     public static final IClientConfigAdapter instance = new TeaVMClientConfigAdapter();
 
-    private String username = "guest";
-    private String server = "";
-    private int serverPort = 0;
     private String resourcePacksDB = "resources";
     private boolean checkGLErrors = false;
     private String localStorageNamespace = "_minecraft";
@@ -54,9 +51,6 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
     public void loadNative(JSObject jsObject) {
         JSMinecraftOptsRoot minecraftOpts = (JSMinecraftOptsRoot)jsObject;
 
-        username = minecraftOpts.getUsername(username);
-        server = minecraftOpts.getServer(server);
-        serverPort = minecraftOpts.getServerPort(serverPort);
         resourcePacksDB = minecraftOpts.getResourcePacksDB(resourcePacksDB);
         checkGLErrors = minecraftOpts.getCheckGLErrors(false);
         localStorageNamespace = minecraftOpts.getLocalStorageNamespace(localStorageNamespace);
@@ -74,21 +68,6 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
         disableBlobURLs = minecraftOpts.getDisableBlobURLs(false);
         ramdiskMode = minecraftOpts.getRamdiskMode(false);
         singleThreadMode = minecraftOpts.getSingleThreadMode(false);
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getServer() {
-        return server;
-    }
-
-    @Override
-    public int getServerPort() {
-        return serverPort;
     }
 
     @Override

@@ -64,6 +64,10 @@ public class ClientMain {
         try {
             systemOut.println("ClientMain: [INFO] Minecraft is starting...");
             JSObject opts = getMinecraftOpts();
+            String username = "guest";
+            String server = "";
+            int serverPort = 0;
+            String mpPass = "";
 
             if (opts == null) {
                 systemErr.println("ClientMain: [ERROR] the \"window.minecraftOpts\" variable is undefined");
@@ -84,6 +88,11 @@ public class ClientMain {
                 while ((oldContent = configRootElement.querySelector("._eaglercraftX_wrapper_element")) != null) {
                     oldContent.delete();
                 }
+
+                username = minecraftOpts.getUsername(username);
+                server = minecraftOpts.getServer(server);
+                serverPort = minecraftOpts.getServerPort(serverPort);
+                mpPass = minecraftOpts.getMpPass(mpPass);
 
                 ((TeaVMClientConfigAdapter)TeaVMClientConfigAdapter.instance).loadNative(minecraftOpts);
 
@@ -173,9 +182,7 @@ public class ClientMain {
             systemOut.println("ClientMain: [INFO] launching Minecraft main thread");
 
             try {
-                Minecraft.main(new String[0], PlatformRuntime.getClientConfigAdapter().getUsername(),
-                        PlatformRuntime.getClientConfigAdapter().getServer(),
-                        PlatformRuntime.getClientConfigAdapter().getServerPort());
+                Minecraft.main(new String[0], username, server, serverPort, mpPass);
             } catch (Throwable t) {
                 systemErr.println("ClientMain: [ERROR] unhandled exception caused main thread to exit");
                 EagRuntime.debugPrintStackTraceToSTDERR(t);
@@ -247,7 +254,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"0.0.16a_02\"\n");
+        str.append("minecraft.version = \"0.0.17a\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

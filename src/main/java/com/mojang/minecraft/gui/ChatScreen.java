@@ -25,7 +25,7 @@ public final class ChatScreen extends Screen {
         if(i2 == 1) {
             this.minecraft.setScreen((Screen)null);
         } else if(i2 == 28) {
-            ConnectionManager connectionManager10000 = this.minecraft.sendQueue;
+            ConnectionManager connectionManager10000 = this.minecraft.connectionManager;
             String string4 = this.typedMsg.trim();
             ConnectionManager connectionManager3 = connectionManager10000;
             if((string4 = string4.trim()).length() > 0) {
@@ -38,7 +38,7 @@ public final class ChatScreen extends Screen {
                 this.typedMsg = this.typedMsg.substring(0, this.typedMsg.length() - 1);
             }
 
-            if("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:-_\'*!\"#%/()=+?[]{}<>".indexOf(c1) >= 0 && this.typedMsg.length() < 64) {
+            if("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:-_\'*!\"#%/()=+?[]{}<>".indexOf(c1) >= 0 && this.typedMsg.length() < 64 - (this.minecraft.user.name.length() + 2)) {
                 this.typedMsg = this.typedMsg + c1;
             }
 

@@ -7,22 +7,17 @@ let auth;
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 setupDiscordSdk().then(() => {
   console.log("Discord SDK is authenticated");
-  discordSdk.subscribe("CURRENT_USER_UPDATE", (ev) => {
-    getUsername(ev);
-  });
-});
-
-function getUsername(data) {
   const server =
       location.host === "ws://localhost" ? `ws://localhost` : `wss://${location.host}/.proxy/minecraft`;
   window.minecraftOpts = {
       container: "game_frame",
       crashOnUncaughtExceptions: true,
-      username: data["username"],
-      server: server
+      username: auth.user.username,
+      server: server,
+      mpPass: auth.access_token
   };
   main();
-}
+});
 
 async function setupDiscordSdk() {
   await discordSdk.ready();

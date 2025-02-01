@@ -1,3 +1,4 @@
+// https://github.com/saschazesiger/websockify-js-express/blob/main/websockify.js
 'use strict';
 
 import express from "express";
@@ -12,6 +13,12 @@ let webServer, wsServer, source_host, source_port, target_host, target_port, arg
 
 const app = express();
 
+let tokens = new Set();
+
+export function newClientToken(token) {
+    tokens.add(token);
+}
+
 // Handle new WebSocket client
 const new_client = function (client, req) {
     const clientAddr = client._socket.remoteAddress;
@@ -20,8 +27,8 @@ const new_client = function (client, req) {
     log = function (msg) {
         console.log(' ' + clientAddr + ': ' + msg);
     };
-    log('WebSocket connection from : ' + clientAddr);
-    log('Version ' + client.protocolVersion + ', subprotocol: ' + client.protocol);
+    log('WebSocket connection from: ' + clientAddr);
+    let hasAuthed = false;
     const target = net.createConnection(target_port, target_host, function () {
         log('connected to target');
         if (onConnectedCallback) {
@@ -30,6 +37,7 @@ const new_client = function (client, req) {
             } catch (e) {
                 log("onConnectedCallback failed, cleaning up target");
                 target.end();
+                target.destroy();
             }
         }
     });
@@ -39,6 +47,7 @@ const new_client = function (client, req) {
         } catch (e) {
             log("Client closed, cleaning up target");
             target.end();
+            target.destroy();
         }
     });
     target.on('end', function () {
@@ -48,11 +57,36 @@ const new_client = function (client, req) {
     target.on('error', function () {
         log('target connection error');
         target.end();
+        target.destroy();
         client.close();
     });
 
     client.on('message', function (msg) {
-        target.write(msg);
+        try {
+            if (msg.readUint8(0) == 0) { // intercept LOGIN packet for token check
+                let token = msg.toString('utf8', 66, 130).trimEnd();
+                if (!tokens.has(token)) {
+                    log('Bad token auth');
+                    target.end();
+                    target.destroy();
+                    client.close();
+                } else {
+                    log('client authed');
+                    hasAuthed = true;
+                }
+            } else if (!hasAuthed) {
+                log('Sent packets before login');
+                target.end();
+                target.destroy();
+                client.close();
+            }
+            target.write(msg);
+        } catch (e) {
+            log('WebSocket client auth error');
+            target.end();
+            target.destroy();
+            client.close();
+        }
     });
     client.on('close', function (code, reason) {
         if (onDisconnectedCallback) {
@@ -64,10 +98,12 @@ const new_client = function (client, req) {
         }
         log('WebSocket client disconnected: ' + code + ' [' + reason + ']');
         target.end();
+        target.destroy();
     });
     client.on('error', function (a) {
         log('WebSocket client error: ' + a);
         target.end();
+        target.destroy();
     });
 };
 

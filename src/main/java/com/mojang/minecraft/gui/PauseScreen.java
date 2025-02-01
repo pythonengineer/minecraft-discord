@@ -12,6 +12,12 @@ public final class PauseScreen extends Screen {
             //((Button)this.buttons.get(2)).enabled = false;
         }
 
+        if(this.minecraft.connectionManager != null) {
+            ((Button)this.buttons.get(0)).enabled = false;
+            ((Button)this.buttons.get(1)).enabled = false;
+            ((Button)this.buttons.get(2)).enabled = false;
+        }
+
     }
 
     protected final void buttonClicked(Button button1) {
@@ -21,7 +27,7 @@ public final class PauseScreen extends Screen {
 
         //if(this.minecraft.user != null) {
             if(button1.id == 1) {
-                this.minecraft.saveLevel(0, "");//this.minecraft.setScreen(new SaveLevelScreen(this));
+                this.minecraft.saveLevel();//this.minecraft.setScreen(new SaveLevelScreen(this));
             }
 
             if(button1.id == 2) {

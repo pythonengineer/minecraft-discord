@@ -229,8 +229,8 @@ public class Entity implements Serializable {
 		this.xo = this.x = f1;
 		this.yo = this.y = f2;
 		this.zo = this.z = f3;
-		this.xRot = f4;
-		this.yRot = f5;
+        this.yRot = f4;
+        this.xRot = f5;
 		this.setPos(f1, f2, f3);
 	}
 }

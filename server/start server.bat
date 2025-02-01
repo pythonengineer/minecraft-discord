@@ -1,3 +1,3 @@
 @echo off
-java -cp minecraft-server.jar com.mojang.minecraft.server.MinecraftServer
+java -Xms512M -Xmx512M -cp minecraft-server.jar com.mojang.minecraft.server.MinecraftServer
 pause

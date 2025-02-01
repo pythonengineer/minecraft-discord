@@ -38,6 +38,10 @@ public abstract class JSMinecraftOptsRoot implements JSObject {
     public native int getServerPort(int defaultValue);
 
     @JSBody(params = {
+            "def"}, script = "return (typeof this.mpPass === \"string\") ? this.mpPass : def;")
+    public native String getMpPass(String defaultValue);
+
+    @JSBody(params = {
             "def"}, script = "return (typeof this.resourcePacksDB === \"string\") ? this.resourcePacksDB : def;")
     public native String getResourcePacksDB(String defaultValue);
 

@@ -399,7 +399,7 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, true);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                if (Minecraft.minecraft.sendQueue != null) {
+                if (Minecraft.minecraft.connectionManager != null) {
                     CHAT.setVisible(renderer, true);
                 } else {
                     CHAT.setVisible(renderer, false);
@@ -409,7 +409,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
-                if (Minecraft.minecraft.sendQueue != null) {
+                if (Minecraft.minecraft.connectionManager != null) {
                     MOB.setVisible(renderer, false);
                 } else {
                     MOB.setVisible(renderer, true);
@@ -432,7 +432,7 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, true);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                if (Minecraft.minecraft.sendQueue != null) {
+                if (Minecraft.minecraft.connectionManager != null) {
                     CHAT.setVisible(renderer, true);
                 } else {
                     CHAT.setVisible(renderer, false);
@@ -442,7 +442,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
-                if (Minecraft.minecraft.sendQueue != null) {
+                if (Minecraft.minecraft.connectionManager != null) {
                     MOB.setVisible(renderer, false);
                 } else {
                     MOB.setVisible(renderer, true);
