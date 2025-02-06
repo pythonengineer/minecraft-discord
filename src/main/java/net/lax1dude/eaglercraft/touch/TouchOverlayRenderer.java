@@ -36,7 +36,7 @@ import com.mojang.minecraft.renderer.Tesselator;
  */
 public class TouchOverlayRenderer {
 
-    public static final int spriteSheet = Minecraft.minecraft.textures.loadTexture("/eagler/gui/touch_gui.png", GL_NEAREST);
+    public static final int spriteSheet = Minecraft.minecraft.textures.getTextureId("/eagler/gui/touch_gui.png");
 
     static final int[] _fuck = new int[2];
 

@@ -57,7 +57,7 @@ public class Zombie extends Entity {
 
 	public void render(Textures textures1, float f2) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures1.loadTexture("/char.png", GL11.GL_NEAREST));
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures1.getTextureId("/char.png"));
 		GL11.glPushMatrix();
 		double d3 = (double)EagRuntime.nanoTime() / 1.0E9D * 10.0D * (double)this.speed + (double)this.timeOffs;
         float f6;

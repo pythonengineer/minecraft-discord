@@ -140,7 +140,7 @@ public final class Minecraft implements Runnable {
         }
         this.displayDPI = Display.getDPI();
 
-        Display.setTitle("Minecraft 0.0.17a");
+        Display.setTitle("Minecraft 0.0.18a_02");
 
         try {
             Display.create();
@@ -250,7 +250,7 @@ public final class Minecraft implements Runnable {
 
     }
 
-    private void destroy() {
+    public final void destroy() {
         this.saveLevel();
         Mouse.destroy();
         Keyboard.destroy();
@@ -342,10 +342,11 @@ public final class Minecraft implements Runnable {
                                     GL11.glLoadIdentity();
                                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
                                     GL11.glLoadIdentity();
-                                    this.initGui();
+                                    this.setupOrthoCamera();
                                 }
 
                                 if(this.screen != null) {
+                                    GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
                                     i34 = scaledResolution.getScaledWidth();
                                     i38 = scaledResolution.getScaledHeight();
                                     int i37 = Mouse.getX() * i34 / this.width;
@@ -378,6 +379,8 @@ public final class Minecraft implements Runnable {
                     }
                 }
 			}
+        } catch (StopGameException stopGameException27) {
+            return;
         } catch (ReportedException reportedexception) {
             this.displayCrashReport(reportedexception.getCrashReport());
         } catch (Throwable throwable1) {
@@ -1000,7 +1003,7 @@ public final class Minecraft implements Runnable {
         if(i20 > 0) {
             levelRenderer18 = this.levelRenderer;
             GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, levelRenderer18.textures.loadTexture("/terrain.png", GL11.GL_NEAREST));
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, levelRenderer18.textures.getTextureId("/terrain.png"));
             GL11.glCallLists(levelRenderer18.dummyBuffer);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
         }
@@ -1023,16 +1026,10 @@ public final class Minecraft implements Runnable {
 
 	}
 
-    private void initGui() {
-        int i1 = scaledResolution.getScaledWidth();
-        int i2 = scaledResolution.getScaledHeight();
-        this.setupOrthoCamera();
-    }
-
     private void renderGui() {
         int i1 = scaledResolution.getScaledWidth();
         int i2 = scaledResolution.getScaledHeight();
-        this.initGui();
+        this.setupOrthoCamera();
         checkGlError("GUI: Init");
         GL11.glPushMatrix();
         GL11.glTranslatef(32.0F, 64.0F, -50.0F);
@@ -1042,7 +1039,7 @@ public final class Minecraft implements Runnable {
         GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
         GL11.glTranslatef(-1.5F, 0.5F, 0.5F);
         GL11.glScalef(-1.0F, -1.0F, -1.0F);
-        int i4 = this.textures.loadTexture("/terrain.png", 9728);
+        int i4 = this.textures.getTextureId("/terrain.png");
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, i4);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         tesselator3.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -1051,7 +1048,7 @@ public final class Minecraft implements Runnable {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glPopMatrix();
         checkGlError("GUI: Draw selected");
-        this.font.drawShadow("0.0.17a", 2, 2, 0xFFFFFF);
+        this.font.drawShadow("0.0.18a_02", 2, 2, 0xFFFFFF);
         this.font.drawShadow(this.fpsString, 2, 12, 0xFFFFFF);
         byte b13 = 10;
         boolean z5 = false;
@@ -1158,70 +1155,81 @@ public final class Minecraft implements Runnable {
     }
 
     public void beginLevelLoading(String title) {
-        this.title = title;
-        int screenWidth = scaledResolution.getScaledWidth();
-        int screenHeight = scaledResolution.getScaledHeight();
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-        GL11.glOrtho(0.0D, (double)screenWidth, (double)screenHeight, 0.0D, 100.0D, 300.0D);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
-        GL11.glTranslatef(0.0F, 0.0F, -200.0F);
+        if(!this.running) {
+            throw new StopGameException();
+        } else {
+            this.title = title;
+            int screenWidth = scaledResolution.getScaledWidth();
+            int screenHeight = scaledResolution.getScaledHeight();
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(0.0D, (double)screenWidth, (double)screenHeight, 0.0D, 100.0D, 300.0D);
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            GL11.glTranslatef(0.0F, 0.0F, -200.0F);
+        }
     }
 
     public final void levelLoadUpdate(String string1) {
-        this.text = string1;
-        this.setLoadingProgress(-1);
+        if(!this.running) {
+            throw new StopGameException();
+        } else {
+            this.text = string1;
+            this.setLoadingProgress(-1);
+        }
     }
 
     public final void setLoadingProgress(int i1) {
-        if(i1 >= 0) {
-            return;
-        }
-        int i2 = scaledResolution.getScaledWidth();
-        int i3 = scaledResolution.getScaledHeight();
-        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-        Tesselator tesselator4 = Tesselator.instance;
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        int i5 = this.textures.loadTexture("/dirt.png", 9728);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, i5);
-        float f8 = 32.0F;
-        tesselator4.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-        tesselator4.color(4210752);
-        tesselator4.vertexUV(0.0F, (float)i3, 0.0F, 0.0F, (float)i3 / f8);
-        tesselator4.vertexUV((float)i2, (float)i3, 0.0F, (float)i2 / f8, (float)i3 / f8);
-        tesselator4.vertexUV((float)i2, 0.0F, 0.0F, (float)i2 / f8, 0.0F);
-        tesselator4.vertexUV(0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-        tesselator4.end();
-        if(i1 >= 0) {
-            i5 = i2 / 2 - 50;
-            int i6 = i3 / 2 + 16;
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            tesselator4.begin(DefaultVertexFormats.POSITION_COLOR);
-            tesselator4.color(8421504);
-            tesselator4.vertex((float)i5, (float)i6, 0.0F);
-            tesselator4.vertex((float)i5, (float)(i6 + 2), 0.0F);
-            tesselator4.vertex((float)(i5 + 100), (float)(i6 + 2), 0.0F);
-            tesselator4.vertex((float)(i5 + 100), (float)i6, 0.0F);
-            tesselator4.color(8454016);
-            tesselator4.vertex((float)i5, (float)i6, 0.0F);
-            tesselator4.vertex((float)i5, (float)(i6 + 2), 0.0F);
-            tesselator4.vertex((float)(i5 + i1), (float)(i6 + 2), 0.0F);
-            tesselator4.vertex((float)(i5 + i1), (float)i6, 0.0F);
-            tesselator4.end();
+        if(!this.running) {
+            throw new StopGameException();
+        } else {
+            if(i1 >= 0) {
+                return;
+            }
+            int i2 = scaledResolution.getScaledWidth();
+            int i3 = scaledResolution.getScaledHeight();
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+            Tesselator tesselator4 = Tesselator.instance;
             GL11.glEnable(GL11.GL_TEXTURE_2D);
+            int i5 = this.textures.getTextureId("/dirt.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, i5);
+            float f8 = 32.0F;
+            tesselator4.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
+            tesselator4.color(4210752);
+            tesselator4.vertexUV(0.0F, (float)i3, 0.0F, 0.0F, (float)i3 / f8);
+            tesselator4.vertexUV((float)i2, (float)i3, 0.0F, (float)i2 / f8, (float)i3 / f8);
+            tesselator4.vertexUV((float)i2, 0.0F, 0.0F, (float)i2 / f8, 0.0F);
+            tesselator4.vertexUV(0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+            tesselator4.end();
+            if(i1 >= 0) {
+                i5 = i2 / 2 - 50;
+                int i6 = i3 / 2 + 16;
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                tesselator4.begin(DefaultVertexFormats.POSITION_COLOR);
+                tesselator4.color(8421504);
+                tesselator4.vertex((float)i5, (float)i6, 0.0F);
+                tesselator4.vertex((float)i5, (float)(i6 + 2), 0.0F);
+                tesselator4.vertex((float)(i5 + 100), (float)(i6 + 2), 0.0F);
+                tesselator4.vertex((float)(i5 + 100), (float)i6, 0.0F);
+                tesselator4.color(8454016);
+                tesselator4.vertex((float)i5, (float)i6, 0.0F);
+                tesselator4.vertex((float)i5, (float)(i6 + 2), 0.0F);
+                tesselator4.vertex((float)(i5 + i1), (float)(i6 + 2), 0.0F);
+                tesselator4.vertex((float)(i5 + i1), (float)i6, 0.0F);
+                tesselator4.end();
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
+            }
+
+            this.font.drawShadow(this.title, (i2 - this.font.width(this.title)) / 2, i3 / 2 - 4 - 16, 0xFFFFFF);
+            this.font.drawShadow(this.text, (i2 - this.font.width(this.text)) / 2, i3 / 2 - 4 + 8, 0xFFFFFF);
+            Display.update();
+
+            try {
+                Thread.sleep(200L);
+            } catch (Exception var8) {
+            }
         }
-
-        this.font.drawShadow(this.title, (i2 - this.font.width(this.title)) / 2, i3 / 2 - 4 - 16, 0xFFFFFF);
-        this.font.drawShadow(this.text, (i2 - this.font.width(this.text)) / 2, i3 / 2 - 4 + 8, 0xFFFFFF);
-        Display.update();
-
-        try {
-            Thread.sleep(200L);
-        } catch (Exception var8) {
-        }
-
     }
 
     public final void generateLevel(int i1) {

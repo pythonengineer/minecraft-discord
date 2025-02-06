@@ -9,12 +9,15 @@ import com.mojang.minecraft.net.Packet;
 
 import net.lax1dude.eaglercraft.internal.IWebSocketClient;
 import net.lax1dude.eaglercraft.internal.PlatformNetworking;
+import net.lax1dude.eaglercraft.opengl.ImageData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public final class SocketConnection {
     public volatile boolean connected;
@@ -24,6 +27,7 @@ public final class SocketConnection {
     public ConnectionManager manager;
     private boolean initialized = false;
     private byte[] stringPacket = new byte[64];
+    private HashMap<String,ByteArrayOutputStream> skinBuffer = new HashMap<String,ByteArrayOutputStream>();
 
     public SocketConnection(String string1, int i2) throws IOException {
         if (i2 != 0) {
@@ -116,7 +120,7 @@ public final class SocketConnection {
                             } catch (IOException iOException10) {
                                 iOException10.printStackTrace();
                             }
-    
+
                             byte[] b14 = LevelIO.loadBlocks(new ByteArrayInputStream(connectionManager12.levelBuffer.toByteArray()));
                             connectionManager12.levelBuffer = null;
                             s18 = ((Short)object11[0]).shortValue();
@@ -176,7 +180,9 @@ public final class SocketConnection {
                                     s18 = s10003;
                                     s17 = s29;
                                     b15 = b10001;
-                                    if(b15 >= 0 && (networkPlayer28 = (NetworkPlayer)connectionManager12.players.get(b15)) != null) {
+                                    if(b15 < 0) {
+                                        connectionManager12.minecraft.player.moveTo((float)s17 / 32.0F, (float)s18 / 32.0F, (float)s21 / 32.0F, (float)(b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
+                                    } else if((networkPlayer28 = (NetworkPlayer)connectionManager12.players.get(b15)) != null) {
                                         networkPlayer28.teleport(s17, s18, s21, (float)(-b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
                                     }
                                 } else {
@@ -224,6 +230,7 @@ public final class SocketConnection {
                                     } else if(packet3 == Packet.PLAYER_DISCONNECT) {
                                         b15 = ((Byte)object11[0]).byteValue();
                                         if(b15 >= 0 && (networkPlayer20 = (NetworkPlayer)connectionManager12.players.remove(b15)) != null) {
+                                            networkPlayer20.clear();
                                             connectionManager12.minecraft.level.entities.remove(networkPlayer20);
                                         }
                                     } else if(packet3 == Packet.CHAT_MESSAGE) {
@@ -238,6 +245,42 @@ public final class SocketConnection {
                                         }
                                     } else if(packet3 == Packet.KICK_PLAYER) {
                                         connectionManager12.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
+                                    } else if(packet3 == Packet.PLAYER_SKIN) {
+                                        String name = (String)object11[0];
+                                        if(!this.skinBuffer.containsKey(name)) {
+                                            this.skinBuffer.put(name, new ByteArrayOutputStream());
+                                        }
+                                        short len = ((Short)object11[1]).shortValue();
+                                        byte[] bytes = (byte[])((byte[])object11[2]);
+                                        ByteArrayOutputStream os = this.skinBuffer.get(name);
+                                        os.write(bytes, 0, bytes.length);
+                                        byte[] texBytes = os.toByteArray();
+                                        if(texBytes.length == len) {
+                                            NetworkPlayer player = null;
+                                            Iterator<NetworkPlayer> itr = connectionManager12.players.values().iterator();
+                                            while (itr.hasNext()) {
+                                                NetworkPlayer p = itr.next();
+                                                if (p.name.equals(name)) {
+                                                    player = p;
+                                                    break;
+                                                }
+                                            }
+                                            if (player != null) {
+                                                this.skinBuffer.remove(name);
+                                                int[] skin = new int[len / 4];
+                                                for (int i = 0; i < skin.length; ++i)
+                                                {
+                                                    int r = texBytes[i * 4 + 0] & 0xFF;
+                                                    int g = texBytes[i * 4 + 1] & 0xFF;
+                                                    int b = texBytes[i * 4 + 2] & 0xFF;
+                                                    int a = texBytes[i * 4 + 3] & 0xFF;
+                                                    int color = (a << 24) | (r << 16) | (g << 8) | b;
+                                                    skin[i] = (color & 0xFF00FF00) | ((color & 0x00FF0000) >>> 16) | ((color & 0x000000FF) << 16);
+                                                }
+                                                ImageData tex = new ImageData(64, 64, skin, true).getSubImage(0, 0, 64, 32);
+                                                player.newTexture = tex;
+                                            }
+                                        }
                                     }
                                 }
                             }

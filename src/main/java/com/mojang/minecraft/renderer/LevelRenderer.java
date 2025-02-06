@@ -81,7 +81,7 @@ public final class LevelRenderer {
 		GL11.glNewList(this.surroundLists, GL11.GL_COMPILE);
 		LevelRenderer levelRenderer9 = this;
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.loadTexture("/rock.png", GL11.GL_NEAREST));
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.getTextureId("/rock.png"));
 		float f10 = 0.5F;
 		GL11.glColor4f(0.5F, f10, f10, 1.0F);
 		Tesselator tesselator11 = Tesselator.instance;
@@ -114,7 +114,7 @@ public final class LevelRenderer {
 		}
 
 		tesselator11.end();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, levelRenderer9.textures.loadTexture("/rock.png", GL11.GL_NEAREST));
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, levelRenderer9.textures.getTextureId("/rock.png"));
 		GL11.glColor3f(0.8F, 0.8F, 0.8F);
 		tesselator11.begin(DefaultVertexFormats.POSITION_TEX);
 
@@ -150,7 +150,7 @@ public final class LevelRenderer {
 		levelRenderer9 = this;
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glColor3f(1.0F, 1.0F, 1.0F);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.loadTexture("/water.png", GL11.GL_NEAREST));
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.getTextureId("/water.png"));
 		f10 = this.level.getWaterLevel();
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -220,7 +220,7 @@ public final class LevelRenderer {
         this.dummyBuffer.flip();
         if(this.dummyBuffer.remaining() > 0) {
             GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.loadTexture("/terrain.png", GL11.GL_NEAREST));
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.getTextureId("/terrain.png"));
             GL11.glCallLists(this.dummyBuffer);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
         }
@@ -230,7 +230,7 @@ public final class LevelRenderer {
 
 	public final void renderClouds(float f1) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.loadTexture("/clouds.png", GL11.GL_NEAREST));
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.getTextureId("/clouds.png"));
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		Tesselator tesselator2 = Tesselator.instance;
 		float f3 = 0.0F;
@@ -320,7 +320,7 @@ public final class LevelRenderer {
 			float f8;
 			GL11.glColor4f(f8 = (float)Math.sin((double)System.currentTimeMillis() / 100.0D) * 0.2F + 0.8F, f8, f8, (float)Math.sin((double)System.currentTimeMillis() / 200.0D) * 0.2F + 0.5F);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			int i7 = this.textures.loadTexture("/terrain.png", 9728);
+            int i7 = this.textures.getTextureId("/terrain.png");
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, i7);
 			i7 = hitResult2.x;
 			i3 = hitResult2.y;

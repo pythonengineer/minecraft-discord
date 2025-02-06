@@ -1,5 +1,6 @@
 package net.lax1dude.eaglercraft.internal.lwjgl;
 
+import java.io.IOException;
 import java.net.URI;
 
 import net.lax1dude.eaglercraft.internal.AbstractWebSocketClient;
@@ -80,20 +81,18 @@ public class DesktopWebSocketClient extends AbstractWebSocketClient {
     }
 
     @Override
-    public void send(String str) {
+    public void send(String str) throws IOException {
         if (clientImpl.isClosed()) {
-            logger.error("[{}]: Client tried to send {} char packet while the socket was closed!", currentURIStr,
-                    str.length());
+            throw new IOException();
         } else {
             clientImpl.send(str);
         }
     }
 
     @Override
-    public void send(byte[] bytes) {
+    public void send(byte[] bytes) throws IOException {
         if (clientImpl.isClosed()) {
-            logger.error("[{}]: Client tried to send {} byte packet while the socket was closed!", currentURIStr,
-                    bytes.length);
+            throw new IOException();
         } else {
             clientImpl.send(bytes);
         }

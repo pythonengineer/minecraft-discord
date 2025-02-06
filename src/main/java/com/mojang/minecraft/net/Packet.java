@@ -16,6 +16,7 @@ public final class Packet {
     public static final Packet PLAYER_DISCONNECT;
     public static final Packet CHAT_MESSAGE;
     public static final Packet KICK_PLAYER;
+    public static final Packet PLAYER_SKIN;
     public final int size;
     private static int nextId;
     public final byte id = (byte)(nextId++);
@@ -64,6 +65,7 @@ public final class Packet {
         PLAYER_DISCONNECT = new Packet(new Class[]{Byte.TYPE});
         CHAT_MESSAGE = new Packet(new Class[]{Byte.TYPE, String.class});
         KICK_PLAYER = new Packet(new Class[]{String.class});
+        PLAYER_SKIN = new Packet(new Class[]{String.class, Short.TYPE, byte[].class});
         nextId = 0;
     }
 }

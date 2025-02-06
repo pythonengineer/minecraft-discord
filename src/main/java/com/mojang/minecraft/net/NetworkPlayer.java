@@ -7,6 +7,7 @@ import com.mojang.minecraft.gui.Font;
 import com.mojang.minecraft.renderer.Textures;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.opengl.ImageData;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +24,12 @@ public class NetworkPlayer extends Entity {
 	private int zp;
 	private float yBodyRot = 0.0F;
 	private float yBodyRotO = 0.0F;
+	private float oRun;
+	private float run;
+	private transient int skin = -1;
+	public transient ImageData newTexture = null;
 	public String name;
+	private Textures textures;
 
 	public NetworkPlayer(Minecraft minecraft1, int i2, String string3, int i4, int i5, int i6, float f7, float f8) {
 		super(minecraft1.level);
@@ -50,46 +56,60 @@ public class NetworkPlayer extends Entity {
 			}
 		} while(i1-- > 0 && this.moveQueue.size() > 10);
 
-		float f6 = this.x - this.xo;
+		float f7 = this.x - this.xo;
 		float f2 = this.z - this.zo;
 		this.yBodyRotO = this.yBodyRot;
-		float f3 = (float)Math.sqrt((double)(f6 * f6 + f2 * f2));
+		float f3 = (float)Math.sqrt((double)(f7 * f7 + f2 * f2));
 		float f4 = this.yBodyRot;
 		float f5 = 0.0F;
+		this.oRun = this.run;
+		float f6 = 0.0F;
 		if(f3 == 0.0F) {
 			this.animStep = 0.0F;
 		} else {
+			f6 = 1.0F;
 			f5 = f3 * 3.0F;
-			f4 = -((float)Math.atan2((double)f2, (double)f6) * 180.0F / (float)Math.PI + 90.0F);
+			f4 = -((float)Math.atan2((double)f2, (double)f7) * 180.0F / (float)Math.PI + 90.0F);
 		}
 
-		for(f6 = f4 - this.yBodyRot; f6 < -180.0F; f6 += 360.0F) {
+		this.run += (f6 - this.run) * 0.1F;
+
+		for(f7 = f4 - this.yBodyRot; f7 < -180.0F; f7 += 360.0F) {
 		}
 
-		while(f6 >= 180.0F) {
-			f6 -= 360.0F;
+		while(f7 >= 180.0F) {
+			f7 -= 360.0F;
 		}
 
-		this.yBodyRot += f6 * 0.1F;
+		this.yBodyRot += f7 * 0.1F;
 
-		for(f6 = this.yRot - this.yBodyRot; f6 < -180.0F; f6 += 360.0F) {
+		for(f7 = this.yRot - this.yBodyRot; f7 < -180.0F; f7 += 360.0F) {
 		}
 
-		while(f6 >= 180.0F) {
-			f6 -= 360.0F;
+		while(f7 >= 180.0F) {
+			f7 -= 360.0F;
 		}
 
-		boolean z7 = f6 < -90.0F || f6 >= 90.0F;
-		if(f6 < -75.0F) {
-			f6 = -75.0F;
+		this.yBodyRot += f7 * 0.1F;
+
+		for(f7 = this.yRot - this.yBodyRot; f7 < -180.0F; f7 += 360.0F) {
 		}
 
-		if(f6 >= 75.0F) {
-			f6 = 75.0F;
+		while(f7 >= 180.0F) {
+			f7 -= 360.0F;
 		}
 
-		this.yBodyRot = this.yRot - f6;
-		if(z7) {
+		boolean z8 = f7 < -90.0F || f7 >= 90.0F;
+		if(f7 < -75.0F) {
+			f7 = -75.0F;
+		}
+
+		if(f7 >= 75.0F) {
+			f7 = 75.0F;
+		}
+
+		this.yBodyRot = this.yRot - f7;
+		if(z8) {
 			f5 = -f5;
 		}
 
@@ -121,8 +141,19 @@ public class NetworkPlayer extends Entity {
 	}
 
 	public void render(Textures textures1, float f2) {
+		this.textures = textures1;
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures1.loadTexture("/char.png", GL11.GL_NEAREST));
+		if(this.newTexture != null) {
+			this.skin = textures1.addTexture(this.newTexture);
+			this.newTexture = null;
+		}
+
+		if(this.skin < 0) {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures1.getTextureId("/char.png"));
+		} else {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.skin);
+		}
+
 		float f8 = this.yBodyRotO + (this.yBodyRot - this.yBodyRotO) * f2;
 		float f3 = this.yRotO + (this.yRot - this.yRotO) * f2;
 		float f4 = this.xRotO + (this.xRot - this.xRotO) * f2;
@@ -138,7 +169,9 @@ public class NetworkPlayer extends Entity {
 		GL11.glScalef(f6, f6, f6);
 		GL11.glTranslatef(0.0F, f7, 0.0F);
 		GL11.glRotatef(f8, 0.0F, 1.0F, 0.0F);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		this.zombieModel.render(f5, f3, f4);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		Font font9 = this.minecraft.font;
 		GL11.glPopMatrix();
 		GL11.glPushMatrix();
@@ -186,5 +219,19 @@ public class NetworkPlayer extends Entity {
 	public void queue(float f1, float f2) {
 		this.moveQueue.add(new PlayerMove((this.yRot + f1) / 2.0F, (this.xRot + f2) / 2.0F));
 		this.moveQueue.add(new PlayerMove(f1, f2));
+	}
+
+	public void clear() {
+		if(this.skin >= 0) {
+			System.out.println("Releasing texture for " + this.name);
+			Textures textures10000 = this.textures;
+			int i1 = this.skin;
+			Textures textures2 = this.textures;
+			textures10000.idBuffer.clear();
+			textures2.idBuffer.put(i1);
+			textures2.idBuffer.flip();
+			GL11.glDeleteTextures(textures2.idBuffer);
+		}
+
 	}
 }

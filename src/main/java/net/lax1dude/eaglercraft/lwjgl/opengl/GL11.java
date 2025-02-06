@@ -1547,9 +1547,15 @@ public class GL11 {
         return i;
     }
 
-    public static final void deleteTexture(int texture) {
+    public static final void glDeleteTexture(int texture) {
         unbindTextureIfCached(texture);
         _wglDeleteTextures(mapTexturesGL.free(texture));
+    }
+
+    public static final void glDeleteTextures(IntBuffer buffer) {
+        for (int i = 0; i < buffer.remaining(); ++i) {
+            glDeleteTexture(buffer.get(i));
+        }
     }
 
     static final void unbindTextureIfCached(int texture) {

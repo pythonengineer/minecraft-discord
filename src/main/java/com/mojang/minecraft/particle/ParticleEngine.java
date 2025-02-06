@@ -22,7 +22,7 @@ public final class ParticleEngine {
 	public final void render(Player player1, float f2) {
 		if(this.particles.size() != 0) {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			int i3 = this.textures.loadTexture("/terrain.png", 9728);
+            int i3 = this.textures.getTextureId("/terrain.png");
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, i3);
 			float f12 = -((float)Math.cos((double)player1.yRot * Math.PI / 180.0D));
 			float f4;

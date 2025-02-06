@@ -1,5 +1,6 @@
 package net.lax1dude.eaglercraft.internal;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -55,11 +56,11 @@ public interface IWebSocketClient {
 
     void clearBinaryFrames();
 
-    void send(String str);
+    void send(String str) throws IOException;
 
-    void send(byte[] bytes);
+    void send(byte[] bytes) throws IOException;
 
-    void write(ByteBuffer buffer);
+    void write(ByteBuffer buffer) throws IOException;
 
     void read(ByteBuffer buffer);
 

@@ -49,7 +49,7 @@ public class Font {
 			this.charWidths[i] = x;
 		}
 
-		this.fontTexture = textures.loadTexture(name, 9728);
+        this.fontTexture = textures.getTextureId(name);
 	}
 
 	public void drawShadow(String str, int x, int y, int color) {
@@ -62,59 +62,65 @@ public class Font {
 	}
 
     private void draw(String string1, int i2, int i3, int i4, boolean z5) {
-        char[] c12 = string1.toCharArray();
-        if(z5) {
-            i4 = (i4 & 16579836) >> 2;
-        }
-
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTexture);
-        Tesselator tesselator6 = Tesselator.instance;
-        tesselator6.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-        tesselator6.color(i4);
-        int i7 = 0;
-
-        for(int i8 = 0; i8 < c12.length; ++i8) {
-            int i9;
-            if(c12[i8] == 38) {
-                i9 = ((i4 = "0123456789abcdef".indexOf(c12[i8 + 1])) & 8) << 3;
-                int i10 = (i4 & 1) * 191 + i9;
-                int i11 = ((i4 & 2) >> 1) * 191 + i9;
-                i4 = ((i4 & 4) >> 2) * 191 + i9 << 16 | i11 << 8 | i10;
-                i8 += 2;
-                if(z5) {
-                    i4 = (i4 & 16579836) >> 2;
-                }
-
-                tesselator6.color(i4);
+        if(string1 != null) {
+            char[] c12 = string1.toCharArray();
+            if(z5) {
+                i4 = (i4 & 16579836) >> 2;
             }
-
-            i4 = c12[i8] % 16 << 3;
-            i9 = c12[i8] / 16 << 3;
-            float f13 = 7.99F;
-            tesselator6.vertexUV((float)(i2 + i7), (float)i3 + f13, 0.0F, (float)i4 / 128.0F, ((float)i9 + f13) / 128.0F);
-            tesselator6.vertexUV((float)(i2 + i7) + f13, (float)i3 + f13, 0.0F, ((float)i4 + f13) / 128.0F, ((float)i9 + f13) / 128.0F);
-            tesselator6.vertexUV((float)(i2 + i7) + f13, (float)i3, 0.0F, ((float)i4 + f13) / 128.0F, (float)i9 / 128.0F);
-            tesselator6.vertexUV((float)(i2 + i7), (float)i3, 0.0F, (float)i4 / 128.0F, (float)i9 / 128.0F);
-            i7 += this.charWidths[c12[i8]];
+    
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTexture);
+            Tesselator tesselator6 = Tesselator.instance;
+            tesselator6.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
+            tesselator6.color(i4);
+            int i7 = 0;
+    
+            for(int i8 = 0; i8 < c12.length; ++i8) {
+                int i9;
+                if(c12[i8] == 38) {
+                    i9 = ((i4 = "0123456789abcdef".indexOf(c12[i8 + 1])) & 8) << 3;
+                    int i10 = (i4 & 1) * 191 + i9;
+                    int i11 = ((i4 & 2) >> 1) * 191 + i9;
+                    i4 = ((i4 & 4) >> 2) * 191 + i9 << 16 | i11 << 8 | i10;
+                    i8 += 2;
+                    if(z5) {
+                        i4 = (i4 & 16579836) >> 2;
+                    }
+    
+                    tesselator6.color(i4);
+                }
+    
+                i4 = c12[i8] % 16 << 3;
+                i9 = c12[i8] / 16 << 3;
+                float f13 = 7.99F;
+                tesselator6.vertexUV((float)(i2 + i7), (float)i3 + f13, 0.0F, (float)i4 / 128.0F, ((float)i9 + f13) / 128.0F);
+                tesselator6.vertexUV((float)(i2 + i7) + f13, (float)i3 + f13, 0.0F, ((float)i4 + f13) / 128.0F, ((float)i9 + f13) / 128.0F);
+                tesselator6.vertexUV((float)(i2 + i7) + f13, (float)i3, 0.0F, ((float)i4 + f13) / 128.0F, (float)i9 / 128.0F);
+                tesselator6.vertexUV((float)(i2 + i7), (float)i3, 0.0F, (float)i4 / 128.0F, (float)i9 / 128.0F);
+                i7 += this.charWidths[c12[i8]];
+            }
+    
+            tesselator6.end();
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
         }
-
-        tesselator6.end();
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 
-	public int width(String str) {
-		char[] chars = str.toCharArray();
-		int len = 0;
+    public final int width(String string1) {
+        if(string1 == null) {
+            return 0;
+        } else {
+            char[] c4 = string1.toCharArray();
+            int i2 = 0;
 
-		for(int i = 0; i < chars.length; ++i) {
-			if(chars[i] == 38) {
-				++i;
-			} else {
-				len += this.charWidths[chars[i]];
-			}
-		}
+            for(int i3 = 0; i3 < c4.length; ++i3) {
+                if(c4[i3] == 38) {
+                    ++i3;
+                } else {
+                    i2 += this.charWidths[c4[i3]];
+                }
+            }
 
-		return len;
-	}
+            return i2;
+        }
+    }
 }

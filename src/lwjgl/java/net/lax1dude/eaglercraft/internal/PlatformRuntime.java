@@ -354,6 +354,7 @@ public class PlatformRuntime {
         EGL.destroy();
         glfwDestroyWindow(windowHandle);
         glfwTerminate();
+        System.exit(0);
     }
 
     private static boolean probablyGLES2(String glVersion) {

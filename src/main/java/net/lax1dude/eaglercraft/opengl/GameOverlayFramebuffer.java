@@ -110,7 +110,7 @@ public class GameOverlayFramebuffer {
             if (enableDepth) {
                 _wglDeleteRenderbuffer(depthBuffer);
             }
-            GL11.deleteTexture(framebufferColor);
+            GL11.glDeleteTexture(framebufferColor);
             framebuffer = null;
             depthBuffer = null;
             framebufferColor = -1;

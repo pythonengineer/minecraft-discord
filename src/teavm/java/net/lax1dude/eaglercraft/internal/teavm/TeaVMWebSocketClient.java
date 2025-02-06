@@ -1,5 +1,7 @@
 package net.lax1dude.eaglercraft.internal.teavm;
 
+import java.io.IOException;
+
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.events.MessageEvent;
@@ -104,16 +106,20 @@ public class TeaVMWebSocketClient extends AbstractWebSocketClient {
     }
 
     @Override
-    public void send(String str) {
-        if(sockIsConnected) {
+    public void send(String str) throws IOException {
+        if (sockIsConnected) {
             sock.send(str);
+        } else {
+            throw new IOException();
         }
     }
 
     @Override
-    public void send(byte[] bytes) {
-        if(sockIsConnected) {
+    public void send(byte[] bytes) throws IOException {
+        if (sockIsConnected) {
             sock.send(TeaVMUtils.unwrapArrayBuffer(bytes));
+        } else {
+            throw new IOException();
         }
     }
 

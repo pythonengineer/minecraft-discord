@@ -1,5 +1,6 @@
 package net.lax1dude.eaglercraft.internal;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -227,7 +228,7 @@ public abstract class AbstractWebSocketClient implements IWebSocketClient {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(ByteBuffer buffer) throws IOException {
         byte[] data = new byte[buffer.remaining()];
         buffer.get(data);
         this.send(data);
