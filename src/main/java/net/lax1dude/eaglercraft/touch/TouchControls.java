@@ -33,8 +33,9 @@ public class TouchControls {
     protected static boolean isPickToggled = false;
 
     public static void update(boolean screenTouched) {
+        Minecraft mc = Minecraft.minecraft;
         int h = Display.getDisplayMode().getHeight();
-        final ScaledResolution sr = Minecraft.scaledResolution;
+        final ScaledResolution sr = mc.scaledResolution;
         int fac = sr.getScaleFactor();
         if (screenTouched) {
             int touchPoints = Touch.touchPointCount();
@@ -68,21 +69,24 @@ public class TouchControls {
                     }
                 }
             }
+            mc.hud.updateTouchEagler(mc.screen == null);
         } else {
             touchControls.clear();
             touchControlPressed.clear();
+            mc.hud.updateTouchEagler(false);
         }
     }
 
     public static boolean handleTouchBegin(int uid, int pointX, int pointY) {
+        Minecraft mc = Minecraft.minecraft;
         pointY = Display.getDisplayMode().getHeight() - pointY - 1;
-        EnumTouchControl control = overlappingControl0(pointX, pointY, Minecraft.scaledResolution);
+        EnumTouchControl control = overlappingControl0(pointX, pointY, mc.scaledResolution);
         if (control != null) {
             int fac = Minecraft.scaledResolution.getScaleFactor();
             touchControls.put(uid, new TouchControlInput(pointX / fac, pointY / fac, control));
             return true;
         } else {
-            return false;
+            return mc.screen == null && mc.hud.handleTouchBeginEagler(uid, pointX, pointY);
         }
     }
 
@@ -90,7 +94,8 @@ public class TouchControls {
         if (touchControls.remove(uid) != null) {
             return true;
         } else {
-            return false;
+            Minecraft mc = Minecraft.minecraft;
+            return mc.screen == null && mc.hud.handleTouchEndEagler(uid, pointX, mc.height - pointY - 1);
         }
     }
 

@@ -70,7 +70,7 @@ public class Zombie extends Entity {
         GL11.glTranslatef(0.0F, f5, 0.0F);
         f6 = 57.29578F;
         GL11.glRotatef(this.rot * f6 + 180.0F, 0.0F, 1.0F, 0.0F);
-        zombieModel.render((float)d3, 0.0F, 0.0F);
+        zombieModel.render((float)d3, 1.0F, 0.0F, 0.0F, 0.0F);
 		GL11.glPopMatrix();
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}

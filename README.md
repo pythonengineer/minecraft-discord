@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **0.0.18a_02**, a *Multiplayer Classic* version of the game which was released on _**June 14, 2009**_.
+This version is **0.0.19a_06**, a *Multiplayer Classic* version of the game which was released on _**June 20, 2009**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.18a_02).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.19a_06).
 
 ### Usage
 
@@ -37,7 +37,8 @@ If you make any code modifications to the game, remember that caching exists and
 Uncommenting the Eruda script in `discord/index.html` will enable a web debugging console that works sometimes on mobile.
 You can also set `openDebugConsoleOnLaunch` to 'true' in `window.minecraftOpts` in the same file or use Discord's development console.
 
-Player skins do load and they are cached and handled by the websocket proxy server. Skins and in-game names work off of the Discord username.
+Player skins do load and they are cached and handled by the websocket proxy server. Skins and in-game names work off of the Discord username,
+however you may add aliases for Discord usernames so they have different player names in `discord/server/aliases.txt`.
 
 ### Gameplay on mobile
 

@@ -20,8 +20,8 @@ import net.lax1dude.eaglercraft.touch.TouchControls;
 
 public class Screen {
 	protected Minecraft minecraft;
-    protected int y;
-    protected int w;
+    protected int width;
+    protected int height;
     protected List buttons = new ArrayList();
     protected int touchModeCursorPosX = -1;
     protected int touchModeCursorPosY = -1;
@@ -63,8 +63,8 @@ public class Screen {
 
     public final void init(Minecraft minecraft1, int i2, int i3) {
         this.minecraft = minecraft1;
-        this.y = i2;
-        this.w = i3;
+        this.width = i2;
+        this.height = i3;
         this.init();
     }
 
@@ -131,8 +131,8 @@ public class Screen {
 
 		while(Mouse.next()) {
 			if(noTouch && Mouse.getEventButtonState()) {
-                int xm = Mouse.getEventX() * this.y / this.minecraft.width;
-                int ym = this.w - Mouse.getEventY() * this.w / this.minecraft.height - 1;
+                int xm = Mouse.getEventX() * this.width / this.minecraft.width;
+                int ym = this.height - Mouse.getEventY() * this.height / this.minecraft.height - 1;
 				this.mouseClicked(xm, ym, Mouse.getEventButton());
 			}
 		}
@@ -188,13 +188,13 @@ public class Screen {
                     continue;
                 }
             }
-            i = applyEaglerScale(scaleFac, i * this.y / this.minecraft.width, this.y);
-            j = applyEaglerScale(scaleFac, this.w - j * this.w / this.minecraft.height - 1, this.w);
+            i = applyEaglerScale(scaleFac, i * this.width / this.minecraft.width, this.width);
+            j = applyEaglerScale(scaleFac, this.height - j * this.height / this.minecraft.height - 1, this.height);
             float rad = Touch.getEventTouchRadiusMixed(t);
-            float si = rad * this.y / this.minecraft.width / scaleFac;
+            float si = rad * this.width / this.minecraft.width / scaleFac;
             if (si < 1.0f)
                 si = 1.0f;
-            float sj = rad * this.w / this.minecraft.height / scaleFac;
+            float sj = rad * this.height / this.minecraft.height / scaleFac;
             if (sj < 1.0f)
                 sj = 1.0f;
             int[] ck = touchStarts.remove(u);
@@ -264,9 +264,8 @@ public class Screen {
             if(i4 >= screen6.buttons.size()) {
                 break;
             }
-
-            Button button5 = (Button)screen6.buttons.get(i4);
-            if(i2 >= button5.x && i3 >= button5.y && i2 < button5.x + button5.w && i3 < button5.y + button5.h) {
+            Button button5;
+            if((button5 = (Button)screen6.buttons.get(i4)).enabled && i2 >= button5.x && i3 >= button5.y && i2 < button5.x + button5.w && i3 < button5.y + button5.h) {
                 screen6.buttonClicked(button5);
             }
 

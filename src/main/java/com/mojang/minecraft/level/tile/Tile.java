@@ -17,7 +17,6 @@ public class Tile {
 	public static final Tile rock;
 	public static final Tile grass;
 	public static final Tile dirt;
-	public static final Tile stoneBrick;
 	public static final Tile wood;
 	public static final Tile bush;
 	public static final Tile unbreakable;
@@ -32,6 +31,8 @@ public class Tile {
 	public static final Tile oreCoal;
 	public static final Tile log;
 	public static final Tile leaf;
+	public static final Tile sponge;
+	public static final Tile glass;
 	public int tex;
 	public final int id;
 	private float xx0;
@@ -54,12 +55,12 @@ public class Tile {
 	}
 
 	protected final void setShape(float f1, float f2, float f3, float f4, float f5, float f6) {
-		this.xx0 = 0.0F;
+		this.xx0 = f1;
 		this.yy0 = f2;
-		this.zz0 = 0.0F;
-		this.xx1 = 1.0F;
+		this.zz0 = f3;
+		this.xx1 = f4;
 		this.yy1 = f5;
-		this.zz1 = 1.0F;
+		this.zz1 = f6;
 	}
 
 	protected Tile(int i1, int i2) {
@@ -73,12 +74,11 @@ public class Tile {
 
 	public boolean render(Tesselator tesselator1, Level level2, int i3, int i4, int i5, int i6) {
 		boolean z7 = false;
-		float f8 = 0.0F;
+		float f8 = 0.5F;
 		float f9 = 0.8F;
 		float f10 = 0.6F;
 		float f11;
 		if(this.shouldRenderFace(level2, i4, i5 - 1, i6, i3, 0)) {
-			f8 = 0.5F;
 			f11 = this.getBrightness(level2, i4, i5 - 1, i6);
 			tesselator1.color(f8 * f11, f8 * f11, f8 * f11);
 			this.renderFace(tesselator1, i4, i5, i6, 0);
@@ -266,56 +266,56 @@ public class Tile {
 
 	}
 
-    public static void renderFaceNoTexture(Entity entity0, Tesselator tesselator1, int i2, int i3, int i4, int i5) {
-        float f6 = (float)i2;
-        float f7 = (float)i2 + 1.0F;
-        float f8 = (float)i3;
-        float f9 = (float)i3 + 1.0F;
-        float f10 = (float)i4;
-        float f11 = (float)i4 + 1.0F;
-        if(i5 == 0 && (float)i3 > entity0.y) {
-            tesselator1.vertex(f6, f8, f11);
-            tesselator1.vertex(f6, f8, f10);
-            tesselator1.vertex(f7, f8, f10);
-            tesselator1.vertex(f7, f8, f11);
-        }
+	public static void renderFaceNoTexture(Entity entity0, Tesselator tesselator1, int i2, int i3, int i4, int i5) {
+		float f6 = (float)i2;
+		float f7 = (float)i2 + 1.0F;
+		float f8 = (float)i3;
+		float f9 = (float)i3 + 1.0F;
+		float f10 = (float)i4;
+		float f11 = (float)i4 + 1.0F;
+		if(i5 == 0 && (float)i3 > entity0.y) {
+			tesselator1.vertex(f6, f8, f11);
+			tesselator1.vertex(f6, f8, f10);
+			tesselator1.vertex(f7, f8, f10);
+			tesselator1.vertex(f7, f8, f11);
+		}
 
-        if(i5 == 1 && (float)i3 < entity0.y) {
-            tesselator1.vertex(f7, f9, f11);
-            tesselator1.vertex(f7, f9, f10);
-            tesselator1.vertex(f6, f9, f10);
-            tesselator1.vertex(f6, f9, f11);
-        }
+		if(i5 == 1 && (float)i3 < entity0.y) {
+			tesselator1.vertex(f7, f9, f11);
+			tesselator1.vertex(f7, f9, f10);
+			tesselator1.vertex(f6, f9, f10);
+			tesselator1.vertex(f6, f9, f11);
+		}
 
-        if(i5 == 2 && (float)i4 > entity0.z) {
-            tesselator1.vertex(f6, f9, f10);
-            tesselator1.vertex(f7, f9, f10);
-            tesselator1.vertex(f7, f8, f10);
-            tesselator1.vertex(f6, f8, f10);
-        }
+		if(i5 == 2 && (float)i4 > entity0.z) {
+			tesselator1.vertex(f6, f9, f10);
+			tesselator1.vertex(f7, f9, f10);
+			tesselator1.vertex(f7, f8, f10);
+			tesselator1.vertex(f6, f8, f10);
+		}
 
-        if(i5 == 3 && (float)i4 < entity0.z) {
-            tesselator1.vertex(f6, f9, f11);
-            tesselator1.vertex(f6, f8, f11);
-            tesselator1.vertex(f7, f8, f11);
-            tesselator1.vertex(f7, f9, f11);
-        }
+		if(i5 == 3 && (float)i4 < entity0.z) {
+			tesselator1.vertex(f6, f9, f11);
+			tesselator1.vertex(f6, f8, f11);
+			tesselator1.vertex(f7, f8, f11);
+			tesselator1.vertex(f7, f9, f11);
+		}
 
-        if(i5 == 4 && (float)i2 > entity0.x) {
-            tesselator1.vertex(f6, f9, f11);
-            tesselator1.vertex(f6, f9, f10);
-            tesselator1.vertex(f6, f8, f10);
-            tesselator1.vertex(f6, f8, f11);
-        }
+		if(i5 == 4 && (float)i2 > entity0.x) {
+			tesselator1.vertex(f6, f9, f11);
+			tesselator1.vertex(f6, f9, f10);
+			tesselator1.vertex(f6, f8, f10);
+			tesselator1.vertex(f6, f8, f11);
+		}
 
-        if(i5 == 5 && (float)i2 < entity0.x) {
-            tesselator1.vertex(f7, f8, f11);
-            tesselator1.vertex(f7, f8, f10);
-            tesselator1.vertex(f7, f9, f10);
-            tesselator1.vertex(f7, f9, f11);
-        }
+		if(i5 == 5 && (float)i2 < entity0.x) {
+			tesselator1.vertex(f7, f8, f11);
+			tesselator1.vertex(f7, f8, f10);
+			tesselator1.vertex(f7, f9, f10);
+			tesselator1.vertex(f7, f9, f11);
+		}
 
-    }
+	}
 
 	public static AABB getTileAABB(int i0, int i1, int i2) {
 		return new AABB((float)i0, (float)i1, (float)i2, (float)(i0 + 1), (float)(i1 + 1), (float)(i2 + 1));
@@ -369,6 +369,12 @@ public class Tile {
 		return 0;
 	}
 
+	public void onTileAdded(Level level1, int i2, int i3, int i4) {
+	}
+
+	public void onTileRemoved(Level level1, int i2, int i3, int i4) {
+	}
+
 	static {
 		Tile tile10000 = new Tile(1, 1);
 		float f1 = 1.0F;
@@ -376,35 +382,33 @@ public class Tile {
 		Tile tile2 = tile10000;
 		tile10000.particleGravity = f1;
 		rock = tile2;
-		GrassTile grassTile11 = new GrassTile(2);
+		GrassTile grassTile13 = new GrassTile(2);
 		f1 = 1.0F;
 		f0 = 0.9F;
-		GrassTile grassTile3 = grassTile11;
-		grassTile11.particleGravity = f1;
+		GrassTile grassTile3 = grassTile13;
+		grassTile13.particleGravity = f1;
 		grass = grassTile3;
-		DirtTile dirtTile12 = new DirtTile(3, 2);
+		DirtTile dirtTile14 = new DirtTile(3, 2);
 		f1 = 1.0F;
 		f0 = 0.8F;
-		DirtTile dirtTile4 = dirtTile12;
-		dirtTile12.particleGravity = f1;
+		DirtTile dirtTile4 = dirtTile14;
+		dirtTile14.particleGravity = f1;
 		dirt = dirtTile4;
 		tile10000 = new Tile(4, 16);
 		f1 = 1.0F;
 		f0 = 1.0F;
-		tile2 = tile10000;
 		tile10000.particleGravity = f1;
-		stoneBrick = tile2;
 		tile10000 = new Tile(5, 4);
 		f1 = 1.0F;
 		f0 = 1.0F;
 		tile2 = tile10000;
 		tile10000.particleGravity = f1;
 		wood = tile2;
-		Bush bush13 = new Bush(6);
+		Bush bush15 = new Bush(6);
 		f1 = 1.0F;
 		f0 = 0.7F;
-		Bush bush5 = bush13;
-		bush13.particleGravity = f1;
+		Bush bush5 = bush15;
+		bush15.particleGravity = f1;
 		bush = bush5;
 		tile10000 = new Tile(7, 17);
 		f1 = 1.0F;
@@ -412,41 +416,41 @@ public class Tile {
 		tile2 = tile10000;
 		tile10000.particleGravity = f1;
 		unbreakable = tile2;
-		LiquidTile liquidTile14 = new LiquidTile(8, Liquid.water);
+		LiquidTile liquidTile16 = new LiquidTile(8, Liquid.water);
 		f1 = 1.0F;
 		f0 = 1.0F;
-		LiquidTile liquidTile6 = liquidTile14;
-		liquidTile14.particleGravity = f1;
+		LiquidTile liquidTile6 = liquidTile16;
+		liquidTile16.particleGravity = f1;
 		water = liquidTile6;
-		CalmLiquidTile calmLiquidTile15 = new CalmLiquidTile(9, Liquid.water);
+		CalmLiquidTile calmLiquidTile17 = new CalmLiquidTile(9, Liquid.water);
 		f1 = 1.0F;
 		f0 = 1.0F;
-		CalmLiquidTile calmLiquidTile7 = calmLiquidTile15;
-		calmLiquidTile15.particleGravity = f1;
+		CalmLiquidTile calmLiquidTile7 = calmLiquidTile17;
+		calmLiquidTile17.particleGravity = f1;
 		calmWater = calmLiquidTile7;
-		liquidTile14 = new LiquidTile(10, Liquid.lava);
+		liquidTile16 = new LiquidTile(10, Liquid.lava);
 		f1 = 1.0F;
 		f0 = 1.0F;
-		liquidTile6 = liquidTile14;
-		liquidTile14.particleGravity = f1;
+		liquidTile6 = liquidTile16;
+		liquidTile16.particleGravity = f1;
 		lava = liquidTile6;
-		calmLiquidTile15 = new CalmLiquidTile(11, Liquid.lava);
+		calmLiquidTile17 = new CalmLiquidTile(11, Liquid.lava);
 		f1 = 1.0F;
 		f0 = 1.0F;
-		calmLiquidTile7 = calmLiquidTile15;
-		calmLiquidTile15.particleGravity = f1;
+		calmLiquidTile7 = calmLiquidTile17;
+		calmLiquidTile17.particleGravity = f1;
 		calmLava = calmLiquidTile7;
-		FallingTile fallingTile16 = new FallingTile(12, 18);
+		FallingTile fallingTile18 = new FallingTile(12, 18);
 		f1 = 1.0F;
 		f0 = 0.8F;
-		FallingTile fallingTile8 = fallingTile16;
-		fallingTile16.particleGravity = f1;
+		FallingTile fallingTile8 = fallingTile18;
+		fallingTile18.particleGravity = f1;
 		sand = fallingTile8;
-		fallingTile16 = new FallingTile(13, 19);
+		fallingTile18 = new FallingTile(13, 19);
 		f1 = 1.0F;
 		f0 = 0.8F;
-		fallingTile8 = fallingTile16;
-		fallingTile16.particleGravity = f1;
+		fallingTile8 = fallingTile18;
+		fallingTile18.particleGravity = f1;
 		gravel = fallingTile8;
 		tile10000 = new Tile(14, 32);
 		f1 = 1.0F;
@@ -466,17 +470,29 @@ public class Tile {
 		tile2 = tile10000;
 		tile10000.particleGravity = f1;
 		oreCoal = tile2;
-		LogTile logTile17 = new LogTile(17);
+		LogTile logTile19 = new LogTile(17);
 		f1 = 1.0F;
 		f0 = 1.0F;
-		LogTile logTile9 = logTile17;
-		logTile17.particleGravity = f1;
+		LogTile logTile9 = logTile19;
+		logTile19.particleGravity = f1;
 		log = logTile9;
-		LeafTile leafTile18 = new LeafTile(18, 22);
+		LeafTile leafTile20 = new LeafTile(18, 22, true);
 		f1 = 0.4F;
 		f0 = 1.0F;
-		LeafTile leafTile10 = leafTile18;
-		leafTile18.particleGravity = f1;
+		LeafTile leafTile10 = leafTile20;
+		leafTile20.particleGravity = f1;
 		leaf = leafTile10;
+		SpongeTile spongeTile21 = new SpongeTile(19);
+		f1 = 0.9F;
+		f0 = 1.0F;
+		SpongeTile spongeTile11 = spongeTile21;
+		spongeTile21.particleGravity = f1;
+		sponge = spongeTile11;
+		GlassTile glassTile22 = new GlassTile(20, 49, false);
+		f1 = 1.0F;
+		f0 = 1.0F;
+		GlassTile glassTile12 = glassTile22;
+		glassTile22.particleGravity = f1;
+		glass = glassTile12;
 	}
 }

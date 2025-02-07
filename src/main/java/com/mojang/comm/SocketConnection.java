@@ -127,12 +127,14 @@ public final class SocketConnection {
                             s21 = ((Short)object11[1]).shortValue();
                             s17 = ((Short)object11[2]).shortValue();
                             Level level7;
-                            (level7 = new Level()).setData(s18, s21, s17, b14);
+                            (level7 = new Level()).setNetworkMode(true);
+                            level7.setData(s18, s21, s17, b14);
                             connectionManager12.minecraft.setLevel(level7);
                             connectionManager12.minecraft.hideGui = false;
+                            connectionManager12.connected = true;
                         } else if(packet3 == Packet.SET_TILE) {
                             if(connectionManager12.minecraft.level != null) {
-                                connectionManager12.minecraft.level.setTile(((Short)object11[0]).shortValue(), ((Short)object11[1]).shortValue(), ((Short)object11[2]).shortValue(), ((Byte)object11[3]).byteValue());
+                                connectionManager12.minecraft.level.netSetTile(((Short)object11[0]).shortValue(), ((Short)object11[1]).shortValue(), ((Short)object11[2]).shortValue(), ((Byte)object11[3]).byteValue());
                             }
                         } else {
                             byte b8;

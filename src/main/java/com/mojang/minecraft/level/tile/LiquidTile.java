@@ -22,8 +22,9 @@ public class LiquidTile extends Tile {
 
 		this.tileId = i1;
 		this.calmTileId = i1 + 1;
+		float f4 = 0.01F;
 		float f3 = 0.1F;
-		this.setShape(0.0F, 0.0F - f3, 0.0F, 1.0F, 1.0F - f3, 1.0F);
+		this.setShape(0.0F - f4, 0.0F - f3 - f4, 0.0F - f4, f4 + 1.0F, 1.0F - f3 + f4, f4 + 1.0F);
 		this.setTicking(true);
 		if(liquid2 == Liquid.lava) {
 			this.setTickSpeed(16);
@@ -47,7 +48,7 @@ public class LiquidTile extends Tile {
 		boolean z6;
 		do {
 			--i3;
-			if(level1.getTile(i2, i3, i4) != 0) {
+			if(level1.getTile(i2, i3, i4) != 0 || !liquidTile8.checkSponge(level1, i2, i3, i4)) {
 				break;
 			}
 
@@ -69,9 +70,31 @@ public class LiquidTile extends Tile {
 
 	}
 
+	private boolean checkSponge(Level level1, int i2, int i3, int i4) {
+		if(this.liquid == Liquid.water) {
+			for(int i7 = i2 - 2; i7 <= i2 + 2; ++i7) {
+				for(int i5 = i3 - 2; i5 <= i3 + 2; ++i5) {
+					for(int i6 = i4 - 2; i6 <= i4 + 2; ++i6) {
+						if(level1.getTile(i7, i5, i6) == Tile.sponge.id) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
 	private boolean checkWater(Level level1, int i2, int i3, int i4) {
-		if(level1.getTile(i2, i3, i4) == 0 && level1.setTile(i2, i3, i4, this.tileId)) {
-			level1.addToTickNextTick(i2, i3, i4, this.tileId);
+		if(level1.getTile(i2, i3, i4) == 0) {
+			if(!this.checkSponge(level1, i2, i3, i4)) {
+				return false;
+			}
+
+			if(level1.setTile(i2, i3, i4, this.tileId)) {
+				level1.addToTickNextTick(i2, i3, i4, this.tileId);
+			}
 		}
 
 		return false;

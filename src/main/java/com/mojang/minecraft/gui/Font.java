@@ -77,8 +77,12 @@ public class Font {
     
             for(int i8 = 0; i8 < c12.length; ++i8) {
                 int i9;
-                if(c12[i8] == 38) {
-                    i9 = ((i4 = "0123456789abcdef".indexOf(c12[i8 + 1])) & 8) << 3;
+                if(c12[i8] == 38 && c12.length > i8 + 1) {
+                    if((i4 = "0123456789abcdef".indexOf(c12[i8 + 1])) < 0) {
+                        i4 = 15;
+                    }
+
+                    i9 = (i4 & 8) << 3;
                     int i10 = (i4 & 1) * 191 + i9;
                     int i11 = ((i4 & 2) >> 1) * 191 + i9;
                     i4 = ((i4 & 4) >> 2) * 191 + i9 << 16 | i11 << 8 | i10;

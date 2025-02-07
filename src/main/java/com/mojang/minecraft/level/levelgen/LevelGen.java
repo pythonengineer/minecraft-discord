@@ -52,7 +52,7 @@ public final class LevelGen {
 
 				double d21;
 				if((d21 = Math.max(d15, d17) / 2.0D) < 0.0D) {
-					d21 /= 2.0D;
+					d21 *= 0.8D;
 				}
 
 				i11[i13 + i14 * levelGen5.width] = (int)d21;
@@ -60,54 +60,54 @@ public final class LevelGen {
 		}
 
 		this.minecraft.levelLoadUpdate("Eroding..");
-		int[] i31 = i11;
+		int[] i34 = i11;
 		levelGen5 = this;
 		distort9 = new Distort(new PerlinNoise(this.random, 8), new PerlinNoise(this.random, 8));
-		Distort distort37 = new Distort(new PerlinNoise(this.random, 8), new PerlinNoise(this.random, 8));
+		Distort distort40 = new Distort(new PerlinNoise(this.random, 8), new PerlinNoise(this.random, 8));
 
 		int i16;
-		int i29;
-		int i39;
-		int i42;
-		for(i39 = 0; i39 < levelGen5.width; ++i39) {
-			levelGen5.setNextPhase(i39 * 100 / (levelGen5.width - 1));
+		int i32;
+		int i43;
+		int i46;
+		for(i43 = 0; i43 < levelGen5.width; ++i43) {
+			levelGen5.setNextPhase(i43 * 100 / (levelGen5.width - 1));
 
-			for(i29 = 0; i29 < levelGen5.height; ++i29) {
-				double d41 = distort9.getValue((double)(i39 << 1), (double)(i29 << 1)) / 8.0D;
-				i42 = distort37.getValue((double)(i39 << 1), (double)(i29 << 1)) > 0.0D ? 1 : 0;
-				if(d41 > 2.0D) {
-					i16 = ((i31[i39 + i29 * levelGen5.width] - i42) / 2 << 1) + i42;
-					i31[i39 + i29 * levelGen5.width] = i16;
+			for(i32 = 0; i32 < levelGen5.height; ++i32) {
+				double d45 = distort9.getValue((double)(i43 << 1), (double)(i32 << 1)) / 8.0D;
+				i46 = distort40.getValue((double)(i43 << 1), (double)(i32 << 1)) > 0.0D ? 1 : 0;
+				if(d45 > 2.0D) {
+					i16 = ((i34[i43 + i32 * levelGen5.width] - i46) / 2 << 1) + i46;
+					i34[i43 + i32 * levelGen5.width] = i16;
 				}
 			}
 		}
 
 		this.minecraft.levelLoadUpdate("Soiling..");
-		i31 = i11;
+		i34 = i11;
 		levelGen5 = this;
-		int i34 = this.width;
-		int i38 = this.height;
-		i39 = this.depth;
-		PerlinNoise perlinNoise30 = new PerlinNoise(this.random, 8);
+		int i37 = this.width;
+		int i42 = this.height;
+		i43 = this.depth;
+		PerlinNoise perlinNoise33 = new PerlinNoise(this.random, 8);
 
 		int i18;
-		int i46;
-		for(i13 = 0; i13 < i34; ++i13) {
+		int i50;
+		for(i13 = 0; i13 < i37; ++i13) {
 			levelGen5.setNextPhase(i13 * 100 / (levelGen5.width - 1));
 
-			for(i14 = 0; i14 < i38; ++i14) {
-				i42 = (int)(perlinNoise30.getValue((double)i13, (double)i14) / 24.0D) - 4;
-				i46 = (i16 = i31[i13 + i14 * i34] + i39 / 2) + i42;
-				i31[i13 + i14 * i34] = Math.max(i16, i46);
+			for(i14 = 0; i14 < i42; ++i14) {
+				i46 = (int)(perlinNoise33.getValue((double)i13, (double)i14) / 24.0D) - 4;
+				i50 = (i16 = i34[i13 + i14 * i37] + i43 / 2) + i46;
+				i34[i13 + i14 * i37] = Math.max(i16, i50);
 
-				for(i18 = 0; i18 < i39; ++i18) {
+				for(i18 = 0; i18 < i43; ++i18) {
 					int i19 = (i18 * levelGen5.height + i14) * levelGen5.width + i13;
 					int i20 = 0;
 					if(i18 <= i16) {
 						i20 = Tile.dirt.id;
 					}
 
-					if(i18 <= i46) {
+					if(i18 <= i50) {
 						i20 = Tile.rock.id;
 					}
 
@@ -117,45 +117,50 @@ public final class LevelGen {
 		}
 
 		this.minecraft.levelLoadUpdate("Carving..");
-		boolean z36 = true;
-		boolean z32 = false;
+		boolean z39 = true;
+		boolean z35 = false;
 		levelGen5 = this;
-		i38 = this.width;
-		i39 = this.height;
-		i29 = this.depth;
-		i13 = i38 * i39 * i29 / 256 / 64;
+		i42 = this.width;
+		i43 = this.height;
+		i32 = this.depth;
+		i13 = i42 * i43 * i32 / 256 / 64;
 
 		for(i14 = 0; i14 < i13; ++i14) {
 			levelGen5.setNextPhase(i14 * 100 / (i13 - 1) / 4);
-			float f43 = levelGen5.random.nextFloat() * (float)i38;
-			float f44 = levelGen5.random.nextFloat() * (float)i29;
-			float f47 = levelGen5.random.nextFloat() * (float)i39;
+			float f47 = levelGen5.random.nextFloat() * (float)i42;
+			float f48 = levelGen5.random.nextFloat() * (float)i32;
+			float f51 = levelGen5.random.nextFloat() * (float)i43;
 			i18 = (int)((levelGen5.random.nextFloat() + levelGen5.random.nextFloat()) * 75.0F);
-			float f48 = (float)((double)levelGen5.random.nextFloat() * Math.PI * 2.0D);
-			float f49 = 0.0F;
-			float f50 = (float)((double)levelGen5.random.nextFloat() * Math.PI * 2.0D);
+			float f52 = (float)((double)levelGen5.random.nextFloat() * Math.PI * 2.0D);
+			float f53 = 0.0F;
+			float f54 = (float)((double)levelGen5.random.nextFloat() * Math.PI * 2.0D);
 			float f22 = 0.0F;
 
 			for(int i7 = 0; i7 < i18; ++i7) {
-				f43 = (float)((double)f43 + Math.sin((double)f48) * Math.cos((double)f50));
-				f47 = (float)((double)f47 + Math.cos((double)f48) * Math.cos((double)f50));
-				f44 = (float)((double)f44 + Math.sin((double)f50));
-				f48 += f49 * 0.2F;
-				f49 = (f49 *= 0.9F) + (levelGen5.random.nextFloat() - levelGen5.random.nextFloat());
-				f50 = (f50 + f22 * 0.5F) * 0.5F;
+				f47 = (float)((double)f47 + Math.sin((double)f52) * Math.cos((double)f54));
+				f51 = (float)((double)f51 + Math.cos((double)f52) * Math.cos((double)f54));
+				f48 = (float)((double)f48 + Math.sin((double)f54));
+				f52 += f53 * 0.2F;
+				f53 = (f53 *= 0.9F) + (levelGen5.random.nextFloat() - levelGen5.random.nextFloat());
+				f54 = (f54 + f22 * 0.5F) * 0.5F;
 				f22 = (f22 *= 0.9F) + (levelGen5.random.nextFloat() - levelGen5.random.nextFloat());
-				float f33 = (float)(Math.sin((double)i7 * Math.PI / (double)i18) * 2.5D + 1.0D);
+				if(levelGen5.random.nextFloat() >= 0.3F) {
+					float f36 = f47 + levelGen5.random.nextFloat() * 4.0F - 2.0F;
+					float f41 = f48 + levelGen5.random.nextFloat() * 4.0F - 2.0F;
+					float f12 = f51 + levelGen5.random.nextFloat() * 4.0F - 2.0F;
+					float f23 = (float)(Math.sin((double)i7 * Math.PI / (double)i18) * 2.5D + 1.0D);
 
-				for(i34 = (int)(f43 - f33); i34 <= (int)(f43 + f33); ++i34) {
-					for(int i12 = (int)(f44 - f33); i12 <= (int)(f44 + f33); ++i12) {
-						for(int i23 = (int)(f47 - f33); i23 <= (int)(f47 + f33); ++i23) {
-							float f24 = (float)i34 - f43;
-							float f25 = (float)i12 - f44;
-							float f26 = (float)i23 - f47;
-							if(f24 * f24 + f25 * f25 * 2.0F + f26 * f26 < f33 * f33 && i34 >= 1 && i12 >= 1 && i23 >= 1 && i34 < levelGen5.width - 1 && i12 < levelGen5.depth - 1 && i23 < levelGen5.height - 1) {
-								int i51 = (i12 * levelGen5.height + i23) * levelGen5.width + i34;
-								if(levelGen5.blocks[i51] == Tile.rock.id) {
-									levelGen5.blocks[i51] = 0;
+					for(int i24 = (int)(f36 - f23); i24 <= (int)(f36 + f23); ++i24) {
+						for(int i25 = (int)(f41 - f23); i25 <= (int)(f41 + f23); ++i25) {
+							for(int i26 = (int)(f12 - f23); i26 <= (int)(f12 + f23); ++i26) {
+								float f27 = (float)i24 - f36;
+								float f28 = (float)i25 - f41;
+								float f29 = (float)i26 - f12;
+								if(f27 * f27 + f28 * f28 * 2.0F + f29 * f29 < f23 * f23 && i24 >= 1 && i25 >= 1 && i26 >= 1 && i24 < levelGen5.width - 1 && i25 < levelGen5.depth - 1 && i26 < levelGen5.height - 1) {
+									int i55 = (i25 * levelGen5.height + i26) * levelGen5.width + i24;
+									if(levelGen5.blocks[i55] == Tile.rock.id) {
+										levelGen5.blocks[i55] = 0;
+									}
 								}
 							}
 						}
@@ -169,49 +174,49 @@ public final class LevelGen {
 		this.carveTunnels(Tile.oreGold.id, 50, 3, 4);
 		this.minecraft.levelLoadUpdate("Watering..");
 		levelGen5 = this;
-		long j35 = EagRuntime.nanoTime();
-		long j40 = 0L;
+		long j38 = EagRuntime.nanoTime();
+		long j44 = 0L;
 		i13 = Tile.calmWater.id;
 		this.setNextPhase(0);
 
 		for(i14 = 0; i14 < levelGen5.width; ++i14) {
-			j40 = j40 + levelGen5.floodFillLiquid(i14, levelGen5.depth / 2 - 1, 0, 0, i13) + levelGen5.floodFillLiquid(i14, levelGen5.depth / 2 - 1, levelGen5.height - 1, 0, i13);
+			j44 = j44 + levelGen5.floodFillLiquid(i14, levelGen5.depth / 2 - 1, 0, 0, i13) + levelGen5.floodFillLiquid(i14, levelGen5.depth / 2 - 1, levelGen5.height - 1, 0, i13);
 		}
 
 		for(i14 = 0; i14 < levelGen5.height; ++i14) {
-			j40 = j40 + levelGen5.floodFillLiquid(0, levelGen5.depth / 2 - 1, i14, 0, i13) + levelGen5.floodFillLiquid(levelGen5.width - 1, levelGen5.depth / 2 - 1, i14, 0, i13);
+			j44 = j44 + levelGen5.floodFillLiquid(0, levelGen5.depth / 2 - 1, i14, 0, i13) + levelGen5.floodFillLiquid(levelGen5.width - 1, levelGen5.depth / 2 - 1, i14, 0, i13);
 		}
 
 		i14 = levelGen5.width * levelGen5.height / 200;
 
-		for(i42 = 0; i42 < i14; ++i42) {
-			if(i42 % 100 == 0) {
-				levelGen5.setNextPhase(i42 * 100 / (i14 - 1));
+		for(i46 = 0; i46 < i14; ++i46) {
+			if(i46 % 100 == 0) {
+				levelGen5.setNextPhase(i46 * 100 / (i14 - 1));
 			}
 
 			i16 = levelGen5.random.nextInt(levelGen5.width);
-			i46 = levelGen5.depth / 2 - 1 - levelGen5.random.nextInt(3);
+			i50 = levelGen5.depth / 2 - 1 - levelGen5.random.nextInt(3);
 			i18 = levelGen5.random.nextInt(levelGen5.height);
-			if(levelGen5.blocks[(i46 * levelGen5.height + i18) * levelGen5.width + i16] == 0) {
-				j40 += levelGen5.floodFillLiquid(i16, i46, i18, 0, i13);
+			if(levelGen5.blocks[(i50 * levelGen5.height + i18) * levelGen5.width + i16] == 0) {
+				j44 += levelGen5.floodFillLiquid(i16, i50, i18, 0, i13);
 			}
 		}
 
 		levelGen5.setNextPhase(100);
-		long j45 = EagRuntime.nanoTime();
-		System.out.println("Flood filled " + j40 + " tiles in " + (double)(j45 - j35) / 1000000.0D + " ms");
+		long j49 = EagRuntime.nanoTime();
+		System.out.println("Flood filled " + j44 + " tiles in " + (double)(j49 - j38) / 1000000.0D + " ms");
 		this.minecraft.levelLoadUpdate("Melting..");
 		this.addLava();
 		this.minecraft.levelLoadUpdate("Growing..");
 		this.addBeaches(i11);
 		this.minecraft.levelLoadUpdate("Planting..");
 		this.plantTrees(i11);
-		Level level28;
-		(level28 = new Level()).setData(i2, 64, i3, this.blocks);
-		level28.createTime = EagRuntime.currentTimeMillis();
-		level28.creator = string1;
-		level28.name = "A Nice World";
-		return level28;
+		Level level31;
+		(level31 = new Level()).setData(i2, 64, i3, this.blocks);
+		level31.createTime = EagRuntime.currentTimeMillis();
+		level31.creator = string1;
+		level31.name = "A Nice World";
+		return level31;
 	}
 
 	private void addBeaches(int[] i1) {
@@ -229,19 +234,19 @@ public final class LevelGen {
 				boolean z10 = perlinNoise6.getValue((double)i7, (double)i8) > 12.0D;
 				int i11;
 				int i12 = ((i11 = i1[i7 + i8 * i2]) * this.height + i8) * this.width + i7;
-                int i13;
-                if(((i13 = this.blocks[((i11 + 1) * this.height + i8) * this.width + i7] & 255) == Tile.water.id || i13 == Tile.calmWater.id) && i11 <= i4 / 2 - 1 && z10) {
-                    this.blocks[i12] = (byte)Tile.gravel.id;
-                }
+				int i13;
+				if(((i13 = this.blocks[((i11 + 1) * this.height + i8) * this.width + i7] & 255) == Tile.water.id || i13 == Tile.calmWater.id) && i11 <= i4 / 2 - 1 && z10) {
+					this.blocks[i12] = (byte)Tile.gravel.id;
+				}
 
-                if(i13 == 0) {
-                    int i14 = Tile.grass.id;
-                    if(i11 <= i4 / 2 - 1 && z9) {
-                        i14 = Tile.sand.id;
-                    }
+				if(i13 == 0) {
+					int i14 = Tile.grass.id;
+					if(i11 <= i4 / 2 - 1 && z9) {
+						i14 = Tile.sand.id;
+					}
 
-                    this.blocks[i12] = (byte)i14;
-                }
+					this.blocks[i12] = (byte)i14;
+				}
 			}
 		}
 
@@ -265,7 +270,7 @@ public final class LevelGen {
 					i9 += this.random.nextInt(6) - this.random.nextInt(6);
 					if(i8 >= 0 && i9 >= 0 && i8 < this.width && i9 < this.height) {
 						int i11 = i1[i8 + i9 * i2] + 1;
-                        int i12 = this.random.nextInt(3) + 4;
+						int i12 = this.random.nextInt(3) + 4;
 						boolean z13 = true;
 
 						int i14;
@@ -295,21 +300,21 @@ public final class LevelGen {
 							if((this.blocks[((i11 - 1) * this.height + i9) * this.width + i8] & 255) == Tile.grass.id && i11 < this.depth - i12 - 1) {
 								this.blocks[i14 - 1 * this.width * this.height] = (byte)Tile.dirt.id;
 
-                                for(i16 = i11 - 3 + i12; i16 <= i11 + i12; ++i16) {
-                                    i17 = i16 - (i11 + i12);
-                                    int i18 = 1 - i17 / 2;
+								for(i16 = i11 - 3 + i12; i16 <= i11 + i12; ++i16) {
+									i17 = i16 - (i11 + i12);
+									int i18 = 1 - i17 / 2;
 
-                                    for(int i21 = i8 - i18; i21 <= i8 + i18; ++i21) {
-                                        int i22 = i21 - i8;
+									for(int i21 = i8 - i18; i21 <= i8 + i18; ++i21) {
+										int i22 = i21 - i8;
 
-                                        for(int i19 = i9 - i18; i19 <= i9 + i18; ++i19) {
-                                            int i20 = i19 - i9;
-                                            if(Math.abs(i22) != i18 || Math.abs(i20) != i18 || this.random.nextInt(2) != 0 && i17 != 0) {
-                                                this.blocks[(i16 * this.height + i19) * this.width + i21] = (byte)Tile.leaf.id;
-                                            }
-                                        }
-                                    }
-                                }
+										for(int i19 = i9 - i18; i19 <= i9 + i18; ++i19) {
+											int i20 = i19 - i9;
+											if(Math.abs(i22) != i18 || Math.abs(i20) != i18 || this.random.nextInt(2) != 0 && i17 != 0) {
+												this.blocks[(i16 * this.height + i19) * this.width + i21] = (byte)Tile.leaf.id;
+											}
+										}
+									}
+								}
 
 								for(i16 = 0; i16 < i12; ++i16) {
 									this.blocks[i14 + i16 * this.width * this.height] = (byte)Tile.log.id;

@@ -2442,6 +2442,11 @@ public class GL11 {
     }
 
     public static final void glTexSubImage2D(int target, int level, int x, int y, int w, int h, int format, int type,
+            ByteBuffer pixels) {
+        _wglTexSubImage2D(target, level, x, y, w, h, format, type, pixels);
+    }
+
+    public static final void glTexSubImage2D(int target, int level, int x, int y, int w, int h, int format, int type,
             IntBuffer pixels) {
         _wglTexSubImage2D(target, level, x, y, w, h, format, type, pixels);
     }

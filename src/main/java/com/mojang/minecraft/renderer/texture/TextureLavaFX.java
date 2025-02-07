@@ -1,0 +1,71 @@
+package com.mojang.minecraft.renderer.texture;
+
+import com.mojang.minecraft.level.tile.Tile;
+
+public final class TextureLavaFX extends TextureFX {
+    private float[] red = new float[256];
+    private float[] green = new float[256];
+    private float[] blue = new float[256];
+    private float[] alpha = new float[256];
+
+    public TextureLavaFX() {
+        super(Tile.lava.tex);
+    }
+
+    public final void onTick() {
+        int i2;
+        float f3;
+        int i5;
+        int i6;
+        int i7;
+        for(int i1 = 0; i1 < 16; ++i1) {
+            for(i2 = 0; i2 < 16; ++i2) {
+                f3 = 0.0F;
+                int i4 = (int)(Math.sin((double)i2 * Math.PI * 2.0D / 16.0D) * 1.2000000476837158D);
+                i5 = (int)(Math.sin((double)i1 * Math.PI * 2.0D / 16.0D) * 1.2000000476837158D);
+
+                for(i6 = i1 - 1; i6 <= i1 + 1; ++i6) {
+                    for(i7 = i2 - 1; i7 <= i2 + 1; ++i7) {
+                        int i8 = i6 + i4 & 15;
+                        int i9 = i7 + i5 & 15;
+                        f3 += this.red[i8 + (i9 << 4)];
+                    }
+                }
+
+                this.green[i1 + (i2 << 4)] = f3 / 10.0F + (this.blue[(i1 & 15) + ((i2 & 15) << 4)] + this.blue[(i1 + 1 & 15) + ((i2 & 15) << 4)] + this.blue[(i1 + 1 & 15) + ((i2 + 1 & 15) << 4)] + this.blue[(i1 & 15) + ((i2 + 1 & 15) << 4)]) / 4.0F * 0.8F;
+                this.blue[i1 + (i2 << 4)] += this.alpha[i1 + (i2 << 4)] * 0.01F;
+                if(this.blue[i1 + (i2 << 4)] < 0.0F) {
+                    this.blue[i1 + (i2 << 4)] = 0.0F;
+                }
+
+                this.alpha[i1 + (i2 << 4)] -= 0.06F;
+                if(Math.random() < 0.005D) {
+                    this.alpha[i1 + (i2 << 4)] = 1.5F;
+                }
+            }
+        }
+
+        float[] f10 = this.green;
+        this.green = this.red;
+        this.red = f10;
+
+        for(i2 = 0; i2 < 256; ++i2) {
+            if((f3 = this.red[i2]) > 1.0F) {
+                f3 = 1.0F;
+            }
+
+            if(f3 < 0.0F) {
+                f3 = 0.0F;
+            }
+
+            i5 = (int)(f3 * 200.0F + 55.0F);
+            i6 = (int)(f3 * f3 * 255.0F);
+            i7 = (int)(f3 * f3 * f3 * f3 * 128.0F);
+            this.imageData[i2 << 2] = (byte)i5;
+            this.imageData[(i2 << 2) + 1] = (byte)i6;
+            this.imageData[(i2 << 2) + 2] = (byte)i7;
+            this.imageData[(i2 << 2) + 3] = -1;
+        }
+
+    }
+}

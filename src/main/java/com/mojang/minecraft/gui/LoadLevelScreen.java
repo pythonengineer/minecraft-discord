@@ -31,11 +31,11 @@ public class LoadLevelScreen extends Screen implements Runnable {
         (new Thread(this)).start();
 
         for(int i1 = 0; i1 < 5; ++i1) {
-            this.buttons.add(new Button(i1, this.y / 2 - 100, this.w / 4 + i1 * 24, 200, 20, "---"));
+            this.buttons.add(new Button(i1, this.width / 2 - 100, this.height / 4 + i1 * 24, 200, 20, "---"));
             ((Button)this.buttons.get(i1)).visible = false;
         }
 
-        this.buttons.add(new Button(5, this.y / 2 - 100, this.w / 4 + 144, 200, 20, "Cancel"));
+        this.buttons.add(new Button(5, this.width / 2 - 100, this.height / 4 + 144, 200, 20, "Cancel"));
     }
 
     protected final void buttonClicked(Button button1) {
@@ -58,10 +58,10 @@ public class LoadLevelScreen extends Screen implements Runnable {
     }
 
     public final void render(int i1, int i2) {
-        fillGradient(0, 0, this.y, this.w, 1610941696, -1607454624);
-        this.drawCenteredString(this.title, this.y / 2, 40, 0xFFFFFF);
+        fillGradient(0, 0, this.width, this.height, 1610941696, -1607454624);
+        this.drawCenteredString(this.title, this.width / 2, 40, 0xFFFFFF);
         if(!this.loaded) {
-            this.drawCenteredString(this.status, this.y / 2, this.w / 2 - 4, 0xFFFFFF);
+            this.drawCenteredString(this.status, this.width / 2, this.height / 2 - 4, 0xFFFFFF);
         }
 
         super.render(i1, i2);

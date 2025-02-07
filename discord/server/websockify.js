@@ -64,6 +64,23 @@ export function newClientToken(token) {
     tokens.add(token);
 }
 
+let nameMap = {};
+
+fs.readFile('aliases.txt', 'utf8', (err, data) => {
+    if (err) {
+        console.error('Error reading names file:', err);
+        return;
+    }
+
+    const lines = data.trim().split('\n');
+    lines.forEach(line => {
+        if (!line.startsWith('#')) {
+            const [key, value] = line.split('=');
+            nameMap[key.trim()] = value.trim();
+        }
+    });
+});
+
 async function getSkin(username) {
     const filePath = `skincache/${username}.png`;
     let skinBuffer;
@@ -227,6 +244,15 @@ const new_client = function (client, req) {
                 } else {
                     log('client auth');
                     hasAuthed = true;
+                    if (username in nameMap) {
+                        username = nameMap[username];
+                        for (let i = 0; i < 64; i++) {
+                            msg[i + 2] = 32;
+                        }
+                        for (let i = 0; i < username.length; i++) {
+                            msg[i + 2] = username.charCodeAt(i);
+                        }
+                    }
                     target.write(msg);
                 }
             } else if (!hasAuthed) {

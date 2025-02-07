@@ -44,6 +44,8 @@ public final class Packet {
                 i2 += 8;
             } else if(class4 == byte[].class) {
                 i2 += 1024;
+            } else if(class4 == String.class) {
+                i2 += 64;
             }
         }
 

@@ -33,6 +33,7 @@ public class Level implements Serializable {
 	private transient int randValue = this.random.nextInt();
 	private transient ArrayList tickList = new ArrayList();
 	public ArrayList entities = new ArrayList();
+    private boolean networkMode = false;
 	int unprocessed = 0;
 	private int tickCount = 0;
 
@@ -180,15 +181,21 @@ public class Level implements Serializable {
 	}
 
 	public void swap(int i1, int i2, int i3, int i4, int i5, int i6) {
-		int i7 = this.getTile(i1, i2, i3);
-		int i8 = this.getTile(i4, i5, i6);
-		this.setTileNoNeighborChange(i1, i2, i3, i8);
-		this.setTileNoNeighborChange(i4, i5, i6, i7);
-		this.updateNeighborAt(i1, i2, i3, i8);
-		this.updateNeighborAt(i4, i5, i6, i7);
+        if(!this.networkMode) {
+            int i7 = this.getTile(i1, i2, i3);
+            int i8 = this.getTile(i4, i5, i6);
+            this.setTileNoNeighborChange(i1, i2, i3, i8);
+            this.setTileNoNeighborChange(i4, i5, i6, i7);
+            this.updateNeighborsAt(i1, i2, i3, i8);
+            this.updateNeighborsAt(i4, i5, i6, i7);
+        }
 	}
 
 	public boolean setTileNoNeighborChange(int i1, int i2, int i3, int i4) {
+        return this.networkMode ? false : this.netSetTileNoNeighborChange(i1, i2, i3, i4);
+    }
+
+    public boolean netSetTileNoNeighborChange(int i1, int i2, int i3, int i4) {
 		if(i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height) {
 			if(i4 == this.blocks[(i2 * this.height + i3) * this.width + i1]) {
 				return false;
@@ -197,7 +204,16 @@ public class Level implements Serializable {
 					i4 = Tile.water.id;
 				}
 
-				this.blocks[(i2 * this.height + i3) * this.width + i1] = (byte)i4;
+                byte b5 = this.blocks[(i2 * this.height + i3) * this.width + i1];
+                this.blocks[(i2 * this.height + i3) * this.width + i1] = (byte)i4;
+                if(b5 != 0) {
+                    Tile.tiles[b5].onTileRemoved(this, i1, i2, i3);
+                }
+
+                if(i4 != 0) {
+                    Tile.tiles[i4].onTileAdded(this, i1, i2, i3);
+                }
+
 				this.calcLightDepths(i1, i3, 1, 1);
 
 				for(i4 = 0; i4 < this.levelListeners.size(); ++i4) {
@@ -212,21 +228,32 @@ public class Level implements Serializable {
 	}
 
 	public boolean setTile(int i1, int i2, int i3, int i4) {
-		if(this.setTileNoNeighborChange(i1, i2, i3, i4)) {
-			this.updateNeighborAt(i1, i2, i3, i4);
+        if(this.networkMode) {
+            return false;
+        } else if(this.setTileNoNeighborChange(i1, i2, i3, i4)) {
+            this.updateNeighborsAt(i1, i2, i3, i4);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean netSetTile(int i1, int i2, int i3, int i4) {
+        if(this.netSetTileNoNeighborChange(i1, i2, i3, i4)) {
+            this.updateNeighborsAt(i1, i2, i3, i4);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private void updateNeighborAt(int i1, int i2, int i3, int i4) {
-		this.neighborChanged(i1 - 1, i2, i3, i4);
-		this.neighborChanged(i1 + 1, i2, i3, i4);
-		this.neighborChanged(i1, i2 - 1, i3, i4);
-		this.neighborChanged(i1, i2 + 1, i3, i4);
-		this.neighborChanged(i1, i2, i3 - 1, i4);
-		this.neighborChanged(i1, i2, i3 + 1, i4);
+    public void updateNeighborsAt(int i1, int i2, int i3, int i4) {
+        this.updateNeighborAt(i1 - 1, i2, i3, i4);
+        this.updateNeighborAt(i1 + 1, i2, i3, i4);
+        this.updateNeighborAt(i1, i2 - 1, i3, i4);
+        this.updateNeighborAt(i1, i2 + 1, i3, i4);
+        this.updateNeighborAt(i1, i2, i3 - 1, i4);
+        this.updateNeighborAt(i1, i2, i3 + 1, i4);
 	}
 
 	public boolean setTileNoUpdate(int i1, int i2, int i3, int i4) {
@@ -242,7 +269,7 @@ public class Level implements Serializable {
 		}
 	}
 
-	private void neighborChanged(int i1, int i2, int i3, int i4) {
+    private void updateNeighborAt(int i1, int i2, int i3, int i4) {
 		if(i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height) {
 			Tile tile5;
 			if((tile5 = Tile.tiles[this.blocks[(i2 * this.height + i3) * this.width + i1]]) != null) {
@@ -257,7 +284,7 @@ public class Level implements Serializable {
 	}
 
 	public int getTile(int i1, int i2, int i3) {
-		return i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height ? this.blocks[(i2 * this.height + i3) * this.width + i1] : 0;
+        return i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.depth && i3 < this.height ? this.blocks[(i2 * this.height + i3) * this.width + i1] & 255 : 0;
 	}
 
 	public boolean isSolidTile(int i1, int i2, int i3) {
@@ -454,13 +481,15 @@ public class Level implements Serializable {
 	}
 
     public void addToTickNextTick(int i1, int i2, int i3, int i4) {
-        Coord coord5 = new Coord(i1, i2, i3, i4);
-        if(i4 > 0) {
-            i3 = Tile.tiles[i4].getTickDelay();
-            coord5.scheduledTime = i3;
-        }
+        if(!this.networkMode) {
+            Coord coord5 = new Coord(i1, i2, i3, i4);
+            if(i4 > 0) {
+                i3 = Tile.tiles[i4].getTickDelay();
+                coord5.scheduledTime = i3;
+            }
 
-        this.tickList.add(coord5);
+            this.tickList.add(coord5);
+        }
     }
 
 	public boolean isFree(AABB aABB1) {
@@ -605,6 +634,15 @@ public class Level implements Serializable {
 
     public byte[] copyBlocks() {
         return Arrays.copyOf(this.blocks, this.blocks.length);
+    }
+
+    public boolean isWater(int i1, int i2, int i3) {
+        int i4;
+        return (i4 = this.getTile(i1, i2, i3)) > 0 && Tile.tiles[i4].getLiquidType() == Liquid.water;
+    }
+
+    public void setNetworkMode(boolean z1) {
+        this.networkMode = z1;
     }
 
     public HitResult clip(Vec3 vec31, Vec3 vec32) {

@@ -12,6 +12,7 @@ public final class ConnectionManager {
 	public SocketConnection connection;
 	public Minecraft minecraft;
 	public boolean processData = false;
+    public boolean connected = false;
 	public HashMap players = new HashMap();
 
 	public ConnectionManager(Minecraft minecraft1, String string2, int i3, String string4, String string5) {

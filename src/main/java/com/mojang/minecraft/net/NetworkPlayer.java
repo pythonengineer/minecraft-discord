@@ -29,6 +29,7 @@ public class NetworkPlayer extends Entity {
 	private transient int skin = -1;
 	public transient ImageData newTexture = null;
 	public String name;
+    int tickCount = 0;
 	private Textures textures;
 
 	public NetworkPlayer(Minecraft minecraft1, int i2, String string3, int i4, int i5, int i6, float f7, float f8) {
@@ -48,6 +49,10 @@ public class NetworkPlayer extends Entity {
 	public void tick() {
 		super.tick();
 		this.animStepO = this.animStep;
+        this.yBodyRotO = this.yBodyRot;
+        this.yRotO = this.yRot;
+        this.xRotO = this.xRot;
+        ++this.tickCount;
 		int i1 = 5;
 
 		do {
@@ -58,32 +63,20 @@ public class NetworkPlayer extends Entity {
 
 		float f7 = this.x - this.xo;
 		float f2 = this.z - this.zo;
-		this.yBodyRotO = this.yBodyRot;
 		float f3 = (float)Math.sqrt((double)(f7 * f7 + f2 * f2));
 		float f4 = this.yBodyRot;
 		float f5 = 0.0F;
 		this.oRun = this.run;
 		float f6 = 0.0F;
-		if(f3 == 0.0F) {
-			this.animStep = 0.0F;
-		} else {
+        if(f3 != 0.0F) {
 			f6 = 1.0F;
 			f5 = f3 * 3.0F;
 			f4 = -((float)Math.atan2((double)f2, (double)f7) * 180.0F / (float)Math.PI + 90.0F);
 		}
 
-		this.run += (f6 - this.run) * 0.1F;
+        this.run += (f6 - this.run) * 0.3F;
 
 		for(f7 = f4 - this.yBodyRot; f7 < -180.0F; f7 += 360.0F) {
-		}
-
-		while(f7 >= 180.0F) {
-			f7 -= 360.0F;
-		}
-
-		this.yBodyRot += f7 * 0.1F;
-
-		for(f7 = this.yRot - this.yBodyRot; f7 < -180.0F; f7 += 360.0F) {
 		}
 
 		while(f7 >= 180.0F) {
@@ -109,6 +102,7 @@ public class NetworkPlayer extends Entity {
 		}
 
 		this.yBodyRot = this.yRot - f7;
+        this.yBodyRot += f7 * 0.1F;
 		if(z8) {
 			f5 = -f5;
 		}
@@ -142,6 +136,7 @@ public class NetworkPlayer extends Entity {
 
 	public void render(Textures textures1, float f2) {
 		this.textures = textures1;
+        float f3 = this.oRun + (this.run - this.oRun) * f2;
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		if(this.newTexture != null) {
 			this.skin = textures1.addTexture(this.newTexture);
@@ -154,46 +149,90 @@ public class NetworkPlayer extends Entity {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.skin);
 		}
 
-		float f8 = this.yBodyRotO + (this.yBodyRot - this.yBodyRotO) * f2;
-		float f3 = this.yRotO + (this.yRot - this.yRotO) * f2;
-		float f4 = this.xRotO + (this.xRot - this.xRotO) * f2;
-		f3 -= f8;
-		GL11.glPushMatrix();
-		float f5 = this.animStepO + (this.animStep - this.animStepO) * f2;
-		float f6;
-		GL11.glColor3f(f6 = this.getBrightness(), f6, f6);
-		f6 = 0.0625F;
-		float f7 = (float)(-Math.abs(Math.sin((double)f5 * 0.6662D)) * 5.0D - 23.0D);
-		GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 - this.heightOffset, this.zo + (this.z - this.zo) * f2);
-		GL11.glScalef(1.0F, -1.0F, 1.0F);
-		GL11.glScalef(f6, f6, f6);
-		GL11.glTranslatef(0.0F, f7, 0.0F);
-		GL11.glRotatef(f8, 0.0F, 1.0F, 0.0F);
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		this.zombieModel.render(f5, f3, f4);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		Font font9 = this.minecraft.font;
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 + 0.8F, this.zo + (this.z - this.zo) * f2);
-		GL11.glRotatef(-this.minecraft.player.yRot, 0.0F, 1.0F, 0.0F);
-		f2 = 0.05F;
-		GL11.glScalef(0.05F, -f2, f2);
-		GL11.glTranslatef((float)(-font9.width(this.name)) / 2.0F, 0.0F, 0.0F);
-		if(this.name.equalsIgnoreCase("Notch")) {
-			font9.draw(this.name, 0, 0, 16776960);
-		} else {
-			font9.draw(this.name, 0, 0, 0xFFFFFF);
-		}
+        while(this.yBodyRotO - this.yBodyRot < -180.0F) {
+            this.yBodyRotO += 360.0F;
+        }
 
-		GL11.glTranslatef(1.0F, 1.0F, -0.05F);
-		font9.draw(this.name, 0, 0, 5263440);
-		GL11.glPopMatrix();
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
+        while(this.yBodyRotO - this.yBodyRot >= 180.0F) {
+            this.yBodyRotO -= 360.0F;
+        }
+
+        float f9;
+        for(f9 = this.yBodyRotO + (this.yBodyRot - this.yBodyRotO) * f2; this.xRotO - this.xRot < -180.0F; this.xRotO += 360.0F) {
+        }
+
+        while(this.xRotO - this.xRot >= 180.0F) {
+            this.xRotO -= 360.0F;
+        }
+
+        while(this.yRotO - this.yRot < -180.0F) {
+            this.yRotO += 360.0F;
+        }
+
+        while(this.yRotO - this.yRot >= 180.0F) {
+            this.yRotO -= 360.0F;
+        }
+
+        float f4 = this.yRotO + (this.yRot - this.yRotO) * f2;
+        float f5 = this.xRotO + (this.xRot - this.xRotO) * f2;
+        f4 = -(f4 - f9);
+		GL11.glPushMatrix();
+        float f6 = this.animStepO + (this.animStep - this.animStepO) * f2;
+        float f7;
+        GL11.glColor3f(f7 = this.getBrightness(), f7, f7);
+        f7 = 0.0625F;
+        float f8 = (float)(-Math.abs(Math.cos((double)f6 * 0.6662D)) * 5.0D * (double)f3 - 23.0D);
+        GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 - this.heightOffset, this.zo + (this.z - this.zo) * f2);
+        GL11.glScalef(1.0F, -1.0F, 1.0F);
+        GL11.glScalef(f7, f7, f7);
+        GL11.glTranslatef(0.0F, f8, 0.0F);
+        GL11.glRotatef(f9, 0.0F, 1.0F, 0.0F);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glScalef(-1.0F, 1.0F, 1.0F);
+        this.zombieModel.render(f6, f3, (float)this.tickCount + f2, f4, f5);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        Font font10 = this.minecraft.font;
+        GL11.glPopMatrix();
+        GL11.glPushMatrix();
+        GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 + 0.8F, this.zo + (this.z - this.zo) * f2);
+        GL11.glRotatef(-this.minecraft.player.yRot, 0.0F, 1.0F, 0.0F);
+        f2 = 0.05F;
+        GL11.glScalef(0.05F, -f2, f2);
+        GL11.glTranslatef((float)(-font10.width(this.name)) / 2.0F, 0.0F, 0.0F);
+        if(this.name.equalsIgnoreCase("Notch")) {
+            font10.draw(this.name, 0, 0, 16776960);
+        } else {
+            font10.draw(this.name, 0, 0, 0xFFFFFF);
+        }
+
+        GL11.glTranslatef(1.0F, 1.0F, -0.05F);
+        font10.draw(this.name, 0, 0, 5263440);
+        GL11.glPopMatrix();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 
 	public void queue(byte b1, byte b2, byte b3, float f4, float f5) {
-		this.moveQueue.add(new PlayerMove(((float)this.xp + (float)b1 / 2.0F) / 32.0F, ((float)this.yp + (float)b2 / 2.0F) / 32.0F, ((float)this.zp + (float)b3 / 2.0F) / 32.0F, (this.yRot + f4) / 2.0F, (this.xRot + f5) / 2.0F));
+        float f6 = f4 - this.yRot;
+
+        float f7;
+        for(f7 = f5 - this.xRot; f6 >= 180.0F; f6 -= 360.0F) {
+        }
+
+        while(f6 < -180.0F) {
+            f6 += 360.0F;
+        }
+
+        while(f7 >= 180.0F) {
+            f7 -= 360.0F;
+        }
+
+        while(f7 < -180.0F) {
+            f7 += 360.0F;
+        }
+
+        f6 = this.yRot + f6 * 0.5F;
+        f7 = this.xRot + f7 * 0.5F;
+        this.moveQueue.add(new PlayerMove(((float)this.xp + (float)b1 / 2.0F) / 32.0F, ((float)this.yp + (float)b2 / 2.0F) / 32.0F, ((float)this.zp + (float)b3 / 2.0F) / 32.0F, f6, f7));
 		this.xp += b1;
 		this.yp += b2;
 		this.zp += b3;
@@ -201,7 +240,27 @@ public class NetworkPlayer extends Entity {
 	}
 
 	public void teleport(short s1, short s2, short s3, float f4, float f5) {
-		this.moveQueue.add(new PlayerMove((float)(this.xp + s1) / 64.0F, (float)(this.yp + s2) / 64.0F, (float)(this.zp + s3) / 64.0F, (this.yRot + f4) / 2.0F, (this.xRot + f5) / 2.0F));
+        float f6 = f4 - this.yRot;
+
+        float f7;
+        for(f7 = f5 - this.xRot; f6 >= 180.0F; f6 -= 360.0F) {
+        }
+
+        while(f6 < -180.0F) {
+            f6 += 360.0F;
+        }
+
+        while(f7 >= 180.0F) {
+            f7 -= 360.0F;
+        }
+
+        while(f7 < -180.0F) {
+            f7 += 360.0F;
+        }
+
+        f6 = this.yRot + f6 * 0.5F;
+        f7 = this.xRot + f7 * 0.5F;
+        this.moveQueue.add(new PlayerMove((float)(this.xp + s1) / 64.0F, (float)(this.yp + s2) / 64.0F, (float)(this.zp + s3) / 64.0F, f6, f7));
 		this.xp = s1;
 		this.yp = s2;
 		this.zp = s3;
@@ -217,7 +276,27 @@ public class NetworkPlayer extends Entity {
 	}
 
 	public void queue(float f1, float f2) {
-		this.moveQueue.add(new PlayerMove((this.yRot + f1) / 2.0F, (this.xRot + f2) / 2.0F));
+        float f3 = f1 - this.yRot;
+
+        float f4;
+        for(f4 = f2 - this.xRot; f3 >= 180.0F; f3 -= 360.0F) {
+        }
+
+        while(f3 < -180.0F) {
+            f3 += 360.0F;
+        }
+
+        while(f4 >= 180.0F) {
+            f4 -= 360.0F;
+        }
+
+        while(f4 < -180.0F) {
+            f4 += 360.0F;
+        }
+
+        f3 = this.yRot + f3 * 0.5F;
+        f4 = this.xRot + f4 * 0.5F;
+        this.moveQueue.add(new PlayerMove(f3, f4));
 		this.moveQueue.add(new PlayerMove(f1, f2));
 	}
 

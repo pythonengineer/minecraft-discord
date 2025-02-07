@@ -6,6 +6,7 @@ import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.player.Player;
 
+import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
@@ -306,7 +307,7 @@ public final class LevelRenderer {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, ((float)Math.sin((double)System.currentTimeMillis() / 100.0D) * 0.2F + 0.4F) * 0.5F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, ((float)Math.sin((double)EagRuntime.currentTimeMillis() / 100.0D) * 0.2F + 0.4F) * 0.5F);
 		if(i3 == 0) {
 			tesselator5.begin(DefaultVertexFormats.POSITION);
 
@@ -318,7 +319,7 @@ public final class LevelRenderer {
 		} else {
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			float f8;
-			GL11.glColor4f(f8 = (float)Math.sin((double)System.currentTimeMillis() / 100.0D) * 0.2F + 0.8F, f8, f8, (float)Math.sin((double)System.currentTimeMillis() / 200.0D) * 0.2F + 0.5F);
+			GL11.glColor4f(f8 = (float)Math.sin((double)EagRuntime.currentTimeMillis() / 100.0D) * 0.2F + 0.8F, f8, f8, (float)Math.sin((double)EagRuntime.currentTimeMillis() / 200.0D) * 0.2F + 0.5F);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
             int i7 = this.textures.getTextureId("/terrain.png");
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, i7);
