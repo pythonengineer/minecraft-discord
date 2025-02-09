@@ -66,11 +66,11 @@ public class Zombie extends Entity {
         float f5 = (float)(-Math.abs(Math.sin(d3 * 0.6662D)) * 5.0D - 23.0D);
         GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2, this.zo + (this.z - this.zo) * f2);
         GL11.glScalef(1.0F, -1.0F, 1.0F);
-        GL11.glScalef(f6, f6, f6);
-        GL11.glTranslatef(0.0F, f5, 0.0F);
-        f6 = 57.29578F;
-        GL11.glRotatef(this.rot * f6 + 180.0F, 0.0F, 1.0F, 0.0F);
-        zombieModel.render((float)d3, 1.0F, 0.0F, 0.0F, 0.0F);
+        GL11.glTranslatef(0.0F, f5 * f6, 0.0F);
+        f2 = 57.29578F;
+        GL11.glRotatef(this.rot * f2 + 180.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glScalef(-1.0F, 1.0F, 1.0F);
+        zombieModel.render((float)d3, 1.0F, 0.0F, 0.0F, 0.0F, f6);
 		GL11.glPopMatrix();
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}

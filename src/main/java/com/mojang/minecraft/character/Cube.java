@@ -63,32 +63,41 @@ public class Cube {
         this.z = 0.0F;
     }
 
-    public void render() {
+    public final void render(float f1) {
         if(!this.compiled) {
-            this.compile();
+            float f3 = f1;
+            Cube cube2 = this;
+            this.list = GL11.glGenLists(1);
+            GL11.glNewList(this.list, GL11.GL_COMPILE);
+            GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+            for(int i4 = 0; i4 < cube2.polygons.length; ++i4) {
+                Polygon polygon10000 = cube2.polygons[i4];
+                float f6 = f3;
+                Polygon polygon5 = polygon10000;
+                Vec3 vec37 = polygon10000.vertices[1].pos.subtract(polygon5.vertices[0].pos).normalize();
+                Vec3 vec38 = polygon5.vertices[1].pos.subtract(polygon5.vertices[2].pos).normalize();
+                GL11.glNormal3f((vec37 = (new Vec3(vec37.y * vec38.z - vec37.z * vec38.y, vec37.z * vec38.x - vec37.x * vec38.z, vec37.x * vec38.y - vec37.y * vec38.x)).normalize()).x, vec37.y, vec37.z);
+
+                for(int i10 = 0; i10 < 4; ++i10) {
+                    Vertex vertex11;
+                    GL11.glTexCoord2f((vertex11 = polygon5.vertices[i10]).u / 64.0F, vertex11.v / 32.0F);
+                    GL11.glVertex3f(vertex11.pos.x * f6, vertex11.pos.y * f6, vertex11.pos.z * f6);
+                }
+            }
+
+            GL11.glEnd();
+            GL11.glEndList();
+            cube2.compiled = true;
         }
 
-        float c = 57.29578F;
+        float f9 = 57.29578F;
         GL11.glPushMatrix();
-        GL11.glTranslatef(this.x, this.y, this.z);
-        GL11.glRotatef(this.zRot * c, 0.0F, 0.0F, 1.0F);
-        GL11.glRotatef(this.yRot * c, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(this.xRot * c, 1.0F, 0.0F, 0.0F);
+        GL11.glTranslatef(this.x * f1, this.y * f1, this.z * f1);
+        GL11.glRotatef(this.zRot * f9, 0.0F, 0.0F, 1.0F);
+        GL11.glRotatef(this.yRot * f9, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(this.xRot * f9, 1.0F, 0.0F, 0.0F);
         GL11.glCallList(this.list);
         GL11.glPopMatrix();
-    }
-
-    private void compile() {
-        this.list = GL11.glGenLists(1);
-        GL11.glNewList(this.list, GL11.GL_COMPILE);
-        GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-
-        for(int i = 0; i < this.polygons.length; ++i) {
-            this.polygons[i].render();
-        }
-
-        GL11.glEnd();
-        GL11.glEndList();
-        this.compiled = true;
     }
 }

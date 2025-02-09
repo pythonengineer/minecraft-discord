@@ -58,6 +58,18 @@ public class Screen {
 
     }
 
+    protected void mousePressed(int i1, int i2, int i3) {
+        if(i3 == 0) {
+            for(i3 = 0; i3 < this.buttons.size(); ++i3) {
+                Button button4;
+                if((button4 = (Button)this.buttons.get(i3)).enabled && i1 >= button4.x && i2 >= button4.y && i1 < button4.x + button4.w && i2 < button4.y + button4.h) {
+                    this.buttonClicked(button4);
+                }
+            }
+        }
+
+    }
+
     protected void buttonClicked(Button button1) {
     }
 
@@ -133,7 +145,7 @@ public class Screen {
 			if(noTouch && Mouse.getEventButtonState()) {
                 int xm = Mouse.getEventX() * this.width / this.minecraft.width;
                 int ym = this.height - Mouse.getEventY() * this.height / this.minecraft.height - 1;
-				this.mouseClicked(xm, ym, Mouse.getEventButton());
+				this.mousePressed(xm, ym, Mouse.getEventButton());
 			}
 		}
 
@@ -147,13 +159,13 @@ public class Screen {
 
     protected void touchStarted(int parInt1, int parInt2, int parInt3) {
         if (shouldTouchGenerateMouseEvents()) {
-            this.mouseClicked(parInt1, parInt2, 12345);
+            this.mousePressed(parInt1, parInt2, 12345);
         }
     }
 
     protected void touchTapped(int parInt1, int parInt2, int parInt3) {
         if (shouldTouchGenerateMouseEvents()) {
-            this.mouseClicked(parInt1, parInt2, 0);
+            this.mousePressed(parInt1, parInt2, 0);
             //this.mouseReleased(parInt1, parInt2, 0);
         }
     }
@@ -248,30 +260,6 @@ public class Screen {
         int[] ret = touchStarts.get(uid);
         return ret != null && ret[2] == 1;
     }
-
-	protected void mouseClicked(int x, int y, int button) {
-        int i3 = y;
-        int i2 = x;
-        int i4 = button;
-        Screen screen6 = this;
-        if(i4 != 0) {
-            return;
-        }
-
-        i4 = 0;
-
-        while(true) {
-            if(i4 >= screen6.buttons.size()) {
-                break;
-            }
-            Button button5;
-            if((button5 = (Button)screen6.buttons.get(i4)).enabled && i2 >= button5.x && i3 >= button5.y && i2 < button5.x + button5.w && i3 < button5.y + button5.h) {
-                screen6.buttonClicked(button5);
-            }
-
-            ++i4;
-        }
-	}
 
     public void tick() {
     }

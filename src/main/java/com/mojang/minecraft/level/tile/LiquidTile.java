@@ -24,7 +24,7 @@ public class LiquidTile extends Tile {
 		this.calmTileId = i1 + 1;
 		float f4 = 0.01F;
 		float f3 = 0.1F;
-		this.setShape(0.0F - f4, 0.0F - f3 - f4, 0.0F - f4, f4 + 1.0F, 1.0F - f3 + f4, f4 + 1.0F);
+        this.setShape(f4 + 0.0F, 0.0F - f3 + f4, f4 + 0.0F, f4 + 1.0F, 1.0F - f3 + f4, f4 + 1.0F);
 		this.setTicking(true);
 		if(liquid2 == Liquid.lava) {
 			this.setTickSpeed(16);

@@ -41,7 +41,7 @@ class PacketRegistry {
     }
 }
 
-PacketRegistry.register(new Packet(0, 129));
+PacketRegistry.register(new Packet(0, 130));
 PacketRegistry.register(new Packet(1, 0));
 PacketRegistry.register(new Packet(2, 0));
 PacketRegistry.register(new Packet(3, 1027));

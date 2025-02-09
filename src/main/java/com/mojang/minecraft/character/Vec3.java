@@ -11,6 +11,15 @@ public class Vec3 {
         this.z = z;
     }
 
+    public final Vec3 subtract(Vec3 vec31) {
+        return new Vec3(this.x - vec31.x, this.y - vec31.y, this.z - vec31.z);
+    }
+
+    public final Vec3 normalize() {
+        float f1 = (float)Math.sqrt((double)(this.x * this.x + this.y * this.y + this.z * this.z));
+        return new Vec3(this.x / f1, this.y / f1, this.z / f1);
+    }
+
     public Vec3 interpolateTo(Vec3 t, float p) {
         float xt = this.x + (t.x - this.x) * p;
         float yt = this.y + (t.y - this.y) * p;

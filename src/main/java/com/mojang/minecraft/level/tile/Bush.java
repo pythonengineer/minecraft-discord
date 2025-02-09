@@ -7,11 +7,11 @@ import com.mojang.minecraft.renderer.Tesselator;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public final class Bush extends Tile {
-	protected Bush(int i1) {
-		super(6);
-		this.tex = 15;
-		this.setTicking(true);
-	}
+    protected Bush(int i1, int i2) {
+        super(i1);
+        this.tex = i2;
+        this.setTicking(true);
+    }
 
 	public final void tick(Level level1, int i2, int i3, int i4, EaglercraftRandom random5) {
 		int i6 = level1.getTile(i2, i3 - 1, i4);

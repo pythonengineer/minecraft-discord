@@ -26,7 +26,7 @@ public class ZombieModel {
         this.leg1.setPos(2.0F, 12.0F, 0.0F);
     }
 
-    public final void render(float f1, float f2, float f3, float f4, float f5) {
+    public final void render(float f1, float f2, float f3, float f4, float f5, float f6) {
         this.head.yRot = f4 / 57.29578F;
         this.head.xRot = f5 / 57.29578F;
         this.arm0.xRot = (float)Math.cos((double)f1 * 0.6662D + Math.PI) * 2.0F * f2;
@@ -39,11 +39,11 @@ public class ZombieModel {
         this.arm1.zRot -= (float)Math.cos((double)f3 * 0.09D) * 0.05F + 0.05F;
         this.arm0.xRot += (float)Math.sin((double)f3 * 0.067D) * 0.05F;
         this.arm1.xRot -= (float)Math.sin((double)f3 * 0.067D) * 0.05F;
-        this.head.render();
-        this.body.render();
-        this.arm0.render();
-        this.arm1.render();
-        this.leg0.render();
-        this.leg1.render();
+        this.head.render(f6);
+        this.body.render(f6);
+        this.arm0.render(f6);
+        this.arm1.render(f6);
+        this.leg0.render(f6);
+        this.leg1.render(f6);
     }
 }

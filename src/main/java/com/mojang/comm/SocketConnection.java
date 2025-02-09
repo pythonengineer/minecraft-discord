@@ -99,6 +99,7 @@ public final class SocketConnection {
                 if(packet3 == Packet.LOGIN) {
                     connectionManager12.minecraft.beginLevelLoading(object11[1].toString());
                     connectionManager12.minecraft.levelLoadUpdate(object11[2].toString());
+                    connectionManager12.minecraft.player.userType = ((Byte)object11[3]).byteValue();
                 } else if(packet3 == Packet.LEVEL_INITIALIZE) {
                     connectionManager12.minecraft.setLevel((Level)null);
                     connectionManager12.levelBuffer = new ByteArrayOutputStream();

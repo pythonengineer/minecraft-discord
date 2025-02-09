@@ -184,12 +184,11 @@ public class NetworkPlayer extends Entity {
         float f8 = (float)(-Math.abs(Math.cos((double)f6 * 0.6662D)) * 5.0D * (double)f3 - 23.0D);
         GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 - this.heightOffset, this.zo + (this.z - this.zo) * f2);
         GL11.glScalef(1.0F, -1.0F, 1.0F);
-        GL11.glScalef(f7, f7, f7);
-        GL11.glTranslatef(0.0F, f8, 0.0F);
+        GL11.glTranslatef(0.0F, f8 * f7, 0.0F);
         GL11.glRotatef(f9, 0.0F, 1.0F, 0.0F);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glScalef(-1.0F, 1.0F, 1.0F);
-        this.zombieModel.render(f6, f3, (float)this.tickCount + f2, f4, f5);
+        this.zombieModel.render(f6, f3, (float)this.tickCount + f2, f4, f5, f7);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         Font font10 = this.minecraft.font;
         GL11.glPopMatrix();
@@ -199,12 +198,17 @@ public class NetworkPlayer extends Entity {
         f2 = 0.05F;
         GL11.glScalef(0.05F, -f2, f2);
         GL11.glTranslatef((float)(-font10.width(this.name)) / 2.0F, 0.0F, 0.0F);
+        GL11.glNormal3f(1.0F, -1.0F, 1.0F);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_LIGHT0);
         if(this.name.equalsIgnoreCase("Notch")) {
             font10.draw(this.name, 0, 0, 16776960);
         } else {
             font10.draw(this.name, 0, 0, 0xFFFFFF);
         }
 
+        GL11.glEnable(GL11.GL_LIGHT0);
+        GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glTranslatef(1.0F, 1.0F, -0.05F);
         font10.draw(this.name, 0, 0, 5263440);
         GL11.glPopMatrix();

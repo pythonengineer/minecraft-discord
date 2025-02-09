@@ -5,6 +5,8 @@ import com.mojang.minecraft.level.Level;
 
 public class Player extends Entity {
 	private MovementInput input;
+    public Inventory inventory = new Inventory();
+    public byte userType = 0;
 
 	public Player(Level level1, MovementInput movementInput2) {
 		super(level1);

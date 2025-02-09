@@ -1089,6 +1089,14 @@ public class GL11 {
             case GL_LIGHTING:
                 enableLighting();
                 break;
+            case GL_LIGHT0:
+                stateLightsEnabled[stateLightsStackPointer][0] = true;
+                ++stateLightingSerial[stateLightsStackPointer];
+                break;
+            case GL_LIGHT1:
+                stateLightsEnabled[stateLightsStackPointer][1] = true;
+                ++stateLightingSerial[stateLightsStackPointer];
+                break;
             case GL_TEXTURE_2D:
                 enableTexture2D();
                 break;
@@ -1120,6 +1128,14 @@ public class GL11 {
                 break;
             case GL_LIGHTING:
                 disableLighting();
+                break;
+            case GL_LIGHT0:
+                stateLightsEnabled[stateLightsStackPointer][0] = false;
+                ++stateLightingSerial[stateLightsStackPointer];
+                break;
+            case GL_LIGHT1:
+                stateLightsEnabled[stateLightsStackPointer][1] = false;
+                ++stateLightingSerial[stateLightsStackPointer];
                 break;
             case GL_TEXTURE_2D:
                 disableTexture2D();
@@ -1199,6 +1215,40 @@ public class GL11 {
     public static final void disableMCLight(int light) {
         stateLightsEnabled[stateLightsStackPointer][light] = false;
         ++stateLightingSerial[stateLightsStackPointer];
+    }
+
+    public static final void glLight(int light, int type, FloatBuffer vector) {
+        switch (light) {
+            case GL_LIGHT0:
+                light = 0;
+                break;
+            case GL_LIGHT1:
+                light = 1;
+                break;
+            default:
+                throw new UnsupportedOperationException("Only GL_LIGHT0 and GL_LIGHT1 glLight are supported");
+        }
+        switch (type) {
+            case GL_POSITION: {
+                paramVector4.x = (float)vector.get();
+                paramVector4.y = (float)vector.get();
+                paramVector4.z = (float)vector.get();
+                paramVector4.w = (float)vector.get();
+                Matrix4f.transform(modelMatrixStack[modelMatrixStackPointer], paramVector4, paramVector4);
+                paramVector4.normalise();
+                Vector4f dest = stateLightsStack[stateLightsStackPointer][light];
+                dest.x = paramVector4.x;
+                dest.y = paramVector4.y;
+                dest.z = paramVector4.z;
+                ++stateLightingSerial[stateLightsStackPointer];
+                break;
+            }
+            case GL_DIFFUSE:
+                Vector4f dest = stateLightsStack[stateLightsStackPointer][light];
+                dest.w = vector.get();
+                ++stateLightingSerial[stateLightsStackPointer];
+                break;
+        }
     }
 
     public static final void glLightModel(int type, FloatBuffer vector) {

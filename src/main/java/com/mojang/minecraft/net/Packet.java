@@ -2,7 +2,7 @@ package com.mojang.minecraft.net;
 
 public final class Packet {
     public static final Packet[] PACKETS = new Packet[256];
-    public static final Packet LOGIN = new Packet(new Class[]{Byte.TYPE, String.class, String.class});
+    public static final Packet LOGIN = new Packet(new Class[]{Byte.TYPE, String.class, String.class, Byte.TYPE});
     public static final Packet LEVEL_INITIALIZE;
     public static final Packet LEVEL_DATA_CHUNK;
     public static final Packet LEVEL_FINALIZE;

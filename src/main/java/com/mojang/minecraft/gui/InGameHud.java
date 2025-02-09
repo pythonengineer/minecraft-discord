@@ -2,10 +2,10 @@ package com.mojang.minecraft.gui;
 
 import com.mojang.minecraft.ChatLine;
 import com.mojang.minecraft.Minecraft;
-import com.mojang.minecraft.User;
 import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.net.ConnectionManager;
 import com.mojang.minecraft.net.NetworkPlayer;
+import com.mojang.minecraft.player.Inventory;
 import com.mojang.minecraft.renderer.Tesselator;
 import com.mojang.minecraft.renderer.Textures;
 
@@ -46,12 +46,13 @@ public final class InGameHud {
         Tesselator tesselator3 = Tesselator.instance;
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glEnable(GL11.GL_BLEND);
-        blit(scaledWidth / 2 - 91, scaledHeight - 22, 0, 0, 182, 22);
+        Inventory inventory4 = this.minecraft.player.inventory;
+        int i = scaledWidth / 2;
+        blit(i - 91, scaledHeight - 22, 0, 0, 182, 22);
 
         if (PointerInputAbstraction.isTouchMode()) {
-            int i = scaledWidth / 2;
-            //GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
-            //blit(i + 89, scaledHeight - 22, 234, 0, 22, 22);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
+            blit(i + 89, scaledHeight - 22, 234, 0, 22, 22, true);
             int areaHAdd = 12;
             hotbarAreaX = (i - 91) * this.minecraft.width / scaledWidth;
             hotbarAreaY = (scaledHeight - 22 - areaHAdd) * this.minecraft.height / scaledHeight;
@@ -64,68 +65,52 @@ public final class InGameHud {
             hotbarAreaH = -1;
         }
 
-        int i10000 = scaledWidth / 2 - 91 - 1;
-        Minecraft minecraft4 = this.minecraft;
-        int i5 = 0;
-
-        int i10001;
-        while(true) {
-            if(i5 >= User.creativeTiles.length) {
-                i10001 = 0;
-                break;
-            }
-
-            if(User.creativeTiles[i5] == minecraft4.paintTexture) {
-                i10001 = i5;
-                break;
-            }
-
-            ++i5;
-        }
-
-        blit(i10000 + i10001 * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.minecraft.textures.getTextureId("/gui.png"));
+        blit(i - 91 - 1 + inventory4.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         GL11.glDisable(GL11.GL_BLEND);
 
-        int i6;
-        int i13;
-        for(i13 = 0; i13 < 9; ++i13) {
-            i5 = User.creativeTiles[i13];
-            GL11.glPushMatrix();
-            GL11.glTranslatef((float)(scaledWidth / 2 - 90 + i13 * 20), (float)(scaledHeight - 16), -50.0F);
-            GL11.glScalef(10.0F, 10.0F, 10.0F);
-            GL11.glTranslatef(1.0F, 0.5F, 0.0F);
-            GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
-            GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-            GL11.glTranslatef(-1.5F, 0.5F, 0.5F);
-            GL11.glScalef(-1.0F, -1.0F, -1.0F);
-            i6 = textures2.getTextureId("/terrain.png");
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, i6);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            tesselator3.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-            Tile.tiles[i5].render(tesselator3, this.minecraft.level, 0, -2, 0, 0);
-            tesselator3.end();
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPopMatrix();
+        int i5;
+        int i7;
+        for(i5 = 0; i5 < inventory4.slots.length; ++i5) {
+            int i6;
+            if((i6 = inventory4.slots[i5]) > 0) {
+                GL11.glPushMatrix();
+                GL11.glTranslatef((float)(scaledWidth / 2 - 90 + i5 * 20), (float)(scaledHeight - 16), -50.0F);
+                GL11.glScalef(10.0F, 10.0F, 10.0F);
+                GL11.glTranslatef(1.0F, 0.5F, 0.0F);
+                GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glTranslatef(-1.5F, 0.5F, 0.5F);
+                GL11.glScalef(-1.0F, -1.0F, -1.0F);
+                i7 = textures2.getTextureId("/terrain.png");
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, i7);
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
+                tesselator3.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
+                Tile.tiles[i6].render(tesselator3, this.minecraft.level, 0, -2, 0, 0);
+                tesselator3.end();
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                GL11.glPopMatrix();
+            }
         }
 
         onEndHotbarDraw();
 
-        font1.drawShadow("0.0.19a_06", 2, 2, 0xFFFFFF);
+        font1.drawShadow("0.0.20a_02", 2, 2, 0xFFFFFF);
         font1.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
-        byte b14 = 10;
-        boolean z15 = false;
+        byte b17 = 10;
+        boolean z18 = false;
         if(this.minecraft.screen instanceof ChatScreen) {
-            b14 = 20;
-            z15 = true;
+            b17 = 20;
+            z18 = true;
         }
 
-        for(i6 = 0; i6 < this.messages.size() && i6 < b14; ++i6) {
-            if(((ChatLine)this.messages.get(i6)).counter < 200 || z15) {
-                font1.drawShadow(((ChatLine)this.messages.get(i6)).message, 2, scaledHeight - 8 - (i6 << 3) - 16, 0xFFFFFF);
+        for(i7 = 0; i7 < this.messages.size() && i7 < b17; ++i7) {
+            if(((ChatLine)this.messages.get(i7)).counter < 200 || z18) {
+                font1.drawShadow(((ChatLine)this.messages.get(i7)).message, 2, scaledHeight - 8 - (i7 << 3) - 16, 0xFFFFFF);
             }
         }
 
-        i6 = scaledWidth / 2;
+        int i6 = scaledWidth / 2;
         int i9 = scaledHeight / 2;
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         tesselator3.begin(DefaultVertexFormats.POSITION);
@@ -165,7 +150,7 @@ public final class InGameHud {
             font1.drawShadow(string11, i6 - font1.width(string11) / 2, i9 - 64 - 12, 0xFFFFFF);
 
             for(int i12 = 0; i12 < arrayList8.size(); ++i12) {
-                i13 = i6 + i12 % 2 * 120 - 120;
+                int i13 = i6 + i12 % 2 * 120 - 120;
                 i5 = i9 - 64 + (i12 / 2 << 3);
                 font1.draw((String)arrayList8.get(i12), i13, i5, 0xFFFFFF);
             }
@@ -178,10 +163,22 @@ public final class InGameHud {
         float f8 = 0.015625F;
         Tesselator tesselator6 = Tesselator.instance;
         Tesselator.instance.begin(DefaultVertexFormats.POSITION_TEX);
-        tesselator6.vertexUV((float)i0, (float)(i1 + 22), -90.0F, 0.0F, (float)(i3 + 22) * f8);
-        tesselator6.vertexUV((float)(i0 + i4), (float)(i1 + 22), -90.0F, (float)(i4 + 0) * f7, (float)(i3 + 22) * f8);
-        tesselator6.vertexUV((float)(i0 + i4), (float)i1, -90.0F, (float)(i4 + 0) * f7, (float)i3 * f8);
-        tesselator6.vertexUV((float)i0, (float)i1, -90.0F, 0.0F, (float)i3 * f8);
+        tesselator6.vertexUV((float)i0, (float)(i1 + 22), -90.0F, i2 * f7, (float)(i3 + 22) * f8);
+        tesselator6.vertexUV((float)(i0 + i4), (float)(i1 + 22), -90.0F, (float)(i4 + i2) * f7, (float)(i3 + 22) * f8);
+        tesselator6.vertexUV((float)(i0 + i4), (float)i1, -90.0F, (float)(i4 + i2) * f7, (float)i3 * f8);
+        tesselator6.vertexUV((float)i0, (float)i1, -90.0F, i2 * f7, (float)i3 * f8);
+        tesselator6.end();
+    }
+
+    private static void blit(int i0, int i1, int i2, int i3, int i4, int i5, boolean same) {
+        float f7 = 0.00390625F;
+        float f8 = 0.00390625F;
+        Tesselator tesselator6 = Tesselator.instance;
+        Tesselator.instance.begin(DefaultVertexFormats.POSITION_TEX);
+        tesselator6.vertexUV((float)i0, (float)(i1 + 22), -90.0F, i2 * f7, (float)(i3 + 22) * f8);
+        tesselator6.vertexUV((float)(i0 + i4), (float)(i1 + 22), -90.0F, (float)(i4 + i2) * f7, (float)(i3 + 22) * f8);
+        tesselator6.vertexUV((float)(i0 + i4), (float)i1, -90.0F, (float)(i4 + i2) * f7, (float)i3 * f8);
+        tesselator6.vertexUV((float)i0, (float)i1, -90.0F, i2 * f7, (float)i3 * f8);
         tesselator6.end();
     }
 
@@ -250,17 +247,12 @@ public final class InGameHud {
                 currentHotbarSlotTouch = getHotbarSlotTouched(pointX);
                 hotbarSlotTouchStart = EagRuntime.currentTimeMillis();
                 if (currentHotbarSlotTouch >= 0 && currentHotbarSlotTouch < 9) {
-                    for (int i = 0; i < User.creativeTiles.length; i++) {
-                        if (User.creativeTiles[i] == this.minecraft.paintTexture
-                            && i == currentHotbarSlotTouch) { 
-                            hotbarSlotTouchAlreadySelected = true;
-                        }
-                    }
-                    this.minecraft.paintTexture = User.creativeTiles[currentHotbarSlotTouch];
+                    hotbarSlotTouchAlreadySelected = (this.minecraft.player.inventory.selectedSlot == currentHotbarSlotTouch);
+                    this.minecraft.player.inventory.selectedSlot = currentHotbarSlotTouch;
                 } else if (currentHotbarSlotTouch == 9) {
-                    //hotbarSlotTouchAlreadySelected = false;
-                    //currentHotbarSlotTouch = 69;
-                    //mc.displayGuiScreen(new GuiInventory(mc.thePlayer));
+                    hotbarSlotTouchAlreadySelected = false;
+                    currentHotbarSlotTouch = 69;
+                    this.minecraft.setScreen(new InventoryScreen());
                 }
                 return true;
             }
@@ -310,7 +302,7 @@ public final class InGameHud {
                                 currentHotbarSlotTouch = slot;
                                 hotbarSlotTouchStart = millis;
                                 if (slot >= 0 && slot < 9) {
-                                    this.minecraft.paintTexture = User.creativeTiles[slot];
+                                    this.minecraft.player.inventory.selectedSlot = slot;
                                 }
                             } else {
                                 if (millis - hotbarSlotTouchStart > 1200l) {
