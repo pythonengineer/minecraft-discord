@@ -242,7 +242,6 @@ const new_client = function (client, req) {
                     log('bad token auth');
                     end(client, target);
                 } else {
-                    log('client auth');
                     hasAuthed = true;
                     if (username in nameMap) {
                         username = nameMap[username];
@@ -253,6 +252,7 @@ const new_client = function (client, req) {
                             msg[i + 2] = username.charCodeAt(i);
                         }
                     }
+                    log('client auth');
                     target.write(msg);
                 }
             } else if (!hasAuthed) {

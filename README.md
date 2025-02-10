@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **0.0.20a_02**, a *Multiplayer Classic* version of the game which was released on _**June 20, 2009**_.
+This version is **0.0.21a**, a *Multiplayer Classic* version of the game which was released on _**June 22, 2009**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.20a_02).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.21a).
 
 ### Usage
 
@@ -44,7 +44,7 @@ however you may add aliases for Discord usernames so they have different player 
 
 From left to right at the top are the buttons to teleport the player to spawn, pause the game, chat, and save the spawn position.
 
-Tap the block on the top left to switch blocks. The most bottom right button is jump and the one above it toggles block picking mode.
+The rightmost hotbar button opens inventory. The most bottom right button is jump and the one above it toggles block picking mode.
 
 ### Notes
 

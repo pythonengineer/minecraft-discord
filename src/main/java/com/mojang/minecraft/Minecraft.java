@@ -101,6 +101,7 @@ public final class Minecraft implements Runnable {
     private float renderDistance = 0.0F;
 	private HitResult hitResult = null;
     private float fogColorMultiplier = 1.0F;
+    private boolean displayActive = false;
     private volatile int unusedInt1 = 0;
     private volatile int unusedInt2 = 0;
     public boolean mouseGrabSupported = false;
@@ -143,7 +144,7 @@ public final class Minecraft implements Runnable {
         }
         this.displayDPI = Math.min(Display.getDPI(), 2.0f);
 
-        Display.setTitle("Minecraft 0.0.20a_02");
+        Display.setTitle("Minecraft 0.0.21a");
 
         try {
             Display.create();
@@ -337,10 +338,11 @@ public final class Minecraft implements Runnable {
                             GL11.optimize();
                             checkGlError("Pre render");
                             float f33 = this.timer.a;
-                            if(!Display.isActive()) {
+                            if(this.displayActive && !Display.isActive()) {
                                 this.pauseGame();
                             }
 
+                            this.displayActive = Display.isActive();
                             int i5;
                             int i34;
                             int i38;
@@ -552,7 +554,7 @@ public final class Minecraft implements Runnable {
             } else {
                 int i5 = this.player.inventory.getSelected();
                 AABB aABB7;
-                if(((tile4 = Tile.tiles[this.level.getTile(i1, i2, i3)]) == null || tile4 == Tile.water || tile4 == Tile.calmWater || tile4 == Tile.lava || tile4 == Tile.calmLava) && ((aABB7 = Tile.tiles[i5].getAABB(i1, i2, i3)) == null || (this.player.bb.intersects(aABB7) ? false : this.level.isFree(aABB7)))) {
+                if(((tile4 = Tile.tiles[this.level.getTile(i1, i2, i3)]) == null || tile4 == Tile.water || tile4 == Tile.calmWater || tile4 == Tile.lava || tile4 == Tile.calmLava) && ((aABB7 = Tile.tiles[i5].getTileAABB(i1, i2, i3)) == null || (this.player.bb.intersects(aABB7) ? false : this.level.isFree(aABB7)))) {
                     if(this.isMultiplayer()) {
                         this.connectionManager.sendBlockChange(i1, i2, i3, this.editMode, i5);
                     }
@@ -676,9 +678,7 @@ public final class Minecraft implements Runnable {
             }
         }
 
-        if(this.screen != null) {
-            this.prevFrameTime = this.ticksRan + 10000;
-        } else {
+        if(this.screen == null || this.screen.allowUserInput) {
             boolean touched;
             boolean moused = false;
             while ((touched = Touch.next()) || (moused = Mouse.next())) {
@@ -712,6 +712,9 @@ public final class Minecraft implements Runnable {
                                     break;
                             }
                         }
+                        if(this.screen != null) {
+                            this.screen.updateTouchEvents();
+                        }
                         TouchControls.handleInput();
                         if (!touch) {
                             continue;
@@ -728,25 +731,27 @@ public final class Minecraft implements Runnable {
                         PointerInputAbstraction.enterMouseModeHook();
                     }
 
-                    if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
-                        this.clickMouse();
-                        this.prevFrameTime = this.ticksRan;
-                    }
-
-                    if (Mouse.getEventButton() == 1 && Mouse.getEventButtonState()) {
-                        this.editMode = (this.editMode + 1) % 2;
-                    }
-
-                    if (Mouse.getEventButton() == 2 && Mouse.getEventButtonState() && this.hitResult != null) {
-                        if((i2 = this.level.getTile(this.hitResult.x, this.hitResult.y, this.hitResult.z)) == Tile.grass.id) {
-                            i2 = Tile.dirt.id;
+                    if(this.screen == null) {
+                        if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+                            this.clickMouse();
+                            this.prevFrameTime = this.ticksRan;
                         }
 
-                        Inventory inventory15 = this.player.inventory;
-                        if((i3 = this.player.inventory.getSlotContainsID(i2)) >= 0) {
-                            inventory15.selectedSlot = i3;
-                        } else if(i2 > 0 && User.creativeTiles.contains(Tile.tiles[i2])) {
-                            inventory15.getSlotContainsTile(Tile.tiles[i2]);
+                        if (Mouse.getEventButton() == 1 && Mouse.getEventButtonState()) {
+                            this.editMode = (this.editMode + 1) % 2;
+                        }
+
+                        if (Mouse.getEventButton() == 2 && Mouse.getEventButtonState() && this.hitResult != null) {
+                            if((i2 = this.level.getTile(this.hitResult.x, this.hitResult.y, this.hitResult.z)) == Tile.grass.id) {
+                                i2 = Tile.dirt.id;
+                            }
+
+                            Inventory inventory15 = this.player.inventory;
+                            if((i3 = this.player.inventory.getSlotContainsID(i2)) >= 0) {
+                                inventory15.selectedSlot = i3;
+                            } else if(i2 > 0 && User.creativeTiles.contains(Tile.tiles[i2])) {
+                                inventory15.getSlotContainsTile(Tile.tiles[i2]);
+                            }
                         }
                     }
 
@@ -768,9 +773,13 @@ public final class Minecraft implements Runnable {
                             inventory11.selectedSlot -= inventory11.slots.length;
                         }
                     }
+
+                    if(this.screen != null) {
+                        this.screen.updateMouseEvents();
+                    }
                 }
 
-                if (!(touch || Mouse.isActuallyGrabbed()) && (touch || Mouse.getEventButtonState())) {
+                if (this.screen == null && !(touch || Mouse.isActuallyGrabbed()) && (touch || Mouse.getEventButtonState())) {
                     this.grabMouse();
                 }
             }
@@ -780,16 +789,35 @@ public final class Minecraft implements Runnable {
             while(Keyboard.next()) {
                 this.player.setKey(Keyboard.getEventKey(), Keyboard.getEventKeyState());
                 if(Keyboard.getEventKeyState()) {
-                    if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-                        this.pauseGame();
+                    if(this.screen != null) {
+                        this.screen.updateKeyboardEvents();
                     }
 
-                    if(Keyboard.getEventKey() == Keyboard.KEY_R) {
-                        this.player.resetPos();
-                    }
+                    if(this.screen == null) {
+                        if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+                            this.pauseGame();
+                        }
 
-                    if(Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
-                        this.saveSpawn();
+                        if(Keyboard.getEventKey() == Keyboard.KEY_R) {
+                            this.player.resetPos();
+                        }
+
+                        if(Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
+                            this.saveSpawn();
+                        }
+
+                        if(Keyboard.getEventKey() == Keyboard.KEY_G && this.connectionManager == null && this.level.entities.size() < 256) {
+                            this.addZombie();
+                        }
+
+                        if(Keyboard.getEventKey() == Keyboard.KEY_B) {
+                            this.setScreen(new InventoryScreen());
+                        }
+
+                        if(Keyboard.getEventKey() == Keyboard.KEY_T && this.connectionManager != null && this.connectionManager.isConnected()) {
+                            this.player.releaseAllKeys();
+                            this.setScreen(new ChatScreen());
+                        }
                     }
 
                     for(i1 = 0; i1 < 9; ++i1) {
@@ -802,23 +830,10 @@ public final class Minecraft implements Runnable {
                         this.yMouseAxis = -this.yMouseAxis;
                     }
 
-                    if(Keyboard.getEventKey() == Keyboard.KEY_G && this.connectionManager == null && this.level.entities.size() < 256) {
-                        this.addZombie();
-                    }
-
                     if(Keyboard.getEventKey() == Keyboard.KEY_F) {
                         LevelRenderer levelRenderer10000 = this.levelRenderer;
                         boolean z15 = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
                         levelRenderer10000.drawDistance = levelRenderer10000.drawDistance + (z15 ? -1 : 1) & 3;
-                    }
-
-                    if(Keyboard.getEventKey() == Keyboard.KEY_B) {
-                        this.setScreen(new InventoryScreen());
-                    }
-
-                    if(Keyboard.getEventKey() == Keyboard.KEY_T && this.connectionManager != null && this.connectionManager.isConnected()) {
-                        this.player.releaseAllKeys();
-                        this.setScreen(new ChatScreen());
                     }
                 }
             }
@@ -834,14 +849,35 @@ public final class Minecraft implements Runnable {
             }
             wasMiningTouch = miningTouch;
 
-            if((Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F) {
+            if(this.screen == null && (Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F) {
                 this.clickMouse();
                 this.prevFrameTime = this.ticksRan;
             }
 	    }
 
         if(this.screen != null) {
-            this.screen.updateEvents();
+            this.prevFrameTime = this.ticksRan + 10000;
+        }
+
+        if(this.screen != null) {
+            Screen screen17 = this.screen;
+            boolean noTouch = true;
+
+            while(Touch.next()) {
+                noTouch = false;
+                screen17.updateTouchEvents();
+            }
+
+            while(Mouse.next()) {
+                if(noTouch) {
+                    screen17.updateMouseEvents();
+                }
+            }
+
+            while(Keyboard.next()) {
+                screen17.updateKeyboardEvents();
+            }
+
             if(this.screen != null) {
                 this.screen.tick();
             }
@@ -914,7 +950,7 @@ public final class Minecraft implements Runnable {
         f65 = (float)Math.sin((double)(-f65) * Math.PI / 180.0D);
         f66 *= f72;
         f55 *= f72;
-        f72 = 4.0F;
+        f72 = 5.0F;
         float f10001 = f66 * f72;
         float f10002 = f65 * f72;
         f72 = f55 * f72;
@@ -1088,6 +1124,8 @@ public final class Minecraft implements Runnable {
 
     private void setupFog() {
         GL11.glFog(GL11.GL_FOG_COLOR, this.getBuffer(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 1.0F));
+        GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         Tile tile1;
         if((tile1 = Tile.tiles[this.level.getTile((int)this.player.x, (int)(this.player.y + 0.12F), (int)this.player.z)]) != null && tile1.getLiquidType() != Liquid.none) {
             Liquid liquid2 = tile1.getLiquidType();

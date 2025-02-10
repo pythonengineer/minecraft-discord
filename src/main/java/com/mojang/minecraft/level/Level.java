@@ -165,14 +165,14 @@ public class Level implements Serializable {
 			for(i3 = i5; i3 < i6; ++i3) {
 				for(int i9 = i7; i9 < i8; ++i9) {
 					AABB aABB10;
-					if(i11 >= 0 && i3 >= 0 && i9 >= 0 && i11 < this.width && i3 < this.depth && i9 < this.height) {
-						Tile tile12;
-						if((tile12 = Tile.tiles[this.getTile(i11, i3, i9)]) != null && (aABB10 = tile12.getAABB(i11, i3, i9)) != null) {
-							arrayList2.add(aABB10);
-						}
-					} else if((i11 < 0 || i3 < 0 || i9 < 0 || i11 >= this.width || i9 >= this.height) && (aABB10 = Tile.unbreakable.getAABB(i11, i3, i9)) != null) {
-						arrayList2.add(aABB10);
-					}
+                    if(i11 >= 0 && i3 >= 0 && i9 >= 0 && i11 < this.width && i3 < this.depth && i9 < this.height) {
+                        Tile tile12;
+                        if((tile12 = Tile.tiles[this.getTile(i11, i3, i9)]) != null && (aABB10 = tile12.getTileAABB(i11, i3, i9)) != null) {
+                            arrayList2.add(aABB10);
+                        }
+                    } else if((i11 < 0 || i3 < 0 || i9 < 0 || i11 >= this.width || i9 >= this.height) && (aABB10 = Tile.unbreakable.getTileAABB(i11, i3, i9)) != null) {
+                        arrayList2.add(aABB10);
+                    }
 				}
 			}
 		}

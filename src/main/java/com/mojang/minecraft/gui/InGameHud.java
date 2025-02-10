@@ -95,7 +95,7 @@ public final class InGameHud {
 
         onEndHotbarDraw();
 
-        font1.drawShadow("0.0.20a_02", 2, 2, 0xFFFFFF);
+        font1.drawShadow("0.0.21a", 2, 2, 0xFFFFFF);
         font1.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
         byte b17 = 10;
         boolean z18 = false;

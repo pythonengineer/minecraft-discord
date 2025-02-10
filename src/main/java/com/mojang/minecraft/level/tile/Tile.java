@@ -149,34 +149,6 @@ public class Tile {
 		return level1.getBrightness(i2, i3, i4);
 	}
 
-	public static boolean cullFace(Level level0, int i1, int i2, int i3, int i4) {
-		if(i4 == 0) {
-			--i2;
-		}
-
-		if(i4 == 1) {
-			++i2;
-		}
-
-		if(i4 == 2) {
-			--i3;
-		}
-
-		if(i4 == 3) {
-			++i3;
-		}
-
-		if(i4 == 4) {
-			--i1;
-		}
-
-		if(i4 == 5) {
-			++i1;
-		}
-
-		return !level0.isSolidTile(i1, i2, i3);
-	}
-
 	protected boolean shouldRenderFace(Level level1, int i2, int i3, int i4, int i5, int i6) {
 		return i5 == 1 ? false : !level1.isSolidTile(i2, i3, i4);
 	}
@@ -339,23 +311,15 @@ public class Tile {
 
 	}
 
-	public static AABB getTileAABB(int i0, int i1, int i2) {
-		return new AABB((float)i0, (float)i1, (float)i2, (float)(i0 + 1), (float)(i1 + 1), (float)(i2 + 1));
-	}
-
-	public AABB getAABB(int i1, int i2, int i3) {
-		return new AABB((float)i1, (float)i2, (float)i3, (float)(i1 + 1), (float)(i2 + 1), (float)(i3 + 1));
-	}
+    public AABB getTileAABB(int i1, int i2, int i3) {
+        return new AABB((float)i1, (float)i2, (float)i3, (float)(i1 + 1), (float)(i2 + 1), (float)(i3 + 1));
+    }
 
 	public boolean blocksLight() {
 		return true;
 	}
 
 	public boolean isSolid() {
-		return true;
-	}
-
-	public boolean mayPick() {
 		return true;
 	}
 

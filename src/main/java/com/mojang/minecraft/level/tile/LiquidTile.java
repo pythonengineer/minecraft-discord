@@ -113,13 +113,9 @@ public class LiquidTile extends Tile {
 		super.renderBackFace(tesselator1, i2, i3, i4, i5);
 	}
 
-	public final boolean mayPick() {
-		return false;
-	}
-
-	public final AABB getAABB(int i1, int i2, int i3) {
-		return null;
-	}
+    public final AABB getTileAABB(int i1, int i2, int i3) {
+        return null;
+    }
 
 	public final boolean blocksLight() {
 		return true;

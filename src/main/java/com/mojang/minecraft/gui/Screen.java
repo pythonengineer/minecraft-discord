@@ -23,6 +23,7 @@ public class Screen {
     protected int width;
     protected int height;
     protected List buttons = new ArrayList();
+    public boolean allowUserInput = false;
     protected int touchModeCursorPosX = -1;
     protected int touchModeCursorPosY = -1;
     private long lastTouchEvent;
@@ -102,22 +103,22 @@ public class Screen {
     }
 
     protected static void fillGradient(int i0, int i1, int i2, int i3, int i4, int i5) {
-        float f10 = (float)(i4 >>> 24) / 255.0F;
-        float f11 = (float)(i4 >> 16 & 255) / 255.0F;
-        float f6 = (float)(i4 >> 8 & 255) / 255.0F;
+        float f6 = (float)(i4 >>> 24) / 255.0F;
+        float f7 = (float)(i4 >> 16 & 255) / 255.0F;
+        float f8 = (float)(i4 >> 8 & 255) / 255.0F;
         float f12 = (float)(i4 & 255) / 255.0F;
-        float f7 = (float)(i5 >>> 24) / 255.0F;
-        float f8 = (float)(i5 >> 16 & 255) / 255.0F;
-        float f9 = (float)(i5 >> 8 & 255) / 255.0F;
+        float f9 = (float)(i5 >>> 24) / 255.0F;
+        float f10 = (float)(i5 >> 16 & 255) / 255.0F;
+        float f11 = (float)(i5 >> 8 & 255) / 255.0F;
         float f13 = (float)(i5 & 255) / 255.0F;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        GL11.glColor4f(f11, f6, f12, f10);
-        GL11.glVertex2f((float)i2, 0.0F);
-        GL11.glVertex2f(0.0F, 0.0F);
-        GL11.glColor4f(f8, f9, f13, f7);
-        GL11.glVertex2f(0.0F, (float)i3);
+        GL11.glColor4f(f7, f8, f12, f6);
+        GL11.glVertex2f((float)i2, (float)i1);
+        GL11.glVertex2f((float)i0, (float)i1);
+        GL11.glColor4f(f10, f11, f13, f9);
+        GL11.glVertex2f((float)i0, (float)i3);
         GL11.glVertex2f((float)i2, (float)i3);
         GL11.glEnd();
         GL11.glDisable(GL11.GL_BLEND);
@@ -133,26 +134,22 @@ public class Screen {
 		font.drawShadow(str, x, y, color);
 	}
 
-	public void updateEvents() {
-        boolean noTouch = true;
-        while (Touch.next()) {
-            noTouch = false;
-            this.handleTouchInput();
-            TouchControls.handleInput();
-        }
+    public void updateTouchEvents() {
+        this.handleTouchInput();
+        TouchControls.handleInput();
+    }
 
-		while(Mouse.next()) {
-			if(noTouch && Mouse.getEventButtonState()) {
-                int xm = Mouse.getEventX() * this.width / this.minecraft.width;
-                int ym = this.height - Mouse.getEventY() * this.height / this.minecraft.height - 1;
-				this.mousePressed(xm, ym, Mouse.getEventButton());
-			}
+	public void updateMouseEvents() {
+		if(Mouse.getEventButtonState()) {
+            int xm = Mouse.getEventX() * this.width / this.minecraft.width;
+            int ym = this.height - Mouse.getEventY() * this.height / this.minecraft.height - 1;
+			this.mousePressed(xm, ym, Mouse.getEventButton());
 		}
+	}
 
-		while(Keyboard.next()) {
-			if(Keyboard.getEventKeyState()) {
-				this.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-			}
+	public void updateKeyboardEvents() {
+		if(Keyboard.getEventKeyState()) {
+			this.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 		}
 
 	}

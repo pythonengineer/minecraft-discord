@@ -55,7 +55,7 @@ public final class Bush extends Tile {
 		}
 	}
 
-	public final AABB getAABB(int i1, int i2, int i3) {
+    public final AABB getTileAABB(int i1, int i2, int i3) {
 		return null;
 	}
 
