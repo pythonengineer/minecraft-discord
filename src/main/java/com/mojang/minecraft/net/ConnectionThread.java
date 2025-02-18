@@ -24,23 +24,28 @@ final class ConnectionThread extends Thread {
     }
 
     public final void run() {
+        ConnectionManager connectionManager1;
+        boolean z2;
         try {
             ConnectionManager connectionManager10000 = this.connectionManager;
-            SocketConnection socketConnection2 = new SocketConnection(this.ip, this.port);
-            connectionManager10000.connection = socketConnection2;
-            ConnectionManager connectionManager1 = this.connectionManager;
-            ConnectionManager connectionManager4 = this.connectionManager;
+            SocketConnection socketConnection4 = new SocketConnection(this.ip, this.port);
+            connectionManager10000.connection = socketConnection4;
+            connectionManager1 = this.connectionManager;
+            ConnectionManager connectionManager5 = this.connectionManager;
             SocketConnection socketConnection10001 = this.connectionManager.connection;
-            this.connectionManager.connection.manager = connectionManager4;
+            this.connectionManager.connection.manager = connectionManager5;
             connectionManager1 = this.connectionManager;
             this.connectionManager.connection.sendPacket(Packet.LOGIN, new Object[]{(byte)6, this.username, this.mpPass, 0});
-            boolean z5 = true;
+            z2 = true;
             connectionManager1 = this.connectionManager;
-            this.connectionManager.processData = true;
+            this.connectionManager.processData = z2;
         } catch (IOException iOException3) {
             this.minecraft.hideGui = false;
             this.minecraft.connectionManager = null;
             this.minecraft.setScreen(new ErrorScreen("Failed to connect", "You failed to connect to the server. It\'s probably down!"));
+            z2 = false;
+            connectionManager1 = this.connectionManager;
+            this.connectionManager.processData = z2;
         }
     }
 }

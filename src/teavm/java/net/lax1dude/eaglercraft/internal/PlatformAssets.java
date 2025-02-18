@@ -1,5 +1,6 @@
 package net.lax1dude.eaglercraft.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.teavm.jso.typedarrays.Uint8Array;
 import org.teavm.jso.typedarrays.Uint8ClampedArray;
 
 import net.lax1dude.eaglercraft.EaglerInputStream;
+import net.lax1dude.eaglercraft.internal.teavm.ArrayBufferInputStream;
 import net.lax1dude.eaglercraft.internal.teavm.ClientMain;
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMBlobURLHandle;
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMBlobURLManager;
@@ -68,10 +70,18 @@ public class PlatformAssets {
         if (data != null) {
             return data;
         } else {
-            data = MISSING_FILE;
-            if (data == MISSING_FILE) {
+            ArrayBuffer fileData = PlatformRuntime.downloadRemoteURI(PlatformRuntime.getAssetUrlPrefix() + path);
+            if (fileData == null) {
                 return null;
             } else {
+                data = new byte[fileData.getByteLength()];
+                try {
+                    ArrayBufferInputStream is = new ArrayBufferInputStream(fileData, 0, fileData.getByteLength());
+                    is.read(data);
+                    is.close();
+                } catch (IOException exc) {
+                    return null;
+                }
                 assets.put(path, data);
                 return data;
             }

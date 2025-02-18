@@ -1,6 +1,6 @@
 package com.mojang.minecraft.level;
 
-import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.ProgressListener;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,11 +8,11 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 public final class LevelIO {
-	private Minecraft minecraft;
+    private ProgressListener progress;
 
-	public LevelIO(Minecraft minecraft1) {
-		this.minecraft = minecraft1;
-	}
+    public LevelIO(ProgressListener progressListener1) {
+        this.progress = progressListener1;
+    }
 
 	public final boolean save(Level level1, String string2, String string3, String string4, String string5, int i6) {
 		return false;
@@ -23,12 +23,12 @@ public final class LevelIO {
 	}
 
     public final Level load(DataInputStream dataInputStream10) {
-        if(this.minecraft != null) {
-            this.minecraft.beginLevelLoading("Loading level");
+        if(this.progress != null) {
+            this.progress.beginLevelLoading("Loading level");
         }
 
-        if(this.minecraft != null) {
-            this.minecraft.levelLoadUpdate("Reading..");
+        if(this.progress != null) {
+            this.progress.levelLoadUpdate("Reading..");
         }
 
 		try {
@@ -89,12 +89,12 @@ public final class LevelIO {
 	}
 
 	public final Level loadLegacy(DataInputStream dataInputStream5) {
-        if(this.minecraft != null) {
-            this.minecraft.beginLevelLoading("Loading level");
+        if(this.progress != null) {
+            this.progress.beginLevelLoading("Loading level");
         }
 
-        if(this.minecraft != null) {
-            this.minecraft.levelLoadUpdate("Reading..");
+        if(this.progress != null) {
+            this.progress.levelLoadUpdate("Reading..");
         }
 
 		try {

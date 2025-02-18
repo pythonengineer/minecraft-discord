@@ -1,12 +1,16 @@
 package com.mojang.minecraft.level;
 
 import com.mojang.minecraft.Entity;
-import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.HitResult;
+import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.character.Vec3;
 import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.renderer.LevelRenderer;
+import com.mojang.minecraft.sound.EntitySoundPos;
+import com.mojang.minecraft.sound.LevelSoundPos;
+import com.mojang.minecraft.sound.Sound;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
@@ -34,6 +38,7 @@ public class Level implements Serializable {
 	private transient ArrayList tickList = new ArrayList();
 	public ArrayList entities = new ArrayList();
     private boolean networkMode = false;
+    public transient Minecraft rendererContext;
 	int unprocessed = 0;
 	private int tickCount = 0;
 
@@ -771,5 +776,23 @@ public class Level implements Serializable {
         } else {
             return null;
         }
+    }
+
+    public void playSound(String string1, Entity entity2, float f3, float f4) {
+        Minecraft minecraft5;
+        Sound audioInfo6;
+        if(this.rendererContext != null && (minecraft5 = this.rendererContext).soundPlayer != null && (audioInfo6 = minecraft5.soundManager.getAudioInfo(string1, f3, f4)) != null) {
+            minecraft5.soundPlayer.play(audioInfo6, new EntitySoundPos(entity2, minecraft5.player));
+        }
+
+    }
+
+    public void playSound(String string1, float f2, float f3, float f4, float f5, float f6) {
+        Minecraft minecraft7;
+        Sound audioInfo8;
+        if(this.rendererContext != null && (minecraft7 = this.rendererContext).soundPlayer != null && (audioInfo8 = minecraft7.soundManager.getAudioInfo(string1, f5, f6)) != null) {
+            minecraft7.soundPlayer.play(audioInfo8, new LevelSoundPos(f2, f3, f4, minecraft7.player));
+        }
+
     }
 }

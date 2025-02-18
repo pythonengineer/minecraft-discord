@@ -36,7 +36,7 @@ public final class InGameHud {
         int scaledWidth = Minecraft.scaledResolution.getScaledWidth();
         int scaledHeight = Minecraft.scaledResolution.getScaledHeight();
         Font font1 = this.minecraft.font;
-        this.minecraft.initGui();
+        this.minecraft.renderHelper.initGui();
 
         onBeginHotbarDraw();
 
@@ -95,7 +95,7 @@ public final class InGameHud {
 
         onEndHotbarDraw();
 
-        font1.drawShadow("0.0.21a", 2, 2, 0xFFFFFF);
+        font1.drawShadow("0.0.22a_05", 2, 2, 0xFFFFFF);
         font1.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
         byte b17 = 10;
         boolean z18 = false;
@@ -106,7 +106,7 @@ public final class InGameHud {
 
         for(i7 = 0; i7 < this.messages.size() && i7 < b17; ++i7) {
             if(((ChatLine)this.messages.get(i7)).counter < 200 || z18) {
-                font1.drawShadow(((ChatLine)this.messages.get(i7)).message, 2, scaledHeight - 8 - (i7 << 3) - 16, 0xFFFFFF);
+                font1.drawShadow(((ChatLine)this.messages.get(i7)).message, 2, scaledHeight - 8 - i7 * 9 - 20, 0xFFFFFF);
             }
         }
 
@@ -180,6 +180,15 @@ public final class InGameHud {
         tesselator6.vertexUV((float)(i0 + i4), (float)i1, -90.0F, (float)(i4 + i2) * f7, (float)i3 * f8);
         tesselator6.vertexUV((float)i0, (float)i1, -90.0F, i2 * f7, (float)i3 * f8);
         tesselator6.end();
+    }
+
+    public final void addChatMessage(String string1) {
+        this.messages.add(0, new ChatLine(string1));
+
+        while(this.messages.size() > 50) {
+            this.messages.remove(this.messages.size() - 1);
+        }
+
     }
 
     private int hotbarAreaX = -1;

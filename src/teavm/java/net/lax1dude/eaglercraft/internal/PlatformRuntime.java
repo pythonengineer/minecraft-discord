@@ -388,6 +388,10 @@ public class PlatformRuntime {
         IEaglerFilesystem resourcePackFilesystem = Filesystem.getHandleFor(getClientConfigAdapter().getResourcePacksDB());
         VFile2.setPrimaryFilesystem(resourcePackFilesystem);
 
+        logger.info("Initializing sound engine...");
+
+        PlatformAudio.initialize();
+
         logger.info("Platform initialization complete");
 
         FixWebMDurationJS.checkOldScriptStillLoaded();
@@ -488,19 +492,133 @@ public class PlatformRuntime {
     }
 
     public static void freeByteBuffer(ByteBuffer byteBuffer) {
-
     }
 
     public static void freeIntBuffer(IntBuffer intBuffer) {
-
     }
 
     public static void freeFloatBuffer(FloatBuffer floatBuffer) {
-
     }
 
     public static boolean hasFetchSupportTeaVM() {
         return hasFetchSupport;
+    }
+
+    public static void downloadRemoteURIByteArray(String assetPackageURI, final Consumer<byte[]> cb) {
+        downloadRemoteURIByteArray(assetPackageURI, false, cb);
+    }
+
+    public static void downloadRemoteURIByteArray(String assetPackageURI, boolean useCache, final Consumer<byte[]> cb) {
+        downloadRemoteURI(assetPackageURI, useCache, arr -> cb.accept(TeaVMUtils.wrapByteArrayBuffer(arr)));
+    }
+
+    public static void downloadRemoteURI(String assetPackageURI, final Consumer<ArrayBuffer> cb) {
+        downloadRemoteURI(assetPackageURI, false, cb);
+    }
+
+    public static void downloadRemoteURI(String assetPackageURI, boolean useCache, final Consumer<ArrayBuffer> cb) {
+        if (hasFetchSupport) {
+            downloadRemoteURIFetch(assetPackageURI, useCache, new AsyncCallback<ArrayBuffer>() {
+                @Override
+                public void complete(ArrayBuffer result) {
+                    cb.accept(result);
+                }
+
+                @Override
+                public void error(Throwable e) {
+                    EagRuntime.debugPrintStackTrace(e);
+                    cb.accept(null);
+                }
+            });
+        } else {
+            downloadRemoteURIXHR(assetPackageURI, new AsyncCallback<ArrayBuffer>() {
+                @Override
+                public void complete(ArrayBuffer result) {
+                    cb.accept(result);
+                }
+
+                @Override
+                public void error(Throwable e) {
+                    EagRuntime.debugPrintStackTrace(e);
+                    cb.accept(null);
+                }
+            });
+        }
+    }
+
+    @Async
+    private static native ArrayBuffer downloadRemoteURIXHR(final String assetPackageURI);
+
+    private static void downloadRemoteURIXHR(final String assetPackageURI, final AsyncCallback<ArrayBuffer> cb) {
+        final boolean isDat = isDataURL(assetPackageURI);
+        if (isDat && !hasDataURLSupport) {
+            cb.complete(TeaVMUtils.unwrapArrayBuffer(TeaVMDataURLManager.decodeDataURLFallback(assetPackageURI)));
+            return;
+        }
+        TeaVMFetchJS.doXHRDownload(assetPackageURI, isDat ? (data) -> {
+                    if (data != null) {
+                        cb.complete(data);
+                    } else {
+                        logger.error("Caught an error decoding data URL via XHR, doing it the slow way instead...");
+                        byte[] b = null;
+                        try {
+                            b = TeaVMDataURLManager.decodeDataURLFallback(assetPackageURI);
+                        } catch (Throwable t) {
+                            logger.error("Failed to manually decode data URL!", t);
+                            cb.complete(null);
+                            return;
+                        }
+                        cb.complete(b == null ? null : TeaVMUtils.unwrapArrayBuffer(b));
+                    }
+                } : cb::complete);
+    }
+
+    @Async
+    private static native ArrayBuffer downloadRemoteURIFetch(final String assetPackageURI, final boolean forceCache);
+
+    private static void downloadRemoteURIFetch(final String assetPackageURI, final boolean useCache, final AsyncCallback<ArrayBuffer> cb) {
+        final boolean isDat = isDataURL(assetPackageURI);
+        if (isDat && !hasDataURLSupport) {
+            cb.complete(TeaVMUtils.unwrapArrayBuffer(TeaVMDataURLManager.decodeDataURLFallback(assetPackageURI)));
+            return;
+        }
+        TeaVMFetchJS.doFetchDownload(assetPackageURI, useCache ? "force-cache" : "no-store",
+                isDat ? (data) -> {
+                    if (data != null) {
+                        cb.complete(data);
+                    } else {
+                        logger.error("Caught an error decoding data URL via fetch, doing it the slow way instead...");
+                        byte[] b = null;
+                        try {
+                            b = TeaVMDataURLManager.decodeDataURLFallback(assetPackageURI);
+                        } catch (Throwable t) {
+                            logger.error("Failed to manually decode data URL!", t);
+                            cb.complete(null);
+                            return;
+                        }
+                        cb.complete(b == null ? null : TeaVMUtils.unwrapArrayBuffer(b));
+                    }
+                } : cb::complete);
+    }
+
+    public static ArrayBuffer downloadRemoteURI(String assetPackageURI) {
+        if (hasFetchSupport) {
+            return downloadRemoteURIFetch(assetPackageURI, true);
+        } else {
+            return downloadRemoteURIXHR(assetPackageURI);
+        }
+    }
+
+    public static ArrayBuffer downloadRemoteURI(final String assetPackageURI, final boolean forceCache) {
+        if (hasFetchSupport) {
+            return downloadRemoteURIFetch(assetPackageURI, forceCache);
+        } else {
+            return downloadRemoteURIXHR(assetPackageURI);
+        }
+    }
+
+    private static boolean isDataURL(String url) {
+        return url.length() > 5 && url.substring(0, 5).equalsIgnoreCase("data:");
     }
 
     public static boolean isDebugRuntime() {
@@ -877,6 +995,10 @@ public class PlatformRuntime {
 
     public static IClientConfigAdapter getClientConfigAdapter() {
         return TeaVMClientConfigAdapter.instance;
+    }
+
+    public static String getAssetUrlPrefix() {
+        return ((TeaVMClientConfigAdapter)getClientConfigAdapter()).getAssetUrlPrefix();
     }
 
     public static long randomSeed() {

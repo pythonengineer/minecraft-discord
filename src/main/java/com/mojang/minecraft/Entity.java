@@ -2,6 +2,8 @@ package com.mojang.minecraft;
 
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.liquid.Liquid;
+import com.mojang.minecraft.level.tile.Tile;
+import com.mojang.minecraft.level.tile.Tile$SoundType;
 import com.mojang.minecraft.net.PlayerMove;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.renderer.Textures;
@@ -32,6 +34,8 @@ public class Entity implements Serializable {
 	public float heightOffset = 0.0F;
 	protected float bbWidth = 0.6F;
 	public float bbHeight = 1.8F;
+	private float walkDist = 0.0F;
+	public boolean makeStepSound = true;
 
 	public Entity(Level level1) {
 		this.level = level1;
@@ -137,46 +141,60 @@ public class Entity implements Serializable {
 	}
 
 	public void move(float f1, float f2, float f3) {
-		float f4 = f1;
-		float f5 = f2;
-		float f6 = f3;
-		ArrayList arrayList7 = this.level.getCubes(this.bb.expand(f1, f2, f3));
+		float f4 = this.x;
+		float f5 = this.z;
+		float f6 = f1;
+		float f7 = f2;
+		float f8 = f3;
+		ArrayList arrayList9 = this.level.getCubes(this.bb.expand(f1, f2, f3));
 
-		int i8;
-		for(i8 = 0; i8 < arrayList7.size(); ++i8) {
-			f2 = ((AABB)arrayList7.get(i8)).clipYCollide(this.bb, f2);
+		int i10;
+		for(i10 = 0; i10 < arrayList9.size(); ++i10) {
+			f2 = ((AABB)arrayList9.get(i10)).clipYCollide(this.bb, f2);
 		}
 
 		this.bb.move(0.0F, f2, 0.0F);
 
-		for(i8 = 0; i8 < arrayList7.size(); ++i8) {
-			f1 = ((AABB)arrayList7.get(i8)).clipXCollide(this.bb, f1);
+		for(i10 = 0; i10 < arrayList9.size(); ++i10) {
+			f1 = ((AABB)arrayList9.get(i10)).clipXCollide(this.bb, f1);
 		}
 
 		this.bb.move(f1, 0.0F, 0.0F);
 
-		for(i8 = 0; i8 < arrayList7.size(); ++i8) {
-			f3 = ((AABB)arrayList7.get(i8)).clipZCollide(this.bb, f3);
+		for(i10 = 0; i10 < arrayList9.size(); ++i10) {
+			f3 = ((AABB)arrayList9.get(i10)).clipZCollide(this.bb, f3);
 		}
 
 		this.bb.move(0.0F, 0.0F, f3);
-		this.horizontalCollision = f4 != f1 || f6 != f3;
-		this.onGround = f5 != f2 && f5 < 0.0F;
-		if(f4 != f1) {
+		this.horizontalCollision = f6 != f1 || f8 != f3;
+		this.onGround = f7 != f2 && f7 < 0.0F;
+		if(f6 != f1) {
 			this.xd = 0.0F;
 		}
 
-		if(f5 != f2) {
+		if(f7 != f2) {
 			this.yd = 0.0F;
 		}
 
-		if(f6 != f3) {
+		if(f8 != f3) {
 			this.zd = 0.0F;
 		}
 
 		this.x = (this.bb.x0 + this.bb.x1) / 2.0F;
 		this.y = this.bb.y0 + this.heightOffset;
 		this.z = (this.bb.z0 + this.bb.z1) / 2.0F;
+		float f13 = this.x - f4;
+		f1 = this.z - f5;
+		this.walkDist = (float)((double)this.walkDist + Math.sqrt((double)(f13 * f13 + f1 * f1)) * 0.6D);
+		if(this.makeStepSound) {
+			int i11 = this.level.getTile((int)this.x, (int)(this.y - 0.2F - this.heightOffset), (int)this.z);
+			Tile$SoundType tile$SoundType12;
+			if(this.walkDist > 1.0F && i11 > 0 && (tile$SoundType12 = Tile.tiles[i11].soundType) != Tile$SoundType.none) {
+				this.walkDist -= (float)((int)this.walkDist);
+				this.playSound("step." + tile$SoundType12.name, tile$SoundType12.getVolume() * 0.75F, tile$SoundType12.getPitch());
+			}
+		}
+
 	}
 
 	public boolean isInWater() {
@@ -225,12 +243,23 @@ public class Entity implements Serializable {
 		this.level = level1;
 	}
 
+	public void playSound(String string1, float f2, float f3) {
+		this.level.playSound(string1, this, f2, f3);
+	}
+
 	public void moveTo(float f1, float f2, float f3, float f4, float f5) {
 		this.xo = this.x = f1;
 		this.yo = this.y = f2;
 		this.zo = this.z = f3;
-        this.yRot = f4;
-        this.xRot = f5;
+		this.yRot = f4;
+		this.xRot = f5;
 		this.setPos(f1, f2, f3);
+	}
+
+	public float distanceTo(Entity entity1) {
+		float f2 = this.x - entity1.x;
+		float f3 = this.y - entity1.y;
+		float f4 = this.z - entity1.z;
+		return (float)Math.sqrt((double)(f2 * f2 + f3 * f3 + f4 * f4));
 	}
 }

@@ -12,3 +12,6 @@ runtime/crash-reports/*
 runtime/options.txt
 runtime/filesystem/*
 runtime/downloads/*
+client.bat
+server.bat
+proxy.bat

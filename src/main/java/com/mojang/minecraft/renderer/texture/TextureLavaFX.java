@@ -50,7 +50,7 @@ public final class TextureLavaFX extends TextureFX {
         this.red = f10;
 
         for(i2 = 0; i2 < 256; ++i2) {
-            if((f3 = this.red[i2]) > 1.0F) {
+            if((f3 = this.red[i2] * 2.0F) > 1.0F) {
                 f3 = 1.0F;
             }
 
@@ -58,7 +58,7 @@ public final class TextureLavaFX extends TextureFX {
                 f3 = 0.0F;
             }
 
-            i5 = (int)(f3 * 200.0F + 55.0F);
+            i5 = (int)(f3 * 100.0F + 155.0F);
             i6 = (int)(f3 * f3 * 255.0F);
             i7 = (int)(f3 * f3 * f3 * f3 * 128.0F);
             this.imageData[i2 << 2] = (byte)i5;

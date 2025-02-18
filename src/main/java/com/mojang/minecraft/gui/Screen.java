@@ -134,6 +134,24 @@ public class Screen {
 		font.drawShadow(str, x, y, color);
 	}
 
+    public final void updateEvents() {
+        boolean noTouch = true;
+
+        while(Touch.next()) {
+            noTouch = false;
+            this.updateTouchEvents();
+        }
+
+        while(noTouch && Mouse.next()) {
+            this.updateMouseEvents();
+        }
+
+        while(Keyboard.next()) {
+            this.updateKeyboardEvents();
+        }
+
+    }
+
     public void updateTouchEvents() {
         this.handleTouchInput();
         TouchControls.handleInput();

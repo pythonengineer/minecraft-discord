@@ -18,6 +18,7 @@ import net.lax1dude.eaglercraft.internal.EnumPlatformAgent;
 import net.lax1dude.eaglercraft.internal.EnumPlatformOS;
 import net.lax1dude.eaglercraft.internal.EnumPlatformType;
 import net.lax1dude.eaglercraft.internal.FileChooserResult;
+import net.lax1dude.eaglercraft.internal.IAudioCacheLoader;
 import net.lax1dude.eaglercraft.internal.IClientConfigAdapter;
 import net.lax1dude.eaglercraft.internal.PlatformApplication;
 import net.lax1dude.eaglercraft.internal.PlatformAssets;
@@ -124,7 +125,7 @@ public class EagRuntime {
     public static byte[] getRequiredResourceBytes(String path) {
         byte[] ret = PlatformAssets.getResourceBytes(path);
         if (ret == null) {
-            throw new EaglerMissingResourceException("Could not load required resource from EPK: " + path);
+            throw new EaglerMissingResourceException("Could not load required resource from URL: " + path);
         }
         return ret;
     }
@@ -141,7 +142,7 @@ public class EagRuntime {
     public static InputStream getRequiredResourceStream(String path) {
         byte[] ret = PlatformAssets.getResourceBytes(path);
         if (ret == null) {
-            throw new EaglerMissingResourceException("Could not load required resource from EPK: " + path);
+            throw new EaglerMissingResourceException("Could not load required resource from URL: " + path);
         }
         return new EaglerInputStream(ret);
     }
@@ -154,7 +155,7 @@ public class EagRuntime {
     public static String getRequiredResourceString(String path) {
         byte[] ret = PlatformAssets.getResourceBytes(path);
         if (ret == null) {
-            throw new EaglerMissingResourceException("Could not load required resource from EPK: " + path);
+            throw new EaglerMissingResourceException("Could not load required resource from URL: " + path);
         }
         return new String(ret, StandardCharsets.UTF_8);
     }
@@ -187,6 +188,14 @@ public class EagRuntime {
         }
         return ret;
     }
+
+    public static final IAudioCacheLoader browserResourcePackLoader = filename -> {
+        try {
+            return EaglerInputStream.inputStreamToBytesQuiet(getResourceStream(filename));
+        } catch (Throwable t) {
+            return null;
+        }
+    };
 
     public static void debugPrintStackTraceToSTDERR(Throwable t) {
         debugPrintStackTraceToSTDERR0("", t);

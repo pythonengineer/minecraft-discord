@@ -12,6 +12,7 @@ setupDiscordSdk().then(() => {
   window.minecraftOpts = {
       container: "game_frame",
       crashOnUncaughtExceptions: true,
+      assetUrlPrefix: ".proxy/",
       username: auth.user.username.slice(0, 16),
       server: server,
       mpPass: auth.access_token

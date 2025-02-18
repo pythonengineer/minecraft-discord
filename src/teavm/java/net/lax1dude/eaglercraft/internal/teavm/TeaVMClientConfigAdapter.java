@@ -30,6 +30,7 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
 
     public static final IClientConfigAdapter instance = new TeaVMClientConfigAdapter();
 
+    private String assetUrlPrefix = "";
     private String resourcePacksDB = "resources";
     private boolean checkGLErrors = false;
     private String localStorageNamespace = "_minecraft";
@@ -41,6 +42,7 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
     private boolean allowExperimentalWebGL1 = true;
     private boolean useWebGLExt = true;
     private boolean useDelayOnSwap = false;
+    private boolean useJOrbisAudioDecoder = false;
     private boolean useXHRFetch = false;
     private boolean useVisualViewport = true;
     private boolean deobfStackTraces = true;
@@ -51,6 +53,7 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
     public void loadNative(JSObject jsObject) {
         JSMinecraftOptsRoot minecraftOpts = (JSMinecraftOptsRoot)jsObject;
 
+        assetUrlPrefix = minecraftOpts.getAssetUrlPrefix(assetUrlPrefix);
         resourcePacksDB = minecraftOpts.getResourcePacksDB(resourcePacksDB);
         checkGLErrors = minecraftOpts.getCheckGLErrors(false);
         localStorageNamespace = minecraftOpts.getLocalStorageNamespace(localStorageNamespace);
@@ -62,6 +65,7 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
         allowExperimentalWebGL1 = minecraftOpts.getAllowExperimentalWebGL1(true);
         useWebGLExt = minecraftOpts.getUseWebGLExt(true);
         useDelayOnSwap = minecraftOpts.getUseDelayOnSwap(false);
+        useJOrbisAudioDecoder = minecraftOpts.getUseJOrbisAudioDecoder(false);
         useXHRFetch = minecraftOpts.getUseXHRFetch(false);
         useVisualViewport = minecraftOpts.getUseVisualViewport(true);
         deobfStackTraces = minecraftOpts.getDeobfStackTraces(true);
@@ -90,6 +94,10 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
         return openDebugConsoleOnLaunch;
     }
 
+    public String getAssetUrlPrefix() {
+        return assetUrlPrefix;
+    }
+
     public boolean isFixDebugConsoleUnloadListenerTeaVM() {
         return fixDebugConsoleUnloadListener;
     }
@@ -112,6 +120,10 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
 
     public boolean isUseDelayOnSwapTeaVM() {
         return useDelayOnSwap;
+    }
+
+    public boolean isUseJOrbisAudioDecoderTeaVM() {
+        return useJOrbisAudioDecoder;
     }
 
     public boolean isUseXHRFetchTeaVM() {

@@ -97,8 +97,8 @@ public final class SocketConnection {
             ConnectionManager connectionManager12 = this.manager;
             if(this.manager.processData) {
                 if(packet3 == Packet.LOGIN) {
-                    connectionManager12.minecraft.beginLevelLoading(object11[1].toString());
-                    connectionManager12.minecraft.levelLoadUpdate(object11[2].toString());
+                    connectionManager12.minecraft.loadingScreen.beginLevelLoading(object11[1].toString());
+                    connectionManager12.minecraft.loadingScreen.levelLoadUpdate(object11[2].toString());
                     connectionManager12.minecraft.player.userType = ((Byte)object11[3]).byteValue();
                 } else if(packet3 == Packet.LEVEL_INITIALIZE) {
                     connectionManager12.minecraft.setLevel((Level)null);
@@ -109,7 +109,7 @@ public final class SocketConnection {
                         short s13 = ((Short)object11[0]).shortValue();
                         byte[] b5 = (byte[])((byte[])object11[1]);
                         b6 = ((Byte)object11[2]).byteValue();
-                        connectionManager12.minecraft.setLoadingProgress(b6);
+                        connectionManager12.minecraft.loadingScreen.setLoadingProgress(b6);
                         connectionManager12.levelBuffer.write(b5, 0, s13);
                     } else {
                         short s17;
@@ -241,13 +241,14 @@ public final class SocketConnection {
                                         string19 = (String)object11[1];
                                         b15 = b10001;
                                         if(b15 < 0) {
-                                            connectionManager12.minecraft.addChatMessage("&e" + string19);
+                                            connectionManager12.minecraft.hud.addChatMessage("&e" + string19);
                                         } else {
                                             connectionManager12.players.get(b15);
-                                            connectionManager12.minecraft.addChatMessage(string19);
+                                            connectionManager12.minecraft.hud.addChatMessage(string19);
                                         }
                                     } else if(packet3 == Packet.KICK_PLAYER) {
                                         connectionManager12.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
+                                        this.disconnect();
                                     } else if(packet3 == Packet.PLAYER_SKIN) {
                                         String name = (String)object11[0];
                                         if(!this.skinBuffer.containsKey(name)) {

@@ -571,6 +571,7 @@ public class PlatformInput {
             public void handleEvent(WheelEvent evt) {
                 evt.preventDefault();
                 evt.stopPropagation();
+                handleWindowFocus();
                 double delta = -evt.getDeltaY();
                 mouseDWheel += delta;
                 int eventX = (int)(getOffsetX(evt, touchOffsetXTeaVM) * windowDPI);
@@ -772,6 +773,7 @@ public class PlatformInput {
             isWindowFocused = true;
         }
         isMouseOverWindow = true;
+        callFocus();
     }
 
     @JSFunctor

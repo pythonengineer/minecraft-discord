@@ -42,6 +42,10 @@ public abstract class JSMinecraftOptsRoot implements JSObject {
     public native String getMpPass(String defaultValue);
 
     @JSBody(params = {
+            "def"}, script = "return (typeof this.assetUrlPrefix === \"string\") ? this.assetUrlPrefix : def;")
+    public native String getAssetUrlPrefix(String defaultValue);
+
+    @JSBody(params = {
             "def"}, script = "return (typeof this.resourcePacksDB === \"string\") ? this.resourcePacksDB : def;")
     public native String getResourcePacksDB(String defaultValue);
 
@@ -88,6 +92,9 @@ public abstract class JSMinecraftOptsRoot implements JSObject {
     @JSBody(params = {
             "def"}, script = "return (typeof this.useDelayOnSwap === \"boolean\") ? this.useDelayOnSwap : def;")
     public native boolean getUseDelayOnSwap(boolean defaultValue);
+
+    @JSBody(params = {"def"}, script = "return (typeof this.useJOrbisAudioDecoder === \"boolean\") ? this.useJOrbisAudioDecoder : def;")
+    public native boolean getUseJOrbisAudioDecoder(boolean defaultValue);
 
     @JSBody(params = {"def"}, script = "return (typeof this.useXHRFetch === \"boolean\") ? this.useXHRFetch : def;")
     public native boolean getUseXHRFetch(boolean defaultValue);
