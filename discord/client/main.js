@@ -5,20 +5,37 @@ import { DiscordSDK } from "@discord/embedded-app-sdk";
 let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
-setupDiscordSdk().then(() => {
-  console.log("Discord SDK is authenticated");
-  const server =
-      location.host === "ws://localhost" ? `ws://localhost` : `wss://${location.host}/.proxy/minecraft`;
-  window.minecraftOpts = {
-      container: "game_frame",
-      crashOnUncaughtExceptions: true,
-      assetUrlPrefix: ".proxy/",
-      username: auth.user.username.slice(0, 16),
-      server: server,
-      mpPass: auth.access_token
-  };
-  main();
-});
+
+function startGame() {
+  setupDiscordSdk().then(() => {
+    console.log("Discord SDK is authenticated");
+    const server =
+        location.host === "ws://localhost" ? `ws://localhost` : `wss://${location.host}/.proxy/minecraft`;
+    window.minecraftOpts = {
+        container: "game_frame",
+        crashOnUncaughtExceptions: true,
+        assetUrlPrefix: ".proxy/",
+        username: auth.user.username.slice(0, 16),
+        server: server,
+        mpPass: auth.access_token
+    };
+    main();
+  });
+}
+
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+if (isAndroid()) {
+  document.addEventListener('click', function() {
+    document.getElementById('android-message').style.display = 'none';
+    startGame();
+  });
+} else {
+  document.getElementById('android-message').style.display = 'none';
+  startGame();
+}
 
 async function setupDiscordSdk() {
   await discordSdk.ready();

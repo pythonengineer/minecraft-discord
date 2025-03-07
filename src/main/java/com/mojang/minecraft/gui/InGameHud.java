@@ -24,15 +24,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public final class InGameHud {
+public final class InGameHud extends Gui {
     public List messages = new ArrayList();
     private Minecraft minecraft;
+    public String hoveredUsername = null;
 
     public InGameHud(Minecraft minecraft1) {
         this.minecraft = minecraft1;
     }
 
-    public final void render() {
+    public final void render(boolean z1, int i2, int i3) {
         int scaledWidth = Minecraft.scaledResolution.getScaledWidth();
         int scaledHeight = Minecraft.scaledResolution.getScaledHeight();
         Font font1 = this.minecraft.font;
@@ -43,16 +44,17 @@ public final class InGameHud {
         Textures textures2 = this.minecraft.textures;
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.minecraft.textures.getTextureId("/gui.png"));
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        Tesselator tesselator3 = Tesselator.instance;
+        Tesselator tesselator6 = Tesselator.instance;
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glEnable(GL11.GL_BLEND);
         Inventory inventory4 = this.minecraft.player.inventory;
+        this.zLevel = -90.0F;
         int i = scaledWidth / 2;
-        blit(i - 91, scaledHeight - 22, 0, 0, 182, 22);
+        this.blit(i - 91, scaledHeight - 22, 0, 0, 182, 22);
 
         if (PointerInputAbstraction.isTouchMode()) {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
-            blit(i + 89, scaledHeight - 22, 234, 0, 22, 22, true);
+            blit(i + 89, scaledHeight - 22, 234, 0, 22, 22);
             int areaHAdd = 12;
             hotbarAreaX = (i - 91) * this.minecraft.width / scaledWidth;
             hotbarAreaY = (scaledHeight - 22 - areaHAdd) * this.minecraft.height / scaledHeight;
@@ -66,7 +68,7 @@ public final class InGameHud {
         }
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.minecraft.textures.getTextureId("/gui.png"));
-        blit(i - 91 - 1 + inventory4.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+        this.blit(i - 91 - 1 + inventory4.selectedSlot * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
         GL11.glDisable(GL11.GL_BLEND);
 
         int i5;
@@ -85,9 +87,9 @@ public final class InGameHud {
                 i7 = textures2.getTextureId("/terrain.png");
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, i7);
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
-                tesselator3.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-                Tile.tiles[i6].render(tesselator3, this.minecraft.level, 0, -2, 0, 0);
-                tesselator3.end();
+                tesselator6.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
+                Tile.tiles[i6].render(tesselator6, this.minecraft.level, 0, -2, 0, 0);
+                tesselator6.end();
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
                 GL11.glPopMatrix();
             }
@@ -95,8 +97,11 @@ public final class InGameHud {
 
         onEndHotbarDraw();
 
-        font1.drawShadow("0.0.22a_05", 2, 2, 0xFFFFFF);
-        font1.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
+        font1.drawShadow("0.0.23a_01", 2, 2, 0xFFFFFF);
+        if(this.minecraft.options.showFPS) {
+            font1.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
+        }
+
         byte b17 = 10;
         boolean z18 = false;
         if(this.minecraft.screen instanceof ChatScreen) {
@@ -110,76 +115,58 @@ public final class InGameHud {
             }
         }
 
-        int i6 = scaledWidth / 2;
-        int i9 = scaledHeight / 2;
+        int i10 = scaledWidth / 2;
+        int i11 = scaledHeight / 2;
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        tesselator3.begin(DefaultVertexFormats.POSITION);
-        tesselator3.vertex((float)(i6 + 1), (float)(i9 - 4), 0.0F);
-        tesselator3.vertex((float)i6, (float)(i9 - 4), 0.0F);
-        tesselator3.vertex((float)i6, (float)(i9 + 5), 0.0F);
-        tesselator3.vertex((float)(i6 + 1), (float)(i9 + 5), 0.0F);
-        tesselator3.vertex((float)(i6 + 5), (float)i9, 0.0F);
-        tesselator3.vertex((float)(i6 - 4), (float)i9, 0.0F);
-        tesselator3.vertex((float)(i6 - 4), (float)(i9 + 1), 0.0F);
-        tesselator3.vertex((float)(i6 + 5), (float)(i9 + 1), 0.0F);
-        tesselator3.end();
-        if(Keyboard.isKeyDown(Keyboard.KEY_TAB) && this.minecraft.connectionManager != null && this.minecraft.connectionManager.isConnected()) {
-            ConnectionManager connectionManager16 = this.minecraft.connectionManager;
-            ArrayList arrayList17;
-            (arrayList17 = new ArrayList()).add(connectionManager16.minecraft.user.name);
-            Iterator iterator7 = connectionManager16.players.values().iterator();
+        tesselator6.begin(DefaultVertexFormats.POSITION);
+        tesselator6.vertex((float)(i10 + 1), (float)(i11 - 4), 0.0F);
+        tesselator6.vertex((float)i10, (float)(i11 - 4), 0.0F);
+        tesselator6.vertex((float)i10, (float)(i11 + 5), 0.0F);
+        tesselator6.vertex((float)(i10 + 1), (float)(i11 + 5), 0.0F);
+        tesselator6.vertex((float)(i10 + 5), (float)i11, 0.0F);
+        tesselator6.vertex((float)(i10 - 4), (float)i11, 0.0F);
+        tesselator6.vertex((float)(i10 - 4), (float)(i11 + 1), 0.0F);
+        tesselator6.vertex((float)(i10 + 5), (float)(i11 + 1), 0.0F);
+        tesselator6.end();
+        this.hoveredUsername = null;
+        if(Keyboard.isKeyDown(15) && this.minecraft.connectionManager != null && this.minecraft.connectionManager.isConnected()) {
+            ConnectionManager connectionManager12 = this.minecraft.connectionManager;
+            ArrayList arrayList15;
+            (arrayList15 = new ArrayList()).add(connectionManager12.minecraft.user.name);
+            Iterator iterator13 = connectionManager12.players.values().iterator();
 
-            while(iterator7.hasNext()) {
-                NetworkPlayer networkPlayer10 = (NetworkPlayer)iterator7.next();
-                arrayList17.add(networkPlayer10.name);
+            while(iterator13.hasNext()) {
+                NetworkPlayer networkPlayer20 = (NetworkPlayer)iterator13.next();
+                arrayList15.add(networkPlayer20.name);
             }
 
-            ArrayList arrayList8 = arrayList17;
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+            ArrayList arrayList14 = arrayList15;
+            GL11.glEnable(3042);
+            GL11.glBlendFunc(770, 771);
+            GL11.glBegin(7, DefaultVertexFormats.POSITION);
             GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.7F);
-            GL11.glVertex2f((float)(i6 + 128), (float)(i9 - 68 - 12));
-            GL11.glVertex2f((float)(i6 - 128), (float)(i9 - 68 - 12));
+            GL11.glVertex2f((float)(i10 + 128), (float)(i11 - 68 - 12));
+            GL11.glVertex2f((float)(i10 - 128), (float)(i11 - 68 - 12));
             GL11.glColor4f(0.2F, 0.2F, 0.2F, 0.8F);
-            GL11.glVertex2f((float)(i6 - 128), (float)(i9 + 68));
-            GL11.glVertex2f((float)(i6 + 128), (float)(i9 + 68));
+            GL11.glVertex2f((float)(i10 - 128), (float)(i11 + 68));
+            GL11.glVertex2f((float)(i10 + 128), (float)(i11 + 68));
             GL11.glEnd();
-            GL11.glDisable(GL11.GL_BLEND);
-            String string11 = "Connected players:";
-            font1.drawShadow(string11, i6 - font1.width(string11) / 2, i9 - 64 - 12, 0xFFFFFF);
+            GL11.glDisable(3042);
+            String string16 = "Connected players:";
+            font1.drawShadow(string16, i10 - font1.width(string16) / 2, i11 - 64 - 12, 16777215);
 
-            for(int i12 = 0; i12 < arrayList8.size(); ++i12) {
-                int i13 = i6 + i12 % 2 * 120 - 120;
-                i5 = i9 - 64 + (i12 / 2 << 3);
-                font1.draw((String)arrayList8.get(i12), i13, i5, 0xFFFFFF);
+            for(int i17 = 0; i17 < arrayList14.size(); ++i17) {
+                int i8 = i10 + i17 % 2 * 120 - 120;
+                int i9 = i11 - 64 + (i17 / 2 << 3);
+                if(z1 && i2 >= i8 && i3 >= i9 && i2 < i8 + 120 && i3 < i9 + 8) {
+                    this.hoveredUsername = (String)arrayList14.get(i17);
+                    font1.draw((String)arrayList14.get(i17), i8 + 2, i9, 16777215);
+                } else {
+                    font1.draw((String)arrayList14.get(i17), i8, i9, 15658734);
+                }
             }
         }
 
-    }
-
-    private static void blit(int i0, int i1, int i2, int i3, int i4, int i5) {
-        float f7 = 0.00390625F;
-        float f8 = 0.015625F;
-        Tesselator tesselator6 = Tesselator.instance;
-        Tesselator.instance.begin(DefaultVertexFormats.POSITION_TEX);
-        tesselator6.vertexUV((float)i0, (float)(i1 + 22), -90.0F, i2 * f7, (float)(i3 + 22) * f8);
-        tesselator6.vertexUV((float)(i0 + i4), (float)(i1 + 22), -90.0F, (float)(i4 + i2) * f7, (float)(i3 + 22) * f8);
-        tesselator6.vertexUV((float)(i0 + i4), (float)i1, -90.0F, (float)(i4 + i2) * f7, (float)i3 * f8);
-        tesselator6.vertexUV((float)i0, (float)i1, -90.0F, i2 * f7, (float)i3 * f8);
-        tesselator6.end();
-    }
-
-    private static void blit(int i0, int i1, int i2, int i3, int i4, int i5, boolean same) {
-        float f7 = 0.00390625F;
-        float f8 = 0.00390625F;
-        Tesselator tesselator6 = Tesselator.instance;
-        Tesselator.instance.begin(DefaultVertexFormats.POSITION_TEX);
-        tesselator6.vertexUV((float)i0, (float)(i1 + 22), -90.0F, i2 * f7, (float)(i3 + 22) * f8);
-        tesselator6.vertexUV((float)(i0 + i4), (float)(i1 + 22), -90.0F, (float)(i4 + i2) * f7, (float)(i3 + 22) * f8);
-        tesselator6.vertexUV((float)(i0 + i4), (float)i1, -90.0F, (float)(i4 + i2) * f7, (float)i3 * f8);
-        tesselator6.vertexUV((float)i0, (float)i1, -90.0F, i2 * f7, (float)i3 * f8);
-        tesselator6.end();
     }
 
     public final void addChatMessage(String string1) {

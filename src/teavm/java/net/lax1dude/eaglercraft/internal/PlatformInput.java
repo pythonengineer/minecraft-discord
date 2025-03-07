@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.Options;
+
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMUtils;
 import net.lax1dude.eaglercraft.internal.teavm.TouchEvent;
 import net.lax1dude.eaglercraft.internal.teavm.VisualViewport;
@@ -245,6 +248,8 @@ public class PlatformInput {
     // hack to fix occasional freeze on iOS
     private static int vsyncSaveLockInterval = -1;
 
+    private static Options options = null;
+
     @JSFunctor
     private static interface UnloadCallback extends JSObject {
         void call();
@@ -369,6 +374,15 @@ public class PlatformInput {
                     mouseDX += evt.getMovementX();
                     mouseDY += -evt.getMovementY();
                 }
+
+                int eventX = (int)(getOffsetX(evt, touchOffsetXTeaVM) * windowDPI);
+                int eventY = windowHeight - (int)(getOffsetY(evt, touchOffsetYTeaVM) * windowDPI) - 1;
+                synchronized (mouseEvents) {
+                    mouseEvents.add(new VMouseEvent(eventX, eventY, -1, 0.0f, EVENT_MOUSE_MOVE));
+                    if (mouseEvents.size() > 64) {
+                        mouseEvents.remove(0);
+                    }
+                }
             }
         });
         canvas.addEventListener("mouseenter", mouseenter = new EventListener<MouseEvent>() {
@@ -391,7 +405,6 @@ public class PlatformInput {
                 handleWindowFocus();
                 SortedTouchEvent sorted = new SortedTouchEvent(evt, touchUIDMapperCreate);
                 currentTouchState = sorted;
-                List<OffsetTouch> lst = sorted.getEventTouches();
                 synchronized (touchEvents) {
                     touchEvents.add(sorted);
                     if (touchEvents.size() > 64) {
@@ -428,6 +441,12 @@ public class PlatformInput {
                 evt.stopPropagation();
                 SortedTouchEvent sorted = new SortedTouchEvent(evt, touchUIDMapperCreate);
                 currentTouchState = sorted;
+                synchronized (touchEvents) {
+                    touchEvents.add(sorted);
+                    if (touchEvents.size() > 64) {
+                        touchEvents.remove(0);
+                    }
+                }
             }
         });
         canvas.addEventListener("touchcancel", touchcancel = new EventListener<TouchEvent>() {
@@ -439,6 +458,12 @@ public class PlatformInput {
                 int len = lst.size();
                 for (int i = 0; i < len; ++i) {
                     touchIDtoUID.remove(lst.get(i).touch.getIdentifier());
+                }
+                synchronized (touchEvents) {
+                    touchEvents.add(sorted);
+                    if (touchEvents.size() > 64) {
+                        touchEvents.remove(0);
+                    }
                 }
             }
         });
@@ -1057,37 +1082,37 @@ public class PlatformInput {
         if (TouchControls.isPressed(EnumTouchControl.DPAD_UP)
          || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)
          || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
-            if (touchPressed != Keyboard.KEY_UP) {
-                touchPressed = Keyboard.KEY_UP;
+            if (touchPressed != options.forward.key) {
+                touchPressed = options.forward.key;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == Keyboard.KEY_UP) {
+        } else if (touchPressed == options.forward.key) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         } else if (TouchControls.isPressed(EnumTouchControl.DPAD_DOWN)) {
-            if (touchPressed != Keyboard.KEY_DOWN) {
-                touchPressed = Keyboard.KEY_DOWN;
+            if (touchPressed != options.back.key) {
+                touchPressed = options.back.key;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == Keyboard.KEY_DOWN) {
+        } else if (touchPressed == options.back.key) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         } else if (TouchControls.isPressed(EnumTouchControl.DPAD_LEFT)
               || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)) {
-            if (touchPressed != Keyboard.KEY_LEFT) {
-                touchPressed = Keyboard.KEY_LEFT;
+            if (touchPressed != options.left.key) {
+                touchPressed = options.left.key;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == Keyboard.KEY_LEFT) {
+        } else if (touchPressed == options.left.key) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         } else if (TouchControls.isPressed(EnumTouchControl.DPAD_RIGHT)
               || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
-            if (touchPressed != Keyboard.KEY_RIGHT) {
-                touchPressed = Keyboard.KEY_RIGHT;
+            if (touchPressed != options.right.key) {
+                touchPressed = options.right.key;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == Keyboard.KEY_RIGHT) {
+        } else if (touchPressed == options.right.key) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         }
@@ -2489,6 +2514,7 @@ public class PlatformInput {
     }
 
     public static void setTitle(String title) {
+        options = Minecraft.minecraft.options;
     }
 
     public static void setSize(int width, int height) {

@@ -33,7 +33,7 @@ import net.lax1dude.eaglercraft.opengl.ImageData;
 public class PlatformAssets {
 
     static URL getDesktopResourceURL(String path) {
-        File f = new File("../discord/client", path);
+        File f = new File("../discord/client/public", path);
         if (f.isFile()) {
             try {
                 return f.toURI().toURL();
@@ -46,11 +46,11 @@ public class PlatformAssets {
     }
 
     public static boolean getResourceExists(String path) {
-        return (new File("../discord/client", path)).isFile();
+        return (new File("../discord/client/public", path)).isFile();
     }
 
     public static byte[] getResourceBytes(String path) {
-        File loadFile = new File("../discord/client", path);
+        File loadFile = new File("../discord/client/public", path);
         byte[] ret = new byte[(int) loadFile.length()];
         try (FileInputStream is = new FileInputStream(loadFile)) {
             int i, j = 0;

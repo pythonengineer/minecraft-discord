@@ -18,6 +18,7 @@ public final class SoundManager {
     private Map music = new HashMap();
     public EaglercraftRandom random = new EaglercraftRandom();
     public long lastMusic = System.currentTimeMillis() + 60000L;
+    public Sound playingMusic;
 
     public final void registerSounds() {
         InputStream stream = EagRuntime.getResourceStream("/assets/sounds.txt");
@@ -108,6 +109,10 @@ public final class SoundManager {
     }
 
     public boolean playMusic(SoundPlayer soundPlayer1, String string2) {
+        if(!soundPlayer1.options.music) {
+            return false;
+        }
+
         List list3 = null;
         Map map4 = this.music;
         synchronized(this.music) {
@@ -118,7 +123,7 @@ public final class SoundManager {
             return false;
         } else {
             String file8 = (String)list3.get(this.random.nextInt(list3.size()));
-            soundPlayer1.play(new Sound(null, file8), null);
+            this.playingMusic = soundPlayer1.play(new Sound(null, file8), null);
             return true;
         }
     }

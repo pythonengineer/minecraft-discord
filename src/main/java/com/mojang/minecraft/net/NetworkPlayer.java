@@ -29,6 +29,7 @@ public class NetworkPlayer extends Entity {
 	private transient int skin = -1;
 	public transient ImageData newTexture = null;
 	public String name;
+    public String displayName;
     int tickCount = 0;
 	private Textures textures;
 
@@ -36,6 +37,8 @@ public class NetworkPlayer extends Entity {
 		super(minecraft1.level);
 		this.minecraft = minecraft1;
 		this.zombieModel = minecraft1.playerModel;
+        this.displayName = string3;
+        string3 = Font.removeColorCodes(string3);
 		this.name = string3;
 		this.xp = i4;
 		this.yp = i5;
@@ -43,7 +46,6 @@ public class NetworkPlayer extends Entity {
 		this.setPos((float)i4 / 32.0F, (float)i5 / 32.0F, (float)i6 / 32.0F);
 		this.xRot = f8;
 		this.yRot = f7;
-		this.heightOffset = 1.62F;
 	}
 
 	public void tick() {
@@ -182,7 +184,7 @@ public class NetworkPlayer extends Entity {
         GL11.glColor3f(f7 = this.getBrightness(), f7, f7);
         f7 = 0.0625F;
         float f8 = (float)(-Math.abs(Math.cos((double)f6 * 0.6662D)) * 5.0D * (double)f3 - 23.0D);
-        GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 - this.heightOffset, this.zo + (this.z - this.zo) * f2);
+        GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 - 1.62F, this.zo + (this.z - this.zo) * f2);
         GL11.glScalef(1.0F, -1.0F, 1.0F);
         GL11.glTranslatef(0.0F, f8 * f7, 0.0F);
         GL11.glRotatef(f9, 0.0F, 1.0F, 0.0F);
@@ -197,14 +199,14 @@ public class NetworkPlayer extends Entity {
         GL11.glRotatef(-this.minecraft.player.yRot, 0.0F, 1.0F, 0.0F);
         f2 = 0.05F;
         GL11.glScalef(0.05F, -f2, f2);
-        GL11.glTranslatef((float)(-font10.width(this.name)) / 2.0F, 0.0F, 0.0F);
+        GL11.glTranslatef((float)(-font10.width(this.displayName)) / 2.0F, 0.0F, 0.0F);
         GL11.glNormal3f(1.0F, -1.0F, 1.0F);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_LIGHT0);
         if(this.name.equalsIgnoreCase("Notch")) {
-            font10.draw(this.name, 0, 0, 16776960);
+            font10.draw(this.displayName, 0, 0, 16776960);
         } else {
-            font10.draw(this.name, 0, 0, 0xFFFFFF);
+            font10.draw(this.displayName, 0, 0, 16777215);
         }
 
         GL11.glEnable(GL11.GL_LIGHT0);

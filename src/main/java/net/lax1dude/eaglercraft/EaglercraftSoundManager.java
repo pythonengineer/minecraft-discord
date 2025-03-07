@@ -135,6 +135,17 @@ public class EaglercraftSoundManager {
         activeSounds.clear();
     }
 
+    public void stopAllExcept(Sound sound) {
+        Iterator<ActiveSoundEvent> soundItr = activeSounds.iterator();
+        while (soundItr.hasNext()) {
+            ActiveSoundEvent evt = soundItr.next();
+            if (evt.soundInstance != sound && !evt.soundHandle.shouldFree()) {
+                evt.soundHandle.end();
+            }
+        }
+        activeSounds.clear();
+    }
+
     public void pauseAllSounds() {
         Iterator<ActiveSoundEvent> soundItr = activeSounds.iterator();
         while (soundItr.hasNext()) {

@@ -127,4 +127,19 @@ public class Font {
             return i2;
         }
     }
+
+    public static String removeColorCodes(String string0) {
+        char[] c3 = string0.toCharArray();
+        String string1 = "";
+
+        for(int i2 = 0; i2 < c3.length; ++i2) {
+            if(c3[i2] == 38) {
+                ++i2;
+            } else {
+                string1 = string1 + c3[i2];
+            }
+        }
+
+        return string1;
+    }
 }

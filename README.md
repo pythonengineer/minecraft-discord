@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **0.0.22a_05**, a *Multiplayer Classic* version of the game which was released on _**June 29, 2009**_.
+This version is **0.0.23a_01**, a *Multiplayer Classic* version of the game which was released on _**July 11, 2009**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.22a_05).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.0.23a_01).
 
 ### Usage
 
@@ -24,10 +24,11 @@ and configure your Discord app to point to the domain of your public endpoint as
 The "discord/server" folder contains the *websockify* proxy that transits traffic to and from the regular Java Minecraft server.
 It also authenticates clients running your activity with Discord's API. For multiplayer to work, you will need to configure a `/minecraft` URL mapping in Discord that points to the proxy endpoint's domain.
 
-Run `npm install` in the "discord/client" or "discord/server" projects to install dependencies and `npm run dev` to run them.
+Run `npm install` in the "discord/client" or "discord/server" projects to install dependencies and `npm run build` to build the app (must be ran whenever changes are made).
+You can run `npm run preview` to start a web server, or move the contents of the built "discord/client/dist" folder to your own web server.
 
 As all endpoints must be HTTPS secure, a good way to set up public endpoints for both the embedded application server
-and the multiplayer proxy server is to use something like *cloudflared* or *ngrok* and have a domain pointed at port 5173 for the embedded app and one at port 3000 for the websocket proxy.
+and the multiplayer proxy server is to use something like *cloudflared* or *ngrok* and have a domain pointed at port 4173 for the embedded app and one at port 3000 for the websocket proxy.
 
 The Minecraft server itself is in the "server" folder of the repository. Clients need not connect directly to it thanks to the websocket proxy.
 If the Minecraft server you want to connect to isn't available at `127.0.0.1:25565` for the websocket, you will have to edit `discord/server/websockify.js`.
@@ -48,7 +49,7 @@ The rightmost hotbar button opens inventory. The most bottom right button is jum
 
 ### Notes
 
-All textures and sound files are in the `discord/client/assets` folder, all created either by Mojang Specifications or Eaglercraft.
+All textures and sound files are in the `discord/client/public/assets` folder, all created either by Mojang Specifications or Eaglercraft.
 
 The Minecraft source code for this version was obtained using [RetroMCP-Java](https://github.com/MCPHackers/RetroMCP-Java).
 

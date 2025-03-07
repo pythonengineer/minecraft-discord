@@ -22,8 +22,8 @@ public final class NameLevelScreen extends Screen {
 	public final void init() {
 		this.buttons.clear();
 		Keyboard.enableRepeatEvents(true);
-        this.buttons.add(new Button(0, this.width / 2 - 100, this.height / 4 + 120, 200, 20, "Save"));
-        this.buttons.add(new Button(1, this.width / 2 - 100, this.height / 4 + 144, 200, 20, "Cancel"));
+        this.buttons.add(new Button(0, this.width / 2 - 100, this.height / 4 + 120, "Save"));
+        this.buttons.add(new Button(1, this.width / 2 - 100, this.height / 4 + 144, "Cancel"));
         ((Button)this.buttons.get(0)).enabled = this.name.trim().length() > 1;
 	}
 
@@ -67,12 +67,12 @@ public final class NameLevelScreen extends Screen {
 
 	public final void render(int i1, int i2) {
         fillGradient(0, 0, this.width, this.height, 1610941696, -1607454624);
-        this.drawCenteredString(this.title, this.width / 2, 40, 0xFFFFFF);
+        drawCenteredString(this.font, this.title, this.width / 2, 40, 16777215);
         int i3 = this.width / 2 - 100;
         int i4 = this.height / 2 - 10;
-		fill(i3 - 1, i4 - 1, i3 + 200 + 1, i4 + 20 + 1, -6250336);
-		fill(i3, i4, i3 + 200, i4 + 20, 0xFF000000);
-		this.drawString(this.name + (this.counter / 6 % 2 == 0 ? "_" : ""), i3 + 4, i4 + 6, 14737632);
-		super.render(i1, i2);
+        fill(i3 - 1, i4 - 1, i3 + 200 + 1, i4 + 20 + 1, -6250336);
+        fill(i3, i4, i3 + 200, i4 + 20, -16777216);
+        drawString(this.font, this.name + (this.counter / 6 % 2 == 0 ? "_" : ""), i3 + 4, i4 + 6, 14737632);
+        super.render(i1, i2);
 	}
 }

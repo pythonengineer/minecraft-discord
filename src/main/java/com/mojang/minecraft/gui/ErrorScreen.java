@@ -14,8 +14,8 @@ public final class ErrorScreen extends Screen {
 
     public final void render(int i1, int i2) {
         fillGradient(0, 0, this.width, this.height, -12574688, -11530224);
-        this.drawCenteredString(this.title, this.width / 2, 90, 0xFFFFFF);
-        this.drawCenteredString(this.desc, this.width / 2, 110, 0xFFFFFF);
+        drawCenteredString(this.font, this.title, this.width / 2, 90, 16777215);
+        drawCenteredString(this.font, this.desc, this.width / 2, 110, 16777215);
         super.render(i1, i2);
     }
 

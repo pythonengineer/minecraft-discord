@@ -779,19 +779,31 @@ public class Level implements Serializable {
     }
 
     public void playSound(String string1, Entity entity2, float f3, float f4) {
-        Minecraft minecraft5;
-        Sound audioInfo6;
-        if(this.rendererContext != null && (minecraft5 = this.rendererContext).soundPlayer != null && (audioInfo6 = minecraft5.soundManager.getAudioInfo(string1, f3, f4)) != null) {
-            minecraft5.soundPlayer.play(audioInfo6, new EntitySoundPos(entity2, minecraft5.player));
+        if(this.rendererContext != null) {
+            Minecraft minecraft5;
+            if((minecraft5 = this.rendererContext).soundPlayer == null || !minecraft5.options.sound) {
+                return;
+            }
+
+            Sound audioInfo6;
+            if((audioInfo6 = minecraft5.soundManager.getAudioInfo(string1, f3, f4)) != null) {
+                minecraft5.soundPlayer.play(audioInfo6, new EntitySoundPos(entity2, minecraft5.player));
+            }
         }
 
     }
 
     public void playSound(String string1, float f2, float f3, float f4, float f5, float f6) {
-        Minecraft minecraft7;
-        Sound audioInfo8;
-        if(this.rendererContext != null && (minecraft7 = this.rendererContext).soundPlayer != null && (audioInfo8 = minecraft7.soundManager.getAudioInfo(string1, f5, f6)) != null) {
-            minecraft7.soundPlayer.play(audioInfo8, new LevelSoundPos(f2, f3, f4, minecraft7.player));
+        if(this.rendererContext != null) {
+            Minecraft minecraft7;
+            if((minecraft7 = this.rendererContext).soundPlayer == null || !minecraft7.options.sound) {
+                return;
+            }
+
+            Sound audioInfo8;
+            if((audioInfo8 = minecraft7.soundManager.getAudioInfo(string1, f5, f6)) != null) {
+                minecraft7.soundPlayer.play(audioInfo8, new LevelSoundPos(f2, f3, f4, minecraft7.player));
+            }
         }
 
     }

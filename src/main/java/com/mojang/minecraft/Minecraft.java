@@ -75,7 +75,6 @@ public final class Minecraft implements Runnable {
     public String minecraftUri;
     public boolean appletMode = false;
     public volatile boolean pause = false;
-    public int yMouseAxis = 1;
     public Textures textures;
     public Font font;
     public int editMode = 0;
@@ -94,6 +93,7 @@ public final class Minecraft implements Runnable {
     public ConnectionManager connectionManager;
     public SoundPlayer soundPlayer;
     public HitResult hitResult = null;
+    public Options options;
     String server = null;
     int port = 0;
 
@@ -112,6 +112,7 @@ public final class Minecraft implements Runnable {
         this.textures = new Textures();
         this.textures.registerTextureFX(new TextureLavaFX());
         this.textures.registerTextureFX(new TextureWaterFX());
+        this.options = new Options(this);
     }
 
     public final void setServer(String string1, int i2) {
@@ -131,7 +132,7 @@ public final class Minecraft implements Runnable {
         }
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft 0.0.22a_05");
+        Display.setTitle("Minecraft 0.0.23a_01");
 
         try {
             Display.create();
@@ -183,13 +184,15 @@ public final class Minecraft implements Runnable {
                     VFile2 f = new VFile2("level.dat");
                     if (f.exists()) {
                         Level level10 = null;
-                        if(!(success = (level10 = this.levelIo.load(new DataInputStream(
-                                PlatformRuntime.newGZIPInputStream(f.getInputStream())))) != null)) {
-                            success = (level10 = this.levelIo.loadLegacy(new DataInputStream(
-                                    PlatformRuntime.newGZIPInputStream(f.getInputStream())))) != null;
+                        if((level10 = this.levelIo.load(new DataInputStream(
+                                PlatformRuntime.newGZIPInputStream(f.getInputStream())))) == null) {
+                            level10 = this.levelIo.loadLegacy(new DataInputStream(
+                                    PlatformRuntime.newGZIPInputStream(f.getInputStream())));
                         }
     
-                        this.setLevel(level10);
+                        if(success = level10 != null) {
+                            this.setLevel(level10);
+                        }
                     }
                 }
             } catch (Exception exception20) {
@@ -204,14 +207,14 @@ public final class Minecraft implements Runnable {
 
         this.levelRenderer = new LevelRenderer(this.textures);
         this.particleEngine = new ParticleEngine(this.level, this.textures);
-        this.player = new Player(this.level, new MovementInputFromOptions());
+        this.player = new Player(this.level, new MovementInputFromOptions(this.options));
         this.player.resetPos();
         if(this.level != null) {
             this.setLevel(this.level);
         }
 
         this.soundManager.registerSounds();
-        this.soundPlayer = new SoundPlayer();
+        this.soundPlayer = new SoundPlayer(this.options);
 
         checkGlError("Post startup");
         this.hud = new InGameHud(this);
@@ -326,7 +329,7 @@ public final class Minecraft implements Runnable {
                                 PointerInputAbstraction.runGameLoop();
                             }
         				}
-        
+
                         if (!Display.contextLost()) {
                             GL11.optimize();
                             checkGlError("Pre render");
@@ -345,12 +348,22 @@ public final class Minecraft implements Runnable {
                             i38 = 0;
                             i34 = PointerInputAbstraction.getDX();
                             i38 = PointerInputAbstraction.getDY();
-                            this.player.turn((float)i34, (float)(i38 * this.yMouseAxis));
+
+                            byte b57 = 1;
+                            if(this.options.invertMouse) {
+                                b57 = -1;
+                            }
+
+                            this.player.turn((float)i34, (float)(i38 * b57));
 
                             if(!this.hideGui) {
+                                int i53 = scaledResolution.getScaledWidth();
+                                int i56 = scaledResolution.getScaledHeight();
+                                int i60 = Mouse.getX() * i53 / this.width;
+                                int i62 = i56 - Mouse.getY() * i56 / this.height - 1;
                                 if(this.level != null) {
                                     this.render(f33);
-                                    this.hud.render();
+                                    this.hud.render(this.screen != null, i60, i62);
                                 } else {
                                     GL11.glViewport(0, 0, this.width, this.height);
                                     GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
@@ -364,11 +377,7 @@ public final class Minecraft implements Runnable {
 
                                 if(this.screen != null) {
                                     GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-                                    i34 = scaledResolution.getScaledWidth();
-                                    i38 = scaledResolution.getScaledHeight();
-                                    int i37 = Mouse.getX() * i34 / this.width;
-                                    i5 = i38 - Mouse.getY() * i38 / this.height - 1;
-                                    this.screen.render(i37, i5);
+                                    this.screen.render(i60, i62);
                                 }
                             }
                             checkGlError("Post render");
@@ -685,7 +694,8 @@ public final class Minecraft implements Runnable {
             }
         }
 
-        if(this.screen == null || this.screen.allowUserInput) {
+        if((this.screen == null || this.screen.allowUserInput) && (this.connectionManager == null
+        || (this.connectionManager.connection != null && this.connectionManager.connected))) {
             boolean touched;
             boolean moused = false;
             while ((touched = Touch.next()) || (moused = Mouse.next())) {
@@ -754,10 +764,10 @@ public final class Minecraft implements Runnable {
                             }
 
                             Inventory inventory15 = this.player.inventory;
-                            if((i3 = this.player.inventory.getSlotContainsID(i2)) >= 0) {
+                            if((i3 = this.player.inventory.containsTileAt(i2)) >= 0) {
                                 inventory15.selectedSlot = i3;
                             } else if(i2 > 0 && User.creativeTiles.contains(Tile.tiles[i2])) {
-                                inventory15.getSlotContainsTile(Tile.tiles[i2]);
+                                inventory15.setTile(Tile.tiles[i2]);
                             }
                         }
                     }
@@ -790,17 +800,11 @@ public final class Minecraft implements Runnable {
                             this.pauseGame();
                         }
 
-                        if(Keyboard.getEventKey() == Keyboard.KEY_R) {
+                        if(Keyboard.getEventKey() == this.options.load.key) {
                             this.player.resetPos();
                         }
 
-                        if(Keyboard.getEventKey() == Keyboard.KEY_M && this.soundPlayer != null) {
-                            SoundPlayer soundPlayer19 = this.soundPlayer;
-                            this.soundPlayer.enabled = !soundPlayer19.enabled;
-                            this.soundPlayer.stop();
-                        }
-
-                        if(Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
+                        if(Keyboard.getEventKey() == this.options.save.key) {
                             this.saveSpawn();
                         }
 
@@ -808,11 +812,11 @@ public final class Minecraft implements Runnable {
                             this.addZombie();
                         }
 
-                        if(Keyboard.getEventKey() == Keyboard.KEY_B) {
+                        if(Keyboard.getEventKey() == this.options.build.key) {
                             this.setScreen(new InventoryScreen());
                         }
 
-                        if(Keyboard.getEventKey() == Keyboard.KEY_T && this.connectionManager != null && this.connectionManager.isConnected()) {
+                        if(Keyboard.getEventKey() == this.options.chat.key && this.connectionManager != null && this.connectionManager.isConnected()) {
                             this.player.releaseAllKeys();
                             this.setScreen(new ChatScreen());
                         }
@@ -824,14 +828,8 @@ public final class Minecraft implements Runnable {
                         }
                     }
 
-                    if(Keyboard.getEventKey() == Keyboard.KEY_Y) {
-                        this.yMouseAxis = -this.yMouseAxis;
-                    }
-
-                    if(Keyboard.getEventKey() == Keyboard.KEY_F) {
-                        LevelRenderer levelRenderer10000 = this.levelRenderer;
-                        boolean z15 = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
-                        levelRenderer10000.drawDistance = levelRenderer10000.drawDistance + (z15 ? -1 : 1) & 3;
+                    if(Keyboard.getEventKey() == this.options.toggleFog.key) {
+                        this.options.setOption(4, !Keyboard.isKeyDown(42) && !Keyboard.isKeyDown(54) ? 1 : -1);
                     }
                 }
             }
@@ -934,7 +932,7 @@ public final class Minecraft implements Runnable {
 
 	public void render(float a) {
         GL11.glViewport(0, 0, this.width, this.height);
-        float f65 = (float)Math.pow((double)(f65 = 1.0F / (float)(4 - this.levelRenderer.drawDistance)), 0.25D);
+        float f65 = (float)Math.pow((double)(f65 = 1.0F / (float)(4 - this.options.renderDistance)), 0.25D);
         this.renderHelper.fogColorRed = 0.6F * (1.0F - f65) + f65;
         this.renderHelper.fogColorGreen = 0.8F * (1.0F - f65) + f65;
         this.renderHelper.fogColorBlue = 1.0F * (1.0F - f65) + f65;
@@ -959,7 +957,7 @@ public final class Minecraft implements Runnable {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         this.pick(a);
         this.renderHelper.fogColorMultiplier = 1.0F;
-        this.renderHelper.renderDistance = (float)(512 >> (this.levelRenderer.drawDistance << 1));
+        this.renderHelper.renderDistance = (float)(512 >> (this.options.renderDistance << 1));
         this.setupCamera(a);
         GL11.glEnable(GL11.GL_CULL_FACE);
         Frustum frustum22 = Frustum.getFrustum();
