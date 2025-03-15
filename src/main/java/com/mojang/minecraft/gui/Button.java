@@ -1,29 +1,29 @@
 package com.mojang.minecraft.gui;
 
-public class Button extends Gui {
-    int x;
-    int y;
-    public int w;
-    public int h;
+public class Button extends GuiComponent {
+    int w;
+    int h;
+    public int x;
+    public int y;
     public String msg;
     public int id;
     public boolean enabled;
     public boolean visible;
 
-    public Button(int i1, int i2, int i3, String string4) {
-        this(i1, i2, i3, 200, 20, string4);
+    public Button(int id, int x, int y, String msg) {
+        this(id, x, y, 200, 20, msg);
     }
 
-    protected Button(int i1, int i2, int i3, int i4, int i5, String string6) {
-        this.x = 200;
-        this.y = 20;
+    protected Button(int id, int x, int y, int w, int h, String msg) {
+        this.w = 200;
+        this.h = 20;
         this.enabled = true;
         this.visible = true;
-        this.id = i1;
-        this.w = i2;
-        this.h = i3;
-        this.x = i4;
-        this.y = 20;
-        this.msg = string6;
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = 20;
+        this.msg = msg;
     }
 }

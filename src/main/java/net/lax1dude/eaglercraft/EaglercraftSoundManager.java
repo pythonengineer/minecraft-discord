@@ -8,7 +8,6 @@ import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.sound.Sound;
 
 import net.lax1dude.eaglercraft.internal.EnumPlatformType;
-import net.lax1dude.eaglercraft.internal.IAudioCacheLoader;
 import net.lax1dude.eaglercraft.internal.IAudioHandle;
 import net.lax1dude.eaglercraft.internal.IAudioResource;
 import net.lax1dude.eaglercraft.internal.PlatformAudio;
@@ -236,37 +235,43 @@ public class EaglercraftSoundManager {
             return;
         }
         if (sound != null) {
-            IAudioResource trk;
+            IAudioResource trk = null;
             if (EagRuntime.getPlatformType() != EnumPlatformType.DESKTOP) {
-                trk = PlatformAudio.loadAudioDataNew(sound.url, sound.pos != null,
-                        EagRuntime.browserResourcePackLoader);
+                PlatformAudio.loadAudioDataNew(sound, sound.pos != null,
+                  EagRuntime.browserResourcePackLoader);
             } else {
                 trk = PlatformAudio.loadAudioData(sound.url, sound.pos != null);
             }
-            if (trk == null) {
-                logger.warn("Unable to play unknown soundEvent(3): {}", sound.url);
+            if (!PlatformAudio.isAsyncSupported()) {
+                this.playSoundLoaded(sound, trk);
+            }
+        }
+    }
+
+    public void playSoundLoaded(Sound sound, IAudioResource trk) {
+        if (trk == null) {
+            logger.warn("Unable to play unknown soundEvent(3): {}", sound.url);
+        } else {
+
+            ActiveSoundEvent newSound = new ActiveSoundEvent(this, sound,
+                    null);
+
+            float pitch = getNormalizedPitch(sound);
+            float attenuatedGain = getNormalizedVolume(sound);
+            boolean repeat = false;
+
+            if (sound.pos != null) {
+                newSound.soundHandle = PlatformAudio.beginPlayback(trk, newSound.activeX, newSound.activeY,
+                        newSound.activeZ, attenuatedGain, pitch, repeat);
             } else {
+                newSound.soundHandle = PlatformAudio.beginPlaybackStatic(trk, attenuatedGain, pitch,
+                        repeat);
+            }
 
-                ActiveSoundEvent newSound = new ActiveSoundEvent(this, sound,
-                        null);
-
-                float pitch = getNormalizedPitch(sound);
-                float attenuatedGain = getNormalizedVolume(sound);
-                boolean repeat = false;
-
-                if (sound.pos != null) {
-                    newSound.soundHandle = PlatformAudio.beginPlayback(trk, newSound.activeX, newSound.activeY,
-                            newSound.activeZ, attenuatedGain, pitch, repeat);
-                } else {
-                    newSound.soundHandle = PlatformAudio.beginPlaybackStatic(trk, attenuatedGain, pitch,
-                            repeat);
-                }
-
-                if (newSound.soundHandle == null) {
-                    logger.error("Unable to play soundEvent(4): {}", sound.url);
-                } else {
-                    activeSounds.add(newSound);
-                }
+            if (newSound.soundHandle == null) {
+                logger.error("Unable to play soundEvent(4): {}", sound.url);
+            } else {
+                activeSounds.add(newSound);
             }
         }
     }
@@ -293,7 +298,7 @@ public class EaglercraftSoundManager {
                 float f1 = player.yRotO + (player.yRot - player.yRotO) * partialTicks;
                 double d0 = player.xo + (player.x - player.xo) * (double)partialTicks;
                 double d1 = player.yo + (player.y - player.yo) * (double)partialTicks
-                        + (double)player.heightOffset;
+                        - (double)player.heightOffset;
                 double d2 = player.zo + (player.z - player.zo) * (double)partialTicks;
                 PlatformAudio.setListener((float)d0, (float)d1, (float)d2, f, f1);
             } catch (Throwable t) {

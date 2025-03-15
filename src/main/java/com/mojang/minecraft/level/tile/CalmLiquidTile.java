@@ -13,42 +13,42 @@ public final class CalmLiquidTile extends LiquidTile {
 		this.setTicking(false);
 	}
 
-	public final void tick(Level level1, int i2, int i3, int i4, EaglercraftRandom random5) {
+	public final void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
 	}
 
-	public final void neighborChanged(Level level1, int i2, int i3, int i4, int i5) {
+	public final void neighborChanged(Level level, int x, int y, int z, int type) {
 		boolean z6 = false;
-		if(level1.getTile(i2 - 1, i3, i4) == 0) {
+		if(level.getTile(x - 1, y, z) == 0) {
 			z6 = true;
 		}
 
-		if(level1.getTile(i2 + 1, i3, i4) == 0) {
+		if(level.getTile(x + 1, y, z) == 0) {
 			z6 = true;
 		}
 
-		if(level1.getTile(i2, i3, i4 - 1) == 0) {
+		if(level.getTile(x, y, z - 1) == 0) {
 			z6 = true;
 		}
 
-		if(level1.getTile(i2, i3, i4 + 1) == 0) {
+		if(level.getTile(x, y, z + 1) == 0) {
 			z6 = true;
 		}
 
-		if(level1.getTile(i2, i3 - 1, i4) == 0) {
+		if(level.getTile(x, y - 1, z) == 0) {
 			z6 = true;
 		}
 
-		if(i5 != 0) {
-			Liquid liquid7 = Tile.tiles[i5].getLiquidType();
-			if(this.liquid == Liquid.water && liquid7 == Liquid.lava || liquid7 == Liquid.water && this.liquid == Liquid.lava) {
-				level1.setTile(i2, i3, i4, Tile.rock.id);
+		if(type != 0) {
+			Liquid type1 = Tile.tiles[type].getLiquidType();
+			if(this.liquid == Liquid.water && type1 == Liquid.lava || type1 == Liquid.water && this.liquid == Liquid.lava) {
+				level.setTile(x, y, z, Tile.rock.id);
 				return;
 			}
 		}
 
 		if(z6) {
-			level1.setTileNoUpdate(i2, i3, i4, this.tileId);
-			level1.addToTickNextTick(i2, i3, i4, this.tileId);
+			level.setTileNoUpdate(x, y, z, this.tileId);
+			level.addToTickNextTick(x, y, z, this.tileId);
 		}
 
 	}

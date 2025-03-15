@@ -6,7 +6,7 @@ let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-function startGame() {
+function startClient() {
   setupDiscordSdk().then(() => {
     console.log("Discord SDK is authenticated");
     const server =
@@ -21,6 +21,15 @@ function startGame() {
     };
     main();
   });
+}
+
+function startGame() {
+  window.minecraftOpts = {
+      container: "game_frame",
+      crashOnUncaughtExceptions: true,
+      assetUrlPrefix: ".proxy/"
+  };
+  main();
 }
 
 function isAndroid() {

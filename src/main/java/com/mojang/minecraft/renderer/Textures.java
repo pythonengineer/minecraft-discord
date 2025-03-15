@@ -1,6 +1,7 @@
 package com.mojang.minecraft.renderer;
 
-import com.mojang.minecraft.renderer.texture.TextureFX;
+import com.mojang.minecraft.Options;
+import com.mojang.minecraft.renderer.texture.DynamicTexture;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,58 +14,75 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
 public class Textures {
-    private HashMap<String, Integer> idMap = new HashMap();
-    public IntBuffer idBuffer = BufferUtils.createIntBuffer(1);
-    public ByteBuffer textureBuffer = BufferUtils.createByteBuffer(262144);
+    public HashMap idMap = new HashMap();
+    public HashMap pixelsMap = new HashMap();
+    public IntBuffer ib = BufferUtils.createIntBuffer(1);
+    public ByteBuffer pixels = BufferUtils.createByteBuffer(262144);
     public List textureList = new ArrayList();
+    public Options options;
 
-    public final int getTextureId(String string1) {
+    public Textures(Options options) {
+        this.options = options;
+    }
+
+    public final int loadTexture(String resourceName) {
         try {
-            if(this.idMap.containsKey(string1)) {
-                return ((Integer)this.idMap.get(string1)).intValue();
+            if(this.idMap.containsKey(resourceName)) {
+                return ((Integer)this.idMap.get(resourceName)).intValue();
             } else {
-                int i2 = this.addTexture(ImageData.loadImageFile("/assets" + string1));
-                this.idMap.put(string1, i2);
+                this.ib.clear();
+                GL11.glGenTextures(this.ib);
+                int i2 = this.ib.get(0);
+                if(resourceName.startsWith("##")) {
+                    this.addTexture(ImageData.loadImageFile("/assets" + resourceName), i2);
+                } else {
+                    this.addTexture(ImageData.loadImageFile("/assets" + resourceName), i2);
+                }
+
+                this.idMap.put(resourceName, i2);
                 return i2;
             }
-        } catch (Exception exception3) {
+        } catch (Exception exception) {
             throw new RuntimeException("!!");
         }
     }
 
-    public final int addTexture(ImageData bufferedImage1) {
-        this.idBuffer.clear();
-        GL11.glGenTextures(this.idBuffer);
-        int i2 = this.idBuffer.get(0);
-        GL11.glBindTexture(i2);
+    public void addTexture(ImageData bufferedImage, int textureId) {
+        GL11.glBindTexture(textureId);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-        int i3 = bufferedImage1.getWidth();
-        int i4 = bufferedImage1.getHeight();
+        int i3 = bufferedImage.getWidth();
+        int i4 = bufferedImage.getHeight();
         int[] i5 = new int[i3 * i4];
         byte[] b6 = new byte[i3 * i4 << 2];
-        bufferedImage1.getRGB(0, 0, i3, i4, i5, 0, i3);
+        bufferedImage.getRGB(0, 0, i3, i4, i5, 0, i3);
 
         for(int i11 = 0; i11 < i5.length; ++i11) {
-            int i7 = i5[i11] >>> 24;
-            int i8 = i5[i11] >> 16 & 255;
-            int i9 = i5[i11] >> 8 & 255;
-            int i10 = i5[i11] & 255;
-            b6[i11 << 2] = (byte)i10;
-            b6[(i11 << 2) + 1] = (byte)i9;
-            b6[(i11 << 2) + 2] = (byte)i8;
-            b6[(i11 << 2) + 3] = (byte)i7;
+            int a = i5[i11] >>> 24;
+            int b = i5[i11] >> 16 & 255;
+            int g = i5[i11] >> 8 & 255;
+            int r = i5[i11] & 255;
+            if(this.options.anaglyph3d) {
+                int i6 = (r * 30 + g * 59 + b * 11) / 100;
+                g = (r * 30 + g * 70) / 100;
+                b = (r * 30 + b * 70) / 100;
+                r = i6;
+            }
+
+            b6[i11 << 2] = (byte)r;
+            b6[(i11 << 2) + 1] = (byte)g;
+            b6[(i11 << 2) + 2] = (byte)b;
+            b6[(i11 << 2) + 3] = (byte)a;
         }
 
-        this.textureBuffer.clear();
-        this.textureBuffer.put(b6);
-        this.textureBuffer.position(0).limit(b6.length);
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, i3, i4, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.textureBuffer);
-        return i2;
+        this.pixels.clear();
+        this.pixels.put(b6);
+        this.pixels.position(0).limit(b6.length);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, i3, i4, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.pixels);
     }
 
-    public final void registerTextureFX(TextureFX textureFX1) {
-        this.textureList.add(textureFX1);
-        textureFX1.onTick();
+    public final void addDynamicTexture(DynamicTexture dynamicTexture) {
+        this.textureList.add(dynamicTexture);
+        dynamicTexture.tick();
     }
 }

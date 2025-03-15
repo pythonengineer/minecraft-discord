@@ -15,39 +15,44 @@ public final class ParticleEngine {
 	public List particles = new ArrayList();
 	private Textures textures;
 
-	public ParticleEngine(Level level1, Textures textures2) {
-		this.textures = textures2;
+	public ParticleEngine(Level level, Textures t) {
+		this.textures = t;
+		level.particleEngine = this;
 	}
 
-    public final void tick() {
-        for(int i1 = 0; i1 < this.particles.size(); ++i1) {
-            Particle particle2;
-            (particle2 = (Particle)this.particles.get(i1)).tick();
-            if(particle2.removed) {
-                this.particles.remove(i1--);
-            }
-        }
+	public final void addParticle(Particle particle) {
+		this.particles.add(particle);
+	}
 
-    }
+	public final void tick() {
+		for(int i1 = 0; i1 < this.particles.size(); ++i1) {
+			Particle particle2;
+			(particle2 = (Particle)this.particles.get(i1)).tick();
+			if(particle2.removed) {
+				this.particles.remove(i1--);
+			}
+		}
 
-	public final void render(Player player1, float f2) {
+	}
+
+	public final void render(Player player, float a) {
 		if(this.particles.size() != 0) {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-            int i3 = this.textures.getTextureId("/terrain.png");
+			int i3 = this.textures.loadTexture("/terrain.png");
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, i3);
-			float f12 = -((float)Math.cos((double)player1.yRot * Math.PI / 180.0D));
+			float f12 = -((float)Math.cos((double)player.yRot * Math.PI / 180.0D));
 			float f4;
-			float f5 = -(f4 = -((float)Math.sin((double)player1.yRot * Math.PI / 180.0D))) * (float)Math.sin((double)player1.xRot * Math.PI / 180.0D);
-			float f6 = f12 * (float)Math.sin((double)player1.xRot * Math.PI / 180.0D);
-			float f11 = (float)Math.cos((double)player1.xRot * Math.PI / 180.0D);
+			float f5 = -(f4 = -((float)Math.sin((double)player.yRot * Math.PI / 180.0D))) * (float)Math.sin((double)player.xRot * Math.PI / 180.0D);
+			float f6 = f12 * (float)Math.sin((double)player.xRot * Math.PI / 180.0D);
+			float f11 = (float)Math.cos((double)player.xRot * Math.PI / 180.0D);
 			Tesselator tesselator7 = Tesselator.instance;
 			Tesselator.instance.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
 
 			for(int i8 = 0; i8 < this.particles.size(); ++i8) {
 				Particle particle9 = (Particle)this.particles.get(i8);
-				float f10 = 0.8F * particle9.getBrightness();
+				float f10 = 0.6F * particle9.getBrightness(a);
 				tesselator7.color(f10, f10, f10);
-				particle9.render(tesselator7, f2, f12, f11, f4, f5, f6);
+				particle9.render(tesselator7, a, f12, f11, f4, f5, f6);
 			}
 
 			tesselator7.end();

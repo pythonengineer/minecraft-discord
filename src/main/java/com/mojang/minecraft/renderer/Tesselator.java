@@ -49,30 +49,16 @@ public final class Tesselator {
         worldRenderer.tex(u, v);
     }
 
-    public final void color(float f1, float f2, float f3) {
+    public final void color(float r, float g, float b) {
         if(!this.noColor) {
             this.hasColor = true;
-            this.r = f1;
-            this.g = f2;
-            this.b = f3;
+            this.r = r;
+            this.g = g;
+            this.b = b;
         }
     }
 
-    public final void color(int i1, int i2, int i3) {
-        byte b10001 = (byte)i1;
-        byte b10002 = (byte)i2;
-        byte b6 = (byte)i3;
-        byte b5 = b10002;
-        byte b4 = b10001;
-        if(!this.noColor) {
-            this.hasColor = true;
-            this.r = (float)(b4 & 255) / 255.0F;
-            this.g = (float)(b5 & 255) / 255.0F;
-            this.b = (float)(b6 & 255) / 255.0F;
-        }
-    }
-
-    public void vertexUV(float x, float y, float z, float u, float v) {
+    public final void vertexUV(float x, float y, float z, float u, float v) {
         this.tex(u, v);
         this.vertex(x, y, z);
     }
@@ -81,18 +67,39 @@ public final class Tesselator {
         if (this.hasColor) {
             worldRenderer.color(this.r, this.g, this.b, 1);
         }
+
         worldRenderer.pos(x, y, z);
         worldRenderer.endVertex();
     }
 
-    public void color(int c) {
-        int r = c >> 16 & 255;
-        int g = c >> 8 & 255;
-        int b = c & 255;
-        this.color(r, g, b);
+    public final void color(int color) {
+        int i2 = color >> 16 & 255;
+        int i3 = color >> 8 & 255;
+        color &= 255;
+        int i10001 = i2;
+        int i10002 = i3;
+        i3 = color;
+        i2 = i10002;
+        color = i10001;
+        byte b7 = (byte)color;
+        byte b8 = (byte)i2;
+        byte b6 = (byte)i3;
+        byte b5 = b8;
+        byte color1 = b7;
+        if(!this.noColor) {
+            this.hasColor = true;
+            this.r = (float)(color1 & 255) / 255.0F;
+            this.g = (float)(b5 & 255) / 255.0F;
+            this.b = (float)(b6 & 255) / 255.0F;
+        }
+
     }
 
     public void noColor() {
         this.noColor = true;
+    }
+
+    public final void normal(float x, float y, float z) {
+        GL11.glNormal3f(x, y, z);
     }
 }

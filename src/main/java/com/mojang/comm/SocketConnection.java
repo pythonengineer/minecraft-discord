@@ -3,7 +3,7 @@ package com.mojang.comm;
 import com.mojang.minecraft.gui.ErrorScreen;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.LevelIO;
-import com.mojang.minecraft.net.ConnectionManager;
+import com.mojang.minecraft.net.Client;
 import com.mojang.minecraft.net.NetworkPlayer;
 import com.mojang.minecraft.net.Packet;
 
@@ -24,16 +24,16 @@ public final class SocketConnection {
     private IWebSocketClient webSocket;
     public ByteBuffer readBuffer = ByteBuffer.allocate(1048576);
     public ByteBuffer writeBuffer = ByteBuffer.allocate(1048576);
-    public ConnectionManager manager;
+    public Client client;
     private boolean initialized = false;
     private byte[] stringPacket = new byte[64];
     private HashMap<String,ByteArrayOutputStream> skinBuffer = new HashMap<String,ByteArrayOutputStream>();
 
-    public SocketConnection(String string1, int i2) throws IOException {
-        if (i2 != 0) {
-            webSocket = PlatformNetworking.openWebSocket(string1 + ":" + i2);
+    public SocketConnection(String ip, int port) throws IOException {
+        if (port != 0) {
+            webSocket = PlatformNetworking.openWebSocket(ip + ":" + port);
         } else {
-            webSocket = PlatformNetworking.openWebSocket(string1);
+            webSocket = PlatformNetworking.openWebSocket(ip);
         }
         if (webSocket == null) {
             throw new IOException();
@@ -94,48 +94,47 @@ public final class SocketConnection {
                 object11[i4] = this.read(packet3.fields[i4]);
             }
 
-            ConnectionManager connectionManager12 = this.manager;
-            if(this.manager.processData) {
+            if(this.client.processData) {
                 if(packet3 == Packet.LOGIN) {
-                    connectionManager12.minecraft.loadingScreen.beginLevelLoading(object11[1].toString());
-                    connectionManager12.minecraft.loadingScreen.levelLoadUpdate(object11[2].toString());
-                    connectionManager12.minecraft.player.userType = ((Byte)object11[3]).byteValue();
+                    this.client.minecraft.loadingScreen.beginLevelLoading(object11[1].toString());
+                    this.client.minecraft.loadingScreen.levelLoadUpdate(object11[2].toString());
+                    this.client.minecraft.player.userType = ((Byte)object11[3]).byteValue();
                 } else if(packet3 == Packet.LEVEL_INITIALIZE) {
-                    connectionManager12.minecraft.setLevel((Level)null);
-                    connectionManager12.levelBuffer = new ByteArrayOutputStream();
+                    this.client.minecraft.loadLegacy((Level)null);
+                    this.client.levelBuffer = new ByteArrayOutputStream();
                 } else {
                     byte b6;
                     if(packet3 == Packet.LEVEL_DATA_CHUNK) {
                         short s13 = ((Short)object11[0]).shortValue();
                         byte[] b5 = (byte[])((byte[])object11[1]);
                         b6 = ((Byte)object11[2]).byteValue();
-                        connectionManager12.minecraft.loadingScreen.setLoadingProgress(b6);
-                        connectionManager12.levelBuffer.write(b5, 0, s13);
+                        this.client.minecraft.loadingScreen.setLoadingProgress(b6);
+                        this.client.levelBuffer.write(b5, 0, s13);
                     } else {
                         short s17;
                         short s18;
                         short s21;
                         if(packet3 == Packet.LEVEL_FINALIZE) {
                             try {
-                                connectionManager12.levelBuffer.close();
+                                this.client.levelBuffer.close();
                             } catch (IOException iOException10) {
                                 iOException10.printStackTrace();
                             }
 
-                            byte[] b14 = LevelIO.loadBlocks(new ByteArrayInputStream(connectionManager12.levelBuffer.toByteArray()));
-                            connectionManager12.levelBuffer = null;
+                            byte[] b14 = LevelIO.loadBlocks(new ByteArrayInputStream(this.client.levelBuffer.toByteArray()));
+                            this.client.levelBuffer = null;
                             s18 = ((Short)object11[0]).shortValue();
                             s21 = ((Short)object11[1]).shortValue();
                             s17 = ((Short)object11[2]).shortValue();
                             Level level7;
                             (level7 = new Level()).setNetworkMode(true);
                             level7.setData(s18, s21, s17, b14);
-                            connectionManager12.minecraft.setLevel(level7);
-                            connectionManager12.minecraft.hideGui = false;
-                            connectionManager12.connected = true;
+                            this.client.minecraft.loadLegacy(level7);
+                            this.client.minecraft.hideScreen = false;
+                            this.client.connected = true;
                         } else if(packet3 == Packet.SET_TILE) {
-                            if(connectionManager12.minecraft.level != null) {
-                                connectionManager12.minecraft.level.netSetTile(((Short)object11[0]).shortValue(), ((Short)object11[1]).shortValue(), ((Short)object11[2]).shortValue(), ((Byte)object11[3]).byteValue());
+                            if(this.client.minecraft.level != null) {
+                                this.client.minecraft.level.netSetTile(((Short)object11[0]).shortValue(), ((Short)object11[1]).shortValue(), ((Short)object11[2]).shortValue(), ((Byte)object11[3]).byteValue());
                             }
                         } else {
                             byte b8;
@@ -160,12 +159,12 @@ public final class SocketConnection {
                                 string19 = string10002;
                                 b15 = b10001;
                                 if(b15 >= 0) {
-                                    networkPlayer20 = new NetworkPlayer(connectionManager12.minecraft, b15, string19, s18, s21, s24, (float)(-b8 * 360) / 256.0F, (float)(b9 * 360) / 256.0F);
-                                    connectionManager12.players.put(b15, networkPlayer20);
-                                    connectionManager12.minecraft.level.entities.add(networkPlayer20);
+                                    networkPlayer20 = new NetworkPlayer(this.client.minecraft, b15, string19, s18, s21, s24, (float)(-b8 * 360) / 256.0F, (float)(b9 * 360) / 256.0F);
+                                    this.client.players.put(b15, networkPlayer20);
+                                    this.client.minecraft.level.addEntity(networkPlayer20);
                                 } else {
-                                    connectionManager12.minecraft.level.setSpawnPos(s18 / 32, s21 / 32, s24 / 32, (float)(b8 * 320 / 256));
-                                    connectionManager12.minecraft.player.moveTo((float)s18 / 32.0F, (float)s21 / 32.0F, (float)s24 / 32.0F, (float)(b8 * 360) / 256.0F, (float)(b9 * 360) / 256.0F);
+                                    this.client.minecraft.level.setSpawnPos(s18 / 32, s21 / 32, s24 / 32, (float)(b8 * 320 / 256));
+                                    this.client.minecraft.player.moveTo((float)s18 / 32.0F, (float)s21 / 32.0F, (float)s24 / 32.0F, (float)(b8 * 360) / 256.0F, (float)(b9 * 360) / 256.0F);
                                 }
                             } else {
                                 byte b25;
@@ -184,8 +183,8 @@ public final class SocketConnection {
                                     s17 = s29;
                                     b15 = b10001;
                                     if(b15 < 0) {
-                                        connectionManager12.minecraft.player.moveTo((float)s17 / 32.0F, (float)s18 / 32.0F, (float)s21 / 32.0F, (float)(b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
-                                    } else if((networkPlayer28 = (NetworkPlayer)connectionManager12.players.get(b15)) != null) {
+                                        this.client.minecraft.player.moveTo((float)s17 / 32.0F, (float)s18 / 32.0F, (float)s21 / 32.0F, (float)(b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
+                                    } else if((networkPlayer28 = (NetworkPlayer)this.client.players.get(b15)) != null) {
                                         networkPlayer28.teleport(s17, s18, s21, (float)(-b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
                                     }
                                 } else {
@@ -205,7 +204,7 @@ public final class SocketConnection {
                                         b22 = b31;
                                         b23 = b30;
                                         b15 = b10001;
-                                        if(b15 >= 0 && (networkPlayer28 = (NetworkPlayer)connectionManager12.players.get(b15)) != null) {
+                                        if(b15 >= 0 && (networkPlayer28 = (NetworkPlayer)this.client.players.get(b15)) != null) {
                                             networkPlayer28.queue(b23, b22, b6, (float)(-b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
                                         }
                                     } else if(packet3 == Packet.PLAYER_ROTATE) {
@@ -215,7 +214,7 @@ public final class SocketConnection {
                                         b23 = b30;
                                         b15 = b10001;
                                         NetworkPlayer networkPlayer26;
-                                        if(b15 >= 0 && (networkPlayer26 = (NetworkPlayer)connectionManager12.players.get(b15)) != null) {
+                                        if(b15 >= 0 && (networkPlayer26 = (NetworkPlayer)this.client.players.get(b15)) != null) {
                                             networkPlayer26.queue((float)(-b23 * 360) / 256.0F, (float)(b22 * 360) / 256.0F);
                                         }
                                     } else if(packet3 == Packet.PLAYER_MOVE) {
@@ -227,27 +226,27 @@ public final class SocketConnection {
                                         b23 = b30;
                                         b15 = b10001;
                                         NetworkPlayer networkPlayer27;
-                                        if(b15 >= 0 && (networkPlayer27 = (NetworkPlayer)connectionManager12.players.get(b15)) != null) {
+                                        if(b15 >= 0 && (networkPlayer27 = (NetworkPlayer)this.client.players.get(b15)) != null) {
                                             networkPlayer27.queue(b23, b22, b6);
                                         }
                                     } else if(packet3 == Packet.PLAYER_DISCONNECT) {
                                         b15 = ((Byte)object11[0]).byteValue();
-                                        if(b15 >= 0 && (networkPlayer20 = (NetworkPlayer)connectionManager12.players.remove(b15)) != null) {
+                                        if(b15 >= 0 && (networkPlayer20 = (NetworkPlayer)this.client.players.remove(b15)) != null) {
                                             networkPlayer20.clear();
-                                            connectionManager12.minecraft.level.entities.remove(networkPlayer20);
+                                            this.client.minecraft.level.removeEntity(networkPlayer20);
                                         }
                                     } else if(packet3 == Packet.CHAT_MESSAGE) {
                                         b10001 = ((Byte)object11[0]).byteValue();
                                         string19 = (String)object11[1];
                                         b15 = b10001;
                                         if(b15 < 0) {
-                                            connectionManager12.minecraft.hud.addChatMessage("&e" + string19);
+                                            this.client.minecraft.gui.addMessage("&e" + string19);
                                         } else {
-                                            connectionManager12.players.get(b15);
-                                            connectionManager12.minecraft.hud.addChatMessage(string19);
+                                            this.client.players.get(b15);
+                                            this.client.minecraft.gui.addMessage(string19);
                                         }
                                     } else if(packet3 == Packet.KICK_PLAYER) {
-                                        connectionManager12.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
+                                        this.client.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
                                         this.disconnect();
                                     } else if(packet3 == Packet.PLAYER_SKIN) {
                                         String name = (String)object11[0];
@@ -261,7 +260,7 @@ public final class SocketConnection {
                                         byte[] texBytes = os.toByteArray();
                                         if(texBytes.length == len) {
                                             NetworkPlayer player = null;
-                                            Iterator<NetworkPlayer> itr = connectionManager12.players.values().iterator();
+                                            Iterator<NetworkPlayer> itr = this.client.players.values().iterator();
                                             while (itr.hasNext()) {
                                                 NetworkPlayer p = itr.next();
                                                 if (p.name.equals(name)) {
@@ -308,13 +307,13 @@ public final class SocketConnection {
 
     }
 
-    public final void sendPacket(Packet packet1, Object... object2) {
+    public final void sendPacket(Packet packet, Object... data) {
         if(this.connected) {
-            this.writeBuffer.put(packet1.id);
+            this.writeBuffer.put(packet.id);
 
-            for(int i3 = 0; i3 < object2.length; ++i3) {
-                Class class10001 = packet1.fields[i3];
-                Object object6 = object2[i3];
+            for(int i3 = 0; i3 < data.length; ++i3) {
+                Class class10001 = packet.fields[i3];
+                Object object6 = data[i3];
                 Class class5 = class10001;
                 SocketConnection socketConnection4 = this;
                 if(this.connected) {
@@ -358,7 +357,7 @@ public final class SocketConnection {
                             }
                         }
                     } catch (Exception exception7) {
-                        this.manager.disconnect(exception7);
+                        this.client.handleException(exception7);
                     }
                 }
             }
@@ -366,27 +365,27 @@ public final class SocketConnection {
         }
     }
 
-    public Object read(Class class1) {
+    public Object read(Class type) {
         if(!this.connected) {
             return null;
         } else {
             try {
-                if(class1 == Long.TYPE) {
+                if(type == Long.TYPE) {
                     return this.readBuffer.getLong();
-                } else if(class1 == Integer.TYPE) {
+                } else if(type == Integer.TYPE) {
                     return this.readBuffer.getInt();
-                } else if(class1 == Short.TYPE) {
+                } else if(type == Short.TYPE) {
                     return this.readBuffer.getShort();
-                } else if(class1 == Byte.TYPE) {
+                } else if(type == Byte.TYPE) {
                     return this.readBuffer.get();
-                } else if(class1 == Double.TYPE) {
+                } else if(type == Double.TYPE) {
                     return this.readBuffer.getDouble();
-                } else if(class1 == Float.TYPE) {
+                } else if(type == Float.TYPE) {
                     return this.readBuffer.getFloat();
-                } else if(class1 == String.class) {
+                } else if(type == String.class) {
                     this.readBuffer.get(this.stringPacket);
                     return (new String(this.stringPacket, "UTF-8")).trim();
-                } else if(class1 == byte[].class) {
+                } else if(type == byte[].class) {
                     byte[] b3 = new byte[1024];
                     this.readBuffer.get(b3);
                     return b3;
@@ -394,7 +393,7 @@ public final class SocketConnection {
                     return null;
                 }
             } catch (Exception exception2) {
-                this.manager.disconnect(exception2);
+                this.client.handleException(exception2);
                 return null;
             }
         }

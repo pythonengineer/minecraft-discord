@@ -20,7 +20,8 @@ import net.lax1dude.eaglercraft.util.Util;
  */
 public enum EnumPlatformOS {
     WINDOWS("Windows", Util.EnumOS.WINDOWS), MACOS("MacOS", Util.EnumOS.OSX), LINUX("Linux", Util.EnumOS.LINUX),
-    CHROMEBOOK_LINUX("ChromeOS", Util.EnumOS.LINUX), OTHER("Unknown", Util.EnumOS.UNKNOWN);
+    CHROMEBOOK_LINUX("ChromeOS", Util.EnumOS.LINUX), IPHONE("iPhone", Util.EnumOS.IPHONE),
+    OTHER("Unknown", Util.EnumOS.UNKNOWN);
 
     private final String name;
     private final Util.EnumOS minecraftEnum;
@@ -65,13 +66,15 @@ public enum EnumPlatformOS {
             return OTHER;
         }
         ua = " " + ua.toLowerCase();
-        if (ua.contains(" cros")) {
+        if (ua.contains(" iphone") || ua.contains("iphone")) {
+            return IPHONE;
+        } else if (ua.contains(" cros") || ua.contains("cros")) {
             return CHROMEBOOK_LINUX;
-        } else if (ua.contains(" linux")) {
+        } else if (ua.contains(" linux") || ua.contains("linux")) {
             return LINUX;
-        } else if (ua.contains(" windows") || ua.contains(" win32") || ua.contains(" win64")) {
+        } else if (ua.contains(" windows") || ua.contains(" win32") || ua.contains(" win64") || ua.contains("windows")) {
             return WINDOWS;
-        } else if (ua.contains(" macos") || ua.contains(" osx")) {
+        } else if (ua.contains(" macos") || ua.contains(" osx") || ua.contains("mac os")) {
             return MACOS;
         } else {
             return OTHER;

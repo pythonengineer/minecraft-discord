@@ -1,15 +1,27 @@
 package com.mojang.minecraft;
 
+import com.mojang.minecraft.character.Vec3;
+
 public final class HitResult {
+    public int type;
     public int x;
     public int y;
     public int z;
     public int f;
+    public Vec3 vec;
+    public Entity entity;
 
-    public HitResult(int i1, int i2, int i3, int i4, int i5) {
-        this.x = i2;
-        this.y = i3;
-        this.z = i4;
-        this.f = i5;
+    public HitResult(int x, int y, int z, int f, Vec3 hitVec) {
+        this.type = 0;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.f = f;
+        this.vec = new Vec3(hitVec.x, hitVec.y, hitVec.z);
+    }
+
+    public HitResult(Entity target) {
+        this.type = 1;
+        this.entity = target;
     }
 }

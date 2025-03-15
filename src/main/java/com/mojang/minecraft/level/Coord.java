@@ -5,12 +5,12 @@ public final class Coord {
     public int y;
     public int z;
     public int id;
-    public int scheduledTime;
+    public int time;
 
-    public Coord(int i1, int i2, int i3, int i4) {
-        this.x = i1;
-        this.y = i2;
-        this.z = i3;
-        this.id = i4;
+    public Coord(int x, int y, int z, int id) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.id = id;
     }
 }

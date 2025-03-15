@@ -1,6 +1,6 @@
 package com.mojang.minecraft.level;
 
-import com.mojang.minecraft.ProgressListener;
+import com.mojang.minecraft.LevelLoaderListener;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,27 +8,27 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 public final class LevelIO {
-    private ProgressListener progress;
+    private LevelLoaderListener levelLoaderListener;
 
-    public LevelIO(ProgressListener progressListener1) {
-        this.progress = progressListener1;
+    public LevelIO(LevelLoaderListener levelLoaderListener) {
+        this.levelLoaderListener = levelLoaderListener;
     }
 
-	public final boolean save(Level level1, String string2, String string3, String string4, String string5, int i6) {
+    public final boolean save(Level level, String host, String userName, String sessionId, String name, int id) {
 		return false;
 	}
 
-    public final Level load(String string1, String string2, int i3) {
+    public final Level load(String host, String owner, int id) {
 		return null;
 	}
 
     public final Level load(DataInputStream dataInputStream10) {
-        if(this.progress != null) {
-            this.progress.beginLevelLoading("Loading level");
+        if(this.levelLoaderListener != null) {
+            this.levelLoaderListener.beginLevelLoading("Loading level");
         }
 
-        if(this.progress != null) {
-            this.progress.levelLoadUpdate("Reading..");
+        if(this.levelLoaderListener != null) {
+            this.levelLoaderListener.levelLoadUpdate("Reading..");
         }
 
 		try {
@@ -84,34 +84,6 @@ public final class LevelIO {
         } catch (Exception exception9) {
             exception9.printStackTrace();
             (new StringBuilder()).append("Failed to load level: ").append(exception9.toString()).toString();
-            return null;
-        }
-	}
-
-	public final Level loadLegacy(DataInputStream dataInputStream5) {
-        if(this.progress != null) {
-            this.progress.beginLevelLoading("Loading level");
-        }
-
-        if(this.progress != null) {
-            this.progress.levelLoadUpdate("Reading..");
-        }
-
-		try {
-			String string7 = "--";
-            String string2 = "unknown";
-            byte[] b3 = new byte[256 << 8 << 6];
-            dataInputStream5.readFully(b3);
-            dataInputStream5.close();
-            Level level6;
-            (level6 = new Level()).setData(256, 64, 256, b3);
-            level6.name = string7;
-            level6.creator = string2;
-            level6.createTime = 0L;
-            return level6;
-        } catch (Exception exception4) {
-            exception4.printStackTrace();
-            (new StringBuilder()).append("Failed to load level: ").append(exception4.toString()).toString();
             return null;
         }
 	}

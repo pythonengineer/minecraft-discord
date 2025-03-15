@@ -25,6 +25,8 @@ import org.teavm.jso.webaudio.MediaStream;
 import org.teavm.jso.webaudio.MediaStreamAudioDestinationNode;
 import org.teavm.jso.webaudio.PannerNode;
 
+import com.mojang.minecraft.sound.Sound;
+
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.teavm.JOrbisAudioBufferDecoder;
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMClientConfigAdapter;
@@ -53,7 +55,6 @@ public class PlatformAudio {
     static final Logger logger = LogManager.getLogger("BrowserAudio");
 
     static AudioContext audioctx = null;
-    static GainNode gameRecGain = null;
     private static final Map<String, BrowserAudioResource> soundCache = new HashMap<>();
     private static final List<BrowserAudioHandle> activeSounds = new LinkedList<>();
 
@@ -100,13 +101,13 @@ public class PlatformAudio {
 
         @Override
         public void pause(boolean setPaused) {
-            if(setPaused) {
-                if(!isPaused) {
+            if (setPaused) {
+                if (!isPaused) {
                     isPaused = true;
                     source.getPlaybackRate().setValue(0.0f);
                 }
-            }else {
-                if(isPaused) {
+            } else {
+                if (isPaused) {
                     isPaused = false;
                     source.getPlaybackRate().setValue(pitch);
                 }
@@ -116,14 +117,14 @@ public class PlatformAudio {
         @Override
         public void repeat(boolean en) {
             repeat = en;
-            if(!isEnded) {
+            if (!isEnded) {
                 source.setLoop(en);
             }
         }
 
         @Override
         public void restart() {
-            if(isEnded) {
+            if (isEnded) {
                 isEnded = false;
                 isPaused = false;
                 AudioBufferSourceNode src = audioctx.createBufferSource();
@@ -133,17 +134,14 @@ public class PlatformAudio {
                 src.setLoop(repeat);
                 source.disconnect();
                 src.connect(panner == null ? gain : panner);
-                if(isDisposed) {
+                if (isDisposed) {
                     isDisposed = false;
                     activeSounds.add(this);
                     gain.connect(audioctx.getDestination());
-                    if(gameRecGain != null) {
-                        gain.connect(gameRecGain);
-                    }
                 }
                 source = src;
                 source.start();
-            }else {
+            } else {
                 isPaused = false;
                 source.getPlaybackRate().setValue(pitch);
                 source.start(0.0);
@@ -152,7 +150,7 @@ public class PlatformAudio {
 
         @Override
         public void move(float x, float y, float z) {
-            if(panner != null) {
+            if (panner != null) {
                 panner.setPosition(x, y, z);
             }
         }
@@ -160,26 +158,26 @@ public class PlatformAudio {
         @Override
         public void pitch(float f) {
             pitch = f;
-            if(!isPaused) {
+            if (!isPaused) {
                 source.getPlaybackRate().setValue(pitch);
             }
         }
 
         @Override
         public void gain(float f) {
-            if(panner != null) {
+            if (panner != null) {
                 float v1 = f * 16.0f;
-                if(v1 < 16.0f) v1 = 16.0f;
+                if (v1 < 16.0f) v1 = 16.0f;
                 panner.setMaxDistance(v1);
             }
             float v2 = f;
-            if(v2 > 1.0f) v2 = 1.0f;
+            if (v2 > 1.0f) v2 = 1.0f;
             gain.getGain().setValue(v2);
         }
 
         @Override
         public void end() {
-            if(!isEnded) {
+            if (!isEnded) {
                 isEnded = true;
                 source.stop();
             }
@@ -196,7 +194,7 @@ public class PlatformAudio {
         }
 
         private void dispose() {
-            if(!isDisposed) {
+            if (!isDisposed) {
                 isDisposed = true;
                 gain.disconnect();
             }
@@ -211,7 +209,7 @@ public class PlatformAudio {
 
         try {
             audioctx = AudioContext.create();
-        }catch(Throwable t) {
+        } catch(Throwable t) {
             audioctx = null;
             logger.error("Could not initialize audio context!");
             logger.error(t);
@@ -244,7 +242,8 @@ public class PlatformAudio {
     private static native boolean detectLoadViaAudioBufferSupport(AudioContext ctx);
 
     private static void detectOGGSupport() {
-        if (((TeaVMClientConfigAdapter)PlatformRuntime.getClientConfigAdapter()).isUseJOrbisAudioDecoderTeaVM()) {
+        if (((TeaVMClientConfigAdapter)PlatformRuntime.getClientConfigAdapter()).isUseJOrbisAudioDecoderTeaVM()
+            || EagRuntime.getPlatformOS() == EnumPlatformOS.IPHONE) {
             logger.info("Note: Using embedded JOrbis OGG decoder");
             oggSupport = false;
         } else {
@@ -252,7 +251,7 @@ public class PlatformAudio {
             try {
                 Int8Array arr = Int8Array.create(fileData.length);
                 arr.set(TeaVMUtils.unwrapByteArray(fileData), 0);
-                AudioBuffer buffer = decodeAudioBrowserAsync(arr.getBuffer(), null);
+                AudioBuffer buffer = decodeAudioBrowserSync(arr.getBuffer(), null);
                 if (buffer == null || buffer.getLength() == 0) {
                     throw new RuntimeException();
                 }
@@ -270,7 +269,7 @@ public class PlatformAudio {
         try {
             Int8Array arr = Int8Array.create(fileData.length);
             arr.set(TeaVMUtils.unwrapByteArray(fileData), 0);
-            AudioBuffer buffer = decodeAudioBrowserAsync(arr.getBuffer(), null);
+            AudioBuffer buffer = decodeAudioBrowserSync(arr.getBuffer(), null);
             if (buffer == null || buffer.getLength() == 0) {
                 throw new RuntimeException();
             }
@@ -286,81 +285,105 @@ public class PlatformAudio {
         try {
             Int8Array arr = Int8Array.create(fileData.length);
             arr.set(TeaVMUtils.unwrapByteArray(fileData), 0);
-            AudioBuffer buffer = decodeAudioBrowserAsync(arr.getBuffer(), null);
-            if(buffer == null || buffer.getLength() == 0) {
+            AudioBuffer buffer = decodeAudioBrowserSync(arr.getBuffer(), null);
+            if (buffer == null || buffer.getLength() == 0) {
                 throw new RuntimeException();
             }
             loadViaWAV16Support = true;
             return;
-        }catch(Throwable t) {
+        } catch(Throwable t) {
             loadViaWAV16Support = false;
             logger.error("Could not load a 16-bit integer WAV file, this browser is not supported");
         }
     }
 
     public static IAudioResource loadAudioData(String filename, boolean holdInCache) {
-        BrowserAudioResource buffer = soundCache.get(filename);
-        if(buffer == null) {
-            byte[] file = PlatformAssets.getResourceBytes(filename);
-            if(file == null) return null;
-            buffer = new BrowserAudioResource(decodeAudioData(file, filename));
-            if(holdInCache) {
-                soundCache.put(filename, buffer);
-            }
-        }
-        if(buffer.buffer != null) {
-            buffer.cacheHit = PlatformRuntime.steadyTimeMillis();
-            return buffer;
-        }else {
-            return null;
-        }
+        return null;
     }
 
-    public static IAudioResource loadAudioDataNew(String filename, boolean holdInCache, IAudioCacheLoader loader) {
+    public static void loadAudioDataNew(Sound sound, boolean holdInCache, IAudioCacheLoader loader) {
+        String filename = sound.url;
         BrowserAudioResource buffer = soundCache.get(filename);
-        if(buffer == null) {
+        if (buffer == null) {
             byte[] file = loader.loadFile(filename);
-            if(file == null) return null;
-            buffer = new BrowserAudioResource(decodeAudioData(file, filename));
-            if(holdInCache) {
-                soundCache.put(filename, buffer);
+            if (file == null) return;
+            AudioBuffer b = decodeAudioData(sound, holdInCache, file, filename);
+            if (!isAsyncSupported()) {
+                buffer = new BrowserAudioResource(b);
+                finishAudioData(sound, filename, holdInCache, buffer);
             }
-        }
-        if(buffer.buffer != null) {
-            buffer.cacheHit = PlatformRuntime.steadyTimeMillis();
-            return buffer;
-        }else {
-            return null;
+        } else {
+            finishAudioData(sound, filename, false, buffer);
         }
     }
 
-    private static AudioBuffer decodeAudioData(byte[] data, String errorFileName) {
-        if(data == null) {
+    private static void finishAudioData(Sound sound, String filename, boolean holdInCache, BrowserAudioResource buffer) {
+        if (holdInCache) {
+            soundCache.put(filename, buffer);
+        }
+
+        if (buffer.buffer != null) {
+            buffer.cacheHit = PlatformRuntime.steadyTimeMillis();
+        }
+
+        sound.finish(buffer);
+    }
+
+    public static boolean isAsyncSupported() {
+        return oggSupport || !loadViaAudioBufferSupport;
+    }
+
+    private static AudioBuffer decodeAudioData(Sound sound, boolean holdInCache, byte[] data, String errorFileName) {
+        if (data == null) {
             return null;
         }
-        if(oggSupport) {
+        if (oggSupport) {
             // browsers complain if we don't copy the array
             Int8Array arr = Int8Array.create(data.length);
             arr.set(TeaVMUtils.unwrapByteArray(data), 0);
-            return decodeAudioBrowserAsync(arr.getBuffer(), errorFileName);
-        }else {
-            if(data.length > 4 && data[0] == (byte)0x4F && data[1] == (byte)0x67 && data[2] == (byte)0x67 && data[3] == (byte)0x53) {
-                return JOrbisAudioBufferDecoder.decodeAudioJOrbis(audioctx, data, errorFileName,
+            decodeAudioBrowserAsync(sound, holdInCache, arr.getBuffer(), errorFileName);
+            return null;
+        } else {
+            if (data.length > 4 && data[0] == (byte)0x4F && data[1] == (byte)0x67 && data[2] == (byte)0x67 && data[3] == (byte)0x53) {
+                return JOrbisAudioBufferDecoder.decodeAudioJOrbis(sound, holdInCache, audioctx, data, errorFileName,
                         loadViaAudioBufferSupport ? JOrbisAudioBufferDecoder.LOAD_VIA_AUDIOBUFFER
                                 : (loadViaWAV32FSupport ? JOrbisAudioBufferDecoder.LOAD_VIA_WAV32F
                                         : JOrbisAudioBufferDecoder.LOAD_VIA_WAV16));
             } else {
                 Int8Array arr = Int8Array.create(data.length);
                 arr.set(TeaVMUtils.unwrapByteArray(data), 0);
-                return decodeAudioBrowserAsync(arr.getBuffer(), errorFileName);
+                decodeAudioBrowserAsync(sound, holdInCache, arr.getBuffer(), errorFileName);
+                return null;
             }
         }
     }
 
     @Async
-    public static native AudioBuffer decodeAudioBrowserAsync(ArrayBuffer buffer, String errorFileName);
+    public static native AudioBuffer decodeAudioBrowserAsync(Sound sound, boolean holdInCache, ArrayBuffer buffer, String errorFileName);
 
-    private static void decodeAudioBrowserAsync(ArrayBuffer buffer, final String errorFileName, final AsyncCallback<AudioBuffer> cb) {
+    private static void decodeAudioBrowserAsync(Sound sound, boolean holdInCache, ArrayBuffer buffer,
+             final String errorFileName, final AsyncCallback<AudioBuffer> cb) {
+        audioctx.decodeAudioData(buffer, new DecodeSuccessCallback() {
+            @Override
+            public void onSuccess(AudioBuffer decodedData) {
+                finishAudioData(sound, errorFileName, holdInCache, new BrowserAudioResource(decodedData));
+            }
+        }, new DecodeErrorCallback() {
+            @Override
+            public void onError(JSObject error) {
+                if (errorFileName != null) {
+                    logger.error("Could not load audio: {}", errorFileName);
+                }
+                finishAudioData(sound, errorFileName, holdInCache, null);
+            }
+        });
+        cb.complete(null);
+    }
+
+    @Async
+    public static native AudioBuffer decodeAudioBrowserSync(ArrayBuffer buffer, String errorFileName);
+
+    private static void decodeAudioBrowserSync(ArrayBuffer buffer, final String errorFileName, final AsyncCallback<AudioBuffer> cb) {
         audioctx.decodeAudioData(buffer, new DecodeSuccessCallback() {
             @Override
             public void onSuccess(AudioBuffer decodedData) {
@@ -369,7 +392,7 @@ public class PlatformAudio {
         }, new DecodeErrorCallback() {
             @Override
             public void onError(JSObject error) {
-                if(errorFileName != null) {
+                if (errorFileName != null) {
                     logger.error("Could not load audio: {}", errorFileName);
                 }
                 cb.complete(null);
@@ -426,10 +449,10 @@ public class PlatformAudio {
 
         PannerNode panner = audioctx.createPanner();
         panner.setPosition(x, y, z);
-        float v1 = volume * 16.0f;
-        if(v1 < 16.0f) v1 = 16.0f;
+        float v1 = 16.0f;
+        if(volume > 1.0f) v1 *= volume;
         panner.setMaxDistance(v1);
-        panner.setRolloffFactor(0.0f);
+        panner.setRolloffFactor(1.0f);
         panner.setDistanceModel("linear");
         //panner.setPanningModel("HRTF");
         panner.setConeInnerAngle(360.0f);
@@ -445,9 +468,6 @@ public class PlatformAudio {
         src.connect(panner);
         panner.connect(gain);
         gain.connect(audioctx.getDestination());
-        if(gameRecGain != null) {
-            gain.connect(gameRecGain);
-        }
 
         src.start();
 
@@ -472,9 +492,6 @@ public class PlatformAudio {
 
         src.connect(gain);
         gain.connect(audioctx.getDestination());
-        if(gameRecGain != null) {
-            gain.connect(gameRecGain);
-        }
 
         src.start();
 
@@ -484,19 +501,17 @@ public class PlatformAudio {
     }
 
     public static void setListener(float x, float y, float z, float pitchDegrees, float yawDegrees) {
-        float f2 = MathHelper.cos((yawDegrees + 90.0F) * 0.017453292F);
-        float f3 = MathHelper.sin((yawDegrees + 90.0F) * 0.017453292F);
-        float f4 = MathHelper.cos(-pitchDegrees * 0.017453292F);
-        float f5 = MathHelper.sin(-pitchDegrees * 0.017453292F);
-        float f6 = MathHelper.cos((-pitchDegrees + 90.0F) * 0.017453292F);
-        float f7 = MathHelper.sin((-pitchDegrees + 90.0F) * 0.017453292F);
-        float f8 = f2 * f4;
-        float f9 = f3 * f4;
-        float f10 = f2 * f6;
-        float f11 = f3 * f6;
+        float upX = MathHelper.sin((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
+        float upY = MathHelper.cos(-pitchDegrees * (float)(Math.PI / 180.0F));
+        float upZ = MathHelper.cos((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
+        float lookX = upX * upY;
+        float lookY = MathHelper.sin(-pitchDegrees * (float)(Math.PI / 180.0F));
+        float lookZ = upZ * upY;
+        upX *= lookY;
+        upZ *= lookY;
         AudioListener l = audioctx.getListener();
         l.setPosition(x, y, z);
-        l.setOrientation(f8, f5, f9, f10, f7, f11);
+        l.setOrientation(lookX, lookY, lookZ, upX, upY, upZ);
     }
 
     static void destroy() {
@@ -504,7 +519,6 @@ public class PlatformAudio {
         if(audioctx != null) {
             audioctx.close();
             audioctx = null;
-            gameRecGain = null;
         }
     }
 

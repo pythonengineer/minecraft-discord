@@ -3,101 +3,130 @@ package com.mojang.minecraft.character;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 
-public class Cube {
-	private Vertex[] vertices;
-	private Polygon[] polygons;
-    private int xTexOffs;
-    private int yTexOffs;
-    public float x;
-    public float y;
-    public float z;
+public final class Cube {
+	public Vertex[] vertices;
+	public Polygon[] polygons;
+	private int xTexOffs;
+	private int yTexOffs;
+	private float x;
+	private float y;
+	private float z;
 	public float xRot;
 	public float yRot;
 	public float zRot;
-	private boolean compiled = false;
-	private int list = 0;
+	public boolean compiled = false;
+	public int list = 0;
+	public boolean mirror = false;
+	public boolean showModel = true;
+	public boolean isHidden = false;
 
-    public Cube(int xTexOffs, int yTexOffs) {
-        this.xTexOffs = xTexOffs;
-        this.yTexOffs = yTexOffs;
-    }
+	public Cube(int xTexOffs, int yTexOffs) {
+		this.xTexOffs = xTexOffs;
+		this.yTexOffs = yTexOffs;
+	}
 
-    public void setTexOffs(int xTexOffs, int yTexOffs) {
-        this.xTexOffs = xTexOffs;
-        this.yTexOffs = yTexOffs;
-    }
-
-    public void addBox(float x0, float y0, float z0, int w, int h, int d) {
+	public final void addBox(float x0, float y0, float z0, int w, int h, int d, float translation) {
 		this.vertices = new Vertex[8];
 		this.polygons = new Polygon[6];
-        float x1 = x0 + (float)w;
-        float y1 = y0 + (float)h;
-        float z1 = z0 + (float)d;
-        Vertex u0 = new Vertex(x0, y0, z0, 0.0F, 0.0F);
-        Vertex u1 = new Vertex(x1, y0, z0, 0.0F, 8.0F);
-        Vertex u2 = new Vertex(x1, y1, z0, 8.0F, 8.0F);
-        Vertex u3 = new Vertex(x0, y1, z0, 8.0F, 0.0F);
-        Vertex l0 = new Vertex(x0, y0, z1, 0.0F, 0.0F);
-        Vertex l1 = new Vertex(x1, y0, z1, 0.0F, 8.0F);
-        Vertex l2 = new Vertex(x1, y1, z1, 8.0F, 8.0F);
-        Vertex l3 = new Vertex(x0, y1, z1, 8.0F, 0.0F);
-        this.vertices[0] = u0;
-        this.vertices[1] = u1;
-        this.vertices[2] = u2;
-        this.vertices[3] = u3;
-        this.vertices[4] = l0;
-        this.vertices[5] = l1;
-        this.vertices[6] = l2;
-        this.vertices[7] = l3;
-        this.polygons[0] = new Polygon(new Vertex[]{l1, u1, u2, l2}, this.xTexOffs + d + w, this.yTexOffs + d, this.xTexOffs + d + w + d, this.yTexOffs + d + h);
-        this.polygons[1] = new Polygon(new Vertex[]{u0, l0, l3, u3}, this.xTexOffs + 0, this.yTexOffs + d, this.xTexOffs + d, this.yTexOffs + d + h);
-        this.polygons[2] = new Polygon(new Vertex[]{l1, l0, u0, u1}, this.xTexOffs + d, this.yTexOffs + 0, this.xTexOffs + d + w, this.yTexOffs + d);
-        this.polygons[3] = new Polygon(new Vertex[]{u2, u3, l3, l2}, this.xTexOffs + d + w, this.yTexOffs + 0, this.xTexOffs + d + w + w, this.yTexOffs + d);
-        this.polygons[4] = new Polygon(new Vertex[]{u1, u0, u3, u2}, this.xTexOffs + d, this.yTexOffs + d, this.xTexOffs + d + w, this.yTexOffs + d + h);
-        this.polygons[5] = new Polygon(new Vertex[]{l0, l1, l2, l3}, this.xTexOffs + d + w + d, this.yTexOffs + d, this.xTexOffs + d + w + d + w, this.yTexOffs + d + h);
-    }
+		float f8 = x0 + (float)w;
+		float f9 = y0 + (float)h;
+		float f10 = z0 + (float)d;
+		x0 -= translation;
+		y0 -= translation;
+		z0 -= translation;
+		f8 += translation;
+		f9 += translation;
+		f10 += translation;
+		if(this.mirror) {
+			translation = f8;
+			f8 = x0;
+			x0 = translation;
+		}
 
-    public void setPos(float x, float y, float z) {
-        this.x = x;
-        this.y = y;
-        this.z = 0.0F;
-    }
+		Vertex vertex20 = new Vertex(x0, y0, z0, 0.0F, 0.0F);
+		Vertex vertex11 = new Vertex(f8, y0, z0, 0.0F, 8.0F);
+		Vertex vertex12 = new Vertex(f8, f9, z0, 8.0F, 8.0F);
+		Vertex vertex18 = new Vertex(x0, f9, z0, 8.0F, 0.0F);
+		Vertex vertex13 = new Vertex(x0, y0, f10, 0.0F, 0.0F);
+		Vertex vertex15 = new Vertex(f8, y0, f10, 0.0F, 8.0F);
+		Vertex vertex21 = new Vertex(f8, f9, f10, 8.0F, 8.0F);
+		Vertex vertex14 = new Vertex(x0, f9, f10, 8.0F, 0.0F);
+		this.vertices[0] = vertex20;
+		this.vertices[1] = vertex11;
+		this.vertices[2] = vertex12;
+		this.vertices[3] = vertex18;
+		this.vertices[4] = vertex13;
+		this.vertices[5] = vertex15;
+		this.vertices[6] = vertex21;
+		this.vertices[7] = vertex14;
+		this.polygons[0] = new Polygon(new Vertex[]{vertex15, vertex11, vertex12, vertex21}, this.xTexOffs + d + w, this.yTexOffs + d, this.xTexOffs + d + w + d, this.yTexOffs + d + h);
+		this.polygons[1] = new Polygon(new Vertex[]{vertex20, vertex13, vertex14, vertex18}, this.xTexOffs, this.yTexOffs + d, this.xTexOffs + d, this.yTexOffs + d + h);
+		this.polygons[2] = new Polygon(new Vertex[]{vertex15, vertex13, vertex20, vertex11}, this.xTexOffs + d, this.yTexOffs, this.xTexOffs + d + w, this.yTexOffs + d);
+		this.polygons[3] = new Polygon(new Vertex[]{vertex12, vertex18, vertex14, vertex21}, this.xTexOffs + d + w, this.yTexOffs, this.xTexOffs + d + w + w, this.yTexOffs + d);
+		this.polygons[4] = new Polygon(new Vertex[]{vertex11, vertex20, vertex18, vertex12}, this.xTexOffs + d, this.yTexOffs + d, this.xTexOffs + d + w, this.yTexOffs + d + h);
+		this.polygons[5] = new Polygon(new Vertex[]{vertex13, vertex15, vertex21, vertex14}, this.xTexOffs + d + w + d, this.yTexOffs + d, this.xTexOffs + d + w + d + w, this.yTexOffs + d + h);
+		if(this.mirror) {
+			for(int i16 = 0; i16 < this.polygons.length; ++i16) {
+				Polygon polygon17;
+				Vertex[] vertex19 = new Vertex[(polygon17 = this.polygons[i16]).vertices.length];
 
-    public final void render(float f1) {
-        if(!this.compiled) {
-            float f3 = f1;
-            Cube cube2 = this;
-            this.list = GL11.glGenLists(1);
-            GL11.glNewList(this.list, GL11.GL_COMPILE);
-            GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+				for(w = 0; w < polygon17.vertices.length; ++w) {
+					vertex19[w] = polygon17.vertices[polygon17.vertices.length - w - 1];
+				}
 
-            for(int i4 = 0; i4 < cube2.polygons.length; ++i4) {
-                Polygon polygon10000 = cube2.polygons[i4];
-                float f6 = f3;
-                Polygon polygon5 = polygon10000;
-                Vec3 vec37 = polygon10000.vertices[1].pos.subtract(polygon5.vertices[0].pos).normalize();
-                Vec3 vec38 = polygon5.vertices[1].pos.subtract(polygon5.vertices[2].pos).normalize();
-                GL11.glNormal3f((vec37 = (new Vec3(vec37.y * vec38.z - vec37.z * vec38.y, vec37.z * vec38.x - vec37.x * vec38.z, vec37.x * vec38.y - vec37.y * vec38.x)).normalize()).x, vec37.y, vec37.z);
+				polygon17.vertices = vertex19;
+			}
+		}
 
-                for(int i10 = 0; i10 < 4; ++i10) {
-                    Vertex vertex11;
-                    GL11.glTexCoord2f((vertex11 = polygon5.vertices[i10]).u / 64.0F, vertex11.v / 32.0F);
-                    GL11.glVertex3f(vertex11.pos.x * f6, vertex11.pos.y * f6, vertex11.pos.z * f6);
-                }
-            }
+	}
 
-            GL11.glEnd();
-            GL11.glEndList();
-            cube2.compiled = true;
-        }
+	public final void setPos(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 
-        float f9 = 57.29578F;
-        GL11.glPushMatrix();
-        GL11.glTranslatef(this.x * f1, this.y * f1, this.z * f1);
-        GL11.glRotatef(this.zRot * f9, 0.0F, 0.0F, 1.0F);
-        GL11.glRotatef(this.yRot * f9, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(this.xRot * f9, 1.0F, 0.0F, 0.0F);
-        GL11.glCallList(this.list);
-        GL11.glPopMatrix();
-    }
+	public final void render(float translation) {
+		if(!this.isHidden) {
+			if(this.showModel) {
+				if(!this.compiled) {
+					this.translateTo(translation);
+				}
+
+				float f2 = 57.29578F;
+				GL11.glPushMatrix();
+				GL11.glTranslatef(this.x * translation, this.y * translation, this.z * translation);
+				GL11.glRotatef(this.zRot * f2, 0.0F, 0.0F, 1.0F);
+				GL11.glRotatef(this.yRot * f2, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(this.xRot * f2, 1.0F, 0.0F, 0.0F);
+				GL11.glCallList(this.list);
+				GL11.glPopMatrix();
+			}
+		}
+	}
+
+	public void translateTo(float translation) {
+		this.list = GL11.glGenLists(1);
+		GL11.glNewList(this.list, GL11.GL_COMPILE);
+		GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+
+		for(int i2 = 0; i2 < this.polygons.length; ++i2) {
+			Polygon polygon10000 = this.polygons[i2];
+			float f4 = translation;
+			Polygon polygon3 = polygon10000;
+			Vec3 vec35 = polygon10000.vertices[1].pos.subtract(polygon3.vertices[0].pos).normalize();
+			Vec3 vec36 = polygon3.vertices[1].pos.subtract(polygon3.vertices[2].pos).normalize();
+			GL11.glNormal3f((vec35 = (new Vec3(vec35.y * vec36.z - vec35.z * vec36.y, vec35.z * vec36.x - vec35.x * vec36.z, vec35.x * vec36.y - vec35.y * vec36.x)).normalize()).x, vec35.y, vec35.z);
+
+			for(int i7 = 0; i7 < 4; ++i7) {
+				Vertex vertex8;
+				GL11.glTexCoord2f((vertex8 = polygon3.vertices[i7]).u, vertex8.v);
+				GL11.glVertex3f(vertex8.pos.x * f4, vertex8.pos.y * f4, vertex8.pos.z * f4);
+			}
+		}
+
+		GL11.glEnd();
+		GL11.glEndList();
+		this.compiled = true;
+	}
 }

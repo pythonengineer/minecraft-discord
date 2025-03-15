@@ -2,6 +2,7 @@ package net.lax1dude.eaglercraft.touch;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
+import net.lax1dude.eaglercraft.Touch;
 
 import com.mojang.minecraft.Minecraft;
 import com.mojang.minecraft.gui.ChatScreen;
@@ -60,7 +61,7 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 18, 18, 18, 18, 2);
     }),
 
-    JUMP(EnumTouchControlPos.BOTTOM_RIGHT, 70, 64, 36, (enumIn, x, y) -> {
+    JUMP(EnumTouchControlPos.BOTTOM_RIGHT, 64, 64, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
         }
     }, (enumIn, x, y, pressed, res) -> {
@@ -79,9 +80,18 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 18, 108, 18, 18, 2);
     }),
 
-    BACK(EnumTouchControlPos.TOP, -50, 0, 36, (enumIn, x, y) -> {
+    BACK(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.player.resetPos();
+            if (Touch.isDeviceKeyboardOpenMAYBE()) {
+                Touch.closeDeviceKeyboard();
+            } else {
+                Minecraft mc = Minecraft.minecraft;
+                if (mc.player != null) {
+                    mc.grabMouse();
+                } else if(mc.screen != null) {
+                    mc.setScreen(null);
+                }
+            }
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -89,11 +99,7 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 36, 18, 18, 2);
     }),
 
-    BACK_DISABLED(EnumTouchControlPos.TOP, 58, 0, 36, (enumIn, x, y) -> {
-        if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.saveSpawn();
-        }
-    }, (enumIn, x, y, pressed, res) -> {
+    BACK_DISABLED(EnumTouchControlPos.TOP, -18, 0, 36, null, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
         int[] pos = enumIn.getLocation(res, TouchOverlayRenderer._fuck);
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 54, 18, 18, 2);
@@ -105,9 +111,9 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 72, 18, 18, 2);
     }),
 
-    PAUSE(EnumTouchControlPos.TOP, -14, 0, 36, (enumIn, x, y) -> {
+    PAUSE(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.pauseGame();
+            Minecraft.minecraft.pauseScreen();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -115,7 +121,7 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 0, 0, 18, 18, 2);
     }),
 
-    CHAT(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
+    CHAT(EnumTouchControlPos.TOP, 18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
             Minecraft.minecraft.setScreen(new ChatScreen());
         }
@@ -143,7 +149,7 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 218, 184, 18, 18, 2);
     }),
 
-    PASTE(EnumTouchControlPos.TOP, 58, 0, 36, (enumIn, x, y) -> {
+    PASTE(EnumTouchControlPos.TOP, 144, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
         }
     }, (enumIn, x, y, pressed, res) -> {
@@ -152,7 +158,7 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 218, 148, 18, 18, 2);
     }),
 
-    COPY(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
+    COPY(EnumTouchControlPos.TOP, 90, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
         }
     }, (enumIn, x, y, pressed, res) -> {
@@ -163,7 +169,6 @@ public enum EnumTouchControl {
 
     PICK(EnumTouchControlPos.BOTTOM_RIGHT, 70, 125, 40, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            TouchControls.togglePick();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -171,9 +176,18 @@ public enum EnumTouchControl {
         TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 36, 20, 20, 20, 2);
     }),
 
+    ATTACK(EnumTouchControlPos.BOTTOM_RIGHT, 70, 125, 40, (enumIn, x, y) -> {
+        if (!TouchControls.isPressed(enumIn)) {
+            Minecraft.minecraft.shootArrow();
+        }
+    }, (enumIn, x, y, pressed, res) -> {
+        GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
+        int[] pos = enumIn.getLocation(res, TouchOverlayRenderer._fuck);
+        TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 36, 0, 20, 20, 2);
+    }),
+
     MOB(EnumTouchControlPos.TOP, 22, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.addZombie();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -320,7 +334,7 @@ public enum EnumTouchControl {
                 DPAD_UP_RIGHT.setVisible(renderer, false);
                 JUMP.setVisible(renderer, false);
                 SNEAK.setVisible(renderer, false);
-                BACK.setVisible(renderer, false);
+                BACK.setVisible(renderer, true);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, true);
                 PAUSE.setVisible(renderer, false);
@@ -330,6 +344,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
@@ -345,7 +360,7 @@ public enum EnumTouchControl {
                 DPAD_UP_RIGHT.setVisible(renderer, false);
                 JUMP.setVisible(renderer, false);
                 SNEAK.setVisible(renderer, false);
-                BACK.setVisible(renderer, false);
+                BACK.setVisible(renderer, true);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, true);
                 PAUSE.setVisible(renderer, false);
@@ -355,6 +370,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
@@ -380,6 +396,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
@@ -395,11 +412,11 @@ public enum EnumTouchControl {
                 DPAD_UP_RIGHT.setVisible(renderer, false);
                 JUMP.setVisible(renderer, true);
                 SNEAK.setVisible(renderer, false);
-                BACK.setVisible(renderer, true);
-                BACK_DISABLED.setVisible(renderer, true);
+                BACK.setVisible(renderer, false);
+                BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                if (Minecraft.minecraft.connectionManager != null) {
+                if (Minecraft.minecraft.networkClient != null) {
                     CHAT.setVisible(renderer, true);
                 } else {
                     CHAT.setVisible(renderer, false);
@@ -408,12 +425,13 @@ public enum EnumTouchControl {
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
-                PICK.setVisible(renderer, true);
-                if (Minecraft.minecraft.connectionManager != null) {
-                    MOB.setVisible(renderer, false);
+                PICK.setVisible(renderer, false);
+                if (Minecraft.minecraft.networkClient != null) {
+                    ATTACK.setVisible(renderer, false);
                 } else {
-                    MOB.setVisible(renderer, true);
+                    ATTACK.setVisible(renderer, true);
                 }
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -428,11 +446,11 @@ public enum EnumTouchControl {
                 DPAD_UP_RIGHT.setVisible(renderer, true);
                 JUMP.setVisible(renderer, true);
                 SNEAK.setVisible(renderer, false);
-                BACK.setVisible(renderer, true);
-                BACK_DISABLED.setVisible(renderer, true);
+                BACK.setVisible(renderer, false);
+                BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                if (Minecraft.minecraft.connectionManager != null) {
+                if (Minecraft.minecraft.networkClient != null) {
                     CHAT.setVisible(renderer, true);
                 } else {
                     CHAT.setVisible(renderer, false);
@@ -441,12 +459,13 @@ public enum EnumTouchControl {
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
-                PICK.setVisible(renderer, true);
-                if (Minecraft.minecraft.connectionManager != null) {
-                    MOB.setVisible(renderer, false);
+                PICK.setVisible(renderer, false);
+                if (Minecraft.minecraft.networkClient != null) {
+                    ATTACK.setVisible(renderer, false);
                 } else {
-                    MOB.setVisible(renderer, true);
+                    ATTACK.setVisible(renderer, true);
                 }
+                MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
                 FLY_DOWN.setVisible(renderer, false);
@@ -471,6 +490,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, true);
                 FLY_UP.setVisible(renderer, false);
@@ -496,6 +516,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, true);
                 FLY_UP.setVisible(renderer, false);
@@ -521,6 +542,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, true);
@@ -546,6 +568,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, true);

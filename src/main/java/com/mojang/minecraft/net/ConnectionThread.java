@@ -7,45 +7,45 @@ import com.mojang.minecraft.gui.ErrorScreen;
 import java.io.IOException;
 
 final class ConnectionThread extends Thread {
-    private String ip;
-    private int port;
-    private String username;
-    private String mpPass;
-    private Minecraft minecraft;
-    private ConnectionManager connectionManager;
+	private String ip;
+	private int port;
+	private String username;
+	private String mpPass;
+	private Minecraft mc;
+	private Client networkClient;
 
-    ConnectionThread(ConnectionManager connectionManager1, String string2, int i3, String string4, String string5, Minecraft minecraft6) {
-        this.connectionManager = connectionManager1;
-        this.ip = string2;
-        this.port = i3;
-        this.username = string4;
-        this.mpPass = string5;
-        this.minecraft = minecraft6;
-    }
+	ConnectionThread(Client nc, String ip, int port, String name, String mppass, Minecraft minecraft) {
+		this.networkClient = nc;
+		this.ip = ip;
+		this.port = port;
+		this.username = name;
+		this.mpPass = mppass;
+		this.mc = minecraft;
+	}
 
-    public final void run() {
-        ConnectionManager connectionManager1;
-        boolean z2;
-        try {
-            ConnectionManager connectionManager10000 = this.connectionManager;
-            SocketConnection socketConnection4 = new SocketConnection(this.ip, this.port);
-            connectionManager10000.connection = socketConnection4;
-            connectionManager1 = this.connectionManager;
-            ConnectionManager connectionManager5 = this.connectionManager;
-            SocketConnection socketConnection10001 = this.connectionManager.connection;
-            this.connectionManager.connection.manager = connectionManager5;
-            connectionManager1 = this.connectionManager;
-            this.connectionManager.connection.sendPacket(Packet.LOGIN, new Object[]{(byte)6, this.username, this.mpPass, 0});
-            z2 = true;
-            connectionManager1 = this.connectionManager;
-            this.connectionManager.processData = z2;
-        } catch (IOException iOException3) {
-            this.minecraft.hideGui = false;
-            this.minecraft.connectionManager = null;
-            this.minecraft.setScreen(new ErrorScreen("Failed to connect", "You failed to connect to the server. It\'s probably down!"));
-            z2 = false;
-            connectionManager1 = this.connectionManager;
-            this.connectionManager.processData = z2;
-        }
-    }
+	public final void run() {
+		Client client1;
+		boolean z2;
+		try {
+			Client client10000 = this.networkClient;
+			SocketConnection socketConnection4 = new SocketConnection(this.ip, this.port);
+			client10000.serverConnection = socketConnection4;
+			client1 = this.networkClient;
+			Client client5 = this.networkClient;
+			SocketConnection socketConnection10001 = this.networkClient.serverConnection;
+			this.networkClient.serverConnection.client = client5;
+			client1 = this.networkClient;
+			this.networkClient.serverConnection.sendPacket(Packet.LOGIN, new Object[]{(byte)6, this.username, this.mpPass, 0});
+			z2 = true;
+			client1 = this.networkClient;
+			this.networkClient.processData = z2;
+		} catch (IOException iOException3) {
+			this.mc.hideScreen = false;
+			this.mc.networkClient = null;
+			this.mc.setScreen(new ErrorScreen("Failed to connect", "You failed to connect to the server. It\'s probably down!"));
+			z2 = false;
+			client1 = this.networkClient;
+			this.networkClient.processData = z2;
+		}
+	}
 }

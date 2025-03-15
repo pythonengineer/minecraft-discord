@@ -2,6 +2,8 @@ package net.lax1dude.eaglercraft.internal;
 
 import java.net.URL;
 
+import com.mojang.minecraft.sound.Sound;
+
 import net.lax1dude.eaglercraft.internal.paulscode.lwjgl3.LibraryLWJGLOpenAL;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
@@ -120,6 +122,10 @@ public class PlatformAudio {
         }
     }
 
+    public static boolean isAsyncSupported() {
+        return false;
+    }
+
     public static void clearAudioCache() {
         // browser only
     }
@@ -128,7 +134,7 @@ public class PlatformAudio {
 
     }
 
-    public static IAudioResource loadAudioDataNew(String filename, boolean holdInCache, IAudioCacheLoader loader) {
+    public static void loadAudioDataNew(Sound sound, boolean holdInCache, IAudioCacheLoader loader) {
         throw new UnsupportedOperationException("Browser only!");
     }
 
@@ -227,18 +233,16 @@ public class PlatformAudio {
         if (sndSystem == null) {
             return;
         }
-        float f2 = MathHelper.cos((yawDegrees + 90.0F) * 0.017453292F);
-        float f3 = MathHelper.sin((yawDegrees + 90.0F) * 0.017453292F);
-        float f4 = MathHelper.cos(-pitchDegrees * 0.017453292F);
-        float f5 = MathHelper.sin(-pitchDegrees * 0.017453292F);
-        float f6 = MathHelper.cos((-pitchDegrees + 90.0F) * 0.017453292F);
-        float f7 = MathHelper.sin((-pitchDegrees + 90.0F) * 0.017453292F);
-        float f8 = f2 * f4;
-        float f9 = f3 * f4;
-        float f10 = f2 * f6;
-        float f11 = f3 * f6;
+        float upX = MathHelper.sin((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
+        float upY = MathHelper.cos(-pitchDegrees * (float)(Math.PI / 180.0F));
+        float upZ = MathHelper.cos((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
+        float lookX = upX * upY;
+        float lookY = MathHelper.sin(-pitchDegrees * (float)(Math.PI / 180.0F));
+        float lookZ = upZ * upY;
+        upX *= lookY;
+        upZ *= lookY;
         sndSystem.setListenerPosition(x, y, z);
-        sndSystem.setListenerOrientation(f8, f5, f9, f10, f7, f11);
+        sndSystem.setListenerOrientation(lookX, lookY, lookZ, upX, upY, upZ);
     }
 
     public static void setMicVol(float vol) {

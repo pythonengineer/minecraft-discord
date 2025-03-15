@@ -30,8 +30,6 @@ public class TouchControls {
     public static final Map<Integer, TouchControlInput> touchControls = new HashMap<>();
     protected static Set<EnumTouchControl> touchControlPressed = EnumSet.noneOf(EnumTouchControl.class);
 
-    protected static boolean isPickToggled = false;
-
     public static void update(boolean screenTouched) {
         Minecraft mc = Minecraft.minecraft;
         int h = Display.getDisplayMode().getHeight();
@@ -69,11 +67,11 @@ public class TouchControls {
                     }
                 }
             }
-            mc.hud.updateTouchEagler(mc.screen == null);
+            mc.gui.updateTouchEagler(mc.screen == null);
         } else {
             touchControls.clear();
             touchControlPressed.clear();
-            mc.hud.updateTouchEagler(false);
+            mc.gui.updateTouchEagler(false);
         }
     }
 
@@ -86,7 +84,7 @@ public class TouchControls {
             touchControls.put(uid, new TouchControlInput(pointX / fac, pointY / fac, control));
             return true;
         } else {
-            return mc.screen == null && mc.hud.handleTouchBeginEagler(uid, pointX, pointY);
+            return mc.screen == null && mc.gui.handleTouchBeginEagler(uid, pointX, pointY);
         }
     }
 
@@ -95,19 +93,7 @@ public class TouchControls {
             return true;
         } else {
             Minecraft mc = Minecraft.minecraft;
-            return mc.screen == null && mc.hud.handleTouchEndEagler(uid, pointX, mc.height - pointY - 1);
-        }
-    }
-
-    public static void togglePick() {
-        Minecraft.minecraft.editMode = (Minecraft.minecraft.editMode + 1) % 2;
-        isPickToggled = !isPickToggled;
-    }
-
-    public static void resetPickInvalidate() {
-        if (isPickToggled) {
-            isPickToggled = false;
-            EnumTouchControl.PICK.invalid = true;
+            return mc.screen == null && mc.gui.handleTouchEndEagler(uid, pointX, mc.height - pointY - 1);
         }
     }
 
@@ -133,10 +119,6 @@ public class TouchControls {
 
     public static boolean isPressed(EnumTouchControl control) {
         return touchControlPressed.contains(control);
-    }
-
-    public static boolean getPickToggled() {
-        return isPickToggled;
     }
 
     public static EnumTouchControl overlappingControl(int tx, int ty) {

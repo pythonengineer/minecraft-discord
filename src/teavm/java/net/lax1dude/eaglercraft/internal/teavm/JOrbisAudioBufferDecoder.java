@@ -16,6 +16,8 @@ import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
 
+import com.mojang.minecraft.sound.Sound;
+
 import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.internal.PlatformAudio;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
@@ -68,10 +70,10 @@ public class JOrbisAudioBufferDecoder {
     public static final int LOAD_VIA_WAV32F = 1;
     public static final int LOAD_VIA_WAV16 = 2;
 
-    public static AudioBuffer decodeAudioJOrbis(AudioContext ctx, byte[] data, String errorString, int loadVia) {
+    public static AudioBuffer decodeAudioJOrbis(Sound sound, boolean holdInCache, AudioContext ctx, byte[] data, String errorString, int loadVia) {
         JOrbisAudioBufferDecoder dec = instance;
         synchronized(dec) {
-            if(!dec.init(data, errorString)) {
+            if (!dec.init(data, errorString)) {
                 logger.error("[{}]: Invalid header detected", errorString);
                 return null;
             }
@@ -79,17 +81,17 @@ public class JOrbisAudioBufferDecoder {
             int len = 0;
             List<float[][]> lst = new LinkedList<>();
             float[][] b;
-            while((b = dec.readBytes()) != null) {
-                if(ch == -1) {
+            while ((b = dec.readBytes()) != null) {
+                if (ch == -1) {
                     ch = b.length;
                 }
                 len += b[0].length;
                 lst.add(b);
             }
-            if(dec.jorbisInfo.channels != ch) {
+            if (dec.jorbisInfo.channels != ch) {
                 logger.warn("[{}]: Number of channels in header does not match the stream", errorString);
             }
-            if(ch == -1 || len == 0) {
+            if (ch == -1 || len == 0) {
                 logger.error("[{}]: Empty file", errorString);
                 return null;
             }
@@ -97,8 +99,8 @@ public class JOrbisAudioBufferDecoder {
             case LOAD_VIA_AUDIOBUFFER: {
                 AudioBuffer buffer = ctx.createBuffer(ch, len, dec.jorbisInfo.rate);
                 int len2 = 0;
-                for(float[][] fl : lst) {
-                    for(int i = 0; i < ch; ++i) {
+                for (float[][] fl : lst) {
+                    for (int i = 0; i < ch; ++i) {
                         buffer.copyToChannel(TeaVMUtils.unwrapFloatArray(fl[i]), i, len2);
                     }
                     len2 += fl[0].length;
@@ -107,7 +109,7 @@ public class JOrbisAudioBufferDecoder {
             }
             case LOAD_VIA_WAV32F: {
                 int len2 = PCMToWAVLoader.getWAVLen(lst, true);
-                if(len2 == 0 || len2 == 44) {
+                if (len2 == 0 || len2 == 44) {
                     logger.error("[{}]: Invalid length for WAV calculated", errorString);
                     return null;
                 }
@@ -115,15 +117,16 @@ public class JOrbisAudioBufferDecoder {
                 try {
                     PCMToWAVLoader.createWAV32F(lst, ch, dec.jorbisInfo.rate, buf);
                     buf.flip();
-                    return PlatformAudio.decodeAudioBrowserAsync(
-                            EaglerBufferAllocator.getDataView8(buf).getBuffer(), errorString + ".wav");
-                }finally {
+                    PlatformAudio.decodeAudioBrowserAsync(
+                        sound, holdInCache, EaglerBufferAllocator.getDataView8(buf).getBuffer(), errorString + ".wav");
+                    return null;
+                } finally {
                     PlatformRuntime.freeByteBuffer(buf);
                 }
             }
             case LOAD_VIA_WAV16: {
                 int len2 = PCMToWAVLoader.getWAVLen(lst, false);
-                if(len2 == 0 || len2 == 44) {
+                if (len2 == 0 || len2 == 44) {
                     logger.error("[{}]: Invalid length for WAV calculated", errorString);
                     return null;
                 }
@@ -131,9 +134,10 @@ public class JOrbisAudioBufferDecoder {
                 try {
                     PCMToWAVLoader.createWAV16(lst, ch, dec.jorbisInfo.rate, buf);
                     buf.flip();
-                    return PlatformAudio.decodeAudioBrowserAsync(
-                            EaglerBufferAllocator.getDataView8(buf).getBuffer(), errorString + ".wav");
-                }finally {
+                    PlatformAudio.decodeAudioBrowserAsync(
+                        sound, holdInCache, EaglerBufferAllocator.getDataView8(buf).getBuffer(), errorString + ".wav");
+                    return null;
+                } finally {
                     PlatformRuntime.freeByteBuffer(buf);
                 }
             }

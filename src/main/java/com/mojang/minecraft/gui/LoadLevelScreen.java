@@ -8,8 +8,8 @@ public class LoadLevelScreen extends Screen implements Runnable {
     private String status = "";
     protected String title = "Load level";
 
-    public LoadLevelScreen(Screen screen1) {
-        this.parent = screen1;
+    public LoadLevelScreen(Screen screen) {
+        this.parent = screen;
     }
 
     public void run() {
@@ -18,10 +18,10 @@ public class LoadLevelScreen extends Screen implements Runnable {
 
     }
 
-    protected void setLevels(String[] string1) {
+    protected void setLevels(String[] levelNames) {
         for(int i2 = 0; i2 < 5; ++i2) {
-            ((Button)this.buttons.get(i2)).enabled = !string1[i2].equals("-");
-            ((Button)this.buttons.get(i2)).msg = string1[i2];
+            ((Button)this.buttons.get(i2)).enabled = !levelNames[i2].equals("-");
+            ((Button)this.buttons.get(i2)).msg = levelNames[i2];
             ((Button)this.buttons.get(i2)).visible = true;
         }
 
@@ -38,32 +38,32 @@ public class LoadLevelScreen extends Screen implements Runnable {
         this.buttons.add(new Button(5, this.width / 2 - 100, this.height / 4 + 144, "Cancel"));
     }
 
-    protected final void buttonClicked(Button button1) {
-        if(button1.enabled) {
-            if(this.loaded && button1.id < 5) {
-                this.loadLevel(button1.id);
+    protected final void buttonClicked(Button button) {
+        if(button.enabled) {
+            if(this.loaded && button.id < 5) {
+                this.loadLevel(button.id);
             }
 
-            if(this.finished || this.loaded && button1.id == 5) {
+            if(this.finished || this.loaded && button.id == 5) {
                 this.minecraft.setScreen(this.parent);
             }
 
         }
     }
 
-    protected void loadLevel(int i1) {
-        this.minecraft.loadLevel(this.minecraft.user.name, i1);
+    protected void loadLevel(int id) {
+        this.minecraft.loadLevel(this.minecraft.user.name, id);
         this.minecraft.setScreen((Screen)null);
         this.minecraft.grabMouse();
     }
 
-    public final void render(int i1, int i2) {
+    public final void render(int xMouse, int yMouse) {
         fillGradient(0, 0, this.width, this.height, 1610941696, -1607454624);
-        drawCenteredString(this.font, this.title, this.width / 2, 40, 16777215);
+        drawCenteredString(this.font, this.title, this.width / 2, 40, 0xFFFFFF);
         if(!this.loaded) {
-            drawCenteredString(this.font, this.status, this.width / 2, this.height / 2 - 4, 16777215);
+            drawCenteredString(this.font, this.status, this.width / 2, this.height / 2 - 4, 0xFFFFFF);
         }
 
-        super.render(i1, i2);
+        super.render(xMouse, yMouse);
     }
 }

@@ -6,33 +6,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class User {
-    public static List creativeTiles;
+    private static List creativeTiles;
     public String name;
     public String sessionId;
     public String mpPass;
 
-    public User(String string1, String string2) {
-        this.name = string1;
-        this.sessionId = string2;
+    public User(String name, String sessionId) {
+        this.name = name;
+        this.sessionId = sessionId;
     }
 
     static {
         (creativeTiles = new ArrayList()).add(Tile.rock);
-        creativeTiles.add(Tile.wood);
-        creativeTiles.add(Tile.dirt);
         creativeTiles.add(Tile.stoneBrick);
+        creativeTiles.add(Tile.dirt);
+        creativeTiles.add(Tile.wood);
         creativeTiles.add(Tile.log);
         creativeTiles.add(Tile.leaf);
         creativeTiles.add(Tile.bush);
-        creativeTiles.add(Tile.plantYellow);
-        creativeTiles.add(Tile.plantRed);
-        creativeTiles.add(Tile.mushroomBrown);
-        creativeTiles.add(Tile.mushroomRed);
+        creativeTiles.add(Tile.flower);
+        creativeTiles.add(Tile.rose);
+        creativeTiles.add(Tile.mushroom1);
+        creativeTiles.add(Tile.mushroom2);
         creativeTiles.add(Tile.sand);
         creativeTiles.add(Tile.gravel);
         creativeTiles.add(Tile.glass);
         creativeTiles.add(Tile.sponge);
-        creativeTiles.add(Tile.blockGold);
+        creativeTiles.add(Tile.goldBlock);
         creativeTiles.add(Tile.clothRed);
         creativeTiles.add(Tile.clothOrange);
         creativeTiles.add(Tile.clothYellow);

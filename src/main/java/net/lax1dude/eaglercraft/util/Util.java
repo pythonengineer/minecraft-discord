@@ -31,6 +31,6 @@ public class Util {
     }
 
     public static enum EnumOS {
-        LINUX, SOLARIS, WINDOWS, OSX, UNKNOWN;
+        LINUX, SOLARIS, WINDOWS, OSX, IPHONE, UNKNOWN;
     }
 }

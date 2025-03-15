@@ -22,13 +22,13 @@ public final class Packet {
     public final byte id = (byte)(nextId++);
     public Class[] fields;
 
-    private Packet(Class... class1) {
+    private Packet(Class... data) {
         PACKETS[this.id] = this;
-        this.fields = new Class[class1.length];
+        this.fields = new Class[data.length];
         int i2 = 0;
 
-        for(int i3 = 0; i3 < class1.length; ++i3) {
-            Class class4 = class1[i3];
+        for(int i3 = 0; i3 < data.length; ++i3) {
+            Class class4 = data[i3];
             this.fields[i3] = class4;
             if(class4 == Long.TYPE) {
                 i2 += 8;

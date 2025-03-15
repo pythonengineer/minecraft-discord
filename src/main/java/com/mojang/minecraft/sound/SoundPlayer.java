@@ -9,8 +9,8 @@ public final class SoundPlayer {
     private final EaglercraftSoundManager sndManager;
     public Options options;
 
-    public SoundPlayer(Options options1) {
-        this.options = options1;
+    public SoundPlayer(Options options) {
+        this.options = options;
         this.sndManager = new EaglercraftSoundManager();
     }
 
@@ -28,10 +28,10 @@ public final class SoundPlayer {
         }
     }
 
-    public final Sound play(Sound audioInfo1, SoundPos soundPos2) {
+    public final Sound play(Sound audioInfo, SoundPos soundPos) {
         Sound sound = null;
         if (this.options.music || this.options.sound) {
-            sound = new Sound(soundPos2, audioInfo1.url, audioInfo1.pitch, audioInfo1.volume);
+            sound = new Sound(this.sndManager, soundPos, audioInfo.url, audioInfo.pitch, audioInfo.volume);
             this.sndManager.playSound(sound);
         }
 

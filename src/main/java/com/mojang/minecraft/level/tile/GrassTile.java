@@ -11,25 +11,29 @@ public final class GrassTile extends Tile {
 		this.setTicking(true);
 	}
 
-	protected final int getTexture(int i1) {
-		return i1 == 1 ? 0 : (i1 == 0 ? 2 : 3);
+	protected final int getTexture(int face) {
+		return face == 1 ? 0 : (face == 0 ? 2 : 3);
 	}
 
-	public final void tick(Level level1, int i2, int i3, int i4, EaglercraftRandom random5) {
-		if(random5.nextInt(4) == 0) {
-			if(!level1.isLit(i2, i3 + 1, i4)) {
-				level1.setTile(i2, i3, i4, Tile.dirt.id);
+	public final void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
+		if(random.nextInt(4) == 0) {
+			if(!level.isLit(x, y + 1, z)) {
+				level.setTile(x, y, z, Tile.dirt.id);
 			} else {
 				for(int i9 = 0; i9 < 4; ++i9) {
-					int i6 = i2 + random5.nextInt(3) - 1;
-					int i7 = i3 + random5.nextInt(5) - 3;
-					int i8 = i4 + random5.nextInt(3) - 1;
-					if(level1.getTile(i6, i7, i8) == Tile.dirt.id && level1.isLit(i6, i7 + 1, i8)) {
-						level1.setTile(i6, i7, i8, Tile.grass.id);
+					int i6 = x + random.nextInt(3) - 1;
+					int i7 = y + random.nextInt(5) - 3;
+					int i8 = z + random.nextInt(3) - 1;
+					if(level.getTile(i6, i7, i8) == Tile.dirt.id && level.isLit(i6, i7 + 1, i8)) {
+						level.setTile(i6, i7, i8, Tile.grass.id);
 					}
 				}
 
 			}
 		}
+	}
+
+	public final int getId() {
+		return Tile.dirt.getId();
 	}
 }

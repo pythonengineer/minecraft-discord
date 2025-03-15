@@ -1,24 +1,15 @@
 package com.mojang.minecraft.level.tile;
 
-import com.mojang.minecraft.level.Level;
+public final class LeafTile extends BaseLeafTile {
+	protected LeafTile(int i1, int i2) {
+		super(18, 22, true);
+	}
 
-public final class LeafTile extends Tile {
-    private boolean renderAdjacentFaces = true;
+	public final int getResourceCount() {
+		return random.nextInt(6) == 0 ? 1 : 0;
+	}
 
-    protected LeafTile(int i1, int i2, boolean z3) {
-        super(18, 22);
-    }
-
-    public final boolean isSolid() {
-        return false;
-    }
-
-    protected final boolean shouldRenderFace(Level level1, int i2, int i3, int i4, int i5, int i6) {
-        int i7 = level1.getTile(i2, i3, i4);
-        return !this.renderAdjacentFaces && i7 == this.id ? false : super.shouldRenderFace(level1, i2, i3, i4, i5, i6);
-    }
-
-    public final boolean blocksLight() {
-        return false;
-    }
+	public final int getId() {
+		return Tile.bush.id;
+	}
 }

@@ -1,60 +1,60 @@
 package com.mojang.minecraft.player;
 
-import com.mojang.minecraft.User;
-import com.mojang.minecraft.level.tile.Tile;
-
 public final class Inventory {
-    public int[] slots = new int[9];
-    public int selectedSlot = 0;
+	public int[] slots = new int[9];
+	public int[] count = new int[9];
+	public int[] popTime = new int[9];
+	public int selected = 0;
 
-    public Inventory() {
-        for(int i1 = 0; i1 < 9; ++i1) {
-            this.slots[i1] = ((Tile)User.creativeTiles.get(i1)).id;
-        }
+	public Inventory() {
+		for(int i1 = 0; i1 < 9; ++i1) {
+			this.slots[i1] = -1;
+			this.count[i1] = 0;
+		}
 
-    }
+	}
 
-    public final int getSelected() {
-        return this.slots[this.selectedSlot];
-    }
+	public final int getSelected() {
+		return this.slots[this.selected];
+	}
 
-    public int containsTileAt(int i1) {
-        for(int i2 = 0; i2 < this.slots.length; ++i2) {
-            if(i1 == this.slots[i2]) {
-                return i2;
-            }
-        }
+	public int containsTileAt(int index) {
+		for(int i2 = 0; i2 < this.slots.length; ++i2) {
+			if(index == this.slots[i2]) {
+				return i2;
+			}
+		}
 
-        return -1;
-    }
+		return -1;
+	}
 
-    public final void scrollHotbar(int i1) {
-        if(i1 > 0) {
-            i1 = 1;
-        }
+	public final void swapPaint(int index) {
+		if(index > 0) {
+			index = 1;
+		}
 
-        if(i1 < 0) {
-            i1 = -1;
-        }
+		if(index < 0) {
+			index = -1;
+		}
 
-        for(this.selectedSlot -= i1; this.selectedSlot < 0; this.selectedSlot += this.slots.length) {
-        }
+		for(this.selected -= index; this.selected < 0; this.selected += this.slots.length) {
+		}
 
-        while(this.selectedSlot >= this.slots.length) {
-            this.selectedSlot -= this.slots.length;
-        }
+		while(this.selected >= this.slots.length) {
+			this.selected -= this.slots.length;
+		}
 
-    }
+	}
 
-    public final void setTile(Tile tile1) {
-        if(tile1 != null) {
-            int i2;
-            if((i2 = this.containsTileAt(tile1.id)) >= 0) {
-                this.slots[i2] = this.slots[this.selectedSlot];
-            }
+	public final boolean removeResource(int index) {
+		if((index = this.containsTileAt(index)) < 0) {
+			return false;
+		} else {
+			if(--this.count[index] <= 0) {
+				this.slots[index] = -1;
+			}
 
-            this.slots[this.selectedSlot] = tile1.id;
-        }
-
-    }
+			return true;
+		}
+	}
 }

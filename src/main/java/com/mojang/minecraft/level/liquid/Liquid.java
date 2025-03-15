@@ -6,7 +6,7 @@ public final class Liquid {
     public static final Liquid water = new Liquid(1);
     public static final Liquid lava = new Liquid(2);
 
-    private Liquid(int i1) {
-        liquids[i1] = this;
+    private Liquid(int type) {
+        liquids[type] = this;
     }
 }

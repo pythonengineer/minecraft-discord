@@ -182,7 +182,11 @@ public class ClientMain {
             systemOut.println("ClientMain: [INFO] launching Minecraft main thread");
 
             try {
-                Minecraft.main(new String[0], username, server, serverPort, mpPass);
+                if (server.isEmpty() || serverPort == 0) {
+                    Minecraft.main(new String[0]);
+                } else {
+                    Minecraft.main(new String[0], username, server, serverPort, mpPass);
+                }
             } catch (Throwable t) {
                 systemErr.println("ClientMain: [ERROR] unhandled exception caused main thread to exit");
                 EagRuntime.debugPrintStackTraceToSTDERR(t);
@@ -254,7 +258,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"0.0.23a_01\"\n");
+        str.append("minecraft.version = \"0.24_SURVIVAL_TEST_03\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

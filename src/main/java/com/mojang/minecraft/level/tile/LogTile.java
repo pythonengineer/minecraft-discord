@@ -1,12 +1,20 @@
 package com.mojang.minecraft.level.tile;
 
 public final class LogTile extends Tile {
-    protected LogTile(int i1) {
-        super(17);
-        this.tex = 20;
-    }
+	protected LogTile(int i1) {
+		super(17);
+		this.tex = 20;
+	}
 
-    protected final int getTexture(int i1) {
-        return i1 == 1 ? 21 : (i1 == 0 ? 21 : 20);
-    }
+	public final int getResourceCount() {
+		return random.nextInt(3) + 3;
+	}
+
+	public final int getId() {
+		return Tile.wood.id;
+	}
+
+	protected final int getTexture(int face) {
+		return face == 1 ? 21 : (face == 0 ? 21 : 20);
+	}
 }

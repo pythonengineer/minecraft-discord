@@ -1112,6 +1112,8 @@ public class GL11 {
             case GL_COLOR_MATERIAL:
                 enableColorMaterial();
                 break;
+            case GL_NORMALIZE:
+                break;
             default:
                 _wglEnable(var);
         }
@@ -1151,6 +1153,8 @@ public class GL11 {
                 break;
             case GL_COLOR_MATERIAL:
                 disableColorMaterial();
+                break;
+            case GL_NORMALIZE:
                 break;
             default:
                 _wglDisable(var);
