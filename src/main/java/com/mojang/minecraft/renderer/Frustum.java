@@ -76,13 +76,13 @@ public final class Frustum {
 		return frustum;
 	}
 
-	private static void normalizePlane(float[][] frustrum, int array) {
-		float f2 = (float)Math.sqrt((double)(frustrum[array][0] * frustrum[array][0] + frustrum[array][1] * frustrum[array][1] + frustrum[array][2] * frustrum[array][2]));
-		frustrum[array][0] /= f2;
-		frustrum[array][1] /= f2;
-		frustrum[array][2] /= f2;
-		frustrum[array][3] /= f2;
-	}
+    private static void normalizePlane(float[][] frustum, int array) {
+        float f2 = (float)Math.sqrt((double)(frustum[array][0] * frustum[array][0] + frustum[array][1] * frustum[array][1] + frustum[array][2] * frustum[array][2]));
+        frustum[array][0] /= f2;
+        frustum[array][1] /= f2;
+        frustum[array][2] /= f2;
+        frustum[array][3] /= f2;
+    }
 
 	public final boolean cubeFullyInFrustrum(float x1, float y1, float z1, float x2, float y2, float z2) {
 		for(int i7 = 0; i7 < 6; ++i7) {

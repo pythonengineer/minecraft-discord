@@ -4,7 +4,7 @@ import com.mojang.minecraft.level.BlockMap;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.level.tile.Tile;
-import com.mojang.minecraft.net.PlayerPos;
+import com.mojang.minecraft.net.EntityPos;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.renderer.Textures;
@@ -79,19 +79,19 @@ public class Entity implements Serializable {
 		this.bbHeight = bbHeight;
 	}
 
-	public void setPos(PlayerPos player) {
-		if(player.moving) {
-			this.setPos(player.x, player.y, player.z);
-		} else {
-			this.setPos(this.x, this.y, this.z);
-		}
+    public void setPos(EntityPos pos) {
+        if(pos.moving) {
+            this.setPos(pos.x, pos.y, pos.z);
+        } else {
+            this.setPos(this.x, this.y, this.z);
+        }
 
-		if(player.rotating) {
-			this.setRot(player.yRot, player.xRot);
-		} else {
-			this.setRot(this.yRot, this.xRot);
-		}
-	}
+        if(pos.rotating) {
+            this.setRot(pos.yRot, pos.xRot);
+        } else {
+            this.setRot(this.yRot, this.xRot);
+        }
+    }
 
 	protected void setRot(float xo, float yo) {
 		this.yRot = xo;
@@ -283,8 +283,8 @@ public class Entity implements Serializable {
 		return this.level.getBrightness(lightValue1, i2, i3);
 	}
 
-	public void render(Textures texture, float translation) {
-	}
+    public void render(Textures textures, float translation) {
+    }
 
 	public void setLevel(Level level) {
 		this.level = level;
@@ -294,14 +294,14 @@ public class Entity implements Serializable {
 		this.level.playSound(soundName, this, volume, pitch);
 	}
 
-	public void moveTo(float x, float y, float z, float yRot, float xRot) {
-		this.xo = this.x = x;
-		this.yo = this.y = y;
-		this.zo = this.z = z;
-		this.yRot = yRot;
-		this.xRot = xRot;
-		this.setPos(x, y, z);
-	}
+    public void moveTo(float x, float y, float z, float xRot, float yRot) {
+        this.xo = this.x = x;
+        this.yo = this.y = y;
+        this.zo = this.z = z;
+        this.yRot = xRot;
+        this.xRot = yRot;
+        this.setPos(x, y, z);
+    }
 
 	public float distanceTo(Entity entity) {
 		float f2 = this.x - entity.x;
@@ -320,32 +320,32 @@ public class Entity implements Serializable {
 	public void playerTouch(Player player) {
 	}
 
-	public void push(Entity entity) {
-		float f2 = entity.x - this.x;
-		float f3 = entity.z - this.z;
-		float f4;
-		if((f4 = f2 * f2 + f3 * f3) >= 0.01F) {
-			f4 = (float)Math.sqrt((double)f4);
-			f2 /= f4;
-			f3 /= f4;
-			f2 /= f4;
-			f3 /= f4;
-			f2 *= 0.05F;
-			f3 *= 0.05F;
-			this.pushEntity(-f2, 0.0F, -f3);
-			entity.pushEntity(f2, 0.0F, f3);
-		}
+    public void push(Entity entity) {
+        float f2 = entity.x - this.x;
+        float f3 = entity.z - this.z;
+        float f4;
+        if((f4 = f2 * f2 + f3 * f3) >= 0.01F) {
+            f4 = (float)Math.sqrt((double)f4);
+            f2 /= f4;
+            f3 /= f4;
+            f2 /= f4;
+            f3 /= f4;
+            f2 *= 0.05F;
+            f3 *= 0.05F;
+            this.push(-f2, 0.0F, -f3);
+            entity.push(f2, 0.0F, f3);
+        }
 
-	}
+    }
 
-	protected void pushEntity(float x, float y, float z) {
-		this.xd += x;
-		this.yd += y;
-		this.zd += z;
-	}
+    protected void push(float x, float y, float z) {
+        this.xd += x;
+        this.yd += y;
+        this.zd += z;
+    }
 
-	public void hurt(Entity entity, int n) {
-	}
+    public void hurt(Entity entity, int amount) {
+    }
 
 	public boolean intersects(float x0, float y0, float z0, float x1, float y1, float z1) {
 		return this.bb.intersects(x0, y0, z0, x1, y1, z1);
@@ -363,6 +363,6 @@ public class Entity implements Serializable {
 		return false;
 	}
 
-	public void awardKillScore(Entity entity, int addedScore) {
-	}
+    public void awardKillScore(Entity entity, int integer) {
+    }
 }

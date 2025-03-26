@@ -4,9 +4,9 @@ public final class ErrorScreen extends Screen {
     private String title;
     private String desc;
 
-    public ErrorScreen(String string1, String string2) {
-        this.title = string1;
-        this.desc = string2;
+    public ErrorScreen(String msg2, String msg21) {
+        this.title = msg2;
+        this.desc = msg21;
     }
 
     public final void init() {

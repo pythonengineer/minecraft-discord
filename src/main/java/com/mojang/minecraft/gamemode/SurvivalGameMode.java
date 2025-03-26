@@ -40,7 +40,7 @@ public final class SurvivalGameMode extends GameMode {
         this.delay = 0;
     }
 
-    public final void stopDestroyBlock(int x, int y, int z, int id) {
+    public final void stopDestroyingBlock(int x, int y, int z, int id) {
         if(this.delay > 0) {
             --this.delay;
         } else if(x == this.x && y == this.y && z == this.z) {

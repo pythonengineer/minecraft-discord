@@ -1,7 +1,6 @@
 package com.mojang.minecraft.mob.ai;
 
 import com.mojang.minecraft.Entity;
-import com.mojang.minecraft.character.Vec3;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.mob.Mob;
 
@@ -10,72 +9,94 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import java.util.List;
 
 public class BasicAI extends AI {
+	public static final long serialVersionUID = 0L;
 	public EaglercraftRandom random = new EaglercraftRandom();
 	public float xxa;
 	public float yya;
-	private float yRotA;
+	protected float yRotA;
 	public Level level;
 	public Mob mob;
 	public boolean jumping = false;
-	private int attackDelay = 0;
+	protected int attackDelay = 0;
+	public float runSpeed = 0.7F;
+	protected int noActionTime = 0;
+	public Entity attackTarget = null;
 
-	public final void tick(Level level, Mob mob) {
-		this.level = level;
-		this.mob = mob;
+	public void tick(Level level1, Mob mob2) {
+		++this.noActionTime;
+		Entity entity3;
+		if(this.noActionTime > 600 && this.random.nextInt(800) == 0 && (entity3 = level1.getPlayer()) != null) {
+			float f4 = entity3.x - mob2.x;
+			float f5 = entity3.y - mob2.y;
+			float f6 = entity3.z - mob2.z;
+			if(f4 * f4 + f5 * f5 + f6 * f6 < 1024.0F) {
+				this.noActionTime = 0;
+			} else {
+				mob2.remove();
+			}
+		}
+
+		this.level = level1;
+		this.mob = mob2;
 		if(this.attackDelay > 0) {
 			--this.attackDelay;
 		}
 
-		if(mob.health <= 0) {
+		if(mob2.health <= 0) {
 			this.jumping = false;
 			this.xxa = 0.0F;
 			this.yya = 0.0F;
 			this.yRotA = 0.0F;
 		} else {
-			this.tick();
+			this.update();
 		}
 
-		boolean z3 = mob.isInWater();
-		boolean z4 = mob.isInLava();
+		boolean z7 = mob2.isInWater();
+		boolean z9 = mob2.isInLava();
 		if(this.jumping) {
-			if(z3) {
-				mob.yd += 0.04F;
-			} else if(z4) {
-				mob.yd += 0.04F;
-			} else if(mob.onGround) {
-				mob.yd = 0.42F;
+			if(z7) {
+				mob2.yd += 0.04F;
+			} else if(z9) {
+				mob2.yd += 0.04F;
+			} else if(mob2.onGround) {
+				mob2.yd = 0.42F;
 			}
 		}
 
 		this.xxa *= 0.98F;
 		this.yya *= 0.98F;
 		this.yRotA *= 0.9F;
-		mob.travel(this.xxa, this.yya);
-		List list5;
-		if((list5 = level.findEntities(mob, mob.bb.grow(0.2F, 0.0F, 0.2F))) != null && list5.size() > 0) {
-			for(int i6 = 0; i6 < list5.size(); ++i6) {
-				Entity entity7;
-				if((entity7 = (Entity)list5.get(i6)).isPushable()) {
-					entity7.push(mob);
+		mob2.travel(this.xxa, this.yya);
+		List list11;
+		if((list11 = level1.findEntities(mob2, mob2.bb.grow(0.2F, 0.0F, 0.2F))) != null && list11.size() > 0) {
+			for(int i8 = 0; i8 < list11.size(); ++i8) {
+				Entity entity10;
+				if((entity10 = (Entity)list11.get(i8)).isPushable()) {
+					entity10.push(mob2);
 				}
 			}
 		}
 
 	}
 
-	protected void tick() {
+	protected void update() {
 		if(this.random.nextFloat() < 0.07F) {
-			this.xxa = this.random.nextFloat() - 0.5F;
-			this.yya = this.random.nextFloat();
+			this.xxa = (this.random.nextFloat() - 0.5F) * this.runSpeed;
+			this.yya = this.random.nextFloat() * this.runSpeed;
 		}
 
+		this.jumping = this.random.nextFloat() < 0.01F;
 		if(this.random.nextFloat() < 0.04F) {
 			this.yRotA = (this.random.nextFloat() - 0.5F) * 60.0F;
 		}
 
 		this.mob.yRot += this.yRotA;
 		this.mob.xRot = (float)this.defaultLookAngle;
-		this.jumping = this.random.nextFloat() < 0.01F;
+		if(this.attackTarget != null) {
+			this.yya = this.runSpeed;
+			this.jumping = this.random.nextFloat() < 0.04F;
+		}
+
 		boolean z1 = this.mob.isInWater();
 		boolean z2 = this.mob.isInLava();
 		if(z1 || z2) {
@@ -84,31 +105,11 @@ public class BasicAI extends AI {
 
 	}
 
-	protected final void attack(Entity entity) {
-		if(entity != null) {
-			float f2 = entity.x - this.mob.x;
-			float f3 = entity.z - this.mob.z;
-			float f4;
-			if((f4 = (float)Math.sqrt((double)(f2 * f2 + f3 * f3))) < 8.0F) {
-				float f5 = entity.y - this.mob.y;
-				this.mob.yRot = (float)(Math.atan2((double)f3, (double)f2) * 180.0D / Math.PI) - 90.0F;
-				this.mob.xRot = -((float)(Math.atan2((double)f5, (double)f4) * 180.0D / Math.PI));
-				if((float)Math.sqrt((double)(f2 * f2 + f5 * f5 + f3 * f3)) < 2.0F && this.attackDelay == 0) {
-					this.hurt(entity);
-				}
-			}
-
-		}
-	}
-
-	public void hurt(Entity entity) {
-		if(this.level.clip(new Vec3(this.mob.x, this.mob.y, this.mob.z), new Vec3(entity.x, entity.y, entity.z)) == null) {
-			this.mob.attackTime = 5;
-			this.attackDelay = this.random.nextInt(20) + 10;
-			entity.hurt(this.mob, this.random.nextInt(4) + this.random.nextInt(4) + 1);
-		}
-	}
-
 	public void beforeRemove() {
+	}
+
+	public void hurt(Entity entity1, int i2) {
+		super.hurt(entity1, i2);
+		this.noActionTime = 0;
 	}
 }

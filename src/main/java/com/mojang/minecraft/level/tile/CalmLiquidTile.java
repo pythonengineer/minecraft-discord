@@ -8,8 +8,8 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 public final class CalmLiquidTile extends LiquidTile {
 	protected CalmLiquidTile(int i1, Liquid liquid2) {
 		super(i1, liquid2);
-		this.tileId = i1 - 1;
-		this.calmTileId = i1;
+        this.tileID = i1 - 1;
+        this.calmTileID = i1;
 		this.setTicking(false);
 	}
 
@@ -46,10 +46,10 @@ public final class CalmLiquidTile extends LiquidTile {
 			}
 		}
 
-		if(z6) {
-			level.setTileNoUpdate(x, y, z, this.tileId);
-			level.addToTickNextTick(x, y, z, this.tileId);
-		}
+        if(z6) {
+            level.setTileNoUpdate(x, y, z, this.tileID);
+            level.addToTickNextTick(x, y, z, this.tileID);
+        }
 
 	}
 }

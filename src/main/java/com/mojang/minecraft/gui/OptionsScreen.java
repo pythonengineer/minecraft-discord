@@ -7,9 +7,9 @@ public final class OptionsScreen extends Screen {
     private String title = "Options";
     private Options options;
 
-    public OptionsScreen(Screen screen1, Options options2) {
-        this.parent = screen1;
-        this.options = options2;
+    public OptionsScreen(Screen screen, Options options) {
+        this.parent = screen;
+        this.options = options;
     }
 
     public final void init() {

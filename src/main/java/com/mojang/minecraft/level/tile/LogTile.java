@@ -6,9 +6,9 @@ public final class LogTile extends Tile {
 		this.tex = 20;
 	}
 
-	public final int getResourceCount() {
-		return random.nextInt(3) + 3;
-	}
+    public final int resourceCount() {
+        return random.nextInt(3) + 3;
+    }
 
 	public final int getId() {
 		return Tile.wood.id;

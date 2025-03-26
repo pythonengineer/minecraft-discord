@@ -1,6 +1,6 @@
 package com.mojang.minecraft.phys;
 
-import com.mojang.minecraft.character.Vec3;
+import com.mojang.minecraft.model.Vec3;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;

@@ -617,6 +617,10 @@ public class PlatformRuntime {
         }
     }
 
+    public static byte[] downloadRemoteURL(String assetPackageURI) {
+        return TeaVMUtils.wrapByteArrayBuffer(downloadRemoteURI(assetPackageURI));
+    }
+
     private static boolean isDataURL(String url) {
         return url.length() > 5 && url.substring(0, 5).equalsIgnoreCase("data:");
     }

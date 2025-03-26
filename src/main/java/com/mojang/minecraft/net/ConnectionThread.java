@@ -11,16 +11,16 @@ final class ConnectionThread extends Thread {
 	private int port;
 	private String username;
 	private String mpPass;
-	private Minecraft mc;
+	private Minecraft minecraft;
 	private Client networkClient;
 
-	ConnectionThread(Client nc, String ip, int port, String name, String mppass, Minecraft minecraft) {
+	ConnectionThread(Client nc, String ip, int port, String username, String mppass, Minecraft minecraft) {
 		this.networkClient = nc;
 		this.ip = ip;
 		this.port = port;
-		this.username = name;
+		this.username = username;
 		this.mpPass = mppass;
-		this.mc = minecraft;
+		this.minecraft = minecraft;
 	}
 
 	public final void run() {
@@ -40,9 +40,9 @@ final class ConnectionThread extends Thread {
 			client1 = this.networkClient;
 			this.networkClient.processData = z2;
 		} catch (IOException iOException3) {
-			this.mc.hideScreen = false;
-			this.mc.networkClient = null;
-			this.mc.setScreen(new ErrorScreen("Failed to connect", "You failed to connect to the server. It\'s probably down!"));
+			this.minecraft.hideScreen = false;
+			this.minecraft.networkClient = null;
+			this.minecraft.setScreen(new ErrorScreen("Failed to connect", "You failed to connect to the server. It\'s probably down!"));
 			z2 = false;
 			client1 = this.networkClient;
 			this.networkClient.processData = z2;

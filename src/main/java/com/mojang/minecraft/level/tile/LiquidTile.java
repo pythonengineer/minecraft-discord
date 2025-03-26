@@ -9,25 +9,25 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class LiquidTile extends Tile {
 	protected Liquid liquid;
-	protected int calmTileId;
-	protected int tileId;
+	protected int calmTileID;
+	protected int tileID;
 
-	protected LiquidTile(int id, Liquid liquidType) {
+	protected LiquidTile(int id, Liquid liquid) {
 		super(id);
-		this.liquid = liquidType;
+		this.liquid = liquid;
 		this.tex = 14;
-		if(liquidType == Liquid.lava) {
+		if(liquid == Liquid.lava) {
 			this.tex = 30;
 		}
 
 		Tile.isLiquid[id] = true;
-		this.tileId = id;
-		this.calmTileId = id + 1;
+		this.tileID = id;
+		this.calmTileID = id + 1;
 		float id1 = 0.01F;
 		float f3 = 0.1F;
 		this.setShape(id1 + 0.0F, 0.0F - f3 + id1, id1 + 0.0F, id1 + 1.0F, 1.0F - f3 + id1, id1 + 1.0F);
 		this.setTicking(true);
-		if(liquidType == Liquid.lava) {
+		if(liquid == Liquid.lava) {
 			this.setTickSpeed(16);
 		}
 
@@ -38,7 +38,7 @@ public class LiquidTile extends Tile {
 	}
 
 	public final void onPlace(Level level, int x, int y, int z) {
-		level.addToTickNextTick(x, y, z, this.tileId);
+		level.addToTickNextTick(x, y, z, this.tileID);
 	}
 
 	public void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
@@ -57,7 +57,7 @@ public class LiquidTile extends Tile {
 				break;
 			}
 
-			if(z6 = level.setTile(x, y, z, liquidTile8.tileId)) {
+			if(z6 = level.setTile(x, y, z, liquidTile8.tileID)) {
 				z9 = true;
 			}
 		} while(z6 && liquidTile8.liquid != Liquid.lava);
@@ -68,9 +68,9 @@ public class LiquidTile extends Tile {
 		}
 
 		if(!z9) {
-			level.setTileNoUpdate(x, y, z, liquidTile8.calmTileId);
+			level.setTileNoUpdate(x, y, z, liquidTile8.calmTileID);
 		} else {
-			level.addToTickNextTick(x, y, z, liquidTile8.tileId);
+			level.addToTickNextTick(x, y, z, liquidTile8.tileID);
 		}
 
 	}
@@ -97,8 +97,8 @@ public class LiquidTile extends Tile {
 				return false;
 			}
 
-			if(level.setTile(x, y, z, this.tileId)) {
-				level.addToTickNextTick(x, y, z, this.tileId);
+			if(level.setTile(x, y, z, this.tileID)) {
+				level.addToTickNextTick(x, y, z, this.tileID);
 			}
 		}
 
@@ -110,7 +110,7 @@ public class LiquidTile extends Tile {
 	}
 
 	public final boolean shouldRenderFace(Level level, int x, int y, int z, int layer, int face) {
-		return x >= 0 && y >= 0 && z >= 0 && x < level.width && z < level.height ? (layer != 1 && this.liquid == Liquid.water ? false : ((layer = level.getTile(x, y, z)) != this.tileId && layer != this.calmTileId ? (face != 1 || level.getTile(x - 1, y, z) != 0 && level.getTile(x + 1, y, z) != 0 && level.getTile(x, y, z - 1) != 0 && level.getTile(x, y, z + 1) != 0 ? super.shouldRenderFace(level, x, y, z, -1, face) : true) : false)) : false;
+		return x >= 0 && y >= 0 && z >= 0 && x < level.width && z < level.height ? (layer != 1 && this.liquid == Liquid.water ? false : ((layer = level.getTile(x, y, z)) != this.tileID && layer != this.calmTileID ? (face != 1 || level.getTile(x - 1, y, z) != 0 && level.getTile(x + 1, y, z) != 0 && level.getTile(x, y, z - 1) != 0 && level.getTile(x, y, z + 1) != 0 ? super.shouldRenderFace(level, x, y, z, -1, face) : true) : false)) : false;
 	}
 
 	public final void renderFace(Tesselator t, int x, int y, int z, int face) {
@@ -156,7 +156,7 @@ public class LiquidTile extends Tile {
 	public final void spawnResources(Level level, int x, int y, int z) {
 	}
 
-	public final int getResourceCount() {
+	public final int resourceCount() {
 		return 0;
 	}
 }

@@ -106,6 +106,7 @@ public class PlatformInput {
     private static EventListener<?> blur = null;
     private static EventListener<?> pointerlock = null;
     private static EventListener<?> pointerlockerr = null;
+    private static EventListener<?> pointerlockchange = null;
     private static EventListener<?> fullscreen = null;
 
     private static Map<String, LegacyKeycodeTranslator.LegacyKeycode> keyCodeTranslatorMap = null;
@@ -654,18 +655,30 @@ public class PlatformInput {
                             mouseDX = 0.0D;
                             mouseDY = 0.0D;
                             pointerLockWaiting = false;
-                            for (int i = 0; i < buttonStates.length; ++i) {
-                                buttonStates[i] = false;
-                            }
-                            for (int i = 0; i < keyStates.length; ++i) {
-                                keyStates[i] = false;
-                            }
                         }
                     });
                     win.getDocument().addEventListener(pointerLockSupported == POINTER_LOCK_MOZ ? "mozpointerlockerror" : "pointerlockerror", pointerlockerr = new EventListener<Event>() {
                         @Override
                         public void handleEvent(Event evt) {
                             pointerLockWaiting = false;
+                        }
+                    });
+                    win.getDocument().addEventListener("pointerlockchange", pointerlockchange = new EventListener<Event>() {
+                        @Override
+                        public void handleEvent(Event evt) {
+                            boolean grab = isPointerLockedImpl();
+                            if (!grab) {
+                                for (int i = 0; i < buttonStates.length; ++i) {
+                                    buttonStates[i] = false;
+                                }
+
+                                for (int i = 0; i < keyStates.length; ++i) {
+                                    if (keyStates[i]) {
+                                        keyStates[i] = false;
+                                        keyEvents.add(new VKeyEvent(-1, 0, i, '\0', EVENT_KEY_UP));
+                                    }
+                                }
+                            }
                         }
                     });
             if (pointerLockSupported == POINTER_LOCK_MOZ) {
@@ -1705,6 +1718,10 @@ public class PlatformInput {
         if (pointerlockerr != null) {
             win.getDocument().removeEventListener("pointerlockerror", pointerlockerr);
             pointerlockerr = null;
+        }
+        if (pointerlockchange != null) {
+            win.getDocument().removeEventListener("pointerlockchange", pointerlockchange);
+            pointerlockchange = null;
         }
         if (fullscreen != null) {
             TeaVMUtils.removeEventListener(fullscreenQuery, "change", fullscreen);

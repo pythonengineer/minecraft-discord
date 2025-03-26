@@ -1,69 +1,67 @@
 package com.mojang.minecraft.mob;
 
 import com.mojang.minecraft.level.Level;
+import com.mojang.minecraft.model.BaseModel;
 import com.mojang.minecraft.model.HumanoidModel;
 import com.mojang.minecraft.renderer.Textures;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class HumanoidMob extends Mob {
-	public static final long serialVersionUID = 77479605454997290L;
-	private static HumanoidModel HUMANOID_MODEL = new HumanoidModel(0.0F);
-	private static HumanoidModel ARMOR_MODEL = new HumanoidModel(1.0F);
-	protected HumanoidModel humanoidModel = HUMANOID_MODEL;
-	private boolean helmet = Math.random() < (double)0.2F;
-	private boolean armor = Math.random() < (double)0.2F;
+	public static final long serialVersionUID = 0L;
+	private boolean helmet = Math.random() < 0.20000000298023224D;
+	private boolean armor = Math.random() < 0.20000000298023224D;
 
 	public HumanoidMob(Level level, float x, float y, float z) {
 		super(level);
 		this.setPos(x, y, z);
 	}
 
-	public void renderModel(Textures texture, float x, float y, float z, float rotX, float rotY, float rotZ) {
-		this.model.render(x, z, (float)this.tickCount + y, rotX, rotY, rotZ);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
+	public void renderModel(Textures textures, float x, float y, float z, float xr, float yr, float zr) {
+		BaseModel baseModel8;
+		(baseModel8 = modelCache.getModel(this.modelName)).render(x, z, (float)this.tickCount + y, xr, yr, zr);
+		GL11.glEnable(3008);
 		if(this.allowAlpha) {
-			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glEnable(2884);
 		}
 
-		HumanoidModel x1;
 		if(this.hasHair) {
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			x1 = this.humanoidModel;
-			this.humanoidModel.hair.yRot = x1.head.yRot;
+			GL11.glDisable(2884);
+			HumanoidModel x1;
+			(x1 = (HumanoidModel)baseModel8).hair.yRot = x1.head.yRot;
 			x1.hair.xRot = x1.head.xRot;
-			x1.hair.render(rotZ);
-			GL11.glEnable(GL11.GL_CULL_FACE);
+			x1.hair.render(zr);
+			GL11.glEnable(2884);
 		}
 
 		if(this.armor || this.helmet) {
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.loadTexture("/armor/plate.png"));
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			ARMOR_MODEL.head.showModel = this.helmet;
-			ARMOR_MODEL.body.showModel = this.armor;
-			ARMOR_MODEL.rightArm.showModel = this.armor;
-			ARMOR_MODEL.leftArm.showModel = this.armor;
-			ARMOR_MODEL.rightLeg.showModel = false;
-			ARMOR_MODEL.leftLeg.showModel = false;
-			HumanoidModel y1 = this.humanoidModel;
-			x1 = ARMOR_MODEL;
-			ARMOR_MODEL.head.yRot = y1.head.yRot;
-			x1.head.xRot = y1.head.xRot;
-			x1.rightArm.xRot = y1.rightArm.xRot;
-			x1.rightArm.zRot = y1.rightArm.zRot;
-			x1.leftArm.xRot = y1.leftArm.xRot;
-			x1.leftArm.zRot = y1.leftArm.zRot;
-			x1.rightLeg.xRot = y1.rightLeg.xRot;
-			x1.leftLeg.xRot = y1.leftLeg.xRot;
-			x1.head.render(rotZ);
-			x1.body.render(rotZ);
-			x1.rightArm.render(rotZ);
-			x1.leftArm.render(rotZ);
-			x1.rightLeg.render(rotZ);
-			x1.leftLeg.render(rotZ);
-			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glBindTexture(3553, textures.loadTexture("/armor/plate.png"));
+			GL11.glDisable(2884);
+			HumanoidModel textures1;
+			(textures1 = (HumanoidModel)modelCache.getModel("humanoid.armor")).head.showModel = this.helmet;
+			textures1.body.showModel = this.armor;
+			textures1.rightArm.showModel = this.armor;
+			textures1.leftArm.showModel = this.armor;
+			textures1.rightLeg.showModel = false;
+			textures1.leftLeg.showModel = false;
+			HumanoidModel y1 = (HumanoidModel)baseModel8;
+			textures1.head.yRot = y1.head.yRot;
+			textures1.head.xRot = y1.head.xRot;
+			textures1.rightArm.xRot = y1.rightArm.xRot;
+			textures1.rightArm.zRot = y1.rightArm.zRot;
+			textures1.leftArm.xRot = y1.leftArm.xRot;
+			textures1.leftArm.zRot = y1.leftArm.zRot;
+			textures1.rightLeg.xRot = y1.rightLeg.xRot;
+			textures1.leftLeg.xRot = y1.leftLeg.xRot;
+			textures1.head.render(zr);
+			textures1.body.render(zr);
+			textures1.rightArm.render(zr);
+			textures1.leftArm.render(zr);
+			textures1.rightLeg.render(zr);
+			textures1.leftLeg.render(zr);
+			GL11.glEnable(2884);
 		}
 
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glDisable(3008);
 	}
 }

@@ -426,7 +426,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
-                if (Minecraft.minecraft.networkClient != null) {
+                if (Minecraft.minecraft.networkClient != null || Minecraft.minecraft.player.arrows <= 0) {
                     ATTACK.setVisible(renderer, false);
                 } else {
                     ATTACK.setVisible(renderer, true);
@@ -460,7 +460,7 @@ public enum EnumTouchControl {
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
-                if (Minecraft.minecraft.networkClient != null) {
+                if (Minecraft.minecraft.networkClient != null || Minecraft.minecraft.player.arrows <= 0) {
                     ATTACK.setVisible(renderer, false);
                 } else {
                     ATTACK.setVisible(renderer, true);

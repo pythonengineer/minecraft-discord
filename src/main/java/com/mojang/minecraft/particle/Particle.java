@@ -73,7 +73,7 @@ public class Particle extends Entity {
 
 	}
 
-	public void render(Tesselator t, float a, float xa, float ya, float za, float xa2, float za2) {
+	public void render(Tesselator t, float a, float xa, float ya, float za, float xa2, float ya2) {
 		float f8;
 		float f9 = (f8 = ((float)(this.tex % 16) + this.uo / 4.0F) / 16.0F) + 0.015609375F;
 		float f10;
@@ -82,9 +82,9 @@ public class Particle extends Entity {
 		float f13 = this.xo + (this.x - this.xo) * a;
 		float f14 = this.yo + (this.y - this.yo) * a;
 		float f15 = this.zo + (this.z - this.zo) * a;
-		t.vertexUV(f13 - xa * f12 - xa2 * f12, f14 - ya * f12, f15 - za * f12 - za2 * f12, f8, f11);
-		t.vertexUV(f13 - xa * f12 + xa2 * f12, f14 + ya * f12, f15 - za * f12 + za2 * f12, f8, f10);
-		t.vertexUV(f13 + xa * f12 + xa2 * f12, f14 + ya * f12, f15 + za * f12 + za2 * f12, f9, f10);
-		t.vertexUV(f13 + xa * f12 - xa2 * f12, f14 - ya * f12, f15 + za * f12 - za2 * f12, f9, f11);
+		t.vertexUV(f13 - xa * f12 - xa2 * f12, f14 - ya * f12, f15 - za * f12 - ya2 * f12, f8, f11);
+		t.vertexUV(f13 - xa * f12 + xa2 * f12, f14 + ya * f12, f15 - za * f12 + ya2 * f12, f8, f10);
+		t.vertexUV(f13 + xa * f12 + xa2 * f12, f14 + ya * f12, f15 + za * f12 + ya2 * f12, f9, f10);
+		t.vertexUV(f13 + xa * f12 - xa2 * f12, f14 - ya * f12, f15 + za * f12 - ya2 * f12, f9, f11);
 	}
 }

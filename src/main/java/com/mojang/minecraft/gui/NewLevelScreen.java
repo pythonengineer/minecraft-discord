@@ -3,8 +3,8 @@ package com.mojang.minecraft.gui;
 public final class NewLevelScreen extends Screen {
     private Screen parent;
 
-    public NewLevelScreen(Screen screen1) {
-        this.parent = screen1;
+    public NewLevelScreen(Screen screen) {
+        this.parent = screen;
     }
 
     public final void init() {

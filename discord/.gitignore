@@ -27,3 +27,6 @@ package-lock.json
 *.njsproj
 *.sln
 *.sw?
+
+# User aliases
+aliases.txt

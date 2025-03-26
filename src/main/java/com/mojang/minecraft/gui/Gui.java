@@ -21,9 +21,6 @@ import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * In-game HUD.
- */
 public final class Gui extends GuiComponent {
 	public List messages = new ArrayList();
 	private EaglercraftRandom random = new EaglercraftRandom();
@@ -37,11 +34,11 @@ public final class Gui extends GuiComponent {
 		this.minecraft = minecraft;
 	}
 
-	public final void render(float itemScale, boolean isPlayerAlive, int width, int height) {
+    public final void render(float scale, boolean playerAlive, int w, int h) {
         this.scaledWidth = Minecraft.scaledResolution.getScaledWidth();
         this.scaledHeight = Minecraft.scaledResolution.getScaledHeight();
 		Font font5 = this.minecraft.font;
-		this.minecraft.lighting.init();
+        this.minecraft.gameRenderer.tick();
 
         onBeginHotbarDraw();
 
@@ -143,7 +140,7 @@ public final class Gui extends GuiComponent {
 				GL11.glTranslatef((float)i25, (float)i14, -50.0F);
 				if(inventory8.popTime[i12] > 0) {
 					float f18;
-					float f19 = -((float)Math.sin((double)((f18 = ((float)inventory8.popTime[i12] - itemScale) / 5.0F) * f18) * Math.PI)) * 8.0F;
+					float f19 = -((float)Math.sin((double)((f18 = ((float)inventory8.popTime[i12] - scale) / 5.0F) * f18) * Math.PI)) * 8.0F;
 					float f23 = (float)Math.sin((double)(f18 * f18) * Math.PI) + 1.0F;
 					float f16 = (float)Math.sin((double)f18 * Math.PI) + 1.0F;
 					GL11.glTranslatef(10.0F, f19 + 10.0F, 0.0F);
@@ -180,11 +177,14 @@ public final class Gui extends GuiComponent {
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-		font5.drawShadow("0.24_SURVIVAL_TEST_03", 2, 2, 0xFFFFFF);
+		font5.drawShadow("0.25_05   SURVIVAL TEST", 2, 2, 0xFFFFFF);
 		if(this.minecraft.options.showFramerate) {
 			font5.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
 		}
 
+        String string26 = "Score: &e" + this.minecraft.player.getScore();
+        font5.drawShadow(string26, this.scaledWidth - font5.width(string26) - 2, 2, 16777215);
+        font5.drawShadow("Arrows: " + this.minecraft.player.arrows, this.scaledWidth / 2 + 8, this.scaledHeight - 33, 16777215);
 		byte b24 = 10;
 		boolean z26 = false;
 		if(this.minecraft.screen instanceof ChatScreen) {
@@ -220,7 +220,7 @@ public final class Gui extends GuiComponent {
 			for(i11 = 0; i11 < list22.size(); ++i11) {
 				int i27 = i14 + i11 % 2 * 120 - 120;
 				int i17 = i15 - 64 + (i11 / 2 << 3);
-				if(isPlayerAlive && width >= i27 && height >= i17 && width < i27 + 120 && height < i17 + 8) {
+				if(playerAlive && w >= i27 && h >= i17 && w < i27 + 120 && h < i17 + 8) {
 					this.hoveredUsername = (String)list22.get(i11);
 					font5.draw((String)list22.get(i11), i27 + 2, i17, 0xFFFFFF);
 				} else {

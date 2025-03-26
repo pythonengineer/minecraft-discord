@@ -1,7 +1,7 @@
 package com.mojang.minecraft.item;
 
 import com.mojang.minecraft.Entity;
-import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.renderer.Tesselator;
@@ -13,6 +13,7 @@ import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import java.util.List;
 
 public class Arrow extends Entity {
+	public static final long serialVersionUID = 0L;
 	private float xd;
 	private float yd;
 	private float zd;
@@ -22,32 +23,42 @@ public class Arrow extends Entity {
 	private float xRotO;
 	private boolean hasHit = false;
 	private int stickTime = 0;
-	private Player owner;
+	private Entity owner;
 	private int time = 0;
+	private int type = 0;
+	private float gravity = 0.0F;
+	private int damage;
 
-	public Arrow(Minecraft minecraft, Player player, float x, float y, float z, float xr, float yr) {
-		super(minecraft.level);
-		this.owner = player;
-		this.setSize(0.25F, 0.5F);
+	public Arrow(Level level, Entity entity, float x, float y, float z, float xr, float yr, float zr) {
+		super(level);
+		this.owner = entity;
+		this.setSize(0.3F, 0.5F);
 		this.heightOffset = this.bbHeight / 2.0F;
+		this.damage = 3;
+		if(!(entity instanceof Player)) {
+			this.type = 1;
+		} else {
+			this.damage = 7;
+		}
+
 		this.heightOffset = 0.25F;
-		float minecraft1 = (float)Math.cos((double)(-xr) * Math.PI / 180.0D - Math.PI);
-		float player1 = (float)Math.sin((double)(-xr) * Math.PI / 180.0D - Math.PI);
-		xr = (float)Math.cos((double)(-yr) * Math.PI / 180.0D);
-		yr = (float)Math.sin((double)(-yr) * Math.PI / 180.0D);
+		float level1 = (float)Math.cos((double)(-xr) * 3.141592653589793D / 180.0D - 3.141592653589793D);
+		float entity1 = (float)Math.sin((double)(-xr) * 3.141592653589793D / 180.0D - 3.141592653589793D);
+		xr = (float)Math.cos((double)(-yr) * 3.141592653589793D / 180.0D);
+		yr = (float)Math.sin((double)(-yr) * 3.141592653589793D / 180.0D);
 		this.slide = false;
-		float f8 = 0.8F;
-		this.xo -= minecraft1 * 0.2F;
-		this.zo += player1 * 0.2F;
-		x -= minecraft1 * 0.2F;
-		z += player1 * 0.2F;
-		this.xd = player1 * xr * f8;
-		this.yd = yr * f8;
-		this.zd = minecraft1 * xr * f8;
+		this.gravity = 1.0F / zr;
+		this.xo -= level1 * 0.2F;
+		this.zo += entity1 * 0.2F;
+		x -= level1 * 0.2F;
+		z += entity1 * 0.2F;
+		this.xd = entity1 * xr * zr;
+		this.yd = yr * zr;
+		this.zd = level1 * xr * zr;
 		this.setPos(x, y, z);
-		minecraft1 = (float)Math.sqrt((double)(this.xd * this.xd + this.zd * this.zd));
-		this.yRotO = this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / Math.PI);
-		this.xRotO = this.xRot = (float)(Math.atan2((double)this.yd, (double)minecraft1) * 180.0D / Math.PI);
+		level1 = (float)Math.sqrt((double)(this.xd * this.xd + this.zd * this.zd));
+		this.yRotO = this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / 3.141592653589793D);
+		this.xRotO = this.xRot = (float)(Math.atan2((double)this.yd, (double)level1) * 180.0D / 3.141592653589793D);
 		this.makeStepSound = false;
 	}
 
@@ -60,15 +71,20 @@ public class Arrow extends Entity {
 		this.zo = this.z;
 		if(this.hasHit) {
 			++this.stickTime;
-			if(this.stickTime >= 20) {
+			if(this.type == 0) {
+				if(this.stickTime >= 300 && Math.random() < 0.009999999776482582D) {
+					this.remove();
+					return;
+				}
+			} else if(this.type == 1 && this.stickTime >= 20) {
 				this.remove();
 			}
 
 		} else {
-			this.xd *= 0.992F;
-			this.yd *= 0.992F;
-			this.zd *= 0.992F;
-			this.yd -= 0.02F;
+			this.xd *= 0.998F;
+			this.yd *= 0.998F;
+			this.zd *= 0.998F;
+			this.yd -= 0.02F * this.gravity;
 			int i1 = (int)((float)Math.sqrt((double)(this.xd * this.xd + this.yd * this.yd + this.zd * this.zd)) / 0.2F + 1.0F);
 			float f2 = this.xd / (float)i1;
 			float f3 = this.yd / (float)i1;
@@ -84,10 +100,11 @@ public class Arrow extends Entity {
 
 				for(int i7 = 0; i7 < list10.size(); ++i7) {
 					Entity entity8;
-					if((entity8 = (Entity)list10.get(i7)).isShootable() && entity8 != this.owner && this.time <= 20) {
-						entity8.hurt(this, 3);
+					if((entity8 = (Entity)list10.get(i7)).isShootable() && (entity8 != this.owner || this.time > 5)) {
+						entity8.hurt(this, this.damage);
 						this.collision = true;
-						this.stickTime = 20;
+						this.remove();
+						return;
 					}
 				}
 
@@ -96,6 +113,7 @@ public class Arrow extends Entity {
 					this.x += f2;
 					this.y += f3;
 					this.z += f4;
+					this.blockMap.moved(this);
 				}
 			}
 
@@ -106,9 +124,9 @@ public class Arrow extends Entity {
 
 			if(!this.hasHit) {
 				float f9 = (float)Math.sqrt((double)(this.xd * this.xd + this.zd * this.zd));
-				this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / Math.PI);
+				this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / 3.141592653589793D);
 
-				for(this.xRot = (float)(Math.atan2((double)this.yd, (double)f9) * 180.0D / Math.PI); this.xRot - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
+				for(this.xRot = (float)(Math.atan2((double)this.yd, (double)f9) * 180.0D / 3.141592653589793D); this.xRot - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
 				}
 
 				while(this.xRot - this.xRotO >= 180.0F) {
@@ -127,32 +145,50 @@ public class Arrow extends Entity {
 		}
 	}
 
-	public void render(Textures texture, float translation) {
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		int i6 = texture.loadTexture("/item/arrows.png");
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, i6);
-		float f7 = this.level.getBrightness((int)this.x, (int)this.y, (int)this.z);
+	public void render(Textures textures, float translation) {
+		GL11.glEnable(3553);
+		int i10 = textures.loadTexture("/item/arrows.png");
+		GL11.glBindTexture(3553, i10);
+		float f11 = this.level.getBrightness((int)this.x, (int)this.y, (int)this.z);
 		GL11.glPushMatrix();
-		GL11.glColor4f(f7, f7, f7, 1.0F);
+		GL11.glColor4f(f11, f11, f11, 1.0F);
 		GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation - this.heightOffset / 2.0F, this.zo + (this.z - this.zo) * translation);
 		GL11.glRotatef(this.yRotO + (this.yRot - this.yRotO) * translation - 90.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(this.xRotO + (this.xRot - this.xRotO) * translation, 0.0F, 0.0F, 1.0F);
 		GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
-		Tesselator tesselator5 = Tesselator.instance;
-		f7 = 0.5F;
-		translation = 0.15625F;
-		float f3 = 0.05625F;
-		GL11.glScalef(0.05625F, f3, f3);
+		Tesselator tesselator12 = Tesselator.instance;
+		translation = 0.5F;
+		float f3 = (float)(0 + this.type * 10) / 32.0F;
+		float f4 = (float)(5 + this.type * 10) / 32.0F;
+		float f5 = 0.15625F;
+		float f6 = (float)(5 + this.type * 10) / 32.0F;
+		float f8 = (float)(10 + this.type * 10) / 32.0F;
+		float f7 = 0.05625F;
+		GL11.glScalef(0.05625F, f7, f7);
+		GL11.glNormal3f(f7, 0.0F, 0.0F);
+		tesselator12.begin(DefaultVertexFormats.POSITION_TEX);
+		tesselator12.vertexUV(-7.0F, -2.0F, -2.0F, 0.0F, f6);
+		tesselator12.vertexUV(-7.0F, -2.0F, 2.0F, f5, f6);
+		tesselator12.vertexUV(-7.0F, 2.0F, 2.0F, f5, f8);
+		tesselator12.vertexUV(-7.0F, 2.0F, -2.0F, 0.0F, f8);
+		tesselator12.end();
+		GL11.glNormal3f(-f7, 0.0F, 0.0F);
+		tesselator12.begin(DefaultVertexFormats.POSITION_TEX);
+		tesselator12.vertexUV(-7.0F, 2.0F, -2.0F, 0.0F, f6);
+		tesselator12.vertexUV(-7.0F, 2.0F, 2.0F, f5, f6);
+		tesselator12.vertexUV(-7.0F, -2.0F, 2.0F, f5, f8);
+		tesselator12.vertexUV(-7.0F, -2.0F, -2.0F, 0.0F, f8);
+		tesselator12.end();
 
-		for(int i4 = 0; i4 < 4; ++i4) {
+		for(int i9 = 0; i9 < 4; ++i9) {
 			GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
-			GL11.glNormal3f(0.0F, -f3, 0.0F);
-			tesselator5.begin(DefaultVertexFormats.POSITION_TEX);
-			tesselator5.vertexUV(-8.0F, -2.0F, 0.0F, 0.0F, 0.0F);
-			tesselator5.vertexUV(8.0F, -2.0F, 0.0F, f7, 0.0F);
-			tesselator5.vertexUV(8.0F, 2.0F, 0.0F, f7, translation);
-			tesselator5.vertexUV(-8.0F, 2.0F, 0.0F, 0.0F, translation);
-			tesselator5.end();
+			GL11.glNormal3f(0.0F, -f7, 0.0F);
+	        tesselator12.begin(DefaultVertexFormats.POSITION_TEX);
+			tesselator12.vertexUV(-8.0F, -2.0F, 0.0F, 0.0F, f3);
+			tesselator12.vertexUV(8.0F, -2.0F, 0.0F, translation, f3);
+			tesselator12.vertexUV(8.0F, 2.0F, 0.0F, translation, f4);
+			tesselator12.vertexUV(-8.0F, 2.0F, 0.0F, 0.0F, f4);
+			tesselator12.end();
 		}
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -161,5 +197,18 @@ public class Arrow extends Entity {
 
 	public void awardKillScore(Entity entity1, int i2) {
 		this.owner.awardKillScore(entity1, i2);
+	}
+
+	public Entity getOwner() {
+		return this.owner;
+	}
+
+	public void playerTouch(Player player1) {
+		if(this.hasHit && this.owner == player1 && player1.arrows < 99) {
+			this.level.addEntity(new TakeEntityAnim(this.level, this, player1));
+			++player1.arrows;
+			this.remove();
+		}
+
 	}
 }

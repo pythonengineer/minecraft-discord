@@ -7,56 +7,11 @@ import url from "url";
 import path from "path";
 import fs from "fs";
 import mime from "mime";
-import png from "pngjs";
 import { WebSocketServer } from "ws";
 
 let webServer, wsServer, source_host, source_port, target_host, target_port, argv = null, onConnectedCallback = null, onDisconnectedCallback = null;
 
 const app = express();
-
-class Packet {
-    constructor(id, length) {
-        this.id = id;
-        this.length = length;
-    }
-
-    getId() {
-        return this.id;
-    }
-
-    getLength() {
-        return this.length;
-    }
-}
-
-class PacketRegistry {
-    static #packets = new Map();
-
-    static register(packetClass) {
-        PacketRegistry.#packets.set(packetClass.getId(), packetClass);
-    }
-
-    static getPacket(id) {
-        return PacketRegistry.#packets.get(id);
-    }
-}
-
-PacketRegistry.register(new Packet(0, 130));
-PacketRegistry.register(new Packet(1, 0));
-PacketRegistry.register(new Packet(2, 0));
-PacketRegistry.register(new Packet(3, 1027));
-PacketRegistry.register(new Packet(4, 6));
-PacketRegistry.register(new Packet(5, 8));
-PacketRegistry.register(new Packet(6, 7));
-PacketRegistry.register(new Packet(7, 73));
-PacketRegistry.register(new Packet(8, 9));
-PacketRegistry.register(new Packet(9, 6));
-PacketRegistry.register(new Packet(10, 4));
-PacketRegistry.register(new Packet(11, 3));
-PacketRegistry.register(new Packet(12, 1));
-PacketRegistry.register(new Packet(13, 65));
-PacketRegistry.register(new Packet(14, 64));
-PacketRegistry.register(new Packet(15, 1090));
 
 let tokens = new Set();
 
@@ -81,77 +36,6 @@ fs.readFile('aliases.txt', 'utf8', (err, data) => {
     });
 });
 
-async function getSkin(username) {
-    const filePath = `skincache/${username}.png`;
-    let skinBuffer;
-    try {
-        const buffer = fs.readFileSync(filePath);
-        skinBuffer = png.PNG.sync.read(buffer).data;
-        console.log(`retrieved ${username} skin from cache`);
-    } catch (err) {
-        let url = await fetch(`https://playerdb.co/api/player/minecraft/${username}`)
-            .then(response => response.json())
-            .then(data => {
-                return data.data.player.skin_texture
-            })
-            .catch((e) => {
-            })
-        const image = await fetch(url)
-        const imageBlob = await image.blob()
-        skinBuffer = await imageBlob.arrayBuffer();
-        const buffer = Buffer.from(skinBuffer);
-        fs.writeFile(filePath, buffer, (err) => {
-            if (err) {
-                console.error(`error writing ${username} skin`);
-            } else {
-                console.log(`caching ${username} skin`);
-            }
-        });
-        skinBuffer = png.PNG.sync.read(buffer).data;
-    }
-
-    return new Uint8Array(skinBuffer);
-}
-
-async function handlePacket(packet, data, username) {
-    try {
-        if (packet == 7) {
-            let name = data.toString('utf8', 2, 66).trimEnd();
-            if (name != username) {
-                let arr = await getSkin(name);
-                let size = arr.length;
-                let buffer = Buffer.alloc(0);
-                while (arr.length > 0) {
-                    let buf = Buffer.alloc(1091);
-
-                    buf[0] = 15;
-                    for (let i = 0; i < 64; i++) {
-                        buf[i + 1] = 32;
-                    }
-                    for (let i = 0; i < name.length; i++) {
-                        buf[i + 1] = name.charCodeAt(i);
-                    }
-
-                    let len = arr.length > 1024 ? 1024 : arr.length;
-                    buf.writeInt16BE(size, 65);
-                    for (let i = 0; i < len; i++) {
-                        buf[i + 67] = arr[i];
-                    }
-
-                    buffer = Buffer.concat([buffer, buf]);
-
-                    if (arr.length == len) {
-                        return buffer;
-                    } else {
-                        arr = arr.subarray(len);
-                    }
-                }
-            }
-        }
-    } catch (e) {
-    }
-}
-
 function end(client, target) {
     if (target != null) {
         target.end();
@@ -173,7 +57,6 @@ const new_client = function (client, req) {
     };
     console.log('WebSocket connection from: ' + clientAddr);
     let hasAuthed = false;
-    let remainingBuf = Buffer.alloc(0);
     const target = net.createConnection(target_port, target_host, function () {
         console.log('connected to target');
         if (onConnectedCallback) {
@@ -187,37 +70,7 @@ const new_client = function (client, req) {
     });
     target.on('data', function (data) {
         try {
-            data = Buffer.concat([remainingBuf, data]);
-            let packet = data.readUint8(0);
-            handlePacket(packet, data, username).then(result => {
-                if (result != null) {
-                    remainingBuf = Buffer.concat([remainingBuf, result]);
-                }
-            });
-            let length = PacketRegistry.getPacket(packet).getLength() + 1;
-            while (data.length >= length) {
-                if (data.length > length) {
-                    const buf = data.subarray(0, length);
-                    client.send(buf);
-                    data = data.subarray(length);
-                    packet = data.readUint8(0);
-                    handlePacket(packet, data, username).then(result => {
-                        if (result != null) {
-                            remainingBuf = Buffer.concat([remainingBuf, result]);
-                        }
-                    });
-                    length = PacketRegistry.getPacket(packet).getLength() + 1;
-                }
-                if (data.length <= length) {
-                    if (data.length < length) {
-                        remainingBuf = data;
-                    } else {
-                        client.send(data);
-                        remainingBuf = Buffer.alloc(0);
-                    }
-                    break
-                }
-            }
+            client.send(data);
         } catch (e) {
             log(e);
             log("Client closed, cleaning up target");

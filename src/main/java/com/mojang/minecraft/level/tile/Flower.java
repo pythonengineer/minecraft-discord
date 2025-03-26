@@ -32,7 +32,7 @@ public class Flower extends Tile {
 	}
 
 	/**
-	 * NOT OFFICIAL
+     * not official
 	 */
 	private void renderFlower(Tesselator t, float x, float y, float z) {
 		int i15 = this.getTexture(15);

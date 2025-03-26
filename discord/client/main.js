@@ -6,30 +6,45 @@ let auth;
 
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-function startClient() {
-  setupDiscordSdk().then(() => {
-    console.log("Discord SDK is authenticated");
-    const server =
-        location.host === "ws://localhost" ? `ws://localhost` : `wss://${location.host}/.proxy/minecraft`;
-    window.minecraftOpts = {
-        container: "game_frame",
-        crashOnUncaughtExceptions: true,
-        assetUrlPrefix: ".proxy/",
-        username: auth.user.username.slice(0, 16),
-        server: server,
-        mpPass: auth.access_token
-    };
-    main();
-  });
-}
-
-function startGame() {
+function startGame(name) {
   window.minecraftOpts = {
       container: "game_frame",
       crashOnUncaughtExceptions: true,
-      assetUrlPrefix: ".proxy/"
+      assetUrlPrefix: ".proxy/",
+      username: name.slice(0, 16),
+      //server: server,
+      //mpPass: auth.access_token
   };
   main();
+}
+
+function startClient() {
+  setupDiscordSdk().then(() => {
+    console.log("Discord SDK is authenticated");
+    //const server =
+    //    location.host === "ws://localhost" ? `ws://localhost` : `wss://${location.host}/.proxy/minecraft`;
+    let nameMap = {};
+    fetch('aliases.txt')
+      .then((response) => response.text())
+      .then((data) => {
+          const lines = data.trim().split('\n');
+          lines.forEach(line => {
+              if (!line.startsWith('#')) {
+                  const [key, value] = line.split('=');
+                  nameMap[key.trim()] = value.trim();
+              }
+          });
+          if (auth.user.username in nameMap) {
+              startGame(nameMap[auth.user.username]);
+          } else {
+              startGame(auth.user.username);
+          }
+      })
+      .catch((err) => {
+          console.error('Error reading names file:', err);
+          startGame(auth.user.username);
+      });
+  });
 }
 
 function isAndroid() {
@@ -39,11 +54,11 @@ function isAndroid() {
 if (isAndroid()) {
   document.addEventListener('click', function() {
     document.getElementById('android-message').style.display = 'none';
-    startGame();
+    startClient();
   });
 } else {
   document.getElementById('android-message').style.display = 'none';
-  startGame();
+  startClient();
 }
 
 async function setupDiscordSdk() {

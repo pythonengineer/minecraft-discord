@@ -6,6 +6,10 @@ public final class DeathScreen extends Screen {
     public final void init() {
         this.buttons.clear();
         this.buttons.add(new Button(1, this.width / 2 - 100, this.height / 4 + 72, "Generate new level..."));
+        this.buttons.add(new Button(2, this.width / 2 - 100, this.height / 4 + 96, "Load level.."));
+        //if(this.minecraft.user == null) {
+        //    ((Button)this.buttons.get(2)).enabled = false;
+        //}
     }
 
     protected final void buttonClicked(Button button) {
@@ -15,6 +19,10 @@ public final class DeathScreen extends Screen {
 
         if(button.id == 1) {
             this.minecraft.setScreen(new NewLevelScreen(this));
+        }
+
+        if(button.id == 2) {// && this.minecraft.user != null) {
+            this.minecraft.setScreen(new LoadLevelScreen(this));
         }
 
     }

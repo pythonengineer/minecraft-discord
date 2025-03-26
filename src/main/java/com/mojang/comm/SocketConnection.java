@@ -9,15 +9,12 @@ import com.mojang.minecraft.net.Packet;
 
 import net.lax1dude.eaglercraft.internal.IWebSocketClient;
 import net.lax1dude.eaglercraft.internal.PlatformNetworking;
-import net.lax1dude.eaglercraft.opengl.ImageData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 
 public final class SocketConnection {
     public volatile boolean connected;
@@ -27,7 +24,6 @@ public final class SocketConnection {
     public Client client;
     private boolean initialized = false;
     private byte[] stringPacket = new byte[64];
-    private HashMap<String,ByteArrayOutputStream> skinBuffer = new HashMap<String,ByteArrayOutputStream>();
 
     public SocketConnection(String ip, int port) throws IOException {
         if (port != 0) {
@@ -248,42 +244,6 @@ public final class SocketConnection {
                                     } else if(packet3 == Packet.KICK_PLAYER) {
                                         this.client.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
                                         this.disconnect();
-                                    } else if(packet3 == Packet.PLAYER_SKIN) {
-                                        String name = (String)object11[0];
-                                        if(!this.skinBuffer.containsKey(name)) {
-                                            this.skinBuffer.put(name, new ByteArrayOutputStream());
-                                        }
-                                        short len = ((Short)object11[1]).shortValue();
-                                        byte[] bytes = (byte[])((byte[])object11[2]);
-                                        ByteArrayOutputStream os = this.skinBuffer.get(name);
-                                        os.write(bytes, 0, bytes.length);
-                                        byte[] texBytes = os.toByteArray();
-                                        if(texBytes.length == len) {
-                                            NetworkPlayer player = null;
-                                            Iterator<NetworkPlayer> itr = this.client.players.values().iterator();
-                                            while (itr.hasNext()) {
-                                                NetworkPlayer p = itr.next();
-                                                if (p.name.equals(name)) {
-                                                    player = p;
-                                                    break;
-                                                }
-                                            }
-                                            if (player != null) {
-                                                this.skinBuffer.remove(name);
-                                                int[] skin = new int[len / 4];
-                                                for (int i = 0; i < skin.length; ++i)
-                                                {
-                                                    int r = texBytes[i * 4 + 0] & 0xFF;
-                                                    int g = texBytes[i * 4 + 1] & 0xFF;
-                                                    int b = texBytes[i * 4 + 2] & 0xFF;
-                                                    int a = texBytes[i * 4 + 3] & 0xFF;
-                                                    int color = (a << 24) | (r << 16) | (g << 8) | b;
-                                                    skin[i] = (color & 0xFF00FF00) | ((color & 0x00FF0000) >>> 16) | ((color & 0x000000FF) << 16);
-                                                }
-                                                ImageData tex = new ImageData(64, 64, skin, true).getSubImage(0, 0, 64, 32);
-                                                player.newTexture = tex;
-                                            }
-                                        }
                                     }
                                 }
                             }

@@ -5,11 +5,14 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWNativeEGL.*;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -645,5 +648,30 @@ public class PlatformRuntime {
 
     public static boolean immediateContinueSupported() {
         return false;
+    }
+
+    public static byte[] downloadRemoteURL(String assetPackageURI) {
+        try {
+            URL url = new URL(assetPackageURI);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                try (InputStream in = connection.getInputStream()) {
+                    byte[] buffer = new byte[1024];
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        bos.write(buffer, 0, bytesRead);
+                    }
+                    return bos.toByteArray();
+                }
+            } else {
+                throw new IOException("Failed to fetch data. Response code: " + responseCode);
+            }
+        } catch (IOException exc) {
+            exc.printStackTrace();
+            return null;
+        }
     }
 }

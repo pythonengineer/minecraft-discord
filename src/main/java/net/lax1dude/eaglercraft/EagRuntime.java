@@ -197,6 +197,10 @@ public class EagRuntime {
         }
     };
 
+    public static byte[] downloadRemoteURL(String assetPackageURI) {
+        return PlatformRuntime.downloadRemoteURL(assetPackageURI);
+    }
+
     public static void debugPrintStackTraceToSTDERR(Throwable t) {
         debugPrintStackTraceToSTDERR0("", t);
         Throwable c = t.getCause();

@@ -5,104 +5,229 @@ import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.renderer.Frustum;
 import com.mojang.minecraft.renderer.Textures;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class BlockMap {
-    public int width;
-    public int depth;
-    public int height;
-    Slot slot = new Slot(this);
-    Slot slot2 = new Slot(this);
-    public List[] entityGrid;
-    public List all = new ArrayList();
-    List tmp = new ArrayList();
+public class BlockMap implements Serializable {
+	public static final long serialVersionUID = 0L;
+	private int width;
+	private int depth;
+	private int height;
+	private BlockMap.Slot slot = new BlockMap.Slot();
+	private BlockMap.Slot slot2 = new BlockMap.Slot();
+	public List[] entityGrid;
+	public List all = new ArrayList();
+	private List tmp = new ArrayList();
 
-    public BlockMap(int w, int d, int h) {
-        this.width = w / 16;
-        this.depth = d / 16;
-        this.height = h / 16;
-        if(this.width == 0) {
-            this.width = 1;
-        }
+	public BlockMap(int w, int d, int h) {
+		this.width = w / 16;
+		this.depth = d / 16;
+		this.height = h / 16;
+		if(this.width == 0) {
+			this.width = 1;
+		}
 
-        if(this.depth == 0) {
-            this.depth = 1;
-        }
+		if(this.depth == 0) {
+			this.depth = 1;
+		}
 
-        if(this.height == 0) {
-            this.height = 1;
-        }
+		if(this.height == 0) {
+			this.height = 1;
+		}
 
-        this.entityGrid = new ArrayList[this.width * this.depth * this.height];
+		this.entityGrid = new ArrayList[this.width * this.depth * this.height];
 
-        for(w = 0; w < this.width; ++w) {
-            for(d = 0; d < this.depth; ++d) {
-                for(h = 0; h < this.height; ++h) {
-                    this.entityGrid[(h * this.depth + d) * this.width + w] = new ArrayList();
-                }
-            }
-        }
+		for(w = 0; w < this.width; ++w) {
+			for(d = 0; d < this.depth; ++d) {
+				for(h = 0; h < this.height; ++h) {
+					this.entityGrid[(h * this.depth + d) * this.width + w] = new ArrayList();
+				}
+			}
+		}
 
-    }
+	}
 
-    public final List getEntities(Entity entity, float x0, float y0, float z0, float x1, float y2, float z2, List entities) {
-        Slot slot9 = this.slot.init(x0, y0, z0);
-        Slot slot10 = this.slot2.init(x1, y2, z2);
+	public void insert(Entity entity) {
+		this.all.add(entity);
+		this.slot.init(entity.x, entity.y, entity.z).add(entity);
+		entity.xOld = entity.x;
+		entity.yOld = entity.y;
+		entity.zOld = entity.z;
+		entity.blockMap = this;
+	}
 
-        for(int i11 = slot9.xSlot - 1; i11 <= slot10.xSlot + 1; ++i11) {
-            for(int i12 = slot9.ySlot - 1; i12 <= slot10.ySlot + 1; ++i12) {
-                for(int i13 = slot9.zSlot - 1; i13 <= slot10.zSlot + 1; ++i13) {
-                    if(i11 >= 0 && i12 >= 0 && i13 >= 0 && i11 < this.width && i12 < this.depth && i13 < this.height) {
-                        List list14 = this.entityGrid[(i13 * this.depth + i12) * this.width + i11];
+	public void remove(Entity entity) {
+		this.slot.init(entity.xOld, entity.yOld, entity.zOld).remove(entity);
+		this.all.remove(entity);
+	}
 
-                        for(int i15 = 0; i15 < list14.size(); ++i15) {
-                            Entity entity16;
-                            if((entity16 = (Entity)list14.get(i15)) != entity && entity16.intersects(x0, y0, z0, x1, y2, z2)) {
-                                entities.add(entity16);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+	public void moved(Entity entity) {
+		BlockMap.Slot blockMap$Slot2 = this.slot.init(entity.xOld, entity.yOld, entity.zOld);
+		BlockMap.Slot blockMap$Slot3 = this.slot2.init(entity.x, entity.y, entity.z);
+		if(!blockMap$Slot2.equals(blockMap$Slot3)) {
+			blockMap$Slot2.remove(entity);
+			blockMap$Slot3.add(entity);
+			entity.xOld = entity.x;
+			entity.yOld = entity.y;
+			entity.zOld = entity.z;
+		}
+	}
 
-        return entities;
-    }
+	public List getEntities(Entity entity, float x0, float y0, float z0, float x1, float y1, float z1) {
+		this.tmp.clear();
+		return this.getEntities(entity, x0, y0, z0, x1, y1, z1, this.tmp);
+	}
 
-    public final List getEntities(Entity entity, AABB box) {
-        this.tmp.clear();
-        return this.getEntities(entity, box.x0, box.y0, box.z0, box.x1, box.y1, box.z1, this.tmp);
-    }
+	public List getEntities(Entity entity, float x0, float y0, float z0, float x1, float y1, float z1, List entities) {
+		BlockMap.Slot blockMap$Slot9 = this.slot.init(x0, y0, z0);
+		BlockMap.Slot blockMap$Slot10 = this.slot2.init(x1, y1, z1);
 
-    public final void render(Frustum frustrum, Textures textures, float a) {
-        for(int i4 = 0; i4 < this.width; ++i4) {
-            float f5 = (float)((i4 << 4) - 2);
-            float f6 = (float)((i4 + 1 << 4) + 2);
+		for(int i11 = blockMap$Slot9.xSlot - 1; i11 <= blockMap$Slot10.xSlot + 1; ++i11) {
+			for(int i12 = blockMap$Slot9.ySlot - 1; i12 <= blockMap$Slot10.ySlot + 1; ++i12) {
+				for(int i13 = blockMap$Slot9.zSlot - 1; i13 <= blockMap$Slot10.zSlot + 1; ++i13) {
+					if(i11 >= 0 && i12 >= 0 && i13 >= 0 && i11 < this.width && i12 < this.depth && i13 < this.height) {
+						List list14 = this.entityGrid[(i13 * this.depth + i12) * this.width + i11];
 
-            for(int i7 = 0; i7 < this.depth; ++i7) {
-                float f8 = (float)((i7 << 4) - 2);
-                float f9 = (float)((i7 + 1 << 4) + 2);
+						for(int i15 = 0; i15 < list14.size(); ++i15) {
+							Entity entity16;
+							if((entity16 = (Entity)list14.get(i15)) != entity && entity16.intersects(x0, y0, z0, x1, y1, z1)) {
+								entities.add(entity16);
+							}
+						}
+					}
+				}
+			}
+		}
 
-                for(int i10 = 0; i10 < this.height; ++i10) {
-                    List list11;
-                    if((list11 = this.entityGrid[(i10 * this.depth + i7) * this.width + i4]).size() != 0) {
-                        float f12 = (float)((i10 << 4) - 2);
-                        float f13 = (float)((i10 + 1 << 4) + 2);
-                        boolean z14;
-                        boolean z15 = (z14 = frustrum.cubeInFrustum(f5, f8, f12, f6, f9, f13)) && frustrum.cubeFullyInFrustrum(f5, f8, f12, f6, f9, f13);
-                        if(z14) {
-                            for(int i16 = 0; i16 < list11.size(); ++i16) {
-                                Entity entity17 = (Entity)list11.get(i16);
-                                if(z15 || frustrum.isVisible(entity17.bb)) {
-                                    ((Entity)list11.get(i16)).render(textures, a);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+		return entities;
+	}
 
-    }
+	public void clear() {
+		for(int i1 = 0; i1 < this.width; ++i1) {
+			for(int i2 = 0; i2 < this.depth; ++i2) {
+				for(int i3 = 0; i3 < this.height; ++i3) {
+					this.entityGrid[(i3 * this.depth + i2) * this.width + i1].clear();
+				}
+			}
+		}
+
+	}
+
+	public List getEntities(Entity entity, AABB box) {
+		this.tmp.clear();
+		return this.getEntities(entity, box.x0, box.y0, box.z0, box.x1, box.y1, box.z1, this.tmp);
+	}
+
+	public List getEntities(Entity entity, AABB box, List entities) {
+		return this.getEntities(entity, box.x0, box.y0, box.z0, box.x1, box.y1, box.z1, entities);
+	}
+
+	public void tickAll() {
+		for(int i1 = 0; i1 < this.all.size(); ++i1) {
+			Entity entity2;
+			(entity2 = (Entity)this.all.get(i1)).tick();
+			if(entity2.removed) {
+				this.all.remove(i1--);
+				this.slot.init(entity2.xOld, entity2.yOld, entity2.zOld).remove(entity2);
+			} else {
+				int i3 = (int)(entity2.xOld / 16.0F);
+				int i4 = (int)(entity2.yOld / 16.0F);
+				int i5 = (int)(entity2.zOld / 16.0F);
+				int i6 = (int)(entity2.x / 16.0F);
+				int i7 = (int)(entity2.y / 16.0F);
+				int i8 = (int)(entity2.z / 16.0F);
+				if(i3 != i6 || i4 != i7 || i5 != i8) {
+					this.moved(entity2);
+				}
+			}
+		}
+
+	}
+
+	public void render(Frustum frustrum, Textures textures, float a_) {
+		for(int i4 = 0; i4 < this.width; ++i4) {
+			float f5 = (float)((i4 << 4) - 2);
+			float f6 = (float)((i4 + 1 << 4) + 2);
+
+			for(int i7 = 0; i7 < this.depth; ++i7) {
+				float f8 = (float)((i7 << 4) - 2);
+				float f9 = (float)((i7 + 1 << 4) + 2);
+
+				for(int i10 = 0; i10 < this.height; ++i10) {
+					List list11;
+					if((list11 = this.entityGrid[(i10 * this.depth + i7) * this.width + i4]).size() != 0) {
+						float f12 = (float)((i10 << 4) - 2);
+						float f13 = (float)((i10 + 1 << 4) + 2);
+						boolean z14;
+						boolean z15 = (z14 = frustrum.cubeInFrustum(f5, f8, f12, f6, f9, f13)) && frustrum.cubeFullyInFrustrum(f5, f8, f12, f6, f9, f13);
+						if(z14) {
+							for(int i16 = 0; i16 < list11.size(); ++i16) {
+								Entity entity17 = (Entity)list11.get(i16);
+								if(z15 || frustrum.isVisible(entity17.bb)) {
+									((Entity)list11.get(i16)).render(textures, a_);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	class Slot implements Serializable {
+		public static final long serialVersionUID = 0L;
+		private int xSlot;
+		private int ySlot;
+		private int zSlot;
+
+		private Slot() {
+		}
+
+		public BlockMap.Slot init(float f1, float f2, float f3) {
+			this.xSlot = (int)(f1 / 16.0F);
+			this.ySlot = (int)(f2 / 16.0F);
+			this.zSlot = (int)(f3 / 16.0F);
+			if(this.xSlot < 0) {
+				this.xSlot = 0;
+			}
+
+			if(this.ySlot < 0) {
+				this.ySlot = 0;
+			}
+
+			if(this.zSlot < 0) {
+				this.zSlot = 0;
+			}
+
+			if(this.xSlot >= BlockMap.this.width) {
+				this.xSlot = BlockMap.this.width - 1;
+			}
+
+			if(this.ySlot >= BlockMap.this.depth) {
+				this.ySlot = BlockMap.this.depth - 1;
+			}
+
+			if(this.zSlot >= BlockMap.this.height) {
+				this.zSlot = BlockMap.this.height - 1;
+			}
+
+			return this;
+		}
+
+		public void add(Entity entity1) {
+			if(this.xSlot >= 0 && this.ySlot >= 0 && this.zSlot >= 0) {
+				BlockMap.this.entityGrid[(this.zSlot * BlockMap.this.depth + this.ySlot) * BlockMap.this.width + this.xSlot].add(entity1);
+			}
+
+		}
+
+		public void remove(Entity entity1) {
+			if(this.xSlot >= 0 && this.ySlot >= 0 && this.zSlot >= 0) {
+				BlockMap.this.entityGrid[(this.zSlot * BlockMap.this.depth + this.ySlot) * BlockMap.this.width + this.xSlot].remove(entity1);
+			}
+
+		}
+	}
 }

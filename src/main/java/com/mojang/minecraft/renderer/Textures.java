@@ -47,6 +47,15 @@ public class Textures {
         }
     }
 
+    public final int loadTexture(ImageData bufferedImage) {
+        this.ib.clear();
+        GL11.glGenTextures(this.ib);
+        int i2 = this.ib.get(0);
+        this.addTexture(bufferedImage, i2);
+        this.pixelsMap.put(i2, bufferedImage);
+        return i2;
+    }
+
     public void addTexture(ImageData bufferedImage, int textureId) {
         GL11.glBindTexture(textureId);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);

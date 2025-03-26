@@ -15,8 +15,8 @@ public final class ParticleEngine {
 	public List particles = new ArrayList();
 	private Textures textures;
 
-	public ParticleEngine(Level level, Textures t) {
-		this.textures = t;
+	public ParticleEngine(Level level, Textures textures) {
+		this.textures = textures;
 		level.particleEngine = this;
 	}
 
@@ -35,7 +35,7 @@ public final class ParticleEngine {
 
 	}
 
-	public final void render(Player player, float a) {
+	public final void render(Player player, float translation) {
 		if(this.particles.size() != 0) {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			int i3 = this.textures.loadTexture("/terrain.png");
@@ -50,9 +50,9 @@ public final class ParticleEngine {
 
 			for(int i8 = 0; i8 < this.particles.size(); ++i8) {
 				Particle particle9 = (Particle)this.particles.get(i8);
-				float f10 = 0.6F * particle9.getBrightness(a);
+				float f10 = 0.6F * particle9.getBrightness(translation);
 				tesselator7.color(f10, f10, f10);
-				particle9.render(tesselator7, a, f12, f11, f4, f5, f6);
+				particle9.render(tesselator7, translation, f12, f11, f4, f5, f6);
 			}
 
 			tesselator7.end();

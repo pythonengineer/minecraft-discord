@@ -442,9 +442,9 @@ public class Tile {
 	public void onTileRemoved(Level level, int x, int y, int z) {
 	}
 
-	public int getResourceCount() {
-		return 1;
-	}
+    public int resourceCount() {
+        return 1;
+    }
 
 	public int getId() {
 		return this.id;
@@ -459,7 +459,7 @@ public class Tile {
 	}
 
 	public void wasExploded(Level level, int x, int y, int z, float chance) {
-		int i6 = this.getResourceCount();
+		int i6 = this.resourceCount();
 
 		for(int i7 = 0; i7 < i6; ++i7) {
 			if(random.nextFloat() <= chance) {

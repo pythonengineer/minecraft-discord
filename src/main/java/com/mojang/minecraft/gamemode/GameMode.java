@@ -17,9 +17,6 @@ public class GameMode {
         this.destroyBlock(x, y, z);
     }
 
-    /**
-     * not official
-     */
     public boolean removeResource(int quantity) {
         return true;
     }
@@ -42,7 +39,7 @@ public class GameMode {
 
     }
 
-    public void stopDestroyBlock(int x, int y, int z, int id) {
+    public void stopDestroyingBlock(int x, int y, int z, int id) {
     }
 
     public void tick() {

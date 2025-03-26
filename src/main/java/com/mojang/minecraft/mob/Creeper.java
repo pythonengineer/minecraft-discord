@@ -2,18 +2,45 @@ package com.mojang.minecraft.mob;
 
 import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.level.Level;
-import com.mojang.minecraft.model.BaseModel;
-import com.mojang.minecraft.model.CreeperModel;
+import com.mojang.minecraft.level.tile.Tile;
+import com.mojang.minecraft.mob.ai.BasicAttackAI;
+import com.mojang.minecraft.particle.Particle;
 
 public class Creeper extends Mob {
-	private static BaseModel CREEPER_MODEL = new CreeperModel();
+	public static final long serialVersionUID = 0L;
 
 	public Creeper(Level level, float x, float y, float z) {
 		super(level);
 		this.heightOffset = 1.62F;
-		this.model = CREEPER_MODEL;
+		this.modelName = "creeper";
 		this.textureName = "/mob/creeper.png";
-		this.ai = new CreeperAI(this);
+		this.ai = new BasicAttackAI() {
+			public final boolean attack(Entity entity1) {
+				if(!super.attack(entity1)) {
+					return false;
+				} else {
+					this.mob.hurt(entity1, 6);
+					return true;
+				}
+			}
+
+			public final void beforeRemove() {
+				float f1 = 4.0F;
+				this.level.explode(this.mob, this.mob.x, this.mob.y, this.mob.z, f1);
+
+				for(int i2 = 0; i2 < 500; ++i2) {
+					float f3 = (float)this.random.nextGaussian() * f1 / 4.0F;
+					float f4 = (float)this.random.nextGaussian() * f1 / 4.0F;
+					float f5 = (float)this.random.nextGaussian() * f1 / 4.0F;
+					float f6 = (float)Math.sqrt((double)(f3 * f3 + f4 * f4 + f5 * f5));
+					float f7 = f3 / f6 / f6;
+					float f8 = f4 / f6 / f6;
+					f6 = f5 / f6 / f6;
+					this.level.particleEngine.addParticle(new Particle(this.level, this.mob.x + f3, this.mob.y + f4, this.mob.z + f5, f7, f8, f6, Tile.leaf));
+				}
+
+			}
+		};
 		this.ai.defaultLookAngle = 45;
 		this.setPos(x, y, z);
 	}

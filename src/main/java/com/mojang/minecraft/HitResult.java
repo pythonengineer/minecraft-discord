@@ -1,6 +1,6 @@
 package com.mojang.minecraft;
 
-import com.mojang.minecraft.character.Vec3;
+import com.mojang.minecraft.model.Vec3;
 
 public final class HitResult {
     public int type;
@@ -20,8 +20,8 @@ public final class HitResult {
         this.vec = new Vec3(hitVec.x, hitVec.y, hitVec.z);
     }
 
-    public HitResult(Entity target) {
+    public HitResult(Entity entity) {
         this.type = 1;
-        this.entity = target;
+        this.entity = entity;
     }
 }

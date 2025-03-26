@@ -1,12 +1,11 @@
 package com.mojang.minecraft.renderer;
 
 import com.mojang.minecraft.Minecraft;
-import com.mojang.minecraft.character.Vec3;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.level.tile.Tile;
+import com.mojang.minecraft.model.Vec3;
 import com.mojang.minecraft.player.Player;
-import com.mojang.minecraft.tilerenderer.TileRenderer;
 
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
@@ -18,16 +17,16 @@ public final class GameRenderer {
     public boolean displayActive = false;
     public float renderDistance = 0.0F;
     public TileRenderer tileRenderer;
-    private volatile int unusedInt1 = 0;
-    private volatile int unusedInt2 = 0;
+    private volatile int u1 = 0;
+    private volatile int u2 = 0;
     private FloatBuffer lb = BufferUtils.createFloatBuffer(16);
     public float fogRed;
     public float fogGreen;
     public float fogBlue;
 
-    public GameRenderer(Minecraft mc) {
-        this.minecraft = mc;
-        this.tileRenderer = new TileRenderer(mc);
+    public GameRenderer(Minecraft minecraft) {
+        this.minecraft = minecraft;
+        this.tileRenderer = new TileRenderer(minecraft);
     }
 
     public void renderHurtFrames(float a) {
@@ -81,7 +80,7 @@ public final class GameRenderer {
         }
     }
 
-    public final void init() {
+    public final void tick() {
         this.minecraft.setupOrthoCamera();
     }
 
