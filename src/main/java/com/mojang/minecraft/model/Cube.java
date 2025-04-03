@@ -92,14 +92,32 @@ public final class Cube {
 				this.translateTo(translation);
 			}
 
-			float f2 = 57.29578F;
-			GL11.glPushMatrix();
-			GL11.glTranslatef(this.x * translation, this.y * translation, this.z * translation);
-			GL11.glRotatef(this.zRot * f2, 0.0F, 0.0F, 1.0F);
-			GL11.glRotatef(this.yRot * f2, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(this.xRot * f2, 1.0F, 0.0F, 0.0F);
-			GL11.glCallList(this.list);
-			GL11.glPopMatrix();
+			if(this.xRot == 0.0F && this.yRot == 0.0F && this.zRot == 0.0F) {
+				if(this.x == 0.0F && this.y == 0.0F && this.z == 0.0F) {
+					GL11.glCallList(this.list);
+				} else {
+					GL11.glTranslatef(this.x * translation, this.y * translation, this.z * translation);
+					GL11.glCallList(this.list);
+					GL11.glTranslatef(-this.x * translation, -this.y * translation, -this.z * translation);
+				}
+			} else {
+				GL11.glPushMatrix();
+				GL11.glTranslatef(this.x * translation, this.y * translation, this.z * translation);
+				if(this.zRot != 0.0F) {
+					GL11.glRotatef(this.zRot * 57.29578F, 0.0F, 0.0F, 1.0F);
+				}
+
+				if(this.yRot != 0.0F) {
+					GL11.glRotatef(this.yRot * 57.29578F, 0.0F, 1.0F, 0.0F);
+				}
+
+				if(this.xRot != 0.0F) {
+					GL11.glRotatef(this.xRot * 57.29578F, 1.0F, 0.0F, 0.0F);
+				}
+
+				GL11.glCallList(this.list);
+				GL11.glPopMatrix();
+			}
 		}
 	}
 

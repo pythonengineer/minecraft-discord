@@ -141,6 +141,10 @@ public class AABB implements Serializable {
         return c.x1 > this.x0 && c.x0 < this.x1 ? (c.y1 > this.y0 && c.y0 < this.y1 ? c.z1 > this.z0 && c.z0 < this.z1 : false) : false;
     }
 
+    public boolean intersectsInner(AABB c) {
+        return c.x1 >= this.x0 && c.x0 <= this.x1 ? (c.y1 >= this.y0 && c.y0 <= this.y1 ? c.z1 >= this.z0 && c.z0 <= this.z1 : false) : false;
+    }
+
     public void move(float xa, float ya, float za) {
         this.x0 += xa;
         this.y0 += ya;
@@ -183,5 +187,50 @@ public class AABB implements Serializable {
         GL11.glVertex3f(this.x0, this.y0, this.z1);
         GL11.glVertex3f(this.x0, this.y1, this.z1);
         GL11.glEnd();
+    }
+
+    public float getSize() {
+        float f1 = this.x1 - this.x0;
+        float f2 = this.y1 - this.y0;
+        float f3 = this.z1 - this.z0;
+        return (f1 + f2 + f3) / 3.0F;
+    }
+
+    public AABB shrink(float xa, float ya, float za) {
+        float f4 = this.x0;
+        float f5 = this.y0;
+        float f6 = this.z0;
+        float f7 = this.x1;
+        float f8 = this.y1;
+        float f9 = this.z1;
+        if(xa < 0.0F) {
+            f4 -= xa;
+        }
+
+        if(xa > 0.0F) {
+            f7 -= xa;
+        }
+
+        if(ya < 0.0F) {
+            f5 -= ya;
+        }
+
+        if(ya > 0.0F) {
+            f8 -= ya;
+        }
+
+        if(za < 0.0F) {
+            f6 -= za;
+        }
+
+        if(za > 0.0F) {
+            f9 -= za;
+        }
+
+        return new AABB(f4, f5, f6, f7, f8, f9);
+    }
+
+    public AABB copy() {
+        return new AABB(this.x0, this.y0, this.z0, this.x1, this.y1, this.z1);
     }
 }

@@ -255,7 +255,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"0.25_05 SURVIVAL TEST\"\n");
+        str.append("minecraft.version = \"0.27 SURVIVAL TEST\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

@@ -52,7 +52,6 @@ public final class LevelLoaderListener {
             int i3 = Minecraft.scaledResolution.getScaledHeight();
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
             Tesselator tesselator4 = Tesselator.instance;
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
             int i5 = this.minecraft.textures.loadTexture("/dirt.png");
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, i5);
             float f8 = 32.0F;
@@ -79,8 +78,8 @@ public final class LevelLoaderListener {
                 tesselator4.vertex((float)(i5 + id), (float)(i6 + 2), 0.0F);
                 tesselator4.vertex((float)(i5 + id), (float)i6, 0.0F);
                 tesselator4.end();
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
             }
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
 
             this.minecraft.font.drawShadow(this.text, (i2 - this.minecraft.font.width(this.text)) / 2, i3 / 2 - 4 - 16, 0xFFFFFF);
             this.minecraft.font.drawShadow(this.title, (i2 - this.minecraft.font.width(this.title)) / 2, i3 / 2 - 4 + 8, 0xFFFFFF);

@@ -7,6 +7,8 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 public final class Mushroom extends Flower {
 	protected Mushroom(int i1, int i2) {
 		super(i1, i2);
+        float f3 = 0.2F;
+        this.setShape(0.5F - f3, 0.0F, 0.5F - f3, f3 + 0.5F, f3 * 2.0F, f3 + 0.5F);
 	}
 
 	public final void tick(Level level, int x, int y, int z, EaglercraftRandom random) {

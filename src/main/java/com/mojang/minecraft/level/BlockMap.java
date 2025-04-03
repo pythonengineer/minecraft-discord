@@ -1,6 +1,7 @@
 package com.mojang.minecraft.level;
 
 import com.mojang.minecraft.Entity;
+import com.mojang.minecraft.model.Vec3;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.renderer.Frustum;
 import com.mojang.minecraft.renderer.Textures;
@@ -145,27 +146,27 @@ public class BlockMap implements Serializable {
 
 	}
 
-	public void render(Frustum frustrum, Textures textures, float a_) {
-		for(int i4 = 0; i4 < this.width; ++i4) {
-			float f5 = (float)((i4 << 4) - 2);
-			float f6 = (float)((i4 + 1 << 4) + 2);
+	public void render(Vec3 v, Frustum frustum, Textures textures, float a_) {
+		for(int i5 = 0; i5 < this.width; ++i5) {
+			float f6 = (float)((i5 << 4) - 2);
+			float f7 = (float)((i5 + 1 << 4) + 2);
 
-			for(int i7 = 0; i7 < this.depth; ++i7) {
-				float f8 = (float)((i7 << 4) - 2);
-				float f9 = (float)((i7 + 1 << 4) + 2);
+			for(int i8 = 0; i8 < this.depth; ++i8) {
+				float f9 = (float)((i8 << 4) - 2);
+				float f10 = (float)((i8 + 1 << 4) + 2);
 
-				for(int i10 = 0; i10 < this.height; ++i10) {
-					List list11;
-					if((list11 = this.entityGrid[(i10 * this.depth + i7) * this.width + i4]).size() != 0) {
-						float f12 = (float)((i10 << 4) - 2);
-						float f13 = (float)((i10 + 1 << 4) + 2);
-						boolean z14;
-						boolean z15 = (z14 = frustrum.cubeInFrustum(f5, f8, f12, f6, f9, f13)) && frustrum.cubeFullyInFrustrum(f5, f8, f12, f6, f9, f13);
-						if(z14) {
-							for(int i16 = 0; i16 < list11.size(); ++i16) {
-								Entity entity17 = (Entity)list11.get(i16);
-								if(z15 || frustrum.isVisible(entity17.bb)) {
-									((Entity)list11.get(i16)).render(textures, a_);
+				for(int i11 = 0; i11 < this.height; ++i11) {
+					List list12;
+					if((list12 = this.entityGrid[(i11 * this.depth + i8) * this.width + i5]).size() != 0) {
+						float f13 = (float)((i11 << 4) - 2);
+						float f14 = (float)((i11 + 1 << 4) + 2);
+						if(frustum.cubeInFrustum(f6, f9, f13, f7, f10, f14)) {
+							boolean z16 = frustum.cubeFullyInFrustrum(f6, f9, f13, f7, f10, f14);
+
+							for(int i17 = 0; i17 < list12.size(); ++i17) {
+								Entity entity15;
+								if((entity15 = (Entity)list12.get(i17)).shouldRender(v) && (z16 || frustum.isVisible(entity15.bb))) {
+									entity15.render(textures, a_);
 								}
 							}
 						}

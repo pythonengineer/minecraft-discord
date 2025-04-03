@@ -5,12 +5,14 @@ import com.mojang.minecraft.HitResult;
 import com.mojang.minecraft.LevelLoaderListener;
 import com.mojang.minecraft.Minecraft;
 import com.mojang.minecraft.gui.Font;
+import com.mojang.minecraft.level.fx.Smolder;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.mob.Creeper;
 import com.mojang.minecraft.mob.Mob;
 import com.mojang.minecraft.mob.Pig;
 import com.mojang.minecraft.mob.Skeleton;
+import com.mojang.minecraft.mob.Spider;
 import com.mojang.minecraft.mob.Zombie;
 import com.mojang.minecraft.model.Vec3;
 import com.mojang.minecraft.particle.ParticleEngine;
@@ -149,7 +151,7 @@ public class Level implements Serializable {
                 for(i8 = this.depth - 1; i8 > 0 && !this.isLightBlocker(i5, i8, i6); --i8) {
                 }
 
-                this.heightMap[i5 + i6 * this.width] = i8 + 1;
+                this.heightMap[i5 + i6 * this.width] = i8;
                 if(i7 != i8) {
                     int i9 = i7 < i8 ? i7 : i8;
                     i7 = i7 > i8 ? i7 : i8;
@@ -199,17 +201,17 @@ public class Level implements Serializable {
             --i7;
         }
 
-        for(int i11 = i3; i11 < i4; ++i11) {
-            for(i3 = i5; i3 < i6; ++i3) {
-                for(int i9 = i7; i9 < i8; ++i9) {
-                    AABB aABB10;
-                    if(i11 >= 0 && i3 >= 0 && i9 >= 0 && i11 < this.width && i3 < this.depth && i9 < this.height) {
+        for(i3 = i3; i3 < i4; ++i3) {
+            for(int i9 = i5; i9 < i6; ++i9) {
+                for(int i10 = i7; i10 < i8; ++i10) {
+                    AABB aABB11;
+                    if(i3 >= 0 && i9 >= 0 && i10 >= 0 && i3 < this.width && i9 < this.depth && i10 < this.height) {
                         Tile tile12;
-                        if((tile12 = Tile.tiles[this.getTile(i11, i3, i9)]) != null && (aABB10 = tile12.getTileAABB(i11, i3, i9)) != null) {
-                            arrayList2.add(aABB10);
+                        if((tile12 = Tile.tiles[this.getTile(i3, i9, i10)]) != null && (aABB11 = tile12.getTileAABB(i3, i9, i10)) != null && c.intersectsInner(aABB11)) {
+                            arrayList2.add(aABB11);
                         }
-                    } else if((i11 < 0 || i3 < 0 || i9 < 0 || i11 >= this.width || i9 >= this.height) && (aABB10 = Tile.unbreakable.getTileAABB(i11, i3, i9)) != null) {
-                        arrayList2.add(aABB10);
+                    } else if((i3 < 0 || i9 < 0 || i10 < 0 || i3 >= this.width || i10 >= this.height) && (aABB11 = Tile.unbreakable.getTileAABB(i3, i9, i10)) != null && c.intersectsInner(aABB11)) {
+                        arrayList2.add(aABB11);
                     }
                 }
             }
@@ -708,14 +710,7 @@ public class Level implements Serializable {
                 int i8 = (int)Math.floor((double)v0.z);
                 int i9 = 20;
 
-                Vec3 vec320;
-                int i21;
-                byte b22;
-                do {
-                    if(i9-- < 0) {
-                        return null;
-                    }
-
+                while(i9-- >= 0) {
                     if(Float.isNaN(v0.x) || Float.isNaN(v0.y) || Float.isNaN(v0.z)) {
                         return null;
                     }
@@ -770,11 +765,12 @@ public class Level implements Serializable {
                     }
 
                     boolean z19 = false;
+                    byte b24;
                     if(f13 < f14 && f13 < f15) {
                         if(i3 > i6) {
-                            b22 = 4;
+                            b24 = 4;
                         } else {
-                            b22 = 5;
+                            b24 = 5;
                         }
 
                         v0.x = f10;
@@ -782,9 +778,9 @@ public class Level implements Serializable {
                         v0.z += f18 * f13;
                     } else if(f14 < f15) {
                         if(i4 > i7) {
-                            b22 = 0;
+                            b24 = 0;
                         } else {
-                            b22 = 1;
+                            b24 = 1;
                         }
 
                         v0.x += f16 * f14;
@@ -792,9 +788,9 @@ public class Level implements Serializable {
                         v0.z += f18 * f14;
                     } else {
                         if(i5 > i8) {
-                            b22 = 2;
+                            b24 = 2;
                         } else {
-                            b22 = 3;
+                            b24 = 3;
                         }
 
                         v0.x += f16 * f15;
@@ -802,26 +798,40 @@ public class Level implements Serializable {
                         v0.z = f12;
                     }
 
+                    Vec3 vec320;
                     i6 = (int)((vec320 = new Vec3(v0.x, v0.y, v0.z)).x = (float)Math.floor((double)v0.x));
-                    if(b22 == 5) {
+                    if(b24 == 5) {
                         --i6;
                         ++vec320.x;
                     }
 
                     i7 = (int)(vec320.y = (float)Math.floor((double)v0.y));
-                    if(b22 == 1) {
+                    if(b24 == 1) {
                         --i7;
                         ++vec320.y;
                     }
 
                     i8 = (int)(vec320.z = (float)Math.floor((double)v0.z));
-                    if(b22 == 3) {
+                    if(b24 == 3) {
                         --i8;
                         ++vec320.z;
                     }
-                } while((i21 = this.getTile(i6, i7, i8)) <= 0 || Tile.tiles[i21].getLiquidType() != Liquid.none);
 
-                return new HitResult(i6, i7, i8, b22, vec320);
+                    int i22 = this.getTile(i6, i7, i8);
+                    Tile tile23 = Tile.tiles[i22];
+                    if(i22 > 0 && tile23.getLiquidType() == Liquid.none) {
+                        if(tile23.isOpaque()) {
+                            return new HitResult(i6, i7, i8, b24, vec320);
+                        }
+
+                        HitResult hitResult21;
+                        if((hitResult21 = tile23.clip(i6, i7, i8, v0, v1)) != null) {
+                            return hitResult21;
+                        }
+                    }
+                }
+
+                return null;
             } else {
                 return null;
             }
@@ -869,7 +879,7 @@ public class Level implements Serializable {
                 loadingListener.setLoadingProgress(i5 * 100 / (count - 1));
             }
 
-            int i6 = this.random.nextInt(4);
+            int i6 = this.random.nextInt(5);
             int i7 = this.random.nextInt(this.width);
             int i8 = (int)(Math.min(this.random.nextFloat(), this.random.nextFloat()) * (float)this.depth);
             int i9 = this.random.nextInt(this.height);
@@ -921,6 +931,10 @@ public class Level implements Serializable {
 
                             if(i6 == 3) {
                                 object21 = new Creeper(this, f15, f16, f17);
+                            }
+
+                            if(i6 == 4) {
+                                object21 = new Spider(this, f15, f16, f17);
                             }
 
                             if(this.isFree(((Mob)object21).bb)) {
@@ -1028,10 +1042,18 @@ public class Level implements Serializable {
                     f15 = (float)i12 + 0.5F - x;
                     f16 = (float)i13 + 0.5F - y;
                     float f17 = (float)i14 + 0.5F - z;
-                    int i20;
-                    if(i12 >= 0 && i13 >= 0 && i14 >= 0 && i12 < this.width && i13 < this.depth && i14 < this.height && f15 * f15 + f16 * f16 + f17 * f17 < radius * radius && (i20 = this.getTile(i12, i13, i14)) > 0) {
-                        Tile.tiles[i20].wasExploded(this, i12, i13, i14, 0.3F);
-                        this.setTile(i12, i13, i14, 0);
+                    if(i12 >= 0 && i13 >= 0 && i14 >= 0 && i12 < this.width && i13 < this.depth && i14 < this.height && f15 * f15 + f16 * f16 + f17 * f17 < radius * radius) {
+                        int i20;
+                        if((i20 = this.getTile(i12, i13, i14)) > 0) {
+                            if(Tile.tiles[i20].isExplodeable()) {
+                                this.addEntity(new Smolder(this, i12, i13, i14));
+                                Tile.tiles[i20].spawnResources(this, i12, i13, i14, 0.3F);
+                                this.setTile(i12, i13, i14, 0);
+                                Tile.tiles[i20].wasExploded(this, i12, i13, i14);
+                            }
+                        } else {
+                            this.addEntity(new Smolder(this, i12, i13, i14));
+                        }
                     }
                 }
             }
@@ -1041,7 +1063,7 @@ public class Level implements Serializable {
 
         for(i13 = 0; i13 < list18.size(); ++i13) {
             Entity entity19;
-            if((f15 = (entity19 = (Entity)list18.get(i13)).distanceTo(entity) / radius) <= 1.0F) {
+            if((f15 = (entity19 = (Entity)list18.get(i13)).distanceTo(x, y, z) / radius) <= 1.0F) {
                 f16 = 1.0F - f15;
                 entity19.hurt(entity, (int)(f16 * 15.0F + 1.0F));
             }

@@ -4,7 +4,7 @@ import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.mob.ai.BasicAttackAI;
-import com.mojang.minecraft.particle.Particle;
+import com.mojang.minecraft.particle.TerrainParticle;
 
 public class Creeper extends Mob {
 	public static final long serialVersionUID = 0L;
@@ -36,25 +36,18 @@ public class Creeper extends Mob {
 					float f7 = f3 / f6 / f6;
 					float f8 = f4 / f6 / f6;
 					f6 = f5 / f6 / f6;
-					this.level.particleEngine.addParticle(new Particle(this.level, this.mob.x + f3, this.mob.y + f4, this.mob.z + f5, f7, f8, f6, Tile.leaf));
+                    this.level.particleEngine.addParticle(new TerrainParticle(this.level, this.mob.x + f3, this.mob.y + f4, this.mob.z + f5, f7, f8, f6, Tile.leaf));
 				}
 
 			}
 		};
 		this.ai.defaultLookAngle = 45;
+        this.deathScore = 200;
 		this.setPos(x, y, z);
 	}
 
 	public float getBrightness(float f1) {
 		float f2 = (float)(20 - this.health) / 20.0F;
 		return ((float)(Math.sin((double)((float)this.tickCount + f1)) * 0.5D + 0.5D) * f2 * 0.5F + 0.25F + f2 * 0.25F) * super.getBrightness(f1);
-	}
-
-	public void die(Entity entity1) {
-		if(entity1 != null) {
-			entity1.awardKillScore(this, 250);
-		}
-
-		super.die(entity1);
 	}
 }

@@ -59,7 +59,7 @@ public class BasicAI extends AI {
 			} else if(z9) {
 				mob2.yd += 0.04F;
 			} else if(mob2.onGround) {
-				mob2.yd = 0.42F;
+                this.jumpFromGround();
 			}
 		}
 
@@ -78,6 +78,10 @@ public class BasicAI extends AI {
 		}
 
 	}
+
+    protected void jumpFromGround() {
+        this.mob.yd = 0.42F;
+    }
 
 	protected void update() {
 		if(this.random.nextFloat() < 0.07F) {

@@ -16,21 +16,21 @@ public final class GrassTile extends Tile {
 	}
 
 	public final void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
-		if(random.nextInt(4) == 0) {
-			if(!level.isLit(x, y + 1, z)) {
-				level.setTile(x, y, z, Tile.dirt.id);
-			} else {
-				for(int i9 = 0; i9 < 4; ++i9) {
-					int i6 = x + random.nextInt(3) - 1;
-					int i7 = y + random.nextInt(5) - 3;
-					int i8 = z + random.nextInt(3) - 1;
-					if(level.getTile(i6, i7, i8) == Tile.dirt.id && level.isLit(i6, i7 + 1, i8)) {
-						level.setTile(i6, i7, i8, Tile.grass.id);
-					}
-				}
+        if(random.nextInt(4) == 0) {
+            if(!level.isLit(x, y, z)) {
+                level.setTile(x, y, z, Tile.dirt.id);
+            } else {
+                for(int i9 = 0; i9 < 4; ++i9) {
+                    int i6 = x + random.nextInt(3) - 1;
+                    int i7 = y + random.nextInt(5) - 3;
+                    int i8 = z + random.nextInt(3) - 1;
+                    if(level.getTile(i6, i7, i8) == Tile.dirt.id && level.isLit(i6, i7, i8)) {
+                        level.setTile(i6, i7, i8, Tile.grass.id);
+                    }
+                }
 
-			}
-		}
+            }
+        }
 	}
 
 	public final int getId() {

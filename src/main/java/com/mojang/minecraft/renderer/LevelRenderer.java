@@ -136,7 +136,6 @@ public final class LevelRenderer {
 
 		tesselator11.end();
 		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEndList();
 		GL11.glNewList(this.surroundLists + 1, GL11.GL_COMPILE);
 		levelRenderer9 = this;
@@ -177,7 +176,6 @@ public final class LevelRenderer {
 
 		tesselator11.end();
 		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEndList();
 		this.setDirty(0, 0, 0, this.level.width, this.level.depth, this.level.height);
 	}
@@ -203,18 +201,16 @@ public final class LevelRenderer {
 		this.ib.put(this.chunkBuffer, 0, i6);
 		this.ib.flip();
 		if(this.ib.remaining() > 0) {
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.loadTexture("/terrain.png"));
 			GL11.glCallLists(this.ib);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		}
 
 		return this.ib.remaining();
 	}
 
 	public final void renderClouds(float partialTicks) {
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.loadTexture("/clouds.png"));
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textures.loadTexture("/clouds.png"));
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f2 = (float)(this.level.cloudColor >> 16 & 255) / 255.0F;
 		float f3 = (float)(this.level.cloudColor >> 8 & 255) / 255.0F;
 		float f4 = (float)(this.level.cloudColor & 255) / 255.0F;
@@ -278,12 +274,12 @@ public final class LevelRenderer {
 		}
 
 		tesselator11.end();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
 	public final void render(int x, int y, int z) {
 		int i6;
 		if((i6 = this.level.getTile(x, y, z)) != 0 && Tile.tiles[i6].isSolid()) {
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glColor4f(0.2F, 0.2F, 0.2F, 1.0F);
 			GL11.glDepthFunc(GL11.GL_LESS);
 			Tesselator tesselator4 = Tesselator.instance;
@@ -304,45 +300,50 @@ public final class LevelRenderer {
 
 			tesselator4.end();
 			GL11.glCullFace(GL11.GL_BACK);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glDepthFunc(GL11.GL_LEQUAL);
 		}
 	}
 
-	public final void renderHit(HitResult h, int mode, int tileType) {
-		Tesselator tesselator4 = Tesselator.instance;
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, ((float)Math.sin((double)EagRuntime.currentTimeMillis() / 100.0D) * 0.2F + 0.4F) * 0.5F);
-		if(this.hurtTime > 0.0F) {
-			GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			tileType = this.textures.loadTexture("/terrain.png");
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, tileType);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
-			GL11.glPushMatrix();
-			GL11.glTranslatef((float)h.x + 0.5F, (float)h.y + 0.5F, (float)h.z + 0.5F);
-			float f5 = 1.01F;
-			GL11.glScalef(1.01F, f5, f5);
-			GL11.glTranslatef(-((float)h.x + 0.5F), -((float)h.y + 0.5F), -((float)h.z + 0.5F));
-			tesselator4.begin(DefaultVertexFormats.POSITION_TEX);
-			tesselator4.noColor();
-			GL11.glDepthMask(false);
+    public final void renderHit(HitResult h, int mode, int id) {
+        Tesselator tesselator8 = Tesselator.instance;
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, ((float)Math.sin((double)EagRuntime.currentTimeMillis() / 100.0D) * 0.2F + 0.4F) * 0.5F);
+        if(this.hurtTime > 0.0F) {
+            GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
+            id = this.textures.loadTexture("/terrain.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
+            GL11.glPushMatrix();
+            Tile tile10000 = (id = this.level.getTile(h.x, h.y, h.z)) > 0 ? Tile.tiles[id] : null;
+            Tile tile9 = tile10000;
+            float f4 = (tile10000.xx0 + tile9.xx1) / 2.0F;
+            float f5 = (tile9.yy0 + tile9.yy1) / 2.0F;
+            float f6 = (tile9.zz0 + tile9.zz1) / 2.0F;
+            GL11.glTranslatef((float)h.x + f4, (float)h.y + f5, (float)h.z + f6);
+            float f7 = 1.01F;
+            GL11.glScalef(1.01F, f7, f7);
+            GL11.glTranslatef(-((float)h.x + f4), -((float)h.y + f5), -((float)h.z + f6));
+            tesselator8.begin(DefaultVertexFormats.POSITION_TEX);
+            tesselator8.noColor();
+            GL11.glDepthMask(false);
+            if(tile9 == null) {
+                tile9 = Tile.rock;
+            }
 
-			for(tileType = 0; tileType < 6; ++tileType) {
-				Tile.rock.renderFaceNoTexture(tesselator4, h.x, h.y, h.z, tileType, 240 + (int)(this.hurtTime * 10.0F));
-			}
+            for(int i10 = 0; i10 < 6; ++i10) {
+                tile9.renderFaceNoTexture(tesselator8, h.x, h.y, h.z, i10, 240 + (int)(this.hurtTime * 10.0F));
+            }
 
-			tesselator4.end();
-			GL11.glDepthMask(true);
-			GL11.glPopMatrix();
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-		}
+            tesselator8.end();
+            GL11.glDepthMask(true);
+            GL11.glPopMatrix();
+        }
 
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
-	}
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+    }
 
 	public final void setDirty(int x0, int y0, int z0, int x1, int y1, int z1) {
 		x0 /= 16;

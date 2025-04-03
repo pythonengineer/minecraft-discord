@@ -66,7 +66,7 @@ public class CrashReport {
     private void populateEnvironment() {
         this.theReportCategory.addCrashSectionCallable("Minecraft Version", new Callable<String>() {
             public String call() {
-                return "0.25_05 SURVIVAL TEST";
+                return "0.27 SURVIVAL TEST";
             }
         });
         this.theReportCategory.addCrashSectionCallable("Operating System", new Callable<String>() {

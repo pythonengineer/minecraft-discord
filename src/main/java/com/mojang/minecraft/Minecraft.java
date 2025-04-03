@@ -11,7 +11,6 @@ import com.mojang.minecraft.gui.PauseScreen;
 import com.mojang.minecraft.gui.Screen;
 import com.mojang.minecraft.item.Arrow;
 import com.mojang.minecraft.item.Item;
-import com.mojang.minecraft.item.Sign;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.LevelIO;
 import com.mojang.minecraft.level.levelgen.LevelGen;
@@ -25,6 +24,7 @@ import com.mojang.minecraft.model.Vec3;
 import com.mojang.minecraft.net.Client;
 import com.mojang.minecraft.net.Packet;
 import com.mojang.minecraft.particle.ParticleEngine;
+import com.mojang.minecraft.particle.WaterDropParticle;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.player.KeyboardInput;
 import com.mojang.minecraft.player.Player;
@@ -92,6 +92,7 @@ public final class Minecraft implements Runnable {
     private LevelGen levelGen = new LevelGen(this.loadingScreen);
     public SoundEngine soundEngine = new SoundEngine();
     private int frames = 0;
+    private int clickCounter = 0;
     public String loadMapUser = null;
     public int loadMapId = 0;
     public Gui gui;
@@ -106,6 +107,7 @@ public final class Minecraft implements Runnable {
     public String fpsString;
     private int oFrames;
     private int rightClickDelayTimer;
+    public boolean raining;
     public boolean mouseGrabSupported = false;
     public static ScaledResolution scaledResolution;
     public static TouchOverlayRenderer touchOverlayRenderer;
@@ -119,6 +121,7 @@ public final class Minecraft implements Runnable {
         this.running = false;
         this.fpsString = "";
         this.oFrames = 0;
+        this.raining = false;
         this.width = width;
         this.height = height;
         this.fullscreen = fullscreen;
@@ -142,7 +145,7 @@ public final class Minecraft implements Runnable {
         }
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft 0.25_05   SURVIVAL TEST");
+        Display.setTitle("Minecraft 0.27   SURVIVAL TEST");
 
         try {
             Display.create();
@@ -176,7 +179,7 @@ public final class Minecraft implements Runnable {
         this.textures = new Textures(this.options);
         this.textures.addDynamicTexture(new LavaTexture());
         this.textures.addDynamicTexture(new WaterTexture());
-        this.font = new Font("/default.png", this.textures);
+        this.font = new Font(this.options, "/default.png", this.textures);
         IntBuffer imgData = BufferUtils.createIntBuffer(256);
         imgData.clear().limit(256);
         this.levelRenderer = new LevelRenderer(this, this.textures);
@@ -204,7 +207,7 @@ public final class Minecraft implements Runnable {
 
         this.particleEngine = new ParticleEngine(this.level, this.textures);
 
-        this.soundEngine.registerSounds();
+        this.soundEngine.registerSounds(this.options);
         this.soundPlayer = new SoundPlayer(this.options);
 
         checkGlError("Post startup");
@@ -330,6 +333,7 @@ public final class Minecraft implements Runnable {
                         if (!Display.contextLost()) {
                             GL11.optimize();
                             checkGlError("Pre render");
+                            GL11.glEnable(GL11.GL_TEXTURE_2D);
                             this.gamemode.render(this.timer.alpha);
                             this.soundPlayer.setListener(this.player, this.timer.alpha);
                             float f33 = this.timer.alpha;
@@ -369,13 +373,17 @@ public final class Minecraft implements Runnable {
                                     GL11.glLoadIdentity();
                                     GL11.glMatrixMode(GL11.GL_MODELVIEW);
                                     GL11.glLoadIdentity();
-                                    this.gameRenderer.tick();
+                                    this.gameRenderer.render();
                                 }
 
                                 if(this.screen != null) {
                                     GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
                                     this.screen.render(i60, i62);
                                 }
+                            }
+
+                            if(this.options.i) {
+                                Thread.sleep(5L);
                             }
 
                             checkGlError("Post render");
@@ -508,85 +516,92 @@ public final class Minecraft implements Runnable {
     }
 
     private void clickMouse(int id) {
-        TileRenderer tileRenderer6;
-        if(id == 0) {
-            tileRenderer6 = this.gameRenderer.tileRenderer;
-            this.gameRenderer.tileRenderer.rot = -1;
-            tileRenderer6.move = true;
-        } else {
-            this.rightClickDelayTimer = 4;
-        }
+        if(id != 0 || this.clickCounter <= 0) {
+            TileRenderer tileRenderer6;
+            if(id == 0) {
+                tileRenderer6 = this.gameRenderer.tileRenderer;
+                this.gameRenderer.tileRenderer.rot = -1;
+                tileRenderer6.move = true;
+            } else {
+                this.rightClickDelayTimer = 4;
+            }
 
-        int i2;
-        if(id == 1 && (i2 = this.player.inventory.getSelected()) > 0 && this.gamemode.removeResource(this.player, i2)) {
-            tileRenderer6 = this.gameRenderer.tileRenderer;
-            this.gameRenderer.tileRenderer.progress = 0.0F;
-        } else if(this.hitResult != null) {
-            if(this.hitResult.type == 1) {
+            int i2;
+            if(id == 1 && (i2 = this.player.inventory.getSelected()) > 0 && this.gamemode.removeResource(this.player, i2)) {
+                tileRenderer6 = this.gameRenderer.tileRenderer;
+                this.gameRenderer.tileRenderer.progress = 0.0F;
+            } else if(this.hitResult == null) {
                 if(id == 0) {
-                    this.hitResult.entity.hurt(this.player, 4);
-                    return;
-                }
-            } else if(this.hitResult.type == 0) {
-                i2 = this.hitResult.x;
-                int i3 = this.hitResult.y;
-                int i4 = this.hitResult.z;
-                if(id != 0) {
-                    if(this.hitResult.f == 0) {
-                        --i3;
-                    }
-
-                    if(this.hitResult.f == 1) {
-                        ++i3;
-                    }
-
-                    if(this.hitResult.f == 2) {
-                        --i4;
-                    }
-
-                    if(this.hitResult.f == 3) {
-                        ++i4;
-                    }
-
-                    if(this.hitResult.f == 4) {
-                        --i2;
-                    }
-
-                    if(this.hitResult.f == 5) {
-                        ++i2;
-                    }
+                    this.clickCounter = 10;
                 }
 
-                Tile tile5 = Tile.tiles[this.level.getTile(i2, i3, i4)];
-                if(id == 0) {
-                    if(tile5 != Tile.unbreakable || this.player.userType >= 100) {
-                        this.gamemode.startDestroyBlock(i2, i3, i4);
+            } else {
+                if(this.hitResult.type == 1) {
+                    if(id == 0) {
+                        this.hitResult.entity.hurt(this.player, 4);
                         return;
                     }
-                } else {
-                    int i8;
-                    if((i8 = this.player.inventory.getSelected()) <= 0) {
-                        return;
+                } else if(this.hitResult.type == 0) {
+                    i2 = this.hitResult.x;
+                    int i3 = this.hitResult.y;
+                    int i4 = this.hitResult.z;
+                    if(id != 0) {
+                        if(this.hitResult.f == 0) {
+                            --i3;
+                        }
+
+                        if(this.hitResult.f == 1) {
+                            ++i3;
+                        }
+
+                        if(this.hitResult.f == 2) {
+                            --i4;
+                        }
+
+                        if(this.hitResult.f == 3) {
+                            ++i4;
+                        }
+
+                        if(this.hitResult.f == 4) {
+                            --i2;
+                        }
+
+                        if(this.hitResult.f == 5) {
+                            ++i2;
+                        }
                     }
 
-                    Tile tile9;
-                    AABB aABB10;
-                    if(((tile9 = Tile.tiles[this.level.getTile(i2, i3, i4)]) == null || tile9 == Tile.water || tile9 == Tile.calmWater || tile9 == Tile.lava || tile9 == Tile.calmLava) && ((aABB10 = Tile.tiles[i8].getTileAABB(i2, i3, i4)) == null || (this.player.bb.intersects(aABB10) ? false : this.level.isFree(aABB10)))) {
-                        if(!this.gamemode.removeResource(i8)) {
+                    Tile tile5 = Tile.tiles[this.level.getTile(i2, i3, i4)];
+                    if(id == 0) {
+                        if(tile5 != Tile.unbreakable || this.player.userType >= 100) {
+                            this.gamemode.startDestroyBlock(i2, i3, i4);
+                            return;
+                        }
+                    } else {
+                        int i8;
+                        if((i8 = this.player.inventory.getSelected()) <= 0) {
                             return;
                         }
 
-                        if(this.isOnlineClient()) {
-                            this.networkClient.sendTileUpdated(i2, i3, i4, id, i8);
+                        Tile tile9;
+                        AABB aABB10;
+                        if(((tile9 = Tile.tiles[this.level.getTile(i2, i3, i4)]) == null || tile9 == Tile.water || tile9 == Tile.calmWater || tile9 == Tile.lava || tile9 == Tile.calmLava) && ((aABB10 = Tile.tiles[i8].getTileAABB(i2, i3, i4)) == null || (this.player.bb.intersects(aABB10) ? false : this.level.isFree(aABB10)))) {
+                            if(!this.gamemode.removeResource(i8)) {
+                                return;
+                            }
+
+                            if(this.isOnlineClient()) {
+                                this.networkClient.sendTileUpdated(i2, i3, i4, id, i8);
+                            }
+
+                            this.level.netSetTile(i2, i3, i4, i8);
+                            tileRenderer6 = this.gameRenderer.tileRenderer;
+                            this.gameRenderer.tileRenderer.progress = 0.0F;
+                            Tile.tiles[i8].onPlace(this.level, i2, i3, i4);
                         }
-
-                        this.level.netSetTile(i2, i3, i4, i8);
-                        tileRenderer6 = this.gameRenderer.tileRenderer;
-                        this.gameRenderer.tileRenderer.progress = 0.0F;
-                        Tile.tiles[i8].onPlace(this.level, i2, i3, i4);
                     }
-                }
 
+                }
             }
         }
     }
@@ -810,6 +825,10 @@ public final class Minecraft implements Runnable {
                 }
             }
 
+            if(this.clickCounter > 0) {
+                --this.clickCounter;
+            }
+
             processTouchMine();
 
             while(Keyboard.next()) {
@@ -824,8 +843,8 @@ public final class Minecraft implements Runnable {
                             this.pauseScreen();
                         }
 
-                        if(Keyboard.getEventKey() == this.options.build.key && this.networkClient == null) {
-                            this.level.addEntity(new Sign(this.level, this.player.x, this.player.y, this.player.z, this.player.yRot));
+                        if(Keyboard.getEventKey() == Keyboard.KEY_F5 && this.networkClient == null) {
+                            this.raining = !this.raining;
                         }
 
                         if(Keyboard.getEventKey() == Keyboard.KEY_TAB && this.networkClient == null) {
@@ -880,14 +899,17 @@ public final class Minecraft implements Runnable {
                 }
             }
 
-            boolean z27 = this.screen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch;
-            if(z27 && this.hitResult != null && this.hitResult.type == 0) {
-                i4 = this.hitResult.x;
-                i41 = this.hitResult.y;
-                int i46 = this.hitResult.z;
-                this.gamemode.stopDestroyingBlock(i4, i41, i46, this.hitResult.f);
-            } else {
-                this.gamemode.tick();
+            boolean z25 = this.screen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch;
+            boolean z35 = false;
+            if(this.clickCounter <= 0) {
+                if(z25 && this.hitResult != null && this.hitResult.type == 0) {
+                    i4 = this.hitResult.x;
+                    i41 = this.hitResult.y;
+                    int i45 = this.hitResult.z;
+                    this.gamemode.stopDestroyingBlock(i4, i41, i45, this.hitResult.f);
+                } else {
+                    this.gamemode.tick();
+                }
             }
 	    }
 
@@ -904,6 +926,7 @@ public final class Minecraft implements Runnable {
 
         if(this.level != null) {
             TileRenderer tileRenderer32 = this.gameRenderer.tileRenderer;
+            ++this.gameRenderer.rainTicks;
             this.gameRenderer.tileRenderer.oProgress = tileRenderer32.progress;
             if(tileRenderer32.move) {
                 ++tileRenderer32.rot;
@@ -934,7 +957,23 @@ public final class Minecraft implements Runnable {
                 tileRenderer32.tile = tile48;
             }
 
-            LevelRenderer levelRenderer25 = this.levelRenderer;
+            if(this.raining) {
+                i41 = (int)this.player.x;
+                int i45 = (int)this.player.y;
+                int i46 = (int)this.player.z;
+
+                for(int i8 = 0; i8 < 50; ++i8) {
+                    int i53 = i41 + this.gameRenderer.random.nextInt(9) - 4;
+                    int i55 = i46 + this.gameRenderer.random.nextInt(9) - 4;
+                    int i60;
+                    if((i60 = this.level.getHighestTile(i53, i55)) <= i45 + 4 && i60 >= i45 - 4) {
+                        float f61 = this.gameRenderer.random.nextFloat();
+                        float f63 = this.gameRenderer.random.nextFloat();
+                        this.particleEngine.addParticle(new WaterDropParticle(this.level, (float)i53 + f61, (float)i60 + 0.1F, (float)i55 + f63));
+                    }
+                }
+            }
+
             ++this.levelRenderer.cloudTickCounter;
             this.level.tickEntities();
             if(!this.isOnlineClient()) {
@@ -973,43 +1012,36 @@ public final class Minecraft implements Runnable {
     private void pick(float a) {
         float f19 = this.player.xRotO + (this.player.xRot - this.player.xRotO) * a;
         float f20 = this.player.yRotO + (this.player.yRot - this.player.yRotO) * a;
-        float f21 = this.player.xo + (this.player.x - this.player.xo) * a;
-        float f68 = this.player.yo + (this.player.y - this.player.yo) * a;
-        float f98 = this.player.zo + (this.player.z - this.player.zo) * a;
-        Vec3 vec3102 = new Vec3(f21, f68, f98);
-        float f84 = (float)Math.cos((double)(-f20) * Math.PI / 180.0D - Math.PI);
-        float f24 = (float)Math.sin((double)(-f20) * Math.PI / 180.0D - Math.PI);
-        f20 = (float)Math.cos((double)(-f19) * Math.PI / 180.0D);
-        float f25 = (float)Math.sin((double)(-f19) * Math.PI / 180.0D);
-        f19 = f24 * f20;
-        f24 = f25;
-        f84 *= f20;
-        f20 = this.gameRenderer.minecraft.gamemode.getPickRange();
-        Vec3 vec3104 = vec3102.addVector(f19 * f20, f25 * f20, f84 * f20);
-        this.gameRenderer.minecraft.hitResult = this.gameRenderer.minecraft.level.clip(vec3102, vec3104);
-        vec3102 = new Vec3(f21, f68, f98);
-        f68 = f20;
-        if(this.gameRenderer.minecraft.hitResult != null) {
-            Vec3 vec375 = this.gameRenderer.minecraft.hitResult.vec;
-            f21 = vec3102.x - vec375.x;
-            f98 = vec3102.y - vec375.y;
-            f68 = vec3102.z - vec375.z;
-            f68 = (float)Math.sqrt((double)(f21 * f21 + f98 * f98 + f68 * f68));
+        Vec3 vec393 = this.gameRenderer.getPlayerRotVec(a);
+        float f68 = (float)Math.cos((double)(-f20) * Math.PI / 180.0D - Math.PI);
+        float f96 = (float)Math.sin((double)(-f20) * Math.PI / 180.0D - Math.PI);
+        float f99 = (float)Math.cos((double)(-f19) * Math.PI / 180.0D);
+        float f24 = (float)Math.sin((double)(-f19) * Math.PI / 180.0D);
+        float f25 = f96 * f99;
+        f20 = f24;
+        f68 *= f99;
+        f19 = this.gamemode.getPickRange();
+        Vec3 vec3100 = vec393.add(f25 * f19, f24 * f19, f68 * f19);
+        this.hitResult = this.level.clip(vec393, vec3100);
+        vec393 = this.gameRenderer.getPlayerRotVec(a);
+        float f82 = f19;
+        if(this.hitResult != null) {
+            f82 = this.hitResult.vec.distanceTo(vec393);
         }
 
-        List list85 = this.gameRenderer.minecraft.level.blockMap.getEntities(this.player, this.player.bb.expand(f19 * f68, f25 * f68, f84 * f68));
+        List list83 = this.level.blockMap.getEntities(this.player, this.player.bb.expand(f25 * f82, f24 * f82, f68 * f82));
 
-        int i94;
-        for(i94 = 0; i94 < list85.size(); ++i94) {
-            Entity entity95;
-            if((entity95 = (Entity)list85.get(i94)).isPickable()) {
-                f98 = 0.1F;
-                AABB aABB103 = entity95.bb.grow(f98, f98, f98);
+        int i90;
+        for(i90 = 0; i90 < list83.size(); ++i90) {
+            Entity entity101;
+            if((entity101 = (Entity)list83.get(i90)).isPickable()) {
+                f99 = 0.1F;
+                AABB aABB102 = entity101.bb.grow(f99, f99, f99);
 
-                for(f25 = 0.0F; f25 < f68; f25 += 0.05F) {
-                    if(aABB103.contains(vec3102.addVector(f19 * f25, f24 * f25, f84 * f25))) {
-                        f68 = f25;
-                        this.hitResult = new HitResult(entity95);
+                for(f24 = 0.0F; f24 < f82; f24 += 0.05F) {
+                    if(aABB102.contains(vec393.add(f25 * f24, f20 * f24, f68 * f24))) {
+                        f82 = f24;
+                        this.hitResult = new HitResult(entity101);
                         break;
                     }
                 }
@@ -1124,8 +1156,8 @@ public final class Minecraft implements Runnable {
             }
             int i105 = this.levelRenderer.allDirtyChunks.size() - 1;
             int i108;
-            if((i108 = this.levelRenderer.allDirtyChunks.size()) > 4) {
-                i108 = 4;
+            if((i108 = this.levelRenderer.allDirtyChunks.size()) > 3) {
+                i108 = 3;
             }
 
             int i109;
@@ -1151,11 +1183,13 @@ public final class Minecraft implements Runnable {
             }
 
             this.gameRenderer.toggleLight(true);
-            this.levelRenderer.level.blockMap.render(frustum23, this.levelRenderer.textures, a);
+            Vec3 vec387 = this.gameRenderer.getPlayerRotVec(a);
+            this.levelRenderer.level.blockMap.render(vec387, frustum23, this.levelRenderer.textures, a);
             this.gameRenderer.toggleLight(false);
             this.gameRenderer.setupFog();
             this.particleEngine.render(this.player, a);
             GL11.glCallList(this.levelRenderer.surroundLists);
+            GL11.glDisable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_LIGHTING);
             this.gameRenderer.setupFog();
             this.levelRenderer.renderClouds(a);
@@ -1166,15 +1200,17 @@ public final class Minecraft implements Runnable {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 this.levelRenderer.renderHit(this.hitResult, 0, this.player.inventory.getSelected());
                 this.player.inventory.getSelected();
-                HitResult hitResult80 = this.hitResult;
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
                 GL11.glLineWidth(2.0F);
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
                 GL11.glDepthMask(false);
-                float f92 = 0.002F;
-                (new AABB((float)hitResult80.x, (float)hitResult80.y, (float)hitResult80.z, (float)(hitResult80.x + 1), (float)(hitResult80.y + 1), (float)(hitResult80.z + 1))).grow(f92, f92, f92).render();
+                f19 = 0.002F;
+                int i94 = this.levelRenderer.level.getTile(this.hitResult.x, this.hitResult.y, this.hitResult.z);
+                Tile.tiles[i94].getAABB(this.hitResult.x, this.hitResult.y, this.hitResult.z).grow(f19, f19, f19).render();
                 GL11.glDepthMask(true);
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
                 GL11.glDisable(GL11.GL_BLEND);
                 GL11.glEnable(GL11.GL_ALPHA_TEST);
                 GL11.glEnable(GL11.GL_LIGHTING);
@@ -1183,6 +1219,7 @@ public final class Minecraft implements Runnable {
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             this.gameRenderer.setupFog();
             GL11.glCallList(this.levelRenderer.surroundLists + 1);
+            GL11.glDisable(GL11.GL_BLEND);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glColorMask(false, false, false, false);
             int i20 = this.levelRenderer.render(this.player, 1);
@@ -1197,19 +1234,19 @@ public final class Minecraft implements Runnable {
 
             if(i20 > 0) {
                 levelRenderer18 = this.levelRenderer;
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, levelRenderer18.textures.loadTexture("/terrain.png"));
                 GL11.glCallLists(levelRenderer18.ib);
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
             }
 
             GL11.glDepthMask(true);
             GL11.glDisable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_FOG);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            if(this.raining) {
+                this.gameRenderer.renderRain(a);
+            }
+
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-            f84 = a;
             GL11.glLoadIdentity();
             if(this.options.anaglyph3d) {
                 GL11.glTranslatef((float)((i81 << 1) - 1) * 0.1F, 0.0F, 0.0F);
@@ -1239,13 +1276,12 @@ public final class Minecraft implements Runnable {
             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
             GL11.glEnable(GL11.GL_NORMALIZE);
             if(tileRenderer97.move) {
-                f84 = (float)Math.sin((double)((f101 = ((float)tileRenderer97.rot + f84) / 7.0F) * f101) * Math.PI);
+                f84 = (float)Math.sin((double)((f101 = ((float)tileRenderer97.rot + a) / 7.0F) * f101) * Math.PI);
                 GL11.glRotatef((float)Math.sin(Math.sqrt((double)f101) * Math.PI) * 80.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glRotatef(-f84 * 20.0F, 1.0F, 0.0F, 0.0F);
             }
 
             GL11.glColor4f(f101 = tileRenderer97.minecraft.level.getBrightness((int)player70.x, (int)player70.y, (int)player70.z), f101, f101, 1.0F);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
             Tesselator tesselator93 = Tesselator.instance;
             if(tileRenderer97.tile != null) {
                 f24 = 0.4F;
@@ -1269,7 +1305,6 @@ public final class Minecraft implements Runnable {
             }
 
             GL11.glDisable(GL11.GL_NORMALIZE);
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glPopMatrix();
             this.gameRenderer.toggleLight(false);
             if(!this.options.anaglyph3d) {
@@ -1345,13 +1380,17 @@ public final class Minecraft implements Runnable {
 
         if(this.particleEngine != null) {
             level.particleEngine = this.particleEngine;
-            this.particleEngine.particles.clear();
+
+            for(int i3 = 0; i3 < 2; ++i3) {
+                this.particleEngine.particles[i3].clear();
+            }
         }
 
         this.player = level.findPlayer();
         if(this.player == null) {
             this.player = new Player(level);
             this.player.resetPos();
+            this.gamemode.initPlayer(this.player);
         }
 
         this.player.input = new KeyboardInput(this.options);

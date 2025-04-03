@@ -17,6 +17,11 @@ public final class SurvivalGameMode extends GameMode {
         super(minecraft1);
     }
 
+    public final void initPlayer(Player player) {
+        player.inventory.slots[8] = Tile.tnt.id;
+        player.inventory.count[8] = 10;
+    }
+
     public final void destroyBlock(int x, int y, int z) {
         int i4 = this.minecraft.level.getTile(x, y, z);
         Tile.tiles[i4].spawnResources(this.minecraft.level, x, y, z);

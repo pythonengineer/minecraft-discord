@@ -80,37 +80,36 @@ public class NetworkPlayer extends HumanoidMob {
 		}
 
 		if(this.texture < 0) {
-			GL11.glBindTexture(3553, textures.loadTexture("/char.png"));
-		} else {
-			GL11.glBindTexture(3553, this.texture);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.loadTexture("/char.png"));
+        } else {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture);
 		}
 	}
 
 	public void render(Textures textures, float translation) {
-		super.render(textures, translation);
-		this.textures = textures;
-		Font textures1 = this.minecraft.font;
-		GL11.glPushMatrix();
-		GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation + 0.8F, this.zo + (this.z - this.zo) * translation);
-		GL11.glRotatef(-this.minecraft.player.yRot, 0.0F, 1.0F, 0.0F);
-		translation = 0.05F;
-		GL11.glScalef(0.05F, -translation, translation);
-		GL11.glTranslatef((float)(-textures1.width(this.displayName)) / 2.0F, 0.0F, 0.0F);
-		GL11.glNormal3f(1.0F, -1.0F, 1.0F);
-		GL11.glDisable(2896);
-		GL11.glDisable(16384);
-		if(this.name.equalsIgnoreCase("Notch")) {
-			textures1.draw(this.displayName, 0, 0, 16776960);
-		} else {
-			textures1.draw(this.displayName, 0, 0, 16777215);
-		}
+        super.render(textures, translation);
+        this.textures = textures;
+        Font textures1 = this.minecraft.font;
+        GL11.glPushMatrix();
+        GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation + 0.8F, this.zo + (this.z - this.zo) * translation);
+        GL11.glRotatef(-this.minecraft.player.yRot, 0.0F, 1.0F, 0.0F);
+        translation = 0.05F;
+        GL11.glScalef(0.05F, -translation, translation);
+        GL11.glTranslatef((float)(-textures1.width(this.displayName)) / 2.0F, 0.0F, 0.0F);
+        GL11.glNormal3f(1.0F, -1.0F, 1.0F);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_LIGHT0);
+        if(this.name.equalsIgnoreCase("Notch")) {
+            textures1.draw(this.displayName, 0, 0, 16776960);
+        } else {
+            textures1.draw(this.displayName, 0, 0, 0xFFFFFF);
+        }
 
-		GL11.glEnable(16384);
-		GL11.glEnable(2896);
-		GL11.glTranslatef(1.0F, 1.0F, -0.05F);
-		textures1.draw(this.name, 0, 0, 5263440);
-		GL11.glPopMatrix();
-		GL11.glDisable(3553);
+        GL11.glEnable(GL11.GL_LIGHT0);
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glTranslatef(1.0F, 1.0F, -0.05F);
+        textures1.draw(this.name, 0, 0, 5263440);
+        GL11.glPopMatrix();
 	}
 
 	public void queue(byte xa, byte ya, byte za, float xr, float yr) {

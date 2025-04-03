@@ -1,7 +1,7 @@
 {
   "name": "minecraft-client",
   "private": true,
-  "version": "0.25_05 SURVIVAL TEST",
+  "version": "0.27 SURVIVAL TEST",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -146,9 +146,8 @@ public class Arrow extends Entity {
 	}
 
 	public void render(Textures textures, float translation) {
-		GL11.glEnable(3553);
-		int i10 = textures.loadTexture("/item/arrows.png");
-		GL11.glBindTexture(3553, i10);
+        this.textureId = textures.loadTexture("/item/arrows.png");
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureId);
 		float f11 = this.level.getBrightness((int)this.x, (int)this.y, (int)this.z);
 		GL11.glPushMatrix();
 		GL11.glColor4f(f11, f11, f11, 1.0F);

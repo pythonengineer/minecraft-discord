@@ -11,20 +11,21 @@ public class Skeleton extends Zombie {
 		super(level1, f2, f3, f4);
 		this.modelName = "skeleton";
 		this.textureName = "/mob/skeleton.png";
-		BasicAttackAI basicAttackAI5;
-		(basicAttackAI5 = new BasicAttackAI() {
-			public final void tick(Level level1, Mob mob2) {
-				super.tick(level1, mob2);
-				if(mob2.health > 0 && this.random.nextInt(30) == 0 && this.attackTarget != null) {
-					Skeleton.this.shootArrow(level1);
-				}
+        BasicAttackAI basicAttackAI5 = new BasicAttackAI() {
+            public final void tick(Level level1, Mob mob2) {
+                super.tick(level1, mob2);
+                if(mob2.health > 0 && this.random.nextInt(30) == 0 && this.attackTarget != null) {
+                    Skeleton.this.shootArrow(level1);
+                }
 
-			}
+            }
 
-			public final void beforeRemove() {
-				Skeleton.access$000(Skeleton.this);
-			}
-		}).runSpeed = 0.3F;
+            public final void beforeRemove() {
+                Skeleton.access$000(Skeleton.this);
+            }
+        };
+        this.deathScore = 120;
+        basicAttackAI5.runSpeed = 0.3F;
 		basicAttackAI5.damage = 8;
 		this.ai = basicAttackAI5;
 	}

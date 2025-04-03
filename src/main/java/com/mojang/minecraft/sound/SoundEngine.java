@@ -8,8 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mojang.minecraft.Options;
+
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.lax1dude.eaglercraft.internal.EnumPlatformOS;
 
 public final class SoundEngine {
     public Map sounds = new HashMap();
@@ -18,7 +21,7 @@ public final class SoundEngine {
     public long lastMusic = System.currentTimeMillis() + 60000L;
     public Sound playingMusic;
 
-    public final void registerSounds() {
+    public final void registerSounds(Options options) {
         InputStream stream = EagRuntime.getResourceStream("/assets/sounds.txt");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String file;
@@ -32,7 +35,7 @@ public final class SoundEngine {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String file;
             while ((file = reader.readLine()) != null) {
-                this.registerMusic(file, "/assets/music/" + file);
+                this.registerMusic(file, "/assets/music/" + file, options);
             }
         } catch (Exception e) {
         }
@@ -79,13 +82,15 @@ public final class SoundEngine {
 
     }
 
-    public final void registerMusic(String musicName, String musicFile) {
+    public final void registerMusic(String musicName, String musicFile, Options options) {
         Map map3 = this.music;
         synchronized(this.music) {
             for(musicName = musicName.substring(0, musicName.length() - 4).replaceAll("/", "."); Character.isDigit(musicName.charAt(musicName.length() - 1)); musicName = musicName.substring(0, musicName.length() - 1)) {
             }
 
-            EagRuntime.getRequiredResourceBytes(musicFile);
+            if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE || options.music) {
+                EagRuntime.getRequiredResourceBytes(musicFile);
+            }
 
             Object object4;
             if((object4 = (List)this.music.get(musicName)) == null) {

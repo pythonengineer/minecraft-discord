@@ -26,10 +26,11 @@ public class Textures {
     }
 
     public final int loadTexture(String resourceName) {
-        try {
-            if(this.idMap.containsKey(resourceName)) {
-                return ((Integer)this.idMap.get(resourceName)).intValue();
-            } else {
+        Integer integer2;
+        if((integer2 = (Integer)this.idMap.get(resourceName)) != null) {
+            return integer2.intValue();
+        } else {
+            try {
                 this.ib.clear();
                 GL11.glGenTextures(this.ib);
                 int i2 = this.ib.get(0);
@@ -41,9 +42,9 @@ public class Textures {
 
                 this.idMap.put(resourceName, i2);
                 return i2;
+            } catch (Exception exception) {
+                throw new RuntimeException("!!");
             }
-        } catch (Exception exception) {
-            throw new RuntimeException("!!");
         }
     }
 

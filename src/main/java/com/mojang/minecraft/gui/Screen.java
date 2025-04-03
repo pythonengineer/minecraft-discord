@@ -34,7 +34,6 @@ public class Screen extends GuiComponent {
             Button button4 = button10000;
             if(button10000.visible) {
                 Font font8 = minecraft5.font;
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, minecraft5.textures.loadTexture("/gui/gui.png"));
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 byte b9 = 1;

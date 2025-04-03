@@ -58,4 +58,7 @@ public class GameMode {
     public boolean removeResource(Player player, int quantity) {
         return false;
     }
+
+    public void initPlayer(Player player) {
+    }
 }

@@ -20,6 +20,10 @@ final class PlayerTextureLoader extends Thread {
     }
 
     public final void run() {
+        if (this.minecraft.user == null) {
+            return;
+        }
+
         byte[] data = EagRuntime.downloadRemoteURL("https://playerdb.co/api/player/minecraft/" + this.minecraft.user.name);
         if (data == null) {
             System.out.println("Failed to load texture for " + this.minecraft.user.name);

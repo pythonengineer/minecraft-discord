@@ -38,13 +38,12 @@ public final class Gui extends GuiComponent {
         this.scaledWidth = Minecraft.scaledResolution.getScaledWidth();
         this.scaledHeight = Minecraft.scaledResolution.getScaledHeight();
 		Font font5 = this.minecraft.font;
-        this.minecraft.gameRenderer.tick();
+        this.minecraft.gameRenderer.render();
 
         onBeginHotbarDraw();
 
 		Textures textures6 = this.minecraft.textures;
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.minecraft.textures.loadTexture("/gui/gui.png"));
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		Tesselator tesselator7 = Tesselator.instance;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -170,21 +169,28 @@ public final class Gui extends GuiComponent {
         onEndHotbarDraw();
 
         GL11.glEnable(GL11.GL_BLEND);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.minecraft.textures.loadTexture("/gui/icons.png"));
         this.blit(i - 7, this.scaledHeight / 2 - 7, 0, 0, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-		font5.drawShadow("0.25_05   SURVIVAL TEST", 2, 2, 0xFFFFFF);
+		font5.drawShadow("0.27   SURVIVAL TEST", 2, 2, 0xFFFFFF);
 		if(this.minecraft.options.showFramerate) {
 			font5.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
 		}
 
         String string26 = "Score: &e" + this.minecraft.player.getScore();
-        font5.drawShadow(string26, this.scaledWidth - font5.width(string26) - 2, 2, 16777215);
+        if (PointerInputAbstraction.isTouchMode()) {
+            GL11.glPushMatrix();
+            GL11.glScalef(1.5f, 1.5f, 1.5f);
+            font5.drawShadow(string26, (this.scaledWidth + font5.width(string26)) / 2, 3, 16777215);
+            GL11.glPopMatrix();
+        } else {
+            font5.drawShadow(string26, this.scaledWidth - font5.width(string26) - 2, 2, 16777215);
+        }
+        onBeginHotbarDraw();
         font5.drawShadow("Arrows: " + this.minecraft.player.arrows, this.scaledWidth / 2 + 8, this.scaledHeight - 33, 16777215);
+        onEndHotbarDraw();
 		byte b24 = 10;
 		boolean z26 = false;
 		if(this.minecraft.screen instanceof ChatScreen) {

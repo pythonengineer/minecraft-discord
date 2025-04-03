@@ -66,29 +66,29 @@ public class Item extends Entity {
 	}
 
 	public void render(Textures textures, float translation) {
-		GL11.glEnable(3553);
-		int textures1 = textures.loadTexture("/terrain.png");
-		GL11.glBindTexture(3553, textures1);
-		float textures2 = this.level.getBrightness((int)this.x, (int)this.y, (int)this.z);
-		float f3 = this.rot + ((float)this.tickCount + translation) * 3.0F;
-		GL11.glPushMatrix();
-		GL11.glColor4f(textures2, textures2, textures2, 1.0F);
-		textures2 = (float)Math.sin((double)(f3 / 10.0F)) * 0.1F + 0.1F;
-		GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation + textures2, this.zo + (this.z - this.zo) * translation);
-		GL11.glRotatef(f3, 0.0F, 1.0F, 0.0F);
-		models[this.resource].render();
-		GL11.glDisable(3553);
-		textures2 = (textures2 = (textures2 = (float)Math.sin((double)(f3 / 10.0F)) * 0.5F + 0.5F) * textures2) * textures2;
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, textures2 * 0.4F);
-		GL11.glEnable(3042);
-		GL11.glBlendFunc(770, 1);
-		GL11.glDisable(3008);
-		models[this.resource].render();
-		GL11.glEnable(3008);
-		GL11.glDisable(3042);
-		GL11.glBlendFunc(770, 771);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glPopMatrix();
+        this.textureId = textures.loadTexture("/terrain.png");
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureId);
+        float textures1 = this.level.getBrightness((int)this.x, (int)this.y, (int)this.z);
+        float f3 = this.rot + ((float)this.tickCount + translation) * 3.0F;
+        GL11.glPushMatrix();
+        GL11.glColor4f(textures1, textures1, textures1, 1.0F);
+        float f4 = (textures1 = (float)Math.sin((double)(f3 / 10.0F))) * 0.1F + 0.1F;
+        GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation + f4, this.zo + (this.z - this.zo) * translation);
+        GL11.glRotatef(f3, 0.0F, 1.0F, 0.0F);
+        models[this.resource].render();
+        textures1 = (textures1 = (textures1 = textures1 * 0.5F + 0.5F) * textures1) * textures1;
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, textures1 * 0.4F);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        models[this.resource].render();
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glPopMatrix();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
 	public void playerTouch(Player player1) {

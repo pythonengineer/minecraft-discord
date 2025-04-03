@@ -1,5 +1,6 @@
 package com.mojang.minecraft.gui;
 
+import com.mojang.minecraft.Options;
 import com.mojang.minecraft.renderer.Tesselator;
 import com.mojang.minecraft.renderer.Textures;
 
@@ -10,8 +11,11 @@ import net.lax1dude.eaglercraft.opengl.ImageData;
 public class Font {
 	private int[] charWidths = new int[256];
 	private int fontTexture = 0;
+    private Options options;
 
-    public Font(String name, Textures textures) {
+    public Font(Options options, String name, Textures textures) {
+        this.options = options;
+
         ImageData img;
         try {
             img = ImageData.loadImageFile("/assets" + name);
@@ -68,7 +72,6 @@ public class Font {
                 color = (color & 16579836) >> 2;
             }
 
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTexture);
             Tesselator tesselator6 = Tesselator.instance;
             tesselator6.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -85,7 +88,17 @@ public class Font {
                     i9 = (color & 8) << 3;
                     int i10 = (color & 1) * 191 + i9;
                     int i11 = ((color & 2) >> 1) * 191 + i9;
-                    color = ((color & 4) >> 2) * 191 + i9 << 16 | i11 << 8 | i10;
+                    color = ((color & 4) >> 2) * 191 + i9;
+                    if(this.options.anaglyph3d) {
+                        i9 = (color * 30 + i11 * 59 + i10 * 11) / 100;
+                        i11 = (color * 30 + i11 * 70) / 100;
+                        i10 = (color * 30 + i10 * 70) / 100;
+                        color = i9;
+                        i11 = i11;
+                        i10 = i10;
+                    }
+
+                    color = color << 16 | i11 << 8 | i10;
                     i8 += 2;
                     if(darken) {
                         color = (color & 16579836) >> 2;
@@ -105,7 +118,6 @@ public class Font {
             }
 
             tesselator6.end();
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
         }
     }
 

@@ -22,7 +22,7 @@ public final class DeathScreen extends Screen {
         }
 
         if(button.id == 2) {// && this.minecraft.user != null) {
-            this.minecraft.setScreen(new LoadLevelScreen(this));
+            this.minecraft.loadLevel("", 0);//this.minecraft.setScreen(new LoadLevelScreen(this));
         }
 
     }
