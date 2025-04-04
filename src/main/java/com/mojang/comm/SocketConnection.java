@@ -242,8 +242,8 @@ public final class SocketConnection {
                                             this.client.minecraft.gui.addMessage(string19);
                                         }
                                     } else if(packet3 == Packet.KICK_PLAYER) {
-                                        this.client.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
                                         this.disconnect();
+                                        this.client.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
                                     }
                                 }
                             }

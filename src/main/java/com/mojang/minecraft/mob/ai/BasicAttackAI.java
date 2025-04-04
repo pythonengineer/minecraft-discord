@@ -8,7 +8,7 @@ public class BasicAttackAI extends BasicAI {
     public static final long serialVersionUID = 0L;
     public int damage = 6;
 
-    protected void update() {
+    public void update() {
         super.update();
         if(this.mob.health > 0) {
             this.doAttack();

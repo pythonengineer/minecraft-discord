@@ -24,27 +24,31 @@ public final class SlabTile extends Tile {
 
     public final void neighborChanged(Level level, int x, int y, int z, int type) {
         if(this == Tile.slabHalf) {
-            int i6;
-            if((i6 = level.getTile(x, y + 1, z)) > 0) {
-                level.setTile(x, y, z, Tile.slabFull.id);
-                if(i6 == Tile.slabHalf.id) {
-                    level.setTile(x, y + 1, z, 0);
-                }
-            }
-
-            if(level.getTile(x, y - 1, z) == slabHalf.id) {
-                level.setTile(x, y, z, 0);
-                level.setTile(x, y - 1, z, Tile.slabFull.id);
-            }
-
+            ;
         }
     }
 
-    public final int getId() {
-        return Tile.slabHalf.id;
+    public final void onTileAdded(Level level, int x, int y, int z) {
+        if(this != Tile.slabHalf) {
+            super.onTileAdded(level, x, y, z);
+        }
+
+        if(level.getTile(x, y - 1, z) == slabHalf.id) {
+            level.setTile(x, y, z, 0);
+            level.setTile(x, y - 1, z, Tile.slabFull.id);
+        }
+
     }
 
     public final boolean isOpaque() {
         return this.half;
+    }
+
+    public final boolean shouldRenderFace(Level level, int x, int y, int z, int layer) {
+        if(this != Tile.slabHalf) {
+            super.shouldRenderFace(level, x, y, z, layer);
+        }
+
+        return layer == 1 ? true : (!super.shouldRenderFace(level, x, y, z, layer) ? false : (layer == 0 ? true : level.getTile(x, y, z) != this.id));
     }
 }

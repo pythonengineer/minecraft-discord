@@ -32,8 +32,4 @@ public final class GrassTile extends Tile {
             }
         }
 	}
-
-	public final int getId() {
-		return Tile.dirt.getId();
-	}
 }

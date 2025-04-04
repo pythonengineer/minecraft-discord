@@ -24,7 +24,6 @@ public final class Options {
 	public boolean bobView = true;
 	public boolean anaglyph3d = false;
 	public boolean limitFramerate = false;
-    public boolean i = false;
 	public KeyMapping forward = new KeyMapping("Forward", 17);
 	public KeyMapping left = new KeyMapping("Left", 30);
 	public KeyMapping back = new KeyMapping("Back", 31);
@@ -33,8 +32,8 @@ public final class Options {
 	public KeyMapping build = new KeyMapping("Build", 48);
 	public KeyMapping chat = new KeyMapping("Chat", 20);
 	public KeyMapping toggleFog = new KeyMapping("Toggle fog", 33);
-	private KeyMapping save = new KeyMapping("Save location", 28);
-	private KeyMapping load = new KeyMapping("Load location", 19);
+	public KeyMapping save = new KeyMapping("Save location", 28);
+	public KeyMapping load = new KeyMapping("Load location", 19);
 	public KeyMapping[] keys = new KeyMapping[]{this.forward, this.left, this.back, this.right, this.jump, this.build, this.chat, this.toggleFog, this.save, this.load};
 	private Minecraft minecraft;
     public int optionCount = 8;
@@ -118,14 +117,14 @@ public final class Options {
         }
 
         if(option == 7) {
-            this.i = !this.i;
+            this.limitFramerate = !this.limitFramerate;
         }
 
         this.save();
     }
 
     public final String getMessage(int option) {
-        return option == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (option == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (option == 2 ? "Invert mouse: " + (this.invertYMouse ? "ON" : "OFF") : (option == 3 ? "Show FPS: " + (this.showFramerate ? "ON" : "OFF") : (option == 4 ? "Render distance: " + RENDER_DISTANCES[this.viewDistance] : (option == 5 ? "View bobbing: " + (this.bobView ? "ON" : "OFF") : (option == 6 ? "3d anaglyph: " + (this.anaglyph3d ? "ON" : "OFF") : (option == 7 ? "Limit framerate: " + (this.i ? "ON" : "OFF") : "")))))));
+        return option == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (option == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (option == 2 ? "Invert mouse: " + (this.invertYMouse ? "ON" : "OFF") : (option == 3 ? "Show FPS: " + (this.showFramerate ? "ON" : "OFF") : (option == 4 ? "Render distance: " + RENDER_DISTANCES[this.viewDistance] : (option == 5 ? "View bobbing: " + (this.bobView ? "ON" : "OFF") : (option == 6 ? "3d anaglyph: " + (this.anaglyph3d ? "ON" : "OFF") : (option == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : "")))))));
     }
 
     private void load() {
@@ -167,7 +166,7 @@ public final class Options {
                     }
 
                     if(string5[0].equals("limitFramerate")) {
-                        this.i = string5[1].equals("true");
+                        this.limitFramerate = string5[1].equals("true");
                     }
 
                     for(int i3 = 0; i3 < this.keys.length; ++i3) {
@@ -196,7 +195,7 @@ public final class Options {
             printWriter1.println("viewDistance:" + this.viewDistance);
             printWriter1.println("bobView:" + this.bobView);
             printWriter1.println("anaglyph3d:" + this.anaglyph3d);
-            printWriter1.println("limitFramerate:" + this.i);
+            printWriter1.println("limitFramerate:" + this.limitFramerate);
 
             for(int i2 = 0; i2 < this.keys.length; ++i2) {
                 printWriter1.println("key_" + this.keys[i2].name + ":" + this.keys[i2].key);

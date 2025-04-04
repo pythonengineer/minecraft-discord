@@ -2,22 +2,13 @@ package com.mojang.minecraft.level;
 
 import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.HitResult;
-import com.mojang.minecraft.LevelLoaderListener;
 import com.mojang.minecraft.Minecraft;
 import com.mojang.minecraft.gui.Font;
-import com.mojang.minecraft.level.fx.Smolder;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.level.tile.Tile;
-import com.mojang.minecraft.mob.Creeper;
-import com.mojang.minecraft.mob.Mob;
-import com.mojang.minecraft.mob.Pig;
-import com.mojang.minecraft.mob.Skeleton;
-import com.mojang.minecraft.mob.Spider;
-import com.mojang.minecraft.mob.Zombie;
 import com.mojang.minecraft.model.Vec3;
 import com.mojang.minecraft.particle.ParticleEngine;
 import com.mojang.minecraft.phys.AABB;
-import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.renderer.LevelRenderer;
 import com.mojang.minecraft.sound.Sound;
 import com.mojang.minecraft.sound.SoundPos;
@@ -44,12 +35,13 @@ public class Level implements Serializable {
     public float rotSpawn;
     private transient ArrayList levelListeners = new ArrayList();
     private transient int[] heightMap;
-    private transient EaglercraftRandom random = new EaglercraftRandom();
+    public transient EaglercraftRandom random = new EaglercraftRandom();
     private transient int randValue = this.random.nextInt();
     private transient ArrayList tickNextTickList = new ArrayList();
     public BlockMap blockMap;
     private boolean networkMode = false;
     public transient Minecraft rendererContext;
+    public boolean creativeMode;
     public int waterLevel;
     public int skyColor;
     public int fogColor;
@@ -338,35 +330,18 @@ public class Level implements Serializable {
 
     public void tick() {
         ++this.tickCount;
-        int i1 = this.width * this.height * this.depth / 64 / 64 / 64;
-        int i3;
-        int i4;
-        if(this.random.nextInt(100) < i1) {
-            Level level2 = this;
-            i3 = 0;
+        int i1 = 1;
 
-            for(i4 = 0; i4 < level2.blockMap.all.size(); ++i4) {
-                if((Entity)level2.blockMap.all.get(i4) instanceof Mob) {
-                    ++i3;
-                }
-            }
-
-            if(i3 < i1 * 20) {
-                this.maybeSpawnMobs(i1, this.player, (LevelLoaderListener)null);
-            }
+        int i2;
+        for(i2 = 1; 1 << i1 < this.width; ++i1) {
         }
 
-        int i12 = 1;
-
-        for(i1 = 1; 1 << i12 < this.width; ++i12) {
+        while(1 << i2 < this.height) {
+            ++i2;
         }
 
-        while(1 << i1 < this.height) {
-            ++i1;
-        }
-
-        i3 = this.height - 1;
-        i4 = this.width - 1;
+        int i3 = this.height - 1;
+        int i4 = this.width - 1;
         int i5 = this.depth - 1;
         int i6;
         int i7;
@@ -393,16 +368,29 @@ public class Level implements Serializable {
 
         for(i7 = 0; i7 < i6; ++i7) {
             this.randValue = this.randValue * 3 + 1013904223;
-            int i13;
-            int i14 = (i13 = this.randValue >> 2) & i4;
-            int i10 = i13 >> i12 & i3;
-            i13 = i13 >> i12 + i1 & i5;
-            byte b11 = this.blocks[(i13 * this.height + i10) * this.width + i14];
+            int i12;
+            int i13 = (i12 = this.randValue >> 2) & i4;
+            int i10 = i12 >> i1 & i3;
+            i12 = i12 >> i1 + i2 & i5;
+            byte b11 = this.blocks[(i12 * this.height + i10) * this.width + i13];
             if(Tile.shouldTick[b11]) {
-                Tile.tiles[b11].tick(this, i14, i13, i10, this.random);
+                Tile.tiles[b11].tick(this, i13, i12, i10, this.random);
             }
         }
 
+    }
+
+    public int countInstanceOf(Class c) {
+        int i2 = 0;
+
+        for(int i3 = 0; i3 < this.blockMap.all.size(); ++i3) {
+            Entity entity4 = (Entity)this.blockMap.all.get(i3);
+            if(c.isAssignableFrom(entity4.getClass())) {
+                ++i2;
+            }
+        }
+
+        return i2;
     }
 
     private boolean isInLevelBounds(int x, int y, int z) {
@@ -871,85 +859,6 @@ public class Level implements Serializable {
 
     }
 
-    public int maybeSpawnMobs(int count, Entity entity, LevelLoaderListener loadingListener) {
-        int i4 = 0;
-
-        for(int i5 = 0; i5 < count; ++i5) {
-            if(loadingListener != null) {
-                loadingListener.setLoadingProgress(i5 * 100 / (count - 1));
-            }
-
-            int i6 = this.random.nextInt(5);
-            int i7 = this.random.nextInt(this.width);
-            int i8 = (int)(Math.min(this.random.nextFloat(), this.random.nextFloat()) * (float)this.depth);
-            int i9 = this.random.nextInt(this.height);
-            if(!this.isSolidTile(i7, i8, i9) && this.getLiquid(i7, i8, i9) == Liquid.none && (!this.isLit(i7, i8, i9) || this.random.nextInt(5) == 0)) {
-                for(int i10 = 0; i10 < 3; ++i10) {
-                    int i11 = i7;
-                    int i12 = i8;
-                    int i13 = i9;
-
-                    for(int i14 = 0; i14 < 3; ++i14) {
-                        i11 += this.random.nextInt(6) - this.random.nextInt(6);
-                        i12 += this.random.nextInt(1) - this.random.nextInt(1);
-                        i13 += this.random.nextInt(6) - this.random.nextInt(6);
-                        if(i11 >= 0 && i13 >= 1 && i12 >= 0 && i12 < this.depth - 2 && i11 < this.width && i13 < this.height && this.isSolidTile(i11, i12 - 1, i13) && !this.isSolidTile(i11, i12, i13) && !this.isSolidTile(i11, i12 + 1, i13)) {
-                            float f15 = (float)i11 + 0.5F;
-                            float f16 = (float)i12 + 1.0F;
-                            float f17 = (float)i13 + 0.5F;
-                            float f18;
-                            float f19;
-                            float f20;
-                            if(entity != null) {
-                                f18 = f15 - entity.x;
-                                f19 = f16 - entity.y;
-                                f20 = f17 - entity.z;
-                                if(f18 * f18 + f19 * f19 + f20 * f20 < 256.0F) {
-                                    continue;
-                                }
-                            } else {
-                                f18 = f15 - (float)this.xSpawn;
-                                f19 = f16 - (float)this.ySpawn;
-                                f20 = f17 - (float)this.zSpawn;
-                                if(f18 * f18 + f19 * f19 + f20 * f20 < 256.0F) {
-                                    continue;
-                                }
-                            }
-
-                            Object object21 = null;
-                            if(i6 == 0) {
-                                object21 = new Zombie(this, f15, f16, f17);
-                            }
-
-                            if(i6 == 1) {
-                                object21 = new Skeleton(this, f15, f16, f17);
-                            }
-
-                            if(i6 == 2) {
-                                object21 = new Pig(this, f15, f16, f17);
-                            }
-
-                            if(i6 == 3) {
-                                object21 = new Creeper(this, f15, f16, f17);
-                            }
-
-                            if(i6 == 4) {
-                                object21 = new Spider(this, f15, f16, f17);
-                            }
-
-                            if(this.isFree(((Mob)object21).bb)) {
-                                ++i4;
-                                this.addEntity((Entity)object21);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return i4;
-    }
-
     public boolean maybeGrowTree(int x, int y, int z) {
         int i4 = this.random.nextInt(3) + 4;
         boolean z5 = true;
@@ -1042,18 +951,10 @@ public class Level implements Serializable {
                     f15 = (float)i12 + 0.5F - x;
                     f16 = (float)i13 + 0.5F - y;
                     float f17 = (float)i14 + 0.5F - z;
-                    if(i12 >= 0 && i13 >= 0 && i14 >= 0 && i12 < this.width && i13 < this.depth && i14 < this.height && f15 * f15 + f16 * f16 + f17 * f17 < radius * radius) {
-                        int i20;
-                        if((i20 = this.getTile(i12, i13, i14)) > 0) {
-                            if(Tile.tiles[i20].isExplodeable()) {
-                                this.addEntity(new Smolder(this, i12, i13, i14));
-                                Tile.tiles[i20].spawnResources(this, i12, i13, i14, 0.3F);
-                                this.setTile(i12, i13, i14, 0);
-                                Tile.tiles[i20].wasExploded(this, i12, i13, i14);
-                            }
-                        } else {
-                            this.addEntity(new Smolder(this, i12, i13, i14));
-                        }
+                    int i20;
+                    if(i12 >= 0 && i13 >= 0 && i14 >= 0 && i12 < this.width && i13 < this.depth && i14 < this.height && f15 * f15 + f16 * f16 + f17 * f17 < radius * radius && (i20 = this.getTile(i12, i13, i14)) > 0 && Tile.tiles[i20].isExplodeable()) {
+                        Tile.tiles[i20].spawnResources(0.3F);
+                        this.setTile(i12, i13, i14, 0);
                     }
                 }
             }
@@ -1071,14 +972,18 @@ public class Level implements Serializable {
 
     }
 
-    public Player findPlayer() {
-        for(int i1 = 0; i1 < this.blockMap.all.size(); ++i1) {
-            Entity entity2;
-            if((entity2 = (Entity)this.blockMap.all.get(i1)) instanceof Player) {
-                return (Player)entity2;
+    public Entity findSubclassOf(Class c) {
+        for(int i2 = 0; i2 < this.blockMap.all.size(); ++i2) {
+            Entity entity3 = (Entity)this.blockMap.all.get(i2);
+            if(c.isAssignableFrom(entity3.getClass())) {
+                return entity3;
             }
         }
 
         return null;
+    }
+
+    public void removeAllNonCreativeModeEntities() {
+        this.blockMap.removeAllNonCreativeModeEntities();
     }
 }

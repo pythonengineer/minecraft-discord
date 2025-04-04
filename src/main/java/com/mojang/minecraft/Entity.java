@@ -7,7 +7,6 @@ import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.model.Vec3;
 import com.mojang.minecraft.net.EntityPos;
 import com.mojang.minecraft.phys.AABB;
-import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.renderer.Textures;
 
 import java.io.Serializable;
@@ -50,6 +49,8 @@ public abstract class Entity implements Serializable {
     public int textureId = 0;
     public float ySlideOffset = 0.0F;
     public float footSize = 0.0F;
+    public boolean noPhysics = false;
+    public float pushthrough = 0.0F;
 
     public Entity(Level level) {
         this.level = level;
@@ -161,66 +162,22 @@ public abstract class Entity implements Serializable {
     }
 
     public void move(float x, float y, float z) {
-        float f4 = this.x;
-        float f5 = this.z;
-        float f6 = x;
-        float f7 = y;
-        float f8 = z;
-        AABB aABB9 = this.bb.copy();
-        ArrayList arrayList10 = this.level.getCubes(this.bb.expand(x, y, z));
+        if(this.noPhysics) {
+            this.bb.move(x, y, z);
+            this.x = (this.bb.x0 + this.bb.x1) / 2.0F;
+            this.y = this.bb.y0 + this.heightOffset - this.ySlideOffset;
+            this.z = (this.bb.z0 + this.bb.z1) / 2.0F;
+        } else {
+            float f4 = this.x;
+            float f5 = this.z;
+            float f6 = x;
+            float f7 = y;
+            float f8 = z;
+            AABB aABB9 = this.bb.copy();
+            ArrayList arrayList10 = this.level.getCubes(this.bb.expand(x, y, z));
 
-        for(int i11 = 0; i11 < arrayList10.size(); ++i11) {
-            y = ((AABB)arrayList10.get(i11)).clipYCollide(this.bb, y);
-        }
-
-        this.bb.move(0.0F, y, 0.0F);
-        if(!this.slide && f7 != y) {
-            z = 0.0F;
-            y = 0.0F;
-            x = 0.0F;
-        }
-
-        boolean z16 = this.onGround || f7 != y && f7 < 0.0F;
-
-        int i12;
-        for(i12 = 0; i12 < arrayList10.size(); ++i12) {
-            x = ((AABB)arrayList10.get(i12)).clipXCollide(this.bb, x);
-        }
-
-        this.bb.move(x, 0.0F, 0.0F);
-        if(!this.slide && f6 != x) {
-            z = 0.0F;
-            y = 0.0F;
-            x = 0.0F;
-        }
-
-        for(i12 = 0; i12 < arrayList10.size(); ++i12) {
-            z = ((AABB)arrayList10.get(i12)).clipZCollide(this.bb, z);
-        }
-
-        this.bb.move(0.0F, 0.0F, z);
-        if(!this.slide && f8 != z) {
-            z = 0.0F;
-            y = 0.0F;
-            x = 0.0F;
-        }
-
-        float f17;
-        float f18;
-        if(this.footSize > 0.0F && z16 && this.ySlideOffset < 0.05F && (f6 != x || f8 != z)) {
-            f18 = x;
-            f17 = y;
-            float f13 = z;
-            x = f6;
-            y = this.footSize;
-            z = f8;
-            AABB aABB14 = this.bb.copy();
-            this.bb = aABB9.copy();
-            arrayList10 = this.level.getCubes(this.bb.expand(f6, y, f8));
-
-            int i15;
-            for(i15 = 0; i15 < arrayList10.size(); ++i15) {
-                y = ((AABB)arrayList10.get(i15)).clipYCollide(this.bb, y);
+            for(int i11 = 0; i11 < arrayList10.size(); ++i11) {
+                y = ((AABB)arrayList10.get(i11)).clipYCollide(this.bb, y);
             }
 
             this.bb.move(0.0F, y, 0.0F);
@@ -230,8 +187,11 @@ public abstract class Entity implements Serializable {
                 x = 0.0F;
             }
 
-            for(i15 = 0; i15 < arrayList10.size(); ++i15) {
-                x = ((AABB)arrayList10.get(i15)).clipXCollide(this.bb, x);
+            boolean z16 = this.onGround || f7 != y && f7 < 0.0F;
+
+            int i12;
+            for(i12 = 0; i12 < arrayList10.size(); ++i12) {
+                x = ((AABB)arrayList10.get(i12)).clipXCollide(this.bb, x);
             }
 
             this.bb.move(x, 0.0F, 0.0F);
@@ -241,8 +201,8 @@ public abstract class Entity implements Serializable {
                 x = 0.0F;
             }
 
-            for(i15 = 0; i15 < arrayList10.size(); ++i15) {
-                z = ((AABB)arrayList10.get(i15)).clipZCollide(this.bb, z);
+            for(i12 = 0; i12 < arrayList10.size(); ++i12) {
+                z = ((AABB)arrayList10.get(i12)).clipZCollide(this.bb, z);
             }
 
             this.bb.move(0.0F, 0.0F, z);
@@ -252,58 +212,106 @@ public abstract class Entity implements Serializable {
                 x = 0.0F;
             }
 
-            if(f18 * f18 + f13 * f13 >= x * x + z * z) {
-                x = f18;
-                y = f17;
-                z = f13;
-                this.bb = aABB14.copy();
-            } else {
-                this.ySlideOffset = (float)((double)this.ySlideOffset + 0.5D);
-            }
-        }
+            float f17;
+            float f18;
+            if(this.footSize > 0.0F && z16 && this.ySlideOffset < 0.05F && (f6 != x || f8 != z)) {
+                f18 = x;
+                f17 = y;
+                float f13 = z;
+                x = f6;
+                y = this.footSize;
+                z = f8;
+                AABB aABB14 = this.bb.copy();
+                this.bb = aABB9.copy();
+                arrayList10 = this.level.getCubes(this.bb.expand(f6, y, f8));
 
-        this.horizontalCollision = f6 != x || f8 != z;
-        this.onGround = f7 != y && f7 < 0.0F;
-        this.collision = this.horizontalCollision || f7 != y;
-        if(this.onGround) {
-            if(this.fallDistance > 0.0F) {
-                this.causeFallDamage(this.fallDistance);
-                this.fallDistance = 0.0F;
-            }
-        } else if(y < 0.0F) {
-            this.fallDistance -= y;
-        }
+                int i15;
+                for(i15 = 0; i15 < arrayList10.size(); ++i15) {
+                    y = ((AABB)arrayList10.get(i15)).clipYCollide(this.bb, y);
+                }
 
-        if(f6 != x) {
-            this.xd = 0.0F;
-        }
+                this.bb.move(0.0F, y, 0.0F);
+                if(!this.slide && f7 != y) {
+                    z = 0.0F;
+                    y = 0.0F;
+                    x = 0.0F;
+                }
 
-        if(f7 != y) {
-            this.yd = 0.0F;
-        }
+                for(i15 = 0; i15 < arrayList10.size(); ++i15) {
+                    x = ((AABB)arrayList10.get(i15)).clipXCollide(this.bb, x);
+                }
 
-        if(f8 != z) {
-            this.zd = 0.0F;
-        }
+                this.bb.move(x, 0.0F, 0.0F);
+                if(!this.slide && f6 != x) {
+                    z = 0.0F;
+                    y = 0.0F;
+                    x = 0.0F;
+                }
 
-        this.x = (this.bb.x0 + this.bb.x1) / 2.0F;
-        this.y = this.bb.y0 + this.heightOffset - this.ySlideOffset;
-        this.z = (this.bb.z0 + this.bb.z1) / 2.0F;
-        f18 = this.x - f4;
-        f17 = this.z - f5;
-        this.walkDist = (float)((double)this.walkDist + Math.sqrt((double)(f18 * f18 + f17 * f17)) * 0.6D);
-        if(this.makeStepSound) {
-            int i19 = this.level.getTile((int)this.x, (int)(this.y - 0.2F - this.heightOffset), (int)this.z);
-            if(this.walkDist > (float)this.nextStep && i19 > 0) {
-                ++this.nextStep;
-                Tile.SoundType tile$SoundType20;
-                if((tile$SoundType20 = Tile.tiles[i19].soundType) != Tile.SoundType.none) {
-                    this.playSound("step." + tile$SoundType20.name, tile$SoundType20.getVolume() * 0.75F, tile$SoundType20.getPitch());
+                for(i15 = 0; i15 < arrayList10.size(); ++i15) {
+                    z = ((AABB)arrayList10.get(i15)).clipZCollide(this.bb, z);
+                }
+
+                this.bb.move(0.0F, 0.0F, z);
+                if(!this.slide && f8 != z) {
+                    z = 0.0F;
+                    y = 0.0F;
+                    x = 0.0F;
+                }
+
+                if(f18 * f18 + f13 * f13 >= x * x + z * z) {
+                    x = f18;
+                    y = f17;
+                    z = f13;
+                    this.bb = aABB14.copy();
+                } else {
+                    this.ySlideOffset = (float)((double)this.ySlideOffset + 0.5D);
                 }
             }
-        }
 
-        this.ySlideOffset *= 0.4F;
+            this.horizontalCollision = f6 != x || f8 != z;
+            this.onGround = f7 != y && f7 < 0.0F;
+            this.collision = this.horizontalCollision || f7 != y;
+            if(this.onGround) {
+                if(this.fallDistance > 0.0F) {
+                    this.causeFallDamage(this.fallDistance);
+                    this.fallDistance = 0.0F;
+                }
+            } else if(y < 0.0F) {
+                this.fallDistance -= y;
+            }
+
+            if(f6 != x) {
+                this.xd = 0.0F;
+            }
+
+            if(f7 != y) {
+                this.yd = 0.0F;
+            }
+
+            if(f8 != z) {
+                this.zd = 0.0F;
+            }
+
+            this.x = (this.bb.x0 + this.bb.x1) / 2.0F;
+            this.y = this.bb.y0 + this.heightOffset - this.ySlideOffset;
+            this.z = (this.bb.z0 + this.bb.z1) / 2.0F;
+            f18 = this.x - f4;
+            f17 = this.z - f5;
+            this.walkDist = (float)((double)this.walkDist + (double)Math.sqrt(f18 * f18 + f17 * f17) * 0.6D);
+            if(this.makeStepSound) {
+                int i19 = this.level.getTile((int)this.x, (int)(this.y - 0.2F - this.heightOffset), (int)this.z);
+                if(this.walkDist > (float)this.nextStep && i19 > 0) {
+                    ++this.nextStep;
+                    Tile.SoundType tile$SoundType20;
+                    if((tile$SoundType20 = Tile.tiles[i19].soundType) != Tile.SoundType.none) {
+                        this.playSound("step." + tile$SoundType20.name, tile$SoundType20.getVolume() * 0.75F, tile$SoundType20.getPitch());
+                    }
+                }
+            }
+
+            this.ySlideOffset *= 0.4F;
+        }
     }
 
     protected void causeFallDamage(float distance) {
@@ -394,7 +402,7 @@ public abstract class Entity implements Serializable {
         return f2 * f2 + f3 * f3 + f4 * f4;
     }
 
-    public void playerTouch(Player player) {
+    public void playerTouch(Entity player) {
     }
 
     public void push(Entity entity) {
@@ -409,6 +417,8 @@ public abstract class Entity implements Serializable {
             f3 /= f4;
             f2 *= 0.05F;
             f3 *= 0.05F;
+            f2 *= 1.0F - this.pushthrough;
+            f3 *= 1.0F - this.pushthrough;
             this.push(-f2, 0.0F, -f3);
             entity.push(f2, 0.0F, f3);
         }
@@ -458,5 +468,9 @@ public abstract class Entity implements Serializable {
 
     public int getTexture() {
         return this.textureId;
+    }
+
+    public boolean isCreativeModeAllowed() {
+        return false;
     }
 }

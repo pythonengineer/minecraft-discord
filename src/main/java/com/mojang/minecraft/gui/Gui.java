@@ -2,6 +2,8 @@ package com.mojang.minecraft.gui;
 
 import com.mojang.minecraft.GuiMessage;
 import com.mojang.minecraft.Minecraft;
+import com.mojang.minecraft.gamemode.CreativeGameMode;
+import com.mojang.minecraft.gamemode.SurvivalGameMode;
 import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.player.Inventory;
 import com.mojang.minecraft.renderer.Tesselator;
@@ -53,8 +55,11 @@ public final class Gui extends GuiComponent {
 		this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
 
         if (PointerInputAbstraction.isTouchMode()) {
-            //GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
-            //blit(i + 89, scaledHeight - 22, 234, 0, 22, 22);
+            if (this.minecraft.gamemode instanceof CreativeGameMode) {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
+                blit(i + 89, scaledHeight - 22, 234, 0, 22, 22);
+            }
+
             int areaHAdd = 12;
             hotbarAreaX = (i - 91) * this.minecraft.width / this.scaledWidth;
             hotbarAreaY = (this.scaledHeight - 22 - areaHAdd) * this.minecraft.height / this.scaledHeight;
@@ -82,51 +87,53 @@ public final class Gui extends GuiComponent {
 		int i12;
 		int i14;
 		int i15;
-		for(i12 = 0; i12 < 10; ++i12) {
-			byte b13 = 0;
-			if(z9) {
-				b13 = 1;
-			}
+        int i25;
+        if(this.minecraft.gamemode.canHurtPlayer()) {
+            for(i12 = 0; i12 < 10; ++i12) {
+                byte b13 = 0;
+                if(z9) {
+                    b13 = 1;
+                }
 
-			i14 = this.scaledWidth / 2 - 91 + (i12 << 3);
-			i15 = this.scaledHeight - 32;
-			if(i10 <= 4) {
-				i15 += this.random.nextInt(2);
-			}
+                i14 = this.scaledWidth / 2 - 91 + (i12 << 3);
+                i15 = this.scaledHeight - 32;
+                if(i10 <= 4) {
+                    i15 += this.random.nextInt(2);
+                }
 
-			this.blit(i14, i15, 16 + b13 * 9, 0, 9, 9);
-			if(z9) {
-				if((i12 << 1) + 1 < i11) {
-					this.blit(i14, i15, 70, 0, 9, 9);
-				}
+                this.blit(i14, i15, 16 + b13 * 9, 0, 9, 9);
+                if(z9) {
+                    if((i12 << 1) + 1 < i11) {
+                        this.blit(i14, i15, 70, 0, 9, 9);
+                    }
 
-				if((i12 << 1) + 1 == i11) {
-					this.blit(i14, i15, 79, 0, 9, 9);
-				}
-			}
+                    if((i12 << 1) + 1 == i11) {
+                        this.blit(i14, i15, 79, 0, 9, 9);
+                    }
+                }
 
-			if((i12 << 1) + 1 < i10) {
-				this.blit(i14, i15, 52, 0, 9, 9);
-			}
+                if((i12 << 1) + 1 < i10) {
+                    this.blit(i14, i15, 52, 0, 9, 9);
+                }
 
-			if((i12 << 1) + 1 == i10) {
-				this.blit(i14, i15, 61, 0, 9, 9);
-			}
-		}
+                if((i12 << 1) + 1 == i10) {
+                    this.blit(i14, i15, 61, 0, 9, 9);
+                }
+            }
 
-		int i25;
-		if(this.minecraft.player.isUnderWater()) {
-			i12 = (int)Math.ceil((double)(this.minecraft.player.airSupply - 2) * 10.0D / 300.0D);
-			i25 = (int)Math.ceil((double)this.minecraft.player.airSupply * 10.0D / 300.0D) - i12;
+            if(this.minecraft.player.isUnderWater()) {
+                i12 = (int)Math.ceil((double)(this.minecraft.player.airSupply - 2) * 10.0D / 300.0D);
+                i25 = (int)Math.ceil((double)this.minecraft.player.airSupply * 10.0D / 300.0D) - i12;
 
-			for(i14 = 0; i14 < i12 + i25; ++i14) {
-				if(i14 < i12) {
-					this.blit(this.scaledWidth / 2 - 91 + (i14 << 3), this.scaledHeight - 32 - 9, 16, 18, 9, 9);
-				} else {
-					this.blit(this.scaledWidth / 2 - 91 + (i14 << 3), this.scaledHeight - 32 - 9, 25, 18, 9, 9);
-				}
-			}
-		}
+                for(i14 = 0; i14 < i12 + i25; ++i14) {
+                    if(i14 < i12) {
+                        this.blit(this.scaledWidth / 2 - 91 + (i14 << 3), this.scaledHeight - 32 - 9, 16, 18, 9, 9);
+                    } else {
+                        this.blit(this.scaledWidth / 2 - 91 + (i14 << 3), this.scaledHeight - 32 - 9, 25, 18, 9, 9);
+                    }
+                }
+            }
+        }
 
 		GL11.glDisable(GL11.GL_BLEND);
 
@@ -156,7 +163,7 @@ public final class Gui extends GuiComponent {
 				int i20 = textures6.loadTexture("/terrain.png");
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, i20);
 				tesselator7.begin(DefaultVertexFormats.POSITION_TEX_COLOR);
-				Tile.tiles[i15].render(tesselator7, this.minecraft.level, 0, -2, 0, 0);
+                Tile.tiles[i15].render(tesselator7);
 				tesselator7.end();
 				GL11.glPopMatrix();
 				if(inventory8.count[i12] > 1) {
@@ -174,23 +181,28 @@ public final class Gui extends GuiComponent {
         this.blit(i - 7, this.scaledHeight / 2 - 7, 0, 0, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
 
-		font5.drawShadow("0.27   SURVIVAL TEST", 2, 2, 0xFFFFFF);
+		font5.drawShadow("0.28_01", 2, 2, 0xFFFFFF);
 		if(this.minecraft.options.showFramerate) {
 			font5.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
 		}
 
-        String string26 = "Score: &e" + this.minecraft.player.getScore();
-        if (PointerInputAbstraction.isTouchMode()) {
-            GL11.glPushMatrix();
-            GL11.glScalef(1.5f, 1.5f, 1.5f);
-            font5.drawShadow(string26, (this.scaledWidth + font5.width(string26)) / 2, 3, 16777215);
-            GL11.glPopMatrix();
-        } else {
-            font5.drawShadow(string26, this.scaledWidth - font5.width(string26) - 2, 2, 16777215);
+        if(this.minecraft.gamemode instanceof SurvivalGameMode) {
+            String string24 = "Score: &e" + this.minecraft.player.getScore();
+            if (PointerInputAbstraction.isTouchMode()) {
+                GL11.glPushMatrix();
+                GL11.glScalef(1.5f, 1.5f, 1.5f);
+                font5.drawShadow(string24, (this.scaledWidth + font5.width(string24)) / 2, 3, 16777215);
+                GL11.glPopMatrix();
+            } else {
+                font5.drawShadow(string24, this.scaledWidth - font5.width(string24) - 2, 2, 16777215);
+            }
+
+            font5.drawShadow(string24, this.scaledWidth - font5.width(string24) - 2, 2, 0xFFFFFF);
+            onBeginHotbarDraw();
+            font5.drawShadow("Arrows: " + this.minecraft.player.arrows, this.scaledWidth / 2 + 8, this.scaledHeight - 33, 0xFFFFFF);
+            onEndHotbarDraw();
         }
-        onBeginHotbarDraw();
-        font5.drawShadow("Arrows: " + this.minecraft.player.arrows, this.scaledWidth / 2 + 8, this.scaledHeight - 33, 16777215);
-        onEndHotbarDraw();
+
 		byte b24 = 10;
 		boolean z26 = false;
 		if(this.minecraft.screen instanceof ChatScreen) {
@@ -210,6 +222,7 @@ public final class Gui extends GuiComponent {
 		if(Keyboard.isKeyDown(Keyboard.KEY_TAB) && this.minecraft.networkClient != null && this.minecraft.networkClient.isConnected()) {
 			List list22 = this.minecraft.networkClient.getUsernames();
 			GL11.glEnable(GL11.GL_BLEND);
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 			GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.7F);
@@ -220,6 +233,7 @@ public final class Gui extends GuiComponent {
 			GL11.glVertex2f((float)(i14 + 128), (float)(i15 + 68));
 			GL11.glEnd();
 			GL11.glDisable(GL11.GL_BLEND);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
 			string21 = "Connected players:";
 			font5.drawShadow(string21, i14 - font5.width(string21) / 2, i15 - 64 - 12, 0xFFFFFF);
 
@@ -313,10 +327,10 @@ public final class Gui extends GuiComponent {
                 if (currentHotbarSlotTouch >= 0 && currentHotbarSlotTouch < 9) {
                     hotbarSlotTouchAlreadySelected = (this.minecraft.player.inventory.selected == currentHotbarSlotTouch);
                     this.minecraft.player.inventory.selected = currentHotbarSlotTouch;
-                } else if (currentHotbarSlotTouch == 9) {
-                    //hotbarSlotTouchAlreadySelected = false;
-                    //currentHotbarSlotTouch = 69;
-                    //this.minecraft.setScreen(new InventoryScreen());
+                } else if (currentHotbarSlotTouch == 9 && this.minecraft.gamemode instanceof CreativeGameMode) {
+                    hotbarSlotTouchAlreadySelected = false;
+                    currentHotbarSlotTouch = 69;
+                    this.minecraft.setScreen(new BlockSelectionScreen());
                 }
                 return true;
             }

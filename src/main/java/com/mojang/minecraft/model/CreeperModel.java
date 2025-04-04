@@ -30,8 +30,8 @@ public final class CreeperModel extends BaseModel {
 	}
 
 	public final void render(float x, float y, float z, float xRot, float yRot, float zRot) {
-		this.head.yRot = xRot / 57.29578F;
-		this.head.xRot = yRot / 57.29578F;
+        this.head.yRot = xRot / 57.295776F;
+        this.head.xRot = yRot / 57.295776F;
 		this.leg1.xRot = (float)Math.cos((double)x * 0.6662D) * 1.4F * y;
 		this.leg2.xRot = (float)Math.cos((double)x * 0.6662D + Math.PI) * 1.4F * y;
 		this.leg3.xRot = (float)Math.cos((double)x * 0.6662D + Math.PI) * 1.4F * y;

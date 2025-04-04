@@ -35,9 +35,15 @@ public class Inventory implements Serializable {
         return -1;
     }
 
-    public void grabTexture(int index) {
-        if((index = this.containsTileAt(index)) >= 0) {
-            this.selected = index;
+    public void grabTexture(int id, boolean replace) {
+        int i3;
+        if((i3 = this.containsTileAt(id)) >= 0) {
+            this.selected = i3;
+        } else {
+            if(replace && id > 0 && User.creativeTiles.contains(Tile.tiles[id])) {
+                this.replaceSlot(Tile.tiles[id]);
+            }
+
         }
     }
 

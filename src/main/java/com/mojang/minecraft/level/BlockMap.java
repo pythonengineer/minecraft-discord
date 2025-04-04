@@ -104,6 +104,23 @@ public class BlockMap implements Serializable {
 		return entities;
 	}
 
+    public void removeAllNonCreativeModeEntities() {
+        for(int i1 = 0; i1 < this.width; ++i1) {
+            for(int i2 = 0; i2 < this.depth; ++i2) {
+                for(int i3 = 0; i3 < this.height; ++i3) {
+                    List list4 = this.entityGrid[(i3 * this.depth + i2) * this.width + i1];
+
+                    for(int i5 = 0; i5 < list4.size(); ++i5) {
+                        if(!((Entity)list4.get(i5)).isCreativeModeAllowed()) {
+                            list4.remove(i5--);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
 	public void clear() {
 		for(int i1 = 0; i1 < this.width; ++i1) {
 			for(int i2 = 0; i2 < this.depth; ++i2) {
@@ -146,36 +163,102 @@ public class BlockMap implements Serializable {
 
 	}
 
-	public void render(Vec3 v, Frustum frustum, Textures textures, float a_) {
-		for(int i5 = 0; i5 < this.width; ++i5) {
-			float f6 = (float)((i5 << 4) - 2);
-			float f7 = (float)((i5 + 1 << 4) + 2);
+    public void render(Vec3 v, Frustum frustum, Textures textures, float a_) {
+        for(int i5 = 0; i5 < this.width; ++i5) {
+            float f6 = (float)((i5 << 4) - 2);
+            float f7 = (float)((i5 + 1 << 4) + 2);
 
-			for(int i8 = 0; i8 < this.depth; ++i8) {
-				float f9 = (float)((i8 << 4) - 2);
-				float f10 = (float)((i8 + 1 << 4) + 2);
+            for(int i8 = 0; i8 < this.depth; ++i8) {
+                float f9 = (float)((i8 << 4) - 2);
+                float f10 = (float)((i8 + 1 << 4) + 2);
 
-				for(int i11 = 0; i11 < this.height; ++i11) {
-					List list12;
-					if((list12 = this.entityGrid[(i11 * this.depth + i8) * this.width + i5]).size() != 0) {
-						float f13 = (float)((i11 << 4) - 2);
-						float f14 = (float)((i11 + 1 << 4) + 2);
-						if(frustum.cubeInFrustum(f6, f9, f13, f7, f10, f14)) {
-							boolean z16 = frustum.cubeFullyInFrustrum(f6, f9, f13, f7, f10, f14);
+                for(int i11 = 0; i11 < this.height; ++i11) {
+                    List list12;
+                    if((list12 = this.entityGrid[(i11 * this.depth + i8) * this.width + i5]).size() != 0) {
+                        float f13 = (float)((i11 << 4) - 2);
+                        float f14 = (float)((i11 + 1 << 4) + 2);
+                        if(frustum.cubeInFrustum(f6, f9, f13, f7, f10, f14)) {
+                            float f19 = f14;
+                            float f18 = f10;
+                            float f15 = f7;
+                            f14 = f13;
+                            f13 = f9;
+                            float f17 = f6;
+                            Frustum frustum16 = frustum;
+                            int i20 = 0;
 
-							for(int i17 = 0; i17 < list12.size(); ++i17) {
-								Entity entity15;
-								if((entity15 = (Entity)list12.get(i17)).shouldRender(v) && (z16 || frustum.isVisible(entity15.bb))) {
-									entity15.render(textures, a_);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+                            boolean z10000;
+                            while(true) {
+                                if(i20 >= 6) {
+                                    z10000 = true;
+                                    break;
+                                }
 
-	}
+                                if(frustum16.m_Frustum[i20][0] * f17 + frustum16.m_Frustum[i20][1] * f13 + frustum16.m_Frustum[i20][2] * f14 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                if(frustum16.m_Frustum[i20][0] * f15 + frustum16.m_Frustum[i20][1] * f13 + frustum16.m_Frustum[i20][2] * f14 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                if(frustum16.m_Frustum[i20][0] * f17 + frustum16.m_Frustum[i20][1] * f18 + frustum16.m_Frustum[i20][2] * f14 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                if(frustum16.m_Frustum[i20][0] * f15 + frustum16.m_Frustum[i20][1] * f18 + frustum16.m_Frustum[i20][2] * f14 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                if(frustum16.m_Frustum[i20][0] * f17 + frustum16.m_Frustum[i20][1] * f13 + frustum16.m_Frustum[i20][2] * f19 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                if(frustum16.m_Frustum[i20][0] * f15 + frustum16.m_Frustum[i20][1] * f13 + frustum16.m_Frustum[i20][2] * f19 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                if(frustum16.m_Frustum[i20][0] * f17 + frustum16.m_Frustum[i20][1] * f18 + frustum16.m_Frustum[i20][2] * f19 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                if(frustum16.m_Frustum[i20][0] * f15 + frustum16.m_Frustum[i20][1] * f18 + frustum16.m_Frustum[i20][2] * f19 + frustum16.m_Frustum[i20][3] <= 0.0F) {
+                                    z10000 = false;
+                                    break;
+                                }
+
+                                ++i20;
+                            }
+
+                            boolean z21 = z10000;
+
+                            for(int i22 = 0; i22 < list12.size(); ++i22) {
+                                Entity entity23;
+                                if((entity23 = (Entity)list12.get(i22)).shouldRender(v)) {
+                                    if(!z21) {
+                                        AABB aABB24 = entity23.bb;
+                                        if(!frustum.cubeInFrustum(aABB24.x0, aABB24.y0, aABB24.z0, aABB24.x1, aABB24.y1, aABB24.z1)) {
+                                            continue;
+                                        }
+                                    }
+
+                                    entity23.render(textures, a_);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
 	class Slot implements Serializable {
 		public static final long serialVersionUID = 0L;

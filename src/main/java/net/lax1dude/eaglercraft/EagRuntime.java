@@ -201,6 +201,18 @@ public class EagRuntime {
         return PlatformRuntime.downloadRemoteURL(assetPackageURI);
     }
 
+    public static byte[] downloadSkinDbURL(String playerName) {
+        String assetPackageURI = PlatformRuntime.getClientConfigAdapter().getSkinDbUrl() + "/api/player/minecraft/" + playerName;
+        return PlatformRuntime.downloadRemoteURL(assetPackageURI);
+    }
+
+    public static byte[] downloadSkinURL(String url) {
+        String[] parts = url.split("/texture/");
+        String textureUrl = "/texture/" + parts[1];
+        String assetPackageURI = PlatformRuntime.getClientConfigAdapter().getSkinUrl() + textureUrl;
+        return PlatformRuntime.downloadRemoteURL(assetPackageURI);
+    }
+
     public static void debugPrintStackTraceToSTDERR(Throwable t) {
         debugPrintStackTraceToSTDERR0("", t);
         Throwable c = t.getCause();

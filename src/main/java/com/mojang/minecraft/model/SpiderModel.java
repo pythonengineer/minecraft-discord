@@ -48,8 +48,8 @@ public final class SpiderModel extends BaseModel {
     }
 
     public final void render(float x, float y, float z, float xRot, float yRot, float zRot) {
-        this.head.yRot = xRot / 57.29578F;
-        this.head.xRot = yRot / 57.29578F;
+        this.head.yRot = xRot / 57.295776F;
+        this.head.xRot = yRot / 57.295776F;
         xRot = 0.7853982F;
         this.leg1.zRot = -xRot;
         this.leg2.zRot = xRot;

@@ -26,14 +26,12 @@ final class PlayerTextureLoader extends Thread {
 
         byte[] data = EagRuntime.downloadRemoteURL("https://playerdb.co/api/player/minecraft/" + this.minecraft.user.name);
         if (data == null) {
-            System.out.println("Failed to load texture for " + this.minecraft.user.name);
             return;
         }
 
         JSONObject d = new JSONObject(new String(data));
         String textureUrl = d.getJSONObject("data").getJSONObject("player").getString("skin_texture");
         if (textureUrl == null || textureUrl.isEmpty()) {
-            System.out.println("Failed to load texture for " + this.minecraft.user.name);
             return;
         }
 
@@ -50,12 +48,10 @@ final class PlayerTextureLoader extends Thread {
             png = Png.readArgb8888Bitmap(is);
         } catch (PngException e) {
             e.printStackTrace();
-            System.out.println("Failed to load texture for " + this.minecraft.user.name);
             return;
         }
 
         if (png == null) {
-            System.out.println("Failed to load texture for " + this.minecraft.user.name);
             return;
         }
 
@@ -68,8 +64,6 @@ final class PlayerTextureLoader extends Thread {
         }
 
         ImageData tex = new ImageData(64, 32, skin, true).getSubImage(0, 0, 64, 32);
-
-        System.out.println("Loading texture for " + this.minecraft.user.name);
         Player.newTexture = tex;
     }
 }

@@ -1,7 +1,6 @@
 package com.mojang.minecraft.level.tile;
 
 import com.mojang.minecraft.HitResult;
-import com.mojang.minecraft.item.Item;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.model.Vec3;
@@ -14,12 +13,11 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 
 public class Tile {
-	public static boolean isNormalTile = true;
 	protected static EaglercraftRandom random = new EaglercraftRandom();
 	public static final Tile[] tiles = new Tile[256];
 	public static final boolean[] shouldTick = new boolean[256];
-	public static final boolean[] isSolid = new boolean[256];
-	public static final boolean[] isOpaque = new boolean[256];
+    private static boolean[] isSolid = new boolean[256];
+    private static boolean[] isOpaque = new boolean[256];
 	public static final boolean[] isLiquid = new boolean[256];
 	private static int[] tickSpeed = new int[256];
 	public static final Tile rock;
@@ -70,6 +68,7 @@ public class Tile {
 	public static final Tile tnt;
 	public static final Tile bookshelf;
 	public static final Tile mossStone;
+    public static final Tile obsidian;
 	public int tex;
 	public final int id;
 	public Tile.SoundType soundType;
@@ -126,64 +125,31 @@ public class Tile {
 		tickSpeed[this.id] = 16;
 	}
 
-	public boolean render(Tesselator t, Level level, int layer, int x, int y, int z) {
-		boolean z7 = false;
-		float f8 = 0.5F;
-		float f9 = 0.8F;
-		float f10 = 0.6F;
-		float f11;
-		if(this.shouldRenderFace(level, x, y - 1, z, layer, 0)) {
-			f11 = this.getBrightness(level, x, y - 1, z);
-			t.color(f8 * f11, f8 * f11, f8 * f11);
-			this.renderFace(t, x, y, z, 0);
-			z7 = true;
-		}
-
-		if(this.shouldRenderFace(level, x, y + 1, z, layer, 1)) {
-			f11 = this.getBrightness(level, x, y + 1, z);
-			t.color(f11 * 1.0F, f11 * 1.0F, f11 * 1.0F);
-			this.renderFace(t, x, y, z, 1);
-			z7 = true;
-		}
-
-		if(this.shouldRenderFace(level, x, y, z - 1, layer, 2)) {
-			f11 = this.getBrightness(level, x, y, z - 1);
-			t.color(f9 * f11, f9 * f11, f9 * f11);
-			this.renderFace(t, x, y, z, 2);
-			z7 = true;
-		}
-
-		if(this.shouldRenderFace(level, x, y, z + 1, layer, 3)) {
-			f11 = this.getBrightness(level, x, y, z + 1);
-			t.color(f9 * f11, f9 * f11, f9 * f11);
-			this.renderFace(t, x, y, z, 3);
-			z7 = true;
-		}
-
-		if(this.shouldRenderFace(level, x - 1, y, z, layer, 4)) {
-			f11 = this.getBrightness(level, x - 1, y, z);
-			t.color(f10 * f11, f10 * f11, f10 * f11);
-			this.renderFace(t, x, y, z, 4);
-			z7 = true;
-		}
-
-		if(this.shouldRenderFace(level, x + 1, y, z, layer, 5)) {
-			f11 = this.getBrightness(level, x + 1, y, z);
-			t.color(f10 * f11, f10 * f11, f10 * f11);
-			this.renderFace(t, x, y, z, 5);
-			z7 = true;
-		}
-
-		return z7;
-	}
+    public void render(Tesselator t) {
+        float f2 = 0.5F;
+        float f3 = 0.8F;
+        float f4 = 0.6F;
+        t.color(f2, f2, f2);
+        this.renderFace(t, -2, 0, 0, 0);
+        t.color(1.0F, 1.0F, 1.0F);
+        this.renderFace(t, -2, 0, 0, 1);
+        t.color(f3, f3, f3);
+        this.renderFace(t, -2, 0, 0, 2);
+        t.color(f3, f3, f3);
+        this.renderFace(t, -2, 0, 0, 3);
+        t.color(f4, f4, f4);
+        this.renderFace(t, -2, 0, 0, 4);
+        t.color(f4, f4, f4);
+        this.renderFace(t, -2, 0, 0, 5);
+    }
 
 	protected float getBrightness(Level level, int x, int y, int z) {
 		return level.getBrightness(x, y, z);
 	}
 
-	public boolean shouldRenderFace(Level level, int x, int y, int z, int layer, int face) {
-		return layer == 1 ? false : !level.isSolidTile(x, y, z);
-	}
+    public boolean shouldRenderFace(Level level, int x, int y, int z, int layer) {
+        return !level.isSolidTile(x, y, z);
+    }
 
 	protected int getTexture(int face) {
 		return this.tex;
@@ -201,10 +167,15 @@ public class Tile {
 		float f17 = ((float)i7 + 15.99F) / 256.0F;
 		float f10 = (float)i8 / 256.0F;
 		float f11 = ((float)i8 + 15.99F) / 256.0F;
-		if(face >= 2 && tex < 240) {
-			f10 = ((float)i8 + this.yy0 * 15.99F) / 256.0F;
-			f11 = ((float)i8 + this.yy1 * 15.99F) / 256.0F;
-		}
+        if(face >= 2 && tex < 240) {
+            if(this.yy0 >= 0.0F && this.yy1 <= 1.0F) {
+                f10 = ((float)i8 + this.yy0 * 15.99F) / 256.0F;
+                f11 = ((float)i8 + this.yy1 * 15.99F) / 256.0F;
+            } else {
+                f10 = (float)i8 / 256.0F;
+                f11 = ((float)i8 + 15.99F) / 256.0F;
+            }
+        }
 
 		float tex1 = (float)x + this.xx0;
 		float x1 = (float)x + this.xx1;
@@ -242,93 +213,6 @@ public class Tile {
 			t.vertexUV(x1, f18, f12, f17, f11);
 			t.vertexUV(x1, y1, f12, f17, f10);
 			t.vertexUV(x1, y1, f13, f9, f10);
-		}
-	}
-
-	public final void renderFace(Tesselator t, int x, int y, int z, int face, int tex) {
-		int i7 = this.getTexture(face);
-		int i10006 = i7;
-		i7 = tex;
-		tex = i10006;
-		float f8;
-		float f9;
-		float f10;
-		int i11;
-		int i12;
-		float tex1;
-		if(!isNormalTile) {
-			i11 = tex % 16 << 4;
-			i12 = tex / 16 << 4;
-			tex1 = (float)i11 / 256.0F;
-			f8 = ((float)i11 + 15.99F) / 256.0F;
-			if(face > 1) {
-				f9 = ((float)i12 + this.yy0 * 15.99F) / 256.0F;
-				f10 = ((float)i12 + this.yy1 * 15.99F) / 256.0F;
-			} else {
-				f9 = (float)i12 / 256.0F;
-				f10 = ((float)i12 + 15.99F) / 256.0F;
-			}
-		} else {
-			i12 = ((i11 = tex % 16) << 4) + tex / 16 << 4;
-			tex1 = 0.0F;
-			f8 = 0.0F;
-			if(face > 1) {
-				f9 = ((float)i12 + this.yy0 * 15.99F) / 4096.0F;
-				f10 = ((float)i12 + this.yy1 * 15.99F) / 4096.0F;
-			} else {
-				f9 = (float)i12 / 4096.0F;
-				f10 = ((float)i12 + 15.99F) / 4096.0F;
-			}
-
-			f8 = 1.0F + (float)i7;
-		}
-
-		float f19 = 0.001F;
-		float f20 = (float)x + this.xx0 - f19;
-		float x1 = (float)x + this.xx1 + f19;
-		float f13 = (float)y + this.yy0 - f19;
-		float y1 = (float)y + this.yy1 + f19;
-		float f14 = (float)z + this.zz0 - f19;
-		float f15 = (float)z + this.zz1 - f19;
-		if(face == 0) {
-			x1 += (float)i7;
-			t.vertexUV(f20, f13, f15, tex1, f10);
-			t.vertexUV(f20, f13, f14, tex1, f9);
-			t.vertexUV(x1, f13, f14, f8, f9);
-			t.vertexUV(x1, f13, f15, f8, f10);
-		} else if(face == 1) {
-			x1 += (float)i7;
-			t.vertexUV(x1, y1, f15, f8, f10);
-			t.vertexUV(x1, y1, f14, f8, f9);
-			t.vertexUV(f20, y1, f14, tex1, f9);
-			t.vertexUV(f20, y1, f15, tex1, f10);
-		} else if(face == 2) {
-			x1 += (float)i7;
-			t.vertexUV(f20, y1, f14, f8, f9);
-			t.vertexUV(x1, y1, f14, tex1, f9);
-			t.vertexUV(x1, f13, f14, tex1, f10);
-			t.vertexUV(f20, f13, f14, f8, f10);
-		} else if(face == 3) {
-			x1 += (float)i7;
-			t.vertexUV(f20, y1, f15, tex1, f9);
-			t.vertexUV(f20, f13, f15, tex1, f10);
-			t.vertexUV(x1, f13, f15, f8, f10);
-			t.vertexUV(x1, y1, f15, f8, f9);
-		} else if(face == 4) {
-			f15 += (float)i7;
-			t.vertexUV(f20, y1, f15, f8, f9);
-			t.vertexUV(f20, y1, f14, tex1, f9);
-			t.vertexUV(f20, f13, f14, tex1, f10);
-			t.vertexUV(f20, f13, f15, f8, f10);
-		} else {
-			if(face == 5) {
-				f15 += (float)i7;
-				t.vertexUV(x1, f13, f15, tex1, f10);
-				t.vertexUV(x1, f13, f14, f8, f10);
-				t.vertexUV(x1, y1, f14, f8, f9);
-				t.vertexUV(x1, y1, f15, tex1, f9);
-			}
-
 		}
 	}
 
@@ -477,32 +361,26 @@ public class Tile {
 		return 1;
 	}
 
-	public int getId() {
-		return this.id;
-	}
-
 	public final int getDestroyProgress() {
 		return this.destroyProgress;
 	}
 
 	public void spawnResources(Level level, int x, int y, int z) {
-		this.spawnResources(level, x, y, z, 1.0F);
+        this.spawnResources(1.0F);
 	}
 
-	public void spawnResources(Level level, int x, int y, int z, float chance) {
-		int i6 = this.resourceCount();
+    public void spawnResources(float chance) {
+        int i3 = this.resourceCount();
 
-		for(int i7 = 0; i7 < i6; ++i7) {
-			if(random.nextFloat() <= chance) {
-				float f8 = 0.7F;
-				float f9 = random.nextFloat() * f8 + (1.0F - f8) * 0.5F;
-				float f10 = random.nextFloat() * f8 + (1.0F - f8) * 0.5F;
-				f8 = random.nextFloat() * f8 + (1.0F - f8) * 0.5F;
-				level.addEntity(new Item(level, (float)x + f9, (float)y + f10, (float)z + f8, this.getId()));
-			}
-		}
+        for(int i2 = 0; i2 < i3; ++i2) {
+            if(random.nextFloat() <= chance) {
+                random.nextFloat();
+                random.nextFloat();
+                random.nextFloat();
+            }
+        }
 
-	}
+    }
 
 	public void renderGuiTile(Tesselator t) {
         t.begin(DefaultVertexFormats.POSITION_TEX);
@@ -645,8 +523,60 @@ public class Tile {
 		return t == null ? false : t.x >= this.xx0 && t.x <= this.xx1 && t.y >= this.yy0 && t.y <= this.yy1;
 	}
 
-	public void wasExploded(Level level, int x, int y, int z) {
-	}
+    public boolean render(Level level, int x, int y, int z, Tesselator t) {
+        boolean z6 = false;
+        float f7 = 0.5F;
+        float f8 = 0.8F;
+        float f9 = 0.6F;
+        float f10;
+        if(this.shouldRenderFace(level, x, y - 1, z, 0)) {
+            f10 = this.getBrightness(level, x, y - 1, z);
+            t.color(f7 * f10, f7 * f10, f7 * f10);
+            this.renderFace(t, x, y, z, 0);
+            z6 = true;
+        }
+
+        if(this.shouldRenderFace(level, x, y + 1, z, 1)) {
+            f10 = this.getBrightness(level, x, y + 1, z);
+            t.color(f10 * 1.0F, f10 * 1.0F, f10 * 1.0F);
+            this.renderFace(t, x, y, z, 1);
+            z6 = true;
+        }
+
+        if(this.shouldRenderFace(level, x, y, z - 1, 2)) {
+            f10 = this.getBrightness(level, x, y, z - 1);
+            t.color(f8 * f10, f8 * f10, f8 * f10);
+            this.renderFace(t, x, y, z, 2);
+            z6 = true;
+        }
+
+        if(this.shouldRenderFace(level, x, y, z + 1, 3)) {
+            f10 = this.getBrightness(level, x, y, z + 1);
+            t.color(f8 * f10, f8 * f10, f8 * f10);
+            this.renderFace(t, x, y, z, 3);
+            z6 = true;
+        }
+
+        if(this.shouldRenderFace(level, x - 1, y, z, 4)) {
+            f10 = this.getBrightness(level, x - 1, y, z);
+            t.color(f9 * f10, f9 * f10, f9 * f10);
+            this.renderFace(t, x, y, z, 4);
+            z6 = true;
+        }
+
+        if(this.shouldRenderFace(level, x + 1, y, z, 5)) {
+            f10 = this.getBrightness(level, x + 1, y, z);
+            t.color(f9 * f10, f9 * f10, f9 * f10);
+            this.renderFace(t, x, y, z, 5);
+            z6 = true;
+        }
+
+        return z6;
+    }
+
+    public int getRenderLayer() {
+        return 0;
+    }
 
 	static {
 		Tile tile10000 = (new StoneTile(1, 1)).setSoundAndGravity(Tile.SoundType.stone, 1.0F, 1.0F, 1.0F);
@@ -745,6 +675,11 @@ public class Tile {
 		tile1 = tile10000;
 		tile10000.explodeable = false;
 		mossStone = tile1;
+        tile10000 = (new StoneTile(49, 37)).setSoundAndGravity(Tile.SoundType.stone, 1.0F, 1.0F, 10.0F);
+        z0 = false;
+        tile1 = tile10000;
+        tile10000.explodeable = false;
+        obsidian = tile1;
 	}
 
 	public static enum SoundType {

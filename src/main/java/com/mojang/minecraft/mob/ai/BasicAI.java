@@ -83,7 +83,7 @@ public class BasicAI extends AI {
         this.mob.yd = 0.42F;
     }
 
-	protected void update() {
+	public void update() {
 		if(this.random.nextFloat() < 0.07F) {
 			this.xxa = (this.random.nextFloat() - 0.5F) * this.runSpeed;
 			this.yya = this.random.nextFloat() * this.runSpeed;

@@ -35,7 +35,7 @@ final class ConnectionThread extends Thread {
 			SocketConnection socketConnection10001 = this.networkClient.serverConnection;
 			this.networkClient.serverConnection.client = client5;
 			client1 = this.networkClient;
-			this.networkClient.serverConnection.sendPacket(Packet.LOGIN, new Object[]{(byte)6, this.username, this.mpPass, 0});
+			this.networkClient.serverConnection.sendPacket(Packet.LOGIN, new Object[]{(byte)7, this.username, this.mpPass, 0});
 			z2 = true;
 			client1 = this.networkClient;
 			this.networkClient.processData = z2;

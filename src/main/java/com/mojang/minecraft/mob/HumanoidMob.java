@@ -9,11 +9,12 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class HumanoidMob extends Mob {
 	public static final long serialVersionUID = 0L;
-	private boolean helmet = Math.random() < (double)0.2F;
-	private boolean armor = Math.random() < (double)0.2F;
+    public boolean helmet = Math.random() < (double)0.2F;
+    public boolean armor = Math.random() < (double)0.2F;
 
-	public HumanoidMob(Level level, float x, float y, float z) {
-		super(level);
+    public HumanoidMob(Level level, float x, float y, float z) {
+        super(level);
+        this.modelName = "humanoid";
 		this.setPos(x, y, z);
 	}
 

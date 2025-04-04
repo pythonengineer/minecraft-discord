@@ -18,6 +18,10 @@ package net.lax1dude.eaglercraft.internal;
  */
 public interface IClientConfigAdapter {
 
+    String getSkinDbUrl();
+
+    String getSkinUrl();
+
     String getResourcePacksDB();
 
     boolean isCheckGLErrors();

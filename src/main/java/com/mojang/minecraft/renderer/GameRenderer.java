@@ -73,56 +73,6 @@ public final class GameRenderer {
         GL11.glRotatef(f5, 1.0F, 0.0F, 0.0F);
     }
 
-    public void renderRain(float a) {
-        Player player2 = this.minecraft.player;
-        Level level3 = this.minecraft.level;
-        int i4 = (int)player2.x;
-        int i5 = (int)player2.y;
-        int i6 = (int)player2.z;
-        Tesselator tesselator7 = Tesselator.instance;
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.minecraft.textures.loadTexture("/rain.png"));
-
-        for(int i8 = i4 - 5; i8 <= i4 + 5; ++i8) {
-            for(int i9 = i6 - 5; i9 <= i6 + 5; ++i9) {
-                int i10 = level3.getHighestTile(i8, i9);
-                int i11 = i5 - 5;
-                int i12 = i5 + 5;
-                if(i11 < i10) {
-                    i11 = i10;
-                }
-
-                if(i12 < i10) {
-                    i12 = i10;
-                }
-
-                if(i11 != i12) {
-                    float f15 = ((float)((this.rainTicks + i8 * 3121 + i9 * 418711) % 32) + a) / 32.0F;
-                    float f13 = (float)i8 + 0.5F - player2.x;
-                    float f14 = (float)i9 + 0.5F - player2.z;
-                    f13 = (float)Math.sqrt((double)(f13 * f13 + f14 * f14)) / (float)5;
-                    GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - f13 * f13) * 0.7F);
-                    tesselator7.begin(DefaultVertexFormats.POSITION_TEX);
-                    tesselator7.vertexUV((float)i8, (float)i11, (float)i9, 0.0F, (float)i11 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.vertexUV((float)(i8 + 1), (float)i11, (float)(i9 + 1), 2.0F, (float)i11 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.vertexUV((float)(i8 + 1), (float)i12, (float)(i9 + 1), 2.0F, (float)i12 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.vertexUV((float)i8, (float)i12, (float)i9, 0.0F, (float)i12 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.vertexUV((float)i8, (float)i11, (float)(i9 + 1), 0.0F, (float)i11 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.vertexUV((float)(i8 + 1), (float)i11, (float)i9, 2.0F, (float)i11 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.vertexUV((float)(i8 + 1), (float)i12, (float)i9, 2.0F, (float)i12 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.vertexUV((float)i8, (float)i12, (float)(i9 + 1), 0.0F, (float)i12 * 2.0F / 8.0F + f15 * 2.0F);
-                    tesselator7.end();
-                }
-            }
-        }
-
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_BLEND);
-    }
-
     public final void toggleLight(boolean light) {
         if(!light) {
             GL11.glDisable(GL11.GL_LIGHTING);
@@ -200,7 +150,6 @@ public final class GameRenderer {
 
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
         GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT);
-        GL11.glEnable(GL11.GL_LIGHTING);
     }
 
     private FloatBuffer getBuffer(float r, float g, float b, float a) {

@@ -13,9 +13,9 @@ public final class GlassTile extends Tile {
 		return false;
 	}
 
-	public final boolean shouldRenderFace(Level level, int x, int y, int z, int layer, int face) {
+	public final boolean shouldRenderFace(Level level, int x, int y, int z, int layer) {
 		int i7 = level.getTile(x, y, z);
-		return !this.renderAdjacentFaces && i7 == this.id ? false : super.shouldRenderFace(level, x, y, z, layer, face);
+		return !this.renderAdjacentFaces && i7 == this.id ? false : super.shouldRenderFace(level, x, y, z, layer);
 	}
 
 	public final boolean blocksLight() {

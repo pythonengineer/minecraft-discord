@@ -34,9 +34,12 @@ public class NetworkPlayer extends HumanoidMob {
 		this.xp = x;
 		this.yp = y;
 		this.zp = z;
+        this.heightOffset = 0.0F;
+        this.pushthrough = 0.8F;
 		this.setPos((float)x / 32.0F, (float)y / 32.0F, (float)z / 32.0F);
 		this.xRot = xRot;
 		this.yRot = yRot;
+        this.armor = this.helmet = false;
         (new NetworkPlayerTextureLoader(this)).start();
 		this.allowAlpha = false;
 	}
@@ -50,6 +53,7 @@ public class NetworkPlayer extends HumanoidMob {
 			}
 		} while(i1-- > 0 && this.moveQueue.size() > 10);
 
+        this.onGround = true;
 	}
 
 	public void bindTexture(Textures textures) {
@@ -87,8 +91,8 @@ public class NetworkPlayer extends HumanoidMob {
 	}
 
 	public void render(Textures textures, float translation) {
-        super.render(textures, translation);
         this.textures = textures;
+        super.render(textures, translation);
         Font textures1 = this.minecraft.font;
         GL11.glPushMatrix();
         GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation + 0.8F, this.zo + (this.z - this.zo) * translation);

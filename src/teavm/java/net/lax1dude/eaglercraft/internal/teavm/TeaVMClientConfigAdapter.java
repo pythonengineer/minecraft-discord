@@ -30,6 +30,8 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
 
     public static final IClientConfigAdapter instance = new TeaVMClientConfigAdapter();
 
+    private String skinDbUrl = "https://playerdb.co";
+    private String skinUrl = "https://textures.minecraft.net";
     private String assetUrlPrefix = "";
     private String resourcePacksDB = "resources";
     private boolean checkGLErrors = false;
@@ -53,6 +55,8 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
     public void loadNative(JSObject jsObject) {
         JSMinecraftOptsRoot minecraftOpts = (JSMinecraftOptsRoot)jsObject;
 
+        skinDbUrl = minecraftOpts.getSkinDbUrl(skinDbUrl);
+        skinUrl = minecraftOpts.getSkinUrl(skinUrl);
         assetUrlPrefix = minecraftOpts.getAssetUrlPrefix(assetUrlPrefix);
         resourcePacksDB = minecraftOpts.getResourcePacksDB(resourcePacksDB);
         checkGLErrors = minecraftOpts.getCheckGLErrors(false);
@@ -92,6 +96,14 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
     @Override
     public boolean isOpenDebugConsoleOnLaunch() {
         return openDebugConsoleOnLaunch;
+    }
+
+    public String getSkinDbUrl() {
+        return skinDbUrl;
+    }
+
+    public String getSkinUrl() {
+        return skinUrl;
     }
 
     public String getAssetUrlPrefix() {

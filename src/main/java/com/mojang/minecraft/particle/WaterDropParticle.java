@@ -4,8 +4,10 @@ import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.renderer.Tesselator;
 
 public class WaterDropParticle extends Particle {
-    public WaterDropParticle(Level level1, float f2, float f3, float f4) {
-        super(level1, f2, f3, f4, 0.0F, 0.0F, 0.0F);
+    private static final long serialVersionUID = 1L;
+
+    public WaterDropParticle(Level level, float x, float y, float z) {
+        super(level, x, y, z, 0.0F, 0.0F, 0.0F);
         this.xd *= 0.3F;
         this.yd = (float)Math.random() * 0.2F + 0.1F;
         this.zd *= 0.3F;

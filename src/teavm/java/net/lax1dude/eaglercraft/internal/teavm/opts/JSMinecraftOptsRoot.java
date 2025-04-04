@@ -46,6 +46,14 @@ public abstract class JSMinecraftOptsRoot implements JSObject {
     public native String getAssetUrlPrefix(String defaultValue);
 
     @JSBody(params = {
+            "def"}, script = "return (typeof this.skinDbUrl === \"string\") ? this.skinDbUrl : def;")
+    public native String getSkinDbUrl(String defaultValue);
+
+    @JSBody(params = {
+            "def"}, script = "return (typeof this.skinUrl === \"string\") ? this.skinUrl : def;")
+    public native String getSkinUrl(String defaultValue);
+
+    @JSBody(params = {
             "def"}, script = "return (typeof this.resourcePacksDB === \"string\") ? this.resourcePacksDB : def;")
     public native String getResourcePacksDB(String defaultValue);
 

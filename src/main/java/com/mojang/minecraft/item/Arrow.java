@@ -202,12 +202,13 @@ public class Arrow extends Entity {
 		return this.owner;
 	}
 
-	public void playerTouch(Player player1) {
-		if(this.hasHit && this.owner == player1 && player1.arrows < 99) {
-			this.level.addEntity(new TakeEntityAnim(this.level, this, player1));
-			++player1.arrows;
-			this.remove();
-		}
+    public void playerTouch(Entity entity1) {
+        Player player2 = (Player)entity1;
+        if(this.hasHit && this.owner == player2 && player2.arrows < 99) {
+            this.level.addEntity(new TakeEntityAnim(this.level, this, player2));
+            ++player2.arrows;
+            this.remove();
+        }
 
-	}
+    }
 }

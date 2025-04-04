@@ -321,36 +321,38 @@ public class Mob extends Entity {
 	}
 
 	public void hurt(Entity entity1, int i2) {
-		if(this.health > 0) {
-			this.ai.hurt(entity1, i2);
-			if((float)this.invulnerableTime > (float)this.invulnerableDuration / 2.0F) {
-				if(this.lastHealth - i2 >= this.health) {
-					return;
-				}
+        if(!this.level.creativeMode) {
+            if(this.health > 0) {
+                this.ai.hurt(entity1, i2);
+                if((float)this.invulnerableTime > (float)this.invulnerableDuration / 2.0F) {
+                    if(this.lastHealth - i2 >= this.health) {
+                        return;
+                    }
 
-				this.health = this.lastHealth - i2;
-			} else {
-				this.lastHealth = this.health;
-				this.invulnerableTime = this.invulnerableDuration;
-				this.health -= i2;
-				this.hurtTime = this.hurtDuration = 10;
-			}
+                    this.health = this.lastHealth - i2;
+                } else {
+                    this.lastHealth = this.health;
+                    this.invulnerableTime = this.invulnerableDuration;
+                    this.health -= i2;
+                    this.hurtTime = this.hurtDuration = 10;
+                }
 
-			this.hurtDir = 0.0F;
-			if(entity1 != null) {
-				float f3 = entity1.x - this.x;
-				float f4 = entity1.z - this.z;
-				this.hurtDir = (float)(Math.atan2((double)f4, (double)f3) * 180.0D / Math.PI) - this.yRot;
-				this.knockback(entity1, i2, f3, f4);
-			} else {
-				this.hurtDir = (float)((int)(Math.random() * 2.0D) * 180);
-			}
+                this.hurtDir = 0.0F;
+                if(entity1 != null) {
+                    float f3 = entity1.x - this.x;
+                    float f4 = entity1.z - this.z;
+                    this.hurtDir = (float)(Math.atan2((double)f4, (double)f3) * 180.0D / (double)(float)Math.PI) - this.yRot;
+                    this.knockback(entity1, i2, f3, f4);
+                } else {
+                    this.hurtDir = (float)((int)(Math.random() * 2.0D) * 180);
+                }
 
-			if(this.health <= 0) {
-				this.die(entity1);
-			}
+                if(this.health <= 0) {
+                    this.die(entity1);
+                }
 
-		}
+            }
+        }
 	}
 
 	public void knockback(Entity entity, int i, float xa, float za) {
@@ -369,19 +371,23 @@ public class Mob extends Entity {
 	}
 
 	public void die(Entity entity) {
-		if(this.deathScore > 0 && entity != null) {
-			entity.awardKillScore(this, this.deathScore);
-		}
+        if(!this.level.creativeMode) {
+            if(this.deathScore > 0 && entity != null) {
+                entity.awardKillScore(this, this.deathScore);
+            }
 
-		this.dead = true;
+            this.dead = true;
+        }
 	}
 
 	protected void causeFallDamage(float f1) {
-		int i2;
-		if((i2 = (int)Math.ceil((double)(f1 - 3.0F))) > 0) {
-			this.hurt((Entity)null, i2);
-		}
+        if(!this.level.creativeMode) {
+            int i2;
+            if((i2 = (int)Math.ceil((double)(f1 - 3.0F))) > 0) {
+                this.hurt((Entity)null, i2);
+            }
 
+        }
 	}
 
 	public void travel(float x, float z) {

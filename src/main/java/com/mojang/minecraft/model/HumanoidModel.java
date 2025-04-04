@@ -47,8 +47,8 @@ public class HumanoidModel extends BaseModel {
 	}
 
 	public void setupAnim(float x, float y, float xRot, float yRot, float zRot, float translation) {
-		this.head.yRot = yRot / 57.29578F;
-		this.head.xRot = zRot / 57.29578F;
+        this.head.yRot = yRot / 57.295776F;
+        this.head.xRot = zRot / 57.295776F;
 		this.rightArm.xRot = (float)Math.cos((double)x * 0.6662D + Math.PI) * 2.0F * y;
 		this.rightArm.zRot = (float)(Math.cos((double)x * 0.2312D) + 1.0D) * y;
 		this.leftArm.xRot = (float)Math.cos((double)x * 0.6662D) * 2.0F * y;

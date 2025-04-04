@@ -29,15 +29,18 @@ public class Player extends Mob {
 
 	public Player(Level level1) {
 		super(level1);
-		level1.player = this;
-		level1.removeEntity(this);
-		level1.addEntity(this);
+        if(level1 != null) {
+            level1.player = this;
+            level1.removeEntity(this);
+            level1.addEntity(this);
+        }
+
 		this.heightOffset = 1.62F;
 		this.health = 20;
 		this.modelName = "humanoid";
 		this.rotOffs = 180.0F;
 		this.ai = new BasicAI() {
-			protected final void update() {
+			public final void update() {
 				this.jumping = Player.this.input.jumping;
 				this.xxa = Player.this.input.ya;
 				this.yya = Player.this.input.xa;
@@ -49,7 +52,10 @@ public class Player extends Mob {
 		this.heightOffset = 1.62F;
 		this.setSize(0.6F, 1.8F);
 		super.resetPos();
-		this.level.player = this;
+        if(this.level != null) {
+            this.level.player = this;
+        }
+
 		this.health = 20;
 		this.deathTime = 0;
 	}
@@ -132,18 +138,32 @@ public class Player extends Mob {
 		return true;
 	}
 
-	public void bindTexture(Textures textures) {
-		if(newTexture != null) {
-			texture = textures.loadTexture(newTexture);
-			newTexture = null;
-		}
+    public void bindTexture(Textures textures) {
+        if(newTexture != null) {
+            texture = textures.loadTexture(newTexture);
+            newTexture = null;
+        }
 
-		if(texture < 0) {
-			GL11.glBindTexture(3553, textures.loadTexture("/char.png"));
-		} else {
-			GL11.glBindTexture(3553, texture);
-		}
-	}
+        int textures1;
+        if(texture < 0) {
+            textures1 = textures.loadTexture("/char.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures1);
+        } else {
+            textures1 = texture;
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures1);
+        }
+    }
+
+    public void hurt(Entity entity1, int i2) {
+        if(!this.level.creativeMode) {
+            super.hurt(entity1, i2);
+        }
+
+    }
+
+    public boolean isCreativeModeAllowed() {
+        return true;
+    }
 
     public boolean getItemShouldUseOnTouchEagler() {
         Tile tile;

@@ -109,8 +109,9 @@ public class LiquidTile extends Tile {
 		return this.liquid == Liquid.lava ? 100.0F : level.getBrightness(x, y, z);
 	}
 
-	public final boolean shouldRenderFace(Level level, int x, int y, int z, int layer, int face) {
-		return x >= 0 && y >= 0 && z >= 0 && x < level.width && z < level.height ? (layer != 1 && this.liquid == Liquid.water ? false : ((layer = level.getTile(x, y, z)) != this.tileID && layer != this.calmTileID ? (face != 1 || level.getTile(x - 1, y, z) != 0 && level.getTile(x + 1, y, z) != 0 && level.getTile(x, y, z - 1) != 0 && level.getTile(x, y, z + 1) != 0 ? super.shouldRenderFace(level, x, y, z, -1, face) : true) : false)) : false;
+	public final boolean shouldRenderFace(Level level, int x, int y, int z, int layer) {
+		int i6;
+		return x >= 0 && y >= 0 && z >= 0 && x < level.width && z < level.height ? ((i6 = level.getTile(x, y, z)) != this.tileID && i6 != this.calmTileID ? (layer == 1 && (level.getTile(x - 1, y, z) == 0 || level.getTile(x + 1, y, z) == 0 || level.getTile(x, y, z - 1) == 0 || level.getTile(x, y, z + 1) == 0) ? true : super.shouldRenderFace(level, x, y, z, layer)) : false) : false;
 	}
 
 	public final void renderFace(Tesselator t, int x, int y, int z, int face) {
@@ -150,13 +151,17 @@ public class LiquidTile extends Tile {
 		return this.liquid == Liquid.lava ? 5 : 0;
 	}
 
-    public final void spawnResources(Level level, int x, int y, int z, float chance) {
-    }
+	public final void spawnResources(float chance) {
+	}
 
 	public final void spawnResources(Level level, int x, int y, int z) {
 	}
 
 	public final int resourceCount() {
 		return 0;
+	}
+
+	public final int getRenderLayer() {
+		return this.liquid == Liquid.water ? 1 : 0;
 	}
 }

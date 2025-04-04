@@ -8,9 +8,9 @@ public final class Cube {
 	public Polygon[] polygons;
 	private int xTexOffs;
 	private int yTexOffs;
-	private float x;
-	private float y;
-	private float z;
+    public float x;
+    public float y;
+    public float z;
 	public float xRot;
 	public float yRot;
 	public float zRot;
@@ -103,17 +103,17 @@ public final class Cube {
 			} else {
 				GL11.glPushMatrix();
 				GL11.glTranslatef(this.x * translation, this.y * translation, this.z * translation);
-				if(this.zRot != 0.0F) {
-					GL11.glRotatef(this.zRot * 57.29578F, 0.0F, 0.0F, 1.0F);
-				}
+                if(this.zRot != 0.0F) {
+                    GL11.glRotatef(this.zRot * 57.295776F, 0.0F, 0.0F, 1.0F);
+                }
 
-				if(this.yRot != 0.0F) {
-					GL11.glRotatef(this.yRot * 57.29578F, 0.0F, 1.0F, 0.0F);
-				}
+                if(this.yRot != 0.0F) {
+                    GL11.glRotatef(this.yRot * 57.295776F, 0.0F, 1.0F, 0.0F);
+                }
 
-				if(this.xRot != 0.0F) {
-					GL11.glRotatef(this.xRot * 57.29578F, 1.0F, 0.0F, 0.0F);
-				}
+                if(this.xRot != 0.0F) {
+                    GL11.glRotatef(this.xRot * 57.295776F, 1.0F, 0.0F, 0.0F);
+                }
 
 				GL11.glCallList(this.list);
 				GL11.glPopMatrix();

@@ -6,6 +6,11 @@ public final class SaveLevelScreen extends LoadLevelScreen {
         this.title = "Save level";
     }
 
+    public final void init() {
+        super.init();
+        ((Button)this.buttons.get(5)).msg = "Save file...";
+    }
+
     protected final void setLevels(String[] levelNames) {
         for(int i2 = 0; i2 < 5; ++i2) {
             ((Button)this.buttons.get(i2)).msg = levelNames[i2];

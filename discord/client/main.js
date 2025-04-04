@@ -4,6 +4,8 @@ import { DiscordSDK } from "@discord/embedded-app-sdk";
 
 let auth;
 
+const server =
+    location.host === "ws://localhost" ? `ws://localhost` : `wss://${location.host}/.proxy/minecraft`;
 const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
 function startGame(name) {
@@ -11,9 +13,11 @@ function startGame(name) {
       container: "game_frame",
       crashOnUncaughtExceptions: true,
       assetUrlPrefix: ".proxy/",
+      skinDbUrl: `https://${location.host}/.proxy/skindb`,
+      skinUrl: `https://${location.host}/.proxy/skin`,
       username: name.slice(0, 16),
-      //server: server,
-      //mpPass: auth.access_token
+      server: server,
+      mpPass: auth.access_token
   };
   main();
 }
@@ -21,10 +25,8 @@ function startGame(name) {
 function startClient() {
   setupDiscordSdk().then(() => {
     console.log("Discord SDK is authenticated");
-    //const server =
-    //    location.host === "ws://localhost" ? `ws://localhost` : `wss://${location.host}/.proxy/minecraft`;
     let nameMap = {};
-    fetch('aliases.txt')
+    fetch('.proxy/aliases.txt')
       .then((response) => response.text())
       .then((data) => {
           const lines = data.trim().split('\n');

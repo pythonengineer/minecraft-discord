@@ -23,6 +23,16 @@ public class DesktopClientConfigAdapter implements IClientConfigAdapter {
     public static final IClientConfigAdapter instance = new DesktopClientConfigAdapter();
 
     @Override
+    public String getSkinDbUrl() {
+        return "https://playerdb.co";
+    }
+
+    @Override
+    public String getSkinUrl() {
+        return "https://textures.minecraft.net";
+    }
+
+    @Override
     public String getResourcePacksDB() {
         return "resources";
     }

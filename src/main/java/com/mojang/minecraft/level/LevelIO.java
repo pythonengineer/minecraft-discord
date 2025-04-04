@@ -39,7 +39,6 @@ public final class LevelIO {
                 if((b12 = dataInputStream10.readByte()) > 2) {
                     return null;
                 } else if (b12 == 1) {
-                    System.out.println("Version is 1!");
                     String string14 = dataInputStream10.readUTF();
                     String string15 = dataInputStream10.readUTF();
                     long j7 = dataInputStream10.readLong();

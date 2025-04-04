@@ -5,10 +5,12 @@ import com.mojang.minecraft.level.tile.Tile;
 import com.mojang.minecraft.renderer.Tesselator;
 
 public class TerrainParticle extends Particle {
-    public TerrainParticle(Level level1, float f2, float f3, float f4, float f5, float f6, float f7, Tile tile8) {
-        super(level1, f2, f3, f4, f5, f6, f7);
-        this.tex = tile8.tex;
-        this.gravity = tile8.particleGravity;
+    private static final long serialVersionUID = 1L;
+
+    public TerrainParticle(Level level, float x, float y, float z, float xr, float yr, float zr, Tile tile) {
+        super(level, x, y, z, xr, yr, zr);
+        this.tex = tile.tex;
+        this.gravity = tile.particleGravity;
         this.rCol = this.gCol = this.bCol = 0.6F;
     }
 

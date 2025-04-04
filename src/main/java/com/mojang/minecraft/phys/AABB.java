@@ -2,9 +2,6 @@ package com.mojang.minecraft.phys;
 
 import com.mojang.minecraft.model.Vec3;
 
-import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
-
 import java.io.Serializable;
 
 public class AABB implements Serializable {
@@ -160,33 +157,6 @@ public class AABB implements Serializable {
 
     public boolean contains(Vec3 t) {
         return t.x > this.x0 && t.x < this.x1 ? (t.y > this.y0 && t.y < this.y1 ? t.z > this.z0 && t.z < this.z1 : false) : false;
-    }
-
-    public void render() {
-        GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        GL11.glVertex3f(this.x0, this.y0, this.z0);
-        GL11.glVertex3f(this.x1, this.y0, this.z0);
-        GL11.glVertex3f(this.x1, this.y0, this.z1);
-        GL11.glVertex3f(this.x0, this.y0, this.z1);
-        GL11.glVertex3f(this.x0, this.y0, this.z0);
-        GL11.glEnd();
-        GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        GL11.glVertex3f(this.x0, this.y1, this.z0);
-        GL11.glVertex3f(this.x1, this.y1, this.z0);
-        GL11.glVertex3f(this.x1, this.y1, this.z1);
-        GL11.glVertex3f(this.x0, this.y1, this.z1);
-        GL11.glVertex3f(this.x0, this.y1, this.z0);
-        GL11.glEnd();
-        GL11.glBegin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        GL11.glVertex3f(this.x0, this.y0, this.z0);
-        GL11.glVertex3f(this.x0, this.y1, this.z0);
-        GL11.glVertex3f(this.x1, this.y0, this.z0);
-        GL11.glVertex3f(this.x1, this.y1, this.z0);
-        GL11.glVertex3f(this.x1, this.y0, this.z1);
-        GL11.glVertex3f(this.x1, this.y1, this.z1);
-        GL11.glVertex3f(this.x0, this.y0, this.z1);
-        GL11.glVertex3f(this.x0, this.y1, this.z1);
-        GL11.glEnd();
     }
 
     public float getSize() {

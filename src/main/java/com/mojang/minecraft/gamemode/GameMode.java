@@ -13,6 +13,13 @@ public class GameMode {
         this.minecraft = minecraft;
     }
 
+    public void initLevel(Level level) {
+        level.creativeMode = false;
+    }
+
+    public void handleOpenInventory() {
+    }
+
     public void startDestroyBlock(int x, int y, int z) {
         this.destroyBlock(x, y, z);
     }
@@ -39,10 +46,10 @@ public class GameMode {
 
     }
 
-    public void stopDestroyingBlock(int x, int y, int z, int id) {
+    public void continueDestroyBlock(int x, int y, int z, int id) {
     }
 
-    public void tick() {
+    public void stopDestroyBlock() {
     }
 
     public void render(float damageTime) {
@@ -60,5 +67,18 @@ public class GameMode {
     }
 
     public void initPlayer(Player player) {
+    }
+
+    public void tick() {
+    }
+
+    public void createPlayer(Level level) {
+    }
+
+    public boolean canHurtPlayer() {
+        return true;
+    }
+
+    public void adjustPlayer(Player player) {
     }
 }
