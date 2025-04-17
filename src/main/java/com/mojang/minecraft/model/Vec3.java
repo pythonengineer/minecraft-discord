@@ -31,6 +31,13 @@ public final class Vec3 {
         return (float)Math.sqrt((double)(f2 * f2 + f3 * f3 + f4 * f4));
     }
 
+    public final float distanceToSqr(Vec3 t) {
+        float f2 = t.x - this.x;
+        float f3 = t.y - this.y;
+        float f4 = t.z - this.z;
+        return f2 * f2 + f3 * f3 + f4 * f4;
+    }
+
     public final Vec3 clipX(Vec3 t, float xa) {
         float f3 = t.x - this.x;
         float f4 = t.y - this.y;

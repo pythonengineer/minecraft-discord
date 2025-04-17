@@ -51,6 +51,7 @@ public abstract class Entity implements Serializable {
     public float footSize = 0.0F;
     public boolean noPhysics = false;
     public float pushthrough = 0.0F;
+    public boolean hovered = false;
 
     public Entity(Level level) {
         this.level = level;
@@ -472,5 +473,8 @@ public abstract class Entity implements Serializable {
 
     public boolean isCreativeModeAllowed() {
         return false;
+    }
+
+    public void renderHover(Textures textures, float t) {
     }
 }

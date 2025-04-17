@@ -17,11 +17,13 @@ public class Flower extends Tile {
 	}
 
 	public void tick(Level level, int x, int y, int z, EaglercraftRandom random) {
-		int i6 = level.getTile(x, y - 1, z);
-		if(!level.isLit(x, y, z) || i6 != Tile.dirt.id && i6 != Tile.grass.id) {
-			level.setTile(x, y, z, 0);
-		}
+        if(!level.growTrees) {
+            int i6 = level.getTile(x, y - 1, z);
+            if(!level.isLit(x, y, z) || i6 != Tile.dirt.id && i6 != Tile.grass.id) {
+                level.setTile(x, y, z, 0);
+            }
 
+        }
 	}
 
 	/**

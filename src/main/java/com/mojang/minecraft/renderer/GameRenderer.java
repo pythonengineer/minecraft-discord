@@ -1,5 +1,6 @@
 package com.mojang.minecraft.renderer;
 
+import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.Minecraft;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.liquid.Liquid;
@@ -11,7 +12,6 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 
 public final class GameRenderer {
     public Minecraft minecraft;
@@ -20,6 +20,7 @@ public final class GameRenderer {
     public float renderDistance = 0.0F;
     public TileRenderer tileRenderer;
     public int rainTicks;
+    public Entity entity = null;
     public EaglercraftRandom random = new EaglercraftRandom();
     private volatile int u1 = 0;
     private volatile int u2 = 0;

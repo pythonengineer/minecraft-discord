@@ -506,8 +506,7 @@ public class Tile {
 				v01 = 3;
 			}
 
-			vec311.add((float)x, (float)y, (float)z);
-			return new HitResult(x, y, z, v01, vec311);
+            return new HitResult(x, y, z, v01, vec311.add((float)x, (float)y, (float)z));
 		}
 	}
 

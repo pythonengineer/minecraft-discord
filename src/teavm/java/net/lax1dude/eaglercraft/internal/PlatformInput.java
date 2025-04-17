@@ -592,7 +592,7 @@ public class PlatformInput {
                         evt.stopPropagation();
                     }
                 });
-        canvas.addEventListener("wheel", wheel = new EventListener<WheelEvent>() {
+        win.addEventListener("wheel", wheel = new EventListener<WheelEvent>() {
             @Override
             public void handleEvent(WheelEvent evt) {
                 evt.preventDefault();

@@ -33,6 +33,7 @@ public class Mob extends Entity {
 	public String modelName = null;
 	protected float bobStrength = 1.0F;
 	protected int deathScore = 0;
+    public float renderOffset = 0.0F;
 	public int health = 20;
 	public int lastHealth;
 	public int invulnerableTime = 0;
@@ -246,7 +247,7 @@ public class Mob extends Entity {
 			GL11.glColor3f(f9 = this.getBrightness(translation), f9, f9);
 			f9 = 0.0625F;
 			float f10 = (float)(-Math.abs(Math.cos((double)f8 * 0.6662D)) * 5.0D * (double)f5 * (double)this.bobStrength - 23.0D);
-			GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation - 1.62F, this.zo + (this.z - this.zo) * translation);
+            GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation - 1.62F + this.renderOffset, this.zo + (this.z - this.zo) * translation);
 			float f11;
 			if((f11 = (float)this.hurtTime - translation) > 0.0F || this.health <= 0) {
 				if(f11 < 0.0F) {

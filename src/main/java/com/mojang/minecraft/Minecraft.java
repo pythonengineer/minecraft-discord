@@ -2,6 +2,7 @@ package com.mojang.minecraft;
 
 import com.mojang.minecraft.gamemode.CreativeGameMode;
 import com.mojang.minecraft.gamemode.GameMode;
+import com.mojang.minecraft.gamemode.SurvivalGameMode;
 import com.mojang.minecraft.gui.ChatScreen;
 import com.mojang.minecraft.gui.DeathScreen;
 import com.mojang.minecraft.gui.ErrorScreen;
@@ -147,7 +148,7 @@ public final class Minecraft implements Runnable {
         }
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft 0.28_01");
+        Display.setTitle("Minecraft 0.29_02");
 
         try {
             Display.create();
@@ -863,11 +864,11 @@ public final class Minecraft implements Runnable {
                             }
                         }
 
-                        if(Keyboard.getEventKey() == Keyboard.KEY_F5 && this.networkClient == null) {
+                        if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
                             this.raining = !this.raining;
                         }
 
-                        if(Keyboard.getEventKey() == Keyboard.KEY_TAB && this.networkClient == null) {
+                        if(Keyboard.getEventKey() == Keyboard.KEY_TAB && this.gamemode instanceof SurvivalGameMode) {
                             this.shootArrow();
                         }
 
@@ -1034,48 +1035,56 @@ public final class Minecraft implements Runnable {
 	}
 
     private void pick(float a) {
-        float f19 = this.player.xRotO + (this.player.xRot - this.player.xRotO) * a;
-        float f20 = this.player.yRotO + (this.player.yRot - this.player.yRotO) * a;
-        Vec3 vec393 = this.gameRenderer.getPlayerRotVec(a);
-        float f68 = (float)Math.cos((double)(-f20) * Math.PI / 180.0D - Math.PI);
-        float f96 = (float)Math.sin((double)(-f20) * Math.PI / 180.0D - Math.PI);
-        float f99 = (float)Math.cos((double)(-f19) * Math.PI / 180.0D);
-        float f24 = (float)Math.sin((double)(-f19) * Math.PI / 180.0D);
-        float f25 = f96 * f99;
-        f20 = f24;
-        f68 *= f99;
-        f19 = this.gamemode.getPickRange();
-        Vec3 vec3100 = vec393.add(f25 * f19, f24 * f19, f68 * f19);
-        this.hitResult = this.level.clip(vec393, vec3100);
-        vec393 = this.gameRenderer.getPlayerRotVec(a);
-        float f82 = f19;
+        float f24 = (this.player = this.player).xRotO + (this.player.xRot - this.player.xRotO) * a;
+        float f25 = this.player.yRotO + (this.player.yRot - this.player.yRotO) * a;
+        Vec3 vec326 = this.gameRenderer.getPlayerRotVec(a);
+        float f27 = (float)Math.cos(-f25 * 0.017453292F - (float)Math.PI);
+        float f78 = (float)Math.sin(-f25 * 0.017453292F - (float)Math.PI);
+        float f85 = (float)Math.cos(-f24 * 0.017453292F);
+        float f17 = (float)Math.sin(-f24 * 0.017453292F);
+        float f18 = f78 * f85;
+        float f72 = f27 * f85;
+        float f19 = this.gamemode.getPickRange();
+        Vec3 vec380 = vec326.add(f18 * f19, f17 * f19, f72 * f19);
+        this.hitResult = this.level.clip(vec326, vec380);
+        f85 = f19;
         if(this.hitResult != null) {
-            f82 = this.hitResult.vec.distanceTo(vec393);
+            f85 = this.hitResult.vec.distanceTo(vec326);
         }
 
-        List list83 = this.level.blockMap.getEntities(this.player, this.player.bb.expand(f25 * f82, f24 * f82, f68 * f82));
+        vec326 = this.gameRenderer.getPlayerRotVec(a);
+        if(this.gamemode instanceof CreativeGameMode) {
+            f19 = 32.0F;
+        } else {
+            f19 = f85;
+        }
 
-        int i90;
-        for(i90 = 0; i90 < list83.size(); ++i90) {
-            Entity entity101;
-            if((entity101 = (Entity)list83.get(i90)).isPickable()) {
-                f99 = 0.1F;
-                AABB aABB102 = entity101.bb.grow(f99, f99, f99);
+        vec380 = vec326.add(f18 * f19, f17 * f19, f72 * f19);
+        this.gameRenderer.entity = null;
+        List list5 = this.level.blockMap.getEntities(this.player, this.player.bb.expand(f18 * f19, f17 * f19, f72 * f19));
+        float f6 = 0.0F;
 
-                for(f24 = 0.0F; f24 < f82; f24 += 0.05F) {
-                    if(aABB102.contains(vec393.add(f25 * f24, f20 * f24, f68 * f24))) {
-                        f82 = f24;
-                        this.hitResult = new HitResult(entity101);
-                        break;
-                    }
+        for(int i61 = 0; i61 < list5.size(); ++i61) {
+            Entity entity74;
+            if((entity74 = (Entity)list5.get(i61)).isPickable()) {
+                f85 = 0.1F;
+                HitResult hitResult90;
+                if((hitResult90 = entity74.bb.grow(f85, f85, f85).clip(vec326, vec380)) != null && ((f85 = vec326.distanceTo(hitResult90.vec)) < f6 || f6 == 0.0F)) {
+                    this.gameRenderer.entity = entity74;
+                    f6 = f85;
                 }
             }
+        }
+
+        if(this.gameRenderer.entity != null && !(this.gamemode instanceof CreativeGameMode)) {
+            this.hitResult = new HitResult(this.gameRenderer.entity);
         }
     }
 
 	public void render(float a) {
-        int i81 = 0;
+        this.pick(a);
 
+        int i81 = 0;
         while(true) {
             if(i81 >= 2) {
                 GL11.glColorMask(true, true, true, false);
@@ -1163,7 +1172,6 @@ public final class Minecraft implements Runnable {
             }
 
             this.orientCamera(a);
-            this.pick(a);
 
             Frustum frustum22 = FrustumCuller.calculateFrustum();
             Frustum frustum23 = frustum22;
@@ -1515,6 +1523,10 @@ public final class Minecraft implements Runnable {
                 }
             }
 
+            if(this.gameRenderer.entity != null) {
+                this.gameRenderer.entity.renderHover(this.textures, a);
+            }
+
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glLoadIdentity();
             if(this.options.anaglyph3d) {
@@ -1635,7 +1647,16 @@ public final class Minecraft implements Runnable {
             this.gamemode.initLevel(level);
             level.font = this.font;
             level.rendererContext = this;
-            this.player = (Player)level.findSubclassOf(Player.class);
+            if(!this.isOnlineClient()) {
+                this.player = (Player)level.findSubclassOf(Player.class);
+            } else if(this.player != null) {
+                this.player.resetPos();
+                this.gamemode.initPlayer(this.player);
+                if(level != null) {
+                    level.player = this.player;
+                    level.addEntity(this.player);
+                }
+            }
         }
 
         if(this.player == null) {

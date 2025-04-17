@@ -15,6 +15,7 @@ public class GameMode {
 
     public void initLevel(Level level) {
         level.creativeMode = false;
+        level.growTrees = true;
     }
 
     public void handleOpenInventory() {

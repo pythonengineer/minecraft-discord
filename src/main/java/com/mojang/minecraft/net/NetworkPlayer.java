@@ -40,6 +40,7 @@ public class NetworkPlayer extends HumanoidMob {
 		this.xRot = xRot;
 		this.yRot = yRot;
         this.armor = this.helmet = false;
+        this.renderOffset = 0.6875F;
         (new NetworkPlayerTextureLoader(this)).start();
 		this.allowAlpha = false;
 	}
@@ -57,6 +58,7 @@ public class NetworkPlayer extends HumanoidMob {
 	}
 
 	public void bindTexture(Textures textures) {
+        this.textures = textures;
 		if(this.newTexture != null) {
 			ImageData bufferedImage2 = this.newTexture;
 			int[] i3 = new int[512];
@@ -90,31 +92,38 @@ public class NetworkPlayer extends HumanoidMob {
 		}
 	}
 
-	public void render(Textures textures, float translation) {
-        this.textures = textures;
-        super.render(textures, translation);
-        Font textures1 = this.minecraft.font;
+    public void renderHover(Textures textures1, float f2) {
+        Font font3 = this.minecraft.font;
         GL11.glPushMatrix();
-        GL11.glTranslatef(this.xo + (this.x - this.xo) * translation, this.yo + (this.y - this.yo) * translation + 0.8F, this.zo + (this.z - this.zo) * translation);
+        GL11.glTranslatef(this.xo + (this.x - this.xo) * f2, this.yo + (this.y - this.yo) * f2 + 0.8F + this.renderOffset, this.zo + (this.z - this.zo) * f2);
         GL11.glRotatef(-this.minecraft.player.yRot, 0.0F, 1.0F, 0.0F);
-        translation = 0.05F;
-        GL11.glScalef(0.05F, -translation, translation);
-        GL11.glTranslatef((float)(-textures1.width(this.displayName)) / 2.0F, 0.0F, 0.0F);
+        f2 = 0.05F;
+        GL11.glScalef(0.05F, -f2, f2);
+        GL11.glTranslatef((float)(-font3.width(this.displayName)) / 2.0F, 0.0F, 0.0F);
         GL11.glNormal3f(1.0F, -1.0F, 1.0F);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_LIGHT0);
         if(this.name.equalsIgnoreCase("Notch")) {
-            textures1.draw(this.displayName, 0, 0, 16776960);
+            font3.draw(this.displayName, 0, 0, 16776960);
         } else {
-            textures1.draw(this.displayName, 0, 0, 0xFFFFFF);
+            font3.draw(this.displayName, 0, 0, 0xFFFFFF);
         }
 
+        GL11.glDepthFunc(GL11.GL_GREATER);
+        GL11.glDepthMask(false);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.8F);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        font3.draw(this.displayName, 0, 0, 0xFFFFFF);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDepthMask(true);
+        GL11.glDepthFunc(GL11.GL_LEQUAL);
+        GL11.glTranslatef(1.0F, 1.0F, -0.05F);
+        font3.draw(this.name, 0, 0, 5263440);
         GL11.glEnable(GL11.GL_LIGHT0);
         GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glTranslatef(1.0F, 1.0F, -0.05F);
-        textures1.draw(this.name, 0, 0, 5263440);
         GL11.glPopMatrix();
-	}
+    }
 
 	public void queue(byte xa, byte ya, byte za, float xr, float yr) {
 		float f6 = xr - this.yRot;
@@ -206,7 +215,7 @@ public class NetworkPlayer extends HumanoidMob {
 	}
 
 	public void clear() {
-		if(this.texture >= 0) {
+        if(this.texture >= 0 && this.textures != null) {
 			Textures textures10000 = this.textures;
 			int i1 = this.texture;
 			Textures textures2 = this.textures;

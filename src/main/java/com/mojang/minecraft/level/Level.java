@@ -51,6 +51,7 @@ public class Level implements Serializable {
     public Entity player;
     public transient ParticleEngine particleEngine;
     public transient Font font;
+    public boolean growTrees = false;
 
     public void initTransient() {
         if(this.blocks == null) {
@@ -805,16 +806,16 @@ public class Level implements Serializable {
                         ++vec320.z;
                     }
 
-                    int i22 = this.getTile(i6, i7, i8);
-                    Tile tile23 = Tile.tiles[i22];
-                    if(i22 > 0 && tile23.getLiquidType() == Liquid.none) {
+                    int i21 = this.getTile(i6, i7, i8);
+                    Tile tile23 = Tile.tiles[i21];
+                    if(i21 > 0 && tile23.getLiquidType() == Liquid.none) {
+                        HitResult hitResult22;
                         if(tile23.isOpaque()) {
-                            return new HitResult(i6, i7, i8, b24, vec320);
-                        }
-
-                        HitResult hitResult21;
-                        if((hitResult21 = tile23.clip(i6, i7, i8, v0, v1)) != null) {
-                            return hitResult21;
+                            if((hitResult22 = tile23.clip(i6, i7, i8, v0, v1)) != null) {
+                                return hitResult22;
+                            }
+                        } else if((hitResult22 = tile23.clip(i6, i7, i8, v0, v1)) != null) {
+                            return hitResult22;
                         }
                     }
                 }

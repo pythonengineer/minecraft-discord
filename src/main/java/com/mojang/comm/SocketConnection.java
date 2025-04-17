@@ -155,6 +155,8 @@ public final class SocketConnection {
                                 string19 = string10002;
                                 b15 = b10001;
                                 if(b15 >= 0) {
+                                    b8 = (byte)(b8 + 128);
+                                    s21 = (short)(s21 - 22);
                                     networkPlayer20 = new NetworkPlayer(this.client.minecraft, b15, string19, s18, s21, s24, (float)(-b8 * 360) / 256.0F, (float)(b9 * 360) / 256.0F);
                                     this.client.players.put(b15, networkPlayer20);
                                     this.client.minecraft.level.addEntity(networkPlayer20);
@@ -180,8 +182,12 @@ public final class SocketConnection {
                                     b15 = b10001;
                                     if(b15 < 0) {
                                         this.client.minecraft.player.moveTo((float)s17 / 32.0F, (float)s18 / 32.0F, (float)s21 / 32.0F, (float)(b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
-                                    } else if((networkPlayer28 = (NetworkPlayer)this.client.players.get(b15)) != null) {
-                                        networkPlayer28.teleport(s17, s18, s21, (float)(-b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
+                                    } else {
+                                        b25 = (byte)(b25 + 128);
+                                        s18 = (short)(s18 - 22);
+                                        if((networkPlayer28 = (NetworkPlayer)this.client.players.get(b15)) != null) {
+                                            networkPlayer28.teleport(s17, s18, s21, (float)(b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
+                                        }
                                     }
                                 } else {
                                     byte b22;
@@ -200,8 +206,11 @@ public final class SocketConnection {
                                         b22 = b31;
                                         b23 = b30;
                                         b15 = b10001;
-                                        if(b15 >= 0 && (networkPlayer28 = (NetworkPlayer)this.client.players.get(b15)) != null) {
-                                            networkPlayer28.queue(b23, b22, b6, (float)(-b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
+                                        if(b15 >= 0) {
+                                            b25 = (byte)(b25 + 128);
+                                            if ((networkPlayer28 = (NetworkPlayer)this.client.players.get(b15)) != null) {
+                                                networkPlayer28.queue(b23, b22, b6, (float)(b25 * 360) / 256.0F, (float)(b8 * 360) / 256.0F);
+                                            }
                                         }
                                     } else if(packet3 == Packet.PLAYER_ROTATE) {
                                         b10001 = ((Byte)object11[0]).byteValue();
@@ -209,9 +218,12 @@ public final class SocketConnection {
                                         b22 = ((Byte)object11[2]).byteValue();
                                         b23 = b30;
                                         b15 = b10001;
-                                        NetworkPlayer networkPlayer26;
-                                        if(b15 >= 0 && (networkPlayer26 = (NetworkPlayer)this.client.players.get(b15)) != null) {
-                                            networkPlayer26.queue((float)(-b23 * 360) / 256.0F, (float)(b22 * 360) / 256.0F);
+                                        if(b15 >= 0) {
+                                            b23 = (byte)(b23 + 128);
+                                            NetworkPlayer networkPlayer26;
+                                            if((networkPlayer26 = (NetworkPlayer)this.client.players.get(b15)) != null) {
+                                                networkPlayer26.queue((float)(b23 * 360) / 256.0F, (float)(b22 * 360) / 256.0F);
+                                            }
                                         }
                                     } else if(packet3 == Packet.PLAYER_MOVE) {
                                         b10001 = ((Byte)object11[0]).byteValue();
@@ -244,6 +256,8 @@ public final class SocketConnection {
                                     } else if(packet3 == Packet.KICK_PLAYER) {
                                         this.disconnect();
                                         this.client.minecraft.setScreen(new ErrorScreen("Connection lost", (String)object11[0]));
+                                    } else if(packet3 == Packet.USER_TYPE) {
+                                        this.client.minecraft.player.userType = ((Byte)object11[0]).byteValue();
                                     }
                                 }
                             }

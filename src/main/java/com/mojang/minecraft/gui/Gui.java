@@ -181,7 +181,7 @@ public final class Gui extends GuiComponent {
         this.blit(i - 7, this.scaledHeight / 2 - 7, 0, 0, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
 
-		font5.drawShadow("0.28_01", 2, 2, 0xFFFFFF);
+		font5.drawShadow("0.29_02", 2, 2, 0xFFFFFF);
 		if(this.minecraft.options.showFramerate) {
 			font5.drawShadow(this.minecraft.fpsString, 2, 12, 0xFFFFFF);
 		}

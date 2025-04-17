@@ -21,6 +21,7 @@ public final class CreativeGameMode extends GameMode {
         super.initLevel(level);
         level.removeAllNonCreativeModeEntities();
         level.creativeMode = true;
+        level.growTrees = false;
     }
 
     public final void adjustPlayer(Player player) {

@@ -1,5 +1,6 @@
 package com.mojang.minecraft.phys;
 
+import com.mojang.minecraft.HitResult;
 import com.mojang.minecraft.model.Vec3;
 
 import java.io.Serializable;
@@ -202,5 +203,105 @@ public class AABB implements Serializable {
 
     public AABB copy() {
         return new AABB(this.x0, this.y0, this.z0, this.x1, this.y1, this.z1);
+    }
+
+    public HitResult clip(Vec3 v0, Vec3 v1) {
+        Vec3 vec33 = v0.clipX(v1, this.x0);
+        Vec3 vec34 = v0.clipX(v1, this.x1);
+        Vec3 vec35 = v0.clipY(v1, this.y0);
+        Vec3 vec36 = v0.clipY(v1, this.y1);
+        Vec3 vec37 = v0.clipZ(v1, this.z0);
+        v1 = v0.clipZ(v1, this.z1);
+        if(!this.containsX(vec33)) {
+            vec33 = null;
+        }
+
+        if(!this.containsX(vec34)) {
+            vec34 = null;
+        }
+
+        if(!this.containsY(vec35)) {
+            vec35 = null;
+        }
+
+        if(!this.containsY(vec36)) {
+            vec36 = null;
+        }
+
+        if(!this.containsZ(vec37)) {
+            vec37 = null;
+        }
+
+        if(!this.containsZ(v1)) {
+            v1 = null;
+        }
+
+        Vec3 vec38 = null;
+        if(vec33 != null) {
+            vec38 = vec33;
+        }
+
+        if(vec34 != null && (vec38 == null || v0.distanceToSqr(vec34) < v0.distanceToSqr(vec38))) {
+            vec38 = vec34;
+        }
+
+        if(vec35 != null && (vec38 == null || v0.distanceToSqr(vec35) < v0.distanceToSqr(vec38))) {
+            vec38 = vec35;
+        }
+
+        if(vec36 != null && (vec38 == null || v0.distanceToSqr(vec36) < v0.distanceToSqr(vec38))) {
+            vec38 = vec36;
+        }
+
+        if(vec37 != null && (vec38 == null || v0.distanceToSqr(vec37) < v0.distanceToSqr(vec38))) {
+            vec38 = vec37;
+        }
+
+        if(v1 != null && (vec38 == null || v0.distanceToSqr(v1) < v0.distanceToSqr(vec38))) {
+            vec38 = v1;
+        }
+
+        if(vec38 == null) {
+            return null;
+        } else {
+            byte v01 = -1;
+            if(vec38 == vec33) {
+                v01 = 4;
+            }
+
+            if(vec38 == vec34) {
+                v01 = 5;
+            }
+
+            if(vec38 == vec35) {
+                v01 = 0;
+            }
+
+            if(vec38 == vec36) {
+                v01 = 1;
+            }
+
+            if(vec38 == vec37) {
+                v01 = 2;
+            }
+
+            if(vec38 == v1) {
+                v01 = 3;
+            }
+
+            return new HitResult(0, 0, 0, v01, vec38);
+        }
+    }
+
+    private boolean containsX(Vec3 xa) {
+        return xa == null ? false : xa.y >= this.y0 && xa.y <= this.y1 && xa.z >= this.z0 && xa.z <= this.z1;
+    }
+
+    private boolean containsY(Vec3 ya) {
+        return ya == null ? false : ya.x >= this.x0 && ya.x <= this.x1 && ya.z >= this.z0 && ya.z <= this.z1;
+    }
+
+    private boolean containsZ(Vec3 za) {
+        return za == null ? false : za.x >= this.x0 && za.x <= this.x1 && za.y >= this.y0 && za.y <= this.y1;
     }
 }
