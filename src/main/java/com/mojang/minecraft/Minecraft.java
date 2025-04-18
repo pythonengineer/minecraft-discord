@@ -148,7 +148,7 @@ public final class Minecraft implements Runnable {
         }
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft 0.29_02");
+        Display.setTitle("Minecraft 0.30");
 
         try {
             Display.create();
@@ -386,11 +386,9 @@ public final class Minecraft implements Runnable {
                                     }
                                 }
 
-                                GL11.glEnable(GL11.GL_TEXTURE_2D);
                                 this.setupOrthoCamera();
                                 touchOverlayRenderer.render(width, height, scaledResolution);
                                 GL11.disableBlend();
-                                GL11.glDisable(GL11.GL_TEXTURE_2D);
                             }
                         }
 
@@ -817,6 +815,10 @@ public final class Minecraft implements Runnable {
                                 i17 = Tile.slabHalf.id;
                             }
 
+                            if(i17 == Tile.unbreakable.id) {
+                                i17 = Tile.rock.id;
+                            }
+
                             this.player.inventory.grabTexture(i17, this.gamemode instanceof CreativeGameMode);
                         }
                     }
@@ -1049,7 +1051,7 @@ public final class Minecraft implements Runnable {
         this.hitResult = this.level.clip(vec326, vec380);
         f85 = f19;
         if(this.hitResult != null) {
-            f85 = this.hitResult.vec.distanceTo(vec326);
+            f85 = this.hitResult.vec.distanceTo(this.gameRenderer.getPlayerRotVec(a));
         }
 
         vec326 = this.gameRenderer.getPlayerRotVec(a);

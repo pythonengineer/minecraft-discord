@@ -1,6 +1,7 @@
 package com.mojang.minecraft.level.tile;
 
 import com.mojang.minecraft.HitResult;
+import com.mojang.minecraft.item.Item;
 import com.mojang.minecraft.level.Level;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.model.Vec3;
@@ -361,25 +362,33 @@ public class Tile {
 		return 1;
 	}
 
+    public int getId() {
+        return this.id;
+    }
+
 	public final int getDestroyProgress() {
 		return this.destroyProgress;
 	}
 
-	public void spawnResources(Level level, int x, int y, int z) {
-        this.spawnResources(1.0F);
-	}
+    public void spawnResources(Level level, int x, int y, int z) {
+        this.spawnResources(level, x, y, z, 1.0F);
+    }
 
-    public void spawnResources(float chance) {
-        int i3 = this.resourceCount();
+    public void spawnResources(Level level, int x, int y, int z, float chance) {
+        if(!level.creativeMode) {
+            int i6 = this.resourceCount();
 
-        for(int i2 = 0; i2 < i3; ++i2) {
-            if(random.nextFloat() <= chance) {
-                random.nextFloat();
-                random.nextFloat();
-                random.nextFloat();
+            for(int i7 = 0; i7 < i6; ++i7) {
+                if(random.nextFloat() <= chance) {
+                    float f8 = 0.7F;
+                    float f9 = random.nextFloat() * f8 + (1.0F - f8) * 0.5F;
+                    float f10 = random.nextFloat() * f8 + (1.0F - f8) * 0.5F;
+                    f8 = random.nextFloat() * f8 + (1.0F - f8) * 0.5F;
+                    level.addEntity(new Item(level, (float)x + f9, (float)y + f10, (float)z + f8, this.getId()));
+                }
             }
-        }
 
+        }
     }
 
 	public void renderGuiTile(Tesselator t) {
@@ -521,6 +530,9 @@ public class Tile {
 	private boolean containsZ(Vec3 t) {
 		return t == null ? false : t.x >= this.xx0 && t.x <= this.xx1 && t.y >= this.yy0 && t.y <= this.yy1;
 	}
+
+    public void wasExploded(Level level, int x, int y, int z) {
+    }
 
     public boolean render(Level level, int x, int y, int z, Tesselator t) {
         boolean z6 = false;

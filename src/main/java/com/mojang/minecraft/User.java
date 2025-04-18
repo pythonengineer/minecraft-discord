@@ -10,6 +10,7 @@ public final class User {
 	public String name;
 	public String sessionId;
 	public String mpPass;
+    public boolean hasPaid;
 
 	public User(String name, String sessionId) {
 		this.name = name;

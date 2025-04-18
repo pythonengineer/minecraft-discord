@@ -4,6 +4,7 @@ import com.mojang.minecraft.Entity;
 import com.mojang.minecraft.LevelLoaderListener;
 import com.mojang.minecraft.level.liquid.Liquid;
 import com.mojang.minecraft.mob.Creeper;
+import com.mojang.minecraft.mob.Mob;
 import com.mojang.minecraft.mob.Pig;
 import com.mojang.minecraft.mob.Sheep;
 import com.mojang.minecraft.mob.Skeleton;
@@ -25,7 +26,7 @@ public final class MobSpawner {
                 levelLoaderListener.setLoadingProgress(i5 * 100 / (count - 1));
             }
 
-            int i6 = this.level.random.nextInt(5);
+            int i6 = this.level.random.nextInt(6);
             int i7 = this.level.random.nextInt(this.level.width);
             int i8 = (int)(Math.min(this.level.random.nextFloat(), this.level.random.nextFloat()) * (float)this.level.depth);
             int i9 = this.level.random.nextInt(this.level.height);
@@ -62,31 +63,34 @@ public final class MobSpawner {
                                 }
                             }
 
-                            Sheep sheep21 = null;
+                            Object object21 = null;
                             if(i6 == 0) {
-                                new Zombie(this.level, f15, f16, f17);
+                                object21 = new Zombie(this.level, f15, f16, f17);
                             }
 
                             if(i6 == 1) {
-                                new Skeleton(this.level, f15, f16, f17);
+                                object21 = new Skeleton(this.level, f15, f16, f17);
                             }
 
                             if(i6 == 2) {
-                                new Pig(this.level, f15, f16, f17);
+                                object21 = new Pig(this.level, f15, f16, f17);
                             }
 
                             if(i6 == 3) {
-                                new Creeper(this.level, f15, f16, f17);
+                                object21 = new Creeper(this.level, f15, f16, f17);
                             }
 
                             if(i6 == 4) {
-                                new Spider(this.level, f15, f16, f17);
+                                object21 = new Spider(this.level, f15, f16, f17);
                             }
 
-                            sheep21 = new Sheep(this.level, f15, f16, f17);
-                            if(this.level.isFree(sheep21.bb)) {
+                            if(i6 == 5) {
+                                object21 = new Sheep(this.level, f15, f16, f17);
+                            }
+
+                            if(this.level.isFree(((Mob)object21).bb)) {
                                 ++i4;
-                                this.level.addEntity(sheep21);
+                                this.level.addEntity((Entity)object21);
                             }
                         }
                     }

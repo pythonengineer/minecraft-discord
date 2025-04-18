@@ -107,7 +107,6 @@ public final class LevelRenderer {
 		}
 
 		tesselator11.end();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, levelRenderer9.textures.loadTexture("/rock.png"));
 		GL11.glColor3f(0.8F, 0.8F, 0.8F);
 		tesselator11.begin(DefaultVertexFormats.POSITION_TEX);
 

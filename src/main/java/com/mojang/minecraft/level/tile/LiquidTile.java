@@ -151,8 +151,8 @@ public class LiquidTile extends Tile {
 		return this.liquid == Liquid.lava ? 5 : 0;
 	}
 
-	public final void spawnResources(float chance) {
-	}
+    public final void spawnResources(Level level, int x, int y, int z, float chance) {
+    }
 
 	public final void spawnResources(Level level, int x, int y, int z) {
 	}

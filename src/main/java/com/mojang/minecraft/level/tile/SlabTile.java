@@ -40,6 +40,10 @@ public final class SlabTile extends Tile {
 
     }
 
+    public final int getId() {
+        return Tile.slabHalf.id;
+    }
+
     public final boolean isOpaque() {
         return this.half;
     }

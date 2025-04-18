@@ -10,6 +10,10 @@ public final class LogTile extends Tile {
         return random.nextInt(3) + 3;
     }
 
+    public final int getId() {
+        return Tile.wood.id;
+    }
+
 	protected final int getTexture(int face) {
 		return face == 1 ? 21 : (face == 0 ? 21 : 20);
 	}
