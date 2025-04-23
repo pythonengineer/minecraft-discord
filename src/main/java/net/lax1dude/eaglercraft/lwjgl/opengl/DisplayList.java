@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import net.lax1dude.eaglercraft.internal.IBufferArrayGL;
 import net.lax1dude.eaglercraft.internal.IBufferGL;
+import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 
 /**
  * Copyright (c) 2022 lax1dude. All Rights Reserved.
@@ -30,6 +31,7 @@ public class DisplayList {
         boolean hasSetting = false;
         boolean doBlend = false;
         boolean enabled;
+        IntBuffer indices = null;
         int setting;
         int count;
         int offset;
@@ -52,10 +54,11 @@ public class DisplayList {
             this.enabled = enabled;
         }
 
-        public ListOperation(int offset, int count) {
+        public ListOperation(int offset, int count, IntBuffer indices) {
             this.hasCount = true;
             this.offset = offset;
             this.count = count;
+            this.indices = indices;
         }
 
         public ListOperation(int mode, int srcFactor, int dstFactor) {
@@ -79,6 +82,7 @@ public class DisplayList {
     int count = 0;
     final int id;
     ArrayList<ListOperation> ops = new ArrayList<ListOperation>();
+    IntBuffer indices = null;
     boolean bindQuad16 = false;
     boolean bindQuad32 = false;
 

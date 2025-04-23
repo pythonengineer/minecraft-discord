@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.mojang.minecraft.Minecraft;
-import com.mojang.minecraft.Options;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.GameSettings;
 
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMUtils;
 import net.lax1dude.eaglercraft.internal.teavm.TouchEvent;
@@ -249,7 +249,7 @@ public class PlatformInput {
     // hack to fix occasional freeze on iOS
     private static int vsyncSaveLockInterval = -1;
 
-    private static Options options = null;
+    private static GameSettings options = null;
 
     @JSFunctor
     private static interface UnloadCallback extends JSObject {
@@ -1095,37 +1095,37 @@ public class PlatformInput {
         if (TouchControls.isPressed(EnumTouchControl.DPAD_UP)
          || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)
          || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
-            if (touchPressed != options.forward.key) {
-                touchPressed = options.forward.key;
+            if (touchPressed != options.keyBindForward.keyCode) {
+                touchPressed = options.keyBindForward.keyCode;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == options.forward.key) {
+        } else if (touchPressed == options.keyBindForward.keyCode) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         } else if (TouchControls.isPressed(EnumTouchControl.DPAD_DOWN)) {
-            if (touchPressed != options.back.key) {
-                touchPressed = options.back.key;
+            if (touchPressed != options.keyBindBack.keyCode) {
+                touchPressed = options.keyBindBack.keyCode;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == options.back.key) {
+        } else if (touchPressed == options.keyBindBack.keyCode) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         } else if (TouchControls.isPressed(EnumTouchControl.DPAD_LEFT)
               || TouchControls.isPressed(EnumTouchControl.DPAD_UP_LEFT)) {
-            if (touchPressed != options.left.key) {
-                touchPressed = options.left.key;
+            if (touchPressed != options.keyBindLeft.keyCode) {
+                touchPressed = options.keyBindLeft.keyCode;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == options.left.key) {
+        } else if (touchPressed == options.keyBindLeft.keyCode) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         } else if (TouchControls.isPressed(EnumTouchControl.DPAD_RIGHT)
               || TouchControls.isPressed(EnumTouchControl.DPAD_UP_RIGHT)) {
-            if (touchPressed != options.right.key) {
-                touchPressed = options.right.key;
+            if (touchPressed != options.keyBindRight.keyCode) {
+                touchPressed = options.keyBindRight.keyCode;
                 keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_DOWN));
             }
-        } else if (touchPressed == options.right.key) {
+        } else if (touchPressed == options.keyBindRight.keyCode) {
             keyEvents.add(new VKeyEvent(-1, 0, touchPressed, '\0', EVENT_KEY_UP));
             touchPressed = Keyboard.KEY_NONE;
         }

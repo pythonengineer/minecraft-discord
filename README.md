@@ -5,13 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **0.30**, the final *Classic* version of the game which was released on _**November 10, 2009**_.
-This version has full multiplayer support and can even connect to regular servers through the provided websocket proxy.
+This version is **0.31 20091223**, an early *Indev* version of the game which was released on _**December 23, 2009**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Classic_0.30).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Indev_0.31_20091223-1459).
 
 ### Setup
 
@@ -22,18 +21,13 @@ You will need to create a `.env` file as shown in the instructions and place it 
 The "discord/client" folder contains the embedded web application. Once you have ran `CompileJS` which compiles the JavaScript classes and moves them there, you can run Vite
 and configure your Discord app to point to the domain of your public endpoint as demonstrated in Discord's example.
 
-The "discord/server" folder contains the websockify proxy that transits traffic to and from the regular Java Minecraft server.
-It also authenticates clients running your activity with Discord's API.
-For multiplayer to work, you will need to configure a `/minecraft` URL mapping in Discord that points to an HTTPS domain representing the proxy.
+The "discord/server" folder contains the server which authenticates clients running your activity with Discord's API.
 
 Run `npm install` in the "discord/client" or "discord/server" projects to install dependencies and `npm run build` to build the app (must be ran whenever changes are made).
 You can run `npm run preview` to start a web server, or move the contents of the built "discord/client/dist" folder to your own web server.
 
-As all endpoints must be HTTPS secure, a good way to set up public endpoints for both the embedded application web server and the multiplayer proxy server
-is to use something like *cloudflared* or *ngrok* and have a domain pointed at port 4173 for the embedded app and port 3000 for the websocket proxy if you don't have your own domains.
-
-The Minecraft server itself is in the "server" folder of the repository. Clients need not connect directly to it thanks to the websocket proxy.
-If the Minecraft server you want to connect to isn't available at `127.0.0.1:25565` for the websocket, you will need to edit `discord/server/websockify.js`.
+As all endpoints must be HTTPS secure, a good way to set up public endpoints for the embedded application web server
+is to use something like *cloudflared* or *ngrok* and have a subdomain pointed at port 4173 for the embedded app if you're running it in preview mode.
 
 If you make any code modifications to the game, remember that caching exists and you may need to increment the `classes.js?v` parameter in `discord/index.html` for the changes to take effect on Discord.
 
@@ -47,8 +41,6 @@ Skins are found using the authenticated Discord username,
 however you may add aliases for Discord usernames so they log-in with custom player names in `discord/client/public/aliases.txt`.
 
 ### Notes
-
-There may be an exiting issue on Discord iOS. If encountered, try turning off music and it might be resolved.
 
 All textures and sound files are in the `discord/client/public/assets` folder, all created either by Mojang Specifications or Eaglercraft.
 

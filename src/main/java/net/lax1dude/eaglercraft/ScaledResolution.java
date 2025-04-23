@@ -1,8 +1,7 @@
 package net.lax1dude.eaglercraft;
 
-import com.mojang.minecraft.Minecraft;
-
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.Minecraft;
 
 public class ScaledResolution {
     private final double scaledWidthD;
@@ -12,8 +11,8 @@ public class ScaledResolution {
     private int scaleFactor;
 
     public ScaledResolution(Minecraft parMinecraft) {
-        this.scaledWidth = parMinecraft.width;
-        this.scaledHeight = parMinecraft.height;
+        this.scaledWidth = parMinecraft.displayWidth;
+        this.scaledHeight = parMinecraft.displayHeight;
         this.scaleFactor = 1;
         int i = 2;
         i = Math.round(i * Math.max(parMinecraft.displayDPI, 0.5f));

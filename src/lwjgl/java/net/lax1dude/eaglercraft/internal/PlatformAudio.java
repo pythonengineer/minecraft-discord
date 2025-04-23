@@ -2,8 +2,6 @@ package net.lax1dude.eaglercraft.internal;
 
 import java.net.URL;
 
-import com.mojang.minecraft.sound.Sound;
-
 import net.lax1dude.eaglercraft.internal.paulscode.lwjgl3.LibraryLWJGLOpenAL;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
@@ -134,9 +132,9 @@ public class PlatformAudio {
 
     }
 
-    public static void loadAudioDataNew(Sound sound, boolean holdInCache, IAudioCacheLoader loader) {
-        throw new UnsupportedOperationException("Browser only!");
-    }
+    //public static void loadAudioDataNew(Sound sound, boolean holdInCache, IAudioCacheLoader loader) {
+    //    throw new UnsupportedOperationException("Browser only!");
+    //}
 
     private static final Logger logger = LogManager.getLogger("EaglercraftPlatformAudio");
     private static SoundSystem sndSystem = null;

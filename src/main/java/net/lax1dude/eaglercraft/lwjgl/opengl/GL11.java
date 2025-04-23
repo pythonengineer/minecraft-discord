@@ -12,11 +12,10 @@ import net.lax1dude.eaglercraft.opengl.VertexFormat;
 import net.lax1dude.eaglercraft.vector.Matrix4f;
 import net.lax1dude.eaglercraft.vector.Vector3f;
 import net.lax1dude.eaglercraft.vector.Vector4f;
+import net.minecraft.client.render.Tessellator;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.mojang.minecraft.renderer.Tesselator;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.GLObjectMap;
@@ -936,6 +935,8 @@ public class GL11 {
     static float stateLightingAmbientB = 0.0f;
     static int stateLightingAmbientSerial = 0;
 
+    static boolean stateLightingLocalViewer = false;
+
     static float stateNormalX = 0.0f;
     static float stateNormalY = 0.0f;
     static float stateNormalZ = -1.0f;
@@ -1263,6 +1264,13 @@ public class GL11 {
         stateLightingAmbientG = vector.get();
         stateLightingAmbientB = vector.get();
         ++stateLightingAmbientSerial;
+    }
+
+    public static final void glLightModelf(int type, float value) {
+        if (type != GL11.GL_LIGHT_MODEL_LOCAL_VIEWER) {
+            throw new UnsupportedOperationException("Only GL_LIGHT_MODEL_LOCAL_VIEWER glLightModelf is supported");
+        }
+        stateLightingLocalViewer = value > 0.0f ? true : false;
     }
 
     public static final void glColorMaterial(int face, int mode) {
@@ -2295,6 +2303,9 @@ public class GL11 {
             if ((dp.attribs & ATTRIB_COLOR) == ATTRIB_COLOR) {
                 GL11.disableVertexAttribArray(++c);
             }
+            if ((dp.attribs & ATTRIB_NORMAL) != 0) {
+                GL11.disableVertexAttribArray(++c);
+            }
         }
         dp.ops.clear();
         dp.attribs = -1;
@@ -2397,6 +2408,10 @@ public class GL11 {
                         }
                         p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_SHORT, 0);
                     }
+                } else if (op.indices != null) {
+                    attachListIndicesBuffer(op.indices.capacity(), true);
+                    _wglBufferData(GL_ELEMENT_ARRAY_BUFFER, op.indices, GL_STATIC_DRAW);
+                    p.drawElements(GL_TRIANGLES, op.indices.capacity(), GL_UNSIGNED_INT, 0);
                 } else {
                     p.drawArrays(dp.mode, op.offset, cnt);
                 }
@@ -2424,6 +2439,13 @@ public class GL11 {
         if (dp.vertexBuffer != null) {
             _wglDeleteBuffers(dp.vertexBuffer);
             dp.vertexBuffer = null;
+        }
+    }
+
+    public static final void glDrawElements(int mode, IntBuffer indices) {
+        if (currentList != null) {
+            currentList.mode = mode;
+            currentList.indices = indices;
         }
     }
 
@@ -2893,8 +2915,9 @@ public class GL11 {
             } else if (currentList.mode != mode) {
                 throw new UnsupportedOperationException("Inconsistent draw mode in display list (only one is allowed)");
             }
-            currentList.ops.add(currentList.new ListOperation(currentList.count, currentList.count + count));
+            currentList.ops.add(currentList.new ListOperation(currentList.count, currentList.count + count, currentList.indices));
             currentList.count += count;
+            currentList.indices = null;
             if (buffer.remaining() > displayListBuffer.remaining()) {
                 growDisplayListBuffer(buffer.remaining());
             }
@@ -2925,11 +2948,29 @@ public class GL11 {
         lastRender.update().drawDirectArrays(lastMode, 0, lastCount);
     }
 
+    private static IBufferGL listIndicesBuffer = null;
+    private static int listIndicesBufferSize = 0;
+
     private static IBufferGL quad16EmulationBuffer = null;
     private static int quad16EmulationBufferSize = 0;
 
     private static IBufferGL quad32EmulationBuffer = null;
     private static int quad32EmulationBufferSize = 0;
+
+    public static final void attachListIndicesBuffer(int vertexCount, boolean bind) {
+        IBufferGL buf = listIndicesBuffer;
+        if (buf == null) {
+            listIndicesBuffer = buf = _wglGenBuffers();
+            GL11.bindVAOGLElementArrayBufferNow(buf);
+        } else {
+            int cnt = listIndicesBufferSize;
+            if (cnt < vertexCount) {
+                GL11.bindVAOGLElementArrayBufferNow(buf);
+            } else if (bind) {
+                GL11.bindVAOGLElementArrayBuffer(buf);
+            }
+        }
+    }
 
     public static final void attachQuad16EmulationBuffer(int vertexCount, boolean bind) {
         IBufferGL buf = quad16EmulationBuffer;
@@ -3289,22 +3330,22 @@ public class GL11 {
     }
 
     public static final void glBegin(int mode, VertexFormat fmt) {
-        Tesselator.instance.begin(mode, fmt);
+        Tessellator.instance.startDrawing(mode, fmt);
     }
 
     public static final void glEnd() {
-        Tesselator.instance.end();
+        Tessellator.instance.draw();
     }
 
     public static final void glTexCoord2f(float u, float v) {
-        Tesselator.instance.tex(u, v);
+        Tessellator.instance.addUV(u, v);
     }
 
     public static final void glVertex3f(float x, float y, float z) {
-        Tesselator.instance.vertex(x, y, z);
+        Tessellator.instance.addVertex(x, y, z);
     }
 
     public static final void glVertex2f(float x, float y) {
-        Tesselator.instance.vertex(x, y, 0.0F);
+        Tessellator.instance.addVertex(x, y, 0.0F);
     }
 }

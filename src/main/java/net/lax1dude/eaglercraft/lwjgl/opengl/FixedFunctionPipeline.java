@@ -114,6 +114,12 @@ public class FixedFunctionPipeline {
             GL11.vertexAttribPointer(self.attribColorIndex, VertexFormat.COMPONENT_COLOR_SIZE,
                     VertexFormat.COMPONENT_COLOR_FORMAT, true, self.attribStride, self.attribColorOffset);
         }
+
+        if (self.attribNormalIndex != -1) {
+            GL11.enableVertexAttribArray(self.attribNormalIndex);
+            GL11.vertexAttribPointer(self.attribNormalIndex, VertexFormat.COMPONENT_NORMAL_SIZE,
+                    VertexFormat.COMPONENT_NORMAL_FORMAT, true, self.attribStride, self.attribNormalOffset);
+        }
     }
 
     public static FixedFunctionPipeline setupRenderDisplayList(int attribs) {
@@ -380,6 +386,8 @@ public class FixedFunctionPipeline {
     private final int attribTextureOffset;
     private final int attribColorIndex;
     private final int attribColorOffset;
+    private final int attribNormalIndex;
+    private final int attribNormalOffset;
 
     private final int attribStride;
 
@@ -521,6 +529,15 @@ public class FixedFunctionPipeline {
             attribTextureIndex = -1;
             attribTextureOffset = -1;
         }
+        if (stateHasAttribNormal) {
+            attribNormalIndex = ++index;
+            attribNormalOffset = stride;
+            _wglBindAttribLocation(compiledProg, index, FixedFunctionConstants.ATTRIB_NORMAL);
+            stride += VertexFormat.COMPONENT_NORMAL_STRIDE; // vec4b
+        } else {
+            attribNormalIndex = -1;
+            attribNormalOffset = -1;
+        }
 
         attribStride = stride;
 
@@ -558,6 +575,12 @@ public class FixedFunctionPipeline {
                         GL11.enableVertexAttribArray(attribColorIndex);
                         GL11.vertexAttribPointer(attribColorIndex, VertexFormat.COMPONENT_COLOR_SIZE,
                                 VertexFormat.COMPONENT_COLOR_FORMAT, true, attribStride, attribColorOffset);
+                    }
+
+                    if (attribNormalIndex != -1) {
+                        GL11.enableVertexAttribArray(attribNormalIndex);
+                        GL11.vertexAttribPointer(attribNormalIndex, VertexFormat.COMPONENT_NORMAL_SIZE,
+                                VertexFormat.COMPONENT_NORMAL_FORMAT, true, attribStride, attribNormalOffset);
                     }
                 });
 

@@ -4,9 +4,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.Touch;
 
-import com.mojang.minecraft.Minecraft;
-import com.mojang.minecraft.gamemode.SurvivalGameMode;
-import com.mojang.minecraft.gui.ChatScreen;
+import net.minecraft.client.Minecraft;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.
@@ -87,10 +85,10 @@ public enum EnumTouchControl {
                 Touch.closeDeviceKeyboard();
             } else {
                 Minecraft mc = Minecraft.minecraft;
-                if (mc.player != null) {
-                    mc.grabMouse();
-                } else if(mc.screen != null) {
-                    mc.setScreen(null);
+                if (mc.thePlayer != null) {
+                    mc.setIngameFocus();
+                } else if(mc.currentScreen != null) {
+                    mc.displayGuiScreen(null);
                 }
             }
         }
@@ -114,7 +112,7 @@ public enum EnumTouchControl {
 
     PAUSE(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.pauseScreen();
+            Minecraft.minecraft.displayInGameMenu();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -124,7 +122,6 @@ public enum EnumTouchControl {
 
     CHAT(EnumTouchControlPos.TOP, 18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.setScreen(new ChatScreen());
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -179,7 +176,6 @@ public enum EnumTouchControl {
 
     ATTACK(EnumTouchControlPos.BOTTOM_RIGHT, 70, 125, 40, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.shootArrow();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -417,21 +413,13 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                if (Minecraft.minecraft.networkClient != null) {
-                    CHAT.setVisible(renderer, true);
-                } else {
-                    CHAT.setVisible(renderer, false);
-                }
+                CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
-                if (Minecraft.minecraft.gamemode instanceof SurvivalGameMode || Minecraft.minecraft.player.arrows <= 0) {
-                    ATTACK.setVisible(renderer, false);
-                } else {
-                    ATTACK.setVisible(renderer, true);
-                }
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);
@@ -451,21 +439,13 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                if (Minecraft.minecraft.networkClient != null) {
-                    CHAT.setVisible(renderer, true);
-                } else {
-                    CHAT.setVisible(renderer, false);
-                }
+                CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
-                if (Minecraft.minecraft.gamemode instanceof SurvivalGameMode || Minecraft.minecraft.player.arrows <= 0) {
-                    ATTACK.setVisible(renderer, false);
-                } else {
-                    ATTACK.setVisible(renderer, true);
-                }
+                ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
                 FLY_UP.setVisible(renderer, false);

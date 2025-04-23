@@ -16,8 +16,8 @@ function startGame(name) {
       skinDbUrl: `https://${location.host}/.proxy/skindb`,
       skinUrl: `https://${location.host}/.proxy/skin`,
       username: name.slice(0, 16),
-      server: server,
-      mpPass: auth.access_token
+      //server: server,
+      //mpPass: auth.access_token
   };
   main();
 }

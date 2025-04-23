@@ -293,12 +293,14 @@ public class WorldRenderer {
     /**
      * set normal of current vertex
      */
-    public WorldRenderer normal(float parFloat1, float parFloat2, float parFloat3) { // TODO: crash with particles
+    public WorldRenderer normal(float x, float y, float z) {
         VertexFormat fmt = this.vertexFormat;
         int i = this.vertexCount * fmt.attribStride + fmt.attribNormalOffset;
-        this.byteBuffer.put(i, (byte)((int)parFloat1 * 127 & 255));
-        this.byteBuffer.put(i + 1, (byte)((int)parFloat2 * 127 & 255));
-        this.byteBuffer.put(i + 2, (byte)((int)parFloat3 * 127 & 255));
+        int xx = (byte)((int)(x * 127.0F)) & 255;
+        int yy = (byte)((int)(y * 127.0F)) & 255;
+        int zz = (byte)((int)(z * 127.0F)) & 255;
+        int l = xx | yy << 8 | zz << 16;
+        this.byteBuffer.putInt(i, l);
         return this;
     }
 

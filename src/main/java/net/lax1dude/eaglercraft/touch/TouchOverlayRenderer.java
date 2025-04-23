@@ -8,15 +8,14 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.Tessellator;
 
 import static net.lax1dude.eaglercraft.lwjgl.opengl.GL11.*;
 
 import java.util.Set;
 
 import com.google.common.collect.Sets;
-import com.mojang.minecraft.Minecraft;
-import com.mojang.minecraft.gui.ChatScreen;
-import com.mojang.minecraft.renderer.Tesselator;
 
 /**
  * Copyright (c) 2024 lax1dude. All Rights Reserved.
@@ -36,7 +35,7 @@ import com.mojang.minecraft.renderer.Tesselator;
  */
 public class TouchOverlayRenderer {
 
-    public static final int spriteSheet = Minecraft.minecraft.textures.loadTexture("/eagler/gui/touch_gui.png");
+    public static final int spriteSheet = Minecraft.minecraft.renderEngine.getTexture("/eagler/gui/touch_gui.png");
 
     static final int[] _fuck = new int[2];
 
@@ -132,26 +131,25 @@ public class TouchOverlayRenderer {
         GL11.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         GL11.enableAlpha();
         GL11.glColor4f(1.0f, 1.0f, 1.0f, MathHelper.clamp_float(1.0F, 0.0f, 1.0f));
-        Tesselator tessellator = Tesselator.instance;
-        tessellator.begin(DefaultVertexFormats.POSITION_TEX);
-        tessellator.tex(0.0F, 0.0F);
-        tessellator.vertex(0.0F, sh, 500.0F);
-        tessellator.tex(1.0F, 0.0F);
-        tessellator.vertex(sw, sh, 500.0F);
-        tessellator.tex(1.0F, 1.0F);
-        tessellator.vertex(sw, 0.0F, 500.0F);
-        tessellator.tex(0.0F, 1.0F);
-        tessellator.vertex(0.0F, 0.0F, 500.0F);
-        tessellator.end();
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        tessellator.addUV(0.0F, 0.0F);
+        tessellator.addVertex(0.0F, sh, 500.0F);
+        tessellator.addUV(1.0F, 0.0F);
+        tessellator.addVertex(sw, sh, 500.0F);
+        tessellator.addUV(1.0F, 1.0F);
+        tessellator.addVertex(sw, 0.0F, 500.0F);
+        tessellator.addUV(0.0F, 1.0F);
+        tessellator.addVertex(0.0F, 0.0F, 500.0F);
+        tessellator.draw();
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GL11.enableDepth();
         GL11.glDepthMask(true);
     }
 
     private EnumTouchLayoutState hashLayoutState() {
-        if (Minecraft.minecraft.screen != null) {
-            return (Minecraft.minecraft.screen instanceof ChatScreen) ? EnumTouchLayoutState.IN_GUI_TYPING
-                    : EnumTouchLayoutState.IN_GUI;
+        if (Minecraft.minecraft.currentScreen != null) {
+            return EnumTouchLayoutState.IN_GUI;
         }
         return showDiagButtons() ? EnumTouchLayoutState.IN_GAME_WALK : EnumTouchLayoutState.IN_GAME;
     }
@@ -166,16 +164,16 @@ public class TouchOverlayRenderer {
             int scaleFac) {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
-        Tesselator tessellator = Tesselator.instance;
-        tessellator.begin(DefaultVertexFormats.POSITION_TEX);
-        tessellator.tex((float)(minU + 0) * f, (float)(minV + maxV) * f1);
-        tessellator.vertex(xCoord + 0.0F, yCoord + (float)maxV * scaleFac, 0.0F);
-        tessellator.tex((float)(minU + maxU) * f, (float)(minV + maxV) * f1);
-        tessellator.vertex(xCoord + (float)maxU * scaleFac, yCoord + (float)maxV * scaleFac, 0.0F);
-        tessellator.tex((float)(minU + maxU) * f, (float)(minV + 0) * f1);
-        tessellator.vertex(xCoord + (float)maxU * scaleFac, yCoord + 0.0F, 0.0F);
-        tessellator.tex((float)(minU + 0) * f, (float)(minV + 0) * f1);
-        tessellator.vertex(xCoord + 0.0F, yCoord + 0.0F, 0.0F);
-        tessellator.end();
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        tessellator.addUV((float)(minU + 0) * f, (float)(minV + maxV) * f1);
+        tessellator.addVertex(xCoord + 0.0F, yCoord + (float)maxV * scaleFac, 0.0F);
+        tessellator.addUV((float)(minU + maxU) * f, (float)(minV + maxV) * f1);
+        tessellator.addVertex(xCoord + (float)maxU * scaleFac, yCoord + (float)maxV * scaleFac, 0.0F);
+        tessellator.addUV((float)(minU + maxU) * f, (float)(minV + 0) * f1);
+        tessellator.addVertex(xCoord + (float)maxU * scaleFac, yCoord + 0.0F, 0.0F);
+        tessellator.addUV((float)(minU + 0) * f, (float)(minV + 0) * f1);
+        tessellator.addVertex(xCoord + 0.0F, yCoord + 0.0F, 0.0F);
+        tessellator.draw();
     }
 }

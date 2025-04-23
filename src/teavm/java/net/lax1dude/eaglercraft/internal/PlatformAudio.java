@@ -25,8 +25,6 @@ import org.teavm.jso.webaudio.MediaStream;
 import org.teavm.jso.webaudio.MediaStreamAudioDestinationNode;
 import org.teavm.jso.webaudio.PannerNode;
 
-import com.mojang.minecraft.sound.Sound;
-
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.teavm.JOrbisAudioBufferDecoder;
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMClientConfigAdapter;
@@ -301,6 +299,7 @@ public class PlatformAudio {
         return null;
     }
 
+    /*
     public static void loadAudioDataNew(Sound sound, boolean holdInCache, IAudioCacheLoader loader) {
         String filename = sound.url;
         BrowserAudioResource buffer = soundCache.get(filename);
@@ -328,11 +327,13 @@ public class PlatformAudio {
 
         sound.finish(buffer);
     }
+    */
 
     public static boolean isAsyncSupported() {
         return oggSupport || !loadViaAudioBufferSupport;
     }
 
+    /*
     private static AudioBuffer decodeAudioData(Sound sound, boolean holdInCache, byte[] data, String errorFileName) {
         if (data == null) {
             return null;
@@ -379,6 +380,7 @@ public class PlatformAudio {
         });
         cb.complete(null);
     }
+    */
 
     @Async
     public static native AudioBuffer decodeAudioBrowserSync(ArrayBuffer buffer, String errorFileName);

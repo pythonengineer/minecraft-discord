@@ -8,8 +8,7 @@ import net.lax1dude.eaglercraft.internal.EnumPlatformANGLE;
 import net.lax1dude.eaglercraft.internal.PlatformInput;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.lwjgl.LWJGLException;
-
-import com.mojang.minecraft.Minecraft;
+import net.minecraft.client.Minecraft;
 
 /**
  * Copyright (c) 2022-2023 lax1dude. All Rights Reserved.

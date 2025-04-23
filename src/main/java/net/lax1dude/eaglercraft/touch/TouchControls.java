@@ -3,8 +3,7 @@ package net.lax1dude.eaglercraft.touch;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.touch.EnumTouchControl.TouchAction;
-import com.mojang.minecraft.Minecraft;
-
+import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.ScaledResolution;
 
 import java.util.*;
@@ -67,11 +66,11 @@ public class TouchControls {
                     }
                 }
             }
-            mc.gui.updateTouchEagler(mc.screen == null);
+            mc.ingameGUI.updateTouchEagler(mc.currentScreen == null);
         } else {
             touchControls.clear();
             touchControlPressed.clear();
-            mc.gui.updateTouchEagler(false);
+            mc.ingameGUI.updateTouchEagler(false);
         }
     }
 
@@ -80,11 +79,11 @@ public class TouchControls {
         pointY = Display.getDisplayMode().getHeight() - pointY - 1;
         EnumTouchControl control = overlappingControl0(pointX, pointY, mc.scaledResolution);
         if (control != null) {
-            int fac = Minecraft.scaledResolution.getScaleFactor();
+            int fac = Minecraft.minecraft.scaledResolution.getScaleFactor();
             touchControls.put(uid, new TouchControlInput(pointX / fac, pointY / fac, control));
             return true;
         } else {
-            return mc.screen == null && mc.gui.handleTouchBeginEagler(uid, pointX, pointY);
+            return mc.currentScreen == null && mc.ingameGUI.handleTouchBeginEagler(uid, pointX, pointY);
         }
     }
 
@@ -93,14 +92,14 @@ public class TouchControls {
             return true;
         } else {
             Minecraft mc = Minecraft.minecraft;
-            return mc.screen == null && mc.gui.handleTouchEndEagler(uid, pointX, mc.height - pointY - 1);
+            return mc.currentScreen == null && mc.ingameGUI.handleTouchEndEagler(uid, pointX, mc.displayHeight - pointY - 1);
         }
     }
 
     public static void handleInput() {
         if (!touchControls.isEmpty()) {
             Set<EnumTouchControl> newPressed = EnumSet.noneOf(EnumTouchControl.class);
-            TouchOverlayRenderer renderer = Minecraft.touchOverlayRenderer;
+            TouchOverlayRenderer renderer = Minecraft.minecraft.touchOverlayRenderer;
             for (TouchControlInput input : touchControls.values()) {
                 TouchAction action = input.control.getAction();
                 if (action != null) {
@@ -123,7 +122,7 @@ public class TouchControls {
 
     public static EnumTouchControl overlappingControl(int tx, int ty) {
         ty = Display.getDisplayMode().getHeight() - ty - 1;
-        return overlappingControl0(tx, ty, Minecraft.scaledResolution);
+        return overlappingControl0(tx, ty, Minecraft.minecraft.scaledResolution);
     }
 
     private static EnumTouchControl overlappingControl0(int pointX, int pointY, ScaledResolution sr) {
