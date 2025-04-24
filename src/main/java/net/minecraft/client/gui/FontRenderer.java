@@ -54,10 +54,14 @@ public final class FontRenderer {
 		this.fontTextureName = var3.getTexture(var2);
 	}
 
-	public final void drawStringWithShadow(String var1, int var2, int var3, int var4) {
-		this.renderString(var1, var2 + 1, var3 + 1, var4, true);
-		this.renderString(var1, var2, var3, var4, false);
-	}
+    public final void drawStringWithShadow(String var1, int var2, int var3, int var4) {
+        this.renderString(var1, var2 + 1, var3 + 1, var4, true);
+        this.drawString(var1, var2, var3, var4);
+    }
+
+    public final void drawString(String var1, int var2, int var3, int var4) {
+        this.renderString(var1, var2, var3, var4, false);
+    }
 
 	private void renderString(String var1, int var2, int var3, int var4, boolean var5) {
 		if(var1 != null) {
@@ -114,7 +118,7 @@ public final class FontRenderer {
 		}
 	}
 
-	public final int getWidth(String var1) {
+    public final int getStringWidth(String var1) {
 		if(var1 == null) {
 			return 0;
 		} else {

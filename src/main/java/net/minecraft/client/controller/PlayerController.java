@@ -3,13 +3,12 @@ package net.minecraft.client.controller;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.effect.EntityDiggingFX;
-import net.minecraft.client.player.EntityPlayer;
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 
 public class PlayerController {
 	protected final Minecraft mc;
-	public boolean isInTestMode = false;
 
 	public PlayerController(Minecraft var1) {
 		this.mc = var1;
@@ -71,10 +70,6 @@ public class PlayerController {
 
 	public float getBlockReachDistance() {
 		return 5.0F;
-	}
-
-	public boolean sendUseItem(EntityPlayer var1, int var2) {
-		return false;
 	}
 
 	public void preparePlayer(EntityPlayer var1) {

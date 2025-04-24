@@ -52,7 +52,7 @@ public class Gui {
 	}
 
 	public static void drawCenteredString(FontRenderer var0, String var1, int var2, int var3, int var4) {
-		var0.drawStringWithShadow(var1, var2 - var0.getWidth(var1) / 2, var3, var4);
+		var0.drawStringWithShadow(var1, var2 - var0.getStringWidth(var1) / 2, var3, var4);
 	}
 
 	public final void drawTexturedModal(int var1, int var2, int var3, int var4, int var5, int var6) {

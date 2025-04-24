@@ -1,14 +1,14 @@
 package net.minecraft.client.render;
 
-import java.util.Collections;
 import java.util.List;
 
-import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.lwjgl.util.glu.GLU;
+import net.lax1dude.eaglercraft.opengl.ImageData;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;
@@ -16,10 +16,9 @@ import net.minecraft.client.RenderHelper;
 import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.effect.EntityFX;
-import net.minecraft.client.player.EntityPlayer;
+import net.minecraft.client.effect.EntityRainFX;
+import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.entity.Entity;
-import net.minecraft.game.entity.EntityLiving;
-import net.minecraft.game.level.EntityMap;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.material.Material;
@@ -29,27 +28,31 @@ import net.minecraft.game.physics.Vec3D;
 
 public final class EntityRenderer {
 	public Minecraft mc;
-	private float fogColorMultiplier = 1.0F;
+	public float fogColorMultiplier = 1.0F;
 	public boolean displayActive = false;
-	private float farPlaneDistance = 0.0F;
+	public float farPlaneDistance = 0.0F;
 	public ItemRenderer itemRenderer;
 	public int entityRendererInt1;
 	private Entity pointedEntity = null;
-	public EaglercraftRandom random = new EaglercraftRandom();
+	public ByteBuffer entityByteBuffer;
+	public FloatBuffer entityFloatBuffer = BufferUtils.createFloatBuffer(16);
+	private EaglercraftRandom random = new EaglercraftRandom();
 	private volatile int unusedInt0 = 0;
 	private volatile int unusedInt1 = 0;
 	private FloatBuffer fogColorBuffer = BufferUtils.createFloatBuffer(16);
 	private float fogColorRed;
 	private float fogColorGreen;
 	private float fogColorBlue;
+	public float prevFogColor;
+	public float fogColor;
 
 	public EntityRenderer(Minecraft var1) {
 		this.mc = var1;
 		this.itemRenderer = new ItemRenderer(var1);
 	}
 
-	private Vec3D orientCamera(float var1) {
-		EntityPlayer var4 = this.mc.thePlayer;
+	public final Vec3D orientCamera(float var1) {
+		EntityPlayerSP var4 = this.mc.thePlayer;
 		float var2 = var4.prevPosX + (var4.posX - var4.prevPosX) * var1;
 		float var3 = var4.prevPosY + (var4.posY - var4.prevPosY) * var1;
 		float var5 = var4.prevPosZ + (var4.posZ - var4.prevPosZ) * var1;
@@ -57,7 +60,7 @@ public final class EntityRenderer {
 	}
 
 	private void hurtCameraEffect(float var1) {
-		EntityPlayer var3 = this.mc.thePlayer;
+		EntityPlayerSP var3 = this.mc.thePlayer;
 		float var2 = (float)var3.hurtTime - var1;
 		if(var3.health <= 0) {
 			var1 += (float)var3.deathTime;
@@ -78,7 +81,7 @@ public final class EntityRenderer {
 	}
 
 	private void setupViewBobbing(float var1) {
-		EntityPlayer var4 = this.mc.thePlayer;
+		EntityPlayerSP var4 = this.mc.thePlayer;
 		float var2 = var4.distanceWalkedModified - var4.prevDistanceWalkedModified;
 		var2 = var4.distanceWalkedModified + var2 * var1;
 		float var3 = var4.prevCameraYaw + (var4.cameraYaw - var4.prevCameraYaw) * var1;
@@ -89,139 +92,155 @@ public final class EntityRenderer {
 		GL11.glRotatef(var5, 1.0F, 0.0F, 0.0F);
 	}
 
+	public static ImageData screenshotBuffer(ByteBuffer var0, int var1, int var2) {
+		var0.position(0).limit(var1 * var2 << 2);
+		ImageData var3 = new ImageData(var1, var2, true);
+		int[] var4 = var3.pixels;
+
+		for(int var5 = 0; var5 < var1 * var2; ++var5) {
+			int var6 = var0.get(var5 * 3) & 255;
+			int var7 = var0.get(var5 * 3 + 1) & 255;
+			int var8 = var0.get(var5 * 3 + 2) & 255;
+			var4[var5] = var6 << 16 | var7 << 8 | var8;
+		}
+
+		return var3;
+	}
+
 	public final void updateCameraAndRender(float var1) {
 		EntityRenderer var15 = this;
-		EntityPlayer var17 = this.mc.thePlayer;
+		EntityPlayerSP var17 = this.mc.thePlayer;
 		float var18 = var17.prevRotationPitch + (var17.rotationPitch - var17.prevRotationPitch) * var1;
 		float var19 = var17.prevRotationYaw + (var17.rotationYaw - var17.prevRotationYaw) * var1;
-		Vec3D var8 = this.orientCamera(var1);
-		float var7 = MathHelper.cos(-var19 * ((float)Math.PI / 180.0F) - (float)Math.PI);
+		Vec3D var7 = this.orientCamera(var1);
+		float var8 = MathHelper.cos(-var19 * ((float)Math.PI / 180.0F) - (float)Math.PI);
 		float var9 = MathHelper.sin(-var19 * ((float)Math.PI / 180.0F) - (float)Math.PI);
 		float var10 = MathHelper.cos(-var18 * ((float)Math.PI / 180.0F));
 		float var11 = MathHelper.sin(-var18 * ((float)Math.PI / 180.0F));
-		float var12 = var9 * var10;
-		float var13 = var7 * var10;
-		float var14 = this.mc.playerController.getBlockReachDistance();
-		Vec3D var20 = var8.addVector(var12 * var14, var11 * var14, var13 * var14);
-		this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(var8, var20);
-		float var21 = var14;
+		float var4 = var9 * var10;
+		float var12 = var8 * var10;
+		float var13 = this.mc.playerController.getBlockReachDistance();
+		Vec3D var30 = var7.addVector(var4 * var13, var11 * var13, var12 * var13);
+		this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(var7, var30);
+		var10 = var13;
 		if(this.mc.objectMouseOver != null) {
-			var21 = this.mc.objectMouseOver.hitVec.distanceTo(var8);
+			var10 = this.mc.objectMouseOver.hitVec.distanceTo(var7);
 		}
 
-		var8 = this.orientCamera(var1);
+		var7 = this.orientCamera(var1);
 		if(this.mc.playerController instanceof PlayerControllerCreative) {
-			var14 = 32.0F;
+			var13 = 32.0F;
 		} else {
-			var14 = var21;
+			var13 = var10;
 		}
 
-		var20 = var8.addVector(var12 * var14, var11 * var14, var13 * var14);
+		var30 = var7.addVector(var4 * var13, var11 * var13, var12 * var13);
 		this.pointedEntity = null;
-		List var22 = this.mc.theWorld.entityMap.getEntitiesWithinAABBExcludingEntity(var17, var17.boundingBox.addCoord(var12 * var14, var11 * var14, var13 * var14));
-		float var23 = 0.0F;
+		List var3 = this.mc.theWorld.entityMap.getEntitiesWithinAABBExcludingEntity(var17, var17.boundingBox.addCoord(var4 * var13, var11 * var13, var12 * var13));
+		float var5 = 0.0F;
 
-		float var109;
-		for(int var24 = 0; var24 < var22.size(); ++var24) {
-			Entity var70 = (Entity)var22.get(var24);
-			if(var70.canBeCollidedWith()) {
-				var21 = 0.1F;
-				AxisAlignedBB var10000 = var70.boundingBox.expand(var21, var21, var21);
-				Vec3D var25 = null;
-				AxisAlignedBB var28 = var10000;
-				Vec3D var93 = var8.getIntermediateWithXValue(var20, var28.x0);
-				Vec3D var26 = var8.getIntermediateWithXValue(var20, var28.x1);
-				var25 = var8.getIntermediateWithYValue(var20, var28.y0);
-				Vec3D var27 = var8.getIntermediateWithYValue(var20, var28.y1);
-				Vec3D var31 = var8.getIntermediateWithZValue(var20, var28.z0);
-				Vec3D var30 = var8.getIntermediateWithZValue(var20, var28.z1);
-				if(!var28.isVecInYZ(var93)) {
-					var93 = null;
+		int var6;
+		Vec3D var42;
+		for(var6 = 0; var6 < var3.size(); ++var6) {
+			Entity var2 = (Entity)var3.get(var6);
+			if(var2.canBeCollidedWith()) {
+				var4 = 0.1F;
+				AxisAlignedBB var10000 = var2.boundingBox.expand(var4, var4, var4);
+				AxisAlignedBB var23 = null;
+				var23 = var10000;
+				Vec3D var40 = var7.getIntermediateWithXValue(var30, var23.x0);
+				var42 = var7.getIntermediateWithXValue(var30, var23.x1);
+				Vec3D var49 = var7.getIntermediateWithYValue(var30, var23.y0);
+				Vec3D var14 = var7.getIntermediateWithYValue(var30, var23.y1);
+				Vec3D var16 = var7.getIntermediateWithZValue(var30, var23.z0);
+				Vec3D var41 = var7.getIntermediateWithZValue(var30, var23.z1);
+				if(!var23.isVecInYZ(var40)) {
+					var40 = null;
 				}
 
-				if(!var28.isVecInYZ(var26)) {
-					var26 = null;
+				if(!var23.isVecInYZ(var42)) {
+					var42 = null;
 				}
 
-				if(!var28.isVecInXZ(var25)) {
-					var25 = null;
+				if(!var23.isVecInXZ(var49)) {
+					var49 = null;
 				}
 
-				if(!var28.isVecInXZ(var27)) {
-					var27 = null;
+				if(!var23.isVecInXZ(var14)) {
+					var14 = null;
 				}
 
-				if(!var28.isVecInXY(var31)) {
-					var31 = null;
+				if(!var23.isVecInXY(var16)) {
+					var16 = null;
 				}
 
-				if(!var28.isVecInXY(var30)) {
-					var30 = null;
+				if(!var23.isVecInXY(var41)) {
+					var41 = null;
 				}
 
-				Vec3D var111 = null;
-				if(var93 != null) {
-					var111 = var93;
+				Vec3D var24 = null;
+				if(var40 != null) {
+					var24 = var40;
 				}
 
-				if(var26 != null && (var111 == null || var8.squaredDistanceTo(var26) < var8.squaredDistanceTo(var111))) {
-					var111 = var26;
+				if(var42 != null && (var24 == null || var7.squaredDistanceTo(var42) < var7.squaredDistanceTo(var24))) {
+					var24 = var42;
 				}
 
-				if(var25 != null && (var111 == null || var8.squaredDistanceTo(var25) < var8.squaredDistanceTo(var111))) {
-					var111 = var25;
+				if(var49 != null && (var24 == null || var7.squaredDistanceTo(var49) < var7.squaredDistanceTo(var24))) {
+					var24 = var49;
 				}
 
-				if(var27 != null && (var111 == null || var8.squaredDistanceTo(var27) < var8.squaredDistanceTo(var111))) {
-					var111 = var27;
+				if(var14 != null && (var24 == null || var7.squaredDistanceTo(var14) < var7.squaredDistanceTo(var24))) {
+					var24 = var14;
 				}
 
-				if(var31 != null && (var111 == null || var8.squaredDistanceTo(var31) < var8.squaredDistanceTo(var111))) {
-					var111 = var31;
+				if(var16 != null && (var24 == null || var7.squaredDistanceTo(var16) < var7.squaredDistanceTo(var24))) {
+					var24 = var16;
 				}
 
-				if(var30 != null && (var111 == null || var8.squaredDistanceTo(var30) < var8.squaredDistanceTo(var111))) {
-					var111 = var30;
+				if(var41 != null && (var24 == null || var7.squaredDistanceTo(var41) < var7.squaredDistanceTo(var24))) {
+					var24 = var41;
 				}
 
-				MovingObjectPosition var123;
-				if(var111 == null) {
-					var123 = null;
+				MovingObjectPosition var67;
+				if(var24 == null) {
+					var67 = null;
 				} else {
-					byte var32 = -1;
-					if(var111 == var93) {
-						var32 = 4;
+					byte var34 = -1;
+					if(var24 == var40) {
+						var34 = 4;
 					}
 
-					if(var111 == var26) {
-						var32 = 5;
+					if(var24 == var42) {
+						var34 = 5;
 					}
 
-					if(var111 == var25) {
-						var32 = 0;
+					if(var24 == var49) {
+						var34 = 0;
 					}
 
-					if(var111 == var27) {
-						var32 = 1;
+					if(var24 == var14) {
+						var34 = 1;
 					}
 
-					if(var111 == var31) {
-						var32 = 2;
+					if(var24 == var16) {
+						var34 = 2;
 					}
 
-					if(var111 == var30) {
-						var32 = 3;
+					if(var24 == var41) {
+						var34 = 3;
 					}
 
-					var123 = new MovingObjectPosition(0, 0, 0, var32, var111);
+					var67 = new MovingObjectPosition(0, 0, 0, var34, var24);
 				}
 
-				MovingObjectPosition var106 = var123;
-				if(var106 != null) {
-					var109 = var8.distanceTo(var106.hitVec);
-					if(var109 < var23 || var23 == 0.0F) {
-						var15.pointedEntity = var70;
-						var23 = var109;
+				MovingObjectPosition var37 = var67;
+				if(var37 != null) {
+					var4 = var7.distanceTo(var37.hitVec);
+					if(var4 < var5 || var5 == 0.0F) {
+						var15.pointedEntity = var2;
+						var5 = var4;
 					}
 				}
 			}
@@ -231,60 +250,21 @@ public final class EntityRenderer {
 			var15.mc.objectMouseOver = new MovingObjectPosition(var15.pointedEntity);
 		}
 
-		for(int var2 = 0; var2 < 2; ++var2) {
+		for(int var20 = 0; var20 < 2; ++var20) {
 			if(this.mc.options.anaglyph) {
-				if(var2 == 0) {
+				if(var20 == 0) {
 					GL11.glColorMask(false, true, true, false);
 				} else {
 					GL11.glColorMask(true, false, false, false);
 				}
 			}
 
-			EntityPlayer var3 = this.mc.thePlayer;
-			World var4 = this.mc.theWorld;
-			RenderGlobal var5 = this.mc.renderGlobal;
-			EffectRenderer var6 = this.mc.effectRenderer;
+			EntityPlayerSP var21 = this.mc.thePlayer;
+			World var38 = this.mc.theWorld;
+			RenderGlobal var25 = this.mc.renderGlobal;
+			EffectRenderer var26 = this.mc.effectRenderer;
 			GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
-			World var16 = this.mc.theWorld;
-			var17 = this.mc.thePlayer;
-			var18 = 1.0F / (float)(4 - this.mc.options.renderDistance);
-			var18 = 1.0F - (float)Math.pow((double)var18, 0.25D);
-			var19 = (float)(var16.skyColor >> 16 & 255) / 255.0F;
-			float var52 = (float)(var16.skyColor >> 8 & 255) / 255.0F;
-			var7 = (float)(var16.skyColor & 255) / 255.0F;
-			this.fogColorRed = (float)(var16.fogColor >> 16 & 255) / 255.0F;
-			this.fogColorGreen = (float)(var16.fogColor >> 8 & 255) / 255.0F;
-			this.fogColorBlue = (float)(var16.fogColor & 255) / 255.0F;
-			this.fogColorRed += (var19 - this.fogColorRed) * var18;
-			this.fogColorGreen += (var52 - this.fogColorGreen) * var18;
-			this.fogColorBlue += (var7 - this.fogColorBlue) * var18;
-			this.fogColorRed *= this.fogColorMultiplier;
-			this.fogColorGreen *= this.fogColorMultiplier;
-			this.fogColorBlue *= this.fogColorMultiplier;
-			Block var54 = Block.blocksList[var16.getBlockId((int)var17.posX, (int)(var17.posY + 0.12F), (int)var17.posZ)];
-			if(var54 != null && var54.getMaterial() != Material.air) {
-				Material var57 = var54.getMaterial();
-				if(var57 == Material.water) {
-					this.fogColorRed = 0.02F;
-					this.fogColorGreen = 0.02F;
-					this.fogColorBlue = 0.2F;
-				} else if(var57 == Material.lava) {
-					this.fogColorRed = 0.6F;
-					this.fogColorGreen = 0.1F;
-					this.fogColorBlue = 0.0F;
-				}
-			}
-
-			if(this.mc.options.anaglyph) {
-				var10 = (this.fogColorRed * 30.0F + this.fogColorGreen * 59.0F + this.fogColorBlue * 11.0F) / 100.0F;
-				var11 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
-				var12 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;
-				this.fogColorRed = var10;
-				this.fogColorGreen = var11;
-				this.fogColorBlue = var12;
-			}
-
-			GL11.glClearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
+			this.updateFogColor(var1);
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 			this.fogColorMultiplier = 1.0F;
 			GL11.glEnable(GL11.GL_CULL_FACE);
@@ -293,14 +273,14 @@ public final class EntityRenderer {
 			GL11.glLoadIdentity();
 			var18 = 0.07F;
 			if(this.mc.options.anaglyph) {
-				GL11.glTranslatef((float)(-((var2 << 1) - 1)) * var18, 0.0F, 0.0F);
+				GL11.glTranslatef((float)(-((var20 << 1) - 1)) * var18, 0.0F, 0.0F);
 			}
 
-			EntityMap var86 = null;
-			EntityPlayer var50 = this.mc.thePlayer;
+			Tessellator var63 = null;
+			EntityPlayerSP var32 = this.mc.thePlayer;
 			var9 = 70.0F;
-			if(var50.health <= 0) {
-				var10 = (float)var50.deathTime + var1;
+			if(var32.health <= 0) {
+				var10 = (float)var32.deathTime + var1;
 				var9 /= (1.0F - 500.0F / (var10 + 500.0F)) * 2.0F + 1.0F;
 			}
 
@@ -308,7 +288,7 @@ public final class EntityRenderer {
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			GL11.glLoadIdentity();
 			if(this.mc.options.anaglyph) {
-				GL11.glTranslatef((float)((var2 << 1) - 1) * 0.1F, 0.0F, 0.0F);
+				GL11.glTranslatef((float)((var20 << 1) - 1) * 0.1F, 0.0F, 0.0F);
 			}
 
 			this.hurtCameraEffect(var1);
@@ -316,61 +296,39 @@ public final class EntityRenderer {
 				this.setupViewBobbing(var1);
 			}
 
-			var50 = this.mc.thePlayer;
+			var32 = this.mc.thePlayer;
 			GL11.glTranslatef(0.0F, 0.0F, -0.1F);
-			GL11.glRotatef(var50.prevRotationPitch + (var50.rotationPitch - var50.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
-			GL11.glRotatef(var50.prevRotationYaw + (var50.rotationYaw - var50.prevRotationYaw) * var1, 0.0F, 1.0F, 0.0F);
-			var9 = var50.prevPosX + (var50.posX - var50.prevPosX) * var1;
-			var10 = var50.prevPosY + (var50.posY - var50.prevPosY) * var1;
-			var11 = var50.prevPosZ + (var50.posZ - var50.prevPosZ) * var1;
+			GL11.glRotatef(var32.prevRotationPitch + (var32.rotationPitch - var32.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(var32.prevRotationYaw + (var32.rotationYaw - var32.prevRotationYaw) * var1, 0.0F, 1.0F, 0.0F);
+			var9 = var32.prevPosX + (var32.posX - var32.prevPosX) * var1;
+			var10 = var32.prevPosY + (var32.posY - var32.prevPosY) * var1;
+			var11 = var32.prevPosZ + (var32.posZ - var32.prevPosZ) * var1;
 			GL11.glTranslatef(-var9, -var10, -var11);
-			ClippingHelper var51 = ClippingHelperImplementation.init();
-			ClippingHelper var74 = var51;
-			RenderGlobal var71 = this.mc.renderGlobal;
-
-			int var81;
-			for(var81 = 0; var81 < var71.worldRenderers.length; ++var81) {
-				var71.worldRenderers[var81].updateInFrustrum(var74);
-			}
-
-			var71 = this.mc.renderGlobal;
-			Collections.sort(var71.worldRenderersToUpdate, new RenderSorter(var3));
-			var81 = var71.worldRenderersToUpdate.size() - 1;
-			int var85 = var71.worldRenderersToUpdate.size();
-			if(var85 > 3) {
-				var85 = 3;
-			}
-
-			int var87;
-			for(var87 = 0; var87 < var85; ++var87) {
-				WorldRenderer var53 = (WorldRenderer)var71.worldRenderersToUpdate.remove(var81 - var87);
-				var53.updateRenderer();
-				var53.needsUpdate = false;
-			}
-
+			ClippingHelper var27 = ClippingHelperImplementation.init();
+			this.mc.renderGlobal.clipRenderersByFrustrum(var27);
+			this.mc.renderGlobal.updateRenderers(var21);
 			this.setupFog();
 			GL11.glEnable(GL11.GL_FOG);
-			var5.sortAndRender(var3, 0);
-			int var55;
-			int var60;
-			int var63;
-			int var65;
-			int var72;
-			if(var4.isSolid(var3.posX, var3.posY, var3.posZ, 0.1F)) {
-				var55 = (int)var3.posX;
-				int var58 = (int)var3.posY;
-				var60 = (int)var3.posZ;
-				RenderBlocks var62 = new RenderBlocks(Tessellator.instance, var4);
+			var25.sortAndRender(var21, 0);
+			int var36;
+			int var45;
+			int var48;
+			int var52;
+			if(var38.isSolid(var21.posX, var21.posY, var21.posZ, 0.1F)) {
+				var36 = (int)var21.posX;
+				int var47 = (int)var21.posY;
+				var45 = (int)var21.posZ;
+				RenderBlocks var44 = new RenderBlocks(Tessellator.instance, var38);
 
-				for(var63 = var55 - 1; var63 <= var55 + 1; ++var63) {
-					for(var65 = var58 - 1; var65 <= var58 + 1; ++var65) {
-						for(var72 = var60 - 1; var72 <= var60 + 1; ++var72) {
-							int var73 = var4.getBlockId(var63, var65, var72);
-							if(var73 > 0) {
-								Block var76 = Block.blocksList[var73];
-								var62.flipTexture = true;
-								var62.renderBlockByRenderType(var76, var63, var65, var72);
-								var62.flipTexture = false;
+				for(var48 = var36 - 1; var48 <= var36 + 1; ++var48) {
+					for(var52 = var47 - 1; var52 <= var47 + 1; ++var52) {
+						for(int var51 = var45 - 1; var51 <= var45 + 1; ++var51) {
+							int var53 = var38.getBlockId(var48, var52, var51);
+							if(var53 > 0) {
+								Block var58 = Block.blocksList[var53];
+								var44.flipTexture = true;
+								var44.renderBlockByRenderType(var58, var48, var52, var51);
+								var44.flipTexture = false;
 							}
 						}
 					}
@@ -378,395 +336,159 @@ public final class EntityRenderer {
 			}
 
 			RenderHelper.enableStandardItemLighting();
-			Vec3D var10001 = this.orientCamera(var1);
-			var18 = var1;
-			ClippingHelper var83 = var51;
-			Vec3D var78 = var10001;
-			var71 = var5;
-			var86 = var5.worldObj.entityMap;
-
-			int var48;
-			List var68;
-			float var89;
-			float var104;
-			for(var55 = 0; var55 < var86.xSlot; ++var55) {
-				var7 = (float)((var55 << 4) - 2);
-				var9 = (float)((var55 + 1 << 4) + 2);
-
-				for(var60 = 0; var60 < var86.ySlot; ++var60) {
-					var11 = (float)((var60 << 4) - 2);
-					var12 = (float)((var60 + 1 << 4) + 2);
-
-					for(var48 = 0; var48 < var86.zSlot; ++var48) {
-						var68 = var86.entityGrid[(var48 * var86.ySlot + var60) * var86.xSlot + var55];
-						if(var68.size() != 0) {
-							var14 = (float)((var48 << 4) - 2);
-							var89 = (float)((var48 + 1 << 4) + 2);
-							boolean var124 = var83.isBoundingBoxInFrustrum(var7, var11, var14, var9, var12, var89);
-							boolean var99 = false;
-							if(var124) {
-								float var29 = var89;
-								float var117 = var12;
-								var109 = var9;
-								float var107 = var14;
-								float var105 = var11;
-								var21 = var7;
-								ClippingHelper var77 = var83;
-								int var113 = 0;
-
-								while(true) {
-									if(var113 >= 6) {
-										var124 = true;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var21 + var77.frustrum[var113][1] * var105 + var77.frustrum[var113][2] * var107 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var109 + var77.frustrum[var113][1] * var105 + var77.frustrum[var113][2] * var107 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var21 + var77.frustrum[var113][1] * var117 + var77.frustrum[var113][2] * var107 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var109 + var77.frustrum[var113][1] * var117 + var77.frustrum[var113][2] * var107 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var21 + var77.frustrum[var113][1] * var105 + var77.frustrum[var113][2] * var29 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var109 + var77.frustrum[var113][1] * var105 + var77.frustrum[var113][2] * var29 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var21 + var77.frustrum[var113][1] * var117 + var77.frustrum[var113][2] * var29 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									if(var77.frustrum[var113][0] * var109 + var77.frustrum[var113][1] * var117 + var77.frustrum[var113][2] * var29 + var77.frustrum[var113][3] <= 0.0F) {
-										var124 = false;
-										break;
-									}
-
-									++var113;
-								}
-
-								boolean var94 = var124;
-
-								for(int var100 = 0; var100 < var68.size(); ++var100) {
-									Entity var101 = (Entity)var68.get(var100);
-									var105 = var101.posX - var78.xCoord;
-									var107 = var101.posY - var78.yCoord;
-									var109 = var101.posZ - var78.zCoord;
-									var117 = var105 * var105 + var107 * var107 + var109 * var109;
-									Object var112 = null;
-									AxisAlignedBB var110 = var101.boundingBox;
-									var105 = var110.x1 - var110.x0;
-									var109 = var110.y1 - var110.y0;
-									float var115 = var110.z1 - var110.z0;
-									float var125 = (var105 + var109 + var115) / 3.0F;
-									var21 = 0.0F;
-									var21 = var125 * 64.0F;
-									if(var117 < var21 * var21) {
-										if(!var94) {
-											AxisAlignedBB var102 = var101.boundingBox;
-											if(!var83.isBoundingBoxInFrustrum(var102.x0, var102.y0, var102.z0, var102.x1, var102.y1, var102.z1)) {
-												continue;
-											}
-										}
-
-										var107 = var18;
-										RenderEngine var108 = var71.renderEngine;
-										RenderManager var79 = var71.renderManager;
-										if(!(var101 instanceof EntityPlayer)) {
-											var109 = var101.lastTickPosX + (var101.posX - var101.lastTickPosX) * var18;
-											var117 = var101.lastTickPosY + (var101.posY - var101.lastTickPosY) * var18;
-											var29 = var101.lastTickPosZ + (var101.posZ - var101.lastTickPosZ) * var18;
-											var115 = var29;
-											float var114 = var117;
-											var104 = var109;
-											RenderManager var119 = var79;
-											GL11.glEnable(GL11.GL_BLEND);
-											Object var33 = null;
-											var108.clampTexture = true;
-											int var118 = var108.getTexture("/shadow.png");
-											GL11.glBindTexture(GL11.GL_TEXTURE_2D, var118);
-											var33 = null;
-											var108.clampTexture = false;
-											GL11.glDepthMask(false);
-											var89 = 0.5F;
-
-											for(var118 = (int)(var109 - var89); var118 <= (int)(var104 + var89); ++var118) {
-												for(int var34 = (int)(var114 - 2.0F); var34 <= (int)var114; ++var34) {
-													for(int var35 = (int)(var115 - var89); var35 <= (int)(var115 + var89); ++var35) {
-														int var36 = var119.worldObj.getBlockId(var118, var34 - 1, var35);
-														if(var36 > 0 && var119.worldObj.isHalfLit(var118, var34, var35)) {
-															Block var121 = Block.blocksList[var36];
-															Tessellator var44 = Tessellator.instance;
-															float var38 = (1.0F - (var114 - (float)var34) / 2.0F) * 0.5F;
-															if(var38 >= 0.0F) {
-																GL11.glColor4f(1.0F, 1.0F, 1.0F, var38);
-																var44.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-																var38 = (float)var118 + var121.minX;
-																float var40 = (float)var118 + var121.maxX;
-																float var41 = (float)var34 + var121.minY;
-																float var45 = (float)var35 + var121.minZ;
-																float var122 = (float)var35 + var121.maxZ;
-																float var42 = (var104 - var38) / 2.0F / var89 + 0.5F;
-																float var37 = (var104 - var40) / 2.0F / var89 + 0.5F;
-																float var46 = (var115 - var45) / 2.0F / var89 + 0.5F;
-																float var39 = (var115 - var122) / 2.0F / var89 + 0.5F;
-																var44.addVertexWithUV(var38, var41, var45, var42, var46);
-																var44.addVertexWithUV(var38, var41, var122, var42, var39);
-																var44.addVertexWithUV(var40, var41, var122, var37, var39);
-																var44.addVertexWithUV(var40, var41, var45, var37, var46);
-																var44.draw();
-															}
-														}
-													}
-												}
-											}
-
-											GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-											GL11.glDisable(GL11.GL_BLEND);
-											GL11.glDepthMask(true);
-											if(var101 instanceof EntityLiving) {
-												EntityLiving var116 = (EntityLiving)var101;
-												GL11.glPushMatrix();
-
-												try {
-													var107 = var116.prevRenderYawOffset + (var116.renderYawOffset - var116.prevRenderYawOffset) * var107;
-													GL11.glTranslatef(var109, var117, var29);
-													var118 = var108.getTexture("/cube-nes.png");
-													GL11.glBindTexture(GL11.GL_TEXTURE_2D, var118);
-													GL11.glRotatef(-var107 + 180.0F, 0.0F, 1.0F, 0.0F);
-													GL11.glColor3f(var114 = var79.worldObj.getBlockLightValue((int)var109, (int)var117, (int)var29), var114, var114);
-													var117 = 0.02F;
-													GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-													GL11.glScalef(var117, -var117, var117);
-													GL11.glEnable(GL11.GL_NORMALIZE);
-													var79.model[0].renderModelVertices(0, 0, 0.0F);
-													GL11.glDisable(GL11.GL_NORMALIZE);
-												} catch (Exception var47) {
-													var47.printStackTrace();
-												}
-
-												GL11.glPopMatrix();
-											} else {
-												AxisAlignedBB var120 = var101.boundingBox;
-												GL11.glDisable(GL11.GL_TEXTURE_2D);
-												Tessellator var90 = Tessellator.instance;
-												GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-												var90.startDrawingQuads(DefaultVertexFormats.POSITION_NORMAL);
-												var90.normal(0.0F, 0.0F, -1.0F);
-												var90.addVertex(var120.x0, var120.y1, var120.z0);
-												var90.addVertex(var120.x1, var120.y1, var120.z0);
-												var90.addVertex(var120.x1, var120.y0, var120.z0);
-												var90.addVertex(var120.x0, var120.y0, var120.z0);
-												var90.normal(0.0F, 0.0F, 1.0F);
-												var90.addVertex(var120.x0, var120.y0, var120.z1);
-												var90.addVertex(var120.x1, var120.y0, var120.z1);
-												var90.addVertex(var120.x1, var120.y1, var120.z1);
-												var90.addVertex(var120.x0, var120.y1, var120.z1);
-												var90.normal(0.0F, -1.0F, 0.0F);
-												var90.addVertex(var120.x0, var120.y0, var120.z0);
-												var90.addVertex(var120.x1, var120.y0, var120.z0);
-												var90.addVertex(var120.x1, var120.y0, var120.z1);
-												var90.addVertex(var120.x0, var120.y0, var120.z1);
-												var90.normal(0.0F, 1.0F, 0.0F);
-												var90.addVertex(var120.x0, var120.y1, var120.z1);
-												var90.addVertex(var120.x1, var120.y1, var120.z1);
-												var90.addVertex(var120.x1, var120.y1, var120.z0);
-												var90.addVertex(var120.x0, var120.y1, var120.z0);
-												var90.normal(-1.0F, 0.0F, 0.0F);
-												var90.addVertex(var120.x0, var120.y0, var120.z1);
-												var90.addVertex(var120.x0, var120.y1, var120.z1);
-												var90.addVertex(var120.x0, var120.y1, var120.z0);
-												var90.addVertex(var120.x0, var120.y0, var120.z0);
-												var90.normal(1.0F, 0.0F, 0.0F);
-												var90.addVertex(var120.x1, var120.y0, var120.z0);
-												var90.addVertex(var120.x1, var120.y1, var120.z0);
-												var90.addVertex(var120.x1, var120.y1, var120.z1);
-												var90.addVertex(var120.x1, var120.y0, var120.z1);
-												var90.draw();
-												GL11.glEnable(GL11.GL_TEXTURE_2D);
-												GL11.glPushMatrix();
-												GL11.glTranslatef(var109, var117, var29);
-												var114 = 0.02F;
-												GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-												GL11.glScalef(var114, -var114, var114);
-												var79.model[0].renderModelVertices(0, 0, var18);
-												GL11.glPopMatrix();
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
+			var25.renderEntities(this.orientCamera(var1), var27, var1);
 			RenderHelper.disableStandardItemLighting();
 			this.setupFog();
-			float var84 = var1;
-			EffectRenderer var75 = var6;
-			var18 = -MathHelper.cos(var3.rotationYaw * (float)Math.PI / 180.0F);
-			var19 = -MathHelper.sin(var3.rotationYaw * (float)Math.PI / 180.0F);
-			var52 = -var19 * MathHelper.sin(var3.rotationPitch * (float)Math.PI / 180.0F);
-			var7 = var18 * MathHelper.sin(var3.rotationPitch * (float)Math.PI / 180.0F);
-			var9 = MathHelper.cos(var3.rotationPitch * (float)Math.PI / 180.0F);
+			float var59 = var1;
+			EffectRenderer var56 = var26;
+			var18 = -MathHelper.cos(var21.rotationYaw * (float)Math.PI / 180.0F);
+			var19 = -MathHelper.sin(var21.rotationYaw * (float)Math.PI / 180.0F);
+			float var29 = -var19 * MathHelper.sin(var21.rotationPitch * (float)Math.PI / 180.0F);
+			var8 = var18 * MathHelper.sin(var21.rotationPitch * (float)Math.PI / 180.0F);
+			var9 = MathHelper.cos(var21.rotationPitch * (float)Math.PI / 180.0F);
 
-			int var64;
-			for(var60 = 0; var60 < 2; ++var60) {
-				if(var75.fxLayers[var60].size() != 0) {
-					var64 = 0;
-					if(var60 == 0) {
-						var64 = var75.renderEngine.getTexture("/particles.png");
+			Tessellator var39;
+			int var46;
+			for(var45 = 0; var45 < 2; ++var45) {
+				if(var56.fxLayers[var45].size() != 0) {
+					var46 = 0;
+					if(var45 == 0) {
+						var46 = var56.renderEngine.getTexture("/particles.png");
 					}
 
-					if(var60 == 1) {
-						var64 = var75.renderEngine.getTexture("/terrain.png");
+					if(var45 == 1) {
+						var46 = var56.renderEngine.getTexture("/terrain.png");
 					}
 
-					GL11.glBindTexture(GL11.GL_TEXTURE_2D, var64);
-					Tessellator var67 = Tessellator.instance;
-					var67.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+					GL11.glBindTexture(GL11.GL_TEXTURE_2D, var46);
+					var39 = Tessellator.instance;
+					var39.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
 
-					for(var48 = 0; var48 < var75.fxLayers[var60].size(); ++var48) {
-						EntityFX var126 = (EntityFX)var75.fxLayers[var60].get(var48);
-						var68 = null;
-						var126.renderParticle(var67, var84, var18, var9, var19, var52, var7);
+					for(var6 = 0; var6 < var56.fxLayers[var45].size(); ++var6) {
+						EntityFX var68 = (EntityFX)var56.fxLayers[var45].get(var6);
+						var42 = null;
+						var68.renderParticle(var39, var59, var18, var9, var19, var29, var8);
 					}
 
-					var67.draw();
+					var39.draw();
 				}
 			}
 
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5.renderEngine.getTexture("/rock.png"));
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var25.renderEngine.getTexture("/rock.png"));
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glCallList(var5.glGenList);
+			GL11.glCallList(var25.glGenList);
 			this.setupFog();
-			var71 = var5;
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5.renderEngine.getTexture("/clouds.png"));
+			RenderGlobal var57 = var25;
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var25.renderEngine.getTexture("/clouds.png"));
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			var84 = (float)(var5.worldObj.cloudColor >> 16 & 255) / 255.0F;
-			var18 = (float)(var5.worldObj.cloudColor >> 8 & 255) / 255.0F;
-			var19 = (float)(var5.worldObj.cloudColor & 255) / 255.0F;
-			if(var5.mc.options.anaglyph) {
-				var52 = (var84 * 30.0F + var18 * 59.0F + var19 * 11.0F) / 100.0F;
-				var7 = (var84 * 30.0F + var18 * 70.0F) / 100.0F;
-				var9 = (var84 * 30.0F + var19 * 70.0F) / 100.0F;
-				var84 = var52;
-				var18 = var7;
+			var59 = (float)(var25.worldObj.cloudColor >> 16 & 255) / 255.0F;
+			var18 = (float)(var25.worldObj.cloudColor >> 8 & 255) / 255.0F;
+			var19 = (float)(var25.worldObj.cloudColor & 255) / 255.0F;
+			if(var25.mc.options.anaglyph) {
+				var29 = (var59 * 30.0F + var18 * 59.0F + var19 * 11.0F) / 100.0F;
+				var8 = (var59 * 30.0F + var18 * 70.0F) / 100.0F;
+				var9 = (var59 * 30.0F + var19 * 70.0F) / 100.0F;
+				var59 = var29;
+				var18 = var8;
 				var19 = var9;
 			}
 
-			Tessellator var59 = Tessellator.instance;
+			Tessellator var31 = Tessellator.instance;
 			var10 = 0.0F;
 			var11 = 0.5F / 1024.0F;
-			var10 = (float)(var5.worldObj.height + 2);
-			var12 = ((float)var5.cloudOffsetX + var1) * var11 * 0.03F;
-			float var49 = 0.0F;
-			var59.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-			var59.setColorOpaque_F(var84, var18, var19);
+			var10 = (float)(var25.worldObj.height + 2);
+			var4 = ((float)var25.cloudOffsetX + var1) * var11 * 0.03F;
+			float var28 = 0.0F;
+			var31.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+			var31.setColorOpaque_F(var59, var18, var19);
 
-			for(var65 = -2048; var65 < var71.worldObj.width + 2048; var65 += 512) {
-				for(var72 = -2048; var72 < var71.worldObj.length + 2048; var72 += 512) {
-					var59.addVertexWithUV((float)var65, var10, (float)(var72 + 512), (float)var65 * var11 + var12, (float)(var72 + 512) * var11);
-					var59.addVertexWithUV((float)(var65 + 512), var10, (float)(var72 + 512), (float)(var65 + 512) * var11 + var12, (float)(var72 + 512) * var11);
-					var59.addVertexWithUV((float)(var65 + 512), var10, (float)var72, (float)(var65 + 512) * var11 + var12, (float)var72 * var11);
-					var59.addVertexWithUV((float)var65, var10, (float)var72, (float)var65 * var11 + var12, (float)var72 * var11);
-					var59.addVertexWithUV((float)var65, var10, (float)var72, (float)var65 * var11 + var12, (float)var72 * var11);
-					var59.addVertexWithUV((float)(var65 + 512), var10, (float)var72, (float)(var65 + 512) * var11 + var12, (float)var72 * var11);
-					var59.addVertexWithUV((float)(var65 + 512), var10, (float)(var72 + 512), (float)(var65 + 512) * var11 + var12, (float)(var72 + 512) * var11);
-					var59.addVertexWithUV((float)var65, var10, (float)(var72 + 512), (float)var65 * var11 + var12, (float)(var72 + 512) * var11);
+			for(var48 = -2048; var48 < var57.worldObj.width + 2048; var48 += 512) {
+				for(var52 = -2048; var52 < var57.worldObj.length + 2048; var52 += 512) {
+					var31.addVertexWithUV((float)var48, var10, (float)(var52 + 512), (float)var48 * var11 + var4, (float)(var52 + 512) * var11);
+					var31.addVertexWithUV((float)(var48 + 512), var10, (float)(var52 + 512), (float)(var48 + 512) * var11 + var4, (float)(var52 + 512) * var11);
+					var31.addVertexWithUV((float)(var48 + 512), var10, (float)var52, (float)(var48 + 512) * var11 + var4, (float)var52 * var11);
+					var31.addVertexWithUV((float)var48, var10, (float)var52, (float)var48 * var11 + var4, (float)var52 * var11);
+					var31.addVertexWithUV((float)var48, var10, (float)var52, (float)var48 * var11 + var4, (float)var52 * var11);
+					var31.addVertexWithUV((float)(var48 + 512), var10, (float)var52, (float)(var48 + 512) * var11 + var4, (float)var52 * var11);
+					var31.addVertexWithUV((float)(var48 + 512), var10, (float)(var52 + 512), (float)(var48 + 512) * var11 + var4, (float)(var52 + 512) * var11);
+					var31.addVertexWithUV((float)var48, var10, (float)(var52 + 512), (float)var48 * var11 + var4, (float)(var52 + 512) * var11);
 				}
 			}
 
-			var59.draw();
+			var31.draw();
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			var59.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
-			var12 = (float)(var71.worldObj.skyColor >> 16 & 255) / 255.0F;
-			var49 = (float)(var71.worldObj.skyColor >> 8 & 255) / 255.0F;
-			var13 = (float)(var71.worldObj.skyColor & 255) / 255.0F;
-			if(var71.mc.options.anaglyph) {
-				var14 = (var12 * 30.0F + var49 * 59.0F + var13 * 11.0F) / 100.0F;
-				var89 = (var12 * 30.0F + var49 * 70.0F) / 100.0F;
-				var21 = (var12 * 30.0F + var13 * 70.0F) / 100.0F;
-				var12 = var14;
-				var49 = var89;
-				var13 = var21;
+			var31.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
+			var4 = (float)(var57.worldObj.skyColor >> 16 & 255) / 255.0F;
+			var28 = (float)(var57.worldObj.skyColor >> 8 & 255) / 255.0F;
+			var12 = (float)(var57.worldObj.skyColor & 255) / 255.0F;
+			if(var57.mc.options.anaglyph) {
+				var13 = (var4 * 30.0F + var28 * 59.0F + var12 * 11.0F) / 100.0F;
+				var8 = (var4 * 30.0F + var28 * 70.0F) / 100.0F;
+				var10 = (var4 * 30.0F + var12 * 70.0F) / 100.0F;
+				var4 = var13;
+				var28 = var8;
+				var12 = var10;
 			}
 
-			var59.setColorOpaque_F(var12, var49, var13);
-			var10 = (float)(var71.worldObj.height + 10);
+			var31.setColorOpaque_F(var4, var28, var12);
+			var10 = (float)(var57.worldObj.height + 10);
 
-			for(var72 = -2048; var72 < var71.worldObj.width + 2048; var72 += 512) {
-				for(int var91 = -2048; var91 < var71.worldObj.length + 2048; var91 += 512) {
-					var59.addVertex((float)var72, var10, (float)var91);
-					var59.addVertex((float)(var72 + 512), var10, (float)var91);
-					var59.addVertex((float)(var72 + 512), var10, (float)(var91 + 512));
-					var59.addVertex((float)var72, var10, (float)(var91 + 512));
+			for(var52 = -2048; var52 < var57.worldObj.width + 2048; var52 += 512) {
+				for(var36 = -2048; var36 < var57.worldObj.length + 2048; var36 += 512) {
+					var31.addVertex((float)var52, var10, (float)var36);
+					var31.addVertex((float)(var52 + 512), var10, (float)var36);
+					var31.addVertex((float)(var52 + 512), var10, (float)(var36 + 512));
+					var31.addVertex((float)var52, var10, (float)(var36 + 512));
 				}
 			}
 
-			var59.draw();
+			var31.draw();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			this.setupFog();
-			int var56;
+			int var33;
+			int var43;
+			World var64;
+			int var66;
 			if(this.mc.objectMouseOver != null) {
 				GL11.glDisable(GL11.GL_ALPHA_TEST);
-				boolean var92 = false;
-				boolean var88 = false;
-				MovingObjectPosition var80 = this.mc.objectMouseOver;
-				Tessellator var95 = Tessellator.instance;
+				var64 = null;
+				boolean var62 = false;
+				MovingObjectPosition var60 = this.mc.objectMouseOver;
+				var63 = Tessellator.instance;
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glEnable(GL11.GL_ALPHA_TEST);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, (MathHelper.sin((float)EagRuntime.currentTimeMillis() / 100.0F) * 0.2F + 0.4F) * 0.5F);
-				if(var5.damagePartialTime > 0.0F) {
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, (MathHelper.sin((float)System.currentTimeMillis() / 100.0F) * 0.2F + 0.4F) * 0.5F);
+				if(var25.damagePartialTime > 0.0F) {
 					GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
-					var55 = var5.renderEngine.getTexture("/terrain.png");
-					GL11.glBindTexture(GL11.GL_TEXTURE_2D, var55);
+					var33 = var25.renderEngine.getTexture("/terrain.png");
+					GL11.glBindTexture(GL11.GL_TEXTURE_2D, var33);
 					GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
 					GL11.glPushMatrix();
-					var56 = var5.worldObj.getBlockId(var80.blockX, var80.blockY, var80.blockZ);
-					var54 = var56 > 0 ? Block.blocksList[var56] : null;
-					var95.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-					var95.disableColor();
-					if(var54 == null) {
-						var54 = Block.stone;
+					var36 = var25.worldObj.getBlockId(var60.blockX, var60.blockY, var60.blockZ);
+					Block var50 = var36 > 0 ? Block.blocksList[var36] : null;
+					var63.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+					var63.disableColor();
+					if(var50 == null) {
+						var50 = Block.stone;
 					}
 
-					var72 = 240 + (int)(var5.damagePartialTime * 10.0F);
-					var65 = var80.blockZ;
-					var48 = var80.blockY;
-					var63 = var80.blockX;
-					RenderBlocks var69 = var5.globalRenderBlocks;
-					var69.overrideBlockTexture = var72;
-					var69.renderBlockByRenderType(var54, var63, var48, var65);
-					var69.overrideBlockTexture = -1;
-					var95.draw();
+					var52 = 240 + (int)(var25.damagePartialTime * 10.0F);
+					var48 = var60.blockZ;
+					var6 = var60.blockY;
+					var43 = var60.blockX;
+					RenderBlocks var54 = var25.globalRenderBlocks;
+					var54.overrideBlockTexture = var52;
+					var54.renderBlockByRenderType(var50, var43, var6, var48);
+					var54.overrideBlockTexture = -1;
+					var63.draw();
 					GL11.glDepthMask(true);
 					GL11.glPopMatrix();
 				}
 
 				GL11.glDisable(GL11.GL_BLEND);
 				GL11.glDisable(GL11.GL_ALPHA_TEST);
-				var80 = this.mc.objectMouseOver;
+				var60 = this.mc.objectMouseOver;
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
@@ -774,32 +496,32 @@ public final class EntityRenderer {
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glDepthMask(false);
 				var18 = 0.002F;
-				var87 = var5.worldObj.getBlockId(var80.blockX, var80.blockY, var80.blockZ);
-				if(var87 > 0) {
-					AxisAlignedBB var61 = Block.blocksList[var87].getSelectedBoundingBoxFromPool(var80.blockX, var80.blockY, var80.blockZ).expand(var18, var18, var18);
+				var66 = var25.worldObj.getBlockId(var60.blockX, var60.blockY, var60.blockZ);
+				if(var66 > 0) {
+					AxisAlignedBB var35 = Block.blocksList[var66].getSelectedBoundingBoxFromPool(var60.blockX, var60.blockY, var60.blockZ).expand(var18, var18, var18);
 					GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-					GL11.glVertex3f(var61.x0, var61.y0, var61.z0);
-					GL11.glVertex3f(var61.x1, var61.y0, var61.z0);
-					GL11.glVertex3f(var61.x1, var61.y0, var61.z1);
-					GL11.glVertex3f(var61.x0, var61.y0, var61.z1);
-					GL11.glVertex3f(var61.x0, var61.y0, var61.z0);
+					GL11.glVertex3f(var35.x0, var35.y0, var35.z0);
+					GL11.glVertex3f(var35.x1, var35.y0, var35.z0);
+					GL11.glVertex3f(var35.x1, var35.y0, var35.z1);
+					GL11.glVertex3f(var35.x0, var35.y0, var35.z1);
+					GL11.glVertex3f(var35.x0, var35.y0, var35.z0);
 					GL11.glEnd();
 					GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-					GL11.glVertex3f(var61.x0, var61.y1, var61.z0);
-					GL11.glVertex3f(var61.x1, var61.y1, var61.z0);
-					GL11.glVertex3f(var61.x1, var61.y1, var61.z1);
-					GL11.glVertex3f(var61.x0, var61.y1, var61.z1);
-					GL11.glVertex3f(var61.x0, var61.y1, var61.z0);
+					GL11.glVertex3f(var35.x0, var35.y1, var35.z0);
+					GL11.glVertex3f(var35.x1, var35.y1, var35.z0);
+					GL11.glVertex3f(var35.x1, var35.y1, var35.z1);
+					GL11.glVertex3f(var35.x0, var35.y1, var35.z1);
+					GL11.glVertex3f(var35.x0, var35.y1, var35.z0);
 					GL11.glEnd();
 					GL11.glBegin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-					GL11.glVertex3f(var61.x0, var61.y0, var61.z0);
-					GL11.glVertex3f(var61.x0, var61.y1, var61.z0);
-					GL11.glVertex3f(var61.x1, var61.y0, var61.z0);
-					GL11.glVertex3f(var61.x1, var61.y1, var61.z0);
-					GL11.glVertex3f(var61.x1, var61.y0, var61.z1);
-					GL11.glVertex3f(var61.x1, var61.y1, var61.z1);
-					GL11.glVertex3f(var61.x0, var61.y0, var61.z1);
-					GL11.glVertex3f(var61.x0, var61.y1, var61.z1);
+					GL11.glVertex3f(var35.x0, var35.y0, var35.z0);
+					GL11.glVertex3f(var35.x0, var35.y1, var35.z0);
+					GL11.glVertex3f(var35.x1, var35.y0, var35.z0);
+					GL11.glVertex3f(var35.x1, var35.y1, var35.z0);
+					GL11.glVertex3f(var35.x1, var35.y0, var35.z1);
+					GL11.glVertex3f(var35.x1, var35.y1, var35.z1);
+					GL11.glVertex3f(var35.x0, var35.y0, var35.z1);
+					GL11.glVertex3f(var35.x0, var35.y1, var35.z1);
 					GL11.glEnd();
 				}
 
@@ -813,91 +535,93 @@ public final class EntityRenderer {
 			this.setupFog();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5.renderEngine.getTexture("/water.png"));
-			GL11.glCallList(var5.glGenList + 1);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var25.renderEngine.getTexture("/water.png"));
+			GL11.glCallList(var25.glGenList + 1);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_CULL_FACE);
 			GL11.glColorMask(false, false, false, false);
-			var55 = var5.sortAndRender(var3, 1);
+			var36 = var25.sortAndRender(var21, 1);
 			GL11.glColorMask(true, true, true, true);
 			if(this.mc.options.anaglyph) {
-				if(var2 == 0) {
+				if(var20 == 0) {
 					GL11.glColorMask(false, true, true, false);
 				} else {
 					GL11.glColorMask(true, false, false, false);
 				}
 			}
 
-			if(var55 > 0) {
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5.renderEngine.getTexture("/terrain.png"));
-				GL11.glCallLists(var5.renderIntBuffer);
+			if(var36 > 0) {
+				var25.renderAllRenderLists();
 			}
 
 			GL11.glDepthMask(true);
+			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_FOG);
+			float var22;
 			if(this.mc.thirdPersonView) {
-				float var82 = var1;
+				float var61 = var1;
 				var15 = this;
 				var17 = this.mc.thePlayer;
-				World var96 = this.mc.theWorld;
-				var87 = (int)var17.posX;
-				var55 = (int)var17.posY;
-				var56 = (int)var17.posZ;
-				Tessellator var66 = Tessellator.instance;
+				var64 = this.mc.theWorld;
+				var66 = (int)var17.posX;
+				var33 = (int)var17.posY;
+				var36 = (int)var17.posZ;
+				Tessellator var55 = Tessellator.instance;
 				GL11.glDisable(GL11.GL_CULL_FACE);
 				GL11.glNormal3f(0.0F, 1.0F, 0.0F);
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/rain.png"));
-				var64 = var87 - 5;
+				var46 = var66 - 5;
 
 				while(true) {
-					if(var64 > var87 + 5) {
+					if(var46 > var66 + 5) {
 						GL11.glEnable(GL11.GL_CULL_FACE);
 						GL11.glDisable(GL11.GL_BLEND);
 						break;
 					}
 
-					for(var63 = var56 - 5; var63 <= var56 + 5; ++var63) {
-						var48 = var96.getMapHeight(var64, var63);
-						var65 = var55 - 5;
-						var72 = var55 + 5;
-						if(var65 < var48) {
-							var65 = var48;
+					for(var43 = var36 - 5; var43 <= var36 + 5; ++var43) {
+						var6 = var64.getMapHeight(var46, var43);
+						var48 = var33 - 5;
+						var52 = var33 + 5;
+						if(var48 < var6) {
+							var48 = var6;
 						}
 
-						if(var72 < var48) {
-							var72 = var48;
+						if(var52 < var6) {
+							var52 = var6;
 						}
 
-						if(var65 != var72) {
-							var21 = ((float)((var15.entityRendererInt1 + var64 * 3121 + var63 * 418711) % 32) + var82) / 32.0F;
-							float var97 = (float)var64 + 0.5F - var17.posX;
-							var23 = (float)var63 + 0.5F - var17.posZ;
-							var104 = MathHelper.sqrt_float(var97 * var97 + var23 * var23) / (float)5;
-							GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - var104 * var104) * 0.7F);
-							var66.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-							var66.addVertexWithUV((float)var64, (float)var65, (float)var63, 0.0F, (float)var65 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.addVertexWithUV((float)(var64 + 1), (float)var65, (float)(var63 + 1), 2.0F, (float)var65 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.addVertexWithUV((float)(var64 + 1), (float)var72, (float)(var63 + 1), 2.0F, (float)var72 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.addVertexWithUV((float)var64, (float)var72, (float)var63, 0.0F, (float)var72 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.addVertexWithUV((float)var64, (float)var65, (float)(var63 + 1), 0.0F, (float)var65 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.addVertexWithUV((float)(var64 + 1), (float)var65, (float)var63, 2.0F, (float)var65 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.addVertexWithUV((float)(var64 + 1), (float)var72, (float)var63, 2.0F, (float)var72 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.addVertexWithUV((float)var64, (float)var72, (float)(var63 + 1), 0.0F, (float)var72 * 2.0F / 8.0F + var21 * 2.0F);
-							var66.draw();
+						if(var48 != var52) {
+							var10 = ((float)((var15.entityRendererInt1 + var46 * 3121 + var43 * 418711) % 32) + var61) / 32.0F;
+							var22 = (float)var46 + 0.5F - var17.posX;
+							var5 = (float)var43 + 0.5F - var17.posZ;
+							var28 = MathHelper.sqrt_float(var22 * var22 + var5 * var5) / (float)5;
+							GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - var28 * var28) * 0.7F);
+							var55.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+							var55.addVertexWithUV((float)var46, (float)var48, (float)var43, 0.0F, (float)var48 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.addVertexWithUV((float)(var46 + 1), (float)var48, (float)(var43 + 1), 2.0F, (float)var48 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.addVertexWithUV((float)(var46 + 1), (float)var52, (float)(var43 + 1), 2.0F, (float)var52 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.addVertexWithUV((float)var46, (float)var52, (float)var43, 0.0F, (float)var52 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.addVertexWithUV((float)var46, (float)var48, (float)(var43 + 1), 0.0F, (float)var48 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.addVertexWithUV((float)(var46 + 1), (float)var48, (float)var43, 2.0F, (float)var48 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.addVertexWithUV((float)(var46 + 1), (float)var52, (float)var43, 2.0F, (float)var52 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.addVertexWithUV((float)var46, (float)var52, (float)(var43 + 1), 0.0F, (float)var52 * 2.0F / 8.0F + var10 * 2.0F);
+							var55.draw();
 						}
 					}
 
-					++var64;
+					++var46;
 				}
 			}
 
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 			GL11.glLoadIdentity();
 			if(this.mc.options.anaglyph) {
-				GL11.glTranslatef((float)((var2 << 1) - 1) * 0.1F, 0.0F, 0.0F);
+				GL11.glTranslatef((float)((var20 << 1) - 1) * 0.1F, 0.0F, 0.0F);
 			}
 
 			this.hurtCameraEffect(var1);
@@ -905,39 +629,64 @@ public final class EntityRenderer {
 				this.setupViewBobbing(var1);
 			}
 
-			ItemRenderer var98 = this.itemRenderer;
-			var52 = var98.prevEquippedProgress + (var98.equippedProgress - var98.prevEquippedProgress) * var1;
-			var50 = var98.minecraft.thePlayer;
+			ItemRenderer var65 = this.itemRenderer;
+			var29 = var65.prevEquippedProgress + (var65.equippedProgress - var65.prevEquippedProgress) * var1;
+			var32 = var65.mc.thePlayer;
 			GL11.glPushMatrix();
-			GL11.glRotatef(var50.prevRotationPitch + (var50.rotationPitch - var50.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
-			GL11.glRotatef(var50.prevRotationYaw + (var50.rotationYaw - var50.prevRotationYaw) * var1, 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(var32.prevRotationPitch + (var32.rotationPitch - var32.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(var32.prevRotationYaw + (var32.rotationYaw - var32.prevRotationYaw) * var1, 0.0F, 1.0F, 0.0F);
 			RenderHelper.enableStandardItemLighting();
 			GL11.glPopMatrix();
 			GL11.glPushMatrix();
 			var9 = 0.8F;
-			if(var98.itemSwingState) {
-				var10 = ((float)var98.swingProgress + var1) / 7.0F;
+			float var69;
+			if(var65.itemSwingState) {
+				var10 = ((float)var65.swingProgress + var1) / 7.0F;
 				var11 = MathHelper.sin(var10 * (float)Math.PI);
-				GL11.glTranslatef(-MathHelper.sin(MathHelper.sqrt_float(var10) * (float)Math.PI) * 0.4F, MathHelper.sin(MathHelper.sqrt_float(var10) * (float)Math.PI * 2.0F) * 0.2F, -var11 * 0.2F);
+				var69 = MathHelper.sin(MathHelper.sqrt_float(var10) * (float)Math.PI);
+				var4 = 0.0F;
+				GL11.glTranslatef(-var69 * 0.4F, MathHelper.sin(MathHelper.sqrt_float(var10) * (float)Math.PI * 2.0F) * 0.2F, -var11 * 0.2F);
 			}
 
-			GL11.glTranslatef(0.7F * var9, -0.65F * var9 - (1.0F - var52) * 0.6F, -0.9F * var9);
+			GL11.glTranslatef(0.7F * var9, -0.65F * var9 - (1.0F - var29) * 0.6F, -0.9F * var9);
 			GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glEnable(GL11.GL_NORMALIZE);
-			if(var98.itemSwingState) {
-				var11 = MathHelper.sin((var10 = ((float)var98.swingProgress + var1) / 7.0F) * var10 * (float)Math.PI);
-				GL11.glRotatef(MathHelper.sin(MathHelper.sqrt_float(var10) * (float)Math.PI) * 80.0F, 0.0F, 1.0F, 0.0F);
+			if(var65.itemSwingState) {
+				var11 = MathHelper.sin((var10 = ((float)var65.swingProgress + var1) / 7.0F) * var10 * (float)Math.PI);
+				var69 = MathHelper.sin(MathHelper.sqrt_float(var10) * (float)Math.PI);
+				var4 = 0.0F;
+				GL11.glRotatef(var69 * 80.0F, 0.0F, 1.0F, 0.0F);
 				GL11.glRotatef(-var11 * 20.0F, 1.0F, 0.0F, 0.0F);
 			}
 
-			GL11.glColor4f(var10 = var98.minecraft.theWorld.getBlockLightValue((int)var50.posX, (int)var50.posY, (int)var50.posZ), var10, var10, 1.0F);
-			if(var98.itemToRender != null) {
+			GL11.glColor4f(var10 = var65.mc.theWorld.getBlockLightValue((int)var32.posX, (int)var32.posY, (int)var32.posZ), var10, var10, 1.0F);
+			if(var65.itemToRender != null) {
 				var11 = 0.4F;
 				GL11.glScalef(0.4F, var11, var11);
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var98.minecraft.renderEngine.getTexture("/terrain.png"));
-				var98.renderBlocksInstance.renderBlockOnInventory(var98.itemToRender);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var65.mc.renderEngine.getTexture("/terrain.png"));
+				var3 = null;
+				if(var65.itemToRender.itemID > 0) {
+					var65.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[var65.itemToRender.itemID]);
+				} else {
+					GL11.glBindTexture(GL11.GL_TEXTURE_2D, var65.mc.renderEngine.getTexture("/gui/items.png"));
+					GL11.glDisable(GL11.GL_LIGHTING);
+					var39 = Tessellator.instance;
+					var28 = (float)(var65.itemToRender.iconIndex % 16 << 4) / 256.0F;
+					var12 = (float)((var65.itemToRender.iconIndex % 16 << 4) + 16) / 256.0F;
+					var13 = (float)(var65.itemToRender.iconIndex / 16 << 4) / 256.0F;
+					var8 = (float)((var65.itemToRender.iconIndex / 16 << 4) + 16) / 256.0F;
+					var10 = 0.7F;
+					var22 = 0.4F;
+					var5 = 0.2F;
+					var39.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+					var39.addVertexWithUV(0.0F - var22, 0.0F - var5, 0.0F - var22, var28, var8);
+					var39.addVertexWithUV(var10 - var22, 0.0F - var5, var10 - var22, var12, var8);
+					var39.addVertexWithUV(var10 - var22, 1.0F - var5, var10 - var22, var12, var13);
+					var39.addVertexWithUV(0.0F - var22, 1.0F - var5, 0.0F - var22, var28, var13);
+					var39.draw();
+					GL11.glEnable(GL11.GL_LIGHTING);
+				}
 			} else {
-				EntityPlayer.setupSkinImage(var98.minecraft.renderEngine);
 				GL11.glScalef(1.0F, -1.0F, -1.0F);
 				GL11.glTranslatef(0.0F, 0.2F, 0.0F);
 				GL11.glRotatef(-120.0F, 0.0F, 0.0F, 1.0F);
@@ -956,20 +705,90 @@ public final class EntityRenderer {
 		GL11.glColorMask(true, true, true, false);
 	}
 
-	public final void setupOverlayRendering() {
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0.0D, this.mc.scaledResolution.getScaledWidth_double(), this.mc.scaledResolution.getScaledHeight_double(), 
-		        0.0D, 100.0D, 3000.0D);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
+	public final void addRainParticles() {
+		EntityPlayerSP var1 = this.mc.thePlayer;
+		World var2 = this.mc.theWorld;
+		int var3 = (int)var1.posX;
+		int var4 = (int)var1.posY;
+		int var12 = (int)var1.posZ;
+
+		for(int var5 = 0; var5 < 50; ++var5) {
+			int var6 = var3 + this.random.nextInt(9) - 4;
+			int var7 = var12 + this.random.nextInt(9) - 4;
+			int var8 = var2.getMapHeight(var6, var7);
+			int var9 = var2.getBlockId(var6, var8 - 1, var7);
+			if(var8 <= var4 + 4 && var8 >= var4 - 4) {
+				float var10 = this.random.nextFloat();
+				float var11 = this.random.nextFloat();
+				if(var9 > 0) {
+					this.mc.effectRenderer.addEffect(new EntityRainFX(var2, (float)var6 + var10, (float)var8 + 0.1F - Block.blocksList[var9].minY, (float)var7 + var11));
+				}
+			}
+		}
+
 	}
 
-	private void setupFog() {
+	public final void setupOverlayRendering() {
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0.0D, this.mc.scaledResolution.getScaledWidth_double(), this.mc.scaledResolution.getScaledHeight_double(), 
+                0.0D, 100.0D, 3000.0D);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
+	}
+
+	public final void updateFogColor(float var1) {
+		World var2 = this.mc.theWorld;
+		EntityPlayerSP var3 = this.mc.thePlayer;
+		float var4 = 1.0F / (float)(4 - this.mc.options.renderDistance);
+		var4 = 1.0F - (float)Math.pow((double)var4, 0.25D);
+		float var5 = (float)(var2.skyColor >> 16 & 255) / 255.0F;
+		float var6 = (float)(var2.skyColor >> 8 & 255) / 255.0F;
+		float var7 = (float)(var2.skyColor & 255) / 255.0F;
+		this.fogColorRed = (float)(var2.fogColor >> 16 & 255) / 255.0F;
+		this.fogColorGreen = (float)(var2.fogColor >> 8 & 255) / 255.0F;
+		this.fogColorBlue = (float)(var2.fogColor & 255) / 255.0F;
+		this.fogColorRed += (var5 - this.fogColorRed) * var4;
+		this.fogColorGreen += (var6 - this.fogColorGreen) * var4;
+		this.fogColorBlue += (var7 - this.fogColorBlue) * var4;
+		this.fogColorRed *= this.fogColorMultiplier;
+		this.fogColorGreen *= this.fogColorMultiplier;
+		this.fogColorBlue *= this.fogColorMultiplier;
+		Block var8 = Block.blocksList[var2.getBlockId((int)var3.posX, (int)(var3.posY + 0.12F), (int)var3.posZ)];
+		if(var8 != null && var8.getMaterial() != Material.air) {
+			Material var9 = var8.getMaterial();
+			if(var9 == Material.water) {
+				this.fogColorRed = 0.02F;
+				this.fogColorGreen = 0.02F;
+				this.fogColorBlue = 0.2F;
+			} else if(var9 == Material.lava) {
+				this.fogColorRed = 0.6F;
+				this.fogColorGreen = 0.1F;
+				this.fogColorBlue = 0.0F;
+			}
+		}
+
+		float var10 = this.prevFogColor + (this.fogColor - this.prevFogColor) * var1;
+		this.fogColorRed *= var10;
+		this.fogColorGreen *= var10;
+		this.fogColorBlue *= var10;
+		if(this.mc.options.anaglyph) {
+			var1 = (this.fogColorRed * 30.0F + this.fogColorGreen * 59.0F + this.fogColorBlue * 11.0F) / 100.0F;
+			var10 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
+			float var11 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;
+			this.fogColorRed = var1;
+			this.fogColorGreen = var10;
+			this.fogColorBlue = var11;
+		}
+
+		GL11.glClearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
+	}
+
+	public final void setupFog() {
 		World var1 = this.mc.theWorld;
-		EntityPlayer var2 = this.mc.thePlayer;
+		EntityPlayerSP var2 = this.mc.thePlayer;
 		int var10000 = GL11.GL_FOG_COLOR;
 		float var3 = 0.0F;
 		float var6 = this.fogColorBlue;

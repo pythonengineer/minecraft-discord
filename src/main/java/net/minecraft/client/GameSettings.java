@@ -28,12 +28,13 @@ public final class GameSettings {
 	public KeyBinding keyBindBack = new KeyBinding("Back", 31);
 	public KeyBinding keyBindRight = new KeyBinding("Right", 32);
 	public KeyBinding keyBindJump = new KeyBinding("Jump", 57);
-	public KeyBinding keyBindInventory = new KeyBinding("Build", 48);
+    public KeyBinding keyBindInventory = new KeyBinding("Inventory", 23);
+    public KeyBinding keyBindDrop = new KeyBinding("Drop", 16);
 	private KeyBinding keyBindChat = new KeyBinding("Chat", 20);
 	public KeyBinding keyBindToggleFog = new KeyBinding("Toggle fog", 33);
 	public KeyBinding keyBindSave = new KeyBinding("Save location", 28);
 	public KeyBinding keyBindLoad = new KeyBinding("Load location", 19);
-	public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
+    public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
 	private Minecraft mc;
 	public int numberOfOptions = 8;
 

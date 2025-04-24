@@ -3,8 +3,9 @@ package net.minecraft.client.controller;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
-import net.minecraft.client.gui.GuiCreativeInventory;
-import net.minecraft.client.player.EntityPlayer;
+import net.minecraft.client.gui.GuiInventory;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.player.ItemStack;
 import net.minecraft.game.level.MobSpawner;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
@@ -12,21 +13,21 @@ import net.minecraft.game.level.block.Block;
 public final class PlayerControllerCreative extends PlayerController {
 	private MobSpawner mobSpawner;
 
-	public PlayerControllerCreative(Minecraft var1) {
-		super(var1);
-		this.isInTestMode = true;
-	}
+    private PlayerControllerCreative(Minecraft var1) {
+        super(var1);
+    }
 
 	public final void displayInventoryGUI() {
-		this.mc.displayGuiScreen(new GuiCreativeInventory());
+        this.mc.displayGuiScreen(new GuiInventory());
 	}
 
 	public final void flipPlayer(EntityPlayer var1) {
 		for(int var2 = 0; var2 < 9; ++var2) {
-			var1.inventory.stackSize[var2] = 1;
-			if(var1.inventory.mainInventory[var2] <= 0) {
-				var1.inventory.mainInventory[var2] = ((Block)Session.allowedBlocks.get(var2)).blockID;
-			}
+            if(var1.inventory.mainInventory[var2] == null) {
+                this.mc.thePlayer.inventory.mainInventory[var2] = new ItemStack(Block.blocksList[((Block)Session.allowedBlocks.get(var2)).blockID]);
+            } else {
+                this.mc.thePlayer.inventory.mainInventory[var2].stackSize = 1;
+            }
 		}
 
 	}
@@ -39,7 +40,7 @@ public final class PlayerControllerCreative extends PlayerController {
 		super.onWorldChange(var1);
 		var1.survivalWorld = false;
 		this.mobSpawner = new MobSpawner(var1);
-		int var2 = var1.width * var1.length * var1.height / 64 / 64 / 8;
+        int var2 = var1.width * var1.length * var1.height / 64 / 64 / 64;
 
 		for(int var3 = 0; var3 < var2; ++var3) {
 			this.mobSpawner.performSpawning(var2, var1.playerEntity, (LoadingScreenRenderer)null);

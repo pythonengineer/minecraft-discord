@@ -1,11 +1,11 @@
 package net.minecraft.client.render;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.entity.player.ItemStack;
 
 public final class ItemRenderer {
-	public Minecraft minecraft;
-	public Block itemToRender = null;
+	public Minecraft mc;
+	public ItemStack itemToRender = null;
 	public float equippedProgress = 0.0F;
 	public float prevEquippedProgress = 0.0F;
 	public int swingProgress = 0;
@@ -13,6 +13,6 @@ public final class ItemRenderer {
 	RenderBlocks renderBlocksInstance = new RenderBlocks(Tessellator.instance);
 
 	public ItemRenderer(Minecraft var1) {
-		this.minecraft = var1;
+		this.mc = var1;
 	}
 }

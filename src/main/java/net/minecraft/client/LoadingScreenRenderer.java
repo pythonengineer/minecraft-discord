@@ -8,35 +8,61 @@ import net.minecraft.client.render.Tessellator;
 
 public final class LoadingScreenRenderer {
 	private String text = "";
-	public Minecraft minecraft;
-	public String title = "";
+	private Minecraft mc;
+	private String title = "";
 	private long start = EagRuntime.currentTimeMillis();
 
 	public LoadingScreenRenderer(Minecraft var1) {
-		this.minecraft = var1;
+		this.mc = var1;
 	}
 
 	public final void displayProgressMessage(String var1) {
-		if(!this.minecraft.running) {
+		if(!this.mc.running) {
 			throw new MinecraftError();
 		} else {
+			this.title = var1;
+            int var3 = this.mc.scaledResolution.getScaledWidth();
+            int var2 = this.mc.scaledResolution.getScaledHeight();
+			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glLoadIdentity();
+			GL11.glOrtho(0.0D, (double)var3, (double)var2, 0.0D, 100.0D, 300.0D);
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glLoadIdentity();
+			GL11.glTranslatef(0.0F, 0.0F, -200.0F);
+		}
+	}
+
+	public final void displayLoadingString(String var1) {
+		if(!this.mc.running) {
+			throw new MinecraftError();
+		} else {
+			this.start = 0L;
 			this.text = var1;
 			this.setLoadingProgress(-1);
+			this.start = 0L;
 		}
 	}
 
 	public final void setLoadingProgress(int var1) {
-		if(!this.minecraft.running) {
+		if(!this.mc.running) {
 			throw new MinecraftError();
 		} else {
-			long var2 = EagRuntime.currentTimeMillis();
+			long var2 = System.currentTimeMillis();
 			if(var2 - this.start >= 20L) {
 				this.start = var2;
-				int var8 = this.minecraft.scaledResolution.getScaledWidth();
-				int var3 = this.minecraft.scaledResolution.getScaledHeight();
+				int var8 = this.mc.scaledResolution.getScaledWidth();
+				int var3 = this.mc.scaledResolution.getScaledHeight();
+				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+				GL11.glMatrixMode(GL11.GL_PROJECTION);
+				GL11.glLoadIdentity();
+				GL11.glOrtho(0.0D, (double)var8, (double)var3, 0.0D, 100.0D, 300.0D);
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glLoadIdentity();
+				GL11.glTranslatef(0.0F, 0.0F, -200.0F);
 				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 				Tessellator var4 = Tessellator.instance;
-				int var5 = this.minecraft.renderEngine.getTexture("/dirt.png");
+				int var5 = this.mc.renderEngine.getTexture("/dirt.png");
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
 				float var9 = 32.0F;
 				var4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -65,8 +91,8 @@ public final class LoadingScreenRenderer {
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
 				}
 
-				this.minecraft.fontRenderer.drawStringWithShadow(this.title, (var8 - this.minecraft.fontRenderer.getWidth(this.title)) / 2, var3 / 2 - 4 - 16, 16777215);
-				this.minecraft.fontRenderer.drawStringWithShadow(this.text, (var8 - this.minecraft.fontRenderer.getWidth(this.text)) / 2, var3 / 2 - 4 + 8, 16777215);
+				this.mc.fontRenderer.drawStringWithShadow(this.title, (var8 - this.mc.fontRenderer.getStringWidth(this.title)) / 2, var3 / 2 - 4 - 16, 16777215);
+				this.mc.fontRenderer.drawStringWithShadow(this.text, (var8 - this.mc.fontRenderer.getStringWidth(this.text)) / 2, var3 / 2 - 4 + 8, 16777215);
 				Display.update();
 
 				try {

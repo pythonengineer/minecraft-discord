@@ -39,6 +39,10 @@ public final class BlockStep extends Block {
 
 	}
 
+    public final int idDropped() {
+        return Block.stairSingle.blockID;
+    }
+
 	public final boolean renderAsNormalBlock() {
 		return this.isDouble;
 	}

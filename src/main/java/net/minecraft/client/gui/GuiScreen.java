@@ -92,7 +92,7 @@ public class GuiScreen extends Gui {
 	public void initGui() {
 	}
 
-    public final void updateEvents() {
+    public final void handleInput() {
         boolean noTouch = true;
 
         while(Touch.next()) {
@@ -129,7 +129,7 @@ public class GuiScreen extends Gui {
 	public void updateScreen() {
 	}
 
-	public void onClose() {
+    public void onGuiClosed() {
 	}
 
     public void touchEvent() {

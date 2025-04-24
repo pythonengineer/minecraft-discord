@@ -31,7 +31,7 @@ public class AILiving extends AI {
 				if(var4 * var4 + var5 * var5 + var10 * var10 < 1024.0F) {
 					this.entityAge = 0;
 				} else {
-					var2.remove();
+                    var2.setEntityDead();
 				}
 			}
 		}

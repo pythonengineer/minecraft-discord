@@ -340,22 +340,32 @@ public final class RenderBlocks {
 	public final void renderBlockOnInventory(Block var1) {
 		int var2 = var1.getRenderType();
 		if(var2 == 0) {
-			GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(0.0F, -1.0F, 0.0F);
-			this.renderBlockBottom(var1, 0, 0, 0, var1.getBlockTexture(0));
-			this.tessellator.normal(0.0F, 1.0F, 0.0F);
-			this.renderBlockTop(var1, 0, 0, 0, var1.getBlockTexture(1));
-			this.tessellator.normal(0.0F, 0.0F, -1.0F);
-			this.renderBlockNorth(var1, 0, 0, 0, var1.getBlockTexture(2));
-			this.tessellator.normal(0.0F, 0.0F, 1.0F);
-			this.renderBlockSouth(var1, 0, 0, 0, var1.getBlockTexture(3));
-			this.tessellator.normal(-1.0F, 0.0F, 0.0F);
-			this.renderBlockWest(var1, 0, 0, 0, var1.getBlockTexture(4));
-			this.tessellator.normal(0.0F, 0.0F, 0.0F);
-			this.renderBlockEast(var1, 0, 0, 0, var1.getBlockTexture(5));
-			this.tessellator.draw();
-			GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+            GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+            this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            this.tessellator.normal(0.0F, -1.0F, 0.0F);
+            this.renderBlockBottom(var1, 0, 0, 0, var1.getBlockTexture(0));
+            this.tessellator.draw();
+            this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            this.tessellator.normal(0.0F, 1.0F, 0.0F);
+            this.renderBlockTop(var1, 0, 0, 0, var1.getBlockTexture(1));
+            this.tessellator.draw();
+            this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            this.tessellator.normal(0.0F, 0.0F, -1.0F);
+            this.renderBlockNorth(var1, 0, 0, 0, var1.getBlockTexture(2));
+            this.tessellator.draw();
+            this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            this.tessellator.normal(0.0F, 0.0F, 1.0F);
+            this.renderBlockSouth(var1, 0, 0, 0, var1.getBlockTexture(3));
+            this.tessellator.draw();
+            this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            this.tessellator.normal(-1.0F, 0.0F, 0.0F);
+            this.renderBlockWest(var1, 0, 0, 0, var1.getBlockTexture(4));
+            this.tessellator.draw();
+            this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            this.tessellator.normal(1.0F, 0.0F, 0.0F);
+            this.renderBlockEast(var1, 0, 0, 0, var1.getBlockTexture(5));
+            this.tessellator.draw();
+            GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 		} else if(var2 == 1) {
 			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 			this.tessellator.normal(0.0F, -1.0F, 0.0F);

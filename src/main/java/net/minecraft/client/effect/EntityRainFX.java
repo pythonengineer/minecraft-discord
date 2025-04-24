@@ -30,18 +30,18 @@ public final class EntityRainFX extends EntityFX {
 		this.motionX1 *= 0.98F;
 		this.motionY1 *= 0.98F;
 		this.motionZ1 *= 0.98F;
-		if(this.particleMaxAge-- <= 0) {
-			this.remove();
-		}
+        if(this.particleMaxAge-- <= 0) {
+            this.setEntityDead();
+        }
 
-		if(this.onGround) {
-			if(Math.random() < 0.5D) {
-				this.remove();
-			}
+        if(this.onGround) {
+            if(Math.random() < 0.5D) {
+                this.setEntityDead();
+            }
 
-			this.motionX1 *= 0.7F;
-			this.motionZ1 *= 0.7F;
-		}
+            this.motionX1 *= 0.7F;
+            this.motionZ1 *= 0.7F;
+        }
 
 	}
 }

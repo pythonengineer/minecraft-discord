@@ -15,7 +15,7 @@ import net.minecraft.client.render.texture.TextureFX;
 public class RenderEngine {
 	public HashMap textureMap = new HashMap();
 	public HashMap textureContentsMap = new HashMap();
-	public IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
+    private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
 	public ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
 	public List textureList = new ArrayList();
 	public GameSettings options;

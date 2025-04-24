@@ -19,7 +19,7 @@ public final class GuiNewLevel extends GuiScreen {
 		if(var1.id == 3) {
 			this.mc.displayGuiScreen(this.parentScreen);
 		} else {
-			this.mc.generateLevel(var1.id);
+            this.mc.generateNewLevel(var1.id);
 			this.mc.displayGuiScreen((GuiScreen)null);
 			this.mc.setIngameFocus();
 		}

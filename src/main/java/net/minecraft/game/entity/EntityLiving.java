@@ -4,12 +4,12 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.level.World;
 
 public class EntityLiving extends Entity {
-	public int heartsHalvesLife = 20;
+    private int heartsHalvesLife = 20;
 	public float renderYawOffset = 0.0F;
 	public float prevRenderYawOffset = 0.0F;
 	private float rotationYawHead;
 	private float prevRotationYawHead;
-	private int maxAir = 10;
+    private int maxAir = 300;
 	public int health;
 	public int prevHealth;
 	public int scoreValue = 0;
@@ -60,7 +60,7 @@ public class EntityLiving extends Entity {
 		if(this.health <= 0) {
 			++this.deathTime;
 			if(this.deathTime > 20) {
-				this.remove();
+                this.setEntityDead();
 			}
 		}
 

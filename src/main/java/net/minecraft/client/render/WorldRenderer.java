@@ -3,7 +3,7 @@ package net.minecraft.client.render;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
-import net.minecraft.client.player.EntityPlayer;
+import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 
@@ -86,7 +86,7 @@ public final class WorldRenderer {
 		}
 	}
 
-	public final float a(EntityPlayer var1) {
+	public final float a(EntityLiving var1) {
 		float var2 = var1.posX - (float)this.posX;
 		float var3 = var1.posY - (float)this.posY;
 		float var4 = var1.posZ - (float)this.posZ;

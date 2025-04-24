@@ -53,5 +53,13 @@ tasks.named("generateJavaScript") {
         def j = dest.indexOf("function(\$rt_globals,\$rt_exports){")
         dest = dest.substring(0, j + 34) + "\n" + file(folder + "/ES6ShimScript.js").getText("UTF-8") + "\n" + dest.substring(j + 34)
         phile.write(dest, "UTF-8")
+
+        phile = file("discord/client/index.html")
+        dest = phile.getText("UTF-8")
+        def date = (new Date()).format('yyyyMMddHHmmss')
+        i = dest.lastIndexOf("?v=0")
+        j = dest.indexOf('"></script> <!')
+        dest = dest.substring(0, i + 4) + date + dest.substring(j)
+        phile.write(dest, "UTF-8")
     }
 }

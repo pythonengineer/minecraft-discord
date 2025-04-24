@@ -22,6 +22,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.util.ReportedException;
 import net.minecraft.client.controller.PlayerController;
 import net.minecraft.client.controller.PlayerControllerCreative;
+import net.minecraft.client.controller.PlayerControllerSP;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.effect.EntityDiggingFX;
 import net.minecraft.client.effect.EntityFX;
@@ -33,9 +34,10 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.player.EntityPlayer;
-import net.minecraft.client.player.InventoryPlayer;
+import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromKeys;
+import net.minecraft.client.render.ClippingHelper;
+import net.minecraft.client.render.ClippingHelperImplementation;
 import net.minecraft.client.render.EntityRenderer;
 import net.minecraft.client.render.ItemRenderer;
 import net.minecraft.client.render.RenderBlocks;
@@ -47,6 +49,8 @@ import net.minecraft.client.render.texture.TextureFX;
 import net.minecraft.client.render.texture.TextureLavaFX;
 import net.minecraft.client.render.texture.TextureWaterFX;
 import net.minecraft.client.render.texture.TextureWaterFlowFX;
+import net.minecraft.game.entity.player.InventoryPlayer;
+import net.minecraft.game.entity.player.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.generator.LevelGenerator;
@@ -56,14 +60,14 @@ import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 
 public final class Minecraft implements Runnable {
-	public PlayerController playerController = new PlayerControllerCreative(this);
+	public PlayerController playerController = new PlayerControllerSP(this);
 	private boolean fullScreen = false;
 	public int displayWidth;
 	public int displayHeight;
 	private Timer timer = new Timer(20.0F);
 	public World theWorld;
 	public RenderGlobal renderGlobal;
-	public EntityPlayer thePlayer;
+    public EntityPlayerSP thePlayer;
 	public EffectRenderer effectRenderer;
 	public Session session = null;
 	public String minecraftUri;
@@ -80,7 +84,7 @@ public final class Minecraft implements Runnable {
 	public MovingObjectPosition objectMouseOver;
 	public GameSettings options;
 	String serverIp;
-	public volatile boolean running;
+    volatile boolean running;
 	public String debug;
 	private boolean inventoryScreen;
 	private int prevFrameTime;
@@ -110,7 +114,7 @@ public final class Minecraft implements Runnable {
 	public final void displayGuiScreen(GuiScreen var1) {
 		if(!(this.currentScreen instanceof GuiErrorScreen)) {
 			if(this.currentScreen != null) {
-				this.currentScreen.onClose();
+                this.currentScreen.onGuiClosed();
 			}
 
 			if(var1 == null && this.thePlayer.health <= 0) {
@@ -120,7 +124,7 @@ public final class Minecraft implements Runnable {
 			this.currentScreen = (GuiScreen)var1;
 			if(var1 != null) {
 				if(this.inventoryScreen) {
-					this.thePlayer.resetKeyState();
+                    this.thePlayer.movementInput.resetKeyState();
 					this.inventoryScreen = false;
 					Mouse.setGrabbed(false);
 				}
@@ -220,9 +224,8 @@ public final class Minecraft implements Runnable {
 				var43.generate(8, 8, 8, new byte[512]);
 				this.setLevel(var43);
 			} else {
-				boolean var9 = false;
 				if(this.theWorld == null) {
-					this.generateLevel(0);
+					this.generateNewLevel(0);
 				}
 			}
 
@@ -327,7 +330,7 @@ public final class Minecraft implements Runnable {
     							float var10001 = (float)var42;
     							float var56 = (float)(var45 * var46);
     							float var57 = var10001;
-    							EntityPlayer var55 = var39.mc.thePlayer;
+    							EntityPlayerSP var55 = var39.mc.thePlayer;
     							float var5 = var55.rotationPitch;
     							float var6 = var55.rotationYaw;
     							var55.rotationYaw = (float)((double)var55.rotationYaw + (double)var57 * 0.15D);
@@ -346,11 +349,11 @@ public final class Minecraft implements Runnable {
     
     						var42 = this.scaledResolution.getScaledWidth();
     						var45 = this.scaledResolution.getScaledHeight();
-    						int var48 = Mouse.getX() * var42 / var39.mc.displayWidth;
-    						var49 = var45 - Mouse.getY() * var45 / var39.mc.displayHeight - 1;
+                            int var48 = PointerInputAbstraction.getX() * var42 / var39.mc.displayWidth;
+                            var49 = var45 - PointerInputAbstraction.getY() * var45 / var39.mc.displayHeight - 1;
     						if(var39.mc.theWorld != null) {
     							var39.updateCameraAndRender(var41);
-    							var39.mc.ingameGUI.renderGameOverlay(var41);
+                                var39.mc.ingameGUI.renderGameOverlay();
     						} else {
     							GL11.glViewport(0, 0, var39.mc.displayWidth, var39.mc.displayHeight);
     							GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
@@ -363,7 +366,27 @@ public final class Minecraft implements Runnable {
     						}
     
     						if(var39.mc.currentScreen != null) {
-    							var39.mc.currentScreen.drawScreen(var48, var49);
+                                GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+                                float f = 1.0f;
+                                final float[] ff = new float[]{1.0f};
+                                f = this.currentScreen.getEaglerScale();
+                                int mx, my;
+                                if (f == 1.0f) {
+                                    mx = var48;
+                                    my = var49;
+                                } else {
+                                    mx = GuiScreen.applyEaglerScale(f, var48, var42);
+                                    my = GuiScreen.applyEaglerScale(f, var49, var45);
+                                    GL11.glPushMatrix();
+                                    float fff = (1.0f - f) * 0.5f;
+                                    GL11.glTranslatef(fff * var42, fff * var45, 0.0f);
+                                    GL11.glScalef(f, f, f);
+                                }
+                                ff[0] = f;
+                                this.currentScreen.drawScreen(mx, my);
+                                if (f != 1.0f) {
+                                    GL11.glPopMatrix();
+                                }
     						}
 
                             var39.setupOverlayRendering();
@@ -491,7 +514,7 @@ public final class Minecraft implements Runnable {
 
     public void setIngameNotInFocus() {
         if (this.inventoryScreen) {
-            this.thePlayer.resetKeyState();
+            this.thePlayer.movementInput.resetKeyState();
             this.inventoryScreen = false;
             if (!PointerInputAbstraction.isTouchMode() && mouseGrabSupported) {
                 Mouse.setGrabbed(false);
@@ -505,104 +528,95 @@ public final class Minecraft implements Runnable {
 		}
 	}
 
-	private void clickMouse(int var1) {
-		if(var1 != 0 || this.leftClickCounter <= 0) {
-			ItemRenderer var5;
-			if(var1 == 0) {
-				var5 = this.entityRenderer.itemRenderer;
-				var5.swingProgress = -1;
-				var5.itemSwingState = true;
+    private void clickMouse(int var1) {
+        if(var1 != 0 || this.leftClickCounter <= 0) {
+            if(var1 == 0) {
+                ItemRenderer var5 = this.entityRenderer.itemRenderer;
+                var5.swingProgress = -1;
+                var5.itemSwingState = true;
             } else {
                 this.rightClickDelayTimer = 4;
             }
 
-			int var2;
-			if(var1 == 1) {
-				var2 = this.thePlayer.inventory.getCurrentItem();
-				if(var2 > 0 && this.playerController.sendUseItem(this.thePlayer, var2)) {
-					var5 = null;
-					this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-					return;
-				}
-			}
+            Object var2 = null;
+            if(this.objectMouseOver == null) {
+                if(var1 == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
+                    this.leftClickCounter = 10;
+                }
 
-			if(this.objectMouseOver == null) {
-				if(var1 == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
-					this.leftClickCounter = 10;
-				}
+            } else {
+                if(this.objectMouseOver.typeOfHit == 1) {
+                    if(var1 == 0) {
+                        this.objectMouseOver.entityHit.attackEntityFrom(this.thePlayer, 4);
+                        return;
+                    }
+                } else if(this.objectMouseOver.typeOfHit == 0) {
+                    int var10 = this.objectMouseOver.blockX;
+                    int var3 = this.objectMouseOver.blockY;
+                    int var4 = this.objectMouseOver.blockZ;
+                    if(var1 != 0) {
+                        if(this.objectMouseOver.sideHit == 0) {
+                            --var3;
+                        }
 
-			} else {
-				if(this.objectMouseOver.typeOfHit == 1) {
-					if(var1 == 0) {
-						this.objectMouseOver.entityHit.attackEntityFrom(this.thePlayer, 4);
-						return;
-					}
-				} else if(this.objectMouseOver.typeOfHit == 0) {
-					var2 = this.objectMouseOver.blockX;
-					int var3 = this.objectMouseOver.blockY;
-					int var4 = this.objectMouseOver.blockZ;
-					if(var1 != 0) {
-						if(this.objectMouseOver.sideHit == 0) {
-							--var3;
-						}
+                        if(this.objectMouseOver.sideHit == 1) {
+                            ++var3;
+                        }
 
-						if(this.objectMouseOver.sideHit == 1) {
-							++var3;
-						}
+                        if(this.objectMouseOver.sideHit == 2) {
+                            --var4;
+                        }
 
-						if(this.objectMouseOver.sideHit == 2) {
-							--var4;
-						}
+                        if(this.objectMouseOver.sideHit == 3) {
+                            ++var4;
+                        }
 
-						if(this.objectMouseOver.sideHit == 3) {
-							++var4;
-						}
+                        if(this.objectMouseOver.sideHit == 4) {
+                            --var10;
+                        }
 
-						if(this.objectMouseOver.sideHit == 4) {
-							--var2;
-						}
+                        if(this.objectMouseOver.sideHit == 5) {
+                            ++var10;
+                        }
+                    }
 
-						if(this.objectMouseOver.sideHit == 5) {
-							++var2;
-						}
-					}
+                    Block var11 = Block.blocksList[this.theWorld.getBlockId(var10, var3, var4)];
+                    if(var1 == 0) {
+                        if(var11 != Block.bedrock) {
+                            this.playerController.clickBlock(var10, var3, var4);
+                            return;
+                        }
+                    } else {
+                        ItemStack var9 = this.thePlayer.inventory.getCurrentItem();
+                        if(var9 == null) {
+                            return;
+                        }
 
-					Block var9 = Block.blocksList[this.theWorld.getBlockId(var2, var3, var4)];
-					if(var1 == 0) {
-						if(var9 != Block.bedrock) {
-							this.playerController.clickBlock(var2, var3, var4);
-							return;
-						}
-					} else {
-						var1 = this.thePlayer.inventory.getCurrentItem();
-						if(var1 <= 0) {
-							return;
-						}
+                        var11 = Block.blocksList[this.theWorld.getBlockId(var10, var3, var4)];
+                        if(var9.itemID > 0 && var11 == null || var11 == Block.waterMoving || var11 == Block.waterStill || var11 == Block.lavaMoving || var11 == Block.lavaStill) {
+                            var1 = var9.itemID;
+                            AxisAlignedBB var12 = Block.blocksList[var1].getCollisionBoundingBoxFromPool(var10, var3, var4);
+                            if(var12 != null) {
+                                AxisAlignedBB var7 = this.thePlayer.boundingBox;
+                                if(!((var12.x1 > var7.x0 && var12.x0 < var7.x1 ? (var12.y1 > var7.y0 && var12.y0 < var7.y1 ? var12.z1 > var7.z0 && var12.z0 < var7.z1 : false) : false) ? false : this.theWorld.checkIfAABBIsClear(var12))) {
+                                    return;
+                                }
+                            }
 
-						var9 = Block.blocksList[this.theWorld.getBlockId(var2, var3, var4)];
-						if(var9 == null || var9 == Block.waterMoving || var9 == Block.waterStill || var9 == Block.lavaMoving || var9 == Block.lavaStill) {
-							AxisAlignedBB var10 = Block.blocksList[var1].getCollisionBoundingBoxFromPool(var2, var3, var4);
-							if(var10 != null) {
-								AxisAlignedBB var7 = this.thePlayer.boundingBox;
-								if(!((var10.x1 > var7.x0 && var10.x0 < var7.x1 ? (var10.y1 > var7.y0 && var10.y0 < var7.y1 ? var10.z1 > var7.z0 && var10.z0 < var7.z1 : false) : false) ? false : this.theWorld.checkIfAABBIsClear(var10))) {
-									return;
-								}
-							}
+                            if(!this.playerController.canPlace(var1)) {
+                                return;
+                            }
 
-							if(!this.playerController.canPlace(var1)) {
-								return;
-							}
+                            this.theWorld.setBlockWithNotify(var10, var3, var4, var1);
+                            this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+                            Block.blocksList[var1].onBlockPlaced(this.theWorld, var10, var3, var4);
+                        }
+                    }
+                }
 
-							this.theWorld.setBlockWithNotify(var2, var3, var4, var1);
-							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[var1].onBlockPlaced(this.theWorld, var2, var3, var4);
-						}
-					}
-				}
-
-			}
-		}
-	}
+            }
+        }
+    }
 
     private long placeTouchStartTime = -1l;
     private long mineTouchStartTime = -1l;
@@ -678,9 +692,8 @@ public final class Minecraft implements Runnable {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png"));
 		RenderEngine var13 = this.renderEngine;
 
-		TextureFX var3;
 		for(var2 = 0; var2 < var13.textureList.size(); ++var2) {
-			var3 = (TextureFX)var13.textureList.get(var2);
+			TextureFX var3 = (TextureFX)var13.textureList.get(var2);
 			var3.anaglyphEnabled = var13.options.anaglyph;
 			var3.onTick();
 			var13.imageData.clear();
@@ -777,13 +790,10 @@ public final class Minecraft implements Runnable {
                                 var2 = Block.stone.blockID;
                             }
 
-                            boolean var5 = this.playerController instanceof PlayerControllerCreative;
-                            InventoryPlayer var18 = this.thePlayer.inventory;
-                            var6 = var18.getInventorySlotContainItem(var2);
-                            if(var6 >= 0) {
-                                var18.currentItem = var6;
-                            } else if(var5 && var2 > 0 && Session.allowedBlocks.contains(Block.blocksList[var2])) {
-                                var18.replaceSlot(Block.blocksList[var2]);
+                            InventoryPlayer var26 = this.thePlayer.inventory;
+                            var4 = var26.getInventorySlotContainItem(var2);
+                            if(var4 >= 0 && var4 < 9) {
+                                var26.currentItem = var4;
                             }
                         }
                     }
@@ -800,11 +810,11 @@ public final class Minecraft implements Runnable {
                             var2 = -1;
                         }
 
-                        for(var15.currentItem -= var2; var15.currentItem < 0; var15.currentItem += var15.mainInventory.length) {
+                        for(var15.currentItem -= var2; var15.currentItem < 0; var15.currentItem += 9) {
                         }
 
-                        while(var15.currentItem >= var15.mainInventory.length) {
-                            var15.currentItem -= var15.mainInventory.length;
+                        while(var15.currentItem >= 9) {
+                            var15.currentItem -= 9;
                         }
                     }
 
@@ -825,13 +835,11 @@ public final class Minecraft implements Runnable {
             processTouchMine();
 
             while(Keyboard.next()) {
-                this.thePlayer.checkKeyForMovementInput(Keyboard.getEventKey(), Keyboard.getEventKeyState());
+                this.thePlayer.movementInput.checkKeyForMovementInput(Keyboard.getEventKey(), Keyboard.getEventKeyState());
                 if(Keyboard.getEventKeyState()) {
                     if(this.currentScreen != null) {
                         this.currentScreen.handleKeyboardInput();
-                    }
-
-                    if(this.currentScreen == null) {
+                    } else {
                         if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
                             this.displayInGameMenu();
                         }
@@ -853,6 +861,10 @@ public final class Minecraft implements Runnable {
 
                         if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
                             this.playerController.displayInventoryGUI();
+                        }
+
+                        if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
+                            this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.currentItem);
                         }
                     }
 
@@ -899,7 +911,7 @@ public final class Minecraft implements Runnable {
             }
 
             boolean var20 = this.currentScreen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch;
-            if(!this.playerController.isInTestMode && this.leftClickCounter <= 0) {
+            if(this.leftClickCounter <= 0) {
                 if(var20 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) {
                     var4 = this.objectMouseOver.blockX;
                     var24 = this.objectMouseOver.blockY;
@@ -956,485 +968,437 @@ public final class Minecraft implements Runnable {
 		}
 
 		if(this.currentScreen != null) {
-            this.currentScreen.updateEvents();
+            this.currentScreen.handleInput();
 			if(this.currentScreen != null) {
 				this.currentScreen.updateScreen();
 			}
 		}
 
 		if(this.theWorld != null) {
-			EntityRenderer var19 = this.entityRenderer;
-			++var19.entityRendererInt1;
-			ItemRenderer var31 = var19.itemRenderer;
-			var19.itemRenderer.prevEquippedProgress = var31.equippedProgress;
-			if(var31.itemSwingState) {
-				++var31.swingProgress;
-				if(var31.swingProgress == 7) {
-					var31.swingProgress = 0;
-					var31.itemSwingState = false;
-				}
-			}
+            EntityRenderer var25 = this.entityRenderer;
+            this.entityRenderer.prevFogColor = var25.fogColor;
+            float var41 = var25.mc.theWorld.getBlockLightValue((int)var25.mc.thePlayer.posX, (int)var25.mc.thePlayer.posY, (int)var25.mc.thePlayer.posZ);
+            float var31 = (float)(3 - var25.mc.options.renderDistance) / 3.0F;
+            var41 = var41 * (1.0F - var31) + var31;
+            var25.fogColor += (var41 - var25.fogColor) * 0.1F;
+            ++var25.entityRendererInt1;
+            ItemRenderer var32 = var25.itemRenderer;
+            var25.itemRenderer.prevEquippedProgress = var32.equippedProgress;
+            if(var32.itemSwingState) {
+                ++var32.swingProgress;
+                if(var32.swingProgress == 7) {
+                    var32.swingProgress = 0;
+                    var32.itemSwingState = false;
+                }
+            }
 
-			var3 = null;
-			var4 = var31.minecraft.thePlayer.inventory.getCurrentItem();
-			Block var26 = null;
-			if(var4 > 0) {
-				var26 = Block.blocksList[var4];
-			}
+            ItemStack var35 = var32.mc.thePlayer.inventory.getCurrentItem();
+            float var36 = 0.4F;
+            float var42 = (var35 == var32.itemToRender ? 1.0F : 0.0F) - var32.equippedProgress;
+            if(var42 < -var36) {
+                var42 = -var36;
+            }
 
-			float var29 = 0.4F;
-			float var10000 = var26 == var31.itemToRender ? 1.0F : 0.0F;
-			float var22 = 0.0F;
-			var22 = var10000 - var31.equippedProgress;
-			if(var22 < -var29) {
-				var22 = -var29;
-			}
+            if(var42 > var36) {
+                var42 = var36;
+            }
 
-			if(var22 > var29) {
-				var22 = var29;
-			}
+            var32.equippedProgress += var42;
+            if(var32.equippedProgress < 0.1F) {
+                var32.itemToRender = var35;
+            }
 
-			var31.equippedProgress += var22;
-			if(var31.equippedProgress < 0.1F) {
-				var31.itemToRender = var26;
-			}
+            if(var25.mc.thirdPersonView) {
+                var25.addRainParticles();
+            }
 
-			if(var19.mc.thirdPersonView) {
-				EntityRenderer var32 = var19;
-				EntityPlayer var27 = var19.mc.thePlayer;
-				World var23 = var19.mc.theWorld;
-				var24 = (int)var27.posX;
-				var6 = (int)var27.posY;
-				var21 = (int)var27.posZ;
-
-				for(var14 = 0; var14 < 50; ++var14) {
-					int var30 = var24 + var32.random.nextInt(9) - 4;
-					int var33 = var21 + var32.random.nextInt(9) - 4;
-					int var34 = var23.getMapHeight(var30, var33);
-					int var35 = var23.getBlockId(var30, var34 - 1, var33);
-					if(var34 <= var6 + 4 && var34 >= var6 - 4) {
-						float var11 = var32.random.nextFloat();
-						float var12 = var32.random.nextFloat();
-						if(var35 > 0) {
-							var32.mc.effectRenderer.addEffect(new EntityRainFX(var23, (float)var30 + var11, (float)var34 + 0.1F - Block.blocksList[var35].minY, (float)var33 + var12));
-						}
-					}
-				}
-			}
-
-			var1 = null;
-			++this.renderGlobal.cloudOffsetX;
-			this.theWorld.updateEntities();
-			this.theWorld.tick();
-			var16 = this.effectRenderer;
-
-			for(var2 = 0; var2 < 2; ++var2) {
-				for(var21 = 0; var21 < var16.fxLayers[var2].size(); ++var21) {
-					EntityFX var25 = (EntityFX)var16.fxLayers[var2].get(var21);
-					var25.onEntityUpdate();
-					if(var25.isDead) {
-						var16.fxLayers[var2].remove(var21--);
-					}
-				}
-			}
+            ++this.renderGlobal.cloudOffsetX;
+            this.theWorld.updateEntities();
+            this.theWorld.tick();
+            this.effectRenderer.updateEffects();
 		}
 
 	}
 
-	public final void generateLevel(int var1) {
-		String var2 = this.session != null ? this.session.username : "anonymous";
-		LevelGenerator var10000 = new LevelGenerator(this.loadingScreen);
-		int var10002 = 128 << var1;
-		int var10003 = 128 << var1;
-		boolean var5 = true;
-		int var4 = var10003;
-		int var3 = var10002;
-		LevelGenerator var31 = var10000;
-		String var7 = "Generating level";
-		LoadingScreenRenderer var6 = var31.progressBar;
-		if(!var6.minecraft.running) {
-			throw new MinecraftError();
-		} else {
-			var6.title = var7;
-			int var8 = this.scaledResolution.getScaledWidth();
-			int var9 = this.scaledResolution.getScaledHeight();
-			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
-			GL11.glOrtho(0.0D, (double)var8, (double)var9, 0.0D, 100.0D, 300.0D);
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glLoadIdentity();
-			GL11.glTranslatef(0.0F, 0.0F, -200.0F);
-			var31.width = var3;
-			var31.depth = var4;
-			var31.height = 64;
-			var31.waterLevel = 32;
-			var31.blocksByteArray = new byte[var3 * var4 << 6];
-			var31.progressBar.displayProgressMessage("Raising..");
-			LevelGenerator var35 = var31;
-			NoiseGeneratorDistort var36 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
-			NoiseGeneratorDistort var38 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
-			NoiseGeneratorOctaves var41 = new NoiseGeneratorOctaves(var31.rand, 6);
-			int[] var10 = new int[var31.width * var31.depth];
-			float var11 = 1.3F;
+    public final void generateNewLevel(int var1) {
+        String var2 = this.session != null ? this.session.username : "anonymous";
+        LevelGenerator var10000 = new LevelGenerator(this.loadingScreen);
+        int var10002 = 128 << var1;
+        int var10003 = 128 << var1;
+        boolean var5 = true;
+        int var4 = var10003;
+        int var3 = var10002;
+        LevelGenerator var31 = var10000;
+        var31.progressBar.displayProgressMessage("Generating level");
+        var31.width = var3;
+        var31.depth = var4;
+        var31.height = 64;
+        var31.waterLevel = 32;
+        var31.blocksByteArray = new byte[var3 * var4 << 6];
+        var31.progressBar.displayLoadingString("Raising..");
+        LevelGenerator var6 = var31;
+        NoiseGeneratorDistort var7 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
+        NoiseGeneratorDistort var8 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
+        NoiseGeneratorOctaves var9 = new NoiseGeneratorOctaves(var31.rand, 6);
+        int[] var10 = new int[var31.width * var31.depth];
+        float var11 = 1.3F;
 
-			int var12;
-			int var17;
-			for(var17 = 0; var17 < var35.width; ++var17) {
-				var35.setNextPhase(var17 * 100 / (var35.width - 1));
+        int var12;
+        int var17;
+        for(var17 = 0; var17 < var6.width; ++var17) {
+            var6.setNextPhase(var17 * 100 / (var6.width - 1));
 
-				for(var12 = 0; var12 < var35.depth; ++var12) {
-					double var19 = var36.generateNoise((double)((float)var17 * var11), (double)((float)var12 * var11)) / 6.0D + (double)-4;
-					double var21 = var38.generateNoise((double)((float)var17 * var11), (double)((float)var12 * var11)) / 5.0D + 10.0D + (double)-4;
-					double var66 = var41.generateNoise((double)var17, (double)var12) / 8.0D;
-					double var23 = 0.0D;
-					if(var66 > 0.0D) {
-						var21 = var19;
-					}
+            for(var12 = 0; var12 < var6.depth; ++var12) {
+                double var19 = var7.generateNoise((double)((float)var17 * var11), (double)((float)var12 * var11)) / 6.0D + (double)-4;
+                double var21 = var8.generateNoise((double)((float)var17 * var11), (double)((float)var12 * var11)) / 5.0D + 10.0D + (double)-4;
+                double var64 = var9.generateNoise((double)var17, (double)var12) / 8.0D;
+                double var23 = 0.0D;
+                if(var64 > 0.0D) {
+                    var21 = var19;
+                }
 
-					double var25 = Math.max(var19, var21) / 2.0D;
-					if(var25 < 0.0D) {
-						var25 *= 0.8D;
-					}
+                double var25 = Math.max(var19, var21) / 2.0D;
+                if(var25 < 0.0D) {
+                    var25 *= 0.8D;
+                }
 
-					var10[var17 + var12 * var35.width] = (int)var25;
-				}
-			}
+                var10[var17 + var12 * var6.width] = (int)var25;
+            }
+        }
 
-			var31.progressBar.displayProgressMessage("Eroding..");
-			int[] var37 = var10;
-			var35 = var31;
-			var38 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
-			NoiseGeneratorDistort var43 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
+        var31.progressBar.displayLoadingString("Eroding..");
+        int[] var35 = var10;
+        var6 = var31;
+        var8 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
+        NoiseGeneratorDistort var40 = new NoiseGeneratorDistort(new NoiseGeneratorOctaves(var31.rand, 8), new NoiseGeneratorOctaves(var31.rand, 8));
 
-			int var45;
-			int var47;
-			boolean var52;
-			int var53;
-			for(var45 = 0; var45 < var35.width; ++var45) {
-				var35.setNextPhase(var45 * 100 / (var35.width - 1));
+        int var43;
+        int var45;
+        boolean var50;
+        int var51;
+        for(var43 = 0; var43 < var6.width; ++var43) {
+            var6.setNextPhase(var43 * 100 / (var6.width - 1));
 
-				for(var47 = 0; var47 < var35.depth; ++var47) {
-					double var16 = var38.generateNoise((double)(var45 << 1), (double)(var47 << 1)) / 8.0D;
-					var12 = var43.generateNoise((double)(var45 << 1), (double)(var47 << 1)) > 0.0D ? 1 : 0;
-					if(var16 > 2.0D) {
-						int var67 = var37[var45 + var47 * var35.width];
-						var52 = false;
-						var53 = ((var67 - var12) / 2 << 1) + var12;
-						var37[var45 + var47 * var35.width] = var53;
-					}
-				}
-			}
+            for(var45 = 0; var45 < var6.depth; ++var45) {
+                double var16 = var8.generateNoise((double)(var43 << 1), (double)(var45 << 1)) / 8.0D;
+                var12 = var40.generateNoise((double)(var43 << 1), (double)(var45 << 1)) > 0.0D ? 1 : 0;
+                if(var16 > 2.0D) {
+                    int var65 = var35[var43 + var45 * var6.width];
+                    var50 = false;
+                    var51 = ((var65 - var12) / 2 << 1) + var12;
+                    var35[var43 + var45 * var6.width] = var51;
+                }
+            }
+        }
 
-			var31.progressBar.displayProgressMessage("Soiling..");
-			var37 = var10;
-			var35 = var31;
-			var8 = var31.width;
-			var9 = var31.depth;
-			var45 = var31.height;
-			NoiseGeneratorOctaves var48 = new NoiseGeneratorOctaves(var31.rand, 8);
+        var31.progressBar.displayLoadingString("Soiling..");
+        var35 = var10;
+        var6 = var31;
+        int var38 = var31.width;
+        int var41 = var31.depth;
+        var43 = var31.height;
+        NoiseGeneratorOctaves var46 = new NoiseGeneratorOctaves(var31.rand, 8);
 
-			int var20;
-			int var22;
-			int var50;
-			int var57;
-			int var59;
-			for(var50 = 0; var50 < var8; ++var50) {
-				var35.setNextPhase(var50 * 100 / (var35.width - 1));
+        int var20;
+        int var22;
+        int var48;
+        int var55;
+        int var57;
+        for(var48 = 0; var48 < var38; ++var48) {
+            var6.setNextPhase(var48 * 100 / (var6.width - 1));
 
-				for(var17 = 0; var17 < var9; ++var17) {
-					var12 = (int)(var48.generateNoise((double)var50, (double)var17) / 24.0D) - 4;
-					var53 = var37[var50 + var17 * var8] + var35.waterLevel;
-					var20 = var53 + var12;
-					var37[var50 + var17 * var8] = Math.max(var53, var20);
-					if(var37[var50 + var17 * var8] > var45 - 2) {
-						var37[var50 + var17 * var8] = var45 - 2;
-					}
+            for(var17 = 0; var17 < var41; ++var17) {
+                var12 = (int)(var46.generateNoise((double)var48, (double)var17) / 24.0D) - 4;
+                var51 = var35[var48 + var17 * var38] + var6.waterLevel;
+                var20 = var51 + var12;
+                var35[var48 + var17 * var38] = Math.max(var51, var20);
+                if(var35[var48 + var17 * var38] > var43 - 2) {
+                    var35[var48 + var17 * var38] = var43 - 2;
+                }
 
-					if(var37[var50 + var17 * var8] < 1) {
-						var37[var50 + var17 * var8] = 1;
-					}
+                if(var35[var48 + var17 * var38] < 1) {
+                    var35[var48 + var17 * var38] = 1;
+                }
 
-					for(var57 = 0; var57 < var45; ++var57) {
-						var22 = (var57 * var35.depth + var17) * var35.width + var50;
-						var59 = 0;
-						if(var57 <= var53) {
-							var59 = Block.dirt.blockID;
-						}
+                for(var55 = 0; var55 < var43; ++var55) {
+                    var22 = (var55 * var6.depth + var17) * var6.width + var48;
+                    var57 = 0;
+                    if(var55 <= var51) {
+                        var57 = Block.dirt.blockID;
+                    }
 
-						if(var57 <= var20) {
-							var59 = Block.stone.blockID;
-						}
+                    if(var55 <= var20) {
+                        var57 = Block.stone.blockID;
+                    }
 
-						if(var57 == 0) {
-							var59 = Block.lavaMoving.blockID;
-						}
+                    if(var55 == 0) {
+                        var57 = Block.lavaMoving.blockID;
+                    }
 
-						var35.blocksByteArray[var22] = (byte)var59;
-					}
-				}
-			}
+                    var6.blocksByteArray[var22] = (byte)var57;
+                }
+            }
+        }
 
-			var31.progressBar.displayProgressMessage("Carving..");
-			boolean var39 = false;
-			var35 = var31;
-			var9 = var31.width;
-			var45 = var31.depth;
-			var47 = var31.height;
-			var50 = var9 * var45 * var47 / 256 / 64 << 1;
+        var31.progressBar.displayLoadingString("Carving..");
+        boolean var36 = false;
+        var6 = var31;
+        var41 = var31.width;
+        var43 = var31.depth;
+        var45 = var31.height;
+        var48 = var41 * var43 * var45 / 256 / 64 << 1;
 
-			for(var17 = 0; var17 < var50; ++var17) {
-				var35.setNextPhase(var17 * 100 / (var50 - 1) / 4);
-				float var49 = var35.rand.nextFloat() * (float)var9;
-				float var54 = var35.rand.nextFloat() * (float)var47;
-				float var55 = var35.rand.nextFloat() * (float)var45;
-				var57 = (int)((var35.rand.nextFloat() + var35.rand.nextFloat()) * 200.0F);
-				float var58 = var35.rand.nextFloat() * (float)Math.PI * 2.0F;
-				float var61 = 0.0F;
-				float var24 = var35.rand.nextFloat() * (float)Math.PI * 2.0F;
-				float var62 = 0.0F;
-				float var26 = var35.rand.nextFloat() * var35.rand.nextFloat();
+        for(var17 = 0; var17 < var48; ++var17) {
+            var6.setNextPhase(var17 * 100 / (var48 - 1) / 4);
+            float var47 = var6.rand.nextFloat() * (float)var41;
+            float var52 = var6.rand.nextFloat() * (float)var45;
+            float var53 = var6.rand.nextFloat() * (float)var43;
+            var55 = (int)((var6.rand.nextFloat() + var6.rand.nextFloat()) * 200.0F);
+            float var56 = var6.rand.nextFloat() * (float)Math.PI * 2.0F;
+            float var59 = 0.0F;
+            float var24 = var6.rand.nextFloat() * (float)Math.PI * 2.0F;
+            float var60 = 0.0F;
+            float var26 = var6.rand.nextFloat() * var6.rand.nextFloat();
 
-				for(int var33 = 0; var33 < var57; ++var33) {
-					var49 += MathHelper.sin(var58) * MathHelper.cos(var24);
-					var55 += MathHelper.cos(var58) * MathHelper.cos(var24);
-					var54 += MathHelper.sin(var24);
-					var58 += var61 * 0.2F;
-					var61 = var61 * 0.9F + (var35.rand.nextFloat() - var35.rand.nextFloat());
-					var24 = (var24 + var62 * 0.5F) * 0.5F;
-					var62 = var62 * (12.0F / 16.0F) + (var35.rand.nextFloat() - var35.rand.nextFloat());
-					if(var35.rand.nextFloat() >= 0.25F) {
-						float var40 = var49 + (var35.rand.nextFloat() * 4.0F - 2.0F) * 0.2F;
-						float var42 = var54 + (var35.rand.nextFloat() * 4.0F - 2.0F) * 0.2F;
-						float var13 = var55 + (var35.rand.nextFloat() * 4.0F - 2.0F) * 0.2F;
-						float var14 = ((float)var35.height - var42) / (float)var35.height;
-						var14 = 1.2F + (var14 * 3.5F + 1.0F) * var26;
-						var14 = MathHelper.sin((float)var33 * (float)Math.PI / (float)var57) * var14;
+            for(int var33 = 0; var33 < var55; ++var33) {
+                var47 += MathHelper.sin(var56) * MathHelper.cos(var24);
+                var53 += MathHelper.cos(var56) * MathHelper.cos(var24);
+                var52 += MathHelper.sin(var24);
+                var56 += var59 * 0.2F;
+                var59 = var59 * 0.9F + (var6.rand.nextFloat() - var6.rand.nextFloat());
+                var24 = (var24 + var60 * 0.5F) * 0.5F;
+                var60 = var60 * (12.0F / 16.0F) + (var6.rand.nextFloat() - var6.rand.nextFloat());
+                if(var6.rand.nextFloat() >= 0.25F) {
+                    float var37 = var47 + (var6.rand.nextFloat() * 4.0F - 2.0F) * 0.2F;
+                    float var39 = var52 + (var6.rand.nextFloat() * 4.0F - 2.0F) * 0.2F;
+                    float var13 = var53 + (var6.rand.nextFloat() * 4.0F - 2.0F) * 0.2F;
+                    float var14 = ((float)var6.height - var39) / (float)var6.height;
+                    var14 = 1.2F + (var14 * 3.5F + 1.0F) * var26;
+                    var14 = MathHelper.sin((float)var33 * (float)Math.PI / (float)var55) * var14;
 
-						for(int var15 = (int)(var40 - var14); var15 <= (int)(var40 + var14); ++var15) {
-							for(int var18 = (int)(var42 - var14); var18 <= (int)(var42 + var14); ++var18) {
-								for(int var27 = (int)(var13 - var14); var27 <= (int)(var13 + var14); ++var27) {
-									float var28 = (float)var15 - var40;
-									float var29 = (float)var18 - var42;
-									float var30 = (float)var27 - var13;
-									if(var28 * var28 + var29 * var29 * 2.0F + var30 * var30 < var14 * var14 && var15 >= 1 && var18 >= 1 && var27 >= 1 && var15 < var35.width - 1 && var18 < var35.height - 1 && var27 < var35.depth - 1) {
-										int var65 = (var18 * var35.depth + var27) * var35.width + var15;
-										if(var35.blocksByteArray[var65] == Block.stone.blockID) {
-											var35.blocksByteArray[var65] = 0;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+                    for(int var15 = (int)(var37 - var14); var15 <= (int)(var37 + var14); ++var15) {
+                        for(int var18 = (int)(var39 - var14); var18 <= (int)(var39 + var14); ++var18) {
+                            for(int var27 = (int)(var13 - var14); var27 <= (int)(var13 + var14); ++var27) {
+                                float var28 = (float)var15 - var37;
+                                float var29 = (float)var18 - var39;
+                                float var30 = (float)var27 - var13;
+                                if(var28 * var28 + var29 * var29 * 2.0F + var30 * var30 < var14 * var14 && var15 >= 1 && var18 >= 1 && var27 >= 1 && var15 < var6.width - 1 && var18 < var6.height - 1 && var27 < var6.depth - 1) {
+                                    int var63 = (var18 * var6.depth + var27) * var6.width + var15;
+                                    if(var6.blocksByteArray[var63] == Block.stone.blockID) {
+                                        var6.blocksByteArray[var63] = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-			var31.populateOre(Block.oreCoal.blockID, 90, 1, 4);
-			var31.populateOre(Block.oreIron.blockID, 70, 2, 4);
-			var31.populateOre(Block.oreGold.blockID, 50, 3, 4);
-			var31.progressBar.displayProgressMessage("Watering..");
-			var35 = var31;
-			var45 = Block.waterStill.blockID;
-			var31.setNextPhase(0);
+        var31.populateOre(Block.oreCoal.blockID, 90, 1, 4);
+        var31.populateOre(Block.oreIron.blockID, 70, 2, 4);
+        var31.populateOre(Block.oreGold.blockID, 50, 3, 4);
+        var31.progressBar.displayLoadingString("Watering..");
+        var6 = var31;
+        var43 = Block.waterStill.blockID;
+        var31.setNextPhase(0);
 
-			for(var47 = 0; var47 < var35.width; ++var47) {
-				var35.floodFill(var47, var35.height / 2 - 1, 0, 0, var45);
-				var35.floodFill(var47, var35.height / 2 - 1, var35.depth - 1, 0, var45);
-			}
+        for(var45 = 0; var45 < var6.width; ++var45) {
+            var6.floodFill(var45, var6.height / 2 - 1, 0, 0, var43);
+            var6.floodFill(var45, var6.height / 2 - 1, var6.depth - 1, 0, var43);
+        }
 
-			for(var47 = 0; var47 < var35.depth; ++var47) {
-				var35.floodFill(0, var35.height / 2 - 1, var47, 0, var45);
-				var35.floodFill(var35.width - 1, var35.height / 2 - 1, var47, 0, var45);
-			}
+        for(var45 = 0; var45 < var6.depth; ++var45) {
+            var6.floodFill(0, var6.height / 2 - 1, var45, 0, var43);
+            var6.floodFill(var6.width - 1, var6.height / 2 - 1, var45, 0, var43);
+        }
 
-			var47 = var35.width * var35.depth / 8000;
+        var45 = var6.width * var6.depth / 8000;
 
-			for(var50 = 0; var50 < var47; ++var50) {
-				if(var50 % 100 == 0) {
-					var35.setNextPhase(var50 * 100 / (var47 - 1));
-				}
+        for(var48 = 0; var48 < var45; ++var48) {
+            if(var48 % 100 == 0) {
+                var6.setNextPhase(var48 * 100 / (var45 - 1));
+            }
 
-				var17 = var35.rand.nextInt(var35.width);
-				var12 = var35.waterLevel - 1 - var35.rand.nextInt(2);
-				var53 = var35.rand.nextInt(var35.depth);
-				if(var35.blocksByteArray[(var12 * var35.depth + var53) * var35.width + var17] == 0) {
-					var35.floodFill(var17, var12, var53, 0, var45);
-				}
-			}
+            var17 = var6.rand.nextInt(var6.width);
+            var12 = var6.waterLevel - 1 - var6.rand.nextInt(2);
+            var51 = var6.rand.nextInt(var6.depth);
+            if(var6.blocksByteArray[(var12 * var6.depth + var51) * var6.width + var17] == 0) {
+                var6.floodFill(var17, var12, var51, 0, var43);
+            }
+        }
 
-			var35.setNextPhase(100);
-			var31.progressBar.displayProgressMessage("Melting..");
-			var35 = var31;
-			var8 = var31.width * var31.depth * var31.height / 20000;
+        var6.setNextPhase(100);
+        var31.progressBar.displayLoadingString("Melting..");
+        var6 = var31;
+        var38 = var31.width * var31.depth * var31.height / 20000;
 
-			for(var9 = 0; var9 < var8; ++var9) {
-				if(var9 % 100 == 0) {
-					var35.setNextPhase(var9 * 100 / (var8 - 1));
-				}
+        for(var41 = 0; var41 < var38; ++var41) {
+            if(var41 % 100 == 0) {
+                var6.setNextPhase(var41 * 100 / (var38 - 1));
+            }
 
-				var45 = var35.rand.nextInt(var35.width);
-				var47 = (int)(var35.rand.nextFloat() * var35.rand.nextFloat() * (float)(var35.waterLevel - 3));
-				var50 = var35.rand.nextInt(var35.depth);
-				if(var35.blocksByteArray[(var47 * var35.depth + var50) * var35.width + var45] == 0) {
-					var35.floodFill(var45, var47, var50, 0, Block.lavaStill.blockID);
-				}
-			}
+            var43 = var6.rand.nextInt(var6.width);
+            var45 = (int)(var6.rand.nextFloat() * var6.rand.nextFloat() * (float)(var6.waterLevel - 3));
+            var48 = var6.rand.nextInt(var6.depth);
+            if(var6.blocksByteArray[(var45 * var6.depth + var48) * var6.width + var43] == 0) {
+                var6.floodFill(var43, var45, var48, 0, Block.lavaStill.blockID);
+            }
+        }
 
-			var35.setNextPhase(100);
-			var31.progressBar.displayProgressMessage("Growing..");
-			var37 = var10;
-			var35 = var31;
-			var8 = var31.width;
-			var9 = var31.depth;
-			var45 = var31.height;
-			var48 = new NoiseGeneratorOctaves(var31.rand, 8);
-			NoiseGeneratorOctaves var51 = new NoiseGeneratorOctaves(var31.rand, 8);
+        var6.setNextPhase(100);
+        var31.progressBar.displayLoadingString("Growing..");
+        var35 = var10;
+        var6 = var31;
+        var38 = var31.width;
+        var41 = var31.depth;
+        var43 = var31.height;
+        var46 = new NoiseGeneratorOctaves(var31.rand, 8);
+        NoiseGeneratorOctaves var49 = new NoiseGeneratorOctaves(var31.rand, 8);
 
-			int var60;
-			for(var17 = 0; var17 < var8; ++var17) {
-				var35.setNextPhase(var17 * 100 / (var35.width - 1));
+        int var58;
+        for(var17 = 0; var17 < var38; ++var17) {
+            var6.setNextPhase(var17 * 100 / (var6.width - 1));
 
-				for(var12 = 0; var12 < var9; ++var12) {
-					var52 = var48.generateNoise((double)var17, (double)var12) > 8.0D;
-					boolean var56 = var51.generateNoise((double)var17, (double)var12) > 12.0D;
-					var57 = var37[var17 + var12 * var8];
-					var22 = (var57 * var35.depth + var12) * var35.width + var17;
-					var59 = var35.blocksByteArray[((var57 + 1) * var35.depth + var12) * var35.width + var17] & 255;
-					if((var59 == Block.waterMoving.blockID || var59 == Block.waterStill.blockID) && var57 <= var45 / 2 - 1 && var56) {
-						var35.blocksByteArray[var22] = (byte)Block.gravel.blockID;
-					}
+            for(var12 = 0; var12 < var41; ++var12) {
+                var50 = var46.generateNoise((double)var17, (double)var12) > 8.0D;
+                boolean var54 = var49.generateNoise((double)var17, (double)var12) > 12.0D;
+                var55 = var35[var17 + var12 * var38];
+                var22 = (var55 * var6.depth + var12) * var6.width + var17;
+                var57 = var6.blocksByteArray[((var55 + 1) * var6.depth + var12) * var6.width + var17] & 255;
+                if((var57 == Block.waterMoving.blockID || var57 == Block.waterStill.blockID) && var55 <= var43 / 2 - 1 && var54) {
+                    var6.blocksByteArray[var22] = (byte)Block.gravel.blockID;
+                }
 
-					if(var59 == 0) {
-						var60 = Block.grass.blockID;
-						if(var57 <= var45 / 2 - 1 && var52) {
-							var60 = Block.sand.blockID;
-						}
+                if(var57 == 0) {
+                    var58 = Block.grass.blockID;
+                    if(var55 <= var43 / 2 - 1 && var50) {
+                        var58 = Block.sand.blockID;
+                    }
 
-						var35.blocksByteArray[var22] = (byte)var60;
-					}
-				}
-			}
+                    var6.blocksByteArray[var22] = (byte)var58;
+                }
+            }
+        }
 
-			var31.progressBar.displayProgressMessage("Planting..");
-			var37 = var10;
-			var35 = var31;
-			var8 = var31.width;
-			var9 = var31.width * var31.depth / 3000;
+        var31.progressBar.displayLoadingString("Planting..");
+        var35 = var10;
+        var6 = var31;
+        var38 = var31.width;
+        var41 = var31.width * var31.depth / 3000;
 
-			for(var45 = 0; var45 < var9; ++var45) {
-				var47 = var35.rand.nextInt(2);
-				var35.setNextPhase(var45 * 50 / (var9 - 1));
-				var50 = var35.rand.nextInt(var35.width);
-				var17 = var35.rand.nextInt(var35.depth);
+        for(var43 = 0; var43 < var41; ++var43) {
+            var45 = var6.rand.nextInt(2);
+            var6.setNextPhase(var43 * 50 / (var41 - 1));
+            var48 = var6.rand.nextInt(var6.width);
+            var17 = var6.rand.nextInt(var6.depth);
 
-				for(var12 = 0; var12 < 10; ++var12) {
-					var53 = var50;
-					var20 = var17;
+            for(var12 = 0; var12 < 10; ++var12) {
+                var51 = var48;
+                var20 = var17;
 
-					for(var57 = 0; var57 < 5; ++var57) {
-						var53 += var35.rand.nextInt(6) - var35.rand.nextInt(6);
-						var20 += var35.rand.nextInt(6) - var35.rand.nextInt(6);
-						if((var47 < 2 || var35.rand.nextInt(4) == 0) && var53 >= 0 && var20 >= 0 && var53 < var35.width && var20 < var35.depth) {
-							var22 = var37[var53 + var20 * var8] + 1;
-							boolean var68 = (var35.blocksByteArray[(var22 * var35.depth + var20) * var35.width + var53] & 255) == 0;
-							boolean var63 = false;
-							if(var68) {
-								var60 = (var22 * var35.depth + var20) * var35.width + var53;
-								if((var35.blocksByteArray[((var22 - 1) * var35.depth + var20) * var35.width + var53] & 255) == Block.grass.blockID) {
-									if(var47 == 0) {
-										var35.blocksByteArray[var60] = (byte)Block.plantYellow.blockID;
-									} else if(var47 == 1) {
-										var35.blocksByteArray[var60] = (byte)Block.plantRed.blockID;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+                for(var55 = 0; var55 < 5; ++var55) {
+                    var51 += var6.rand.nextInt(6) - var6.rand.nextInt(6);
+                    var20 += var6.rand.nextInt(6) - var6.rand.nextInt(6);
+                    if((var45 < 2 || var6.rand.nextInt(4) == 0) && var51 >= 0 && var20 >= 0 && var51 < var6.width && var20 < var6.depth) {
+                        var22 = var35[var51 + var20 * var38] + 1;
+                        boolean var66 = (var6.blocksByteArray[(var22 * var6.depth + var20) * var6.width + var51] & 255) == 0;
+                        boolean var61 = false;
+                        if(var66) {
+                            var58 = (var22 * var6.depth + var20) * var6.width + var51;
+                            if((var6.blocksByteArray[((var22 - 1) * var6.depth + var20) * var6.width + var51] & 255) == Block.grass.blockID) {
+                                if(var45 == 0) {
+                                    var6.blocksByteArray[var58] = (byte)Block.plantYellow.blockID;
+                                } else if(var45 == 1) {
+                                    var6.blocksByteArray[var58] = (byte)Block.plantRed.blockID;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-			var37 = var10;
-			var35 = var31;
-			var8 = var31.width;
-			var45 = var31.width * var31.depth * var31.height / 2000;
+        var35 = var10;
+        var6 = var31;
+        var38 = var31.width;
+        var43 = var31.width * var31.depth * var31.height / 2000;
 
-			for(var47 = 0; var47 < var45; ++var47) {
-				var50 = var35.rand.nextInt(2);
-				var35.setNextPhase(var47 * 50 / (var45 - 1) + 50);
-				var17 = var35.rand.nextInt(var35.width);
-				var12 = var35.rand.nextInt(var35.height);
-				var53 = var35.rand.nextInt(var35.depth);
+        for(var45 = 0; var45 < var43; ++var45) {
+            var48 = var6.rand.nextInt(2);
+            var6.setNextPhase(var45 * 50 / (var43 - 1) + 50);
+            var17 = var6.rand.nextInt(var6.width);
+            var12 = var6.rand.nextInt(var6.height);
+            var51 = var6.rand.nextInt(var6.depth);
 
-				for(var20 = 0; var20 < 20; ++var20) {
-					var57 = var17;
-					var22 = var12;
-					var59 = var53;
+            for(var20 = 0; var20 < 20; ++var20) {
+                var55 = var17;
+                var22 = var12;
+                var57 = var51;
 
-					for(var60 = 0; var60 < 5; ++var60) {
-						var57 += var35.rand.nextInt(6) - var35.rand.nextInt(6);
-						var22 += var35.rand.nextInt(2) - var35.rand.nextInt(2);
-						var59 += var35.rand.nextInt(6) - var35.rand.nextInt(6);
-						if((var50 < 2 || var35.rand.nextInt(4) == 0) && var57 >= 0 && var59 >= 0 && var22 >= 1 && var57 < var35.width && var59 < var35.depth && var22 < var37[var57 + var59 * var8] - 1 && (var35.blocksByteArray[(var22 * var35.depth + var59) * var35.width + var57] & 255) == 0) {
-							int var64 = (var22 * var35.depth + var59) * var35.width + var57;
-							if((var35.blocksByteArray[((var22 - 1) * var35.depth + var59) * var35.width + var57] & 255) == Block.stone.blockID) {
-								if(var50 == 0) {
-									var35.blocksByteArray[var64] = (byte)Block.mushroomBrown.blockID;
-								} else if(var50 == 1) {
-									var35.blocksByteArray[var64] = (byte)Block.mushroomRed.blockID;
-								}
-							}
-						}
-					}
-				}
-			}
+                for(var58 = 0; var58 < 5; ++var58) {
+                    var55 += var6.rand.nextInt(6) - var6.rand.nextInt(6);
+                    var22 += var6.rand.nextInt(2) - var6.rand.nextInt(2);
+                    var57 += var6.rand.nextInt(6) - var6.rand.nextInt(6);
+                    if((var48 < 2 || var6.rand.nextInt(4) == 0) && var55 >= 0 && var57 >= 0 && var22 >= 1 && var55 < var6.width && var57 < var6.depth && var22 < var35[var55 + var57 * var38] - 1 && (var6.blocksByteArray[(var22 * var6.depth + var57) * var6.width + var55] & 255) == 0) {
+                        int var62 = (var22 * var6.depth + var57) * var6.width + var55;
+                        if((var6.blocksByteArray[((var22 - 1) * var6.depth + var57) * var6.width + var55] & 255) == Block.stone.blockID) {
+                            if(var48 == 0) {
+                                var6.blocksByteArray[var62] = (byte)Block.mushroomBrown.blockID;
+                            } else if(var48 == 1) {
+                                var6.blocksByteArray[var62] = (byte)Block.mushroomRed.blockID;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-			World var34 = new World();
-			var34.waterLevel = var31.waterLevel;
-			var34.generate(var3, 64, var4, var31.blocksByteArray);
-			EagRuntime.currentTimeMillis();
-			int[] var46 = var10;
-			World var44 = var34;
-			var35 = var31;
-			var9 = var31.width;
-			var45 = var31.width * var31.depth / 4000;
+        World var34 = new World();
+        var34.waterLevel = var31.waterLevel;
+        var34.generate(var3, 64, var4, var31.blocksByteArray);
+        EagRuntime.currentTimeMillis();
+        int[] var44 = var10;
+        World var42 = var34;
+        var6 = var31;
+        var41 = var31.width;
+        var43 = var31.width * var31.depth / 4000;
 
-			for(var47 = 0; var47 < var45; ++var47) {
-				var35.setNextPhase(var47 * 50 / (var45 - 1) + 50);
-				var50 = var35.rand.nextInt(var35.width);
-				var17 = var35.rand.nextInt(var35.depth);
+        for(var45 = 0; var45 < var43; ++var45) {
+            var6.setNextPhase(var45 * 50 / (var43 - 1) + 50);
+            var48 = var6.rand.nextInt(var6.width);
+            var17 = var6.rand.nextInt(var6.depth);
 
-				for(var12 = 0; var12 < 20; ++var12) {
-					var53 = var50;
-					var20 = var17;
+            for(var12 = 0; var12 < 20; ++var12) {
+                var51 = var48;
+                var20 = var17;
 
-					for(var57 = 0; var57 < 20; ++var57) {
-						var53 += var35.rand.nextInt(6) - var35.rand.nextInt(6);
-						var20 += var35.rand.nextInt(6) - var35.rand.nextInt(6);
-						if(var53 >= 0 && var20 >= 0 && var53 < var35.width && var20 < var35.depth) {
-							var22 = var46[var53 + var20 * var9] + 1;
-							if(var35.rand.nextInt(4) == 0) {
-								var44.growTrees(var53, var22, var20);
-							}
-						}
-					}
-				}
-			}
+                for(var55 = 0; var55 < 20; ++var55) {
+                    var51 += var6.rand.nextInt(6) - var6.rand.nextInt(6);
+                    var20 += var6.rand.nextInt(6) - var6.rand.nextInt(6);
+                    if(var51 >= 0 && var20 >= 0 && var51 < var6.width && var20 < var6.depth) {
+                        var22 = var44[var51 + var20 * var41] + 1;
+                        if(var6.rand.nextInt(4) == 0) {
+                            var42.growTrees(var51, var22, var20);
+                        }
+                    }
+                }
+            }
+        }
 
-			this.setLevel(var34);
-		}
-	}
+        this.setLevel(var34);
+    }
 
 	private void setLevel(World var1) {
 		this.theWorld = var1;
 		if(var1 != null) {
 			var1.load();
 			this.playerController.onWorldChange(var1);
-			this.thePlayer = (EntityPlayer)var1.findSubclassOf(EntityPlayer.class);
+			this.thePlayer = (EntityPlayerSP)var1.findSubclassOf(EntityPlayerSP.class);
 		}
 
 		if(this.thePlayer == null) {
-			this.thePlayer = new EntityPlayer(var1);
+			this.thePlayer = new EntityPlayerSP(var1);
 			this.thePlayer.preparePlayerToSpawn();
 			this.playerController.preparePlayer(this.thePlayer);
 			if(var1 != null) {

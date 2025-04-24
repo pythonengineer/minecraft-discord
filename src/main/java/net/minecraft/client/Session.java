@@ -56,5 +56,6 @@ public final class Session {
 		allowedBlocks.add(Block.bookShelf);
 		allowedBlocks.add(Block.tnt);
 		allowedBlocks.add(Block.obsidian);
+        System.out.println(allowedBlocks.size());
 	}
 }

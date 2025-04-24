@@ -2,44 +2,61 @@ package net.minecraft.client.controller;
 
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.EntityPlayer;
-import net.minecraft.game.entity.Entity;
+import net.minecraft.client.gui.GuiInventory;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.player.InventoryPlayer;
+import net.minecraft.game.entity.player.ItemStack;
 import net.minecraft.game.level.MobSpawner;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 
 public final class PlayerControllerSP extends PlayerController {
-	private int curBlockX;
-	private int curBlockY;
-	private int curBlockZ;
-	private int curBlockDamage;
-	private int prevBlockDamage;
-	private int blockHitWait;
+	private int curBlockX = -1;
+	private int curBlockY = -1;
+	private int curBlockZ = -1;
+	private int curBlockDamage = 0;
+	private int prevBlockDamage = 0;
+	private int blockHitWait = 0;
 	private MobSpawner mobSpawner;
 
-	private PlayerControllerSP(Minecraft var1) {
+	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
 	}
 
+	public final void displayInventoryGUI() {
+		this.mc.displayGuiScreen(new GuiInventory());
+	}
+
 	public final void preparePlayer(EntityPlayer var1) {
-		var1.inventory.mainInventory[5] = Block.stairSingle.blockID;
-		var1.inventory.stackSize[5] = 99;
-		var1.inventory.mainInventory[6] = Block.stone.blockID;
-		var1.inventory.stackSize[6] = 99;
-		var1.inventory.mainInventory[7] = Block.waterMoving.blockID;
-		var1.inventory.stackSize[7] = 99;
-		var1.inventory.mainInventory[8] = Block.lavaMoving.blockID;
-		var1.inventory.stackSize[8] = 99;
+		var1.inventory.mainInventory[8] = new ItemStack(Block.bookShelf, 99);
+		var1.inventory.mainInventory[7] = new ItemStack(Block.tnt, 99);
+
+		for(int var4 = 0; var4 < 20; ++var4) {
+			int var2 = var4 % 5;
+			int var3 = var4 / 5;
+			var1.inventory.mainInventory[var4 + 9] = new ItemStack(var2 + (var3 << 4));
+		}
+
 	}
 
 	public final void sendBlockRemoved(int var1, int var2, int var3) {
 		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld);
+		Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3);
 		super.sendBlockRemoved(var1, var2, var3);
 	}
 
 	public final boolean canPlace(int var1) {
-		return this.mc.thePlayer.inventory.consumeInventoryItem(var1);
+		InventoryPlayer var2 = this.mc.thePlayer.inventory;
+		var1 = var2.getInventorySlotContainItem(var1);
+		if(var1 < 0) {
+			return false;
+		} else {
+			if(--var2.mainInventory[var1].stackSize <= 0) {
+				var2.mainInventory[var1] = null;
+			}
+
+			return true;
+		}
 	}
 
 	public final void clickBlock(int var1, int var2, int var3) {
@@ -89,28 +106,6 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public final float getBlockReachDistance() {
 		return 4.0F;
-	}
-
-	public final boolean sendUseItem(EntityPlayer var1, int var2) {
-		Block var3 = Block.blocksList[var2];
-		if(var3 == Block.mushroomRed && this.mc.thePlayer.inventory.consumeInventoryItem(var2)) {
-			var1.attackEntityFrom((Entity)null, 3);
-			return true;
-		} else if(var3 == Block.mushroomBrown && this.mc.thePlayer.inventory.consumeInventoryItem(var2)) {
-			boolean var4 = false;
-			if(var1.health > 0) {
-				var1.health += 5;
-				if(var1.health > 20) {
-					var1.health = 20;
-				}
-
-				var1.scoreValue = var1.heartsHalvesLife / 2;
-			}
-
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public final void onWorldChange(World var1) {

@@ -42,11 +42,10 @@ public abstract class Entity {
 	public float lastTickPosZ;
 	private float ySize = 0.0F;
 	public float stepHeight = 0.0F;
-	public int ticksExisted;
+    public EaglercraftRandom rand = new EaglercraftRandom();
+    public int ticksExisted = 0;
 
 	public Entity(World var1) {
-		new EaglercraftRandom();
-		this.ticksExisted = 0;
 		this.worldObj = var1;
 		this.setPosition(0.0F, 0.0F, 0.0F);
 	}
@@ -69,7 +68,7 @@ public abstract class Entity {
 		}
 	}
 
-	public void remove() {
+    public void setEntityDead() {
 		this.isDead = true;
 	}
 

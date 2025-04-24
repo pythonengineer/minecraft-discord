@@ -7,6 +7,10 @@ public final class BlockOre extends Block {
 		super(var1, var2);
 	}
 
+    public final int idDropped() {
+        return this == Block.oreCoal ? Block.stairSingle.blockID : (this == Block.oreGold ? Block.goldBlock.blockID : (this == Block.oreIron ? Block.ironBlock.blockID : this.blockID));
+    }
+
 	public final int quantityDropped(EaglercraftRandom var1) {
 		return var1.nextInt(3) + 1;
 	}

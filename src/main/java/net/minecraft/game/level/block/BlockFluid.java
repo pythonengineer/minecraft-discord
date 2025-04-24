@@ -18,7 +18,7 @@ public class BlockFluid extends Block {
 			this.blockIndexInTexture = 30;
 		}
 
-		Block.isBlockContainer[var1] = true;
+		Block.isBlockFluid[var1] = true;
 		this.movingId = var1;
 		this.stillId = var1 + 1;
 		float var3 = 0.01F;
@@ -51,7 +51,7 @@ public class BlockFluid extends Block {
 		boolean var6;
 		do {
 			--var3;
-			if(var1.getBlockId(var2, var3, var4) != 0 || !var8.canFlow(var1, var2, var3, var4)) {
+			if(var1.getBlockId(var2, var3, var4) != 0 || !var8.h(var1, var2, var3, var4)) {
 				break;
 			}
 
@@ -63,7 +63,7 @@ public class BlockFluid extends Block {
 
 		++var3;
 		if(var8.material == Material.water || !var9) {
-			var9 = var9 | var8.flow(var1, var2 - 1, var3, var4) | var8.flow(var1, var2 + 1, var3, var4) | var8.flow(var1, var2, var3, var4 - 1) | var8.flow(var1, var2, var3, var4 + 1);
+			var9 = var9 | var8.i(var1, var2 - 1, var3, var4) | var8.i(var1, var2 + 1, var3, var4) | var8.i(var1, var2, var3, var4 - 1) | var8.i(var1, var2, var3, var4 + 1);
 		}
 
 		if(!var9) {
@@ -73,7 +73,7 @@ public class BlockFluid extends Block {
 		}
 	}
 
-	private boolean canFlow(World var1, int var2, int var3, int var4) {
+	private boolean h(World var1, int var2, int var3, int var4) {
 		if(this.material == Material.water) {
 			for(int var7 = var2 - 2; var7 <= var2 + 2; ++var7) {
 				for(int var5 = var3 - 2; var5 <= var3 + 2; ++var5) {
@@ -89,9 +89,9 @@ public class BlockFluid extends Block {
 		return true;
 	}
 
-	private boolean flow(World var1, int var2, int var3, int var4) {
+	private boolean i(World var1, int var2, int var3, int var4) {
 		if(var1.getBlockId(var2, var3, var4) == 0) {
-			if(!this.canFlow(var1, var2, var3, var4)) {
+			if(!this.h(var1, var2, var3, var4)) {
 				return false;
 			}
 
@@ -144,10 +144,10 @@ public class BlockFluid extends Block {
 		return this.material == Material.lava ? 25 : 5;
 	}
 
-	public final void dropBlockAsItemWithChance(World var1, float var2) {
+	public final void dropBlockAsItemWithChance(World var1, int var2, int var3, int var4, float var5) {
 	}
 
-	public final void dropBlockAsItem(World var1) {
+	public final void dropBlockAsItem(World var1, int var2, int var3, int var4) {
 	}
 
 	public final int quantityDropped(EaglercraftRandom var1) {

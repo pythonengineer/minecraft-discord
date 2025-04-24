@@ -9,7 +9,6 @@ import net.ellerton.japng.argb8888.Argb8888Bitmap;
 import net.ellerton.japng.error.PngException;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.opengl.ImageData;
-import net.minecraft.client.player.EntityPlayer;
 
 final class ThreadDownloadSkin extends Thread {
     private Minecraft mc;
@@ -63,6 +62,5 @@ final class ThreadDownloadSkin extends Thread {
         }
 
         ImageData tex = new ImageData(64, 32, skin, true).getSubImage(0, 0, 64, 32);
-        EntityPlayer.skinData = tex;
     }
 }

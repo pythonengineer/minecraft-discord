@@ -25,7 +25,7 @@ public final class GuiNameLevel extends GuiScreen {
 		((GuiButton)this.controlList.get(0)).enabled = this.name.trim().length() > 1;
 	}
 
-	public final void onClose() {
+    public final void onGuiClosed() {
 		Keyboard.enableRepeatEvents(false);
 	}
 

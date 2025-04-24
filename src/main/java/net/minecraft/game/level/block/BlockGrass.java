@@ -31,4 +31,8 @@ public final class BlockGrass extends Block {
 			}
 		}
 	}
+
+    public final int idDropped() {
+        return Block.dirt.idDropped();
+    }
 }

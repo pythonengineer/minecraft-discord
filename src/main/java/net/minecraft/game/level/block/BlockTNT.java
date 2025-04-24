@@ -1,6 +1,7 @@
 package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.level.World;
 
 public final class BlockTNT extends Block {
@@ -16,7 +17,13 @@ public final class BlockTNT extends Block {
 		return 0;
 	}
 
+	public final void onBlockDestroyedByExplosion(World var1, int var2, int var3, int var4) {
+		EntityTNTPrimed var5 = new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F);
+		var5.fuse = var1.random.nextInt(var5.fuse / 4) + var5.fuse / 8;
+		var1.spawnEntityInWorld(var5);
+	}
+
 	public final void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4) {
-		var1.createExplosion(var2, var3 - 1, var4, Block.planks.blockID);
+		var1.spawnEntityInWorld(new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F));
 	}
 }

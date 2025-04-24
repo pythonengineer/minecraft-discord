@@ -10,4 +10,8 @@ public final class BlockLeaves extends BlockLeavesBase {
 	public final int quantityDropped(EaglercraftRandom var1) {
 		return var1.nextInt(10) == 0 ? 1 : 0;
 	}
+
+    public final int idDropped() {
+        return Block.sapling.blockID;
+    }
 }

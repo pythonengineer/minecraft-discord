@@ -17,10 +17,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.controller.PlayerControllerSP;
-import net.minecraft.client.player.InventoryPlayer;
 import net.minecraft.client.render.RenderBlocks;
-import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.game.entity.player.InventoryPlayer;
+import net.minecraft.game.entity.player.ItemStack;
 import net.minecraft.game.level.block.Block;
 
 public final class GuiIngame extends Gui {
@@ -36,29 +36,26 @@ public final class GuiIngame extends Gui {
 		this.mc = var1;
 	}
 
-	public final void renderGameOverlay(float var1) {
+	public final void renderGameOverlay() {
         this.ingameWidth = this.mc.scaledResolution.getScaledWidth();
         this.ingameHeight = this.mc.scaledResolution.getScaledHeight();
-		FontRenderer var2 = this.mc.fontRenderer;
+
+        FontRenderer var1 = this.mc.fontRenderer;
 		this.mc.entityRenderer.setupOverlayRendering();
 
         onBeginHotbarDraw();
 
-		RenderEngine var3 = this.mc.renderEngine;
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glEnable(GL11.GL_BLEND);
-		InventoryPlayer var4 = this.mc.thePlayer.inventory;
+        InventoryPlayer var2 = this.mc.thePlayer.inventory;
 		this.zLevel = -90.0F;
         int i = this.ingameWidth / 2;
 		this.drawTexturedModal(i - 91, this.ingameHeight - 22, 0, 0, 182, 22);
 
         if (PointerInputAbstraction.isTouchMode()) {
-            if (this.mc.playerController instanceof PlayerControllerCreative) {
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
-                this.drawTexturedModal(i + 89, this.ingameHeight - 22, 234, 0, 22, 22);
-            }
-
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
+            this.drawTexturedModal(i + 89, this.ingameHeight - 22, 234, 0, 22, 22);
             int areaHAdd = 12;
             hotbarAreaX = (i - 91) * this.mc.displayWidth / this.ingameWidth;
             hotbarAreaY = (this.ingameHeight - 22 - areaHAdd) * this.mc.displayHeight / this.ingameHeight;
@@ -72,66 +69,66 @@ public final class GuiIngame extends Gui {
         }
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
-		this.drawTexturedModal(i - 91 - 1 + var4.currentItem * 20, this.ingameHeight - 22 - 1, 0, 22, 24, 22);
+		this.drawTexturedModal(i - 91 - 1 + var2.currentItem * 20, this.ingameHeight - 22 - 1, 0, 22, 24, 22);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
-		boolean var5 = this.mc.thePlayer.scoreValue / 3 % 2 == 1;
-		if(this.mc.thePlayer.scoreValue < 10) {
-			var5 = false;
+        boolean var9 = this.mc.thePlayer.scoreValue / 3 % 2 == 1;
+        if(this.mc.thePlayer.scoreValue < 10) {
+            var9 = false;
 		}
 
-		int var6 = this.mc.thePlayer.health;
-		int var7 = this.mc.thePlayer.prevHealth;
-		this.rand.setSeed((long)(this.updateCounter * 312871));
-		int var8;
-		int var10;
-		int var11;
-		int var18;
-		if(this.mc.playerController.shouldDrawHUD()) {
-			for(var8 = 0; var8 < 10; ++var8) {
-				byte var9 = 0;
-				if(var5) {
-					var9 = 1;
-				}
+        int var3 = this.mc.thePlayer.health;
+        int var4 = this.mc.thePlayer.prevHealth;
+        this.rand.setSeed((long)(this.updateCounter * 312871));
+        int var5;
+        int var7;
+        int var8;
+        int var12;
+        if(this.mc.playerController.shouldDrawHUD()) {
+            for(var5 = 0; var5 < 10; ++var5) {
+                byte var6 = 0;
+                if(var9) {
+                    var6 = 1;
+                }
 
-				var10 = this.ingameWidth / 2 - 91 + (var8 << 3);
-				var11 = this.ingameHeight - 32;
-				if(var6 <= 4) {
-					var11 += this.rand.nextInt(2);
-				}
+                var7 = this.ingameWidth / 2 - 91 + (var5 << 3);
+                var8 = this.ingameHeight - 32;
+                if(var3 <= 4) {
+                    var8 += this.rand.nextInt(2);
+                }
 
-				this.drawTexturedModal(var10, var11, 16 + var9 * 9, 0, 9, 9);
-				if(var5) {
-					if((var8 << 1) + 1 < var7) {
-						this.drawTexturedModal(var10, var11, 70, 0, 9, 9);
-					}
+                this.drawTexturedModal(var7, var8, 16 + var6 * 9, 0, 9, 9);
+                if(var9) {
+                    if((var5 << 1) + 1 < var4) {
+                        this.drawTexturedModal(var7, var8, 70, 0, 9, 9);
+                    }
 
-					if((var8 << 1) + 1 == var7) {
-						this.drawTexturedModal(var10, var11, 79, 0, 9, 9);
-					}
-				}
+                    if((var5 << 1) + 1 == var4) {
+                        this.drawTexturedModal(var7, var8, 79, 0, 9, 9);
+                    }
+                }
 
-				if((var8 << 1) + 1 < var6) {
-					this.drawTexturedModal(var10, var11, 52, 0, 9, 9);
-				}
+                if((var5 << 1) + 1 < var3) {
+                    this.drawTexturedModal(var7, var8, 52, 0, 9, 9);
+                }
 
-				if((var8 << 1) + 1 == var6) {
-					this.drawTexturedModal(var10, var11, 61, 0, 9, 9);
-				}
-			}
+                if((var5 << 1) + 1 == var3) {
+                    this.drawTexturedModal(var7, var8, 61, 0, 9, 9);
+                }
+            }
 
-			if(this.mc.thePlayer.isInsideOfMaterial()) {
-				var8 = (int)Math.ceil((double)(this.mc.thePlayer.air - 2) * 10.0D / 300.0D);
-				var18 = (int)Math.ceil((double)this.mc.thePlayer.air * 10.0D / 300.0D) - var8;
+            if(this.mc.thePlayer.isInsideOfMaterial()) {
+                var5 = (int)Math.ceil((double)(this.mc.thePlayer.air - 2) * 10.0D / 300.0D);
+                var12 = (int)Math.ceil((double)this.mc.thePlayer.air * 10.0D / 300.0D) - var5;
 
-				for(var10 = 0; var10 < var8 + var18; ++var10) {
-					if(var10 < var8) {
-						this.drawTexturedModal(this.ingameWidth / 2 - 91 + (var10 << 3), this.ingameHeight - 32 - 9, 16, 18, 9, 9);
-					} else {
-						this.drawTexturedModal(this.ingameWidth / 2 - 91 + (var10 << 3), this.ingameHeight - 32 - 9, 25, 18, 9, 9);
-					}
-				}
-			}
-		}
+                for(var7 = 0; var7 < var5 + var12; ++var7) {
+                    if(var7 < var5) {
+                        this.drawTexturedModal(this.ingameWidth / 2 - 91 + (var7 << 3), this.ingameHeight - 32 - 9, 16, 18, 9, 9);
+                    } else {
+                        this.drawTexturedModal(this.ingameWidth / 2 - 91 + (var7 << 3), this.ingameHeight - 32 - 9, 25, 18, 9, 9);
+                    }
+                }
+            }
+        }
 
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_NORMALIZE);
@@ -140,37 +137,52 @@ public final class GuiIngame extends Gui {
 		RenderHelper.enableStandardItemLighting();
 		GL11.glPopMatrix();
 
-		for(var8 = 0; var8 < var4.mainInventory.length; ++var8) {
-			var18 = this.ingameWidth / 2 - 90 + var8 * 20;
-			var10 = this.ingameHeight - 16;
-			var11 = var4.mainInventory[var8];
-			if(var11 > 0) {
-				GL11.glPushMatrix();
-				GL11.glTranslatef((float)var18, (float)var10, -50.0F);
-				if(var4.animationsToGo[var8] > 0) {
-					float var12;
-					float var13 = -MathHelper.sin((var12 = ((float)var4.animationsToGo[var8] - var1) / 5.0F) * var12 * (float)Math.PI) * 8.0F;
-					float var16 = MathHelper.sin(var12 * var12 * (float)Math.PI) + 1.0F;
-					var12 = MathHelper.sin(var12 * (float)Math.PI) + 1.0F;
-					GL11.glTranslatef(10.0F, var13 + 10.0F, 0.0F);
-					GL11.glScalef(var16, var12, 1.0F);
-					GL11.glTranslatef(-10.0F, -10.0F, 0.0F);
-				}
+        for(var5 = 0; var5 < 9; ++var5) {
+            var12 = this.ingameWidth / 2 - 90 + var5 * 20 + 2;
+            var7 = this.ingameHeight - 16 - 3;
+            ItemStack var13 = this.mc.thePlayer.inventory.mainInventory[var5];
+            if(var13 == null) {
+                if(var5 > 50) {
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    var8 = this.mc.renderEngine.getTexture("/gui/items.png");
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
+                    this.drawTexturedModal(var12, var7, 240, 63 - var5 << 4, 16, 16);
+                    GL11.glEnable(GL11.GL_LIGHTING);
+                }
+            } else {
+                String var14 = null;
+                var3 = var13.itemID;
+                if(var3 > 0) {
+                    var8 = this.mc.renderEngine.getTexture("/terrain.png");
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
+                    Block var10 = Block.blocksList[var3];
+                    GL11.glPushMatrix();
+                    GL11.glTranslatef((float)(var12 - 2), (float)(var7 + 3), 0.0F);
+                    GL11.glScalef(10.0F, 10.0F, 10.0F);
+                    GL11.glTranslatef(1.0F, 0.5F, 8.0F);
+                    GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
+                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+                    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                    this.blockRenderer.renderBlockOnInventory(var10);
+                    GL11.glPopMatrix();
+                } else if(var13.iconIndex >= 0) {
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    var8 = this.mc.renderEngine.getTexture("/gui/items.png");
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
+                    this.drawTexturedModal(var12, var7, var13.iconIndex % 16 << 4, var13.iconIndex / 16 << 4, 16, 16);
+                    GL11.glEnable(GL11.GL_LIGHTING);
+                }
 
-				GL11.glScalef(10.0F, 10.0F, 10.0F);
-				GL11.glTranslatef(1.0F, 0.5F, 0.0F);
-				GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-				int var14 = var3.getTexture("/terrain.png");
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var14);
-				this.blockRenderer.renderBlockOnInventory(Block.blocksList[var11]);
-				GL11.glPopMatrix();
-				if(var4.stackSize[var8] > 1) {
-					String var15 = "" + var4.stackSize[var8];
-					var2.drawStringWithShadow(var15, var18 + 19 - var2.getWidth(var15), var10 + 6, 16777215);
-				}
-			}
-		}
+                if(var13.stackSize > 1) {
+                    var14 = "" + var13.stackSize;
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    GL11.glDisable(GL11.GL_DEPTH_TEST);
+                    this.mc.fontRenderer.drawStringWithShadow(var14, var12 + 19 - 2 - this.mc.fontRenderer.getStringWidth(var14), var7 + 6 + 3, 16777215);
+                    GL11.glEnable(GL11.GL_LIGHTING);
+                    GL11.glEnable(GL11.GL_DEPTH_TEST);
+                }
+            }
+        }
 
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL11.GL_NORMALIZE);
@@ -183,33 +195,39 @@ public final class GuiIngame extends Gui {
         this.drawTexturedModal(i - 7, this.ingameHeight / 2 - 7, 0, 0, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
 
-		var2.drawStringWithShadow("0.31", 2, 2, 16777215);
+        onBeginTouchGUI();
+
+		var1.drawStringWithShadow("0.31", 2, 2, 16777215);
 		if(this.mc.options.showFPS) {
-			var2.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
+			var1.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
 		}
+
+        onEndTouchGUI();
+
+        if (PointerInputAbstraction.isTouchMode()) {
+            GL11.glPopMatrix();
+        }
 
 		if(this.mc.playerController instanceof PlayerControllerSP) {
 			String var17 = "Score: &e" + this.mc.thePlayer.getScore();
             if (PointerInputAbstraction.isTouchMode()) {
-                GL11.glPushMatrix();
-                GL11.glScalef(1.5f, 1.5f, 1.5f);
-                var2.drawStringWithShadow(var17, (this.ingameWidth + var2.getWidth(var17)) / 2, 3, 16777215);
-                GL11.glPopMatrix();
+                onBeginTouchGUI();
+                var1.drawStringWithShadow(var17, (this.ingameWidth + var1.getStringWidth(var17)) / 2, 3, 16777215);
+                onEndTouchGUI();
             } else {
-                var2.drawStringWithShadow(var17, this.ingameWidth - var2.getWidth(var17) - 2, 2, 16777215);
+                var1.drawStringWithShadow(var17, this.ingameWidth - var1.getStringWidth(var17) - 2, 2, 16777215);
             }
-			var2.drawStringWithShadow(var17, this.ingameWidth - var2.getWidth(var17) - 2, 2, 16777215);
             onBeginHotbarDraw();
-			var2.drawStringWithShadow("Arrows: " + this.mc.thePlayer.getArrows, this.ingameWidth / 2 + 8, this.ingameHeight - 33, 16777215);
+			var1.drawStringWithShadow("Arrows: " + this.mc.thePlayer.getArrows, this.ingameWidth / 2 + 8, this.ingameHeight - 33, 16777215);
 			onEndHotbarDraw();
 		}
 
-		for(var10 = 0; var10 < this.chatMessageList.size() && var10 < 10; ++var10) {
-			if(((ChatLine)this.chatMessageList.get(var10)).updateCounter < 200) {
-				this.chatMessageList.get(var10);
-				var2.drawStringWithShadow((String)null, 2, this.ingameHeight - 8 - var10 * 9 - 20, 16777215);
-			}
-		}
+        for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
+            if(((ChatLine)this.chatMessageList.get(var7)).updateCounter < 200) {
+                this.chatMessageList.get(var7);
+                var1.drawStringWithShadow((String)null, 2, this.ingameHeight - 8 - var7 * 9 - 20, 16777215);
+            }
+        }
 
 	}
 
@@ -237,6 +255,19 @@ public final class GuiIngame extends Gui {
             return (posY + this.mc.scaledResolution.getScaledHeight() / 2) * 2 / 3;
         } else {
             return (posY + this.mc.displayHeight / 2) * 2 / 3;
+        }
+    }
+
+    private void onBeginTouchGUI() {
+        if (PointerInputAbstraction.isTouchMode()) {
+            GL11.glPushMatrix();
+            GL11.glScalef(1.5f, 1.5f, 1.5f);
+        }
+    }
+
+    private void onEndTouchGUI() {
+        if (PointerInputAbstraction.isTouchMode()) {
+            GL11.glPopMatrix();
         }
     }
 
@@ -280,10 +311,10 @@ public final class GuiIngame extends Gui {
                 if (currentHotbarSlotTouch >= 0 && currentHotbarSlotTouch < 9) {
                     hotbarSlotTouchAlreadySelected = (this.mc.thePlayer.inventory.currentItem == currentHotbarSlotTouch);
                     this.mc.thePlayer.inventory.currentItem = currentHotbarSlotTouch;
-                } else if (currentHotbarSlotTouch == 9 && this.mc.playerController instanceof PlayerControllerCreative) {
+                } else if (currentHotbarSlotTouch == 9) {
                     hotbarSlotTouchAlreadySelected = false;
                     currentHotbarSlotTouch = 69;
-                    this.mc.displayGuiScreen(new GuiCreativeInventory());
+                    this.mc.playerController.displayInventoryGUI();
                 }
                 return true;
             }
@@ -296,9 +327,9 @@ public final class GuiIngame extends Gui {
             if (hotbarSlotTouchStart != -1l && currentHotbarSlotTouch != 69) {
                 if (EagRuntime.currentTimeMillis() - hotbarSlotTouchStart < 350l) {
                     if (hotbarSlotTouchAlreadySelected) {
-                        //if (mc.thePlayer != null) {
-                        //    mc.thePlayer.dropOneItem(false);
-                        //}
+                        if (this.mc.thePlayer != null) {
+                            this.mc.thePlayer.dropOneItem(false);
+                        }
                     }
                 }
             }
@@ -337,8 +368,8 @@ public final class GuiIngame extends Gui {
                                 }
                             } else {
                                 if (millis - hotbarSlotTouchStart > 1200l) {
-                                    //hotbarSlotTouchStart = millis;
-                                    //this.mc.thePlayer.dropOneItem(true);
+                                    hotbarSlotTouchStart = millis;
+                                    this.mc.thePlayer.dropOneItem(true);
                                 }
                             }
                         }

@@ -13,7 +13,7 @@ public final class EntityMap {
 	EntityMapSlot slot1 = new EntityMapSlot(this);
 	public List[] entityGrid;
 	public List entities = new ArrayList();
-	private List entitiesExcludingEntity = new ArrayList();
+    List entitiesExcludingEntity = new ArrayList();
 
 	public EntityMap(int var1, int var2, int var3) {
 		this.xSlot = var1 / 16;
@@ -43,42 +43,37 @@ public final class EntityMap {
 
 	}
 
-	public final List getEntitiesWithinAABBExcludingEntity(Entity var1, AxisAlignedBB var2) {
-		this.entitiesExcludingEntity.clear();
-		List var8 = this.entitiesExcludingEntity;
-		float var7 = var2.z1;
-		float var6 = var2.y1;
-		float var5 = var2.x1;
-		float var4 = var2.z0;
-		float var3 = var2.y0;
-		float var25 = var2.x0;
-		var1 = var1;
-		EntityMap var24 = this;
-		EntityMapSlot var9 = this.slot0.init(var25, var3, var4);
-		EntityMapSlot var10 = this.slot1.init(var5, var6, var7);
-		List var14 = null;
+    public final List getEntitiesWithinAABBExcludingEntity(Entity var1, float var2, float var3, float var4, float var5, float var6, float var7, List var8) {
+        EntityMapSlot var9 = this.slot0.init(var2, var3, var4);
+        EntityMapSlot var10 = this.slot1.init(var5, var6, var7);
+        List var14 = null;
 
-		for(int var11 = var9.xSlot - 1; var11 <= var10.xSlot + 1; ++var11) {
-			for(int var12 = var9.ySlot - 1; var12 <= var10.ySlot + 1; ++var12) {
-				for(int var13 = var9.zSlot - 1; var13 <= var10.zSlot + 1; ++var13) {
-					if(var11 >= 0 && var12 >= 0 && var13 >= 0 && var11 < var24.xSlot && var12 < var24.ySlot && var13 < var24.zSlot) {
-						var14 = var24.entityGrid[(var13 * var24.ySlot + var12) * var24.xSlot + var11];
+        for(int var11 = var9.xSlot - 1; var11 <= var10.xSlot + 1; ++var11) {
+            for(int var12 = var9.ySlot - 1; var12 <= var10.ySlot + 1; ++var12) {
+                for(int var13 = var9.zSlot - 1; var13 <= var10.zSlot + 1; ++var13) {
+                    if(var11 >= 0 && var12 >= 0 && var13 >= 0 && var11 < this.xSlot && var12 < this.ySlot && var13 < this.zSlot) {
+                        var14 = this.entityGrid[(var13 * this.ySlot + var12) * this.xSlot + var11];
 
-						for(int var15 = 0; var15 < var14.size(); ++var15) {
-							Entity var16 = (Entity)var14.get(var15);
-							if(var16 != var1) {
-								AxisAlignedBB var17 = null;
-								var17 = var16.boundingBox;
-								if(var5 > var17.x0 && var25 < var17.x1 ? (var6 > var17.y0 && var3 < var17.y1 ? var7 > var17.z0 && var4 < var17.z1 : false) : false) {
-									var8.add(var16);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+                        for(int var15 = 0; var15 < var14.size(); ++var15) {
+                            Entity var16 = (Entity)var14.get(var15);
+                            if(var16 != var1) {
+                                AxisAlignedBB var17 = null;
+                                var17 = var16.boundingBox;
+                                if(var5 > var17.x0 && var2 < var17.x1 ? (var6 > var17.y0 && var3 < var17.y1 ? var7 > var17.z0 && var4 < var17.z1 : false) : false) {
+                                    var8.add(var16);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 		return var8;
 	}
+
+    public final List getEntitiesWithinAABBExcludingEntity(Entity var1, AxisAlignedBB var2) {
+        this.entitiesExcludingEntity.clear();
+        return this.getEntitiesWithinAABBExcludingEntity(var1, var2.x0, var2.y0, var2.z0, var2.x1, var2.y1, var2.z1, this.entitiesExcludingEntity);
+    }
 }
