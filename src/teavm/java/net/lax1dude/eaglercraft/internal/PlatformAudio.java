@@ -33,6 +33,8 @@ import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
+import net.minecraft.client.sound.SoundPoolEntry;
+
 /**
  * Copyright (c) 2022-2024 lax1dude. All Rights Reserved.
  *
@@ -299,9 +301,8 @@ public class PlatformAudio {
         return null;
     }
 
-    /*
-    public static void loadAudioDataNew(Sound sound, boolean holdInCache, IAudioCacheLoader loader) {
-        String filename = sound.url;
+    public static void loadAudioDataNew(SoundPoolEntry sound, boolean holdInCache, IAudioCacheLoader loader) {
+        String filename = sound.soundUrl;
         BrowserAudioResource buffer = soundCache.get(filename);
         if (buffer == null) {
             byte[] file = loader.loadFile(filename);
@@ -316,7 +317,7 @@ public class PlatformAudio {
         }
     }
 
-    private static void finishAudioData(Sound sound, String filename, boolean holdInCache, BrowserAudioResource buffer) {
+    private static void finishAudioData(SoundPoolEntry sound, String filename, boolean holdInCache, BrowserAudioResource buffer) {
         if (holdInCache) {
             soundCache.put(filename, buffer);
         }
@@ -327,14 +328,12 @@ public class PlatformAudio {
 
         sound.finish(buffer);
     }
-    */
 
     public static boolean isAsyncSupported() {
         return oggSupport || !loadViaAudioBufferSupport;
     }
 
-    /*
-    private static AudioBuffer decodeAudioData(Sound sound, boolean holdInCache, byte[] data, String errorFileName) {
+    private static AudioBuffer decodeAudioData(SoundPoolEntry sound, boolean holdInCache, byte[] data, String errorFileName) {
         if (data == null) {
             return null;
         }
@@ -360,9 +359,9 @@ public class PlatformAudio {
     }
 
     @Async
-    public static native AudioBuffer decodeAudioBrowserAsync(Sound sound, boolean holdInCache, ArrayBuffer buffer, String errorFileName);
+    public static native AudioBuffer decodeAudioBrowserAsync(SoundPoolEntry sound, boolean holdInCache, ArrayBuffer buffer, String errorFileName);
 
-    private static void decodeAudioBrowserAsync(Sound sound, boolean holdInCache, ArrayBuffer buffer,
+    private static void decodeAudioBrowserAsync(SoundPoolEntry sound, boolean holdInCache, ArrayBuffer buffer,
              final String errorFileName, final AsyncCallback<AudioBuffer> cb) {
         audioctx.decodeAudioData(buffer, new DecodeSuccessCallback() {
             @Override
@@ -380,7 +379,6 @@ public class PlatformAudio {
         });
         cb.complete(null);
     }
-    */
 
     @Async
     public static native AudioBuffer decodeAudioBrowserSync(ArrayBuffer buffer, String errorFileName);
@@ -460,7 +458,7 @@ public class PlatformAudio {
         panner.setConeInnerAngle(360.0f);
         panner.setConeOuterAngle(0.0f);
         panner.setConeOuterGain(0.0f);
-        panner.setOrientation(0.0f, 0.0f, 0.0f);
+        panner.setOrientation(0.0f, 1.0f, 0.0f);
 
         GainNode gain = audioctx.createGain();
         float v2 = volume;
@@ -503,11 +501,11 @@ public class PlatformAudio {
     }
 
     public static void setListener(float x, float y, float z, float pitchDegrees, float yawDegrees) {
-        float upX = MathHelper.sin((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
-        float upY = MathHelper.cos(-pitchDegrees * (float)(Math.PI / 180.0F));
-        float upZ = MathHelper.cos((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
+        float upX = MathHelper.sin(-yawDegrees * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float upY = MathHelper.cos(-pitchDegrees * ((float)Math.PI / 180.0F));
+        float upZ = MathHelper.cos(-yawDegrees * ((float)Math.PI / 180.0F) - (float)Math.PI);
         float lookX = upX * upY;
-        float lookY = MathHelper.sin(-pitchDegrees * (float)(Math.PI / 180.0F));
+        float lookY = MathHelper.sin(-pitchDegrees * ((float)Math.PI / 180.0F));
         float lookZ = upZ * upY;
         upX *= lookY;
         upZ *= lookY;

@@ -5,12 +5,14 @@ import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 public final class GuiNameLevel extends GuiScreen {
 	private GuiScreen parent;
 	private String title = "Enter level name:";
+    private int slot;
 	private String name;
 	private int id = 0;
 
 	public GuiNameLevel(GuiScreen var1, String var2, int var3) {
 		this.parent = var1;
 		this.name = var2;
+        this.slot = var3;
 		if(this.name.equals("-")) {
 			this.name = "";
 		}

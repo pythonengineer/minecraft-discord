@@ -24,12 +24,12 @@ import net.minecraft.game.entity.player.ItemStack;
 import net.minecraft.game.level.block.Block;
 
 public final class GuiIngame extends Gui {
-	public List chatMessageList = new ArrayList();
+    private List chatMessages = new ArrayList();
 	private EaglercraftRandom rand = new EaglercraftRandom();
 	private Minecraft mc;
 	private int ingameWidth;
 	private int ingameHeight;
-	public int updateCounter = 0;
+    private int updateCounter = 0;
 	private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
 
 	public GuiIngame(Minecraft var1, int var2, int var3) {
@@ -51,11 +51,11 @@ public final class GuiIngame extends Gui {
         InventoryPlayer var2 = this.mc.thePlayer.inventory;
 		this.zLevel = -90.0F;
         int i = this.ingameWidth / 2;
-		this.drawTexturedModal(i - 91, this.ingameHeight - 22, 0, 0, 182, 22);
+		this.drawTexturedModalRect(i - 91, this.ingameHeight - 22, 0, 0, 182, 22);
 
         if (PointerInputAbstraction.isTouchMode()) {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
-            this.drawTexturedModal(i + 89, this.ingameHeight - 22, 234, 0, 22, 22);
+            this.drawTexturedModalRect(i + 89, this.ingameHeight - 22, 234, 0, 22, 22);
             int areaHAdd = 12;
             hotbarAreaX = (i - 91) * this.mc.displayWidth / this.ingameWidth;
             hotbarAreaY = (this.ingameHeight - 22 - areaHAdd) * this.mc.displayHeight / this.ingameHeight;
@@ -69,10 +69,10 @@ public final class GuiIngame extends Gui {
         }
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
-		this.drawTexturedModal(i - 91 - 1 + var2.currentItem * 20, this.ingameHeight - 22 - 1, 0, 22, 24, 22);
+		this.drawTexturedModalRect(i - 91 - 1 + var2.currentSlot * 20, this.ingameHeight - 22 - 1, 0, 22, 24, 22);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
-        boolean var9 = this.mc.thePlayer.scoreValue / 3 % 2 == 1;
-        if(this.mc.thePlayer.scoreValue < 10) {
+        boolean var9 = this.mc.thePlayer.heartsLife / 3 % 2 == 1;
+        if(this.mc.thePlayer.heartsLife < 10) {
             var9 = false;
 		}
 
@@ -96,23 +96,23 @@ public final class GuiIngame extends Gui {
                     var8 += this.rand.nextInt(2);
                 }
 
-                this.drawTexturedModal(var7, var8, 16 + var6 * 9, 0, 9, 9);
+                this.drawTexturedModalRect(var7, var8, 16 + var6 * 9, 0, 9, 9);
                 if(var9) {
                     if((var5 << 1) + 1 < var4) {
-                        this.drawTexturedModal(var7, var8, 70, 0, 9, 9);
+                        this.drawTexturedModalRect(var7, var8, 70, 0, 9, 9);
                     }
 
                     if((var5 << 1) + 1 == var4) {
-                        this.drawTexturedModal(var7, var8, 79, 0, 9, 9);
+                        this.drawTexturedModalRect(var7, var8, 79, 0, 9, 9);
                     }
                 }
 
                 if((var5 << 1) + 1 < var3) {
-                    this.drawTexturedModal(var7, var8, 52, 0, 9, 9);
+                    this.drawTexturedModalRect(var7, var8, 52, 0, 9, 9);
                 }
 
                 if((var5 << 1) + 1 == var3) {
-                    this.drawTexturedModal(var7, var8, 61, 0, 9, 9);
+                    this.drawTexturedModalRect(var7, var8, 61, 0, 9, 9);
                 }
             }
 
@@ -122,9 +122,9 @@ public final class GuiIngame extends Gui {
 
                 for(var7 = 0; var7 < var5 + var12; ++var7) {
                     if(var7 < var5) {
-                        this.drawTexturedModal(this.ingameWidth / 2 - 91 + (var7 << 3), this.ingameHeight - 32 - 9, 16, 18, 9, 9);
+                        this.drawTexturedModalRect(this.ingameWidth / 2 - 91 + (var7 << 3), this.ingameHeight - 32 - 9, 16, 18, 9, 9);
                     } else {
-                        this.drawTexturedModal(this.ingameWidth / 2 - 91 + (var7 << 3), this.ingameHeight - 32 - 9, 25, 18, 9, 9);
+                        this.drawTexturedModalRect(this.ingameWidth / 2 - 91 + (var7 << 3), this.ingameHeight - 32 - 9, 25, 18, 9, 9);
                     }
                 }
             }
@@ -146,7 +146,7 @@ public final class GuiIngame extends Gui {
                     GL11.glDisable(GL11.GL_LIGHTING);
                     var8 = this.mc.renderEngine.getTexture("/gui/items.png");
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
-                    this.drawTexturedModal(var12, var7, 240, 63 - var5 << 4, 16, 16);
+                    this.drawTexturedModalRect(var12, var7, 240, 63 - var5 << 4, 16, 16);
                     GL11.glEnable(GL11.GL_LIGHTING);
                 }
             } else {
@@ -169,7 +169,7 @@ public final class GuiIngame extends Gui {
                     GL11.glDisable(GL11.GL_LIGHTING);
                     var8 = this.mc.renderEngine.getTexture("/gui/items.png");
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
-                    this.drawTexturedModal(var12, var7, var13.iconIndex % 16 << 4, var13.iconIndex / 16 << 4, 16, 16);
+                    this.drawTexturedModalRect(var12, var7, var13.iconIndex % 16 << 4, var13.iconIndex / 16 << 4, 16, 16);
                     GL11.glEnable(GL11.GL_LIGHTING);
                 }
 
@@ -192,7 +192,7 @@ public final class GuiIngame extends Gui {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
-        this.drawTexturedModal(i - 7, this.ingameHeight / 2 - 7, 0, 0, 16, 16);
+        this.drawTexturedModalRect(i - 7, this.ingameHeight / 2 - 7, 0, 0, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
 
         onBeginTouchGUI();
@@ -222,14 +222,23 @@ public final class GuiIngame extends Gui {
 			onEndHotbarDraw();
 		}
 
-        for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
-            if(((ChatLine)this.chatMessageList.get(var7)).updateCounter < 200) {
-                this.chatMessageList.get(var7);
+        for(var7 = 0; var7 < this.chatMessages.size() && var7 < 10; ++var7) {
+            if(((ChatLine)this.chatMessages.get(var7)).updateCounter < 200) {
+                this.chatMessages.get(var7);
                 var1.drawStringWithShadow((String)null, 2, this.ingameHeight - 8 - var7 * 9 - 20, 16777215);
             }
         }
 
 	}
+
+    public final void updateChatMessages() {
+        ++this.updateCounter;
+
+        for(int var1 = 0; var1 < this.chatMessages.size(); ++var1) {
+            ++((ChatLine)this.chatMessages.get(var1)).updateCounter;
+        }
+
+    }
 
     private int hotbarAreaX = -1;
     private int hotbarAreaY = -1;
@@ -309,8 +318,8 @@ public final class GuiIngame extends Gui {
                 currentHotbarSlotTouch = getHotbarSlotTouched(pointX);
                 hotbarSlotTouchStart = EagRuntime.currentTimeMillis();
                 if (currentHotbarSlotTouch >= 0 && currentHotbarSlotTouch < 9) {
-                    hotbarSlotTouchAlreadySelected = (this.mc.thePlayer.inventory.currentItem == currentHotbarSlotTouch);
-                    this.mc.thePlayer.inventory.currentItem = currentHotbarSlotTouch;
+                    hotbarSlotTouchAlreadySelected = (this.mc.thePlayer.inventory.currentSlot == currentHotbarSlotTouch);
+                    this.mc.thePlayer.inventory.currentSlot = currentHotbarSlotTouch;
                 } else if (currentHotbarSlotTouch == 9) {
                     hotbarSlotTouchAlreadySelected = false;
                     currentHotbarSlotTouch = 69;
@@ -364,7 +373,7 @@ public final class GuiIngame extends Gui {
                                 currentHotbarSlotTouch = slot;
                                 hotbarSlotTouchStart = millis;
                                 if (slot >= 0 && slot < 9) {
-                                    this.mc.thePlayer.inventory.currentItem = slot;
+                                    this.mc.thePlayer.inventory.currentSlot = slot;
                                 }
                             } else {
                                 if (millis - hotbarSlotTouchStart > 1200l) {

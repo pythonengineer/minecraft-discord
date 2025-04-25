@@ -79,25 +79,20 @@ public final class Tessellator {
 	}
 
 	public final void setColorOpaque_I(int var1) {
-		int var2 = var1 >> 16 & 255;
-		int var3 = var1 >> 8 & 255;
-		var1 &= 255;
-		int var10001 = var2;
-		int var10002 = var3;
-		var3 = var1;
-		var2 = var10002;
-		var1 = var10001;
-		byte var7 = (byte)var1;
-		byte var8 = (byte)var2;
-		byte var6 = (byte)var3;
-		byte var5 = var8;
-		byte var4 = var7;
-		if(!this.drawMode) {
-			this.hasColor = true;
-			this.r = (float)(var4 & 255) / 255.0F;
-			this.g = (float)(var5 & 255) / 255.0F;
-			this.b = (float)(var6 & 255) / 255.0F;
-		}
+        int var2 = var1 >> 16 & 255;
+        int var3 = var1 >> 8 & 255;
+        var1 &= 255;
+        byte var10001 = (byte)var2;
+        byte var10002 = (byte)var3;
+        byte var4 = (byte)var1;
+        byte var6 = var10002;
+        byte var5 = var10001;
+        if(!this.drawMode) {
+            this.hasColor = true;
+            this.r = (float)(var5 & 255) / 255.0F;
+            this.g = (float)(var6 & 255) / 255.0F;
+            this.b = (float)(var4 & 255) / 255.0F;
+        }
 
 	}
 

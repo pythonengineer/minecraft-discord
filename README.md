@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **0.31 20091231**, an early *Indev* version of the game which was released on _**December 31, 2009**_.
+This version is **0.31 20100104**, an early *Indev* version of the game which was released on _**January 4, 2010**_.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Indev_0.31_20091231-2255).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Indev_0.31_20100104-2258).
 
 ### Setup
 
@@ -39,6 +39,8 @@ Skins are found using the authenticated Discord username,
 however you may add aliases for Discord usernames so they log-in with custom player names in `discord/client/public/aliases.txt`.
 
 ### Notes
+
+There may be an exiting issue on Discord iOS. If encountered, try turning off music and it might be resolved.
 
 All textures and sound files are in the `discord/client/public/assets` folder, all created either by Mojang Specifications or Eaglercraft.
 

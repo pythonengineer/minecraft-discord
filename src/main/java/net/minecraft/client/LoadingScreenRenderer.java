@@ -6,7 +6,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.Tessellator;
 
-public final class LoadingScreenRenderer {
+public final class LoadingScreenRenderer implements IProgressUpdate {
 	private String text = "";
 	private Minecraft mc;
 	private String title = "";

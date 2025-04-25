@@ -70,7 +70,13 @@ public class PlatformAssets {
         if (data != null) {
             return data;
         } else {
-            ArrayBuffer fileData = PlatformRuntime.downloadRemoteURI(PlatformRuntime.getAssetUrlPrefix() + path);
+            boolean useCache = true;
+            String ext = path.substring(path.length() - 4);
+            if (ext.equalsIgnoreCase(".txt")) {
+                useCache = false;
+            }
+
+            ArrayBuffer fileData = PlatformRuntime.downloadRemoteURI(PlatformRuntime.getAssetUrlPrefix() + path, useCache);
             if (fileData == null) {
                 return null;
             } else {

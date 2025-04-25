@@ -1,3 +1,13 @@
+random/click.ogg
+random/explode.ogg
+random/explode1.ogg
+random/explode2.ogg
+random/explode3.ogg
+random/explode4.ogg
+random/fuse.ogg
+random/hurt.ogg
+random/pop.ogg
+random/splash.ogg
 step/grass1.ogg
 step/grass2.ogg
 step/grass3.ogg

@@ -2,17 +2,21 @@ package net.minecraft.game.entity;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.block.Block;
+import net.minecraft.game.level.block.StepSound;
 
 public class EntityLiving extends Entity {
-    private int heartsHalvesLife = 20;
+	private int heartsHalvesLife = 20;
 	public float renderYawOffset = 0.0F;
 	public float prevRenderYawOffset = 0.0F;
 	private float rotationYawHead;
 	private float prevRotationYawHead;
-    private int maxAir = 300;
-	public int health;
+	private int unused2 = 0;
+	private int maxAir = 300;
+	private boolean unused3 = false;
+	public int health = 20;
 	public int prevHealth;
-	public int scoreValue = 0;
+	public int heartsLife = 0;
 	public int air = 300;
 	public int hurtTime;
 	public int maxHurtTime;
@@ -21,12 +25,12 @@ public class EntityLiving extends Entity {
 	private int attackTime = 0;
 	public float prevCameraPitch;
 	public float cameraPitch;
-	public AI entityAI = null;
+	protected AI entityAI = null;
+	public int unused0 = -1;
+	public float unused1 = (float)(Math.random() * (double)0.9F + (double)0.1F);
 
 	public EntityLiving(World var1) {
 		super(var1);
-		Math.random();
-		this.health = 20;
 		Math.random();
 		this.setPosition(this.posX, this.posY, this.posZ);
 		Math.random();
@@ -53,14 +57,14 @@ public class EntityLiving extends Entity {
 			--this.hurtTime;
 		}
 
-		if(this.scoreValue > 0) {
-			--this.scoreValue;
+		if(this.heartsLife > 0) {
+			--this.heartsLife;
 		}
 
 		if(this.health <= 0) {
 			++this.deathTime;
 			if(this.deathTime > 20) {
-                this.setEntityDead();
+				this.setEntityDead();
 			}
 		}
 
@@ -74,8 +78,21 @@ public class EntityLiving extends Entity {
 			this.air = this.maxAir;
 		}
 
+		float var1;
 		if(this.handleWaterMovement()) {
+			if(!this.unused3) {
+				var1 = MathHelper.sqrt_float(this.motionX * this.motionX * 0.2F + this.motionY * this.motionY + this.motionZ * this.motionZ * 0.2F) * 0.2F;
+				if(var1 > 1.0F) {
+					var1 = 1.0F;
+				}
+
+				this.worldObj.playSoundEffect(this, "random.splash", var1, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+			}
+
 			this.fallDistance = 0.0F;
+			this.unused3 = true;
+		} else {
+			this.unused3 = false;
 		}
 
 		if(this.handleLavaMovement()) {
@@ -87,7 +104,7 @@ public class EntityLiving extends Entity {
 		this.prevRotationPitch = this.rotationPitch;
 		++this.ticksExisted;
 		this.onLivingUpdate();
-		float var1 = this.posX - this.prevPosX;
+		var1 = this.posX - this.prevPosX;
 		float var2 = this.posZ - this.prevPosZ;
 		float var3 = MathHelper.sqrt_float(var1 * var1 + var2 * var2);
 		float var4 = this.renderYawOffset;
@@ -163,7 +180,7 @@ public class EntityLiving extends Entity {
 		this.prevRotationYawHead += var5;
 	}
 
-	public void onLivingUpdate() {
+	protected void onLivingUpdate() {
 		if(this.entityAI != null) {
 			this.entityAI.onLivingUpdate(this.worldObj, this);
 		}
@@ -173,7 +190,7 @@ public class EntityLiving extends Entity {
 	public final void attackEntityFrom(Entity var1, int var2) {
 		if(this.worldObj.survivalWorld) {
 			if(this.health > 0) {
-				if((float)this.scoreValue > (float)this.heartsHalvesLife / 2.0F) {
+				if((float)this.heartsLife > (float)this.heartsHalvesLife / 2.0F) {
 					if(this.prevHealth - var2 >= this.health) {
 						return;
 					}
@@ -181,24 +198,24 @@ public class EntityLiving extends Entity {
 					this.health = this.prevHealth - var2;
 				} else {
 					this.prevHealth = this.health;
-					this.scoreValue = this.heartsHalvesLife;
+					this.heartsLife = this.heartsHalvesLife;
 					this.health -= var2;
 					this.hurtTime = this.maxHurtTime = 10;
 				}
 
+				this.worldObj.playSoundEffect(this, "random.hurt", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 				this.attackedAtYaw = 0.0F;
 				if(var1 != null) {
-					float var7 = var1.posX - this.posX;
+					float var6 = var1.posX - this.posX;
 					float var3 = var1.posZ - this.posZ;
-					this.attackedAtYaw = (float)(Math.atan2((double)var3, (double)var7) * 180.0D / (double)((float)Math.PI)) - this.rotationYaw;
-					float var5 = MathHelper.sqrt_float(var7 * var7 + var3 * var3);
-					float var6 = 0.4F;
+					this.attackedAtYaw = (float)(Math.atan2((double)var3, (double)var6) * 180.0D / (double)((float)Math.PI)) - this.rotationYaw;
+					float var5 = MathHelper.sqrt_float(var6 * var6 + var3 * var3);
 					this.motionX /= 2.0F;
 					this.motionY /= 2.0F;
 					this.motionZ /= 2.0F;
-					this.motionX -= var7 / var5 * var6;
+					this.motionX -= var6 / var5 * 0.4F;
 					this.motionY += 0.4F;
-					this.motionZ -= var3 / var5 * var6;
+					this.motionZ -= var3 / var5 * 0.4F;
 					if(this.motionY > 0.4F) {
 						this.motionY = 0.4F;
 					}
@@ -218,10 +235,19 @@ public class EntityLiving extends Entity {
 	}
 
 	protected final void fall(float var1) {
-		int var2 = (int)Math.ceil((double)(var1 - 3.0F));
-		if(var2 > 0) {
-			this.attackEntityFrom((Entity)null, var2);
+		int var3 = (int)Math.ceil((double)(var1 - 3.0F));
+		if(var3 > 0) {
+			this.attackEntityFrom((Entity)null, var3);
+			var3 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY - 0.2F - this.yOffset), (int)this.posZ);
+			if(var3 > 0) {
+				StepSound var4 = Block.blocksList[var3].stepSound;
+				this.worldObj.playSoundEffect(this, "step." + var4.a, var4.speed * 0.5F, var4.pitch * (12.0F / 16.0F));
+			}
 		}
 
+	}
+
+	public final void setEntityAI(AI var1) {
+		this.entityAI = var1;
 	}
 }

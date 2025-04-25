@@ -8,7 +8,7 @@ public final class Session {
 	public static List allowedBlocks;
 	public String username;
 
-	public Session(String var1) {
+	public Session(String var1, String var2) {
 		this.username = var1;
 	}
 
@@ -53,7 +53,7 @@ public final class Session {
 		allowedBlocks.add(Block.oreGold);
 		allowedBlocks.add(Block.ironBlock);
 		allowedBlocks.add(Block.goldBlock);
-		allowedBlocks.add(Block.bookShelf);
+        allowedBlocks.add(Block.bookshelf);
 		allowedBlocks.add(Block.tnt);
 		allowedBlocks.add(Block.obsidian);
         System.out.println(allowedBlocks.size());

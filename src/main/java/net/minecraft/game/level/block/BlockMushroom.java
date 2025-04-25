@@ -4,11 +4,10 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
 
 public final class BlockMushroom extends BlockFlower {
-	protected BlockMushroom(int var1, int var2) {
-		super(var1, var2);
-		float var3 = 0.2F;
-		this.setBlockBounds(0.5F - var3, 0.0F, 0.5F - var3, var3 + 0.5F, var3 * 2.0F, var3 + 0.5F);
-	}
+    protected BlockMushroom(int var1, int var2) {
+        super(var1, var2);
+        this.setBlockBounds(0.3F, 0.0F, 0.3F, 0.7F, 0.4F, 0.7F);
+    }
 
 	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		int var6 = var1.getBlockId(var2, var3 - 1, var4);

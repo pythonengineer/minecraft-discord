@@ -7,10 +7,10 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.level.World;
-import net.minecraft.game.level.block.Block;
 
 public class EntityPlayer extends EntityLiving {
     public InventoryPlayer inventory = new InventoryPlayer();
+    public byte userType = 0;
     public float prevCameraYaw;
     public float cameraYaw;
     private int getScore = 0;
@@ -68,53 +68,15 @@ public class EntityPlayer extends EntityLiving {
         this.cameraYaw += (var1 - this.cameraYaw) * 0.4F;
         this.cameraPitch += (var2 - this.cameraPitch) * 0.8F;
         if(this.health > 0) {
-            List var8 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0F, 0.0F, 1.0F));
-            if(var8 != null) {
-                for(int var9 = 0; var9 < var8.size(); ++var9) {
-                    Entity var10 = (Entity)var8.get(var9);
-                    if(var10 instanceof EntityItem) {
-                        EntityItem var11 = (EntityItem)var10;
-                        if(var11.delayBeforeCanPickup == 0) {
-                            boolean var10000;
-                            label60: {
-                                ItemStack var6 = var11.item;
-                                InventoryPlayer var5 = this.inventory;
-                                Object var7 = null;
-                                int var13;
-                                if(var6.itemID > 0) {
-                                    int var12 = var6.itemID;
-                                    var13 = var5.getInventorySlotContainItem(var12);
-                                    if(var13 < 0) {
-                                        var13 = var5.getFirstEmptyStack();
-                                    }
-
-                                    if(var13 >= 0) {
-                                        if(var5.mainInventory[var13] == null) {
-                                            var5.mainInventory[var13] = new ItemStack(Block.blocksList[var12], 0);
-                                        }
-
-                                        if(var5.mainInventory[var13].stackSize < 99) {
-                                            ++var5.mainInventory[var13].stackSize;
-                                            var5.mainInventory[var13].animationsToGo = 5;
-                                            var10000 = true;
-                                            break label60;
-                                        }
-                                    }
-                                } else {
-                                    var13 = var5.getFirstEmptyStack();
-                                    if(var13 >= 0) {
-                                        var5.mainInventory[var13] = var6;
-                                        var10000 = true;
-                                        break label60;
-                                    }
-                                }
-
-                                var10000 = false;
-                            }
-
-                            if(var10000) {
-                                this.worldObj.releaseEntitySkin(var11);
-                            }
+            List var5 = this.worldObj.a(this, this.boundingBox.expand(1.0F, 0.0F, 1.0F));
+            if(var5 != null) {
+                for(int var6 = 0; var6 < var5.size(); ++var6) {
+                    Entity var7 = (Entity)var5.get(var6);
+                    if(var7 instanceof EntityItem) {
+                        EntityItem var8 = (EntityItem)var7;
+                        if(var8.delayBeforeCanPickup == 0 && this.inventory.addItemStackToInventory(var8.item)) {
+                            this.worldObj.playSoundEffect(var8, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                            this.worldObj.releaseEntitySkin(var8);
                         }
                     }
                 }
@@ -124,7 +86,7 @@ public class EntityPlayer extends EntityLiving {
     }
 
     public final int getScore() {
-        return 0;
+        return this.getScore;
     }
 
     public final void onDeath(Entity var1) {
@@ -155,7 +117,7 @@ public class EntityPlayer extends EntityLiving {
                 var10000 = var3;
             } else {
                 --var4.mainInventory[var2].stackSize;
-                var10000 = new ItemStack(var4.mainInventory[var2]);
+                var10000 = new ItemStack(var4.mainInventory[var2], 1);
             }
         } else {
             var10000 = null;
@@ -178,7 +140,7 @@ public class EntityPlayer extends EntityLiving {
     }
 
     public final void dropOneItem(boolean flag) {
-        int var1 = this.inventory.currentItem;
+        int var1 = this.inventory.currentSlot;
         int var2 = var1;
         InventoryPlayer var4 = this.inventory;
         ItemStack var10000;
@@ -189,7 +151,7 @@ public class EntityPlayer extends EntityLiving {
                 var10000 = var3;
             } else {
                 --var4.mainInventory[var2].stackSize;
-                var10000 = new ItemStack(var4.mainInventory[var2]);
+                var10000 = new ItemStack(var4.mainInventory[var2], 1);
             }
         } else {
             var10000 = null;

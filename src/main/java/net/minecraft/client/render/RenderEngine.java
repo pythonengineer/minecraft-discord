@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
@@ -13,17 +14,21 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.render.texture.TextureFX;
 
 public class RenderEngine {
-	public HashMap textureMap = new HashMap();
-	public HashMap textureContentsMap = new HashMap();
+    private HashMap textureMap = new HashMap();
+    private HashMap textureContentsMap = new HashMap();
     private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
-	public ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
-	public List textureList = new ArrayList();
-	public GameSettings options;
-	boolean clampTexture = false;
+    private ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
+    private List textureList = new ArrayList();
+    private GameSettings options;
+    private boolean clampTexture = false;
 
-	public RenderEngine(GameSettings var1) {
-		this.options = var1;
-	}
+    public RenderEngine(GameSettings var1) {
+        this.options = var1;
+    }
+
+    public final void setClampTexture(boolean var1) {
+        this.clampTexture = var1;
+    }
 
 	public final int getTexture(String var1) {
 		Integer var2 = (Integer)this.textureMap.get(var1);
@@ -48,7 +53,7 @@ public class RenderEngine {
 		}
 	}
 
-	public final void setupTexture(ImageData var1, int var2) {
+	private void setupTexture(ImageData var1, int var2) {
 		GL11.glBindTexture(var2);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
@@ -92,6 +97,51 @@ public class RenderEngine {
 
 	public final void registerTextureFX(TextureFX var1) {
 		this.textureList.add(var1);
-		var1.onTick();
-	}
+        var1.onTick();
+    }
+
+    public final void updateDynamicTextures() {
+        for(int var1 = 0; var1 < this.textureList.size(); ++var1) {
+            TextureFX var2 = (TextureFX)this.textureList.get(var1);
+            var2.anaglyphEnabled = this.options.anaglyph;
+            var2.onTick();
+            this.imageData.clear();
+            this.imageData.put(var2.imageData);
+            this.imageData.position(0).limit(var2.imageData.length);
+            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, var2.iconIndex % 16 << 4, var2.iconIndex / 16 << 4, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
+        }
+
+    }
+
+    public final void refreshTextures() {
+        Iterator var1 = this.textureContentsMap.keySet().iterator();
+
+        int var2;
+        ImageData var3;
+        while(var1.hasNext()) {
+            var2 = ((Integer)var1.next()).intValue();
+            var3 = (ImageData)this.textureContentsMap.get(Integer.valueOf(var2));
+            this.setupTexture(var3, var2);
+        }
+
+        var1 = this.textureMap.keySet().iterator();
+
+        while(var1.hasNext()) {
+            String var5 = (String)var1.next();
+
+            try {
+                if(var5.startsWith("##")) {
+                    var3 = ImageData.loadImageFile("/assets" + var5.substring(2));
+                } else {
+                    var3 = ImageData.loadImageFile("/assets" + var5);
+                }
+
+                var2 = ((Integer)this.textureMap.get(var5)).intValue();
+                this.setupTexture(var3, var2);
+            } catch (Exception var4) {
+                var4.printStackTrace();
+            }
+        }
+
+    }
 }

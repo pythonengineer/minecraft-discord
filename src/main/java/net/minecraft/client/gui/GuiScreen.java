@@ -29,31 +29,7 @@ public class GuiScreen extends Gui {
 	public void drawScreen(int var1, int var2) {
 		for(int var3 = 0; var3 < this.controlList.size(); ++var3) {
 			GuiButton var10000 = (GuiButton)this.controlList.get(var3);
-			GuiButton var4 = null;
-			Minecraft var5 = this.mc;
-			var4 = var10000;
-			if(var4.visible) {
-				FontRenderer var8 = var5.fontRenderer;
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5.renderEngine.getTexture("/gui/gui.png"));
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				byte var9 = 1;
-				boolean var6 = var1 >= var4.x && var2 >= var4.y && var1 < var4.x + var4.width && var2 < var4.y + var4.height;
-				if(!var4.enabled) {
-					var9 = 0;
-				} else if(var6) {
-					var9 = 2;
-				}
-
-				var4.drawTexturedModal(var4.x, var4.y, 0, 46 + var9 * 20, var4.width / 2, var4.height);
-				var4.drawTexturedModal(var4.x + var4.width / 2, var4.y, 200 - var4.width / 2, 46 + var9 * 20, var4.width / 2, var4.height);
-				if(!var4.enabled) {
-					GuiButton.drawCenteredString(var8, var4.displayString, var4.x + var4.width / 2, var4.y + (var4.height - 8) / 2, -6250336);
-				} else if(var6) {
-					GuiButton.drawCenteredString(var8, var4.displayString, var4.x + var4.width / 2, var4.y + (var4.height - 8) / 2, 16777120);
-				} else {
-					GuiButton.drawCenteredString(var8, var4.displayString, var4.x + var4.width / 2, var4.y + (var4.height - 8) / 2, 14737632);
-				}
-			}
+            var10000.drawButton(this.mc, var1, var2);
 		}
 
 	}
@@ -70,7 +46,8 @@ public class GuiScreen extends Gui {
 		if(var3 == 0) {
 			for(var3 = 0; var3 < this.controlList.size(); ++var3) {
 				GuiButton var4 = (GuiButton)this.controlList.get(var3);
-				if(var4.enabled && var1 >= var4.x && var2 >= var4.y && var1 < var4.x + var4.width && var2 < var4.y + var4.height) {
+                if(var4.mousePressed(var1, var2)) {
+                    this.mc.sndManager.playSound("random.click", 1.0F, 1.0F);
 					this.actionPerformed(var4);
 				}
 			}

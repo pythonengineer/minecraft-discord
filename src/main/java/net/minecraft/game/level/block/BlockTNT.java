@@ -5,7 +5,7 @@ import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.level.World;
 
 public final class BlockTNT extends Block {
-	public BlockTNT() {
+    public BlockTNT(int var1, int var2) {
 		super(46, 8);
 	}
 
@@ -24,6 +24,8 @@ public final class BlockTNT extends Block {
 	}
 
 	public final void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4) {
-		var1.spawnEntityInWorld(new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F));
+        EntityTNTPrimed var5 = new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F);
+        var1.spawnEntityInWorld(var5);
+        var1.playSoundEffect(var5, "random.fuse", 1.0F, 1.0F);
 	}
 }

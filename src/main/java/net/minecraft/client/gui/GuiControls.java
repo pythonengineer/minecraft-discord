@@ -4,7 +4,7 @@ import net.minecraft.client.GameSettings;
 
 public final class GuiControls extends GuiScreen {
 	private GuiScreen parentScreen;
-	private String screenTItle = "Controls";
+	private String screenTitle = "Controls";
 	private GameSettings options;
 	private int buttonId = -1;
 
@@ -15,7 +15,7 @@ public final class GuiControls extends GuiScreen {
 
 	public final void initGui() {
 		for(int var1 = 0; var1 < this.options.keyBindings.length; ++var1) {
-			this.controlList.add(new GuiSmallButton(var1, this.width / 2 - 155 + var1 % 2 * 160, this.height / 6 + 24 * (var1 >> 1), this.options.setKeyBindingString(var1)));
+			this.controlList.add(new GuiButtonSmall(var1, this.width / 2 - 155 + var1 % 2 * 160, this.height / 6 + 24 * (var1 >> 1), this.options.setKeyBindingString(var1)));
 		}
 
 		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, "Done"));
@@ -46,7 +46,7 @@ public final class GuiControls extends GuiScreen {
 
 	public final void drawScreen(int var1, int var2) {
 		drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
-		drawCenteredString(this.fontRenderer, this.screenTItle, this.width / 2, 20, 16777215);
+		drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
 		super.drawScreen(var1, var2);
 	}
 }

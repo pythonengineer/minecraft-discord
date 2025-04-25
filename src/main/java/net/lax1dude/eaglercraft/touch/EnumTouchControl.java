@@ -112,7 +112,7 @@ public enum EnumTouchControl {
 
     PAUSE(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.displayInGameMenu();
+            Minecraft.minecraft.displayIngameMenu();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);

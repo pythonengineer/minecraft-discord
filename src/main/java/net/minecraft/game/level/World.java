@@ -8,7 +8,6 @@ import java.util.List;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.material.Material;
@@ -29,7 +28,7 @@ public final class World {
 	public int zSpawn;
 	public float rotSpawn;
 	private ArrayList worldAccesses = new ArrayList();
-	private ArrayList ticksList = new ArrayList();
+	private ArrayList tickList = new ArrayList();
 	private int[] heightMap;
 	public EaglercraftRandom random = new EaglercraftRandom();
 	private int randId = this.random.nextInt();
@@ -55,7 +54,7 @@ public final class World {
 			this.updateSkylight(0, 0, this.width, this.length);
 			this.random = new EaglercraftRandom();
 			this.randId = this.random.nextInt();
-			this.ticksList = new ArrayList();
+			this.tickList = new ArrayList();
 			if(this.waterLevel == 0) {
 				this.waterLevel = this.height / 2;
 			}
@@ -83,7 +82,7 @@ public final class World {
 		}
 	}
 
-	public final void generate(int var1, int var2, int var3, byte[] var4) {
+	public final void setLevel(int var1, int var2, int var3, byte[] var4) {
 		this.width = var1;
 		this.length = var3;
 		this.height = var2;
@@ -93,11 +92,11 @@ public final class World {
 		Arrays.fill(this.heightMap, this.height);
 		this.updateSkylight(0, 0, var1, var3);
 
-		for(var1 = 0; var1 < this.worldAccesses.size(); ++var1) {
-			((RenderGlobal)this.worldAccesses.get(var1)).loadRenderers();
-		}
+        for(var1 = 0; var1 < this.worldAccesses.size(); ++var1) {
+            ((IWorldAccess)this.worldAccesses.get(var1)).loadRenderers();
+        }
 
-		this.ticksList.clear();
+        this.tickList.clear();
 		this.findSpawn();
 		this.load();
 		System.gc();
@@ -246,7 +245,8 @@ public final class World {
                 var6 = var8;
             }
 
-            if((this.data[(var10 * this.length + var8) * this.width + var9] & 255) != var11) {
+            var13 = this.data[(var10 * this.length + var8) * this.width + var9] & 255;
+            if(var13 != var11) {
                 this.data[(var10 * this.length + var8) * this.width + var9] = (byte)var11;
                 if(var9 > 0 && (this.data[(var10 * this.length + var8) * this.width + (var9 - 1)] & 255) != var11 - 1) {
                     this.floodFillCounters[var7++] = var9 - 1 << 20 | var10 << 10 | var8;
@@ -277,23 +277,22 @@ public final class World {
         Iterator var15 = this.worldAccesses.iterator();
 
         while(var15.hasNext()) {
-            RenderGlobal var10000 = (RenderGlobal)var15.next();
-            Object var16 = null;
-            var10000.markBlocksForUpdate(var1 - 1, var2 - 1, var3 - 1, var4 + 1, var5 + 1, var6 + 1);
+            IWorldAccess var16 = (IWorldAccess)var15.next();
+            var16.markBlockRangeNeedsUpdate(var1, var2, var3, var4, var5, var6);
         }
 
     }
 
-	public final void addRenderer(RenderGlobal var1) {
-		this.worldAccesses.add(var1);
-	}
+    public final void addWorldAccess(IWorldAccess var1) {
+        this.worldAccesses.add(var1);
+    }
 
-	public final void finalize() {
-	}
+    public final void finalize() {
+    }
 
-	public final void removeRenderer(RenderGlobal var1) {
-		this.worldAccesses.remove(var1);
-	}
+    public final void removeWorldAccess(IWorldAccess var1) {
+        this.worldAccesses.remove(var1);
+    }
 
 	public final ArrayList getCollidingBoundingBoxes(AxisAlignedBB var1) {
 		ArrayList var2 = new ArrayList();
@@ -315,29 +314,27 @@ public final class World {
 			--var7;
 		}
 
-		while(var3 < var4) {
-			for(int var9 = var5; var9 < var6; ++var9) {
-				for(int var10 = var7; var10 < var8; ++var10) {
-					AxisAlignedBB var11;
-					if(var3 >= 0 && var9 >= 0 && var10 >= 0 && var3 < this.width && var9 < this.height && var10 < this.length) {
-						Block var12 = Block.blocksList[this.getBlockId(var3, var9, var10)];
-						if(var12 != null) {
-							var11 = var12.getCollisionBoundingBoxFromPool(var3, var9, var10);
-							if(var11 != null && var1.intersectsWith(var11)) {
-								var2.add(var11);
-							}
-						}
-					} else if(var3 < 0 || var9 < 0 || var10 < 0 || var3 >= this.width || var10 >= this.length) {
-						var11 = Block.bedrock.getCollisionBoundingBoxFromPool(var3, var9, var10);
-						if(var11 != null && var1.intersectsWith(var11)) {
-							var2.add(var11);
-						}
-					}
-				}
-			}
-
-			++var3;
-		}
+        for(var3 = var3; var3 < var4; ++var3) {
+            for(int var9 = var5; var9 < var6; ++var9) {
+                for(int var10 = var7; var10 < var8; ++var10) {
+                    AxisAlignedBB var11;
+                    if(var3 >= 0 && var9 >= 0 && var10 >= 0 && var3 < this.width && var9 < this.height && var10 < this.length) {
+                        Block var12 = Block.blocksList[this.getBlockId(var3, var9, var10)];
+                        if(var12 != null) {
+                            var11 = var12.getCollisionBoundingBoxFromPool(var3, var9, var10);
+                            if(var11 != null && var1.intersectsWith(var11)) {
+                                var2.add(var11);
+                            }
+                        }
+                    } else if(var3 < 0 || var9 < 0 || var10 < 0 || var3 >= this.width || var10 >= this.length) {
+                        var11 = Block.bedrock.getCollisionBoundingBoxFromPool(var3, var9, var10);
+                        if(var11 != null && var1.intersectsWith(var11)) {
+                            var2.add(var11);
+                        }
+                    }
+                }
+            }
+        }
 
 		return var2;
 	}
@@ -356,13 +353,9 @@ public final class World {
 			if(var4 == this.blocks[(var2 * this.length + var3) * this.width + var1]) {
 				return false;
 			} else {
-				if(var4 == 0 && (var1 == 0 || var3 == 0 || var1 == this.width - 1 || var3 == this.length - 1)) {
-					float var10000 = (float)var2;
-					Object var5 = null;
-					if(var10000 >= (float)this.waterLevel - 2.0F && (float)var2 < (float)this.waterLevel) {
-						var4 = Block.waterMoving.blockID;
-					}
-				}
+                if(var4 == 0 && (var1 == 0 || var3 == 0 || var1 == this.width - 1 || var3 == this.length - 1) && (float)var2 >= (float)this.waterLevel - 2.0F && (float)var2 < (float)this.waterLevel) {
+                    var4 = Block.waterMoving.blockID;
+                }
 
 				byte var8 = this.blocks[(var2 * this.length + var3) * this.width + var1];
 				this.blocks[(var2 * this.length + var3) * this.width + var1] = (byte)var4;
@@ -377,9 +370,9 @@ public final class World {
 				this.updateSkylight(var1, var3, 1, 1);
 				this.updateLight(var1, var2, var3, var1 + 1, var2 + 1, var3 + 1);
 
-				for(var4 = 0; var4 < this.worldAccesses.size(); ++var4) {
-					((RenderGlobal)this.worldAccesses.get(var4)).markBlocksForUpdate(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
-				}
+                for(var4 = 0; var4 < this.worldAccesses.size(); ++var4) {
+                    ((IWorldAccess)this.worldAccesses.get(var4)).markBlockAndNeighborsNeedsUpdate(var1, var2, var3);
+                }
 
 				return true;
 			}
@@ -398,12 +391,12 @@ public final class World {
 	}
 
 	public final void notifyBlocksOfNeighborChange(int var1, int var2, int var3, int var4) {
-		this.notifyBlockOfNeighborChange(var1 - 1, var2, var3, var4);
-		this.notifyBlockOfNeighborChange(var1 + 1, var2, var3, var4);
-		this.notifyBlockOfNeighborChange(var1, var2 - 1, var3, var4);
-		this.notifyBlockOfNeighborChange(var1, var2 + 1, var3, var4);
-		this.notifyBlockOfNeighborChange(var1, var2, var3 - 1, var4);
-		this.notifyBlockOfNeighborChange(var1, var2, var3 + 1, var4);
+        this.notifyBlockOfNeighborChange(var1 - 1, var2, var3, var4);
+        this.notifyBlockOfNeighborChange(var1 + 1, var2, var3, var4);
+        this.notifyBlockOfNeighborChange(var1, var2 - 1, var3, var4);
+        this.notifyBlockOfNeighborChange(var1, var2 + 1, var3, var4);
+        this.notifyBlockOfNeighborChange(var1, var2, var3 - 1, var4);
+        this.notifyBlockOfNeighborChange(var1, var2, var3 + 1, var4);
 	}
 
 	public final boolean setTileNoUpdate(int var1, int var2, int var3, int var4) {
@@ -444,36 +437,7 @@ public final class World {
 	}
 
 	public final void updateEntities() {
-		EntityMap var9 = this.entityMap;
-
-		for(int var1 = 0; var1 < var9.entities.size(); ++var1) {
-			Entity var2;
-			(var2 = (Entity)var9.entities.get(var1)).lastTickPosX = var2.posX;
-			var2.lastTickPosY = var2.posY;
-			var2.lastTickPosZ = var2.posZ;
-			var2.onEntityUpdate();
-			++var2.ticksExisted;
-			if(var2.isDead) {
-				var9.entities.remove(var1--);
-				var9.slot0.init(var2.lastTickPosX, var2.lastTickPosY, var2.lastTickPosZ).remove(var2);
-			} else {
-				int var3 = (int)(var2.lastTickPosX / 16.0F);
-				int var4 = (int)(var2.lastTickPosY / 16.0F);
-				int var5 = (int)(var2.lastTickPosZ / 16.0F);
-				int var6 = (int)(var2.posX / 16.0F);
-				int var7 = (int)(var2.posY / 16.0F);
-				int var8 = (int)(var2.posZ / 16.0F);
-				if(var3 != var6 || var4 != var7 || var5 != var8) {
-					EntityMapSlot var12 = var9.slot0.init(var2.lastTickPosX, var2.lastTickPosY, var2.lastTickPosZ);
-					EntityMapSlot var10 = var9.slot1.init(var2.posX, var2.posY, var2.posZ);
-					if(!var12.equals(var10)) {
-						var12.remove(var2);
-						var10.add(var2);
-					}
-				}
-			}
-		}
-
+        this.entityMap.updateEntities();
 	}
 
 	public final void tick() {
@@ -491,7 +455,7 @@ public final class World {
 		int var3 = this.length - 1;
 		int var4 = this.width - 1;
 		int var5 = this.height - 1;
-		int var6 = this.ticksList.size();
+		int var6 = this.tickList.size();
 		if(var6 > this.MAX_TICKS) {
 			var6 = this.MAX_TICKS;
 		}
@@ -499,10 +463,10 @@ public final class World {
 		int var7;
 		int var10;
 		for(var7 = 0; var7 < var6; ++var7) {
-			NextTickListEntry var8 = (NextTickListEntry)this.ticksList.remove(0);
+			NextTickListEntry var8 = (NextTickListEntry)this.tickList.remove(0);
 			if(var8.scheduledTime > 0) {
 				--var8.scheduledTime;
-				this.ticksList.add(var8);
+				this.tickList.add(var8);
 			} else {
 				int var12 = var8.zCoord;
 				int var11 = var8.yCoord;
@@ -537,8 +501,8 @@ public final class World {
 	public final int entitiesInLevelList(Class var1) {
 		int var2 = 0;
 
-		for(int var3 = 0; var3 < this.entityMap.entities.size(); ++var3) {
-			Entity var4 = (Entity)this.entityMap.entities.get(var3);
+		for(int var3 = 0; var3 < this.entityMap.all.size(); ++var3) {
+			Entity var4 = (Entity)this.entityMap.all.get(var3);
 			if(var1.isAssignableFrom(var4.getClass())) {
 				++var2;
 			}
@@ -551,7 +515,7 @@ public final class World {
 		return (float)this.waterLevel - 2.0F;
 	}
 
-	public final float rgetGroundLevel() {
+	public final float getWaterLevel() {
 		return (float)this.waterLevel;
 	}
 
@@ -602,7 +566,7 @@ public final class World {
 			for(var2 = var4; var2 < var5; ++var2) {
 				for(int var8 = var6; var8 < var7; ++var8) {
 					Block var9 = Block.blocksList[this.getBlockId(var10, var2, var8)];
-					if(var9 != null && var9.getMaterial() != Material.air) {
+					if(var9 != null && var9.getBlockMaterial() != Material.air) {
 						return true;
 					}
 				}
@@ -659,7 +623,7 @@ public final class World {
 			for(var3 = var5; var3 < var6; ++var3) {
 				for(int var9 = var7; var9 < var8; ++var9) {
 					Block var10 = Block.blocksList[this.getBlockId(var11, var3, var9)];
-					if(var10 != null && var10.getMaterial() == var2) {
+					if(var10 != null && var10.getBlockMaterial() == var2) {
 						return true;
 					}
 				}
@@ -676,20 +640,20 @@ public final class World {
 			var5.scheduledTime = var3;
 		}
 
-		this.ticksList.add(var5);
+		this.tickList.add(var5);
 	}
 
 	public final boolean checkIfAABBIsClear(AxisAlignedBB var1) {
 		return this.entityMap.getEntitiesWithinAABBExcludingEntity((Entity)null, var1).size() == 0;
 	}
 
-	public final List getEntitiesWithinAABBExcludingEntity(Entity var1, AxisAlignedBB var2) {
+	public final List a(Entity var1, AxisAlignedBB var2) {
 		return this.entityMap.getEntitiesWithinAABBExcludingEntity(var1, var2);
 	}
 
 	public final boolean isSolid(float var1, float var2, float var3, float var4) {
-		return this.isSolid(var1 - var4, var2 - var4, var3 - var4) ? true : (this.isSolid(var1 - var4, var2 - var4, var3 + var4) ? true : (this.isSolid(var1 - var4, var2 + var4, var3 - var4) ? true : (this.isSolid(var1 - var4, var2 + var4, var3 + var4) ? true : (this.isSolid(var1 + var4, var2 - var4, var3 - var4) ? true : (this.isSolid(var1 + var4, var2 - var4, var3 + var4) ? true : (this.isSolid(var1 + var4, var2 + var4, var3 - var4) ? true : this.isSolid(var1 + var4, var2 + var4, var3 + var4)))))));
-	}
+        return this.isSolid(var1 - 0.1F, var2 - 0.1F, var3 - 0.1F) ? true : (this.isSolid(var1 - 0.1F, var2 - 0.1F, var3 + 0.1F) ? true : (this.isSolid(var1 - 0.1F, var2 + 0.1F, var3 - 0.1F) ? true : (this.isSolid(var1 - 0.1F, var2 + 0.1F, var3 + 0.1F) ? true : (this.isSolid(var1 + 0.1F, var2 - 0.1F, var3 - 0.1F) ? true : (this.isSolid(var1 + 0.1F, var2 - 0.1F, var3 + 0.1F) ? true : (this.isSolid(var1 + 0.1F, var2 + 0.1F, var3 - 0.1F) ? true : this.isSolid(var1 + 0.1F, var2 + 0.1F, var3 + 0.1F)))))));
+    }
 
 	private boolean isSolid(float var1, float var2, float var3) {
 		int var4 = this.getBlockId((int)var1, (int)var2, (int)var3);
@@ -698,7 +662,7 @@ public final class World {
 
 	private int getFirstUncoveredBlock(int var1, int var2) {
 		int var3;
-		for(var3 = this.height; (this.getBlockId(var1, var3 - 1, var2) == 0 || Block.blocksList[this.getBlockId(var1, var3 - 1, var2)].getMaterial() != Material.air) && var3 > 0; --var3) {
+		for(var3 = this.height; (this.getBlockId(var1, var3 - 1, var2) == 0 || Block.blocksList[this.getBlockId(var1, var3 - 1, var2)].getBlockMaterial() != Material.air) && var3 > 0; --var3) {
 		}
 
 		return var3;
@@ -717,12 +681,12 @@ public final class World {
 
 	public final Material getBlockMaterial(int var1, int var2, int var3) {
 		int var4 = this.getBlockId(var1, var2, var3);
-		return var4 == 0 ? Material.air : Block.blocksList[var4].getMaterial();
+		return var4 == 0 ? Material.air : Block.blocksList[var4].getBlockMaterial();
 	}
 
 	public final boolean isWater(int var1, int var2, int var3) {
 		int var4 = this.getBlockId(var1, var2, var3);
-		return var4 > 0 && Block.blocksList[var4].getMaterial() == Material.water;
+		return var4 > 0 && Block.blocksList[var4].getBlockMaterial() == Material.water;
 	}
 
 	public final MovingObjectPosition rayTraceBlocks(Vec3D var1, Vec3D var2) {
@@ -790,7 +754,6 @@ public final class World {
 						var15 = (var12 - var1.zCoord) / var18;
 					}
 
-					boolean var19 = false;
 					byte var24;
 					if(var13 < var14 && var13 < var15) {
 						if(var3 > var6) {
@@ -845,7 +808,7 @@ public final class World {
 
 					int var21 = this.getBlockId(var6, var7, var8);
 					Block var23 = Block.blocksList[var21];
-					if(var21 > 0 && var23.getMaterial() == Material.air) {
+					if(var21 > 0 && var23.getBlockMaterial() == Material.air) {
 						MovingObjectPosition var22;
 						if(var23.renderAsNormalBlock()) {
 							var22 = var23.collisionRayTrace(var6, var7, var8, var1, var2);
@@ -877,6 +840,7 @@ public final class World {
 		int var6;
 		int var8;
 		int var9;
+        int var10;
 		for(var6 = var2; var6 <= var2 + 1 + var4; ++var6) {
 			byte var7 = 1;
 			if(var6 == var2) {
@@ -890,11 +854,10 @@ public final class World {
 			for(var8 = var1 - var7; var8 <= var1 + var7 && var5; ++var8) {
 				for(var9 = var3 - var7; var9 <= var3 + var7 && var5; ++var9) {
 					if(var8 >= 0 && var6 >= 0 && var9 >= 0 && var8 < this.width && var6 < this.height && var9 < this.length) {
-						int var10000 = this.blocks[(var6 * this.length + var9) * this.width + var8] & 255;
-						boolean var10 = false;
-						if(var10000 != 0) {
-							var5 = false;
-						}
+                        var10 = this.blocks[(var6 * this.length + var9) * this.width + var8] & 255;
+                        if(var10 != 0) {
+                            var5 = false;
+                        }
 					} else {
 						var5 = false;
 					}
@@ -904,118 +867,100 @@ public final class World {
 
 		if(!var5) {
 			return false;
-		} else if((this.blocks[((var2 - 1) * this.length + var3) * this.width + var1] & 255) == Block.grass.blockID && var2 < this.height - var4 - 1) {
-			this.setBlockWithNotify(var1, var2 - 1, var3, Block.dirt.blockID);
+        } else {
+            var6 = this.blocks[((var2 - 1) * this.length + var3) * this.width + var1] & 255;
+            if(var6 == Block.grass.blockID && var2 < this.height - var4 - 1) {
+                this.setBlockWithNotify(var1, var2 - 1, var3, Block.dirt.blockID);
 
-			int var13;
-			for(var13 = var2 - 3 + var4; var13 <= var2 + var4; ++var13) {
-				var8 = var13 - (var2 + var4);
-				var9 = 1 - var8 / 2;
+                int var13;
+                for(var13 = var2 - 3 + var4; var13 <= var2 + var4; ++var13) {
+                    var8 = var13 - (var2 + var4);
+                    var9 = 1 - var8 / 2;
 
-				for(int var14 = var1 - var9; var14 <= var1 + var9; ++var14) {
-					int var12 = var14 - var1;
+                    for(var10 = var1 - var9; var10 <= var1 + var9; ++var10) {
+                        int var12 = var10 - var1;
 
-					for(var6 = var3 - var9; var6 <= var3 + var9; ++var6) {
-						int var11 = var6 - var3;
-						if(Math.abs(var12) != var9 || Math.abs(var11) != var9 || this.random.nextInt(2) != 0 && var8 != 0) {
-							this.setBlockWithNotify(var14, var13, var6, Block.leaves.blockID);
-						}
-					}
-				}
-			}
+                        for(var6 = var3 - var9; var6 <= var3 + var9; ++var6) {
+                            int var11 = var6 - var3;
+                            if(Math.abs(var12) != var9 || Math.abs(var11) != var9 || this.random.nextInt(2) != 0 && var8 != 0) {
+                                this.setBlockWithNotify(var10, var13, var6, Block.leaves.blockID);
+                            }
+                        }
+                    }
+                }
 
-			for(var13 = 0; var13 < var4; ++var13) {
-				this.setBlockWithNotify(var1, var2 + var13, var3, Block.log.blockID);
-			}
+                for(var13 = 0; var13 < var4; ++var13) {
+                    this.setBlockWithNotify(var1, var2 + var13, var3, Block.log.blockID);
+                }
 
-			return true;
-		} else {
-			return false;
-		}
+                return true;
+            } else {
+                return false;
+            }
+        }
 	}
 
-	public final Entity getPlayerEntity() {
+	public final Entity getPlayer() {
 		return this.playerEntity;
 	}
 
 	public final void spawnEntityInWorld(Entity var1) {
-		EntityMap var2 = this.entityMap;
-		var2.entities.add(var1);
-		var2.slot0.init(var1.posX, var1.posY, var1.posZ).add(var1);
-		var1.lastTickPosX = var1.posX;
-		var1.lastTickPosY = var1.posY;
-		var1.lastTickPosZ = var1.posZ;
-		var1.worldObj = this;
+        this.entityMap.add(var1);
+        var1.a(this);
 	}
 
 	public final void releaseEntitySkin(Entity var1) {
-		EntityMap var2 = this.entityMap;
-		var2.slot0.init(var1.lastTickPosX, var1.lastTickPosY, var1.lastTickPosZ).remove(var1);
-		var2.entities.remove(var1);
+        this.entityMap.remove(var1);
 	}
 
     public final void createExplosion(Entity var1, float var2, float var3, float var4, float var5) {
-        int var18 = (int)(var2 - var5 - 1.0F);
-        int var6 = (int)(var2 + var5 + 1.0F);
-        int var7 = (int)(var3 - var5 - 1.0F);
-        int var8 = (int)(var3 + var5 + 1.0F);
-        int var9 = (int)(var4 - var5 - 1.0F);
-        int var10 = (int)(var4 + var5 + 1.0F);
+        int var16 = (int)(var2 - 4.0F - 1.0F);
+        int var18 = (int)(var2 + 4.0F + 1.0F);
+        int var6 = (int)(var3 - 4.0F - 1.0F);
+        int var7 = (int)(var3 + 4.0F + 1.0F);
+        int var8 = (int)(var4 - 4.0F - 1.0F);
+        int var9 = (int)(var4 + 4.0F + 1.0F);
 
-        int var12;
+        int var11;
+        float var13;
         float var14;
-        float var15;
-        for(int var11 = var18; var11 < var6; ++var11) {
-            for(var12 = var8 - 1; var12 >= var7; --var12) {
-                for(int var13 = var9; var13 < var10; ++var13) {
-                    var14 = (float)var11 + 0.5F - var2;
-                    var15 = (float)var12 + 0.5F - var3;
-                    float var16 = (float)var13 + 0.5F - var4;
-                    if(var11 >= 0 && var12 >= 0 && var13 >= 0 && var11 < this.width && var12 < this.height && var13 < this.length && var14 * var14 + var15 * var15 + var16 * var16 < var5 * var5) {
-                        int var27 = this.getBlockId(var11, var12, var13);
-                        if(var27 > 0 && Block.blocksList[var27].canDrop()) {
-                            Block.blocksList[var27].dropBlockAsItemWithChance(this, var11, var12, var13, 0.3F);
-                            this.setBlockWithNotify(var11, var12, var13, 0);
-                            Block.blocksList[var27].onBlockDestroyedByExplosion(this, var11, var12, var13);
+        for(int var10 = var16; var10 < var18; ++var10) {
+            for(var11 = var7 - 1; var11 >= var6; --var11) {
+                for(int var12 = var8; var12 < var9; ++var12) {
+                    var13 = (float)var10 + 0.5F - var2;
+                    var14 = (float)var11 + 0.5F - var3;
+                    float var15 = (float)var12 + 0.5F - var4;
+                    if(var10 >= 0 && var11 >= 0 && var12 >= 0 && var10 < this.width && var11 < this.height && var12 < this.length && var13 * var13 + var14 * var14 + var15 * var15 < 16.0F) {
+                        int var22 = this.getBlockId(var10, var11, var12);
+                        if(var22 > 0 && Block.blocksList[var22].isExplosionResistant()) {
+                            Block.blocksList[var22].dropBlockAsItemWithChance(this, var10, var11, var12, 0.3F);
+                            this.setBlockWithNotify(var10, var11, var12, 0);
+                            Block.blocksList[var22].onBlockDestroyedByExplosion(this, var10, var11, var12);
                         }
                     }
                 }
             }
         }
 
-        float var10001 = (float)var18;
-        float var10002 = (float)var7;
-        float var10003 = (float)var9;
-        float var10004 = (float)var6;
-        float var10005 = (float)var8;
-        float var24 = (float)var10;
-        float var23 = var10005;
-        float var22 = var10004;
-        float var21 = var10003;
-        float var20 = var10002;
-        float var19 = var10001;
-        var1 = null;
-        EntityMap var17 = this.entityMap;
-        var17.entitiesExcludingEntity.clear();
-        List var25 = var17.getEntitiesWithinAABBExcludingEntity((Entity)null, var19, var20, var21, var22, var23, var24, var17.entitiesExcludingEntity);
+        List var20 = this.entityMap.getEntities((Entity)null, (float)var16, (float)var6, (float)var8, (float)var18, (float)var7, (float)var9);
 
-        for(var12 = 0; var12 < var25.size(); ++var12) {
-            Entity var26 = (Entity)var25.get(var12);
-            var21 = var26.posX - var2;
-            var22 = var26.posY - var3;
-            var23 = var26.posZ - var4;
-            var14 = MathHelper.sqrt_float(var21 * var21 + var22 * var22 + var23 * var23) / var5;
-            if(var14 <= 1.0F) {
-                var15 = 1.0F - var14;
-                var26.attackEntityFrom((Entity)null, (int)(var15 * 15.0F + 1.0F));
+        for(var11 = 0; var11 < var20.size(); ++var11) {
+            Entity var21 = (Entity)var20.get(var11);
+            var5 = var21.posX - var2;
+            float var19 = var21.posY - var3;
+            float var17 = var21.posZ - var4;
+            var13 = MathHelper.sqrt_float(var5 * var5 + var19 * var19 + var17 * var17) / 4.0F;
+            if(var13 <= 1.0F) {
+                var14 = 1.0F - var13;
+                var21.attackEntityFrom((Entity)null, (int)(var14 * 15.0F + 1.0F));
             }
         }
 
     }
 
     public final Entity findSubclassOf(Class var1) {
-        for(int var2 = 0; var2 < this.entityMap.entities.size(); ++var2) {
-            Entity var3 = (Entity)this.entityMap.entities.get(var2);
+        for(int var2 = 0; var2 < this.entityMap.all.size(); ++var2) {
+            Entity var3 = (Entity)this.entityMap.all.get(var2);
             if(var1.isAssignableFrom(var3.getClass())) {
                 return var3;
             }
@@ -1026,6 +971,19 @@ public final class World {
 
     public final int getMapHeight(int var1, int var2) {
         return this.heightMap[var1 + var2 * this.width];
+    }
+
+    public final void playSoundEffect(Entity var1, String var2, float var3, float var4) {
+        for(int var5 = 0; var5 < this.worldAccesses.size(); ++var5) {
+            Entity var6 = this.playerEntity;
+            float var8 = var6.posX - var1.posX;
+            float var9 = var6.posY - var1.posY;
+            float var10 = var6.posZ - var1.posZ;
+            if(var8 * var8 + var9 * var9 + var10 * var10 < 256.0F) {
+                ((IWorldAccess)this.worldAccesses.get(var5)).playSound(var2, var1.posX, var1.posY - var1.yOffset, var1.posZ, var3, var4);
+            }
+        }
+
     }
 
 	static {

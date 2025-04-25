@@ -5,198 +5,173 @@ import java.io.IOException;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.md3.MD3Buffers;
 import net.minecraft.client.model.md3.MD3Loader;
 import net.minecraft.client.model.md3.MD3Model;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.player.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 
 public final class RenderManager {
-	private MD3Model[] model = new MD3Model[1];
-	public World worldObj;
-	private RenderBlocks blockRenderer;
-	float playerViewY;
+    private MD3Model[] model = new MD3Model[1];
+    private World worldObj;
+    private RenderBlocks blockRenderer;
+    private float playerViewY;
 
-	public RenderManager() {
-		new ModelBiped();
-		this.blockRenderer = new RenderBlocks(Tessellator.instance);
+    public RenderManager() {
+        new ModelBiped();
+        this.blockRenderer = new RenderBlocks(Tessellator.instance);
 
-		try {
-			this.model[0] = new MD3Model((new MD3Loader()).loadModel("/test2.md3"));
-		} catch (IOException var1) {
-			var1.printStackTrace();
-		}
-	}
+        try {
+            this.model[0] = new MD3Model((new MD3Loader()).loadModel("/test2.md3"));
+        } catch (IOException var2) {
+            var2.printStackTrace();
+        }
+    }
 
-	public final void renderEntityWithPosYaw(Entity var1, RenderEngine var2, float var3, float var4, float var5, float var6, float var7) {
-		float var9;
-		Object var13;
-		float var29;
-		int var41;
-		if(!(var1 instanceof EntityLiving)) {
-			if(var1 instanceof EntityTNTPrimed) {
-				GL11.glPushMatrix();
-				GL11.glTranslatef(var3, var4, var5);
-				var41 = var2.getTexture("/terrain.png");
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var41);
-				this.blockRenderer.renderBlockOnInventory(Block.tnt);
-				GL11.glPopMatrix();
-			} else {
-				if(var1 instanceof EntityItem) {
-					EntityItem var31 = (EntityItem)var1;
-					GL11.glPushMatrix();
-					GL11.glTranslatef(var3, var4, var5);
-					GL11.glEnable(GL11.GL_NORMALIZE);
-					var13 = null;
-					if(var31.item.itemID > 0) {
-						GL11.glPushMatrix();
-						GL11.glScalef(0.25F, 0.25F, 0.25F);
-						var41 = var2.getTexture("/terrain.png");
-						GL11.glBindTexture(GL11.GL_TEXTURE_2D, var41);
-						var13 = null;
-						this.blockRenderer.renderBlockOnInventory(Block.blocksList[var31.item.itemID]);
-						GL11.glPopMatrix();
-					} else {
-						GL11.glScalef(0.5F, 0.5F, 0.5F);
-						var41 = var2.getTexture("/gui/items.png");
-						GL11.glBindTexture(GL11.GL_TEXTURE_2D, var41);
-						Tessellator var37 = Tessellator.instance;
-						int var33 = var31.item.iconIndex;
-						var7 = (float)(var33 % 16 << 4) / 256.0F;
-						var9 = (float)((var33 % 16 << 4) + 16) / 256.0F;
-						float var32 = (float)(var33 / 16 << 4) / 256.0F;
-						var29 = (float)((var33 / 16 << 4) + 16) / 256.0F;
-						var3 = 0.5F;
-						var4 = 0.25F;
-						GL11.glRotatef(-this.playerViewY, 0.0F, 1.0F, 0.0F);
-						var37.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-						var37.normal(0.0F, 1.0F, 0.0F);
-						var37.addVertexWithUV(0.0F - var3, 0.0F - var4, 0.0F, var7, var29);
-						var37.addVertexWithUV(1.0F - var3, 0.0F - var4, 0.0F, var9, var29);
-						var37.addVertexWithUV(1.0F - var3, 1.0F - var4, 0.0F, var9, var32);
-						var37.addVertexWithUV(0.0F - var3, 1.0F - var4, 0.0F, var7, var32);
-						var37.draw();
-					}
+    public final void renderEntityWithPosYaw(Entity var1, RenderEngine var2, float var3) {
+        float var4 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * var3;
+        float var5 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * var3;
+        float var6 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * var3;
+        float var7 = this.worldObj.getBlockLightValue((int)var4, (int)(var5 + var1.bbHeight * 2.0F / 3.0F), (int)var6);
+        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+        if(var1 instanceof EntityLiving) {
+            float var12 = var6;
+            float var11 = var5;
+            float var10 = var4;
+            RenderManager var8 = this;
+            GL11.glEnable(GL11.GL_BLEND);
+            var2.setClampTexture(true);
+            int var13 = var2.getTexture("/shadow.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var13);
+            var2.setClampTexture(false);
+            GL11.glDepthMask(false);
 
-					GL11.glDisable(GL11.GL_NORMALIZE);
-					GL11.glPopMatrix();
-				}
+            for(int var9 = (int)(var4 - 0.5F); var9 <= (int)(var10 + 0.5F); ++var9) {
+                for(var13 = (int)(var11 - 2.0F); var13 <= (int)var11; ++var13) {
+                    for(int var14 = (int)(var12 - 0.5F); var14 <= (int)(var12 + 0.5F); ++var14) {
+                        int var15 = var8.worldObj.getBlockId(var9, var13 - 1, var14);
+                        if(var15 > 0 && var8.worldObj.isHalfLit(var9, var13, var14)) {
+                            Block var10001 = Block.blocksList[var15];
+                            float var25 = 0.5F;
+                            Block var16 = var10001;
+                            Tessellator var23 = Tessellator.instance;
+                            var25 = (1.0F - (var11 - (float)var13) / 2.0F) * 0.5F * var8.worldObj.getBlockLightValue(var9, var13, var14);
+                            if(var25 >= 0.0F) {
+                                GL11.glColor4f(1.0F, 1.0F, 1.0F, var25);
+                                var23.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                                var25 = (float)var9 + var16.minX;
+                                float var18 = (float)var9 + var16.maxX;
+                                float var20 = (float)var13 + var16.minY;
+                                float var21 = (float)var14 + var16.minZ;
+                                float var26 = (float)var14 + var16.maxZ;
+                                float var22 = (var10 - var25) / 2.0F / 0.5F + 0.5F;
+                                float var17 = (var10 - var18) / 2.0F / 0.5F + 0.5F;
+                                float var24 = (var12 - var21) / 2.0F / 0.5F + 0.5F;
+                                float var19 = (var12 - var26) / 2.0F / 0.5F + 0.5F;
+                                var23.addVertexWithUV(var25, var20, var21, var22, var24);
+                                var23.addVertexWithUV(var25, var20, var26, var22, var19);
+                                var23.addVertexWithUV(var18, var20, var26, var17, var19);
+                                var23.addVertexWithUV(var18, var20, var21, var17, var24);
+                                var23.draw();
+                            }
+                        }
+                    }
+                }
+            }
 
-			}
-		} else {
-			float var12 = var5;
-			float var11 = var4;
-			float var10 = var3;
-			RenderManager var8 = this;
-			GL11.glEnable(GL11.GL_BLEND);
-			boolean var14 = false;
-			var13 = null;
-			var2.clampTexture = true;
-			var41 = var2.getTexture("/shadow.png");
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var41);
-			var13 = null;
-			var2.clampTexture = false;
-			GL11.glDepthMask(false);
-			var9 = 0.5F;
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glDepthMask(true);
+        }
 
-			for(var41 = (int)(var3 - var9); var41 <= (int)(var10 + var9); ++var41) {
-				for(int var42 = (int)(var11 - 2.0F); var42 <= (int)var11; ++var42) {
-					for(int var15 = (int)(var12 - var9); var15 <= (int)(var12 + var9); ++var15) {
-						int var16 = var8.worldObj.getBlockId(var41, var42 - 1, var15);
-						if(var16 > 0 && var8.worldObj.isHalfLit(var41, var42, var15)) {
-							Block var17 = Block.blocksList[var16];
-							Tessellator var24 = Tessellator.instance;
-							float var18 = (1.0F - (var11 - (float)var42) / 2.0F) * 0.5F;
-							if(var18 >= 0.0F) {
-								GL11.glColor4f(1.0F, 1.0F, 1.0F, var18);
-								var24.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-								var18 = (float)var41 + var17.minX;
-								float var20 = (float)var41 + var17.maxX;
-								float var21 = (float)var42 + var17.minY;
-								float var25 = (float)var15 + var17.minZ;
-								float var47 = (float)var15 + var17.maxZ;
-								float var22 = (var10 - var18) / 2.0F / var9 + 0.5F;
-								float var45 = (var10 - var20) / 2.0F / var9 + 0.5F;
-								float var26 = (var12 - var25) / 2.0F / var9 + 0.5F;
-								float var19 = (var12 - var47) / 2.0F / var9 + 0.5F;
-								var24.addVertexWithUV(var18, var21, var25, var22, var26);
-								var24.addVertexWithUV(var18, var21, var47, var22, var19);
-								var24.addVertexWithUV(var20, var21, var47, var45, var19);
-								var24.addVertexWithUV(var20, var21, var25, var45, var26);
-								var24.draw();
-							}
-						}
-					}
-				}
-			}
+        GL11.glColor3f(var7, var7, var7);
+        this.doRender(var1, var2, var4, var5, var6, 1.0F, var3);
+    }
 
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glDepthMask(true);
-			EntityLiving var28 = (EntityLiving)var1;
-			GL11.glPushMatrix();
-			boolean var35 = false;
+    public final void doRender(Entity var1, RenderEngine var2, float var3, float var4, float var5, float var6, float var7) {
+        float var11;
+        int var15;
+        if(var1 instanceof EntityLiving) {
+            EntityLiving var12 = (EntityLiving)var1;
+            GL11.glPushMatrix();
 
-			try {
-				var29 = var28.prevRenderYawOffset + (var28.renderYawOffset - var28.prevRenderYawOffset) * var7;
-				var29 *= var6;
-				GL11.glTranslatef(var3, var4, var5);
-				var41 = var2.getTexture("/cube-nes.png");
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var41);
-				GL11.glRotatef(-var29 + 180.0F, 0.0F, 1.0F, 0.0F);
-				boolean var30 = false;
-				var29 = 0.02F;
-				GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glScalef(var29, -var29, var29);
-				boolean var34 = false;
-				GL11.glEnable(GL11.GL_NORMALIZE);
-				MD3Model var10000 = this.model[0];
-				boolean var38 = false;
-				MD3Model var36 = var10000;
-				if(var36.displayList == 0) {
-					MD3Model var40 = var36;
-					var36.displayList = GL11.glGenLists(var36.vertices.totalFrames);
+            try {
+                var11 = var12.prevRenderYawOffset + (var12.renderYawOffset - var12.prevRenderYawOffset) * var7;
+                var11 *= var6;
+                GL11.glTranslatef(var3, var4, var5);
+                var15 = var2.getTexture("/cube-nes.png");
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var15);
+                GL11.glRotatef(-var11 + 180.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glScalef(0.02F, -0.02F, 0.02F);
+                GL11.glEnable(GL11.GL_NORMALIZE);
+                this.model[0].renderModelVertices(0, 0, 0.0F);
+                GL11.glDisable(GL11.GL_NORMALIZE);
+            } catch (Exception var8) {
+                var8.printStackTrace();
+            }
 
-					for(int var39 = 0; var39 < var40.vertices.totalFrames; ++var39) {
-						GL11.glNewList(var40.displayList + var39, GL11.GL_COMPILE);
-		                Tessellator tessellator = Tessellator.instance;
+            GL11.glPopMatrix();
+        } else if(var1 instanceof EntityTNTPrimed) {
+            GL11.glPushMatrix();
+            GL11.glTranslatef(var3, var4, var5);
+            var15 = var2.getTexture("/terrain.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var15);
+            this.blockRenderer.renderBlockOnInventory(Block.tnt);
+            GL11.glPopMatrix();
+        } else {
+            if(var1 instanceof EntityItem) {
+                EntityItem var9 = (EntityItem)var1;
+                GL11.glPushMatrix();
+                GL11.glTranslatef(var3, var4, var5);
+                GL11.glEnable(GL11.GL_NORMALIZE);
+                ItemStack var14 = var9.item;
+                if(var14.itemID > 0) {
+                    GL11.glPushMatrix();
+                    GL11.glScalef(0.25F, 0.25F, 0.25F);
+                    var15 = var2.getTexture("/terrain.png");
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var15);
+                    var14 = var9.item;
+                    this.blockRenderer.renderBlockOnInventory(Block.blocksList[var14.itemID]);
+                    GL11.glPopMatrix();
+                } else {
+                    GL11.glScalef(0.5F, 0.5F, 0.5F);
+                    var15 = var2.getTexture("/gui/items.png");
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var15);
+                    Tessellator var13 = Tessellator.instance;
+                    int var10 = var9.item.iconIndex;
+                    var3 = (float)(var10 % 16 << 4) / 256.0F;
+                    var4 = (float)((var10 % 16 << 4) + 16) / 256.0F;
+                    var5 = (float)(var10 / 16 << 4) / 256.0F;
+                    var11 = (float)((var10 / 16 << 4) + 16) / 256.0F;
+                    GL11.glRotatef(-this.playerViewY, 0.0F, 1.0F, 0.0F);
+                    var13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                    var13.normal(0.0F, 1.0F, 0.0F);
+                    var13.addVertexWithUV(-0.5F, -0.25F, 0.0F, var3, var11);
+                    var13.addVertexWithUV(0.5F, -0.25F, 0.0F, var4, var11);
+                    var13.addVertexWithUV(0.5F, 12.0F / 16.0F, 0.0F, var4, var5);
+                    var13.addVertexWithUV(-0.5F, 12.0F / 16.0F, 0.0F, var3, var5);
+                    var13.draw();
+                }
 
-						for(var41 = 0; var41 < var40.vertices.buffersMD3.length; ++var41) {
-							MD3Buffers var44 = var40.vertices.buffersMD3[var41];
-							boolean var46 = false;
-							MD3Buffers var43 = var44;
-							var43.triangles.position(0).limit(var43.triangles.capacity());
-							var43.xBuffer.position(0).limit(var43.xBuffer.capacity());
-							var43.vertices.clear().position(0 * var43.verts * 3).limit(1 * var43.verts * 3);
-							var43.normals.clear().position(0 * var43.verts * 3).limit(1 * var43.verts * 3);
-							var43.vertices.position(0);
-							var43.triangles.position(0);
-							var43.normals.position(0);
-							var43.xBuffer.position(0);
-		                    tessellator.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
-		                    for (int i = 0; i < var43.verts; ++i) {
-		                        tessellator.normal(var43.normals.get(), var43.normals.get(), var43.normals.get());
-		                        tessellator.addVertexWithUV(var43.vertices.get(), var43.vertices.get(), var43.vertices.get(), var43.xBuffer.get(), var43.xBuffer.get());
-		                    }
-		                    GL11.glDrawElements(GL11.GL_TRIANGLES, var43.triangles);
-		                    tessellator.draw();
-						}
+                GL11.glDisable(GL11.GL_NORMALIZE);
+                GL11.glPopMatrix();
+            }
 
-						GL11.glEndList();
-					}
-				}
+        }
+    }
 
-				GL11.glCallList(var36.displayList);
-				GL11.glDisable(GL11.GL_NORMALIZE);
-			} catch (Exception var27) {
-				var27.printStackTrace();
-			}
+    public final void setWorld(World var1) {
+        this.worldObj = var1;
+    }
 
-			GL11.glPopMatrix();
-		}
-	}
+    public final void cacheActiveRenderInfo(float var1) {
+        EntityPlayer var2 = (EntityPlayer)this.worldObj.getPlayer();
+        this.playerViewY = var2.prevRotationYaw + (var2.rotationYaw - var2.prevRotationYaw) * var1;
+    }
 }

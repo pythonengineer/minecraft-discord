@@ -3,7 +3,7 @@ package net.minecraft.game.level.block;
 import net.minecraft.game.level.World;
 
 public final class BlockSponge extends Block {
-	protected BlockSponge() {
+    protected BlockSponge(int var1) {
 		super(19);
 		this.blockIndexInTexture = 48;
 	}

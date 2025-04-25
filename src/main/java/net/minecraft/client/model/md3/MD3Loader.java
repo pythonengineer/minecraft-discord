@@ -12,32 +12,30 @@ import net.minecraft.game.physics.Vec3D;
 
 public class MD3Loader {
 	public final MD3Vertices loadModel(String var1) throws IOException {
-		DataInputStream var5 = new DataInputStream(EagRuntime.getResourceStream("assets/" + var1));
+        DataInputStream var5 = new DataInputStream(EagRuntime.getResourceStream("assets/" + var1));
 		ByteArrayOutputStream var2 = new ByteArrayOutputStream();
 		byte[] var3 = new byte[4096];
-		boolean var4 = false;
 
 		while(true) {
-			int var7 = var5.read(var3);
-			if(var7 < 0) {
+			int var4 = var5.read(var3);
+			if(var4 < 0) {
 				var5.close();
 				var2.close();
 				ByteBuffer var6 = ByteBuffer.wrap(var2.toByteArray());
 				return this.loadMD3Data(var6);
 			}
 
-			var2.write(var3, 0, var7);
+			var2.write(var3, 0, var4);
 		}
 	}
 
 	private MD3Vertices loadMD3Data(ByteBuffer var1) throws IOException {
 		var1.order(ByteOrder.LITTLE_ENDIAN);
-		String var10000 = loadMD3Info(var1, 4);
-		MD3Vertices var2 = null;
-		if(!var10000.equals("IDP3")) {
+		String var2 = loadMD3Info(var1, 4);
+		if(!var2.equals("IDP3")) {
 			throw new IOException("Not a valid MD3 file (bad magic number)");
 		} else {
-			var2 = new MD3Vertices();
+			MD3Vertices var14 = new MD3Vertices();
 			var1.getInt();
 			loadMD3Info(var1, 64);
 			var1.getInt();
@@ -50,60 +48,59 @@ public class MD3Loader {
 			var1.getInt();
 			int var7 = var1.getInt();
 			var1.getInt();
-			var2.totalFrames = var3;
-			var2.frameArray = new MD3FrameArray[var3];
-			var2.modelMap = new HashMap();
-			var2.buffersMD3 = new MD3Buffers[var5];
+			var14.totalFrames = var3;
+			var14.frameArray = new MD3FrameArray[var3];
+			var14.modelMap = new HashMap();
+			var14.buffersMD3 = new MD3Buffers[var5];
 			var1.position(var6);
 
 			for(var6 = 0; var6 < var3; ++var6) {
-				MD3FrameArray[] var14 = var2.frameArray;
-				MD3FrameArray var11 = new MD3FrameArray();
+				MD3FrameArray[] var10000 = var14.frameArray;
+				MD3FrameArray var12 = new MD3FrameArray();
 				getMD3Vec(var1);
 				getMD3Vec(var1);
 				getMD3Vec(var1);
 				var1.getFloat();
 				loadMD3Info(var1, 16);
-				var14[var6] = var11;
+				var10000[var6] = var12;
 			}
 
-			MD3Data[] var13 = new MD3Data[var4];
+			MD3Data[] var15 = new MD3Data[var4];
 
 			int var8;
 			for(var8 = 0; var8 < var4; ++var8) {
-				var13[var8] = new MD3Data(var3);
+				var15[var8] = new MD3Data(var3);
 			}
 
 			for(var8 = 0; var8 < var3; ++var8) {
 				for(int var9 = 0; var9 < var4; ++var9) {
-					MD3Data var10 = var13[var9];
-					var10.name = loadMD3Info(var1, 64);
-					var10.b[var8] = getMD3Vec(var1);
-					var10.c[var8] = getMD3Vec(var1);
-					var10.d[var8] = getMD3Vec(var1);
-					var10.e[var8] = getMD3Vec(var1);
+					MD3Data var11 = var15[var9];
+					var11.name = loadMD3Info(var1, 64);
+					var11.b[var8] = getMD3Vec(var1);
+					var11.c[var8] = getMD3Vec(var1);
+					var11.d[var8] = getMD3Vec(var1);
+					var11.e[var8] = getMD3Vec(var1);
 				}
 			}
 
 			for(var8 = 0; var8 < var4; ++var8) {
-				var2.modelMap.put(var13[var8].name, var13[var8]);
+				var14.modelMap.put(var15[var8].name, var15[var8]);
 			}
 
 			var1.position(var7);
 
 			for(var8 = 0; var8 < var5; ++var8) {
-				var2.buffersMD3[var8] = this.getMD3Buffer(var1, var7);
+				var14.buffersMD3[var8] = this.getMD3Buffer(var1);
 			}
 
-			return var2;
+			return var14;
 		}
 	}
 
-	private MD3Buffers getMD3Buffer(ByteBuffer var1, int var2) throws IOException {
-		var2 = var1.position();
-		String var10000 = loadMD3Info(var1, 4);
-		String var3 = null;
-		if(!var10000.equals("IDP3")) {
+	private MD3Buffers getMD3Buffer(ByteBuffer var1) throws IOException {
+		int var2 = var1.position();
+		String var3 = loadMD3Info(var1, 4);
+		if(!var3.equals("IDP3")) {
 			throw new IOException("Not a valid MD3 file (bad surface magic number)");
 		} else {
 			var3 = loadMD3Info(var1, 64);
@@ -112,60 +109,59 @@ public class MD3Loader {
 			int var20 = var1.getInt();
 			int var4 = var1.getInt();
 			int var5 = var1.getInt();
-			int var17 = var1.getInt();
-			MD3Buffers var6 = new MD3Buffers(var17, var5, var20);
-			int var7 = var1.getInt() + var2;
+			int var6 = var1.getInt();
+			MD3Buffers var7 = new MD3Buffers(var6, var5, var20);
 			int var8 = var1.getInt() + var2;
 			int var9 = var1.getInt() + var2;
+			int var10 = var1.getInt() + var2;
 			var2 += var1.getInt();
 			var1.getInt();
-			var6.verts = var5;
-			var6.shaders = new MD3Shader[var4];
-			System.out.println("Triangles: " + var17);
-			System.out.println("OFS_SHADERS: " + var8 + " (current location: " + var1.position() + ")");
-			var1.position(var8);
-
-			for(var8 = 0; var8 < var4; ++var8) {
-				MD3Shader[] var22 = var6.shaders;
-				MD3Shader var10 = null;
-				var10 = new MD3Shader();
-				loadMD3Info(var1, 64);
-				var1.getInt();
-				var22[var8] = var10;
-			}
-
-			System.out.println("OFS_TRIANGLES: " + var7 + " (current location: " + var1.position() + ")");
-			var1.position(var7);
-
-			for(var8 = 0; var8 < var17 * 3; ++var8) {
-				var6.triangles.put(var1.getInt());
-			}
-
-			System.out.println("OFS_ST: " + var9 + " (current location: " + var1.position() + ")");
+			var7.verts = var5;
+			var7.shaders = new MD3Shader[var4];
+			System.out.println("Triangles: " + var6);
+			System.out.println("OFS_SHADERS: " + var9 + " (current location: " + var1.position() + ")");
 			var1.position(var9);
 
-			for(var8 = 0; var8 < var5 << 1; ++var8) {
-				var6.xBuffer.put(var1.getFloat());
+			for(var9 = 0; var9 < var4; ++var9) {
+				MD3Shader[] var10000 = var7.shaders;
+				MD3Shader var11 = new MD3Shader();
+				loadMD3Info(var1, 64);
+				var1.getInt();
+				var10000[var9] = var11;
+			}
+
+			System.out.println("OFS_TRIANGLES: " + var8 + " (current location: " + var1.position() + ")");
+			var1.position(var8);
+
+			for(var9 = 0; var9 < var6 * 3; ++var9) {
+				var7.triangles.put(var1.getInt());
+			}
+
+			System.out.println("OFS_ST: " + var10 + " (current location: " + var1.position() + ")");
+			var1.position(var10);
+
+			for(var9 = 0; var9 < var5 << 1; ++var9) {
+				var7.xBuffer.put(var1.getFloat());
 			}
 
 			System.out.println("OFS_XYZ_NORMAL: " + var2 + " (current location: " + var1.position() + ")");
 			var1.position(var2);
 
-			for(var8 = 0; var8 < var5 * var20; ++var8) {
-				var6.vertices.put((float)var1.getShort() / 64.0F);
-				var6.vertices.put((float)var1.getShort() / 64.0F);
-				var6.vertices.put((float)var1.getShort() / 64.0F);
-				double var13 = (double)(var1.get() & 255) * Math.PI * 2.0D / 255.0D;
+			for(var9 = 0; var9 < var5 * var20; ++var9) {
+				var7.vertices.put((float)var1.getShort() / 64.0F);
+				var7.vertices.put((float)var1.getShort() / 64.0F);
+				var7.vertices.put((float)var1.getShort() / 64.0F);
 				double var15 = (double)(var1.get() & 255) * Math.PI * 2.0D / 255.0D;
-				float var18 = (float)(Math.cos(var15) * Math.sin(var13));
-				float var19 = (float)(Math.sin(var15) * Math.sin(var13));
-				float var21 = (float)Math.cos(var13);
-				var6.normals.put(var18);
-				var6.normals.put(var19);
-				var6.normals.put(var21);
+				double var17 = (double)(var1.get() & 255) * Math.PI * 2.0D / 255.0D;
+				float var19 = (float)(Math.cos(var17) * Math.sin(var15));
+				float var21 = (float)(Math.sin(var17) * Math.sin(var15));
+				float var22 = (float)Math.cos(var15);
+				var7.normals.put(var19);
+				var7.normals.put(var21);
+				var7.normals.put(var22);
 			}
 
-			return var6;
+			return var7;
 		}
 	}
 

@@ -23,7 +23,7 @@ public final class WorldRenderer {
 	public boolean needsUpdate;
 	private RenderBlocks renderBlocks;
 
-	public WorldRenderer(World var1, int var2, int var3, int var4, int var5) {
+	public WorldRenderer(World var1, int var2, int var3, int var4, int var5, int var6) {
 		this.renderBlocks = new RenderBlocks(Tessellator.instance, var1);
 		this.worldObj = var1;
 		this.posX = var2;
@@ -31,11 +31,11 @@ public final class WorldRenderer {
 		this.posZ = var4;
 		this.sizeWidth = this.sizeHeight = this.sizeDepth = 16;
 		MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth));
-		this.glRenderList = var5;
+		this.glRenderList = var6;
 		this.setDontDraw();
 	}
 
-	public final void updateRenderer() {
+	public final void a() {
 		if(this.needsUpdate) {
 			++chunksUpdated;
 			int var1 = this.posX;

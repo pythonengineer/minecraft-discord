@@ -5,23 +5,29 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.player.ItemStack;
 import net.minecraft.game.level.EntityMap;
+import net.minecraft.game.level.IWorldAccess;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.block.Block;
 import net.minecraft.game.physics.AxisAlignedBB;
+import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.level.World;
 
-public final class RenderGlobal {
-	public World worldObj;
-	RenderEngine renderEngine;
-	int glGenList;
+public final class RenderGlobal implements IWorldAccess {
+    private World worldObj;
+    private RenderEngine renderEngine;
+    private int glGenList;
     private IntBuffer renderIntBuffer = BufferUtils.createIntBuffer(65536);
     private List worldRenderersToUpdate = new ArrayList();
     private WorldRenderer[] sortedWorldRenderers;
@@ -30,11 +36,11 @@ public final class RenderGlobal {
 	private int renderChunksTall;
 	private int renderChunksDeep;
 	private int glRenderListBase;
-	Minecraft mc;
-	public RenderBlocks globalRenderBlocks;
+    private Minecraft mc;
+    private RenderBlocks globalRenderBlocks;
 	public RenderManager renderManager = new RenderManager();
 	private int[] dummyBuf50k = new int['\uc350'];
-	public int cloudOffsetX = 0;
+    private int cloudOffsetX = 0;
 	private float prevSortX = -9999.0F;
 	private float prevSortY = -9999.0F;
 	private float prevSortZ = -9999.0F;
@@ -46,6 +52,21 @@ public final class RenderGlobal {
 		this.glGenList = GL11.glGenLists(2);
 		this.glRenderListBase = GL11.glGenLists(4096 << 6 << 1);
 	}
+
+    public final void loadRenderers(World var1) {
+        if(this.worldObj != null) {
+            this.worldObj.removeWorldAccess(this);
+        }
+
+        this.renderManager.setWorld(var1);
+        this.worldObj = var1;
+        this.globalRenderBlocks = new RenderBlocks(Tessellator.instance, var1);
+        if(var1 != null) {
+            var1.addWorldAccess(this);
+            this.loadRenderers();
+        }
+
+    }
 
 	public final void loadRenderers() {
 		int var1;
@@ -67,7 +88,7 @@ public final class RenderGlobal {
 		for(var2 = 0; var2 < this.renderChunksWide; ++var2) {
 			for(int var3 = 0; var3 < this.renderChunksTall; ++var3) {
 				for(var4 = 0; var4 < this.renderChunksDeep; ++var4) {
-					this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = new WorldRenderer(this.worldObj, var2 << 4, var3 << 4, var4 << 4, this.glRenderListBase + var1);
+					this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = new WorldRenderer(this.worldObj, var2 << 4, var3 << 4, var4 << 4, 16, this.glRenderListBase + var1);
 					this.sortedWorldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2];
 					var1 += 2;
 				}
@@ -81,8 +102,7 @@ public final class RenderGlobal {
 		this.worldRenderersToUpdate.clear();
 		GL11.glNewList(this.glGenList, GL11.GL_COMPILE);
 		RenderGlobal var9 = this;
-		float var10 = 0.5F;
-		GL11.glColor4f(0.5F, var10, var10, 1.0F);
+        GL11.glColor4f(0.5F, 0.5F, 0.5F, 1.0F);
 		Tessellator var11 = Tessellator.instance;
 		float var12 = this.worldObj.getGroundLevel();
 		int var5 = 128;
@@ -100,7 +120,7 @@ public final class RenderGlobal {
 		int var7;
 		for(var7 = -var5 * var6; var7 < var9.worldObj.width + var5 * var6; var7 += var5) {
 			for(int var8 = -var5 * var6; var8 < var9.worldObj.length + var5 * var6; var8 += var5) {
-				var10 = var12;
+				float var10 = var12;
 				if(var7 >= 0 && var8 >= 0 && var7 < var9.worldObj.width && var8 < var9.worldObj.length) {
 					var10 = 0.0F;
 				}
@@ -145,7 +165,7 @@ public final class RenderGlobal {
 		GL11.glNewList(this.glGenList + 1, GL11.GL_COMPILE);
 		var9 = this;
 		GL11.glColor3f(1.0F, 1.0F, 1.0F);
-		var10 = this.worldObj.rgetGroundLevel();
+        float var10 = this.worldObj.getWaterLevel();
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		var11 = Tessellator.instance;
 		var4 = 128;
@@ -184,77 +204,75 @@ public final class RenderGlobal {
 
     public final void renderEntities(Vec3D var1, ClippingHelper var2, float var3) {
         EntityMap var4 = this.worldObj.entityMap;
-        RenderManager var16 = this.renderManager;
-        EntityPlayer var18 = (EntityPlayer)var16.worldObj.getPlayerEntity();
-        var16.playerViewY = var18.prevRotationYaw + (var18.rotationYaw - var18.prevRotationYaw) * var3;
+        this.renderManager.cacheActiveRenderInfo(var3);
 
-        for(int var5 = 0; var5 < var4.xSlot; ++var5) {
+        for(int var5 = 0; var5 < var4.width; ++var5) {
             float var6 = (float)((var5 << 4) - 2);
             float var7 = (float)((var5 + 1 << 4) + 2);
 
-            for(int var8 = 0; var8 < var4.ySlot; ++var8) {
+            for(int var8 = 0; var8 < var4.depth; ++var8) {
                 float var9 = (float)((var8 << 4) - 2);
                 float var10 = (float)((var8 + 1 << 4) + 2);
 
-                for(int var11 = 0; var11 < var4.zSlot; ++var11) {
-                    List var12 = var4.entityGrid[(var11 * var4.ySlot + var8) * var4.xSlot + var5];
+                for(int var11 = 0; var11 < var4.height; ++var11) {
+                    List var12 = var4.entityGrid[(var11 * var4.depth + var8) * var4.width + var5];
                     if(var12.size() != 0) {
                         float var13 = (float)((var11 << 4) - 2);
                         float var14 = (float)((var11 + 1 << 4) + 2);
-                        boolean var10000 = var2.isBoundingBoxInFrustrum(var6, var9, var13, var7, var10, var14);
-                        boolean var15 = false;
-                        if(var10000) {
+                        boolean var15 = var2.isBoundingBoxInFrustrum(var6, var9, var13, var7, var10, var14);
+                        if(var15) {
                             float var22 = var14;
                             float var21 = var10;
                             float var20 = var7;
                             float var19 = var13;
-                            float var31 = var9;
+                            float var18 = var9;
                             float var17 = var6;
-                            ClippingHelper var27 = var2;
+                            ClippingHelper var16 = var2;
                             int var23 = 0;
 
+                            boolean var10000;
                             while(true) {
                                 if(var23 >= 6) {
                                     var10000 = true;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var17 + var27.frustrum[var23][1] * var31 + var27.frustrum[var23][2] * var19 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var17 + var16.frustrum[var23][1] * var18 + var16.frustrum[var23][2] * var19 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var20 + var27.frustrum[var23][1] * var31 + var27.frustrum[var23][2] * var19 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var20 + var16.frustrum[var23][1] * var18 + var16.frustrum[var23][2] * var19 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var17 + var27.frustrum[var23][1] * var21 + var27.frustrum[var23][2] * var19 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var17 + var16.frustrum[var23][1] * var21 + var16.frustrum[var23][2] * var19 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var20 + var27.frustrum[var23][1] * var21 + var27.frustrum[var23][2] * var19 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var20 + var16.frustrum[var23][1] * var21 + var16.frustrum[var23][2] * var19 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var17 + var27.frustrum[var23][1] * var31 + var27.frustrum[var23][2] * var22 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var17 + var16.frustrum[var23][1] * var18 + var16.frustrum[var23][2] * var22 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var20 + var27.frustrum[var23][1] * var31 + var27.frustrum[var23][2] * var22 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var20 + var16.frustrum[var23][1] * var18 + var16.frustrum[var23][2] * var22 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var17 + var27.frustrum[var23][1] * var21 + var27.frustrum[var23][2] * var22 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var17 + var16.frustrum[var23][1] * var21 + var16.frustrum[var23][2] * var22 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
 
-                                if(var27.frustrum[var23][0] * var20 + var27.frustrum[var23][1] * var21 + var27.frustrum[var23][2] * var22 + var27.frustrum[var23][3] <= 0.0F) {
+                                if(var16.frustrum[var23][0] * var20 + var16.frustrum[var23][1] * var21 + var16.frustrum[var23][2] * var22 + var16.frustrum[var23][3] <= 0.0F) {
                                     var10000 = false;
                                     break;
                                 }
@@ -266,34 +284,26 @@ public final class RenderGlobal {
 
                             for(int var25 = 0; var25 < var12.size(); ++var25) {
                                 Entity var26 = (Entity)var12.get(var25);
-                                var31 = var26.posX - var1.xCoord;
+                                var18 = var26.posX - var1.xCoord;
                                 var19 = var26.posY - var1.yCoord;
                                 var20 = var26.posZ - var1.zCoord;
-                                var21 = var31 * var31 + var19 * var19 + var20 * var20;
-                                Object var33 = null;
-                                AxisAlignedBB var28 = var26.boundingBox;
-                                var17 = var28.x1 - var28.x0;
-                                var31 = var28.y1 - var28.y0;
-                                float var29 = var28.z1 - var28.z0;
-                                var29 = (var17 + var31 + var29) / 3.0F * 64.0F;
-                                if(var21 < var29 * var29) {
+                                var21 = var18 * var18 + var19 * var19 + var20 * var20;
+                                AxisAlignedBB var27 = var26.boundingBox;
+                                var17 = var27.x1 - var27.x0;
+                                var18 = var27.y1 - var27.y0;
+                                float var28 = var27.z1 - var27.z0;
+                                var28 = (var17 + var18 + var28) / 3.0F;
+                                var28 *= 64.0F;
+                                if(var21 < var28 * var28) {
                                     if(!var24) {
-                                        AxisAlignedBB var30 = var26.boundingBox;
-                                        var16 = null;
-                                        if(!var2.isBoundingBoxInFrustrum(var30.x0, var30.y0, var30.z0, var30.x1, var30.y1, var30.z1)) {
+                                        AxisAlignedBB var29 = var26.boundingBox;
+                                        if(!var2.isBoundingBoxInFrustrum(var29.x0, var29.y0, var29.z0, var29.x1, var29.y1, var29.z1)) {
                                             continue;
                                         }
                                     }
 
                                     if(!(var26 instanceof EntityPlayer)) {
-                                        RenderEngine var32 = this.renderEngine;
-                                        var16 = this.renderManager;
-                                        var20 = var26.lastTickPosX + (var26.posX - var26.lastTickPosX) * var3;
-                                        var21 = var26.lastTickPosY + (var26.posY - var26.lastTickPosY) * var3;
-                                        var22 = var26.lastTickPosZ + (var26.posZ - var26.lastTickPosZ) * var3;
-                                        float var34;
-                                        GL11.glColor3f(var34 = var16.worldObj.getBlockLightValue((int)var20, (int)(var21 + var26.bbHeight * 2.0F / 3.0F), (int)var22), var34, var34);
-                                        var16.renderEntityWithPosYaw(var26, var32, var20, var21, var22, 1.0F, var3);
+                                        this.renderManager.renderEntityWithPosYaw(var26, this.renderEngine, var3);
                                     }
                                 }
                             }
@@ -338,6 +348,90 @@ public final class RenderGlobal {
         GL11.glCallLists(this.renderIntBuffer);
     }
 
+    public final void updateClouds() {
+        ++this.cloudOffsetX;
+    }
+
+    public final void renderClouds(float var1) {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/clouds.png"));
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        float var2 = (float)(this.worldObj.cloudColor >> 16 & 255) / 255.0F;
+        float var3 = (float)(this.worldObj.cloudColor >> 8 & 255) / 255.0F;
+        float var4 = (float)(this.worldObj.cloudColor & 255) / 255.0F;
+        if(this.mc.options.anaglyph) {
+            float var5 = (var2 * 30.0F + var3 * 59.0F + var4 * 11.0F) / 100.0F;
+            var3 = (var2 * 30.0F + var3 * 70.0F) / 100.0F;
+            var4 = (var2 * 30.0F + var4 * 70.0F) / 100.0F;
+            var2 = var5;
+            var3 = var3;
+            var4 = var4;
+        }
+
+        Tessellator var9 = Tessellator.instance;
+        float var6 = (float)(this.worldObj.height + 2);
+        var1 = ((float)this.cloudOffsetX + var1) * (0.5F / 1024.0F) * 0.03F;
+        var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+        var9.setColorOpaque_F(var2, var3, var4);
+
+        int var10;
+        for(int var7 = -2048; var7 < this.worldObj.width + 2048; var7 += 512) {
+            for(var10 = -2048; var10 < this.worldObj.length + 2048; var10 += 512) {
+                var9.addVertexWithUV((float)var7, var6, (float)(var10 + 512), (float)var7 * (0.5F / 1024.0F) + var1, (float)(var10 + 512) * (0.5F / 1024.0F));
+                var9.addVertexWithUV((float)(var7 + 512), var6, (float)(var10 + 512), (float)(var7 + 512) * (0.5F / 1024.0F) + var1, (float)(var10 + 512) * (0.5F / 1024.0F));
+                var9.addVertexWithUV((float)(var7 + 512), var6, (float)var10, (float)(var7 + 512) * (0.5F / 1024.0F) + var1, (float)var10 * (0.5F / 1024.0F));
+                var9.addVertexWithUV((float)var7, var6, (float)var10, (float)var7 * (0.5F / 1024.0F) + var1, (float)var10 * (0.5F / 1024.0F));
+                var9.addVertexWithUV((float)var7, var6, (float)var10, (float)var7 * (0.5F / 1024.0F) + var1, (float)var10 * (0.5F / 1024.0F));
+                var9.addVertexWithUV((float)(var7 + 512), var6, (float)var10, (float)(var7 + 512) * (0.5F / 1024.0F) + var1, (float)var10 * (0.5F / 1024.0F));
+                var9.addVertexWithUV((float)(var7 + 512), var6, (float)(var10 + 512), (float)(var7 + 512) * (0.5F / 1024.0F) + var1, (float)(var10 + 512) * (0.5F / 1024.0F));
+                var9.addVertexWithUV((float)var7, var6, (float)(var10 + 512), (float)var7 * (0.5F / 1024.0F) + var1, (float)(var10 + 512) * (0.5F / 1024.0F));
+            }
+        }
+
+        var9.draw();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        var9.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
+        var1 = (float)(this.worldObj.skyColor >> 16 & 255) / 255.0F;
+        var2 = (float)(this.worldObj.skyColor >> 8 & 255) / 255.0F;
+        var3 = (float)(this.worldObj.skyColor & 255) / 255.0F;
+        if(this.mc.options.anaglyph) {
+            var4 = (var1 * 30.0F + var2 * 59.0F + var3 * 11.0F) / 100.0F;
+            var2 = (var1 * 30.0F + var2 * 70.0F) / 100.0F;
+            var3 = (var1 * 30.0F + var3 * 70.0F) / 100.0F;
+            var1 = var4;
+            var2 = var2;
+            var3 = var3;
+        }
+
+        var9.setColorOpaque_F(var1, var2, var3);
+        var6 = (float)(this.worldObj.height + 10);
+
+        for(var10 = -2048; var10 < this.worldObj.width + 2048; var10 += 512) {
+            for(int var8 = -2048; var8 < this.worldObj.length + 2048; var8 += 512) {
+                var9.addVertex((float)var10, var6, (float)var8);
+                var9.addVertex((float)(var10 + 512), var6, (float)var8);
+                var9.addVertex((float)(var10 + 512), var6, (float)(var8 + 512));
+                var9.addVertex((float)var10, var6, (float)(var8 + 512));
+            }
+        }
+
+        var9.draw();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
+    public final void oobGroundRenderer() {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/rock.png"));
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glCallList(this.glGenList);
+    }
+
+    public final void oobWaterRenderer() {
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/water.png"));
+        GL11.glCallList(this.glGenList + 1);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
+
     public final void updateRenderers(EntityPlayer var1) {
         Collections.sort(this.worldRenderersToUpdate, new RenderSorter(var1));
         int var5 = this.worldRenderersToUpdate.size() - 1;
@@ -348,13 +442,85 @@ public final class RenderGlobal {
 
         for(int var3 = 0; var3 < var2; ++var3) {
             WorldRenderer var4 = (WorldRenderer)this.worldRenderersToUpdate.remove(var5 - var3);
-            var4.updateRenderer();
+            var4.a();
             var4.needsUpdate = false;
         }
 
     }
 
-	public final void markBlocksForUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
+
+    public final void drawBlockBreaking(MovingObjectPosition var1, int var2, ItemStack var3) {
+        Tessellator var4 = Tessellator.instance;
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, (MathHelper.sin((float)EagRuntime.currentTimeMillis() / 100.0F) * 0.2F + 0.4F) * 0.5F);
+        if(this.damagePartialTime > 0.0F) {
+            GL11.glBlendFunc(GL11.GL_DST_COLOR, GL11.GL_SRC_COLOR);
+            int var5 = this.renderEngine.getTexture("/terrain.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
+            GL11.glPushMatrix();
+            var5 = this.worldObj.getBlockId(var1.blockX, var1.blockY, var1.blockZ);
+            Block var6 = var5 > 0 ? Block.blocksList[var5] : null;
+            var4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+            var4.disableColor();
+            if(var6 == null) {
+                var6 = Block.stone;
+            }
+
+            this.globalRenderBlocks.renderBlockAllFaces(var6, var1.blockX, var1.blockY, var1.blockZ, 240 + (int)(this.damagePartialTime * 10.0F));
+            var4.draw();
+            GL11.glDepthMask(true);
+            GL11.glPopMatrix();
+        }
+
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+    }
+
+    public final void drawSelectionBox(MovingObjectPosition var1, int var2) {
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
+        GL11.glLineWidth(2.0F);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDepthMask(false);
+        var2 = this.worldObj.getBlockId(var1.blockX, var1.blockY, var1.blockZ);
+        if(var2 > 0) {
+            AxisAlignedBB var3 = Block.blocksList[var2].getSelectedBoundingBoxFromPool(var1.blockX, var1.blockY, var1.blockZ).expand(0.002F, 0.002F, 0.002F);
+            GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            GL11.glVertex3f(var3.x0, var3.y0, var3.z0);
+            GL11.glVertex3f(var3.x1, var3.y0, var3.z0);
+            GL11.glVertex3f(var3.x1, var3.y0, var3.z1);
+            GL11.glVertex3f(var3.x0, var3.y0, var3.z1);
+            GL11.glVertex3f(var3.x0, var3.y0, var3.z0);
+            GL11.glEnd();
+            GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+            GL11.glVertex3f(var3.x0, var3.y1, var3.z0);
+            GL11.glVertex3f(var3.x1, var3.y1, var3.z0);
+            GL11.glVertex3f(var3.x1, var3.y1, var3.z1);
+            GL11.glVertex3f(var3.x0, var3.y1, var3.z1);
+            GL11.glVertex3f(var3.x0, var3.y1, var3.z0);
+            GL11.glEnd();
+            GL11.glBegin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+            GL11.glVertex3f(var3.x0, var3.y0, var3.z0);
+            GL11.glVertex3f(var3.x0, var3.y1, var3.z0);
+            GL11.glVertex3f(var3.x1, var3.y0, var3.z0);
+            GL11.glVertex3f(var3.x1, var3.y1, var3.z0);
+            GL11.glVertex3f(var3.x1, var3.y0, var3.z1);
+            GL11.glVertex3f(var3.x1, var3.y1, var3.z1);
+            GL11.glVertex3f(var3.x0, var3.y0, var3.z1);
+            GL11.glVertex3f(var3.x0, var3.y1, var3.z1);
+            GL11.glEnd();
+        }
+
+        GL11.glDepthMask(true);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
+
+    private void markBlocksForUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
 		var1 /= 16;
 		var2 /= 16;
 		var3 /= 16;
@@ -385,7 +551,7 @@ public final class RenderGlobal {
 			var6 = this.renderChunksDeep - 1;
 		}
 
-		while(var1 <= var4) {
+        for(var1 = var1; var1 <= var4; ++var1) {
 			for(int var7 = var2; var7 <= var5; ++var7) {
 				for(int var8 = var3; var8 <= var6; ++var8) {
 					WorldRenderer var9 = this.worldRenderers[(var8 * this.renderChunksTall + var7) * this.renderChunksWide + var1];
@@ -395,16 +561,26 @@ public final class RenderGlobal {
 					}
 				}
 			}
-
-			++var1;
 		}
 
 	}
+
+    public final void markBlockAndNeighborsNeedsUpdate(int var1, int var2, int var3) {
+        this.markBlocksForUpdate(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
+    }
+
+    public final void markBlockRangeNeedsUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
+        this.markBlocksForUpdate(var1 - 1, var2 - 1, var3 - 1, var4 + 1, var5 + 1, var6 + 1);
+    }
 
     public final void clipRenderersByFrustrum(ClippingHelper var1) {
         for(int var2 = 0; var2 < this.worldRenderers.length; ++var2) {
             this.worldRenderers[var2].updateInFrustrum(var1);
         }
 
+    }
+
+    public final void playSound(String var1, float var2, float var3, float var4, float var5, float var6) {
+        this.mc.sndManager.a(var1, var2, var3, var4, var5, var6);
     }
 }

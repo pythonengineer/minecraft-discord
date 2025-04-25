@@ -4,18 +4,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.Iterator;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.EaglerOutputStream;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
-import net.lax1dude.eaglercraft.opengl.ImageData;
-import net.minecraft.client.render.RenderEngine;
 
 public final class GameSettings {
 	private static final String[] RENDER_DISTANCES = new String[]{"FAR", "NORMAL", "SHORT", "TINY"};
-	private boolean music = true;
+	public boolean music = true;
 	private boolean sound = true;
 	public boolean invertMouse = false;
 	public boolean showFPS = false;
@@ -79,35 +76,7 @@ public final class GameSettings {
 
 		if(var1 == 6) {
 			this.anaglyph = !this.anaglyph;
-			RenderEngine var7 = this.mc.renderEngine;
-			Iterator var3 = var7.textureContentsMap.keySet().iterator();
-
-			int var4;
-			ImageData var5;
-			while(var3.hasNext()) {
-				var4 = ((Integer)var3.next()).intValue();
-				var5 = (ImageData)var7.textureContentsMap.get(Integer.valueOf(var4));
-				var7.setupTexture(var5, var4);
-			}
-
-			var3 = var7.textureMap.keySet().iterator();
-
-			while(var3.hasNext()) {
-				String var8 = (String)var3.next();
-
-				try {
-					if(var8.startsWith("##")) {
-						var5 = ImageData.loadImageFile("/assets" + var8.substring(2));
-					} else {
-						var5 = ImageData.loadImageFile("/assets" + var8);
-					}
-
-					var4 = ((Integer)var7.textureMap.get(var8)).intValue();
-					var7.setupTexture(var5, var4);
-				} catch (Exception var6) {
-					var6.printStackTrace();
-				}
-			}
+            this.mc.renderEngine.refreshTextures();
 		}
 
 		if(var1 == 7) {
@@ -127,10 +96,9 @@ public final class GameSettings {
             if(options != null) {
                 BufferedReader var1 = new BufferedReader(
                         new InputStreamReader(new EaglerInputStream(options)));
-				String var2 = null;
 
 				while(true) {
-					var2 = var1.readLine();
+					String var2 = var1.readLine();
 					if(var2 == null) {
 						var1.close();
 						return;

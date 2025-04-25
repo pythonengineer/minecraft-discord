@@ -3,8 +3,8 @@ package net.minecraft.game.level.block;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public final class BlockLeaves extends BlockLeavesBase {
-	protected BlockLeaves() {
-		super(18, 22);
+    protected BlockLeaves(int var1, int var2) {
+        super(18, 22, true);
 	}
 
 	public final int quantityDropped(EaglercraftRandom var1) {

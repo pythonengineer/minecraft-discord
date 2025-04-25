@@ -55,17 +55,17 @@ public final class Vec3D {
 		}
 	}
 
-	public final Vec3D getIntermediateWithZValue(Vec3D var1, float var2) {
-		float var3 = var1.xCoord - this.xCoord;
-		float var4 = var1.yCoord - this.yCoord;
-		float var5;
-		if((var5 = var1.zCoord - this.zCoord) * var5 < 1.0E-7F) {
-			return null;
-		} else {
-			var2 = (var2 - this.zCoord) / var5;
-			return var2 >= 0.0F && var2 <= 1.0F ? new Vec3D(this.xCoord + var3 * var2, this.yCoord + var4 * var2, this.zCoord + var5 * var2) : null;
-		}
-	}
+    public final Vec3D getIntermediateWithZValue(Vec3D var1, float var2) {
+        float var3 = var1.xCoord - this.xCoord;
+        float var4 = var1.yCoord - this.yCoord;
+        float var5 = var1.zCoord - this.zCoord;
+        if(var5 * var5 < 1.0E-7F) {
+            return null;
+        } else {
+            var2 = (var2 - this.zCoord) / var5;
+            return var2 >= 0.0F && var2 <= 1.0F ? new Vec3D(this.xCoord + var3 * var2, this.yCoord + var4 * var2, this.zCoord + var5 * var2) : null;
+        }
+    }
 
 	public final String toString() {
 		return "(" + this.xCoord + ", " + this.yCoord + ", " + this.zCoord + ")";

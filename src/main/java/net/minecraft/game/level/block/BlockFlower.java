@@ -9,8 +9,7 @@ public class BlockFlower extends Block {
 		super(var1);
 		this.blockIndexInTexture = var2;
 		this.setTickOnLoad(true);
-		float var3 = 0.2F;
-		this.setBlockBounds(0.5F - var3, 0.0F, 0.5F - var3, var3 + 0.5F, var3 * 3.0F, var3 + 0.5F);
+        this.setBlockBounds(0.3F, 0.0F, 0.3F, 0.7F, 0.6F, 0.7F);
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
@@ -35,7 +34,7 @@ public class BlockFlower extends Block {
 		return false;
 	}
 
-	public final int getRenderType() {
+	public final int g() {
 		return 1;
 	}
 }

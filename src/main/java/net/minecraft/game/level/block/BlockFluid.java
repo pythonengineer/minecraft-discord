@@ -21,9 +21,7 @@ public class BlockFluid extends Block {
 		Block.isBlockFluid[var1] = true;
 		this.movingId = var1;
 		this.stillId = var1 + 1;
-		float var3 = 0.01F;
-		float var4 = 0.1F;
-		this.setBlockBounds(var3, 0.0F - var4 + var3, var3, var3 + 1.0F, 1.0F - var4 + var3, var3 + 1.0F);
+		this.setBlockBounds(0.01F, -0.09F, 0.01F, 1.01F, 0.90999997F, 1.01F);
 		this.setTickOnLoad(true);
 	}
 
@@ -40,45 +38,49 @@ public class BlockFluid extends Block {
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		boolean var7 = false;
-		var4 = var4;
-		var3 = var3;
-		var2 = var2;
-		var1 = var1;
-		BlockFluid var8 = this;
-		boolean var9 = false;
+		boolean var8 = false;
+		int var11 = var4;
+		var4 = var3;
+		var3 = var2;
+		World var10 = var1;
+		BlockFluid var9 = this;
+		boolean var6 = false;
 
-		boolean var6;
+		boolean var7;
 		do {
-			--var3;
-			if(var1.getBlockId(var2, var3, var4) != 0 || !var8.h(var1, var2, var3, var4)) {
+			--var4;
+			if(var10.getBlockId(var3, var4, var11) != 0 || !var9.h(var10, var3, var4, var11)) {
 				break;
 			}
 
-			var6 = var1.setBlockWithNotify(var2, var3, var4, var8.movingId);
-			if(var6) {
-				var9 = true;
+			var7 = var10.setBlockWithNotify(var3, var4, var11, var9.movingId);
+			if(var7) {
+				var6 = true;
 			}
-		} while(var6 && var8.material != Material.lava);
+		} while(var7 && var9.material != Material.lava);
 
-		++var3;
-		if(var8.material == Material.water || !var9) {
-			var9 = var9 | var8.i(var1, var2 - 1, var3, var4) | var8.i(var1, var2 + 1, var3, var4) | var8.i(var1, var2, var3, var4 - 1) | var8.i(var1, var2, var3, var4 + 1);
+		++var4;
+		if(var9.material == Material.water || !var6) {
+			var6 |= var9.i(var10, var3 - 1, var4, var11);
+			var6 |= var9.i(var10, var3 + 1, var4, var11);
+			var6 |= var9.i(var10, var3, var4, var11 - 1);
+			var6 |= var9.i(var10, var3, var4, var11 + 1);
 		}
 
-		if(!var9) {
-			var1.setTileNoUpdate(var2, var3, var4, var8.stillId);
+		if(!var6) {
+			var10.setTileNoUpdate(var3, var4, var11, var9.stillId);
 		} else {
-			var1.scheduleBlockUpdate(var2, var3, var4, var8.movingId);
+			var10.scheduleBlockUpdate(var3, var4, var11, var9.movingId);
 		}
+
 	}
 
 	private boolean h(World var1, int var2, int var3, int var4) {
 		if(this.material == Material.water) {
-			for(int var7 = var2 - 2; var7 <= var2 + 2; ++var7) {
-				for(int var5 = var3 - 2; var5 <= var3 + 2; ++var5) {
-					for(int var6 = var4 - 2; var6 <= var4 + 2; ++var6) {
-						if(var1.getBlockId(var7, var5, var6) == Block.sponge.blockID) {
+			for(int var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
+				for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
+					for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
+						if(var1.getBlockId(var5, var6, var7) == Block.sponge.blockID) {
 							return false;
 						}
 					}
@@ -90,12 +92,14 @@ public class BlockFluid extends Block {
 	}
 
 	private boolean i(World var1, int var2, int var3, int var4) {
-		if(var1.getBlockId(var2, var3, var4) == 0) {
+		int var5 = var1.getBlockId(var2, var3, var4);
+		if(var5 == 0) {
 			if(!this.h(var1, var2, var3, var4)) {
 				return false;
 			}
 
-			if(var1.setBlockWithNotify(var2, var3, var4, this.movingId)) {
+			boolean var6 = var1.setBlockWithNotify(var2, var3, var4, this.movingId);
+			if(var6) {
 				var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
 			}
 		}
@@ -124,13 +128,13 @@ public class BlockFluid extends Block {
 		return false;
 	}
 
-	public final Material getMaterial() {
+	public final Material getBlockMaterial() {
 		return this.material;
 	}
 
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		if(var5 != 0) {
-			Material var6 = Block.blocksList[var5].getMaterial();
+			Material var6 = Block.blocksList[var5].getBlockMaterial();
 			if(this.material == Material.water && var6 == Material.lava || var6 == Material.water && this.material == Material.lava) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
 				return;

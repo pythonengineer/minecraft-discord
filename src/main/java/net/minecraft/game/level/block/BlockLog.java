@@ -3,7 +3,7 @@ package net.minecraft.game.level.block;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public final class BlockLog extends Block {
-	protected BlockLog() {
+    protected BlockLog(int var1) {
 		super(17);
 		this.blockIndexInTexture = 20;
 	}

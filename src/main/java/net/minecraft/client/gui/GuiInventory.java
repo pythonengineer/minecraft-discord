@@ -44,7 +44,7 @@ public final class GuiInventory extends GuiScreen {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, var3);
         var3 = (this.width - 176) / 2;
         int var4 = (this.height - 184) / 2;
-        this.drawTexturedModal(var3, var4, 0, 0, 176, 184);
+        this.drawTexturedModalRect(var3, var4, 0, 0, 176, 184);
         GL11.glPushMatrix();
         GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
@@ -55,12 +55,11 @@ public final class GuiInventory extends GuiScreen {
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
         GL11.glPushMatrix();
         GL11.glTranslatef(52.0F, 73.0F, 24.0F);
-        float var5 = 24.0F;
-        GL11.glScalef(24.0F, -var5, var5);
+        GL11.glScalef(24.0F, -24.0F, 24.0F);
         GL11.glRotatef(10.0F, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(10.0F, 1.0F, 0.0F, 0.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.renderGlobal.renderManager.renderEntityWithPosYaw(this.mc.thePlayer, this.mc.renderEngine, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        this.mc.renderGlobal.renderManager.doRender(this.mc.thePlayer, this.mc.renderEngine, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         GL11.glPopMatrix();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glEnable(GL11.GL_NORMALIZE);
@@ -125,7 +124,7 @@ public final class GuiInventory extends GuiScreen {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 var5 = this.mc.renderEngine.getTexture("/gui/items.png");
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
-                this.drawTexturedModal(var2, var3, var4.iconIndex % 16 << 4, var4.iconIndex / 16 << 4, 16, 16);
+                this.drawTexturedModalRect(var2, var3, var4.iconIndex % 16 << 4, var4.iconIndex / 16 << 4, 16, 16);
                 GL11.glEnable(GL11.GL_LIGHTING);
             }
 
@@ -143,7 +142,7 @@ public final class GuiInventory extends GuiScreen {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 var5 = this.mc.renderEngine.getTexture("/gui/items.png");
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
-                this.drawTexturedModal(var2, var3, 240, 63 - var1 << 4, 16, 16);
+                this.drawTexturedModalRect(var2, var3, 240, 63 - var1 << 4, 16, 16);
                 GL11.glEnable(GL11.GL_LIGHTING);
             }
 

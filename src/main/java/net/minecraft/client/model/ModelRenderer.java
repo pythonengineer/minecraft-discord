@@ -12,7 +12,7 @@ public final class ModelRenderer {
 		this.textureOffsetY = var2;
 	}
 
-	public final void addBox(float var1, float var2, float var3, int var4, int var5, int var6, float var7) {
+	public final void setBounds(float var1, float var2, float var3, int var4, int var5, int var6, float var7) {
 		this.corners = new PositionTextureVertex[8];
 		this.faces = new TexturedQuad[6];
 		float var8 = var1 + (float)var4;

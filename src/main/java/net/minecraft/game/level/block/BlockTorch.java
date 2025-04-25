@@ -3,7 +3,7 @@ package net.minecraft.game.level.block;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public final class BlockTorch extends Block {
-	protected BlockTorch() {
+    protected BlockTorch(int var1, int var2) {
 		super(50, 80);
 	}
 
@@ -19,7 +19,7 @@ public final class BlockTorch extends Block {
 		return false;
 	}
 
-	public final int getRenderType() {
+	public final int g() {
 		return 2;
 	}
 }

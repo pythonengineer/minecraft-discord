@@ -6,11 +6,12 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
+import net.minecraft.game.level.block.StepSound;
 import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public abstract class Entity {
-	public World worldObj;
+	protected World worldObj;
 	public float prevPosX;
 	public float prevPosY;
 	public float prevPosZ;
@@ -34,7 +35,7 @@ public abstract class Entity {
 	public float bbHeight = 1.8F;
 	public float prevDistanceWalkedModified = 0.0F;
 	public float distanceWalkedModified = 0.0F;
-	public boolean makeStepSound = true;
+    protected boolean makeStepSound = true;
 	protected float fallDistance = 0.0F;
 	private int nextStep = 1;
 	public float lastTickPosX;
@@ -42,7 +43,9 @@ public abstract class Entity {
 	public float lastTickPosZ;
 	private float ySize = 0.0F;
 	public float stepHeight = 0.0F;
-    public EaglercraftRandom rand = new EaglercraftRandom();
+    private boolean noClip = false;
+    private float entityCollisionReduction = 0.0F;
+    protected EaglercraftRandom rand = new EaglercraftRandom();
     public int ticksExisted = 0;
 
 	public Entity(World var1) {
@@ -50,7 +53,7 @@ public abstract class Entity {
 		this.setPosition(0.0F, 0.0F, 0.0F);
 	}
 
-	public void preparePlayerToSpawn() {
+	protected void preparePlayerToSpawn() {
 		if(this.worldObj != null) {
 			float var1 = (float)this.worldObj.xSpawn + 0.5F;
 			float var2 = (float)this.worldObj.ySpawn;
@@ -72,12 +75,12 @@ public abstract class Entity {
 		this.isDead = true;
 	}
 
-	public final void setSize(float var1, float var2) {
+    protected final void setSize(float var1, float var2) {
 		this.bbWidth = var1;
 		this.bbHeight = var2;
 	}
 
-	public final void setPosition(float var1, float var2, float var3) {
+    protected final void setPosition(float var1, float var2, float var3) {
 		this.posX = var1;
 		this.posY = var2;
 		this.posZ = var3;
@@ -101,7 +104,8 @@ public abstract class Entity {
 		var2 = var1;
 		AxisAlignedBB var5 = this.boundingBox;
 		var5 = new AxisAlignedBB(var5.x0 + var4, var5.y0 + var3, var5.z0 + var4, var5.x1 + var2, var5.y1 + var3, var5.z1 + var4);
-		return this.worldObj.getCollidingBoundingBoxes(var5).size() > 0 ? false : !this.worldObj.getIsAnyLiquid(var5);
+        ArrayList var6 = this.worldObj.getCollidingBoundingBoxes(var5);
+        return var6.size() > 0 ? false : !this.worldObj.getIsAnyLiquid(var5);
 	}
 
 	public final void moveEntity(float var1, float var2, float var3) {
@@ -206,6 +210,9 @@ public abstract class Entity {
 			}
 		}
 
+        this.posX = (this.boundingBox.x0 + this.boundingBox.x1) / 2.0F;
+        this.posY = this.boundingBox.y0 + this.yOffset - this.ySize;
+        this.posZ = (this.boundingBox.z0 + this.boundingBox.z1) / 2.0F;
 		this.horizontalCollision = var6 != var1 || var8 != var3;
 		this.onGround = var7 != var2 && var7 < 0.0F;
 		if(this.onGround) {
@@ -229,9 +236,6 @@ public abstract class Entity {
 			this.motionZ = 0.0F;
 		}
 
-		this.posX = (this.boundingBox.x0 + this.boundingBox.x1) / 2.0F;
-		this.posY = this.boundingBox.y0 + this.yOffset - this.ySize;
-		this.posZ = (this.boundingBox.z0 + this.boundingBox.z1) / 2.0F;
 		var18 = this.posX - var4;
 		var17 = this.posZ - var5;
 		this.distanceWalkedModified = (float)((double)this.distanceWalkedModified + (double)MathHelper.sqrt_float(var18 * var18 + var17 * var17) * 0.6D);
@@ -239,6 +243,8 @@ public abstract class Entity {
 			int var19 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY - 0.2F - this.yOffset), (int)this.posZ);
 			if(this.distanceWalkedModified > (float)this.nextStep && var19 > 0) {
 				++this.nextStep;
+                StepSound var20 = Block.blocksList[var19].stepSound;
+                this.worldObj.playSoundEffect(this, "step." + var20.a, var20.speed * 0.15F, var20.pitch);
 			}
 		}
 
@@ -254,7 +260,7 @@ public abstract class Entity {
 
 	public final boolean isInsideOfMaterial() {
 		int var1 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY + 0.12F), (int)this.posZ);
-		return var1 != 0 ? Block.blocksList[var1].getMaterial().equals(Material.water) : false;
+		return var1 != 0 ? Block.blocksList[var1].getBlockMaterial().equals(Material.water) : false;
 	}
 
 	public final boolean handleLavaMovement() {
@@ -282,14 +288,45 @@ public abstract class Entity {
 		int var1 = (int)this.posX;
 		int var2 = (int)(this.posY + this.yOffset / 2.0F);
 		int var3 = (int)this.posZ;
-		return this.worldObj.getBlockLightValue(var1, var2, var3);
+        return this.worldObj.getBlockLightValue(var1, var2, var3);
+    }
+
+    public final void a(World var1) {
+        this.worldObj = var1;
+    }
+
+    public final void setLocationAndAngles(float var1, float var2, float var3, float var4, float var5) {
+        this.prevPosX = this.posX = var1;
+        this.prevPosY = this.posY = var2;
+        this.prevPosZ = this.posZ = var3;
+        this.rotationYaw = var4;
+        this.rotationPitch = 0.0F;
+        this.setPosition(var1, var2, var3);
+    }
+
+    public final void applyEntityCollision(Entity var1) {
+        float var2 = var1.posX - this.posX;
+        float var3 = var1.posZ - this.posZ;
+        float var4 = var2 * var2 + var3 * var3;
+        if(var4 >= 0.01F) {
+            var4 = MathHelper.sqrt_float(var4);
+            var2 /= var4;
+            var3 /= var4;
+            var2 /= var4;
+            var3 /= var4;
+            var2 *= 0.05F;
+            var3 *= 0.05F;
+            this.addVelocity(-var2, 0.0F, -var3);
+            var1.addVelocity(var2, 0.0F, var3);
+        }
+
 	}
 
-	void addVelocity(float var1, float var2) {
-		this.motionX += var1;
-		this.motionY = this.motionY;
-		this.motionZ += var2;
-	}
+    private void addVelocity(float var1, float var2, float var3) {
+        this.motionX += var1;
+        this.motionY = this.motionY;
+        this.motionZ += var3;
+    }
 
 	public void attackEntityFrom(Entity var1, int var2) {
 	}

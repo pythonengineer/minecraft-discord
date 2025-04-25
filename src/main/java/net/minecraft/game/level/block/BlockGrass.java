@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
 
 public final class BlockGrass extends Block {
-	protected BlockGrass() {
+    protected BlockGrass(int var1) {
 		super(2);
 		this.blockIndexInTexture = 3;
 		this.setTickOnLoad(true);

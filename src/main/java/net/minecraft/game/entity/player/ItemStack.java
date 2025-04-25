@@ -9,7 +9,7 @@ public final class ItemStack {
     public int animationsToGo;
 
     public ItemStack(Block var1) {
-        this(var1, 1);
+        this((Block)var1, 1);
     }
 
     public ItemStack(Block var1, int var2) {
@@ -19,14 +19,14 @@ public final class ItemStack {
         this.stackSize = var2;
     }
 
-    public ItemStack(int var1) {
+    public ItemStack(int var1, int var2) {
         this.itemID = -1;
         this.iconIndex = -1;
         this.iconIndex = var1;
         this.stackSize = 1;
     }
 
-    public ItemStack(ItemStack var1) {
+    public ItemStack(ItemStack var1, int var2) {
         this.itemID = -1;
         this.iconIndex = -1;
         this.itemID = var1.itemID;

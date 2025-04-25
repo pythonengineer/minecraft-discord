@@ -43,15 +43,15 @@ public class EntityFX extends Entity {
 	}
 
 	public final EntityFX multiplyVelocity(float var1) {
-		this.motionX1 *= var1;
-		this.motionY1 = (this.motionY1 - 0.1F) * var1 + 0.1F;
-		this.motionZ1 *= var1;
+		this.motionX1 *= 0.2F;
+		this.motionY1 = (this.motionY1 - 0.1F) * 0.2F + 0.1F;
+		this.motionZ1 *= 0.2F;
 		return this;
 	}
 
 	public final EntityFX multipleParticleScaleBy(float var1) {
-		this.setSize(0.2F * var1, 0.2F * var1);
-		this.particleScale *= var1;
+        this.setSize(0.120000005F, 0.120000005F);
+        this.particleScale *= 0.6F;
 		return this;
 	}
 

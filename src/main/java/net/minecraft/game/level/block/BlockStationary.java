@@ -38,7 +38,7 @@ public final class BlockStationary extends BlockFluid {
 		}
 
 		if(var5 != 0) {
-			Material var7 = Block.blocksList[var5].getMaterial();
+			Material var7 = Block.blocksList[var5].getBlockMaterial();
 			if(this.material == Material.water && var7 == Material.lava || var7 == Material.water && this.material == Material.lava) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
 				return;
