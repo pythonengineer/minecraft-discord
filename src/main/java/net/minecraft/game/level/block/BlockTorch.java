@@ -19,7 +19,7 @@ public final class BlockTorch extends Block {
 		return false;
 	}
 
-	public final int g() {
+    public final int getRenderType() {
 		return 2;
 	}
 }

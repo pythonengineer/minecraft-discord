@@ -48,7 +48,7 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
 		if(!this.mc.running) {
 			throw new MinecraftError();
 		} else {
-			long var2 = System.currentTimeMillis();
+			long var2 = EagRuntime.currentTimeMillis();
 			if(var2 - this.start >= 20L) {
 				this.start = var2;
 				int var8 = this.mc.scaledResolution.getScaledWidth();

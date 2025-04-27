@@ -9,11 +9,11 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.EaglercraftSoundManager;
 
 public final class SoundPool {
-    private EaglercraftRandom b = new EaglercraftRandom();
+    private EaglercraftRandom rand = new EaglercraftRandom();
     private Map nameToSoundPoolEntriesMapping = new HashMap();
     public int numberOfSoundPoolEntries = 0;
 
-    public final void getFolder(EaglercraftSoundManager mgr, String var1, String var2) {
+    public final SoundPoolEntry addSound(EaglercraftSoundManager mgr, String var1, String var2) {
         try {
             String var3 = var1;
 
@@ -25,8 +25,10 @@ public final class SoundPool {
                 this.nameToSoundPoolEntriesMapping.put(var1, new ArrayList());
             }
 
-            ((List)this.nameToSoundPoolEntriesMapping.get(var1)).add(new SoundPoolEntry(mgr, var3, var2));
+            SoundPoolEntry var5 = new SoundPoolEntry(mgr, var3, var2);
+            ((List)this.nameToSoundPoolEntriesMapping.get(var1)).add(var5);
             ++this.numberOfSoundPoolEntries;
+            return var5;
         } catch (Exception var4) {
             var4.printStackTrace();
             throw new RuntimeException(var4);
@@ -35,6 +37,6 @@ public final class SoundPool {
 
     public final SoundPoolEntry getRandomSoundFromSoundPool(String var1) {
         List var2 = (List)this.nameToSoundPoolEntriesMapping.get(var1);
-        return var2 == null ? null : (SoundPoolEntry)var2.get(this.b.nextInt(var2.size()));
+        return var2 == null ? null : (SoundPoolEntry)var2.get(this.rand.nextInt(var2.size()));
     }
 }

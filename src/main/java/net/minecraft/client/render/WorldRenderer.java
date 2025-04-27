@@ -18,7 +18,7 @@ public final class WorldRenderer {
 	private int sizeWidth;
 	private int sizeHeight;
 	private int sizeDepth;
-	public boolean isInFrustrum = false;
+    public boolean isVisible = false;
 	private boolean[] skipRenderPass = new boolean[2];
 	public boolean needsUpdate;
 	private RenderBlocks renderBlocks;
@@ -35,7 +35,7 @@ public final class WorldRenderer {
 		this.setDontDraw();
 	}
 
-	public final void a() {
+	public final void updateRenderer() {
 		if(this.needsUpdate) {
 			++chunksUpdated;
 			int var1 = this.posX;
@@ -106,7 +106,7 @@ public final class WorldRenderer {
 	}
 
 	public final int getGLCallListForPass(int[] var1, int var2, int var3) {
-		if(!this.isInFrustrum) {
+        if(!this.isVisible) {
 			return var2;
 		} else {
 			if(!this.skipRenderPass[var3]) {
@@ -118,6 +118,6 @@ public final class WorldRenderer {
 	}
 
 	public final void updateInFrustrum(ClippingHelper var1) {
-		this.isInFrustrum = var1.isBoundingBoxInFrustrum((float)this.posX, (float)this.posY, (float)this.posZ, (float)(this.posX + this.sizeWidth), (float)(this.posY + this.sizeHeight), (float)(this.posZ + this.sizeDepth));
+	    this.isVisible = var1.isVisible((float)this.posX, (float)this.posY, (float)this.posZ, (float)(this.posX + this.sizeWidth), (float)(this.posY + this.sizeHeight), (float)(this.posZ + this.sizeDepth));
 	}
 }

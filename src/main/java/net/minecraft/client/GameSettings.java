@@ -12,8 +12,8 @@ import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 
 public final class GameSettings {
 	private static final String[] RENDER_DISTANCES = new String[]{"FAR", "NORMAL", "SHORT", "TINY"};
-	public boolean music = true;
-	private boolean sound = true;
+    public boolean music = true;
+    public boolean sound = true;
 	public boolean invertMouse = false;
 	public boolean showFPS = false;
 	public int renderDistance = 0;
@@ -52,10 +52,12 @@ public final class GameSettings {
 	public final void setOptionValue(int var1, int var2) {
 		if(var1 == 0) {
 			this.music = !this.music;
+            this.mc.sndManager.onSoundOptionsChanged();
 		}
 
 		if(var1 == 1) {
 			this.sound = !this.sound;
+            this.mc.sndManager.onSoundOptionsChanged();
 		}
 
 		if(var1 == 2) {

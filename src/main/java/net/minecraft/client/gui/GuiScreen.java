@@ -47,7 +47,7 @@ public class GuiScreen extends Gui {
 			for(var3 = 0; var3 < this.controlList.size(); ++var3) {
 				GuiButton var4 = (GuiButton)this.controlList.get(var3);
                 if(var4.mousePressed(var1, var2)) {
-                    this.mc.sndManager.playSound("random.click", 1.0F, 1.0F);
+                    this.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
 					this.actionPerformed(var4);
 				}
 			}

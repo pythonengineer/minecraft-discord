@@ -4,6 +4,7 @@ random/explode1.ogg
 random/explode2.ogg
 random/explode3.ogg
 random/explode4.ogg
+random/fizz.ogg
 random/fuse.ogg
 random/hurt.ogg
 random/pop.ogg

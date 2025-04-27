@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.game.level.block.Block;
 
 public final class Session {
-	public static List allowedBlocks;
+    public static List registeredBlocksList;
 	public String username;
 
 	public Session(String var1, String var2) {
@@ -13,49 +13,49 @@ public final class Session {
 	}
 
 	static {
-		(allowedBlocks = new ArrayList()).add(Block.stone);
-		allowedBlocks.add(Block.cobblestone);
-		allowedBlocks.add(Block.brick);
-		allowedBlocks.add(Block.dirt);
-		allowedBlocks.add(Block.planks);
-		allowedBlocks.add(Block.log);
-		allowedBlocks.add(Block.leaves);
-		allowedBlocks.add(Block.torch);
-		allowedBlocks.add(Block.stairSingle);
-		allowedBlocks.add(Block.glass);
-		allowedBlocks.add(Block.cobblestoneMossy);
-		allowedBlocks.add(Block.sapling);
-		allowedBlocks.add(Block.plantYellow);
-		allowedBlocks.add(Block.plantRed);
-		allowedBlocks.add(Block.mushroomBrown);
-		allowedBlocks.add(Block.mushroomRed);
-		allowedBlocks.add(Block.sand);
-		allowedBlocks.add(Block.gravel);
-		allowedBlocks.add(Block.sponge);
-		allowedBlocks.add(Block.clothRed);
-		allowedBlocks.add(Block.clothOrange);
-		allowedBlocks.add(Block.clothYellow);
-		allowedBlocks.add(Block.clothChartreuse);
-		allowedBlocks.add(Block.clothGreen);
-		allowedBlocks.add(Block.clothSpringGreen);
-		allowedBlocks.add(Block.clothCyan);
-		allowedBlocks.add(Block.clothCapri);
-		allowedBlocks.add(Block.clothUltramarine);
-		allowedBlocks.add(Block.clothViolet);
-		allowedBlocks.add(Block.clothPurple);
-		allowedBlocks.add(Block.clothMagenta);
-		allowedBlocks.add(Block.clothRose);
-		allowedBlocks.add(Block.clothDarkGray);
-		allowedBlocks.add(Block.clothGray);
-		allowedBlocks.add(Block.clothWhite);
-		allowedBlocks.add(Block.oreCoal);
-		allowedBlocks.add(Block.oreIron);
-		allowedBlocks.add(Block.oreGold);
-		allowedBlocks.add(Block.ironBlock);
-		allowedBlocks.add(Block.goldBlock);
-        allowedBlocks.add(Block.bookshelf);
-		allowedBlocks.add(Block.tnt);
-		allowedBlocks.add(Block.obsidian);
-        System.out.println(allowedBlocks.size());
+        (registeredBlocksList = new ArrayList()).add(Block.stone);
+        registeredBlocksList.add(Block.cobblestone);
+        registeredBlocksList.add(Block.brick);
+        registeredBlocksList.add(Block.dirt);
+        registeredBlocksList.add(Block.planks);
+        registeredBlocksList.add(Block.wood);
+        registeredBlocksList.add(Block.leaves);
+        registeredBlocksList.add(Block.torch);
+        registeredBlocksList.add(Block.stairSingle);
+        registeredBlocksList.add(Block.glass);
+        registeredBlocksList.add(Block.cobblestoneMossy);
+        registeredBlocksList.add(Block.sapling);
+        registeredBlocksList.add(Block.plantYellow);
+        registeredBlocksList.add(Block.plantRed);
+        registeredBlocksList.add(Block.mushroomBrown);
+        registeredBlocksList.add(Block.mushroomRed);
+        registeredBlocksList.add(Block.sand);
+        registeredBlocksList.add(Block.gravel);
+        registeredBlocksList.add(Block.sponge);
+        registeredBlocksList.add(Block.clothRed);
+        registeredBlocksList.add(Block.clothOrange);
+        registeredBlocksList.add(Block.clothYellow);
+        registeredBlocksList.add(Block.clothChartreuse);
+        registeredBlocksList.add(Block.clothGreen);
+        registeredBlocksList.add(Block.clothSpringGreen);
+        registeredBlocksList.add(Block.clothCyan);
+        registeredBlocksList.add(Block.clothCapri);
+        registeredBlocksList.add(Block.clothUltramarine);
+        registeredBlocksList.add(Block.clothViolet);
+        registeredBlocksList.add(Block.clothPurple);
+        registeredBlocksList.add(Block.clothMagenta);
+        registeredBlocksList.add(Block.clothRose);
+        registeredBlocksList.add(Block.clothDarkGray);
+        registeredBlocksList.add(Block.clothGray);
+        registeredBlocksList.add(Block.clothWhite);
+        registeredBlocksList.add(Block.oreCoal);
+        registeredBlocksList.add(Block.oreIron);
+        registeredBlocksList.add(Block.oreGold);
+        registeredBlocksList.add(Block.blockSteel);
+        registeredBlocksList.add(Block.blockGold);
+        registeredBlocksList.add(Block.bookShelf);
+        registeredBlocksList.add(Block.tnt);
+        registeredBlocksList.add(Block.obsidian);
+        System.out.println(registeredBlocksList.size());
 	}
 }

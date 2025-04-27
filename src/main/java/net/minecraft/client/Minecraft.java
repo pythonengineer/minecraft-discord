@@ -33,21 +33,21 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.player.EntityPlayerSP;
-import net.minecraft.client.player.MovementInputFromKeys;
+import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.texture.TextureFlamesFX;
 import net.minecraft.client.render.texture.TextureLavaFX;
 import net.minecraft.client.render.texture.TextureWaterFX;
 import net.minecraft.client.render.texture.TextureWaterFlowFX;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.player.InventoryPlayer;
-import net.minecraft.game.entity.player.ItemStack;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.generator.LevelGenerator;
-import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 
 public final class Minecraft implements Runnable {
@@ -79,11 +79,13 @@ public final class Minecraft implements Runnable {
 	public GameSettings options;
     public SoundManager sndManager;
     private String serverIp;
+    private TextureWaterFX textureWaterFX;
+    private TextureLavaFX textureLavaFX;
     volatile boolean running;
 	public String debug;
-    public boolean inventoryScreen;
-	private int prevFrameTime;
-	public boolean thirdPersonView;
+    public boolean ingameFocus;
+    private int prevFrameTime;
+    public boolean renderRain;
     public boolean mouseGrabSupported = false;
     private int rightClickDelayTimer;
     public float displayDPI = 1.0f;
@@ -96,11 +98,13 @@ public final class Minecraft implements Runnable {
 		this.objectMouseOver = null;
         this.sndManager = new SoundManager();
 		this.serverIp = null;
+        this.textureWaterFX = new TextureWaterFX();
+        this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
 		this.debug = "";
-		this.inventoryScreen = false;
-		this.prevFrameTime = 0;
-		this.thirdPersonView = false;
+        this.ingameFocus = false;
+        this.prevFrameTime = 0;
+        this.renderRain = false;
 		this.displayWidth = width;
 		this.displayHeight = height;
 		this.fullScreen = fullScreen;
@@ -123,9 +127,9 @@ public final class Minecraft implements Runnable {
 
 			this.currentScreen = (GuiScreen)var1;
 			if(var1 != null) {
-				if(this.inventoryScreen) {
+                if(this.ingameFocus) {
                     this.thePlayer.movementInput.resetKeyState();
-					this.inventoryScreen = false;
+                    this.ingameFocus = false;
 					Mouse.setGrabbed(false);
 				}
 
@@ -207,9 +211,11 @@ public final class Minecraft implements Runnable {
 			checkGLError("Startup");
 
 			this.renderEngine = new RenderEngine(this.options);
-			this.renderEngine.registerTextureFX(new TextureLavaFX());
-			this.renderEngine.registerTextureFX(new TextureWaterFX());
-			this.renderEngine.registerTextureFX(new TextureWaterFlowFX());
+            this.renderEngine.registerTextureFX(this.textureLavaFX);
+            this.renderEngine.registerTextureFX(this.textureWaterFX);
+            this.renderEngine.registerTextureFX(new TextureWaterFlowFX());
+            this.renderEngine.registerTextureFX(new TextureFlamesFX(0));
+            this.renderEngine.registerTextureFX(new TextureFlamesFX(1));
 			this.fontRenderer = new FontRenderer(this.options, "/default.png", this.renderEngine);
 			IntBuffer var8 = BufferUtils.createIntBuffer(256);
 			var8.clear().limit(256);
@@ -223,15 +229,15 @@ public final class Minecraft implements Runnable {
 
 			if(this.serverIp != null && this.session != null) {
 				World var43 = new World();
-				var43.setLevel(8, 8, 8, new byte[512]);
+				var43.generate(8, 8, 8, new byte[512]);
 				this.setLevel(var43);
 			} else {
-				this.generateNewLevel(0);
+                this.generateNewLevel(1, 0, 1, 0);
 			}
 
 			this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
-            this.sndManager.loadSoundSettings();
-            this.sndManager.registerSounds(this.options);
+            this.sndManager.loadSoundSettings(this.options);
+            this.sndManager.registerSounds();
 
 			checkGLError("Post startup");
 			this.ingameGUI = new GuiIngame(this, this.displayWidth, this.displayHeight);
@@ -386,8 +392,8 @@ public final class Minecraft implements Runnable {
 	public final void setIngameFocus() {
         boolean touch = PointerInputAbstraction.isTouchMode();
         if (touch || Display.isActive()) {
-            if (!this.inventoryScreen) {
-                this.inventoryScreen = true;
+            if(!this.ingameFocus) {
+                this.ingameFocus = true;
                 if (!touch && mouseGrabSupported) {
                     Mouse.setGrabbed(true);
                 }
@@ -398,16 +404,16 @@ public final class Minecraft implements Runnable {
 	}
 
     public void setIngameNotInFocus() {
-        if (this.inventoryScreen) {
+        if (this.ingameFocus) {
             this.thePlayer.movementInput.resetKeyState();
-            this.inventoryScreen = false;
+            this.ingameFocus = false;
             if (!PointerInputAbstraction.isTouchMode() && mouseGrabSupported) {
                 Mouse.setGrabbed(false);
             }
         }
     }
 
-	public final void displayIngameMenu() {
+	public final void displayInGameMenu() {
 		if(this.currentScreen == null) {
 			this.displayGuiScreen(new GuiIngameMenu());
 		}
@@ -416,9 +422,25 @@ public final class Minecraft implements Runnable {
     private void clickMouse(int var1) {
         if(var1 != 0 || this.leftClickCounter <= 0) {
             if(var1 == 0) {
-                this.entityRenderer.itemRenderer.equippedItemRender();
+                this.entityRenderer.itemRenderer.swingItem();
             } else {
                 this.rightClickDelayTimer = 4;
+            }
+
+            World var4;
+            if(var1 == 1) {
+                ItemStack var2 = this.thePlayer.inventory.getCurrentItem();
+                if(var2 != null) {
+                    EntityPlayerSP var5 = this.thePlayer;
+                    var4 = this.theWorld;
+                    if(var2.getItem().onPlaced(var2, var5)) {
+                        if(var2.stackSize == 0) {
+                            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+                        }
+
+                        this.entityRenderer.itemRenderer.resetEquippedProgress2();
+                    }
+                }
             }
 
             if(this.objectMouseOver == null) {
@@ -433,39 +455,15 @@ public final class Minecraft implements Runnable {
                         return;
                     }
                 } else if(this.objectMouseOver.typeOfHit == 0) {
-                    int var2 = this.objectMouseOver.blockX;
+                    int var10 = this.objectMouseOver.blockX;
                     int var3 = this.objectMouseOver.blockY;
-                    int var4 = this.objectMouseOver.blockZ;
-                    if(var1 != 0) {
-                        if(this.objectMouseOver.sideHit == 0) {
-                            --var3;
-                        }
-
-                        if(this.objectMouseOver.sideHit == 1) {
-                            ++var3;
-                        }
-
-                        if(this.objectMouseOver.sideHit == 2) {
-                            --var4;
-                        }
-
-                        if(this.objectMouseOver.sideHit == 3) {
-                            ++var4;
-                        }
-
-                        if(this.objectMouseOver.sideHit == 4) {
-                            --var2;
-                        }
-
-                        if(this.objectMouseOver.sideHit == 5) {
-                            ++var2;
-                        }
-                    }
-
-                    Block var5 = Block.blocksList[this.theWorld.getBlockId(var2, var3, var4)];
+                    int var11 = this.objectMouseOver.blockZ;
+                    int var12 = this.objectMouseOver.sideHit;
+                    Block var6 = Block.blocksList[this.theWorld.getBlockId(var10, var3, var11)];
                     if(var1 == 0) {
-                        if(var5 != Block.bedrock) {
-                            this.playerController.clickBlock(var2, var3, var4);
+                        this.theWorld.extinguishFire(var10, var3, var11, this.objectMouseOver.sideHit);
+                        if(var6 != Block.bedrock) {
+                            this.playerController.clickBlock(var10, var3, var11);
                             return;
                         }
                     } else {
@@ -474,24 +472,17 @@ public final class Minecraft implements Runnable {
                             return;
                         }
 
-                        var5 = Block.blocksList[this.theWorld.getBlockId(var2, var3, var4)];
-                        if(var9.itemID > 0 && var5 == null || var5 == Block.waterMoving || var5 == Block.waterStill || var5 == Block.lavaMoving || var5 == Block.lavaStill) {
-                            var1 = var9.itemID;
-                            AxisAlignedBB var10 = Block.blocksList[var1].getCollisionBoundingBoxFromPool(var2, var3, var4);
-                            if(var10 != null) {
-                                AxisAlignedBB var7 = this.thePlayer.boundingBox;
-                                if(!((var10.x1 > var7.x0 && var10.x0 < var7.x1 ? (var10.y1 > var7.y0 && var10.y0 < var7.y1 ? var10.z1 > var7.z0 && var10.z0 < var7.z1 : false) : false) ? false : this.theWorld.checkIfAABBIsClear(var10))) {
-                                    return;
-                                }
-                            }
+                        int var13 = var9.stackSize;
+                        int var7 = var11;
+                        var4 = this.theWorld;
+                        var9.getItem().onItemUse(var9, var4, var10, var3, var7, var12);
+                        if(var9.stackSize == 0) {
+                            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+                            return;
+                        }
 
-                            if(!this.playerController.canPlace(var2, var3, var4, var1)) {
-                                return;
-                            }
-
-                            this.theWorld.setBlockWithNotify(var2, var3, var4, var1);
-                            this.entityRenderer.itemRenderer.equipAnimationSpeed();
-                            Block.blocksList[var1].onBlockPlaced(this.theWorld, var2, var3, var4);
+                        if(var9.stackSize != var13) {
+                            this.entityRenderer.itemRenderer.resetEquippedProgress();
                         }
                     }
                 }
@@ -559,11 +550,11 @@ public final class Minecraft implements Runnable {
 
         if(this.currentScreen == null && !PointerInputAbstraction.isTouchMode() && !Mouse.isMouseGrabbed()) {
             this.setIngameNotInFocus();
-            this.displayIngameMenu();
+            this.displayInGameMenu();
         }
 
 		this.playerController.onUpdate();
-        this.ingameGUI.updateChatMessages();
+        this.ingameGUI.addChatMessage();
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png"));
         this.renderEngine.updateDynamicTextures();
@@ -648,7 +639,7 @@ public final class Minecraft implements Runnable {
                                 var2 = Block.dirt.blockID;
                             }
 
-                            if(var2 == Block.slabDouble.blockID) {
+                            if(var2 == Block.stairDouble.blockID) {
                                 var2 = Block.stairSingle.blockID;
                             }
 
@@ -672,11 +663,11 @@ public final class Minecraft implements Runnable {
                             var2 = -1;
                         }
 
-                        for(var15.currentSlot -= var2; var15.currentSlot < 0; var15.currentSlot += 9) {
+                        for(var15.currentItem -= var2; var15.currentItem < 0; var15.currentItem += 9) {
                         }
 
-                        while(var15.currentSlot >= 9) {
-                            var15.currentSlot -= 9;
+                        while(var15.currentItem >= 9) {
+                            var15.currentItem -= 9;
                         }
                     }
 
@@ -703,7 +694,7 @@ public final class Minecraft implements Runnable {
                         this.currentScreen.handleKeyboardInput();
                     } else {
                         if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-                            this.displayIngameMenu();
+                            this.displayInGameMenu();
                         }
 
                         if(this.playerController instanceof PlayerControllerCreative) {
@@ -718,21 +709,21 @@ public final class Minecraft implements Runnable {
                         }
 
                         if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
-                            this.thirdPersonView = !this.thirdPersonView;
+                            this.renderRain = !this.renderRain;
                         }
 
                         if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
-                            this.playerController.displayInventoryGUI();
+                            this.playerController.openInventory();
                         }
 
                         if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
-                            this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.currentSlot);
+                            this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.currentItem);
                         }
                     }
 
                     for(var14 = 0; var14 < 9; ++var14) {
                         if(Keyboard.getEventKey() == var14 + 2) {
-                            this.thePlayer.inventory.currentSlot = var14;
+                            this.thePlayer.inventory.currentItem = var14;
                         }
                     }
 
@@ -761,24 +752,24 @@ public final class Minecraft implements Runnable {
             }
 
             if(this.currentScreen == null) {
-                if((Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F) {
+                if((Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F && this.ingameFocus) {
                     this.clickMouse(0);
                     this.prevFrameTime = this.ticksRan;
                 }
 
-                if((Mouse.isButtonDown(1) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F) {
+                if((Mouse.isButtonDown(1) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F && this.ingameFocus) {
                     this.clickMouse(1);
                     this.prevFrameTime = this.ticksRan;
                 }
             }
 
-            boolean var20 = this.currentScreen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch;
+            boolean var20 = this.currentScreen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch && this.ingameFocus;
             if(!this.playerController.isInTestMode && this.leftClickCounter <= 0) {
                 if(var20 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) {
                     int var2 = this.objectMouseOver.blockX;
                     int var8 = this.objectMouseOver.blockY;
                     var4 = this.objectMouseOver.blockZ;
-                    this.playerController.hitBlock(var2, var8, var4, this.objectMouseOver.sideHit);
+                    this.playerController.sendBlockRemoving(var2, var8, var4, this.objectMouseOver.sideHit);
                     this.effectRenderer.addBlockHitEffects(var2, var8, var4, this.objectMouseOver.sideHit);
                 } else {
                     this.playerController.resetBlockRemoving();
@@ -807,11 +798,27 @@ public final class Minecraft implements Runnable {
 
 	}
 
-    public final void generateNewLevel(int var1) {
-        String var2 = this.session != null ? this.session.username : "anonymous";
-        LevelGenerator var3 = new LevelGenerator(this.loadingScreen);
-        World var4 = var3.generate(var2, 128 << var1, 128 << var1, 64);
-        this.setLevel(var4);
+    public final void generateNewLevel(int var1, int var2, int var3, int var4) {
+        String var5 = this.session != null ? this.session.username : "anonymous";
+        LevelGenerator var6 = new LevelGenerator(this.loadingScreen);
+        var6.islandGen = var3 == 1;
+        var6.floatingGen = var3 == 2;
+        var6.flatGen = var3 == 3;
+        var6.levelType = var4;
+        var1 = 128 << var1;
+        var3 = var1;
+        short var8 = 64;
+        if(var2 == 1) {
+            var1 /= 2;
+            var3 <<= 1;
+        } else if(var2 == 2) {
+            var1 /= 2;
+            var3 = var1;
+            var8 = 256;
+        }
+
+        World var7 = var6.generate(var5, var1, var3, var8);
+        this.setLevel(var7);
     }
 
 	private void setLevel(World var1) {
@@ -825,24 +832,33 @@ public final class Minecraft implements Runnable {
 		if(this.thePlayer == null) {
 			this.thePlayer = new EntityPlayerSP(var1);
 			this.thePlayer.preparePlayerToSpawn();
-            this.playerController.onRespawn(this.thePlayer);
+            this.playerController.flipPlayer(this.thePlayer);
 			if(var1 != null) {
 				var1.playerEntity = this.thePlayer;
 			}
 		}
 
 		if(this.thePlayer != null) {
-			this.thePlayer.movementInput = new MovementInputFromKeys(this.options);
-			this.playerController.flipPlayer(this.thePlayer);
+            this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
+            this.playerController.onRespawn(this.thePlayer);
 		}
 
 		if(this.renderGlobal != null) {
-            this.renderGlobal.loadRenderers(var1);
+            this.renderGlobal.changeWorld(var1);
 		}
 
 		if(this.effectRenderer != null) {
             this.effectRenderer.clearEffects(var1);
 		}
+
+        this.textureWaterFX.textureId = 0;
+        this.textureLavaFX.textureId = 0;
+        int var2 = this.renderEngine.getTexture("/water.png");
+        if(var1.defaultFluid == Block.waterMoving.blockID) {
+            this.textureWaterFX.textureId = var2;
+        } else {
+            this.textureLavaFX.textureId = var2;
+        }
 
 		System.gc();
 	}

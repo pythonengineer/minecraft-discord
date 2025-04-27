@@ -2,29 +2,29 @@ package net.minecraft.game.physics;
 
 public final class AxisAlignedBB {
     private float epsilon = 0.0F;
-    public float x0;
-    public float y0;
-    public float z0;
-    public float x1;
-    public float y1;
-    public float z1;
+    public float minX;
+    public float minY;
+    public float minZ;
+    public float maxX;
+    public float maxY;
+    public float maxZ;
 
     public AxisAlignedBB(float var1, float var2, float var3, float var4, float var5, float var6) {
-        this.x0 = var1;
-        this.y0 = var2;
-        this.z0 = var3;
-        this.x1 = var4;
-        this.y1 = var5;
-        this.z1 = var6;
+        this.minX = var1;
+        this.minY = var2;
+        this.minZ = var3;
+        this.maxX = var4;
+        this.maxY = var5;
+        this.maxZ = var6;
     }
 
     public final AxisAlignedBB addCoord(float var1, float var2, float var3) {
-        float var4 = this.x0;
-        float var5 = this.y0;
-        float var6 = this.z0;
-        float var7 = this.x1;
-        float var8 = this.y1;
-        float var9 = this.z1;
+        float var4 = this.minX;
+        float var5 = this.minY;
+        float var6 = this.minZ;
+        float var7 = this.maxX;
+        float var8 = this.maxY;
+        float var9 = this.maxZ;
         if(var1 < 0.0F) {
             var4 += var1;
         }
@@ -53,28 +53,28 @@ public final class AxisAlignedBB {
     }
 
     public final AxisAlignedBB expand(float var1, float var2, float var3) {
-        float var4 = this.x0 - var1;
-        float var5 = this.y0 - var2;
-        float var6 = this.z0 - var3;
-        var1 += this.x1;
-        var2 += this.y1;
-        var3 += this.z1;
+        float var4 = this.minX - var1;
+        float var5 = this.minY - var2;
+        float var6 = this.minZ - var3;
+        var1 += this.maxX;
+        var2 += this.maxY;
+        var3 += this.maxZ;
         return new AxisAlignedBB(var4, var5, var6, var1, var2, var3);
     }
 
-    public final float clipXCollide(AxisAlignedBB var1, float var2) {
-        if(var1.y1 > this.y0 && var1.y0 < this.y1) {
-            if(var1.z1 > this.z0 && var1.z0 < this.z1) {
+    public final float calculateXOffset(AxisAlignedBB var1, float var2) {
+        if(var1.maxY > this.minY && var1.minY < this.maxY) {
+            if(var1.maxZ > this.minZ && var1.minZ < this.maxZ) {
                 float var3;
-                if(var2 > 0.0F && var1.x1 <= this.x0) {
-                    var3 = this.x0 - var1.x1;
+                if(var2 > 0.0F && var1.maxX <= this.minX) {
+                    var3 = this.minX - var1.maxX;
                     if(var3 < var2) {
                         var2 = var3;
                     }
                 }
 
-                if(var2 < 0.0F && var1.x0 >= this.x1) {
-                    var3 = this.x1 - var1.x0;
+                if(var2 < 0.0F && var1.minX >= this.maxX) {
+                    var3 = this.maxX - var1.minX;
                     if(var3 > var2) {
                         var2 = var3;
                     }
@@ -89,19 +89,19 @@ public final class AxisAlignedBB {
         }
     }
 
-    public final float clipYCollide(AxisAlignedBB var1, float var2) {
-        if(var1.x1 > this.x0 && var1.x0 < this.x1) {
-            if(var1.z1 > this.z0 && var1.z0 < this.z1) {
+    public final float calculateYOffset(AxisAlignedBB var1, float var2) {
+        if(var1.maxX > this.minX && var1.minX < this.maxX) {
+            if(var1.maxZ > this.minZ && var1.minZ < this.maxZ) {
                 float var3;
-                if(var2 > 0.0F && var1.y1 <= this.y0) {
-                    var3 = this.y0 - var1.y1;
+                if(var2 > 0.0F && var1.maxY <= this.minY) {
+                    var3 = this.minY - var1.maxY;
                     if(var3 < var2) {
                         var2 = var3;
                     }
                 }
 
-                if(var2 < 0.0F && var1.y0 >= this.y1) {
-                    var3 = this.y1 - var1.y0;
+                if(var2 < 0.0F && var1.minY >= this.maxY) {
+                    var3 = this.maxY - var1.minY;
                     if(var3 > var2) {
                         var2 = var3;
                     }
@@ -116,19 +116,19 @@ public final class AxisAlignedBB {
         }
     }
 
-    public final float clipZCollide(AxisAlignedBB var1, float var2) {
-        if(var1.x1 > this.x0 && var1.x0 < this.x1) {
-            if(var1.y1 > this.y0 && var1.y0 < this.y1) {
+    public final float calculateZOffset(AxisAlignedBB var1, float var2) {
+        if(var1.maxX > this.minX && var1.minX < this.maxX) {
+            if(var1.maxY > this.minY && var1.minY < this.maxY) {
                 float var3;
-                if(var2 > 0.0F && var1.z1 <= this.z0) {
-                    var3 = this.z0 - var1.z1;
+                if(var2 > 0.0F && var1.maxZ <= this.minZ) {
+                    var3 = this.minZ - var1.maxZ;
                     if(var3 < var2) {
                         var2 = var3;
                     }
                 }
 
-                if(var2 < 0.0F && var1.z0 >= this.z1) {
-                    var3 = this.z1 - var1.z0;
+                if(var2 < 0.0F && var1.minZ >= this.maxZ) {
+                    var3 = this.maxZ - var1.minZ;
                     if(var3 > var2) {
                         var2 = var3;
                     }
@@ -144,29 +144,29 @@ public final class AxisAlignedBB {
     }
 
     public final boolean intersectsWith(AxisAlignedBB var1) {
-        return var1.x1 >= this.x0 && var1.x0 <= this.x1 ? (var1.y1 >= this.y0 && var1.y0 <= this.y1 ? var1.z1 >= this.z0 && var1.z0 <= this.z1 : false) : false;
+        return var1.maxX >= this.minX && var1.minX <= this.maxX ? (var1.maxY >= this.minY && var1.minY <= this.maxY ? var1.maxZ >= this.minZ && var1.minZ <= this.maxZ : false) : false;
     }
 
     public final void offset(float var1, float var2, float var3) {
-        this.x0 += var1;
-        this.y0 += var2;
-        this.z0 += var3;
-        this.x1 += var1;
-        this.y1 += var2;
-        this.z1 += var3;
+        this.minX += var1;
+        this.minY += var2;
+        this.minZ += var3;
+        this.maxX += var1;
+        this.maxY += var2;
+        this.maxZ += var3;
     }
 
     public final AxisAlignedBB copy() {
-        return new AxisAlignedBB(this.x0, this.y0, this.z0, this.x1, this.y1, this.z1);
+        return new AxisAlignedBB(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 
     public final MovingObjectPosition calculateIntercept(Vec3D var1, Vec3D var2) {
-        Vec3D var3 = var1.getIntermediateWithXValue(var2, this.x0);
-        Vec3D var4 = var1.getIntermediateWithXValue(var2, this.x1);
-        Vec3D var5 = var1.getIntermediateWithYValue(var2, this.y0);
-        Vec3D var6 = var1.getIntermediateWithYValue(var2, this.y1);
-        Vec3D var7 = var1.getIntermediateWithZValue(var2, this.z0);
-        var2 = var1.getIntermediateWithZValue(var2, this.z1);
+        Vec3D var3 = var1.getIntermediateWithXValue(var2, this.minX);
+        Vec3D var4 = var1.getIntermediateWithXValue(var2, this.maxX);
+        Vec3D var5 = var1.getIntermediateWithYValue(var2, this.minY);
+        Vec3D var6 = var1.getIntermediateWithYValue(var2, this.maxY);
+        Vec3D var7 = var1.getIntermediateWithZValue(var2, this.minZ);
+        var2 = var1.getIntermediateWithZValue(var2, this.maxZ);
         if(!this.isVecInYZ(var3)) {
             var3 = null;
         }
@@ -249,14 +249,14 @@ public final class AxisAlignedBB {
     }
 
     private boolean isVecInYZ(Vec3D var1) {
-        return var1 == null ? false : var1.yCoord >= this.y0 && var1.yCoord <= this.y1 && var1.zCoord >= this.z0 && var1.zCoord <= this.z1;
+        return var1 == null ? false : var1.yCoord >= this.minY && var1.yCoord <= this.maxY && var1.zCoord >= this.minZ && var1.zCoord <= this.maxZ;
     }
 
     private boolean isVecInXZ(Vec3D var1) {
-        return var1 == null ? false : var1.xCoord >= this.x0 && var1.xCoord <= this.x1 && var1.zCoord >= this.z0 && var1.zCoord <= this.z1;
+        return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.zCoord >= this.minZ && var1.zCoord <= this.maxZ;
     }
 
     private boolean isVecInXY(Vec3D var1) {
-        return var1 == null ? false : var1.xCoord >= this.x0 && var1.xCoord <= this.x1 && var1.yCoord >= this.y0 && var1.yCoord <= this.y1;
+        return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.yCoord >= this.minY && var1.yCoord <= this.maxY;
     }
 }

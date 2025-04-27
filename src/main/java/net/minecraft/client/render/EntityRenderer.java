@@ -61,7 +61,7 @@ public final class EntityRenderer {
         this.fogColor += (var1 - this.fogColor) * 0.1F;
         ++this.entityRendererInt1;
         this.itemRenderer.updateEquippedItem();
-        if(this.mc.thirdPersonView) {
+        if(this.mc.renderRain) {
             EntityRenderer var13 = this;
             EntityPlayerSP var14 = this.mc.thePlayer;
             World var3 = this.mc.theWorld;
@@ -130,7 +130,7 @@ public final class EntityRenderer {
 
     public final void updateCameraAndRender(float var1) {
         if(this.displayActive && !Display.isActive()) {
-            this.mc.displayIngameMenu();
+            this.mc.displayInGameMenu();
         }
 
         this.displayActive = Display.isActive();
@@ -139,7 +139,7 @@ public final class EntityRenderer {
         float var5;
         float var7;
         float var8;
-        if(this.mc.inventoryScreen) {
+        if(this.mc.ingameFocus) {
             var2 = PointerInputAbstraction.getDX();
             var3 = PointerInputAbstraction.getDY();
             byte var4 = 1;
@@ -312,7 +312,7 @@ public final class EntityRenderer {
                     var35.renderParticles(var32, var5);
                     var23.oobGroundRenderer();
                     this.setupFog();
-                    var23.renderClouds(var5);
+                    var23.renderSky(var5);
                     this.setupFog();
                     if(this.mc.objectMouseOver != null) {
                         GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -345,7 +345,7 @@ public final class EntityRenderer {
                     GL11.glEnable(GL11.GL_CULL_FACE);
                     GL11.glDisable(GL11.GL_BLEND);
                     GL11.glDisable(GL11.GL_FOG);
-                    if(this.mc.thirdPersonView) {
+                    if(this.mc.renderRain) {
                         var11 = var5;
                         var12 = this.mc.thePlayer;
                         World var24 = this.mc.theWorld;
@@ -453,7 +453,7 @@ public final class EntityRenderer {
         }
     }
 
-    public final void renderLargeScreenshot() {
+    public final void grabLargeScreenshot() {
     }
 
     private static ImageData screenshotBuffer(ByteBuffer var0, int var1, int var2) {

@@ -10,10 +10,10 @@ public final class BlockMushroom extends BlockFlower {
     }
 
 	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		int var6 = var1.getBlockId(var2, var3 - 1, var4);
-		if(var1.isHalfLit(var2, var3, var4) || var6 != Block.stone.blockID && var6 != Block.gravel.blockID && var6 != Block.cobblestone.blockID) {
-			var1.setBlockWithNotify(var2, var3, var4, 0);
-		}
+        int var6 = var1.getBlockId(var2, var3 - 1, var4);
+        if(!var1.isFullyLit(var2, var3, var4) || !Block.opaqueCubeLookup[var6]) {
+            var1.setBlockWithNotify(var2, var3, var4, 0);
+        }
 
 	}
 }

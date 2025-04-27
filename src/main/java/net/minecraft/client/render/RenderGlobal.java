@@ -14,7 +14,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
-import net.minecraft.game.entity.player.ItemStack;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.EntityMap;
 import net.minecraft.game.level.IWorldAccess;
 import net.minecraft.game.level.World;
@@ -53,12 +53,12 @@ public final class RenderGlobal implements IWorldAccess {
 		this.glRenderListBase = GL11.glGenLists(4096 << 6 << 1);
 	}
 
-    public final void loadRenderers(World var1) {
+    public final void changeWorld(World var1) {
         if(this.worldObj != null) {
             this.worldObj.removeWorldAccess(this);
         }
 
-        this.renderManager.setWorld(var1);
+        this.renderManager.changeWorld(var1);
         this.worldObj = var1;
         this.globalRenderBlocks = new RenderBlocks(Tessellator.instance, var1);
         if(var1 != null) {
@@ -101,110 +101,79 @@ public final class RenderGlobal implements IWorldAccess {
 
 		this.worldRenderersToUpdate.clear();
 		GL11.glNewList(this.glGenList, GL11.GL_COMPILE);
-		RenderGlobal var9 = this;
-        GL11.glColor4f(0.5F, 0.5F, 0.5F, 1.0F);
-		Tessellator var11 = Tessellator.instance;
-		float var12 = this.worldObj.getGroundLevel();
-		int var5 = 128;
-		if(128 > this.worldObj.width) {
-			var5 = this.worldObj.width;
-		}
+		RenderGlobal var11 = this;
+        Tessellator var12 = Tessellator.instance;
+        float var13 = (float)this.worldObj.getGroundLevel();
+        var4 = 128;
+        if(128 > this.worldObj.width) {
+            var4 = this.worldObj.width;
+        }
 
-		if(var5 > this.worldObj.length) {
-			var5 = this.worldObj.length;
-		}
+        if(var4 > this.worldObj.length) {
+            var4 = this.worldObj.length;
+        }
 
-		int var6 = 2048 / var5;
-		var11.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        int var5 = 2048 / var4;
+        var12.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
 
-		int var7;
-		for(var7 = -var5 * var6; var7 < var9.worldObj.width + var5 * var6; var7 += var5) {
-			for(int var8 = -var5 * var6; var8 < var9.worldObj.length + var5 * var6; var8 += var5) {
-				float var10 = var12;
-				if(var7 >= 0 && var8 >= 0 && var7 < var9.worldObj.width && var8 < var9.worldObj.length) {
-					var10 = 0.0F;
-				}
+        for(int var6 = -var4 * var5; var6 < var11.worldObj.width + var4 * var5; var6 += var4) {
+            for(int var7 = -var4 * var5; var7 < var11.worldObj.length + var4 * var5; var7 += var4) {
+                if(var13 < 0.0F || var6 < 0 || var7 < 0 || var6 >= var11.worldObj.width || var7 >= var11.worldObj.length) {
+                    var12.addVertexWithUV((float)var6, var13, (float)(var7 + var4), 0.0F, (float)var4);
+                    var12.addVertexWithUV((float)(var6 + var4), var13, (float)(var7 + var4), (float)var4, (float)var4);
+                    var12.addVertexWithUV((float)(var6 + var4), var13, (float)var7, (float)var4, 0.0F);
+                    var12.addVertexWithUV((float)var6, var13, (float)var7, 0.0F, 0.0F);
+                }
+            }
+        }
 
-				var11.addVertexWithUV((float)var7, var10, (float)(var8 + var5), 0.0F, (float)var5);
-				var11.addVertexWithUV((float)(var7 + var5), var10, (float)(var8 + var5), (float)var5, (float)var5);
-				var11.addVertexWithUV((float)(var7 + var5), var10, (float)var8, (float)var5, 0.0F);
-				var11.addVertexWithUV((float)var7, var10, (float)var8, 0.0F, 0.0F);
-			}
-		}
+        var12.draw();
+        GL11.glEndList();
+        GL11.glNewList(this.glGenList + 1, GL11.GL_COMPILE);
+        var11 = this;
+        GL11.glColor3f(1.0F, 1.0F, 1.0F);
+        float var14 = (float)this.worldObj.getWaterLevel();
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        Tessellator var15 = Tessellator.instance;
+        var4 = 128;
+        if(128 > this.worldObj.width) {
+            var4 = this.worldObj.width;
+        }
 
-		var11.draw();
-		GL11.glColor3f(0.8F, 0.8F, 0.8F);
-		var11.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        if(var4 > this.worldObj.length) {
+            var4 = this.worldObj.length;
+        }
 
-		for(var7 = 0; var7 < var9.worldObj.width; var7 += var5) {
-			var11.addVertexWithUV((float)var7, 0.0F, 0.0F, 0.0F, 0.0F);
-			var11.addVertexWithUV((float)(var7 + var5), 0.0F, 0.0F, (float)var5, 0.0F);
-			var11.addVertexWithUV((float)(var7 + var5), var12, 0.0F, (float)var5, var12);
-			var11.addVertexWithUV((float)var7, var12, 0.0F, 0.0F, var12);
-			var11.addVertexWithUV((float)var7, var12, (float)var9.worldObj.length, 0.0F, var12);
-			var11.addVertexWithUV((float)(var7 + var5), var12, (float)var9.worldObj.length, (float)var5, var12);
-			var11.addVertexWithUV((float)(var7 + var5), 0.0F, (float)var9.worldObj.length, (float)var5, 0.0F);
-			var11.addVertexWithUV((float)var7, 0.0F, (float)var9.worldObj.length, 0.0F, 0.0F);
-		}
+        var5 = 2048 / var4;
+        var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        float var16 = Block.waterMoving.minX;
+        float var17 = Block.waterMoving.minZ;
 
-		GL11.glColor3f(0.6F, 0.6F, 0.6F);
+        for(int var8 = -var4 * var5; var8 < var11.worldObj.width + var4 * var5; var8 += var4) {
+            for(int var9 = -var4 * var5; var9 < var11.worldObj.length + var4 * var5; var9 += var4) {
+                float var10 = var14 + Block.waterMoving.minY;
+                if(var14 < 0.0F || var8 < 0 || var9 < 0 || var8 >= var11.worldObj.width || var9 >= var11.worldObj.length) {
+                    var15.addVertexWithUV((float)var8 + var16, var10, (float)(var9 + var4) + var17, 0.0F, (float)var4);
+                    var15.addVertexWithUV((float)(var8 + var4) + var16, var10, (float)(var9 + var4) + var17, (float)var4, (float)var4);
+                    var15.addVertexWithUV((float)(var8 + var4) + var16, var10, (float)var9 + var17, (float)var4, 0.0F);
+                    var15.addVertexWithUV((float)var8 + var16, var10, (float)var9 + var17, 0.0F, 0.0F);
+                    var15.addVertexWithUV((float)var8 + var16, var10, (float)var9 + var17, 0.0F, 0.0F);
+                    var15.addVertexWithUV((float)(var8 + var4) + var16, var10, (float)var9 + var17, (float)var4, 0.0F);
+                    var15.addVertexWithUV((float)(var8 + var4) + var16, var10, (float)(var9 + var4) + var17, (float)var4, (float)var4);
+                    var15.addVertexWithUV((float)var8 + var16, var10, (float)(var9 + var4) + var17, 0.0F, (float)var4);
+                }
+            }
+        }
 
-		for(var7 = 0; var7 < var9.worldObj.length; var7 += var5) {
-			var11.addVertexWithUV(0.0F, var12, (float)var7, 0.0F, 0.0F);
-			var11.addVertexWithUV(0.0F, var12, (float)(var7 + var5), (float)var5, 0.0F);
-			var11.addVertexWithUV(0.0F, 0.0F, (float)(var7 + var5), (float)var5, var12);
-			var11.addVertexWithUV(0.0F, 0.0F, (float)var7, 0.0F, var12);
-			var11.addVertexWithUV((float)var9.worldObj.width, 0.0F, (float)var7, 0.0F, var12);
-			var11.addVertexWithUV((float)var9.worldObj.width, 0.0F, (float)(var7 + var5), (float)var5, var12);
-			var11.addVertexWithUV((float)var9.worldObj.width, var12, (float)(var7 + var5), (float)var5, 0.0F);
-			var11.addVertexWithUV((float)var9.worldObj.width, var12, (float)var7, 0.0F, 0.0F);
-		}
-
-		var11.draw();
-		GL11.glEndList();
-		GL11.glNewList(this.glGenList + 1, GL11.GL_COMPILE);
-		var9 = this;
-		GL11.glColor3f(1.0F, 1.0F, 1.0F);
-        float var10 = this.worldObj.getWaterLevel();
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		var11 = Tessellator.instance;
-		var4 = 128;
-		if(128 > this.worldObj.width) {
-			var4 = this.worldObj.width;
-		}
-
-		if(var4 > this.worldObj.length) {
-			var4 = this.worldObj.length;
-		}
-
-		var5 = 2048 / var4;
-		var11.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-
-		for(var6 = -var4 * var5; var6 < var9.worldObj.width + var4 * var5; var6 += var4) {
-			for(var7 = -var4 * var5; var7 < var9.worldObj.length + var4 * var5; var7 += var4) {
-				float var13 = var10 - 0.1F;
-				if(var6 < 0 || var7 < 0 || var6 >= var9.worldObj.width || var7 >= var9.worldObj.length) {
-					var11.addVertexWithUV((float)var6, var13, (float)(var7 + var4), 0.0F, (float)var4);
-					var11.addVertexWithUV((float)(var6 + var4), var13, (float)(var7 + var4), (float)var4, (float)var4);
-					var11.addVertexWithUV((float)(var6 + var4), var13, (float)var7, (float)var4, 0.0F);
-					var11.addVertexWithUV((float)var6, var13, (float)var7, 0.0F, 0.0F);
-					var11.addVertexWithUV((float)var6, var13, (float)var7, 0.0F, 0.0F);
-					var11.addVertexWithUV((float)(var6 + var4), var13, (float)var7, (float)var4, 0.0F);
-					var11.addVertexWithUV((float)(var6 + var4), var13, (float)(var7 + var4), (float)var4, (float)var4);
-					var11.addVertexWithUV((float)var6, var13, (float)(var7 + var4), 0.0F, (float)var4);
-				}
-			}
-		}
-
-		var11.draw();
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEndList();
+        var15.draw();
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEndList();
 		this.markBlocksForUpdate(0, 0, 0, this.worldObj.width, this.worldObj.height, this.worldObj.length);
 	}
 
     public final void renderEntities(Vec3D var1, ClippingHelper var2, float var3) {
         EntityMap var4 = this.worldObj.entityMap;
-        this.renderManager.cacheActiveRenderInfo(var3);
+        this.renderManager.setPlayerViewY(var3);
 
         for(int var5 = 0; var5 < var4.width; ++var5) {
             float var6 = (float)((var5 << 4) - 2);
@@ -219,7 +188,7 @@ public final class RenderGlobal implements IWorldAccess {
                     if(var12.size() != 0) {
                         float var13 = (float)((var11 << 4) - 2);
                         float var14 = (float)((var11 + 1 << 4) + 2);
-                        boolean var15 = var2.isBoundingBoxInFrustrum(var6, var9, var13, var7, var10, var14);
+                        boolean var15 = var2.isVisible(var6, var9, var13, var7, var10, var14);
                         if(var15) {
                             float var22 = var14;
                             float var21 = var10;
@@ -289,21 +258,21 @@ public final class RenderGlobal implements IWorldAccess {
                                 var20 = var26.posZ - var1.zCoord;
                                 var21 = var18 * var18 + var19 * var19 + var20 * var20;
                                 AxisAlignedBB var27 = var26.boundingBox;
-                                var17 = var27.x1 - var27.x0;
-                                var18 = var27.y1 - var27.y0;
-                                float var28 = var27.z1 - var27.z0;
+                                var17 = var27.maxX - var27.minX;
+                                var18 = var27.maxY - var27.minY;
+                                float var28 = var27.maxZ - var27.minZ;
                                 var28 = (var17 + var18 + var28) / 3.0F;
                                 var28 *= 64.0F;
                                 if(var21 < var28 * var28) {
                                     if(!var24) {
                                         AxisAlignedBB var29 = var26.boundingBox;
-                                        if(!var2.isBoundingBoxInFrustrum(var29.x0, var29.y0, var29.z0, var29.x1, var29.y1, var29.z1)) {
+                                        if(!var2.isVisible(var29.minX, var29.minY, var29.minZ, var29.maxX, var29.maxY, var29.maxZ)) {
                                             continue;
                                         }
                                     }
 
                                     if(!(var26 instanceof EntityPlayer)) {
-                                        this.renderManager.renderEntityWithPosYaw(var26, this.renderEngine, var3);
+                                        this.renderManager.renderShadow(var26, this.renderEngine, var3);
                                     }
                                 }
                             }
@@ -352,7 +321,7 @@ public final class RenderGlobal implements IWorldAccess {
         ++this.cloudOffsetX;
     }
 
-    public final void renderClouds(float var1) {
+    public final void renderSky(float var1) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/clouds.png"));
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         float var2 = (float)(this.worldObj.cloudColor >> 16 & 255) / 255.0F;
@@ -368,7 +337,8 @@ public final class RenderGlobal implements IWorldAccess {
         }
 
         Tessellator var9 = Tessellator.instance;
-        float var6 = (float)(this.worldObj.height + 2);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5F);
+        float var6 = (float)this.worldObj.cloudHeight;
         var1 = ((float)this.cloudOffsetX + var1) * (0.5F / 1024.0F) * 0.03F;
         var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
         var9.setColorOpaque_F(var2, var3, var4);
@@ -389,6 +359,7 @@ public final class RenderGlobal implements IWorldAccess {
 
         var9.draw();
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
         var9.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
         var1 = (float)(this.worldObj.skyColor >> 16 & 255) / 255.0F;
         var2 = (float)(this.worldObj.skyColor >> 8 & 255) / 255.0F;
@@ -419,7 +390,13 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final void oobGroundRenderer() {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/rock.png"));
+        float var1 = this.worldObj.getBlockLightValue(0, this.worldObj.getGroundLevel(), 0);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/dirt.png"));
+        if(this.worldObj.getGroundLevel() > this.worldObj.getWaterLevel() && this.worldObj.defaultFluid == Block.waterMoving.blockID) {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/grass.png"));
+        }
+
+        GL11.glColor4f(var1, var1, var1, 1.0F);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glCallList(this.glGenList);
     }
@@ -442,7 +419,7 @@ public final class RenderGlobal implements IWorldAccess {
 
         for(int var3 = 0; var3 < var2; ++var3) {
             WorldRenderer var4 = (WorldRenderer)this.worldRenderersToUpdate.remove(var5 - var3);
-            var4.a();
+            var4.updateRenderer();
             var4.needsUpdate = false;
         }
 
@@ -490,28 +467,28 @@ public final class RenderGlobal implements IWorldAccess {
         if(var2 > 0) {
             AxisAlignedBB var3 = Block.blocksList[var2].getSelectedBoundingBoxFromPool(var1.blockX, var1.blockY, var1.blockZ).expand(0.002F, 0.002F, 0.002F);
             GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            GL11.glVertex3f(var3.x0, var3.y0, var3.z0);
-            GL11.glVertex3f(var3.x1, var3.y0, var3.z0);
-            GL11.glVertex3f(var3.x1, var3.y0, var3.z1);
-            GL11.glVertex3f(var3.x0, var3.y0, var3.z1);
-            GL11.glVertex3f(var3.x0, var3.y0, var3.z0);
+            GL11.glVertex3f(var3.minX, var3.minY, var3.minZ);
+            GL11.glVertex3f(var3.maxX, var3.minY, var3.minZ);
+            GL11.glVertex3f(var3.maxX, var3.minY, var3.maxZ);
+            GL11.glVertex3f(var3.minX, var3.minY, var3.maxZ);
+            GL11.glVertex3f(var3.minX, var3.minY, var3.minZ);
             GL11.glEnd();
             GL11.glBegin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-            GL11.glVertex3f(var3.x0, var3.y1, var3.z0);
-            GL11.glVertex3f(var3.x1, var3.y1, var3.z0);
-            GL11.glVertex3f(var3.x1, var3.y1, var3.z1);
-            GL11.glVertex3f(var3.x0, var3.y1, var3.z1);
-            GL11.glVertex3f(var3.x0, var3.y1, var3.z0);
+            GL11.glVertex3f(var3.minX, var3.maxY, var3.minZ);
+            GL11.glVertex3f(var3.maxX, var3.maxY, var3.minZ);
+            GL11.glVertex3f(var3.maxX, var3.maxY, var3.maxZ);
+            GL11.glVertex3f(var3.minX, var3.maxY, var3.maxZ);
+            GL11.glVertex3f(var3.minX, var3.maxY, var3.minZ);
             GL11.glEnd();
             GL11.glBegin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-            GL11.glVertex3f(var3.x0, var3.y0, var3.z0);
-            GL11.glVertex3f(var3.x0, var3.y1, var3.z0);
-            GL11.glVertex3f(var3.x1, var3.y0, var3.z0);
-            GL11.glVertex3f(var3.x1, var3.y1, var3.z0);
-            GL11.glVertex3f(var3.x1, var3.y0, var3.z1);
-            GL11.glVertex3f(var3.x1, var3.y1, var3.z1);
-            GL11.glVertex3f(var3.x0, var3.y0, var3.z1);
-            GL11.glVertex3f(var3.x0, var3.y1, var3.z1);
+            GL11.glVertex3f(var3.minX, var3.minY, var3.minZ);
+            GL11.glVertex3f(var3.minX, var3.maxY, var3.minZ);
+            GL11.glVertex3f(var3.maxX, var3.minY, var3.minZ);
+            GL11.glVertex3f(var3.maxX, var3.maxY, var3.minZ);
+            GL11.glVertex3f(var3.maxX, var3.minY, var3.maxZ);
+            GL11.glVertex3f(var3.maxX, var3.maxY, var3.maxZ);
+            GL11.glVertex3f(var3.minX, var3.minY, var3.maxZ);
+            GL11.glVertex3f(var3.minX, var3.maxY, var3.maxZ);
             GL11.glEnd();
         }
 
@@ -581,6 +558,6 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final void playSound(String var1, float var2, float var3, float var4, float var5, float var6) {
-        this.mc.sndManager.a(var1, var2, var3, var4, var5, var6);
+        this.mc.sndManager.playSound(var1, var2, var3, var4, var5, var6);
     }
 }

@@ -9,12 +9,12 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.game.entity.player.ItemStack;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.block.Block;
 
 public final class GuiInventory extends GuiScreen {
     private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
-    private int selectedItem = -1;
+    private int itemStack = -1;
     private List inventorySlots = new ArrayList();
 
     public GuiInventory() {
@@ -67,25 +67,25 @@ public final class GuiInventory extends GuiScreen {
         int var8;
         for(var8 = 0; var8 < this.inventorySlots.size(); ++var8) {
             Slot var6 = (Slot)this.inventorySlots.get(var8);
-            this.drawSlotInventory(var6.slotIndex, var6.xDisplayPosition, var6.yDisplayPosition);
-            if(var6.getIsMouseOverSlot(var1, var2)
+            this.renderItemIntoGUI(var6.slotIndex, var6.xPos, var6.yPos);
+            if(var6.isAtCursorPos(var1, var2)
                 && (!PointerInputAbstraction.isTouchMode() || primaryTouchPoint != -1)) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
-                int var7 = var6.xDisplayPosition;
-                int var9 = var6.yDisplayPosition;
+                int var7 = var6.xPos;
+                int var9 = var6.yPos;
                 drawGradientRect(var7, var9, var7 + 16, var9 + 16, -2130706433, -2130706433);
                 GL11.glEnable(GL11.GL_LIGHTING);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
         }
 
-        if(this.selectedItem >= 0) {
+        if(this.itemStack >= 0) {
             GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-            var8 = this.selectedItem;
-            this.selectedItem = -1;
-            this.drawSlotInventory(var8, var1 - var3 - 8, var2 - var4 - 8);
-            this.selectedItem = var8;
+            var8 = this.itemStack;
+            this.itemStack = -1;
+            this.renderItemIntoGUI(var8, var1 - var3 - 8, var2 - var4 - 8);
+            this.itemStack = var8;
         }
 
         GL11.glDisable(GL11.GL_NORMALIZE);
@@ -101,13 +101,12 @@ public final class GuiInventory extends GuiScreen {
         GL11.glPopMatrix();
     }
 
-    private void drawSlotInventory(int var1, int var2, int var3) {
+    private void renderItemIntoGUI(int var1, int var2, int var3) {
         ItemStack var4 = this.mc.thePlayer.inventory.mainInventory[var1];
         int var5;
-        if(var4 != null && this.selectedItem != var1) {
-            String var7 = null;
-            var1 = var4.itemID;
-            if(var1 > 0) {
+        if(var4 != null && this.itemStack != var1) {
+            if(var4.itemID < 256) {
+                var1 = var4.itemID;
                 var5 = this.mc.renderEngine.getTexture("/terrain.png");
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
                 Block var6 = Block.blocksList[var1];
@@ -120,16 +119,16 @@ public final class GuiInventory extends GuiScreen {
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
                 this.blockRenderer.renderBlockOnInventory(var6);
                 GL11.glPopMatrix();
-            } else if(var4.iconIndex >= 0) {
+            } else if(var4.getItem().getIconIndex() >= 0) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 var5 = this.mc.renderEngine.getTexture("/gui/items.png");
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
-                this.drawTexturedModalRect(var2, var3, var4.iconIndex % 16 << 4, var4.iconIndex / 16 << 4, 16, 16);
+                this.drawTexturedModalRect(var2, var3, var4.getItem().getIconIndex() % 16 << 4, var4.getItem().getIconIndex() / 16 << 4, 16, 16);
                 GL11.glEnable(GL11.GL_LIGHTING);
             }
 
             if(var4.stackSize > 1) {
-                var7 = "" + var4.stackSize;
+                String var7 = "" + var4.stackSize;
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
                 this.fontRenderer.drawStringWithShadow(var7, var2 + 19 - 2 - this.fontRenderer.getStringWidth(var7), var3 + 6 + 3, 16777215);
@@ -164,7 +163,7 @@ public final class GuiInventory extends GuiScreen {
                 }
 
                 Slot var7 = (Slot)var8.inventorySlots.get(var6);
-                if(var7.getIsMouseOverSlot(var4, var5)) {
+                if(var7.isAtCursorPos(var4, var5)) {
                     var10000 = var7;
                     break;
                 }
@@ -174,33 +173,33 @@ public final class GuiInventory extends GuiScreen {
 
             Slot var9 = var10000;
             if(var9 != null) {
-                if(var9.slotIndex == this.selectedItem) {
-                    this.selectedItem = -1;
+                if(var9.slotIndex == this.itemStack) {
+                    this.itemStack = -1;
                     return;
                 }
 
                 if(this.mc.thePlayer.inventory.mainInventory[var9.slotIndex] != null) {
-                    if(this.selectedItem < 0) {
-                        this.selectedItem = var9.slotIndex;
+                    if(this.itemStack < 0) {
+                        this.itemStack = var9.slotIndex;
                         return;
                     }
 
-                    this.mc.thePlayer.inventory.setInventorySlotContents(this.selectedItem, var9.slotIndex);
+                    this.mc.thePlayer.inventory.swapSlots(this.itemStack, var9.slotIndex);
                     return;
                 }
 
-                if(this.selectedItem >= 0) {
-                    this.mc.thePlayer.inventory.setInventorySlotContents(this.selectedItem, var9.slotIndex);
-                    this.selectedItem = -1;
+                if(this.itemStack >= 0) {
+                    this.mc.thePlayer.inventory.swapSlots(this.itemStack, var9.slotIndex);
+                    this.itemStack = -1;
                     return;
                 }
-            } else if(this.selectedItem > 0) {
+            } else if(this.itemStack > 0) {
                 var3 = (this.width - 176) / 2;
                 var4 = (this.height - 184) / 2;
                 if(var1 < var3 || var2 < var4 || var1 >= var3 + 176 || var2 >= var4 + 176) {
-                    this.mc.thePlayer.dropPlayerItemWithRandomChoice(this.selectedItem);
+                    this.mc.thePlayer.dropPlayerItemWithRandomChoice(this.itemStack);
                 } else if (PointerInputAbstraction.isTouchMode()) {
-                    this.selectedItem = -1;
+                    this.itemStack = -1;
                 }
             }
         }

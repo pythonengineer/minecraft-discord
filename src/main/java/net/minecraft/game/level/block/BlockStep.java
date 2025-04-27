@@ -35,7 +35,7 @@ public final class BlockStep extends Block {
         int var5 = var1.getBlockId(var2, var3 - 1, var4);
         if(var5 == stairSingle.blockID) {
             var1.setBlockWithNotify(var2, var3, var4, 0);
-            var1.setBlockWithNotify(var2, var3 - 1, var4, Block.slabDouble.blockID);
+            var1.setBlockWithNotify(var2, var3 - 1, var4, Block.stairDouble.blockID);
         }
 
 	}

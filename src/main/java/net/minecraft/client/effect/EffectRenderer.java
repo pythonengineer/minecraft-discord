@@ -92,7 +92,7 @@ public final class EffectRenderer {
 
     }
 
-    public final void a(int var1, int var2, int var3) {
+    public final void addBlockDestroyEffects(int var1, int var2, int var3) {
         int var4 = this.worldObj.getBlockId(var1, var2, var3);
         if(var4 != 0) {
             Block var11 = Block.blocksList[var4];

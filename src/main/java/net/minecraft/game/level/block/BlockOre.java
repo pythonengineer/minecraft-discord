@@ -8,7 +8,7 @@ public final class BlockOre extends Block {
 	}
 
     public final int idDropped() {
-        return this == Block.oreCoal ? Block.stairSingle.blockID : (this == Block.oreGold ? Block.goldBlock.blockID : (this == Block.oreIron ? Block.ironBlock.blockID : this.blockID));
+        return this == Block.oreCoal ? Block.stairSingle.blockID : (this == Block.oreGold ? Block.blockGold.blockID : (this == Block.oreIron ? Block.blockSteel.blockID : this.blockID));
     }
 
 	public final int quantityDropped(EaglercraftRandom var1) {

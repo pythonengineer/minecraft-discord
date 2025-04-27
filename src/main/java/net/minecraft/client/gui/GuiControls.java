@@ -15,7 +15,7 @@ public final class GuiControls extends GuiScreen {
 
 	public final void initGui() {
 		for(int var1 = 0; var1 < this.options.keyBindings.length; ++var1) {
-			this.controlList.add(new GuiButtonSmall(var1, this.width / 2 - 155 + var1 % 2 * 160, this.height / 6 + 24 * (var1 >> 1), this.options.setKeyBindingString(var1)));
+			this.controlList.add(new GuiSmallButton(var1, this.width / 2 - 155 + var1 % 2 * 160, this.height / 6 + 24 * (var1 >> 1), this.options.setKeyBindingString(var1)));
 		}
 
 		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, "Done"));

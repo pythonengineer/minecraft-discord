@@ -6,11 +6,11 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
 
 public class AILiving extends AI {
-	private EaglercraftRandom e = new EaglercraftRandom();
+	private EaglercraftRandom rand = new EaglercraftRandom();
 	protected float moveStrafing;
 	protected float moveForward;
 	private float randomYawVelocity;
-	private EntityLiving targetToAttack;
+    private EntityLiving entityLiving;
 	protected boolean isJumping = false;
 	private int fire = 0;
 	private float moveSpeed = 0.7F;
@@ -21,8 +21,8 @@ public class AILiving extends AI {
 		++this.entityAge;
 		float var4;
 		float var5;
-		if(this.entityAge > 600 && this.e.nextInt(800) == 0) {
-			Entity var3 = var1.getPlayer();
+        if(this.entityAge > 600 && this.rand.nextInt(800) == 0) {
+            Entity var3 = var1.getPlayerEntity();
 			if(var3 != null) {
 				var4 = var3.posX - var2.posX;
 				var5 = var3.posY - var2.posY;
@@ -36,7 +36,7 @@ public class AILiving extends AI {
 			}
 		}
 
-		this.targetToAttack = var2;
+        this.entityLiving = var2;
 		if(this.fire > 0) {
 			--this.fire;
 		}
@@ -58,7 +58,7 @@ public class AILiving extends AI {
 			} else if(var10) {
 				var2.motionY += 0.04F;
 			} else if(var2.onGround) {
-				this.targetToAttack.motionY = 0.42F;
+                this.entityLiving.motionY = 0.42F;
 			}
 		}
 
@@ -76,20 +76,20 @@ public class AILiving extends AI {
 			var2.motionY *= 0.8F;
 			var2.motionZ *= 0.8F;
 			var2.motionY = (float)((double)var2.motionY - 0.02D);
-			if(var2.horizontalCollision && var2.isOffsetPositionInLiquid(var2.motionX, var2.motionY + 0.6F - var2.posY + var6, var2.motionZ)) {
-				var2.motionY = 0.3F;
-			}
-		} else if(var2.handleLavaMovement()) {
-			var6 = var2.posY;
-			var2.moveFlying(var4, var5, 0.02F);
-			var2.moveEntity(var2.motionX, var2.motionY, var2.motionZ);
-			var2.motionX *= 0.5F;
-			var2.motionY *= 0.5F;
-			var2.motionZ *= 0.5F;
-			var2.motionY = (float)((double)var2.motionY - 0.02D);
-			if(var2.horizontalCollision && var2.isOffsetPositionInLiquid(var2.motionX, var2.motionY + 0.6F - var2.posY + var6, var2.motionZ)) {
-				var2.motionY = 0.3F;
-			}
+            if(var2.isCollidedHorizontally && var2.isOffsetPositionInLiquid(var2.motionX, var2.motionY + 0.6F - var2.posY + var6, var2.motionZ)) {
+                var2.motionY = 0.3F;
+            }
+        } else if(var2.handleLavaMovement()) {
+            var6 = var2.posY;
+            var2.moveFlying(var4, var5, 0.02F);
+            var2.moveEntity(var2.motionX, var2.motionY, var2.motionZ);
+            var2.motionX *= 0.5F;
+            var2.motionY *= 0.5F;
+            var2.motionZ *= 0.5F;
+            var2.motionY = (float)((double)var2.motionY - 0.02D);
+            if(var2.isCollidedHorizontally && var2.isOffsetPositionInLiquid(var2.motionX, var2.motionY + 0.6F - var2.posY + var6, var2.motionZ)) {
+                var2.motionY = 0.3F;
+            }
 		} else {
 			var2.moveFlying(var4, var5, var2.onGround ? 0.1F : 0.02F);
 			var2.moveEntity(var2.motionX, var2.motionY, var2.motionZ);
@@ -103,36 +103,36 @@ public class AILiving extends AI {
 			}
 		}
 
-		List var12 = var1.a(var2, var2.boundingBox.expand(0.2F, 0.0F, 0.2F));
-		if(var12 != null && var12.size() > 0) {
-			for(int var9 = 0; var9 < var12.size(); ++var9) {
-				Entity var11 = (Entity)var12.get(var9);
-				if(var11.canBePushed()) {
-					var11.applyEntityCollision(var2);
-				}
-			}
-		}
+        List var12 = var1.getEntitiesWithinAABBExcludingEntity(var2, var2.boundingBox.expand(0.2F, 0.0F, 0.2F));
+        if(var12 != null && var12.size() > 0) {
+            for(int var9 = 0; var9 < var12.size(); ++var9) {
+                Entity var11 = (Entity)var12.get(var9);
+                if(var11.canBePushed()) {
+                    var11.applyEntityCollision(var2);
+                }
+            }
+        }
 
 	}
 
 	protected void updatePlayerActionState() {
-		if(this.e.nextFloat() < 0.07F) {
-			this.moveStrafing = (this.e.nextFloat() - 0.5F) * this.moveSpeed;
-			this.moveForward = this.e.nextFloat() * this.moveSpeed;
-		}
+        if(this.rand.nextFloat() < 0.07F) {
+            this.moveStrafing = (this.rand.nextFloat() - 0.5F) * this.moveSpeed;
+            this.moveForward = this.rand.nextFloat() * this.moveSpeed;
+        }
 
-		this.isJumping = this.e.nextFloat() < 0.01F;
-		if(this.e.nextFloat() < 0.04F) {
-			this.randomYawVelocity = (this.e.nextFloat() - 0.5F) * 60.0F;
-		}
+        this.isJumping = this.rand.nextFloat() < 0.01F;
+        if(this.rand.nextFloat() < 0.04F) {
+            this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 60.0F;
+        }
 
-		this.targetToAttack.rotationYaw += this.randomYawVelocity;
-		this.targetToAttack.rotationPitch = 0.0F;
-		boolean var1 = this.targetToAttack.handleWaterMovement();
-		boolean var2 = this.targetToAttack.handleLavaMovement();
-		if(var1 || var2) {
-			this.isJumping = this.e.nextFloat() < 0.8F;
-		}
+        this.entityLiving.rotationYaw += this.randomYawVelocity;
+        this.entityLiving.rotationPitch = 0.0F;
+        boolean var1 = this.entityLiving.handleWaterMovement();
+        boolean var2 = this.entityLiving.handleLavaMovement();
+        if(var1 || var2) {
+            this.isJumping = this.rand.nextFloat() < 0.8F;
+        }
 
 	}
 }

@@ -5,12 +5,12 @@ import net.minecraft.game.level.World;
 import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
-public class BlockFluid extends Block {
+public class BlockFlowing extends Block {
 	protected Material material;
-	protected int stillId;
-	protected int movingId;
+	protected int stillId1;
+	protected int movingId1;
 
-	protected BlockFluid(int var1, Material var2) {
+	protected BlockFlowing(int var1, Material var2) {
 		super(var1);
 		this.material = var2;
 		this.blockIndexInTexture = 14;
@@ -19,8 +19,8 @@ public class BlockFluid extends Block {
 		}
 
 		Block.isBlockFluid[var1] = true;
-		this.movingId = var1;
-		this.stillId = var1 + 1;
+		this.movingId1 = var1;
+		this.stillId1 = var1 + 1;
 		this.setBlockBounds(0.01F, -0.09F, 0.01F, 1.01F, 0.90999997F, 1.01F);
 		this.setTickOnLoad(true);
 	}
@@ -33,27 +33,23 @@ public class BlockFluid extends Block {
 		return false;
 	}
 
-	public final void onBlockPlaced(World var1, int var2, int var3, int var4) {
-		var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
-	}
-
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		boolean var8 = false;
 		int var11 = var4;
 		var4 = var3;
 		var3 = var2;
 		World var10 = var1;
-		BlockFluid var9 = this;
+		BlockFlowing var9 = this;
 		boolean var6 = false;
 
 		boolean var7;
 		do {
 			--var4;
-			if(var10.getBlockId(var3, var4, var11) != 0 || !var9.h(var10, var3, var4, var11)) {
+			if(!var9.canFlow(var10, var3, var4, var11)) {
 				break;
 			}
 
-			var7 = var10.setBlockWithNotify(var3, var4, var11, var9.movingId);
+			var7 = var10.setBlockWithNotify(var3, var4, var11, var9.movingId1);
 			if(var7) {
 				var6 = true;
 			}
@@ -61,50 +57,68 @@ public class BlockFluid extends Block {
 
 		++var4;
 		if(var9.material == Material.water || !var6) {
-			var6 |= var9.i(var10, var3 - 1, var4, var11);
-			var6 |= var9.i(var10, var3 + 1, var4, var11);
-			var6 |= var9.i(var10, var3, var4, var11 - 1);
-			var6 |= var9.i(var10, var3, var4, var11 + 1);
+			var6 |= var9.liquidSpread(var10, var3 - 1, var4, var11);
+			var6 |= var9.liquidSpread(var10, var3 + 1, var4, var11);
+			var6 |= var9.liquidSpread(var10, var3, var4, var11 - 1);
+			var6 |= var9.liquidSpread(var10, var3, var4, var11 + 1);
+		}
+
+		if(var9.material == Material.lava) {
+			var6 |= flow(var10, var3 - 1, var4, var11);
+			var6 |= flow(var10, var3 + 1, var4, var11);
+			var6 |= flow(var10, var3, var4, var11 - 1);
+			var6 |= flow(var10, var3, var4, var11 + 1);
 		}
 
 		if(!var6) {
-			var10.setTileNoUpdate(var3, var4, var11, var9.stillId);
+			var10.setTileNoUpdate(var3, var4, var11, var9.stillId1);
 		} else {
-			var10.scheduleBlockUpdate(var3, var4, var11, var9.movingId);
+			var10.scheduleBlockUpdate(var3, var4, var11, var9.movingId1);
 		}
 
 	}
 
-	private boolean h(World var1, int var2, int var3, int var4) {
-		if(this.material == Material.water) {
-			for(int var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
-				for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
-					for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
-						if(var1.getBlockId(var5, var6, var7) == Block.sponge.blockID) {
-							return false;
+	protected final boolean canFlow(World var1, int var2, int var3, int var4) {
+		int var5 = var1.getBlockId(var2, var3, var4);
+		if(var5 != 0 && var5 != Block.fire.blockID) {
+			return false;
+		} else {
+			if(this.material == Material.water) {
+				for(var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
+					for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
+						for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
+							if(var1.getBlockId(var5, var6, var7) == Block.sponge.blockID) {
+								return false;
+							}
 						}
 					}
 				}
 			}
-		}
 
-		return true;
+			return true;
+		}
 	}
 
-	private boolean i(World var1, int var2, int var3, int var4) {
-		int var5 = var1.getBlockId(var2, var3, var4);
-		if(var5 == 0) {
-			if(!this.h(var1, var2, var3, var4)) {
-				return false;
-			}
-
-			boolean var6 = var1.setBlockWithNotify(var2, var3, var4, this.movingId);
-			if(var6) {
-				var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
-			}
+	private static boolean flow(World var0, int var1, int var2, int var3) {
+		if(Block.fire.canBlockCatchFire(var0.getBlockId(var1, var2, var3))) {
+			Block.fire.fireSpread(var0, var1, var2, var3);
+			return true;
+		} else {
+			return false;
 		}
+	}
 
-		return false;
+	private boolean liquidSpread(World var1, int var2, int var3, int var4) {
+		if(!this.canFlow(var1, var2, var3, var4)) {
+			return false;
+		} else {
+			boolean var5 = var1.setBlockWithNotify(var2, var3, var4, this.movingId1);
+			if(var5) {
+				var1.scheduleBlockUpdate(var2, var3, var4, this.movingId1);
+			}
+
+			return false;
+		}
 	}
 
 	public final float getBlockBrightness(World var1, int var2, int var3, int var4) {
@@ -114,10 +128,14 @@ public class BlockFluid extends Block {
 	public final boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
 		if(var2 >= 0 && var3 >= 0 && var4 >= 0 && var2 < var1.width && var4 < var1.length) {
 			int var6 = var1.getBlockId(var2, var3, var4);
-			return var6 != this.movingId && var6 != this.stillId ? (var5 != 1 || var1.getBlockId(var2 - 1, var3, var4) != 0 && var1.getBlockId(var2 + 1, var3, var4) != 0 && var1.getBlockId(var2, var3, var4 - 1) != 0 && var1.getBlockId(var2, var3, var4 + 1) != 0 ? super.shouldSideBeRendered(var1, var2, var3, var4, var5) : true) : false;
+			return var6 != this.movingId1 && var6 != this.stillId1 ? (var5 != 1 || var1.getBlockId(var2 - 1, var3, var4) != 0 && var1.getBlockId(var2 + 1, var3, var4) != 0 && var1.getBlockId(var2, var3, var4 - 1) != 0 && var1.getBlockId(var2, var3, var4 + 1) != 0 ? super.shouldSideBeRendered(var1, var2, var3, var4, var5) : true) : false;
 		} else {
 			return false;
 		}
+	}
+
+	public final boolean isCollidable() {
+		return false;
 	}
 
 	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
@@ -137,11 +155,10 @@ public class BlockFluid extends Block {
 			Material var6 = Block.blocksList[var5].getBlockMaterial();
 			if(this.material == Material.water && var6 == Material.lava || var6 == Material.water && this.material == Material.lava) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
-				return;
 			}
 		}
 
-		var1.scheduleBlockUpdate(var2, var3, var4, var5);
+		var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
 	}
 
 	public final int tickRate() {

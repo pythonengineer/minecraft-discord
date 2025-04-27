@@ -6,26 +6,29 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.block.Block;
 
 public class EntityPlayer extends EntityLiving {
     public InventoryPlayer inventory = new InventoryPlayer();
-    public byte userType = 0;
+    public byte unusedByte = 0;
     public float prevCameraYaw;
     public float cameraYaw;
     private int getScore = 0;
-    public int getArrows = 20;
+    public int arrows = 20;
 
     public EntityPlayer(World var1) {
         super(var1);
         if(var1 != null) {
             var1.playerEntity = this;
+            var1.onPickup(this);
             var1.releaseEntitySkin(this);
-            var1.spawnEntityInWorld(this);
         }
 
         this.yOffset = 1.62F;
         this.health = 20;
+        this.fireResistance = 20;
     }
 
     public final void preparePlayerToSpawn() {
@@ -68,15 +71,15 @@ public class EntityPlayer extends EntityLiving {
         this.cameraYaw += (var1 - this.cameraYaw) * 0.4F;
         this.cameraPitch += (var2 - this.cameraPitch) * 0.8F;
         if(this.health > 0) {
-            List var5 = this.worldObj.a(this, this.boundingBox.expand(1.0F, 0.0F, 1.0F));
+            List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0F, 0.0F, 1.0F));
             if(var5 != null) {
                 for(int var6 = 0; var6 < var5.size(); ++var6) {
                     Entity var7 = (Entity)var5.get(var6);
                     if(var7 instanceof EntityItem) {
                         EntityItem var8 = (EntityItem)var7;
                         if(var8.delayBeforeCanPickup == 0 && this.inventory.addItemStackToInventory(var8.item)) {
-                            this.worldObj.playSoundEffect(var8, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-                            this.worldObj.releaseEntitySkin(var8);
+                            this.worldObj.playSoundAtEntity(var8, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                            this.worldObj.onPickup(var8);
                         }
                     }
                 }
@@ -110,6 +113,7 @@ public class EntityPlayer extends EntityLiving {
         int var2 = var1;
         InventoryPlayer var4 = this.inventory;
         ItemStack var10000;
+        ItemStack var5;
         if(var4.mainInventory[var2] != null) {
             if(var4.mainInventory[var2].stackSize == 1) {
                 ItemStack var3 = var4.mainInventory[var2];
@@ -117,33 +121,48 @@ public class EntityPlayer extends EntityLiving {
                 var10000 = var3;
             } else {
                 --var4.mainInventory[var2].stackSize;
-                var10000 = new ItemStack(var4.mainInventory[var2], 1);
+                var5 = var4.mainInventory[var2];
+                --var5.stackSize;
+                var10000 = new ItemStack(var5.itemID, 1);
             }
         } else {
             var10000 = null;
         }
 
-        ItemStack var5 = var10000;
+        var5 = var10000;
         if(var5 != null) {
             EntityItem var6 = new EntityItem(this.worldObj, this.posX, this.posY - 0.3F, this.posZ, var5);
             var6.delayBeforeCanPickup = 40;
-            var6.motionX1 = MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
-            var6.motionZ1 = -MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
-            var6.motionY1 = 0.2F;
+            var6.itemMotionX = MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
+            var6.itemMotionZ = -MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
+            var6.itemMotionY = 0.2F;
             float var7 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
             float var8 = this.rand.nextFloat() * 0.1F;
-            var6.motionX1 = (float)((double)var6.motionX1 + Math.cos((double)var7) * (double)var8);
-            var6.motionY1 += (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F;
-            var6.motionZ1 = (float)((double)var6.motionZ1 + Math.sin((double)var7) * (double)var8);
-            this.worldObj.spawnEntityInWorld(var6);
+            var6.itemMotionX = (float)((double)var6.itemMotionX + Math.cos((double)var7) * (double)var8);
+            var6.itemMotionY += (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F;
+            var6.itemMotionZ = (float)((double)var6.itemMotionZ + Math.sin((double)var7) * (double)var8);
+            this.worldObj.releaseEntitySkin(var6);
         }
     }
 
+    public final float canHarvestBlock(Block var1) {
+        Block var2 = var1;
+        InventoryPlayer var4 = this.inventory;
+        float var3 = 1.0F;
+        if(var4.mainInventory[var4.currentItem] != null) {
+            ItemStack var5 = var4.mainInventory[var4.currentItem];
+            var3 = 1.0F * var5.getItem().getStrVsBlock(var2);
+        }
+
+        return var3;
+    }
+
     public final void dropOneItem(boolean flag) {
-        int var1 = this.inventory.currentSlot;
+        int var1 = this.inventory.currentItem;
         int var2 = var1;
         InventoryPlayer var4 = this.inventory;
         ItemStack var10000;
+        ItemStack var5;
         if(var4.mainInventory[var2] != null) {
             if(var4.mainInventory[var2].stackSize == 1) {
                 ItemStack var3 = var4.mainInventory[var2];
@@ -151,30 +170,32 @@ public class EntityPlayer extends EntityLiving {
                 var10000 = var3;
             } else {
                 --var4.mainInventory[var2].stackSize;
-                var10000 = new ItemStack(var4.mainInventory[var2], 1);
+                var5 = var4.mainInventory[var2];
+                --var5.stackSize;
+                var10000 = new ItemStack(var5.itemID, 1);
             }
         } else {
             var10000 = null;
         }
 
-        ItemStack var5 = var10000;
+        var5 = var10000;
         if(var5 != null) {
             EntityItem var6 = new EntityItem(this.worldObj, this.posX, this.posY - 0.3F, this.posZ, var5);
             var6.delayBeforeCanPickup = 40;
-            var6.motionX1 = MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
-            var6.motionZ1 = -MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
-            var6.motionY1 = 0.2F;
+            var6.itemMotionX = MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
+            var6.itemMotionZ = -MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.2F;
+            var6.itemMotionY = 0.2F;
             float var7 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
             float var8 = this.rand.nextFloat() * 0.1F;
-            var6.motionX1 = (float)((double)var6.motionX1 + Math.cos((double)var7) * (double)var8);
-            var6.motionY1 += (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F;
-            var6.motionZ1 = (float)((double)var6.motionZ1 + Math.sin((double)var7) * (double)var8);
-            this.worldObj.spawnEntityInWorld(var6);
+            var6.itemMotionX = (float)((double)var6.itemMotionX + Math.cos((double)var7) * (double)var8);
+            var6.itemMotionY += (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F;
+            var6.itemMotionZ = (float)((double)var6.itemMotionZ + Math.sin((double)var7) * (double)var8);
+            this.worldObj.releaseEntitySkin(var6);
         }
     }
 
     public boolean getItemShouldUseOnTouchEagler() {
         ItemStack st = this.inventory.getCurrentItem();
-        return st != null && st.shouldUseOnTouchEagler();
+        return st != null && st.getItem().shouldUseOnTouchEagler(st);
     }
 }

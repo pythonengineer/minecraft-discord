@@ -454,11 +454,11 @@ public class PlatformAudio {
         panner.setMaxDistance(v1);
         panner.setRolloffFactor(1.0f);
         panner.setDistanceModel("linear");
-        //panner.setPanningModel("HRTF");
+        panner.setPanningModel("equalpower");//panner.setPanningModel("HRTF");
         panner.setConeInnerAngle(360.0f);
         panner.setConeOuterAngle(0.0f);
         panner.setConeOuterGain(0.0f);
-        panner.setOrientation(0.0f, 1.0f, 0.0f);
+        panner.setOrientation(0.0f, 0.0f, 0.0f);
 
         GainNode gain = audioctx.createGain();
         float v2 = volume;

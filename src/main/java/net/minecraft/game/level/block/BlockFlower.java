@@ -13,28 +13,26 @@ public class BlockFlower extends Block {
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		if(!var1.multiplayerWorld) {
-			int var6 = var1.getBlockId(var2, var3 - 1, var4);
-			if(!var1.isHalfLit(var2, var3, var4) || var6 != Block.dirt.blockID && var6 != Block.grass.blockID) {
-				var1.setBlockWithNotify(var2, var3, var4, 0);
-			}
+        int var6 = var1.getBlockId(var2, var3 - 1, var4);
+        if(!var1.isHalfLit(var2, var3, var4) || var6 != Block.dirt.blockID && var6 != Block.grass.blockID) {
+            var1.setBlockWithNotify(var2, var3, var4, 0);
+        }
 
-		}
-	}
+    }
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
-		return null;
-	}
+    public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
+        return null;
+    }
 
-	public final boolean isOpaqueCube() {
-		return false;
-	}
+    public final boolean isOpaqueCube() {
+        return false;
+    }
 
-	public final boolean renderAsNormalBlock() {
-		return false;
-	}
+    public final boolean renderAsNormalBlock() {
+        return false;
+    }
 
-	public final int g() {
-		return 1;
-	}
+    public final int getRenderType() {
+        return 1;
+    }
 }

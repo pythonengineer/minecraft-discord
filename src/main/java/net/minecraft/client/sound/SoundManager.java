@@ -14,16 +14,19 @@ public final class SoundManager {
     private EaglercraftSoundManager sndManager;
     private SoundPool soundPoolSounds = new SoundPool();
     private SoundPool soundPoolMusic = new SoundPool();
+    private GameSettings options;
 
-    public final void loadSoundSettings() {
+    public final void loadSoundSettings(GameSettings var1) {
+        this.options = var1;
+
         try {
             this.sndManager = new EaglercraftSoundManager();
-        } catch (Exception var1) {
+        } catch (Exception var2) {
             System.err.println("error linking with the LibraryJavaSound plug-in");
         }
     }
 
-    public final void registerSounds(GameSettings options) {
+    public final void registerSounds() {
         InputStream stream = EagRuntime.getResourceStream("/assets/sounds.txt");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String file;
@@ -37,10 +40,17 @@ public final class SoundManager {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String file;
             while ((file = reader.readLine()) != null) {
-                this.addMusic(file, "/assets/music/" + file, options);
+                this.addMusic(file, "/assets/music/" + file);
             }
         } catch (Exception e) {
         }
+    }
+
+    public final void onSoundOptionsChanged() {
+        if(!this.options.music) {
+            this.sndManager.stopAllStatic();
+        }
+
     }
 
     public final void closeMinecraft() {
@@ -49,16 +59,16 @@ public final class SoundManager {
 
     public final void addSound(String var1, String var2) {
         EagRuntime.getRequiredResourceBytes(var1);
-        this.soundPoolSounds.getFolder(this.sndManager, var2, var1);
+        this.soundPoolSounds.addSound(this.sndManager, var2, var1);
     }
 
-    public final void addMusic(String var1, String var2, GameSettings options) {
-        if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE || options.music) {
+    public final void addMusic(String var1, String var2) {
+        if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE || this.options.music) {
             EagRuntime.getRequiredResourceBytes(var2);
         }
 
-        this.soundPoolMusic.getFolder(this.sndManager, var1, var2);
-        if(this.soundPoolMusic.numberOfSoundPoolEntries == 3 && options.music) {
+        this.soundPoolMusic.addSound(this.sndManager, var1, var2);
+        if(this.soundPoolMusic.numberOfSoundPoolEntries == 3 && this.options.music) {
             SoundPoolEntry var3 = this.soundPoolMusic.getRandomSoundFromSoundPool("calm");
             var3.playStatic = true;
             this.play(var3);
@@ -75,19 +85,23 @@ public final class SoundManager {
         this.sndManager.setListener(var1, var2);
     }
 
-    public final void a(String var1, float var2, float var3, float var4, float var5, float var6) {
-        SoundPoolEntry var8 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
-        if(var8 != null) {
-            this.play(new SoundPoolEntry(var8, var2, var3, var4, var5, var6));
-        }
+    public final void playSound(String var1, float var2, float var3, float var4, float var5, float var6) {
+        if(this.options.sound) {
+            SoundPoolEntry var8 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
+            if(var8 != null) {
+                this.play(new SoundPoolEntry(var8, var2, var3, var4, var5, var6));
+            }
 
+        }
     }
 
-    public final void playSound(String var1, float var2, float var3) {
-        SoundPoolEntry var4 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
-        if(var4 != null) {
-            this.play(new SoundPoolEntry(var4, true));
-        }
+    public final void playSoundFX(String var1, float var2, float var3) {
+        if(this.options.sound) {
+            SoundPoolEntry var4 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
+            if(var4 != null) {
+                this.play(new SoundPoolEntry(var4, true));
+            }
 
+        }
     }
 }

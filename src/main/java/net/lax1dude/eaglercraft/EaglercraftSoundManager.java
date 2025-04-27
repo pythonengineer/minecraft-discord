@@ -133,11 +133,11 @@ public class EaglercraftSoundManager {
         activeSounds.clear();
     }
 
-    public void stopAllExcept(SoundPoolEntry sound) {
+    public void stopAllStatic() {
         Iterator<ActiveSoundEvent> soundItr = activeSounds.iterator();
         while (soundItr.hasNext()) {
             ActiveSoundEvent evt = soundItr.next();
-            if (evt.soundInstance != sound && !evt.soundHandle.shouldFree()) {
+            if (evt.soundInstance.playStatic && !evt.soundHandle.shouldFree()) {
                 evt.soundHandle.end();
             }
         }

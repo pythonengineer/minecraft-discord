@@ -23,7 +23,7 @@ public class EntityFX extends Entity {
 	public EntityFX(World var1, float var2, float var3, float var4, float var5, float var6, float var7) {
 		super(var1);
 		this.setSize(0.2F, 0.2F);
-		this.yOffset = this.bbHeight / 2.0F;
+		this.yOffset = this.height / 2.0F;
 		this.setPosition(var2, var3, var4);
 		this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
 		this.motionX1 = var5 + (float)(Math.random() * 2.0D - 1.0D) * 0.4F;
@@ -39,7 +39,7 @@ public class EntityFX extends Entity {
 		this.particleScale = (float)(Math.random() * 0.5D + 0.5D);
 		this.particleMaxAge = (int)(4.0D / (Math.random() * 0.9D + 0.1D));
 		this.particleAge = 0;
-		this.makeStepSound = false;
+		this.canTriggerWalking = false;
 	}
 
 	public final EntityFX multiplyVelocity(float var1) {
@@ -50,8 +50,8 @@ public class EntityFX extends Entity {
 	}
 
 	public final EntityFX multipleParticleScaleBy(float var1) {
-        this.setSize(0.120000005F, 0.120000005F);
-        this.particleScale *= 0.6F;
+		this.setSize(0.120000005F, 0.120000005F);
+		this.particleScale *= 0.6F;
 		return this;
 	}
 
@@ -60,7 +60,7 @@ public class EntityFX extends Entity {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		if(this.particleAge++ >= this.particleMaxAge) {
-            this.setEntityDead();
+			this.setEntityDead();
 		}
 
 		this.motionY1 = (float)((double)this.motionY1 - 0.04D * (double)this.particleGravity);

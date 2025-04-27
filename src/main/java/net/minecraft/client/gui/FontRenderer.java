@@ -8,12 +8,12 @@ import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.Tessellator;
 
 public final class FontRenderer {
-    private int[] charList = new int[256];
-    private int character = 0;
-    private GameSettings settings;
+    private int[] charWidth = new int[256];
+    private int fontTextureName = 0;
+    private GameSettings options;
 
 	public FontRenderer(GameSettings var1, String var2, RenderEngine var3) {
-        this.settings = var1;
+        this.options = var1;
 
 		ImageData var14;
 		try {
@@ -49,10 +49,10 @@ public final class FontRenderer {
 				var8 = 4;
 			}
 
-            this.charList[var15] = var8;
+            this.charWidth[var15] = var8;
         }
 
-        this.character = var3.getTexture(var2);
+        this.fontTextureName = var3.getTexture(var2);
 	}
 
     public final void drawStringWithShadow(String var1, int var2, int var3, int var4) {
@@ -71,7 +71,7 @@ public final class FontRenderer {
 				var4 = (var4 & 16579836) >> 2;
 			}
 
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.character);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTextureName);
 			Tessellator var6 = Tessellator.instance;
 			var6.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
 			var6.setColorOpaque_I(var4);
@@ -89,7 +89,7 @@ public final class FontRenderer {
 					int var10 = (var4 & 1) * 191 + var9;
 					int var11 = ((var4 & 2) >> 1) * 191 + var9;
 					var4 = ((var4 & 4) >> 2) * 191 + var9;
-                    if(this.settings.anaglyph) {
+                    if(this.options.anaglyph) {
                         var9 = (var4 * 30 + var11 * 59 + var10 * 11) / 100;
                         var11 = (var4 * 30 + var11 * 70) / 100;
                         var10 = (var4 * 30 + var10 * 70) / 100;
@@ -113,7 +113,7 @@ public final class FontRenderer {
                 var6.addVertexWithUV((float)(var2 + var7) + 7.99F, (float)var3 + 7.99F, 0.0F, ((float)var4 + 7.99F) / 128.0F, ((float)var9 + 7.99F) / 128.0F);
                 var6.addVertexWithUV((float)(var2 + var7) + 7.99F, (float)var3, 0.0F, ((float)var4 + 7.99F) / 128.0F, (float)var9 / 128.0F);
                 var6.addVertexWithUV((float)(var2 + var7), (float)var3, 0.0F, (float)var4 / 128.0F, (float)var9 / 128.0F);
-                var7 += this.charList[var12[var8]];
+                var7 += this.charWidth[var12[var8]];
 			}
 
 			var6.draw();
@@ -131,7 +131,7 @@ public final class FontRenderer {
 				if(var4[var3] == 38) {
 					++var3;
 				} else {
-                    var2 += this.charList[var4[var3]];
+                    var2 += this.charWidth[var4[var3]];
 				}
 			}
 

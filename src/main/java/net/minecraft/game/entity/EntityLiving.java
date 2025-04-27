@@ -6,14 +6,14 @@ import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.StepSound;
 
 public class EntityLiving extends Entity {
-	private int heartsHalvesLife = 20;
+    public int heartsHalvesLife = 20;
 	public float renderYawOffset = 0.0F;
 	public float prevRenderYawOffset = 0.0F;
 	private float rotationYawHead;
 	private float prevRotationYawHead;
-	private int unused2 = 0;
-	private int maxAir = 300;
-	private boolean unused3 = false;
+    private int scoreValue = 0;
+    private int maxAir = 300;
+    private boolean inWater = false;
 	public int health = 20;
 	public int prevHealth;
 	public int heartsLife = 0;
@@ -74,30 +74,41 @@ public class EntityLiving extends Entity {
 			} else {
 				this.attackEntityFrom((Entity)null, 2);
 			}
+
+            this.fire = 0;
 		} else {
 			this.air = this.maxAir;
 		}
 
 		float var1;
-		if(this.handleWaterMovement()) {
-			if(!this.unused3) {
-				var1 = MathHelper.sqrt_float(this.motionX * this.motionX * 0.2F + this.motionY * this.motionY + this.motionZ * this.motionZ * 0.2F) * 0.2F;
-				if(var1 > 1.0F) {
-					var1 = 1.0F;
-				}
+        if(this.handleWaterMovement()) {
+            if(!this.inWater) {
+                var1 = MathHelper.sqrt_float(this.motionX * this.motionX * 0.2F + this.motionY * this.motionY + this.motionZ * this.motionZ * 0.2F) * 0.2F;
+                if(var1 > 1.0F) {
+                    var1 = 1.0F;
+                }
 
-				this.worldObj.playSoundEffect(this, "random.splash", var1, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
-			}
+                this.worldObj.playSoundAtEntity(this, "random.splash", var1, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+            }
 
-			this.fallDistance = 0.0F;
-			this.unused3 = true;
-		} else {
-			this.unused3 = false;
-		}
+            this.fallDistance = 0.0F;
+            this.inWater = true;
+        } else {
+            this.inWater = false;
+        }
 
-		if(this.handleLavaMovement()) {
-			this.attackEntityFrom((Entity)null, 10);
-		}
+        if(this.fire > 0) {
+            if(this.fire % 20 == 0) {
+                this.attackEntityFrom((Entity)null, 1);
+            }
+
+            --this.fire;
+        }
+
+        if(this.handleLavaMovement()) {
+            this.attackEntityFrom((Entity)null, 10);
+            this.fire = 600;
+        }
 
 		this.prevRenderYawOffset = this.renderYawOffset;
 		this.prevRotationYaw = this.rotationYaw;
@@ -203,8 +214,8 @@ public class EntityLiving extends Entity {
 					this.hurtTime = this.maxHurtTime = 10;
 				}
 
-				this.worldObj.playSoundEffect(this, "random.hurt", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-				this.attackedAtYaw = 0.0F;
+                this.worldObj.playSoundAtEntity(this, "random.hurt", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                this.attackedAtYaw = 0.0F;
 				if(var1 != null) {
 					float var6 = var1.posX - this.posX;
 					float var3 = var1.posZ - this.posZ;
@@ -238,11 +249,11 @@ public class EntityLiving extends Entity {
 		int var3 = (int)Math.ceil((double)(var1 - 3.0F));
 		if(var3 > 0) {
 			this.attackEntityFrom((Entity)null, var3);
-			var3 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY - 0.2F - this.yOffset), (int)this.posZ);
-			if(var3 > 0) {
-				StepSound var4 = Block.blocksList[var3].stepSound;
-				this.worldObj.playSoundEffect(this, "step." + var4.a, var4.speed * 0.5F, var4.pitch * (12.0F / 16.0F));
-			}
+            var3 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY - 0.2F - this.yOffset), (int)this.posZ);
+            if(var3 > 0) {
+                StepSound var4 = Block.blocksList[var3].stepSound;
+                this.worldObj.playSoundAtEntity(this, "step." + var4.soundDir, var4.soundVolume * 0.5F, var4.soundPitch * (12.0F / 16.0F));
+            }
 		}
 
 	}

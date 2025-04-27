@@ -8,86 +8,67 @@ import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.StepSound;
 
 public class PlayerController {
-    protected final Minecraft a;
-    public boolean isInTestMode = false;
+	protected final Minecraft mc;
+	public boolean isInTestMode = false;
 
-    public PlayerController(Minecraft var1) {
-        this.a = var1;
-    }
+	public PlayerController(Minecraft var1) {
+		this.mc = var1;
+	}
 
-    public void onWorldChange(World var1) {
-        var1.multiplayerWorld = true;
-    }
+	public void onWorldChange(World var1) {
+	}
 
-    public void displayInventoryGUI() {
-    }
+	public void openInventory() {
+	}
 
-    public void clickBlock(int var1, int var2, int var3) {
-        this.sendBlockRemoved(var1, var2, var3);
-    }
+	public void clickBlock(int var1, int var2, int var3) {
+		this.sendBlockRemoved(var1, var2, var3);
+	}
 
-    public boolean canPlace(int var1, int var2, int var3, int var4) {
-        if(var4 > 0) {
-            Block var6 = Block.blocksList[var4];
-            if(var6 != null) {
-                SoundManager var10000 = this.a.sndManager;
-                String var10001 = "step." + var6.stepSound.a;
-                float var10002 = (float)var1 + 0.5F;
-                float var10003 = (float)var2 + 0.5F;
-                float var10004 = (float)var3 + 0.5F;
-                StepSound var5 = var6.stepSound;
-                float var10005 = (var5.speed + 1.0F) / 2.0F;
-                var5 = var6.stepSound;
-                var10000.a(var10001, var10002, var10003, var10004, var10005, var5.pitch * 0.8F);
-            }
-        }
+	public boolean sendBlockRemoved(int var1, int var2, int var3) {
+		this.mc.effectRenderer.addBlockDestroyEffects(var1, var2, var3);
+		World var4 = this.mc.theWorld;
+		Block var5 = Block.blocksList[var4.getBlockId(var1, var2, var3)];
+		boolean var6 = var4.setBlockWithNotify(var1, var2, var3, 0);
+		if(var5 != null && var6) {
+			SoundManager var10000 = this.mc.sndManager;
+			String var10001 = "step." + var5.stepSound.soundDir;
+			float var10002 = (float)var1 + 0.5F;
+			float var10003 = (float)var2 + 0.5F;
+			float var10004 = (float)var3 + 0.5F;
+			StepSound var7 = var5.stepSound;
+			float var10005 = (var7.soundVolume + 1.0F) / 2.0F;
+			var7 = var5.stepSound;
+			var10000.playSound(var10001, var10002, var10003, var10004, var10005, var7.soundPitch * 0.8F);
+			var5.onBlockDestroyedByPlayer(var4, var1, var2, var3);
+		}
 
-        return true;
-    }
+		return var6;
+	}
 
-    public void sendBlockRemoved(int var1, int var2, int var3) {
-        this.a.effectRenderer.a(var1, var2, var3);
-        World var4 = this.a.theWorld;
-        Block var5 = Block.blocksList[var4.getBlockId(var1, var2, var3)];
-        boolean var6 = var4.setBlockWithNotify(var1, var2, var3, 0);
-        if(var5 != null && var6) {
-            SoundManager var10000 = this.a.sndManager;
-            String var10001 = "step." + var5.stepSound.a;
-            float var10002 = (float)var1 + 0.5F;
-            float var10003 = (float)var2 + 0.5F;
-            float var10004 = (float)var3 + 0.5F;
-            StepSound var7 = var5.stepSound;
-            float var10005 = (var7.speed + 1.0F) / 2.0F;
-            var7 = var5.stepSound;
-            var10000.a(var10001, var10002, var10003, var10004, var10005, var7.pitch * 0.8F);
-            var5.onBlockDestroyedByPlayer(var4, var1, var2, var3);
-        }
+	public void sendBlockRemoving(int var1, int var2, int var3, int var4) {
+	}
 
-    }
+	public void resetBlockRemoving() {
+	}
 
-    public void hitBlock(int var1, int var2, int var3, int var4) {
-    }
+	public void setPartialTime(float var1) {
+	}
 
-    public void resetBlockRemoving() {
-    }
+	public float getBlockReachDistance() {
+		return 5.0F;
+	}
 
-    public void setPartialTime(float var1) {
-    }
+	public void flipPlayer(EntityPlayer var1) {
+	}
 
-    public float getBlockReachDistance() {
-        return 5.0F;
-    }
+	public void onUpdate() {
+	}
 
-    public void onRespawn(EntityPlayer var1) {
-    }
+	public boolean shouldDrawHUD() {
+		return true;
+	}
 
-    public void onUpdate() {
-    }
-
-    public boolean shouldDrawHUD() {
-        return true;
-    }
-
-    public void flipPlayer(EntityPlayer var1) {
-    }
+	public void onRespawn(EntityPlayer var1) {
+	}
 }

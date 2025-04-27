@@ -57,6 +57,14 @@ public class RenderEngine {
 		GL11.glBindTexture(var2);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        if(this.clampTexture) {
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
+        } else {
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+        }
+
 		var2 = var1.getWidth();
 		int var3 = var1.getHeight();
 		int[] var4 = new int[var2 * var3];
@@ -84,14 +92,6 @@ public class RenderEngine {
 		this.imageData.clear();
 		this.imageData.put(var5);
 		this.imageData.position(0).limit(var5.length);
-		if(this.clampTexture) {
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
-		} else {
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-		}
-
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, var2, var3, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
 	}
 
@@ -101,14 +101,27 @@ public class RenderEngine {
     }
 
     public final void updateDynamicTextures() {
-        for(int var1 = 0; var1 < this.textureList.size(); ++var1) {
-            TextureFX var2 = (TextureFX)this.textureList.get(var1);
+        int var1;
+        TextureFX var2;
+        for(var1 = 0; var1 < this.textureList.size(); ++var1) {
+            var2 = (TextureFX)this.textureList.get(var1);
             var2.anaglyphEnabled = this.options.anaglyph;
             var2.onTick();
             this.imageData.clear();
             this.imageData.put(var2.imageData);
             this.imageData.position(0).limit(var2.imageData.length);
             GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, var2.iconIndex % 16 << 4, var2.iconIndex / 16 << 4, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
+        }
+
+        for(var1 = 0; var1 < this.textureList.size(); ++var1) {
+            var2 = (TextureFX)this.textureList.get(var1);
+            if(var2.textureId > 0) {
+                this.imageData.clear();
+                this.imageData.put(var2.imageData);
+                this.imageData.position(0).limit(var2.imageData.length);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2.textureId);
+                GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
+            }
         }
 
     }
