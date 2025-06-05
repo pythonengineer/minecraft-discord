@@ -7,6 +7,7 @@ public class GuiLoadLevel extends GuiScreen implements Runnable {
 	private String[] levels = null;
 	private String status = "";
 	protected String title = "Load level";
+    private boolean frozen = false;
 
 	public GuiLoadLevel(GuiScreen var1) {
 		this.parent = var1;
@@ -24,6 +25,7 @@ public class GuiLoadLevel extends GuiScreen implements Runnable {
 			((GuiButton)this.controlList.get(var2)).visible = true;
 		}
 
+        ((GuiButton)this.controlList.get(5)).visible = true;
 	}
 
 	public void initGui() {
@@ -37,18 +39,20 @@ public class GuiLoadLevel extends GuiScreen implements Runnable {
 		((GuiButton)this.controlList.get(5)).visible = false;
 	}
 
-	protected final void actionPerformed(GuiButton var1) {
-		if(var1.enabled) {
-			if(this.loaded && var1.id < 5) {
-				this.openLevel(var1.id);
-			}
+    protected final void actionPerformed(GuiButton var1) {
+        if(!this.frozen) {
+            if(var1.enabled) {
+                if(this.loaded && var1.id < 5) {
+                    this.openLevel(var1.id);
+                }
 
-			if(this.finished || this.loaded && var1.id == 6) {
-				this.mc.displayGuiScreen(this.parent);
-			}
+                if(this.finished || this.loaded && var1.id == 6) {
+                    this.mc.displayGuiScreen(this.parent);
+                }
 
-		}
-	}
+            }
+        }
+    }
 
 	protected void openLevel(int var1) {
 		this.mc.displayGuiScreen((GuiScreen)null);

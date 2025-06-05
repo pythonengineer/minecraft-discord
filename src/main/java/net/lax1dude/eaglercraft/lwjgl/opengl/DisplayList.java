@@ -2,7 +2,7 @@ package net.lax1dude.eaglercraft.lwjgl.opengl;
 
 import java.util.ArrayList;
 
-import net.lax1dude.eaglercraft.internal.IBufferArrayGL;
+import net.lax1dude.eaglercraft.internal.IVertexArrayGL;
 import net.lax1dude.eaglercraft.internal.IBufferGL;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 
@@ -75,7 +75,7 @@ public class DisplayList {
             this.a = a;
         }
     }
-    IBufferArrayGL vertexArray = null;
+    IVertexArrayGL vertexArray = null;
     IBufferGL vertexBuffer = null;
     int attribs = -1;
     int mode = -1;

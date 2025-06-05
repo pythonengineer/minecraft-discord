@@ -143,25 +143,25 @@ public final class BlockFire extends Block {
 
     public final void fireSpread(World var1, int var2, int var3, int var4) {
         boolean var5 = false;
-        var5 = j(var1, var2, var3 + 1, var4);
+        var5 = fireCheck(var1, var2, var3 + 1, var4);
         if(!var5) {
-            var5 = j(var1, var2 - 1, var3, var4);
+            var5 = fireCheck(var1, var2 - 1, var3, var4);
         }
 
         if(!var5) {
-            var5 = j(var1, var2 + 1, var3, var4);
+            var5 = fireCheck(var1, var2 + 1, var3, var4);
         }
 
         if(!var5) {
-            var5 = j(var1, var2, var3, var4 - 1);
+            var5 = fireCheck(var1, var2, var3, var4 - 1);
         }
 
         if(!var5) {
-            var5 = j(var1, var2, var3, var4 + 1);
+            var5 = fireCheck(var1, var2, var3, var4 + 1);
         }
 
         if(!var5) {
-            var5 = j(var1, var2, var3 - 1, var4);
+            var5 = fireCheck(var1, var2, var3 - 1, var4);
         }
 
         if(!var5) {
@@ -170,7 +170,7 @@ public final class BlockFire extends Block {
 
     }
 
-    private static boolean j(World var0, int var1, int var2, int var3) {
+    private static boolean fireCheck(World var0, int var1, int var2, int var3) {
         int var4 = var0.getBlockId(var1, var2, var3);
         if(var4 == Block.fire.blockID) {
             return true;

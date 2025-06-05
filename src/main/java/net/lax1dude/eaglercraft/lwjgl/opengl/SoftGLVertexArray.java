@@ -1,6 +1,6 @@
 package net.lax1dude.eaglercraft.lwjgl.opengl;
 
-import net.lax1dude.eaglercraft.internal.IBufferArrayGL;
+import net.lax1dude.eaglercraft.internal.IVertexArrayGL;
 import net.lax1dude.eaglercraft.internal.IBufferGL;
 
 import static net.lax1dude.eaglercraft.internal.PlatformOpenGL.*;
@@ -21,7 +21,7 @@ import static net.lax1dude.eaglercraft.internal.PlatformOpenGL.*;
  * POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-class SoftGLBufferArray implements IBufferArrayGL {
+class SoftGLVertexArray implements IVertexArrayGL {
 
     Attrib[] attribs = new Attrib[4];
     int[] attribDivisors = null;
@@ -30,7 +30,7 @@ class SoftGLBufferArray implements IBufferArrayGL {
     int enabledCnt = -1;
     IBufferGL indexBuffer = null;
 
-    SoftGLBufferArray() {
+    SoftGLVertexArray() {
     }
 
     void setAttrib(IBufferGL buffer, int index, int size, int format, boolean normalized, int stride, int offset) {
@@ -87,7 +87,7 @@ class SoftGLBufferArray implements IBufferArrayGL {
         indexBuffer = buffer;
     }
 
-    void transitionToState(SoftGLBufferState previousState, boolean elements) {
+    void transitionToState(SoftGLVertexState previousState, boolean elements) {
         int oldEnabled = previousState.oldEnabled;
         int oldEnabledCnt = previousState.oldEnabledCnt;
         int[] oldAttribDivisors = previousState.attribDivisors;
@@ -223,5 +223,18 @@ class SoftGLBufferArray implements IBufferArrayGL {
             return o2 == this || (o2.hash == hash && o2.buffer == buffer && o2.checkVal == checkVal
                     && o2.stride == stride && o2.offset == offset);
         }
+    }
+
+    @Override
+    public int getBits() {
+        return enabled;
+    }
+
+    @Override
+    public void setBit(int bit) {
+    }
+
+    @Override
+    public void unsetBit(int bit) {
     }
 }

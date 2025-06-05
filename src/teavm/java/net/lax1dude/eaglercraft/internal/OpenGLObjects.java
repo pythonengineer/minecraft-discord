@@ -13,7 +13,7 @@ import net.lax1dude.eaglercraft.internal.teavm.WebGLVertexArray;
 
 /**
  * Copyright (c) 2022-2023 lax1dude. All Rights Reserved.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -25,7 +25,7 @@ import net.lax1dude.eaglercraft.internal.teavm.WebGLVertexArray;
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 class OpenGLObjects {
 
@@ -51,13 +51,14 @@ class OpenGLObjects {
 
     }
 
-    static class BufferArrayGL implements IBufferArrayGL {
+    static class VertexArrayGL implements IVertexArrayGL {
 
         private static int hashGen = 0;
         final WebGLVertexArray ptr;
         final int hash;
+        int enabled;
 
-        BufferArrayGL(WebGLVertexArray ptr) {
+        VertexArrayGL(WebGLVertexArray ptr) {
             this.ptr = ptr;
             this.hash = ++hashGen;
         }
@@ -71,6 +72,20 @@ class OpenGLObjects {
             PlatformOpenGL._wglDeleteVertexArrays(this);
         }
 
+        @Override
+        public int getBits() {
+            return enabled;
+        }
+
+        @Override
+        public void setBit(int bit) {
+            enabled |= bit;
+        }
+
+        @Override
+        public void unsetBit(int bit) {
+            enabled &= ~bit;
+        }
     }
 
     static class TextureGL implements ITextureGL {
@@ -78,6 +93,8 @@ class OpenGLObjects {
         private static int hashGen = 0;
         final WebGLTexture ptr;
         final int hash;
+        int width;
+        int height;
 
         TextureGL(WebGLTexture ptr) {
             this.ptr = ptr;
@@ -91,6 +108,22 @@ class OpenGLObjects {
         @Override
         public void free() {
             PlatformOpenGL._wglDeleteTextures(this);
+        }
+
+        @Override
+        public void setCacheSize(int w, int h) {
+            width = w;
+            height = h;
+        }
+
+        @Override
+        public int getWidth() {
+            return width;
+        }
+
+        @Override
+        public int getHeight() {
+            return height;
         }
 
     }

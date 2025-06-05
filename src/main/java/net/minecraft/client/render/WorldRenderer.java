@@ -18,7 +18,7 @@ public final class WorldRenderer {
 	private int sizeWidth;
 	private int sizeHeight;
 	private int sizeDepth;
-    public boolean isVisible = false;
+    public boolean isInFrustrum = false;
 	private boolean[] skipRenderPass = new boolean[2];
 	public boolean needsUpdate;
 	private RenderBlocks renderBlocks;
@@ -86,7 +86,7 @@ public final class WorldRenderer {
 		}
 	}
 
-	public final float a(EntityLiving var1) {
+	public final float distanceToEntitySquared(EntityLiving var1) {
 		float var2 = var1.posX - (float)this.posX;
 		float var3 = var1.posY - (float)this.posY;
 		float var4 = var1.posZ - (float)this.posZ;
@@ -106,7 +106,7 @@ public final class WorldRenderer {
 	}
 
 	public final int getGLCallListForPass(int[] var1, int var2, int var3) {
-        if(!this.isVisible) {
+        if(!this.isInFrustrum) {
 			return var2;
 		} else {
 			if(!this.skipRenderPass[var3]) {
@@ -118,6 +118,6 @@ public final class WorldRenderer {
 	}
 
 	public final void updateInFrustrum(ClippingHelper var1) {
-	    this.isVisible = var1.isVisible((float)this.posX, (float)this.posY, (float)this.posZ, (float)(this.posX + this.sizeWidth), (float)(this.posY + this.sizeHeight), (float)(this.posZ + this.sizeDepth));
+	    this.isInFrustrum = var1.isBoundingBoxInFrustrum((float)this.posX, (float)this.posY, (float)this.posZ, (float)(this.posX + this.sizeWidth), (float)(this.posY + this.sizeHeight), (float)(this.posZ + this.sizeDepth));
 	}
 }

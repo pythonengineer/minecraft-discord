@@ -35,10 +35,11 @@ class OpenGLObjects {
         }
     }
 
-    static class BufferArrayGL implements IBufferArrayGL {
+    static class VertexArrayGL implements IVertexArrayGL {
         final int ptr;
+        int enabled;
 
-        BufferArrayGL(int ptr) {
+        VertexArrayGL(int ptr) {
             this.ptr = ptr;
         }
 
@@ -50,10 +51,27 @@ class OpenGLObjects {
         public void free() {
             PlatformOpenGL._wglDeleteVertexArrays(this);
         }
+
+        @Override
+        public int getBits() {
+            return enabled;
+        }
+
+        @Override
+        public void setBit(int bit) {
+            enabled |= bit;
+        }
+
+        @Override
+        public void unsetBit(int bit) {
+            enabled &= ~bit;
+        }
     }
 
     static class TextureGL implements ITextureGL {
         final int ptr;
+        int width;
+        int height;
 
         TextureGL(int ptr) {
             this.ptr = ptr;
@@ -66,6 +84,22 @@ class OpenGLObjects {
         @Override
         public void free() {
             PlatformOpenGL._wglDeleteTextures(this);
+        }
+
+        @Override
+        public void setCacheSize(int w, int h) {
+            width = w;
+            height = h;
+        }
+
+        @Override
+        public int getWidth() {
+            return width;
+        }
+
+        @Override
+        public int getHeight() {
+            return height;
         }
     }
 

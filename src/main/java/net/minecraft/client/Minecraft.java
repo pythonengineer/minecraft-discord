@@ -6,6 +6,7 @@ import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.crash.CrashReport;
 import net.lax1dude.eaglercraft.internal.EnumPlatformType;
+import net.lax1dude.eaglercraft.internal.ContextLostError;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
@@ -15,7 +16,6 @@ import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayMode;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import net.lax1dude.eaglercraft.lwjgl.util.glu.GLU;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
 import net.lax1dude.eaglercraft.util.ReportedException;
@@ -109,6 +109,8 @@ public final class Minecraft implements Runnable {
 		this.displayHeight = height;
 		this.fullScreen = fullScreen;
         this.options = new GameSettings(this);
+        this.sndManager.loadSoundSettings(this.options);
+        this.sndManager.registerSounds();
 	}
 
     public final void setServer(String var1, int var2) {
@@ -127,12 +129,7 @@ public final class Minecraft implements Runnable {
 
 			this.currentScreen = (GuiScreen)var1;
 			if(var1 != null) {
-                if(this.ingameFocus) {
-                    this.thePlayer.movementInput.resetKeyState();
-                    this.ingameFocus = false;
-					Mouse.setGrabbed(false);
-				}
-
+                this.setIngameNotInFocus();
 				((GuiScreen)var1).setWorldAndResolution(this,
 				        this.scaledResolution.getScaledWidth(), this.scaledResolution.getScaledHeight());
                 this.skipRenderWorld = false;
@@ -140,17 +137,6 @@ public final class Minecraft implements Runnable {
 				this.setIngameFocus();
 			}
 		}
-	}
-
-	private static void checkGLError(String var0) {
-		int var1 = GL11.glGetError();
-		if(var1 != 0) {
-			String var2 = GLU.gluErrorString(var1);
-			System.out.println("########## GL ERROR ##########");
-			System.out.println("@ " + var0);
-			System.out.println(var1 + ": " + var2);
-		}
-
 	}
 
 	public final void shutdownMinecraftApplet() {
@@ -196,7 +182,6 @@ public final class Minecraft implements Runnable {
 			Mouse.create();
 			Display.update();
 
-			checkGLError("Pre startup");
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glShadeModel(GL11.GL_SMOOTH);
 			GL11.glClearDepth(1.0D);
@@ -208,7 +193,6 @@ public final class Minecraft implements Runnable {
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			checkGLError("Startup");
 
 			this.renderEngine = new RenderEngine(this.options);
             this.renderEngine.registerTextureFX(this.textureLavaFX);
@@ -236,11 +220,8 @@ public final class Minecraft implements Runnable {
 			}
 
 			this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
-            this.sndManager.loadSoundSettings(this.options);
-            this.sndManager.registerSounds();
 
-			checkGLError("Post startup");
-			this.ingameGUI = new GuiIngame(this, this.displayWidth, this.displayHeight);
+			this.ingameGUI = new GuiIngame(this);
 			(new ThreadDownloadSkin(this)).start();
 		} catch (Exception var36) {
 			var36.printStackTrace();
@@ -263,6 +244,8 @@ public final class Minecraft implements Runnable {
 					try {
                         this.timer.updateTimer();
 
+                        Display.checkContextLost();
+
                         PointerInputAbstraction.runGameLoop();
 
 						for(int var38 = 0; var38 < this.timer.elapsedTicks; ++var38) {
@@ -273,25 +256,30 @@ public final class Minecraft implements Runnable {
                             }
 						}
 
-                        if (!Display.contextLost()) {
-                            GL11.optimize();
-    						checkGLError("Pre render");
-                            this.sndManager.setListener(this.thePlayer, this.timer.renderPartialTicks);
-    						GL11.glEnable(GL11.GL_TEXTURE_2D);
-    						this.playerController.setPartialTime(this.timer.renderPartialTicks);
-                            this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
-                            this.entityRenderer.setupOverlayRendering();
-                            touchOverlayRenderer.render(this.displayWidth, this.displayHeight, this.scaledResolution);
-                            GL11.disableBlend();
-                        }
+                        GL11.optimize();
+                        this.sndManager.setListener(this.thePlayer, this.timer.renderPartialTicks);
+						GL11.glEnable(GL11.GL_TEXTURE_2D);
+						this.playerController.setPartialTime(this.timer.renderPartialTicks);
+                        this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
+                        this.entityRenderer.setupOverlayRendering();
+                        touchOverlayRenderer.render(this.displayWidth, this.displayHeight, this.scaledResolution);
+                        GL11.disableBlend();
 
 						Thread.yield();
                         this.updateDisplay();
+
+                        if(!Display.isActive()) {
+                            if(this.fullScreen) {
+                                this.toggleFullScreen();
+                            }
+
+                            Thread.sleep(10L);
+                        }
+
 						if(this.options.limitFramerate) {
 							Thread.sleep(5L);
 						}
 
-						checkGLError("Post render");
 						++var3;
 					} catch (Exception var32) {
 						this.displayGuiScreen(new GuiErrorScreen("Client error", "The game broke! [" + var32 + "]"));
@@ -307,9 +295,9 @@ public final class Minecraft implements Runnable {
 				}
 			}
 
-			return;
-		} catch (MinecraftError var33) {
-			return;
+            return;
+        } catch (ContextLostError err) {
+            throw err;
         } catch (ReportedException reportedexception) {
             this.displayCrashReport(reportedexception.getCrashReport());
         } catch (Throwable throwable1) {
@@ -379,6 +367,36 @@ public final class Minecraft implements Runnable {
 
     }
 
+    public final void toggleFullScreen() {
+        try {
+            this.fullScreen = !this.fullScreen;
+            System.out.println("Toggle fullscreen!");
+            if(this.fullScreen) {
+                Display.setDisplayMode(Display.getDesktopDisplayMode());
+                this.displayWidth = Display.getDisplayMode().getWidth();
+                this.displayHeight = Display.getDisplayMode().getHeight();
+            } else {
+                this.displayWidth = Display.getWidth();
+                this.displayHeight = Display.getHeight();
+
+                Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
+            }
+
+            this.setIngameNotInFocus();
+            Display.setFullscreen(this.fullScreen);
+            this.resize(this.displayWidth, this.displayHeight);
+            this.updateDisplay();
+            Thread.sleep(1000L);
+            if(this.fullScreen) {
+                this.setIngameFocus();
+            }
+
+            System.out.println("Size: " + this.displayWidth + ", " + this.displayHeight);
+        } catch (Exception var2) {
+            var2.printStackTrace();
+        }
+    }
+
     private void resize(int width, int height) {
         this.displayWidth = Math.max(1, width);
         this.displayHeight = Math.max(1, height);
@@ -433,7 +451,7 @@ public final class Minecraft implements Runnable {
                 if(var2 != null) {
                     EntityPlayerSP var5 = this.thePlayer;
                     var4 = this.theWorld;
-                    if(var2.getItem().onPlaced(var2, var5)) {
+                    if(var2.getItem().onItemRightClick(var2, var4, var5)) {
                         if(var2.stackSize == 0) {
                             this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
                         }
@@ -468,11 +486,16 @@ public final class Minecraft implements Runnable {
                         }
                     } else {
                         ItemStack var9 = this.thePlayer.inventory.getCurrentItem();
+                        int var13 = this.theWorld.getBlockId(var10, var3, var11);
+                        if(var13 > 0 && Block.blocksList[var13].blockActivated(this.theWorld, var10, var3, var11, this.thePlayer)) {
+                            return;
+                        }
+
                         if(var9 == null) {
                             return;
                         }
 
-                        int var13 = var9.stackSize;
+                        var13 = var9.stackSize;
                         int var7 = var11;
                         var4 = this.theWorld;
                         var9.getItem().onItemUse(var9, var4, var10, var3, var7, var12);
@@ -676,7 +699,7 @@ public final class Minecraft implements Runnable {
                     }
                 }
 
-                if (this.currentScreen == null && !(touch || Mouse.isActuallyGrabbed()) && (touch || Mouse.getEventButtonState())) {
+                if(this.currentScreen == null && !(touch || Mouse.isActuallyGrabbed()) && (touch || Mouse.getEventButtonState())) {
                     this.setIngameFocus();
                 }
             }
@@ -690,45 +713,49 @@ public final class Minecraft implements Runnable {
             while(Keyboard.next()) {
                 this.thePlayer.movementInput.checkKeyForMovementInput(Keyboard.getEventKey(), Keyboard.getEventKeyState());
                 if(Keyboard.getEventKeyState()) {
-                    if(this.currentScreen != null) {
-                        this.currentScreen.handleKeyboardInput();
+                    if(Keyboard.getEventKey() == Keyboard.KEY_F11) {
+                        this.toggleFullScreen();
                     } else {
-                        if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
-                            this.displayInGameMenu();
-                        }
-
-                        if(this.playerController instanceof PlayerControllerCreative) {
-                            if(Keyboard.getEventKey() == this.options.keyBindLoad.keyCode) {
-                                this.thePlayer.preparePlayerToSpawn();
+                        if(this.currentScreen != null) {
+                            this.currentScreen.handleKeyboardInput();
+                        } else {
+                            if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+                                this.displayInGameMenu();
                             }
 
-                            if(Keyboard.getEventKey() == this.options.keyBindSave.keyCode) {
-                                this.theWorld.setSpawnLocation((int)this.thePlayer.posX, (int)this.thePlayer.posY, (int)this.thePlayer.posZ, this.thePlayer.rotationYaw);
-                                this.thePlayer.preparePlayerToSpawn();
+                            if(this.playerController instanceof PlayerControllerCreative) {
+                                if(Keyboard.getEventKey() == this.options.keyBindLoad.keyCode) {
+                                    this.thePlayer.preparePlayerToSpawn();
+                                }
+
+                                if(Keyboard.getEventKey() == this.options.keyBindSave.keyCode) {
+                                    this.theWorld.setSpawnLocation((int)this.thePlayer.posX, (int)this.thePlayer.posY, (int)this.thePlayer.posZ, this.thePlayer.rotationYaw);
+                                    this.thePlayer.preparePlayerToSpawn();
+                                }
+                            }
+
+                            if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
+                                this.renderRain = !this.renderRain;
+                            }
+
+                            if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
+                                this.playerController.openInventory();
+                            }
+
+                            if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
+                                this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1));
                             }
                         }
 
-                        if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
-                            this.renderRain = !this.renderRain;
+                        for(var14 = 0; var14 < 9; ++var14) {
+                            if(Keyboard.getEventKey() == var14 + 2) {
+                                this.thePlayer.inventory.currentItem = var14;
+                            }
                         }
 
-                        if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
-                            this.playerController.openInventory();
+                        if(Keyboard.getEventKey() == this.options.keyBindToggleFog.keyCode) {
+                            this.options.setOptionValue(4, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
                         }
-
-                        if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
-                            this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.currentItem);
-                        }
-                    }
-
-                    for(var14 = 0; var14 < 9; ++var14) {
-                        if(Keyboard.getEventKey() == var14 + 2) {
-                            this.thePlayer.inventory.currentItem = var14;
-                        }
-                    }
-
-                    if(Keyboard.getEventKey() == this.options.keyBindToggleFog.keyCode) {
-                        this.options.setOptionValue(4, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
                     }
                 }
             }
@@ -821,19 +848,21 @@ public final class Minecraft implements Runnable {
         this.setLevel(var7);
     }
 
-	private void setLevel(World var1) {
+    public final void setLevel(World var1) {
 		this.theWorld = var1;
 		if(var1 != null) {
 			var1.load();
 			this.playerController.onWorldChange(var1);
 			this.thePlayer = (EntityPlayerSP)var1.findSubclassOf(EntityPlayerSP.class);
+            var1.playerEntity = this.thePlayer;
 		}
 
 		if(this.thePlayer == null) {
-			this.thePlayer = new EntityPlayerSP(var1);
+            this.thePlayer = new EntityPlayerSP(this, var1);
 			this.thePlayer.preparePlayerToSpawn();
             this.playerController.flipPlayer(this.thePlayer);
 			if(var1 != null) {
+                var1.spawnEntityInWorld(this.thePlayer);
 				var1.playerEntity = this.thePlayer;
 			}
 		}

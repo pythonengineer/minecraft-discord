@@ -1,5 +1,6 @@
 package net.minecraft.game.entity;
 
+import com.mojang.nbt.NBTTagCompound;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
@@ -12,12 +13,8 @@ public class EntityLiving extends Entity {
 	private float rotationYawHead;
 	private float prevRotationYawHead;
     private int scoreValue = 0;
-    private int maxAir = 300;
-    private boolean inWater = false;
 	public int health = 20;
 	public int prevHealth;
-	public int heartsLife = 0;
-	public int air = 300;
 	public int hurtTime;
 	public int maxHurtTime;
 	public float attackedAtYaw = 0.0F;
@@ -31,10 +28,11 @@ public class EntityLiving extends Entity {
 
 	public EntityLiving(World var1) {
 		super(var1);
+        this.preventEntitySpawning = true;
 		Math.random();
 		this.setPosition(this.posX, this.posY, this.posZ);
 		Math.random();
-		Math.random();
+        this.rotationYaw = (float)(Math.random() * (double)((float)Math.PI) * 2.0D);
 		this.stepHeight = 0.5F;
 	}
 
@@ -48,26 +46,6 @@ public class EntityLiving extends Entity {
 
 	public final void onEntityUpdate() {
 		super.onEntityUpdate();
-		this.prevCameraPitch = this.cameraPitch;
-		if(this.attackTime > 0) {
-			--this.attackTime;
-		}
-
-		if(this.hurtTime > 0) {
-			--this.hurtTime;
-		}
-
-		if(this.heartsLife > 0) {
-			--this.heartsLife;
-		}
-
-		if(this.health <= 0) {
-			++this.deathTime;
-			if(this.deathTime > 20) {
-				this.setEntityDead();
-			}
-		}
-
 		if(this.isInsideOfMaterial()) {
 			if(this.air > 0) {
 				--this.air;
@@ -80,34 +58,24 @@ public class EntityLiving extends Entity {
 			this.air = this.maxAir;
 		}
 
-		float var1;
-        if(this.handleWaterMovement()) {
-            if(!this.inWater) {
-                var1 = MathHelper.sqrt_float(this.motionX * this.motionX * 0.2F + this.motionY * this.motionY + this.motionZ * this.motionZ * 0.2F) * 0.2F;
-                if(var1 > 1.0F) {
-                    var1 = 1.0F;
-                }
-
-                this.worldObj.playSoundAtEntity(this, "random.splash", var1, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
-            }
-
-            this.fallDistance = 0.0F;
-            this.inWater = true;
-        } else {
-            this.inWater = false;
+        this.prevCameraPitch = this.cameraPitch;
+        if(this.attackTime > 0) {
+            --this.attackTime;
         }
 
-        if(this.fire > 0) {
-            if(this.fire % 20 == 0) {
-                this.attackEntityFrom((Entity)null, 1);
-            }
-
-            --this.fire;
+        if(this.hurtTime > 0) {
+            --this.hurtTime;
         }
 
-        if(this.handleLavaMovement()) {
-            this.attackEntityFrom((Entity)null, 10);
-            this.fire = 600;
+        if(this.heartsLife > 0) {
+            --this.heartsLife;
+        }
+
+        if(this.health <= 0) {
+            ++this.deathTime;
+            if(this.deathTime > 20) {
+                this.setEntityDead();
+            }
         }
 
 		this.prevRenderYawOffset = this.renderYawOffset;
@@ -115,7 +83,7 @@ public class EntityLiving extends Entity {
 		this.prevRotationPitch = this.rotationPitch;
 		++this.ticksExisted;
 		this.onLivingUpdate();
-		var1 = this.posX - this.prevPosX;
+		float var1 = this.posX - this.prevPosX;
 		float var2 = this.posZ - this.prevPosZ;
 		float var3 = MathHelper.sqrt_float(var1 * var1 + var2 * var2);
 		float var4 = this.renderYawOffset;
@@ -258,7 +226,25 @@ public class EntityLiving extends Entity {
 
 	}
 
-	public final void setEntityAI(AI var1) {
-		this.entityAI = var1;
-	}
+    public final void setAI(AI var1) {
+        this.entityAI = var1;
+    }
+
+    protected void writeEntityToNBT(NBTTagCompound var1) {
+        var1.setShort("Health", (short)this.health);
+        var1.setShort("HurtTime", (short)this.hurtTime);
+        var1.setShort("DeathTime", (short)this.deathTime);
+        var1.setShort("AttackTime", (short)this.attackTime);
+    }
+
+    protected void readEntityFromNBT(NBTTagCompound var1) {
+        this.health = var1.getShort("Health");
+        this.hurtTime = var1.getShort("HurtTime");
+        this.deathTime = var1.getShort("DeathTime");
+        this.attackTime = var1.getShort("AttackTime");
+    }
+
+    protected String getEntityString() {
+        return "Mob";
+    }
 }

@@ -1,6 +1,7 @@
 package net.minecraft.game.level.generator.noise;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.lax1dude.eaglercraft.util.MathHelper;
 
 public final class NoiseGeneratorPerlin extends NoiseGenerator {
 	private int[] permutations;
@@ -44,12 +45,12 @@ public final class NoiseGeneratorPerlin extends NoiseGenerator {
     public final double generateNoise(double var1, double var3) {
         double var10 = 0.0D;
         double var8 = var3;
-        int var2 = (int)Math.floor(var1) & 255;
-        int var21 = (int)Math.floor(var3) & 255;
-        int var4 = (int)Math.floor(0.0D) & 255;
-        double var6 = var1 - Math.floor(var1);
-        var8 -= Math.floor(var8);
-        var10 = 0.0D - Math.floor(0.0D);
+        int var2 = MathHelper.floor_double(var1) & 255;
+        int var21 = MathHelper.floor_double(var3) & 255;
+        int var4 = MathHelper.floor_double(0.0D) & 255;
+        double var6 = var1 - (double)MathHelper.floor_double(var1);
+        var8 -= (double)MathHelper.floor_double(var8);
+        var10 = 0.0D - (double)MathHelper.floor_double(0.0D);
         double var15 = generateNoise(var6);
         double var17 = generateNoise(var8);
         double var19 = generateNoise(var10);

@@ -14,6 +14,6 @@ public final class EntitySorter implements Comparator {
 		WorldRenderer var10001 = (WorldRenderer)var1;
 		WorldRenderer var4 = (WorldRenderer)var2;
 		WorldRenderer var3 = var10001;
-		return var3.a(this.player) < var4.a(this.player) ? -1 : 1;
+		return var3.distanceToEntitySquared(this.player) < var4.distanceToEntitySquared(this.player) ? -1 : 1;
 	}
 }

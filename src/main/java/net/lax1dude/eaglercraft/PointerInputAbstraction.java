@@ -92,6 +92,9 @@ public class PointerInputAbstraction {
                 if (TouchControls.overlappingControl(tx, ty) != null) {
                     continue;
                 }
+                if (mc.currentScreen == null && mc.ingameGUI.isTouchOverlapEagler(uid, tx, ty)) {
+                    continue;
+                }
                 cursorX = oldTX = tx;
                 cursorY = oldTY = ty;
                 oldMX = Mouse.getX();

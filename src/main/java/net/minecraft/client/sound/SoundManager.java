@@ -63,7 +63,7 @@ public final class SoundManager {
     }
 
     public final void addMusic(String var1, String var2) {
-        if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE || this.options.music) {
+        if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE && this.options.music) {
             EagRuntime.getRequiredResourceBytes(var2);
         }
 

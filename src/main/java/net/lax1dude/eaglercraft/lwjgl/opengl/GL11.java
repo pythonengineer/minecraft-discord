@@ -19,7 +19,7 @@ import java.util.Map;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.GLObjectMap;
-import net.lax1dude.eaglercraft.internal.IBufferArrayGL;
+import net.lax1dude.eaglercraft.internal.IVertexArrayGL;
 import net.lax1dude.eaglercraft.internal.IBufferGL;
 import net.lax1dude.eaglercraft.internal.IProgramGL;
 import net.lax1dude.eaglercraft.internal.ITextureGL;
@@ -874,13 +874,81 @@ public class GL11 {
     public static final int _GL_TEXTURE_COMPARE_FUNC = 0x884D;
     public static final int _GL_COMPARE_REF_TO_TEXTURE = 0x884E;
 
+    static final GLObjectRecycler<IBufferGL> arrayBufferRecycler = new GLObjectRecycler<IBufferGL>(32) {
+
+        @Override
+        protected IBufferGL create() {
+            return _wglGenBuffers();
+        }
+
+        @Override
+        protected void invalidate(IBufferGL object) {
+            // Don't bother
+        }
+
+        @Override
+        protected void destroy(IBufferGL object) {
+            _wglDeleteBuffers(object);
+        }
+    };
+
+    static final GLObjectRecycler<IBufferGL> elementArrayBufferRecycler = new GLObjectRecycler<IBufferGL>(32) {
+
+        @Override
+        protected IBufferGL create() {
+            return _wglGenBuffers();
+        }
+
+        @Override
+        protected void invalidate(IBufferGL object) {
+            // Don't bother
+        }
+
+        @Override
+        protected void destroy(IBufferGL object) {
+            _wglDeleteBuffers(object);
+        }
+    };
+
+    static final GLObjectRecycler<IVertexArrayGL> VAORecycler = new GLObjectRecycler<IVertexArrayGL>(256) {
+
+        @Override
+        protected IVertexArrayGL create() {
+            return _wglGenVertexArrays();
+        }
+
+        @Override
+        protected void invalidate(IVertexArrayGL object) {
+            int i;
+            int bits = object.getBits();
+            if (bits != 0) {
+                IVertexArrayGL old = currentVertexArray;
+                if (old != object) {
+                    _wglBindVertexArray(object);
+                }
+                do {
+                    i = Integer.numberOfTrailingZeros(bits);
+                    _wglDisableVertexAttribArray(i);
+                } while ((bits &= ~((i << 1) - 1)) != 0);
+                if (old != object) {
+                    _wglBindVertexArray(old);
+                }
+            }
+        }
+
+        @Override
+        protected void destroy(IVertexArrayGL object) {
+            _wglDeleteVertexArrays(object);
+        }
+    };
+
     static final GLObjectMap<ITextureGL> mapTexturesGL = new GLObjectMap<>(8192);
     private static final HashMap<Integer, DisplayList> displayLists = new HashMap<>();
 
     public static final Logger logger = LogManager.getLogger("GL11");
 
     static boolean emulatedVAOs = false;
-    static SoftGLBufferState emulatedVAOState = new SoftGLBufferState();
+    static SoftGLVertexState emulatedVAOState = new SoftGLVertexState();
 
     static boolean stateDepthTest = false;
     static boolean stateDepthTestStash = false;
@@ -970,10 +1038,10 @@ public class GL11 {
 
     static int colorMaskBits = 15;
 
-    static float clearColorR = 0.0f;
-    static float clearColorG = 0.0f;
-    static float clearColorB = 0.0f;
-    static float clearColorA = 1.0f;
+    static float clearColorR = -999.0f;
+    static float clearColorG = -999.0f;
+    static float clearColorB = -999.0f;
+    static float clearColorA = -999.0f;
 
     static double clearDepth = -999.0;
 
@@ -1010,8 +1078,8 @@ public class GL11 {
 
     static final Matrix4f[][] textureMatrixStack = new Matrix4f[8][8];
     static final int[][] textureMatrixStackAccessSerial = new int[8][8];
-    static int[] textureMatrixAccessSerial = new int[8];
-    static int[] textureMatrixStackPointer = new int[8];
+    static final int[] textureMatrixAccessSerial = new int[8];
+    static final int[] textureMatrixStackPointer = new int[8];
 
     static boolean stateUseExtensionPipeline = false;
 
@@ -1044,7 +1112,7 @@ public class GL11 {
         }
     }
 
-    public static final void pushLightCoords() {
+    public static void pushLightCoords() {
         int push = stateLightsStackPointer + 1;
         if (push < stateLightsStack.length) {
             Vector4f[] copyFrom = stateLightsStack[stateLightsStackPointer];
@@ -1068,7 +1136,7 @@ public class GL11 {
         }
     }
 
-    public static final void popLightCoords() {
+    public static void popLightCoords() {
         if (stateLightsStackPointer > 0) {
             --stateLightsStackPointer;
         } else {
@@ -1078,7 +1146,7 @@ public class GL11 {
         }
     }
 
-    public static final void glEnable(int var) {
+    public static void glEnable(int var) {
         if (currentList != null) {
             currentList.ops.add(currentList.new ListOperation(var, true));
             return;
@@ -1120,7 +1188,7 @@ public class GL11 {
         }
     }
 
-    public static final void glDisable(int var) {
+    public static void glDisable(int var) {
         if (currentList != null) {
             currentList.ops.add(currentList.new ListOperation(var, false));
             return;
@@ -1162,15 +1230,15 @@ public class GL11 {
         }
     }
 
-    public static final void disableAlpha() {
+    public static void disableAlpha() {
         stateAlphaTest = false;
     }
 
-    public static final void enableAlpha() {
+    public static void enableAlpha() {
         stateAlphaTest = true;
     }
 
-    public static final void glAlphaFunc(int func, float ref) {
+    public static void glAlphaFunc(int func, float ref) {
         if (func != GL_GREATER) {
             throw new UnsupportedOperationException("Only GL_GREATER glAlphaFunc is supported");
         } else {
@@ -1178,19 +1246,19 @@ public class GL11 {
         }
     }
 
-    public static final void enableLighting() {
+    public static void enableLighting() {
         stateLighting = true;
     }
 
-    public static final void disableLighting() {
+    public static void disableLighting() {
         stateLighting = false;
     }
 
-    public static final void enableExtensionPipeline() {
+    public static void enableExtensionPipeline() {
         stateUseExtensionPipeline = true;
     }
 
-    public static final void disableExtensionPipeline() {
+    public static void disableExtensionPipeline() {
         stateUseExtensionPipeline = false;
     }
 
@@ -1200,29 +1268,33 @@ public class GL11 {
 
     private static final Vector4f paramVector4 = new Vector4f();
 
-    public static final void enableMCLight(int light, float diffuse, double dirX, double dirY, double dirZ,
+    public static void enableMCLight(int light, float diffuse, double dirX, double dirY, double dirZ,
             double dirW) {
+        if (dirW != 0.0) throw new IllegalArgumentException("dirW must be 0.0!");
         paramVector4.x = (float)dirX;
         paramVector4.y = (float)dirY;
         paramVector4.z = (float)dirZ;
-        paramVector4.w = (float)dirW;
+        paramVector4.w = (float)0.0f;
         Matrix4f.transform(modelMatrixStack[modelMatrixStackPointer], paramVector4, paramVector4);
-        paramVector4.normalise();
         Vector4f dest = stateLightsStack[stateLightsStackPointer][light];
-        dest.x = paramVector4.x;
-        dest.y = paramVector4.y;
-        dest.z = paramVector4.z;
+        float len = MathHelper.sqrt_float(
+                paramVector4.x * paramVector4.x +
+                paramVector4.y * paramVector4.y +
+                paramVector4.z * paramVector4.z);
+        dest.x = paramVector4.x / len;
+        dest.y = paramVector4.y / len;
+        dest.z = paramVector4.z / len;
         dest.w = diffuse;
         stateLightsEnabled[stateLightsStackPointer][light] = true;
         ++stateLightingSerial[stateLightsStackPointer];
     }
 
-    public static final void disableMCLight(int light) {
+    public static void disableMCLight(int light) {
         stateLightsEnabled[stateLightsStackPointer][light] = false;
         ++stateLightingSerial[stateLightsStackPointer];
     }
 
-    public static final void glLight(int light, int type, FloatBuffer vector) {
+    public static void glLight(int light, int type, FloatBuffer vector) {
         switch (light) {
             case GL_LIGHT0:
                 light = 0;
@@ -1256,8 +1328,8 @@ public class GL11 {
         }
     }
 
-    public static final void glLightModel(int type, FloatBuffer vector) {
-        if (type != GL11.GL_LIGHT_MODEL_AMBIENT) {
+    public static void glLightModel(int type, FloatBuffer vector) {
+        if (type != GL_LIGHT_MODEL_AMBIENT) {
             throw new UnsupportedOperationException("Only GL_LIGHT_MODEL_AMBIENT glLightModel is supported");
         }
         stateLightingAmbientR = vector.get();
@@ -1266,45 +1338,45 @@ public class GL11 {
         ++stateLightingAmbientSerial;
     }
 
-    public static final void glLightModelf(int type, float value) {
-        if (type != GL11.GL_LIGHT_MODEL_LOCAL_VIEWER) {
+    public static void glLightModelf(int type, float value) {
+        if (type != GL_LIGHT_MODEL_LOCAL_VIEWER) {
             throw new UnsupportedOperationException("Only GL_LIGHT_MODEL_LOCAL_VIEWER glLightModelf is supported");
         }
         stateLightingLocalViewer = value > 0.0f ? true : false;
     }
 
-    public static final void glColorMaterial(int face, int mode) {
+    public static void glColorMaterial(int face, int mode) {
     }
 
-    public static final void enableColorMaterial() {
+    public static void enableColorMaterial() {
         stateMaterial = true;
     }
 
-    public static final void disableColorMaterial() {
+    public static void disableColorMaterial() {
         stateMaterial = false;
     }
 
-    public static final void disableDepth() {
+    public static void disableDepth() {
         if (stateDepthTest) {
             _wglDisable(GL_DEPTH_TEST);
             stateDepthTest = false;
         }
     }
 
-    public static final void enableDepth() {
+    public static void enableDepth() {
         if (!stateDepthTest) {
             _wglEnable(GL_DEPTH_TEST);
             stateDepthTest = true;
         }
     }
 
-    public static final void eagPushStateForGLES2BlitHack() {
+    public static void eagPushStateForGLES2BlitHack() {
         stateDepthTestStash = stateDepthTest;
         stateCullStash = stateCull;
         stateBlendStash = stateBlend;
     }
 
-    public static final void eagPopStateForGLES2BlitHack() {
+    public static void eagPopStateForGLES2BlitHack() {
         if (stateDepthTestStash) {
             enableDepth();
         } else {
@@ -1322,7 +1394,7 @@ public class GL11 {
         }
     }
 
-    public static final void glDepthFunc(int depthFunc) {
+    public static void glDepthFunc(int depthFunc) {
         int rev = depthFunc;
         switch (depthFunc) {
             case GL_GREATER:
@@ -1347,42 +1419,42 @@ public class GL11 {
         }
     }
 
-    public static final void glDepthMask(boolean flagIn) {
+    public static void glDepthMask(boolean flagIn) {
         if (flagIn != stateDepthMask) {
             _wglDepthMask(flagIn);
             stateDepthMask = flagIn;
         }
     }
 
-    public static final void disableBlend() {
+    public static void disableBlend() {
         if (stateBlend) {
             if (stateGlobalBlend) _wglDisable(GL_BLEND);
             stateBlend = false;
         }
     }
 
-    public static final void enableBlend() {
+    public static void enableBlend() {
         if (!stateBlend) {
             if (stateGlobalBlend) _wglEnable(GL_BLEND);
             stateBlend = true;
         }
     }
 
-    public static final void globalDisableBlend() {
+    public static void globalDisableBlend() {
         if (stateBlend) {
             _wglDisable(GL_BLEND);
         }
         stateGlobalBlend = false;
     }
 
-    public static final void globalEnableBlend() {
+    public static void globalEnableBlend() {
         if (stateBlend) {
             _wglEnable(GL_BLEND);
         }
         stateGlobalBlend = true;
     }
 
-    public static final void glBlendFunc(int srcFactor, int dstFactor) {
+    public static void glBlendFunc(int srcFactor, int dstFactor) {
         if (currentList != null) {
             currentList.ops.add(currentList.new ListOperation(GL_BLEND, srcFactor, dstFactor));
             return;
@@ -1400,7 +1472,7 @@ public class GL11 {
         }
     }
 
-    public static final void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha,
+    public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha,
             int dstFactorAlpha) {
         if (stateEnableOverlayFramebufferBlending) { // game overlay framebuffer in EntityRenderer.java
             srcFactorAlpha = GL_ONE;
@@ -1415,15 +1487,15 @@ public class GL11 {
         }
     }
 
-    public static final void enableOverlayFramebufferBlending() {
+    public static void enableOverlayFramebufferBlending() {
         stateEnableOverlayFramebufferBlending = true;
     }
 
-    public static final void disableOverlayFramebufferBlending() {
+    public static void disableOverlayFramebufferBlending() {
         stateEnableOverlayFramebufferBlending = false;
     }
 
-    public static final void setShaderBlendSrc(float r, float g, float b, float a) {
+    public static void setShaderBlendSrc(float r, float g, float b, float a) {
         stateShaderBlendSrcColorR = r;
         stateShaderBlendSrcColorG = g;
         stateShaderBlendSrcColorB = b;
@@ -1431,7 +1503,7 @@ public class GL11 {
         ++stateShaderBlendColorSerial;
     }
 
-    public static final void setShaderBlendAdd(float r, float g, float b, float a) {
+    public static void setShaderBlendAdd(float r, float g, float b, float a) {
         stateShaderBlendAddColorR = r;
         stateShaderBlendAddColorG = g;
         stateShaderBlendAddColorB = b;
@@ -1439,15 +1511,15 @@ public class GL11 {
         ++stateShaderBlendColorSerial;
     }
 
-    public static final void enableShaderBlendAdd() {
+    public static void enableShaderBlendAdd() {
         stateEnableShaderBlendColor = true;
     }
 
-    public static final void disableShaderBlendAdd() {
+    public static void disableShaderBlendAdd() {
         stateEnableShaderBlendColor = false;
     }
 
-    public static final void setBlendConstants(float r, float g, float b, float a) {
+    public static void setBlendConstants(float r, float g, float b, float a) {
         if (r != blendConstantR || g != blendConstantG || b != blendConstantB || a != blendConstantA) {
             _wglBlendColor(r, g, b, a);
             blendConstantR = r;
@@ -1457,70 +1529,70 @@ public class GL11 {
         }
     }
 
-    public static final void enableFog() {
+    public static void enableFog() {
         stateFog = true;
     }
 
-    public static final void disableFog() {
+    public static void disableFog() {
         stateFog = false;
     }
 
-    public static final void setFog(int param) {
+    public static void setFog(int param) {
         stateFogEXP = param == GL_EXP;
         ++stateFogSerial;
     }
 
-    public static final void setFogDensity(float param) {
+    public static void setFogDensity(float param) {
         stateFogDensity = param;
         ++stateFogSerial;
     }
 
-    public static final void setFogStart(float param) {
+    public static void setFogStart(float param) {
         stateFogStart = param;
         ++stateFogSerial;
     }
 
-    public static final void setFogEnd(float param) {
+    public static void setFogEnd(float param) {
         stateFogEnd = param;
         ++stateFogSerial;
     }
 
-    public static final void enableCull() {
+    public static void enableCull() {
         if (!stateCull) {
             _wglEnable(GL_CULL_FACE);
             stateCull = true;
         }
     }
 
-    public static final void disableCull() {
+    public static void disableCull() {
         if (stateCull) {
             _wglDisable(GL_CULL_FACE);
             stateCull = false;
         }
     }
 
-    public static final void glCullFace(int mode) {
+    public static void glCullFace(int mode) {
         if (stateCullFace != mode) {
             _wglCullFace(mode);
             stateCullFace = mode;
         }
     }
 
-    public static final void enablePolygonOffset() {
+    public static void enablePolygonOffset() {
         if (!statePolygonOffset) {
             _wglEnable(GL_POLYGON_OFFSET_FILL);
             statePolygonOffset = true;
         }
     }
 
-    public static final void disablePolygonOffset() {
+    public static void disablePolygonOffset() {
         if (statePolygonOffset) {
             _wglDisable(GL_POLYGON_OFFSET_FILL);
             statePolygonOffset = false;
         }
     }
 
-    public static final void doPolygonOffset(float factor, float units) {
+    public static void doPolygonOffset(float factor, float units) {
         if (factor != statePolygonOffsetFactor || units != statePolygonOffsetUnits) {
             _wglPolygonOffset(-factor, units);
             statePolygonOffsetFactor = factor;
@@ -1528,32 +1600,32 @@ public class GL11 {
         }
     }
 
-    public static final void enableColorLogic() {
+    public static void enableColorLogic() {
         throw new UnsupportedOperationException("Color logic op is not supported in OpenGL ES!");
     }
 
-    public static final void disableColorLogic() {
+    public static void disableColorLogic() {
 
     }
 
-    public static final void colorLogicOp(int opcode) {
+    public static void colorLogicOp(int opcode) {
 
     }
 
-    public static final void enableTexGen() {
+    public static void enableTexGen() {
         stateTexGen = true;
     }
 
-    public static final void disableTexGen() {
+    public static void disableTexGen() {
         stateTexGen = false;
     }
 
-    public static final void texGen(TexGen coord, int source) {
+    public static void texGen(TexGen coord, int source) {
         coord.source = source;
         ++stateTexGenSerial;
     }
 
-    public static final void func_179105_a(TexGen coord, int plane, FloatBuffer vector) {
+    public static void func_179105_a(TexGen coord, int plane, FloatBuffer vector) {
         coord.plane = plane;
         coord.vector.load(vector);
         if (plane == GL_EYE_PLANE) {
@@ -1563,7 +1635,7 @@ public class GL11 {
         ++stateTexGenSerial;
     }
 
-    public static final void setActiveTexture(int texture) {
+    public static void setActiveTexture(int texture) {
         int textureIdx = texture - GL_TEXTURE0;
         if (textureIdx != activeTexture) {
             _wglActiveTexture(texture);
@@ -1571,50 +1643,50 @@ public class GL11 {
         }
     }
 
-    public static final void enableTexture2D() {
+    public static void enableTexture2D() {
         stateTexture[activeTexture] = true;
     }
 
-    public static final void disableTexture2D() {
+    public static void disableTexture2D() {
         stateTexture[activeTexture] = false;
     }
 
-    public static final void texCoords2D(float x, float y) {
+    public static void texCoords2D(float x, float y) {
         textureCoordsX[activeTexture] = x;
         textureCoordsY[activeTexture] = y;
         ++textureCoordsAccessSerial[activeTexture];
     }
 
-    public static final void texCoords2DDirect(int tex, float x, float y) {
+    public static void texCoords2DDirect(int tex, float x, float y) {
         textureCoordsX[tex] = x;
         textureCoordsY[tex] = y;
         ++textureCoordsAccessSerial[tex];
     }
 
-    public static final float getTexCoordX(int tex) {
+    public static float getTexCoordX(int tex) {
         return textureCoordsX[tex];
     }
 
-    public static final float getTexCoordY(int tex) {
+    public static float getTexCoordY(int tex) {
         return textureCoordsY[tex];
     }
 
-    public static final int glGenTextures() {
+    public static int glGenTextures() {
         return mapTexturesGL.register(_wglGenTextures());
     }
 
-    public static final int glGenTextures(IntBuffer ib) {
+    public static int glGenTextures(IntBuffer ib) {
         int i = mapTexturesGL.register(_wglGenTextures());
         ib.put(i);
         return i;
     }
 
-    public static final void glDeleteTexture(int texture) {
+    public static void glDeleteTexture(int texture) {
         unbindTextureIfCached(texture);
         _wglDeleteTextures(mapTexturesGL.free(texture));
     }
 
-    public static final void glDeleteTextures(IntBuffer buffer) {
+    public static void glDeleteTextures(IntBuffer buffer) {
         for (int i = 0; i < buffer.remaining(); ++i) {
             glDeleteTexture(buffer.get(i));
         }
@@ -1630,7 +1702,7 @@ public class GL11 {
                     f2 = f1;
                 }
                 _wglBindTexture(GL_TEXTURE_2D, null);
-                if (GL11.checkOpenGLESVersion() >= 300) {
+                if (checkOpenGLESVersion() >= 300) {
                     _wglBindTexture(GL_TEXTURE_3D, null);
                 }
                 boundTexture[i] = -1;
@@ -1641,14 +1713,14 @@ public class GL11 {
         }
     }
 
-    public static final void glBindTexture(int texture) {
+    public static void glBindTexture(int texture) {
         if (texture != boundTexture[activeTexture]) {
             _wglBindTexture(GL_TEXTURE_2D, mapTexturesGL.get(texture));
             boundTexture[activeTexture] = texture;
         }
     }
 
-    public static final void glBindTexture(int mode, int texture) {
+    public static void glBindTexture(int mode, int texture) {
         if (currentList != null) {
             currentList.ops.add(currentList.new ListOperation(texture));
             return;
@@ -1656,14 +1728,14 @@ public class GL11 {
         glBindTexture(texture);
     }
 
-    public static final void bindTexture3D(int texture) {
+    public static void bindTexture3D(int texture) {
         if (texture != boundTexture[activeTexture]) {
             _wglBindTexture(GL_TEXTURE_3D, mapTexturesGL.get(texture));
             boundTexture[activeTexture] = texture;
         }
     }
 
-    public static final void quickBindTexture(int unit, int texture) {
+    public static void quickBindTexture(int unit, int texture) {
         int unitBase = unit - GL_TEXTURE0;
         if (texture != boundTexture[unitBase]) {
             if (unitBase != activeTexture) {
@@ -1677,19 +1749,17 @@ public class GL11 {
         }
     }
 
-    public static final void glShadeModel(int mode) {
-
+    public static void glShadeModel(int mode) {
     }
 
-    public static final void enableRescaleNormal() {
+    public static void enableRescaleNormal() {
         // still not sure what this is for
     }
 
-    public static final void disableRescaleNormal() {
-
+    public static void disableRescaleNormal() {
     }
 
-    public static final void glViewport(int x, int y, int w, int h) {
+    public static void glViewport(int x, int y, int w, int h) {
         if (viewportX != x || viewportY != y || viewportW != w || viewportH != h) {
             _wglViewport(x, y, w, h);
             viewportX = x;
@@ -1699,7 +1769,7 @@ public class GL11 {
         }
     }
 
-    public static final void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
+    public static void glColorMask(boolean red, boolean green, boolean blue, boolean alpha) {
         int bits = (red ? 1 : 0) | (green ? 2 : 0) | (blue ? 4 : 0) | (alpha ? 8 : 0);
         if (bits != colorMaskBits) {
             _wglColorMask(red, green, blue, alpha);
@@ -1707,7 +1777,7 @@ public class GL11 {
         }
     }
 
-    public static final void glClearDepth(double depth) {
+    public static void glClearDepth(double depth) {
         depth = 1.0f - depth;
         if (depth != clearDepth) {
             _wglClearDepth((float)depth);
@@ -1715,7 +1785,7 @@ public class GL11 {
         }
     }
 
-    public static final void glClearColor(float red, float green, float blue, float alpha) {
+    public static void glClearColor(float red, float green, float blue, float alpha) {
         if (red != clearColorR || green != clearColorG || blue != clearColorB || alpha != clearColorA) {
             _wglClearColor(red, green, blue, alpha);
             clearColorR = red;
@@ -1725,15 +1795,15 @@ public class GL11 {
         }
     }
 
-    public static final void glClear(int mask) {
+    public static void glClear(int mask) {
         _wglClear(mask);
     }
 
-    public static final void glMatrixMode(int mode) {
+    public static void glMatrixMode(int mode) {
         stateMatrixMode = mode;
     }
 
-    public static final void glLoadIdentity() {
+    public static void glLoadIdentity() {
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
             default:
@@ -1751,7 +1821,7 @@ public class GL11 {
         }
     }
 
-    public static final void glPushMatrix() {
+    public static void glPushMatrix() {
         int push;
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
@@ -1796,7 +1866,7 @@ public class GL11 {
         }
     }
 
-    public static final void glPopMatrix() {
+    public static void glPopMatrix() {
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
             default:
@@ -1829,56 +1899,66 @@ public class GL11 {
         }
     }
 
-    public static final void glGetFloat(int pname, float[] params) {
-        switch (pname) {
-            case GL_MODELVIEW_MATRIX:
-                modelMatrixStack[modelMatrixStackPointer].store(params);
-                break;
-            case GL_PROJECTION_MATRIX:
-                projectionMatrixStack[projectionMatrixStackPointer].store(params);
-                break;
-            case GL_TEXTURE_MATRIX:
-                textureMatrixStack[activeTexture][textureMatrixStackPointer[activeTexture]].store(params);
-                break;
-            default:
-                throw new UnsupportedOperationException("glGetFloat can only be used to retrieve matricies!");
-        }
-    }
-
-    public static final void glGetFloat(int pname, FloatBuffer params) {
-        switch (pname) {
-            case GL_MODELVIEW_MATRIX:
-                modelMatrixStack[modelMatrixStackPointer].store(params);
-                break;
-            case GL_PROJECTION_MATRIX:
-                projectionMatrixStack[projectionMatrixStackPointer].store(params);
-                break;
-            case GL_TEXTURE_MATRIX:
-                textureMatrixStack[activeTexture][textureMatrixStackPointer[activeTexture]].store(params);
-                break;
-            default:
-                throw new UnsupportedOperationException("glGetFloat can only be used to retrieve matricies!");
-        }
-    }
-
-    public static final void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
-        Matrix4f matrix;
+    private static Matrix4f getMatrixIncr() {
+        Matrix4f mat;
+        int _i, _j;
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
-                matrix = modelMatrixStack[modelMatrixStackPointer];
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
+                _j = modelMatrixStackPointer;
+                mat = modelMatrixStack[_j];
+                modelMatrixStackAccessSerial[_j] = ++modelMatrixAccessSerial;
                 break;
             case GL_PROJECTION:
-            default:
-                matrix = projectionMatrixStack[projectionMatrixStackPointer];
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
+                _j = projectionMatrixStackPointer;
+                mat = projectionMatrixStack[_j];
+                projectionMatrixStackAccessSerial[_j] = ++projectionMatrixAccessSerial;
                 break;
             case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                matrix = textureMatrixStack[activeTexture][ptr];
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
+                _i = activeTexture;
+                _j = textureMatrixStackPointer[_i];
+                mat = textureMatrixStack[_i][_j];
+                textureMatrixStackAccessSerial[_i][_j] = ++textureCoordsAccessSerial[_i];
                 break;
+            default:
+                throw new IllegalStateException();
         }
+        return mat;
+    }
+
+    public static void glGetFloat(int pname, float[] params) {
+        switch (pname) {
+            case GL_MODELVIEW_MATRIX:
+                modelMatrixStack[modelMatrixStackPointer].store(params);
+                break;
+            case GL_PROJECTION_MATRIX:
+                projectionMatrixStack[projectionMatrixStackPointer].store(params);
+                break;
+            case GL_TEXTURE_MATRIX:
+                textureMatrixStack[activeTexture][textureMatrixStackPointer[activeTexture]].store(params);
+                break;
+            default:
+                throw new UnsupportedOperationException("glGetFloat can only be used to retrieve matricies!");
+        }
+    }
+
+    public static void glGetFloat(int pname, FloatBuffer params) {
+        switch (pname) {
+            case GL_MODELVIEW_MATRIX:
+                modelMatrixStack[modelMatrixStackPointer].store(params);
+                break;
+            case GL_PROJECTION_MATRIX:
+                projectionMatrixStack[projectionMatrixStackPointer].store(params);
+                break;
+            case GL_TEXTURE_MATRIX:
+                textureMatrixStack[activeTexture][textureMatrixStackPointer[activeTexture]].store(params);
+                break;
+            default:
+                throw new UnsupportedOperationException("glGetFloat can only be used to retrieve matricies!");
+        }
+    }
+
+    public static void glOrtho(double left, double right, double bottom, double top, double zNear, double zFar) {
+        Matrix4f matrix = getMatrixIncr();
         paramMatrix.m00 = 2.0f / (float)(right - left);
         paramMatrix.m01 = 0.0f;
         paramMatrix.m02 = 0.0f;
@@ -1898,170 +1978,207 @@ public class GL11 {
         Matrix4f.mul(matrix, paramMatrix, matrix);
     }
 
-    private static final Vector3f paramVector = new Vector3f();
     private static final float toRad = 0.0174532925f;
 
-    public static final void glRotatef(float angle, float x, float y, float z) {
-        paramVector.x = x;
-        paramVector.y = y;
-        paramVector.z = z;
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-            default:
-                modelMatrixStack[modelMatrixStackPointer].rotate(angle * toRad, paramVector);
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-                projectionMatrixStack[projectionMatrixStackPointer].rotate(angle * toRad, paramVector);
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                textureMatrixStack[activeTexture][ptr].rotate(angle * toRad, paramVector);
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
+    public static void glRotatef(float angle, float x, float y, float z) {
+        Matrix4f matrix = getMatrixIncr();
+        if (x == 0.0f) {
+            if (y == 0.0f) {
+                if (z == 1.0f || z == -1.0f) {
+                    _glRotatefZ(matrix, toRad * angle * z);
+                    return;
+                }
+            } else if ((y == 1.0f || y == -1.0f) && z == 0.0f) {
+                _glRotatefY(matrix, toRad * angle * y);
+                return;
+            }
+        } else if ((x == 1.0f || x == -1.0f) && y == 0.0f && z == 0.0f) {
+            _glRotatefX(matrix, toRad * angle * x);
+            return;
         }
+        _glRotatef(matrix, toRad * angle, x, y, z);
     }
 
-    public static final void glScalef(float x, float y, float z) {
-        paramVector.x = x;
-        paramVector.y = y;
-        paramVector.z = z;
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-            default:
-                modelMatrixStack[modelMatrixStackPointer].scale(paramVector);
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-                projectionMatrixStack[projectionMatrixStackPointer].scale(paramVector);
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                textureMatrixStack[activeTexture][ptr].scale(paramVector);
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
+    public static void rotateXYZ(float x, float y, float z) {
+        Matrix4f matrix = getMatrixIncr();
+        if (x != 0.0f) _glRotatefX(matrix, toRad * x);
+        if (y != 0.0f) _glRotatefY(matrix, toRad * y);
+        if (z != 0.0f) _glRotatefZ(matrix, toRad * z);
     }
 
-    public static final void glScalef(double x, double y, double z) {
-        paramVector.x = (float)x;
-        paramVector.y = (float)y;
-        paramVector.z = (float)z;
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-            default:
-                modelMatrixStack[modelMatrixStackPointer].scale(paramVector);
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-                projectionMatrixStack[projectionMatrixStackPointer].scale(paramVector);
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                textureMatrixStack[activeTexture][ptr].scale(paramVector);
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
+    public static void rotateZYX(float x, float y, float z) {
+        Matrix4f matrix = getMatrixIncr();
+        if (z != 0.0f) _glRotatefZ(matrix, toRad * z);
+        if (y != 0.0f) _glRotatefY(matrix, toRad * y);
+        if (x != 0.0f) _glRotatefX(matrix, toRad * x);
     }
 
-    public static final void glTranslatef(float x, float y, float z) {
-        paramVector.x = x;
-        paramVector.y = y;
-        paramVector.z = z;
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-            default:
-                modelMatrixStack[modelMatrixStackPointer].translate(paramVector);
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-                projectionMatrixStack[projectionMatrixStackPointer].translate(paramVector);
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                textureMatrixStack[activeTexture][ptr].translate(paramVector);
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
+    public static void rotateXYZRad(float x, float y, float z) {
+        Matrix4f matrix = getMatrixIncr();
+        if (x != 0.0f) _glRotatefX(matrix, x);
+        if (y != 0.0f) _glRotatefY(matrix, y);
+        if (z != 0.0f) _glRotatefZ(matrix, z);
     }
 
-    public static final void glTranslatef(double x, double y, double z) {
-        paramVector.x = (float)x;
-        paramVector.y = (float)y;
-        paramVector.z = (float)z;
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-            default:
-                modelMatrixStack[modelMatrixStackPointer].translate(paramVector);
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-                projectionMatrixStack[projectionMatrixStackPointer].translate(paramVector);
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                textureMatrixStack[activeTexture][ptr].translate(paramVector);
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
+    public static void rotateZYXRad(float x, float y, float z) {
+        Matrix4f matrix = getMatrixIncr();
+        if (z != 0.0f) _glRotatefZ(matrix, z);
+        if (y != 0.0f) _glRotatefY(matrix, y);
+        if (x != 0.0f) _glRotatefX(matrix, x);
+    }
+
+    private static void _glRotatefX(Matrix4f mat, float angle) {
+        float sin = MathHelper.sin(angle);
+        float cos = MathHelper.cos(angle);
+        float lm10 = mat.m10, lm11 = mat.m11, lm12 = mat.m12, lm13 = mat.m13, lm20 = mat.m20, lm21 = mat.m21,
+                lm22 = mat.m22, lm23 = mat.m23;
+        mat.m20 = lm10 * -sin + lm20 * cos;
+        mat.m21 = lm11 * -sin + lm21 * cos;
+        mat.m22 = lm12 * -sin + lm22 * cos;
+        mat.m23 = lm13 * -sin + lm23 * cos;
+        mat.m10 = lm10 * cos + lm20 * sin;
+        mat.m11 = lm11 * cos + lm21 * sin;
+        mat.m12 = lm12 * cos + lm22 * sin;
+        mat.m13 = lm13 * cos + lm23 * sin;
+    }
+
+    private static void _glRotatefY(Matrix4f mat, float angle) {
+        float sin = MathHelper.sin(angle);
+        float cos = MathHelper.cos(angle);
+        float nm00 = mat.m00 * cos + mat.m20 * -sin;
+        float nm01 = mat.m01 * cos + mat.m21 * -sin;
+        float nm02 = mat.m02 * cos + mat.m22 * -sin;
+        float nm03 = mat.m03 * cos + mat.m23 * -sin;
+        mat.m20 = mat.m00 * sin + mat.m20 * cos;
+        mat.m21 = mat.m01 * sin + mat.m21 * cos;
+        mat.m22 = mat.m02 * sin + mat.m22 * cos;
+        mat.m23 = mat.m03 * sin + mat.m23 * cos;
+        mat.m00 = nm00;
+        mat.m01 = nm01;
+        mat.m02 = nm02;
+        mat.m03 = nm03;
+    }
+
+    private static void _glRotatefZ(Matrix4f mat, float angle) {
+        float dirX = MathHelper.sin(angle);
+        float dirY = MathHelper.cos(angle);
+        float nm00 = mat.m00 * dirY + mat.m10 * dirX;
+        float nm01 = mat.m01 * dirY + mat.m11 * dirX;
+        float nm02 = mat.m02 * dirY + mat.m12 * dirX;
+        float nm03 = mat.m03 * dirY + mat.m13 * dirX;
+        mat.m10 = mat.m00 * -dirX + mat.m10 * dirY;
+        mat.m11 = mat.m01 * -dirX + mat.m11 * dirY;
+        mat.m12 = mat.m02 * -dirX + mat.m12 * dirY;
+        mat.m13 = mat.m03 * -dirX + mat.m13 * dirY;
+        mat.m00 = nm00;
+        mat.m01 = nm01;
+        mat.m02 = nm02;
+        mat.m03 = nm03;
+    }
+
+    private static void _glRotatef(Matrix4f mat, float angle, float x, float y, float z) {
+        float s = MathHelper.sin(angle);
+        float c = MathHelper.cos(angle);
+        float C = 1.0f - c;
+        float xx = x * x, xy = x * y, xz = x * z;
+        float yy = y * y, yz = y * z;
+        float zz = z * z;
+        float rm00 = xx * C + c;
+        float rm01 = xy * C + z * s;
+        float rm02 = xz * C - y * s;
+        float rm10 = xy * C - z * s;
+        float rm11 = yy * C + c;
+        float rm12 = yz * C + x * s;
+        float rm20 = xz * C + y * s;
+        float rm21 = yz * C - x * s;
+        float rm22 = zz * C + c;
+        float nm00 = mat.m00 * rm00 + mat.m10 * rm01 + mat.m20 * rm02;
+        float nm01 = mat.m01 * rm00 + mat.m11 * rm01 + mat.m21 * rm02;
+        float nm02 = mat.m02 * rm00 + mat.m12 * rm01 + mat.m22 * rm02;
+        float nm03 = mat.m03 * rm00 + mat.m13 * rm01 + mat.m23 * rm02;
+        float nm10 = mat.m00 * rm10 + mat.m10 * rm11 + mat.m20 * rm12;
+        float nm11 = mat.m01 * rm10 + mat.m11 * rm11 + mat.m21 * rm12;
+        float nm12 = mat.m02 * rm10 + mat.m12 * rm11 + mat.m22 * rm12;
+        float nm13 = mat.m03 * rm10 + mat.m13 * rm11 + mat.m23 * rm12;
+        mat.m20 = mat.m00 * rm20 + mat.m10 * rm21 + mat.m20 * rm22;
+        mat.m21 = mat.m01 * rm20 + mat.m11 * rm21 + mat.m21 * rm22;
+        mat.m22 = mat.m02 * rm20 + mat.m12 * rm21 + mat.m22 * rm22;
+        mat.m23 = mat.m03 * rm20 + mat.m13 * rm21 + mat.m23 * rm22;
+        mat.m00 = nm00;
+        mat.m01 = nm01;
+        mat.m02 = nm02;
+        mat.m03 = nm03;
+        mat.m10 = nm10;
+        mat.m11 = nm11;
+        mat.m12 = nm12;
+        mat.m13 = nm13;
+    }
+
+    public static void glScalef(float x, float y, float z) {
+        Matrix4f matrix = getMatrixIncr();
+        matrix.m00 *= x;
+        matrix.m01 *= x;
+        matrix.m02 *= x;
+        matrix.m03 *= x;
+        matrix.m10 *= y;
+        matrix.m11 *= y;
+        matrix.m12 *= y;
+        matrix.m13 *= y;
+        matrix.m20 *= z;
+        matrix.m21 *= z;
+        matrix.m22 *= z;
+        matrix.m23 *= z;
+    }
+
+    public static void glScalef(double x, double y, double z) {
+        Matrix4f matrix = getMatrixIncr();
+        matrix.m00 *= x;
+        matrix.m01 *= x;
+        matrix.m02 *= x;
+        matrix.m03 *= x;
+        matrix.m10 *= y;
+        matrix.m11 *= y;
+        matrix.m12 *= y;
+        matrix.m13 *= y;
+        matrix.m20 *= z;
+        matrix.m21 *= z;
+        matrix.m22 *= z;
+        matrix.m23 *= z;
+    }
+
+    public static void glTranslatef(float x, float y, float z) {
+        Matrix4f matrix = getMatrixIncr();
+        matrix.m30 = matrix.m00 * x + matrix.m10 * y + matrix.m20 * z + matrix.m30;
+        matrix.m31 = matrix.m01 * x + matrix.m11 * y + matrix.m21 * z + matrix.m31;
+        matrix.m32 = matrix.m02 * x + matrix.m12 * y + matrix.m22 * z + matrix.m32;
+        matrix.m33 = matrix.m03 * x + matrix.m13 * y + matrix.m23 * z + matrix.m33;
+    }
+
+    public static void glTranslatef(double x, double y, double z) {
+        float _x = (float)x;
+        float _y = (float)y;
+        float _z = (float)z;
+        Matrix4f matrix = getMatrixIncr();
+        matrix.m30 = matrix.m00 * _x + matrix.m10 * _y + matrix.m20 * _z + matrix.m30;
+        matrix.m31 = matrix.m01 * _x + matrix.m11 * _y + matrix.m21 * _z + matrix.m31;
+        matrix.m32 = matrix.m02 * _x + matrix.m12 * _y + matrix.m22 * _z + matrix.m32;
+        matrix.m33 = matrix.m03 * _x + matrix.m13 * _y + matrix.m23 * _z + matrix.m33;
     }
 
     private static final Matrix4f paramMatrix = new Matrix4f();
 
-    public static final void glMultMatrix(float[] matrix) {
-        Matrix4f modeMatrix;
-
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-            default:
-                modeMatrix = modelMatrixStack[modelMatrixStackPointer];
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-                modeMatrix = projectionMatrixStack[projectionMatrixStackPointer];
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                modeMatrix = textureMatrixStack[activeTexture][ptr];
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
-
+    public static void glMultMatrix(float[] matrix) {
         paramMatrix.load(matrix);
-
-        Matrix4f.mul(modeMatrix, paramMatrix, modeMatrix);
+        Matrix4f mat = getMatrixIncr();
+        Matrix4f.mul(mat, paramMatrix, mat);
     }
 
-    public static final void glMultMatrix(Matrix4f matrix) {
-        Matrix4f modeMatrix;
-
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-            default:
-                modeMatrix = modelMatrixStack[modelMatrixStackPointer];
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-                modeMatrix = projectionMatrixStack[projectionMatrixStackPointer];
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                modeMatrix = textureMatrixStack[activeTexture][ptr];
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
-
-        Matrix4f.mul(modeMatrix, matrix, modeMatrix);
+    public static void glMultMatrix(Matrix4f matrix) {
+        Matrix4f mat = getMatrixIncr();
+        Matrix4f.mul(mat, matrix, mat);
     }
 
-    public static final void glColor4f(float colorRed, float colorGreen, float colorBlue, float colorAlpha) {
+    public static void glColor4f(float colorRed, float colorGreen, float colorBlue, float colorAlpha) {
         if (currentList != null) {
             currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, colorAlpha));
             return;
@@ -2073,7 +2190,7 @@ public class GL11 {
         ++stateColorSerial;
     }
 
-    public static final void glColor3f(float colorRed, float colorGreen, float colorBlue) {
+    public static void glColor3f(float colorRed, float colorGreen, float colorBlue) {
         if (currentList != null) {
             currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, 1.0f));
             return;
@@ -2085,7 +2202,7 @@ public class GL11 {
         ++stateColorSerial;
     }
 
-    public static final void resetColor() {
+    public static void resetColor() {
         stateColorR = 1.0f;
         stateColorG = 1.0f;
         stateColorB = 1.0f;
@@ -2093,24 +2210,8 @@ public class GL11 {
         ++stateColorSerial;
     }
 
-    public static final void gluPerspective(float fovy, float aspect, float zNear, float zFar) {
-        Matrix4f matrix;
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-                matrix = modelMatrixStack[modelMatrixStackPointer];
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-            default:
-                matrix = projectionMatrixStack[projectionMatrixStackPointer];
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                matrix = textureMatrixStack[activeTexture][ptr];
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
+    public static void gluPerspective(float fovy, float aspect, float zNear, float zFar) {
+        Matrix4f matrix = getMatrixIncr();
         float cotangent = (float)Math.cos(fovy * toRad * 0.5f) / (float)Math.sin(fovy * toRad * 0.5f);
         paramMatrix.m00 = cotangent / aspect;
         paramMatrix.m01 = 0.0f;
@@ -2131,24 +2232,8 @@ public class GL11 {
         Matrix4f.mul(matrix, paramMatrix, matrix);
     }
 
-    public static final void gluLookAt(Vector3f eye, Vector3f center, Vector3f up) {
-        Matrix4f matrix;
-        switch (stateMatrixMode) {
-            case GL_MODELVIEW:
-                matrix = modelMatrixStack[modelMatrixStackPointer];
-                modelMatrixStackAccessSerial[modelMatrixStackPointer] = ++modelMatrixAccessSerial;
-                break;
-            case GL_PROJECTION:
-            default:
-                matrix = projectionMatrixStack[projectionMatrixStackPointer];
-                projectionMatrixStackAccessSerial[projectionMatrixStackPointer] = ++projectionMatrixAccessSerial;
-                break;
-            case GL_TEXTURE:
-                int ptr = textureMatrixStackPointer[activeTexture];
-                matrix = textureMatrixStack[activeTexture][ptr];
-                textureMatrixStackAccessSerial[activeTexture][textureMatrixStackPointer[activeTexture]] = ++textureMatrixAccessSerial[activeTexture];
-                break;
-        }
+    public static void gluLookAt(Vector3f eye, Vector3f center, Vector3f up) {
+        Matrix4f matrix = getMatrixIncr();
         float x = center.x - eye.x;
         float y = center.y - eye.y;
         float z = center.z - eye.z;
@@ -2188,7 +2273,7 @@ public class GL11 {
         Matrix4f.mul(matrix, paramMatrix, matrix);
     }
 
-    public static final void transform(Vector4f vecIn, Vector4f vecOut) {
+    public static void transform(Vector4f vecIn, Vector4f vecOut) {
         Matrix4f matrix;
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
@@ -2209,7 +2294,7 @@ public class GL11 {
     private static final Matrix4f unprojB = new Matrix4f();
     private static final Vector4f unprojC = new Vector4f();
 
-    public static final void gluUnProject(float p1, float p2, float p3, float[] modelview, float[] projection,
+    public static void gluUnProject(float p1, float p2, float p3, float[] modelview, float[] projection,
             int[] viewport, float[] objectcoords) {
         unprojA.load(modelview);
         unprojB.load(projection);
@@ -2223,7 +2308,7 @@ public class GL11 {
         objectcoords[2] = unprojC.z / unprojC.w;
     }
 
-    public static final void getMatrix(Matrix4f mat) {
+    public static void getMatrix(Matrix4f mat) {
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
                 mat.load(modelMatrixStack[modelMatrixStackPointer]);
@@ -2238,7 +2323,7 @@ public class GL11 {
         }
     }
 
-    public static final void loadMatrix(Matrix4f mat) {
+    public static void loadMatrix(Matrix4f mat) {
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
                 modelMatrixStack[modelMatrixStackPointer].load(mat);
@@ -2256,34 +2341,51 @@ public class GL11 {
         }
     }
 
-    public static final int getModelViewSerial() {
+    public static int getModelViewSerial() {
         return modelMatrixStackAccessSerial[modelMatrixStackPointer];
     }
 
-    public static final Matrix4f getModelViewReference() {
+    public static Matrix4f getModelViewReference() {
         return modelMatrixStack[modelMatrixStackPointer];
+    }
+
+    public static Matrix4f getProjectionReference() {
+        return projectionMatrixStack[projectionMatrixStackPointer];
     }
 
     public static void recompileShaders() {
         FixedFunctionPipeline.flushCache();
     }
 
-    public static final void glTexParameteri(int target, int param, int value) {
+    public static int getBoundTexture() {
+        return boundTexture[activeTexture];
+    }
+
+    static void setTextureCachedSize(int target, int w, int h) {
+        if (target == GL_TEXTURE_2D) {
+            ITextureGL tex = getNativeTexture(boundTexture[activeTexture]);
+            if (tex != null) {
+                tex.setCacheSize(w, h);
+            }
+        }
+    }
+
+    public static void glTexParameteri(int target, int param, int value) {
         _wglTexParameteri(target, param, value);
     }
 
-    public static final void glTexParameterf(int target, int param, float value) {
+    public static void glTexParameterf(int target, int param, float value) {
         _wglTexParameterf(target, param, value);
     }
 
-    public static final void glCopyTexSubImage2D(int target, int level, int sx, int sy, int dx, int dy, int w, int h) {
+    public static void glCopyTexSubImage2D(int target, int level, int sx, int sy, int dx, int dy, int w, int h) {
         _wglCopyTexSubImage2D(target, level, sx, sy, dx, dy, w, h);
     }
 
     private static DisplayList currentList = null;
     private static ByteBuffer displayListBuffer = EagRuntime.allocateByteBuffer(0x100000);
 
-    public static final void glNewList(int target, int op) {
+    public static void glNewList(int target, int op) {
         if (currentList != null) {
             throw new IllegalStateException("A display list is already being compiled you eagler!");
         }
@@ -2295,16 +2397,16 @@ public class GL11 {
             throw new IllegalArgumentException("Unknown display list: " + target);
         }
         if (dp.vertexArray != null && dp.attribs > 0) {
-            bindGLBufferArray(dp.vertexArray);
+            bindGLVertexArray(dp.vertexArray);
             int c = 0;
-            if ((dp.attribs & ATTRIB_TEXTURE) == ATTRIB_TEXTURE) {
-                GL11.disableVertexAttribArray(++c);
+            if ((dp.attribs & ATTRIB_TEXTURE) != 0) {
+                disableVertexAttribArray(++c);
             }
-            if ((dp.attribs & ATTRIB_COLOR) == ATTRIB_COLOR) {
-                GL11.disableVertexAttribArray(++c);
+            if ((dp.attribs & ATTRIB_COLOR) != 0) {
+                disableVertexAttribArray(++c);
             }
             if ((dp.attribs & ATTRIB_NORMAL) != 0) {
-                GL11.disableVertexAttribArray(++c);
+                disableVertexAttribArray(++c);
             }
         }
         dp.ops.clear();
@@ -2313,7 +2415,7 @@ public class GL11 {
         dp.count = 0;
     }
 
-    private static final void growDisplayListBuffer(int len) {
+    private static void growDisplayListBuffer(int len) {
         int wantSize = displayListBuffer.position() + len;
         if (displayListBuffer.capacity() < wantSize) {
             int newSize = (wantSize & 0xFFFE0000) + 0x40000;
@@ -2324,7 +2426,7 @@ public class GL11 {
         }
     }
 
-    public static final void glEndList() {
+    public static void glEndList() {
         DisplayList dp = currentList;
         if (dp == null) {
             throw new IllegalStateException("No list is currently being compiled!");
@@ -2332,11 +2434,11 @@ public class GL11 {
 
         if (dp.attribs == -1) {
             if (dp.vertexArray != null) {
-                GL11.destroyGLBufferArray(dp.vertexArray);
+                destroyGLVertexArray(dp.vertexArray);
                 dp.vertexArray = null;
             }
             if (dp.vertexBuffer != null) {
-                _wglDeleteBuffers(dp.vertexBuffer);
+                destroyGLArrayBuffer(dp.vertexBuffer);
                 dp.vertexBuffer = null;
             }
             currentList = null;
@@ -2344,12 +2446,12 @@ public class GL11 {
         }
 
         if (dp.vertexArray == null) {
-            dp.vertexArray = createGLBufferArray();
+            dp.vertexArray = createGLVertexArray();
             dp.bindQuad16 = false;
             dp.bindQuad32 = false;
         }
         if (dp.vertexBuffer == null) {
-            dp.vertexBuffer = _wglGenBuffers();
+            dp.vertexBuffer = createGLArrayBuffer();
         }
 
         bindVAOGLArrayBufferNow(dp.vertexBuffer);
@@ -2361,7 +2463,46 @@ public class GL11 {
         currentList = null;
     }
 
-    public static final void glCallList(int displayList) {
+    public static void uploadListDirect(int target, ByteBuffer buffer, int attrib, int mode, int count) {
+        DisplayList dp = displayLists.get(target);
+        if (dp == null) {
+            throw new IllegalArgumentException("Unknown display list: " + target);
+        }
+
+        if (dp.vertexArray != null && dp.attribs > 0) {
+            bindGLVertexArray(dp.vertexArray);
+            int c = 0;
+            if ((dp.attribs & ATTRIB_TEXTURE) != 0) {
+                disableVertexAttribArray(++c);
+            }
+            if ((dp.attribs & ATTRIB_COLOR) != 0) {
+                disableVertexAttribArray(++c);
+            }
+            if ((dp.attribs & ATTRIB_NORMAL) != 0) {
+                disableVertexAttribArray(++c);
+            }
+        }
+
+        if (dp.vertexArray == null) {
+            dp.vertexArray = createGLVertexArray();
+            dp.bindQuad16 = false;
+            dp.bindQuad32 = false;
+        }
+        if (dp.vertexBuffer == null) {
+            dp.vertexBuffer = createGLArrayBuffer();
+        }
+
+        bindVAOGLArrayBufferNow(dp.vertexBuffer);
+        _wglBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+
+        dp.attribs = attrib;
+        FixedFunctionPipeline.setupDisplayList(dp);
+
+        dp.mode = mode;
+        dp.count = count;
+    }
+
+    public static void glCallList(int displayList) {
         DisplayList dp = displayLists.get(displayList);
         if (dp == null) {
             throw new NullPointerException("Tried to call a display list that does not exist: " + displayList);
@@ -2386,10 +2527,10 @@ public class GL11 {
             }
             if (op.hasCount && dp.attribs != -1) {
                 FixedFunctionPipeline p = FixedFunctionPipeline.setupRenderDisplayList(dp.attribs).update();
-                bindGLBufferArray(dp.vertexArray);
+                bindGLVertexArray(dp.vertexArray);
                 int cnt = op.count;
                 if (dp.mode == GL_QUADS) {
-                    if (cnt > 0xFFFF) {
+                    if (cnt > quad16MaxVertices) {
                         if (!dp.bindQuad32) {
                             dp.bindQuad16 = false;
                             dp.bindQuad32 = true;
@@ -2397,16 +2538,14 @@ public class GL11 {
                         } else {
                             attachQuad32EmulationBuffer(cnt, false);
                         }
-                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_INT, 0);
+                        p.drawElements(GL_TRIANGLES, (cnt >> 2) * 6, GL_UNSIGNED_INT, 0);
                     } else {
                         if (!dp.bindQuad16) {
                             dp.bindQuad16 = true;
                             dp.bindQuad32 = false;
-                            attachQuad16EmulationBuffer(cnt, true);
-                        } else {
-                            attachQuad16EmulationBuffer(cnt, false);
+                            attachQuad16EmulationBuffer(true);
                         }
-                        p.drawElements(GL_TRIANGLES, cnt + (cnt >> 1), GL_UNSIGNED_SHORT, 0);
+                        p.drawElements(GL_TRIANGLES, (cnt >> 2) * 6, GL_UNSIGNED_SHORT, 0);
                     }
                 } else if (op.indices != null) {
                     attachListIndicesBuffer(op.indices.capacity(), true);
@@ -2419,13 +2558,13 @@ public class GL11 {
         }
     }
 
-    public static final void glCallLists(IntBuffer buffer) {
+    public static void glCallLists(IntBuffer buffer) {
         for (int i = 0; i < buffer.remaining(); ++i) {
             glCallList(buffer.get(i));
         }
     }
 
-    public static final void flushDisplayList(int displayList) {
+    public static void flushDisplayList(int displayList) {
         DisplayList dp = displayLists.get(displayList);
         if (dp == null) {
             throw new NullPointerException("Tried to flush a display list that does not exist: " + displayList);
@@ -2433,23 +2572,23 @@ public class GL11 {
         dp.ops.clear();
         dp.attribs = -1;
         if (dp.vertexArray != null) {
-            GL11.destroyGLBufferArray(dp.vertexArray);
+            destroyGLVertexArray(dp.vertexArray);
             dp.vertexArray = null;
         }
         if (dp.vertexBuffer != null) {
-            _wglDeleteBuffers(dp.vertexBuffer);
+            destroyGLArrayBuffer(dp.vertexBuffer);
             dp.vertexBuffer = null;
         }
     }
 
-    public static final void glDrawElements(int mode, IntBuffer indices) {
+    public static void glDrawElements(int mode, IntBuffer indices) {
         if (currentList != null) {
             currentList.mode = mode;
             currentList.indices = indices;
         }
     }
 
-    public static final void glNormal3f(float x, float y, float z) {
+    public static void glNormal3f(float x, float y, float z) {
         stateNormalX = x;
         stateNormalY = y;
         stateNormalZ = z;
@@ -2458,16 +2597,19 @@ public class GL11 {
 
     private static final Map<Integer, String> stringCache = new HashMap<>();
 
-    public static final String glGetString(int param) {
+    public static String glGetString(int param) {
         String str = stringCache.get(param);
         if (str == null) {
             str = _wglGetString(param);
+            if (str == null) {
+                str = "";
+            }
             stringCache.put(param, str);
         }
-        return str;
+        return str.length() == 0 ? null : str;
     }
 
-    public static final void glGetInteger(int param, int[] values) {
+    public static void glGetInteger(int param, int[] values) {
         switch (param) {
             case GL_VIEWPORT:
                 values[0] = viewportX;
@@ -2480,7 +2622,7 @@ public class GL11 {
         }
     }
 
-    public static final void glGetInteger(int param, IntBuffer values) {
+    public static void glGetInteger(int param, IntBuffer values) {
         switch (param) {
             case GL_VIEWPORT:
                 values.put(viewportX);
@@ -2493,12 +2635,13 @@ public class GL11 {
         }
     }
 
-    public static final int glGetInteger(int param) {
+    public static int glGetInteger(int param) {
         return _wglGetInteger(param);
     }
 
-    public static final void glTexImage2D(int target, int level, int internalFormat, int w, int h, int unused,
+    public static void glTexImage2D(int target, int level, int internalFormat, int w, int h, int unused,
             int format, int type, ByteBuffer pixels) {
+        setTextureCachedSize(target, w, h);
         if (glesVers >= 300) {
             _wglTexImage2D(target, level, internalFormat, w, h, unused, format, type, pixels);
         } else {
@@ -2507,8 +2650,9 @@ public class GL11 {
         }
     }
 
-    public static final void glTexImage2D(int target, int level, int internalFormat, int w, int h, int unused,
+    public static void glTexImage2D(int target, int level, int internalFormat, int w, int h, int unused,
             int format, int type, IntBuffer pixels) {
+        setTextureCachedSize(target, w, h);
         if (glesVers >= 300) {
             _wglTexImage2D(target, level, internalFormat, w, h, unused, format, type, pixels);
         } else {
@@ -2517,17 +2661,18 @@ public class GL11 {
         }
     }
 
-    public static final void glTexSubImage2D(int target, int level, int x, int y, int w, int h, int format, int type,
+    public static void glTexSubImage2D(int target, int level, int x, int y, int w, int h, int format, int type,
             ByteBuffer pixels) {
         _wglTexSubImage2D(target, level, x, y, w, h, format, type, pixels);
     }
 
-    public static final void glTexSubImage2D(int target, int level, int x, int y, int w, int h, int format, int type,
+    public static void glTexSubImage2D(int target, int level, int x, int y, int w, int h, int format, int type,
             IntBuffer pixels) {
         _wglTexSubImage2D(target, level, x, y, w, h, format, type, pixels);
     }
 
-    public static final void glTexStorage2D(int target, int levels, int internalFormat, int w, int h) {
+    public static void glTexStorage2D(int target, int levels, int internalFormat, int w, int h) {
+        setTextureCachedSize(target, w, h);
         if (texStorageCapable
                 && (glesVers >= 300 || levels == 1 || (MathHelper.calculateLogBaseTwo(Math.max(w, h)) + 1) == levels)) {
             _wglTexStorage2D(target, levels, internalFormat, w, h);
@@ -2540,7 +2685,7 @@ public class GL11 {
         }
     }
 
-    public static final void glReadPixels(int x, int y, int width, int height, int format, int type,
+    public static void glReadPixels(int x, int y, int width, int height, int format, int type,
             ByteBuffer buffer) {
         switch (type) {
             case GL_FLOAT:
@@ -2556,11 +2701,11 @@ public class GL11 {
         }
     }
 
-    public static final void glLineWidth(float f) {
+    public static void glLineWidth(float f) {
         _wglLineWidth(f);
     }
 
-    public static final void glFog(int param, FloatBuffer valueBuffer) {
+    public static void glFog(int param, FloatBuffer valueBuffer) {
         int pos = valueBuffer.position();
         switch (param) {
             case GL_FOG_COLOR:
@@ -2576,13 +2721,13 @@ public class GL11 {
         valueBuffer.position(pos);
     }
 
-    public static final void glFogi(int param, int value) {
+    public static void glFogi(int param, int value) {
         if (param == GL_FOG_MODE) {
             setFog(value);
         }
     }
 
-    public static final void glFogf(int param, float value) {
+    public static void glFogf(int param, float value) {
         if (param == GL_FOG_DENSITY) {
             setFogDensity(value);
         } else if (param == GL_FOG_START) {
@@ -2596,7 +2741,7 @@ public class GL11 {
 
     private static int displayListId = 0;
 
-    public static final int glGenLists(int size) {
+    public static int glGenLists(int size) {
         int base = displayListId + 1;
         for (int i = 0; i < size; i++) {
             int id = ++displayListId;
@@ -2605,81 +2750,97 @@ public class GL11 {
         return base;
     }
 
-    public static final void glDeleteLists(int id) {
+    public static void glDeleteLists(int id) {
         DisplayList d = displayLists.remove(id);
         if (d != null) {
             if (d.vertexArray != null) {
-                GL11.destroyGLBufferArray(d.vertexArray);
+                destroyGLVertexArray(d.vertexArray);
             }
             if (d.vertexBuffer != null) {
-                _wglDeleteBuffers(d.vertexBuffer);
+                destroyGLArrayBuffer(d.vertexBuffer);
             }
         }
     }
 
-    public static final void glDeleteLists(int id, int range) {
+    public static void glDeleteLists(int id, int range) {
         for (int i = id; i < id + range; ++i) {
             glDeleteLists(i);
         }
     }
 
-    public static final int glGetError() {
+    public static int glGetError() {
         return _wglGetError();
     }
 
-    public static final void glBlendEquation(int equation) {
+    public static void glBlendEquation(int equation) {
         if (equation != stateBlendEquation) {
             _wglBlendEquation(equation);
             stateBlendEquation = equation;
         }
     }
 
-    public static final boolean areVAOsEmulated() {
+    public static IBufferGL createGLArrayBuffer() {
+        return arrayBufferRecycler.create();
+    }
+
+    public static void destroyGLArrayBuffer(IBufferGL buffer) {
+        arrayBufferRecycler.destroyObject(buffer);
+    }
+
+    public static IBufferGL createGLElementArrayBuffer() {
+        return elementArrayBufferRecycler.create();
+    }
+
+    public static void destroyGLElementArrayBuffer(IBufferGL buffer) {
+        elementArrayBufferRecycler.destroyObject(buffer);
+    }
+
+    public static boolean areVAOsEmulated() {
         return emulatedVAOs;
     }
 
-    public static final IBufferArrayGL createGLBufferArray() {
+    public static IVertexArrayGL createGLVertexArray() {
         if (emulatedVAOs) {
-            return new SoftGLBufferArray();
+            return new SoftGLVertexArray();
         } else {
-            return _wglGenVertexArrays();
+            return VAORecycler.create();
         }
     }
 
-    public static final void destroyGLBufferArray(IBufferArrayGL buffer) {
+    public static void destroyGLVertexArray(IVertexArrayGL buffer) {
         if (!emulatedVAOs) {
-            _wglDeleteVertexArrays(buffer);
+            VAORecycler.destroyObject(buffer);
         }
     }
 
-    public static final void enableVertexAttribArray(int index) {
+    public static void enableVertexAttribArray(int index) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping enable attrib with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).enableAttrib(index, true);
+            ((SoftGLVertexArray)currentVertexArray).enableAttrib(index, true);
         } else {
             _wglEnableVertexAttribArray(index);
         }
     }
 
-    public static final void disableVertexAttribArray(int index) {
+    public static void disableVertexAttribArray(int index) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping disable attrib with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).enableAttrib(index, false);
+            ((SoftGLVertexArray)currentVertexArray).enableAttrib(index, false);
         } else {
             _wglDisableVertexAttribArray(index);
         }
     }
 
-    public static final void vertexAttribPointer(int index, int size, int format, boolean normalized, int stride,
+    public static void vertexAttribPointer(int index, int size, int format, boolean normalized, int stride,
             int offset) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping vertexAttribPointer with emulated VAO because no known VAO is bound!");
                 return;
             }
@@ -2687,78 +2848,78 @@ public class GL11 {
                 logger.warn("Skipping vertexAttribPointer with emulated VAO because no VAO array buffer is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).setAttrib(currentVAOArrayBuffer, index, size, format, normalized,
+            ((SoftGLVertexArray)currentVertexArray).setAttrib(currentVAOArrayBuffer, index, size, format, normalized,
                     stride, offset);
         } else {
             _wglVertexAttribPointer(index, size, format, normalized, stride, offset);
         }
     }
 
-    public static final void vertexAttribDivisor(int index, int divisor) {
+    public static void vertexAttribDivisor(int index, int divisor) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping vertexAttribPointer with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).setAttribDivisor(index, divisor);
+            ((SoftGLVertexArray)currentVertexArray).setAttribDivisor(index, divisor);
         } else {
             _wglVertexAttribDivisor(index, divisor);
         }
     }
 
-    public static final void doDrawArrays(int mode, int first, int count) {
+    public static void drawArrays(int mode, int first, int count) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping draw call with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).transitionToState(emulatedVAOState, false);
+            ((SoftGLVertexArray)currentVertexArray).transitionToState(emulatedVAOState, false);
         }
         _wglDrawArrays(mode, first, count);
     }
 
-    public static final void doDrawElements(int mode, int count, int type, int offset) {
+    public static void drawElements(int mode, int count, int type, int offset) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping draw call with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).transitionToState(emulatedVAOState, true);
+            ((SoftGLVertexArray)currentVertexArray).transitionToState(emulatedVAOState, true);
         }
         _wglDrawElements(mode, count, type, offset);
     }
 
-    public static final void doDrawArraysInstanced(int mode, int first, int count, int instances) {
+    public static void drawArraysInstanced(int mode, int first, int count, int instances) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping instanced draw call with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).transitionToState(emulatedVAOState, false);
+            ((SoftGLVertexArray)currentVertexArray).transitionToState(emulatedVAOState, false);
         }
         _wglDrawArraysInstanced(mode, first, count, instances);
     }
 
-    public static final void doDrawElementsInstanced(int mode, int count, int type, int offset, int instances) {
+    public static void drawElementsInstanced(int mode, int count, int type, int offset, int instances) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping instanced draw call with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).transitionToState(emulatedVAOState, true);
+            ((SoftGLVertexArray)currentVertexArray).transitionToState(emulatedVAOState, true);
         }
         _wglDrawElementsInstanced(mode, count, type, offset, instances);
     }
 
-    static IBufferArrayGL currentBufferArray = null;
+    static IVertexArrayGL currentVertexArray = null;
 
-    public static final void bindGLBufferArray(IBufferArrayGL buffer) {
+    public static void bindGLVertexArray(IVertexArrayGL buffer) {
         if (emulatedVAOs) {
-            currentBufferArray = buffer;
+            currentVertexArray = buffer;
         } else {
-            if (currentBufferArray != buffer) {
+            if (currentVertexArray != buffer) {
                 _wglBindVertexArray(buffer);
-                currentBufferArray = buffer;
+                currentVertexArray = buffer;
             }
         }
     }
@@ -2768,7 +2929,10 @@ public class GL11 {
     // only used when VAOs are emulated
     static IBufferGL currentVAOArrayBuffer = null;
 
-    public static final void bindVAOGLArrayBuffer(IBufferGL buffer) {
+    /**
+     * Binds a buffer to use only for calls to vertexAttribPointer
+     */
+    public static void bindVAOGLArrayBuffer(IBufferGL buffer) {
         if (emulatedVAOs) {
             currentVAOArrayBuffer = buffer;
         } else {
@@ -2779,7 +2943,11 @@ public class GL11 {
         }
     }
 
-    public static final void bindVAOGLArrayBufferNow(IBufferGL buffer) {
+    /**
+     * Binds a buffer to use for calls to vertexAttribPointer and the
+     * GL_ARRAY_BUFFER target
+     */
+    public static void bindVAOGLArrayBufferNow(IBufferGL buffer) {
         if (emulatedVAOs) {
             currentVAOArrayBuffer = buffer;
         }
@@ -2789,25 +2957,28 @@ public class GL11 {
         }
     }
 
-    public static final void bindVAOGLElementArrayBuffer(IBufferGL buffer) {
+    /**
+     * Binds an index buffer to the current vertex array
+     */
+    public static void bindVAOGLElementArrayBuffer(IBufferGL buffer) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping set element array buffer with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).setIndexBuffer(buffer);
+            ((SoftGLVertexArray)currentVertexArray).setIndexBuffer(buffer);
         } else {
             _wglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
         }
     }
 
-    static final void bindVAOGLElementArrayBufferNow(IBufferGL buffer) {
+    static void bindVAOGLElementArrayBufferNow(IBufferGL buffer) {
         if (emulatedVAOs) {
-            if (currentBufferArray == null) {
+            if (currentVertexArray == null) {
                 logger.warn("Skipping set element array buffer with emulated VAO because no known VAO is bound!");
                 return;
             }
-            ((SoftGLBufferArray)currentBufferArray).setIndexBuffer(buffer);
+            ((SoftGLVertexArray)currentVertexArray).setIndexBuffer(buffer);
             if (currentEmulatedVAOIndexBuffer != buffer) {
                 _wglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
                 currentEmulatedVAOIndexBuffer = buffer;
@@ -2819,14 +2990,18 @@ public class GL11 {
 
     static IBufferGL currentEmulatedVAOIndexBuffer = null;
 
-    static final void bindEmulatedVAOIndexBuffer(IBufferGL buffer) {
+    static void bindEmulatedVAOIndexBuffer(IBufferGL buffer) {
         if (currentEmulatedVAOIndexBuffer != buffer) {
             _wglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
             currentEmulatedVAOIndexBuffer = buffer;
         }
     }
 
-    public static final void bindGLArrayBuffer(IBufferGL buffer) {
+    /**
+     * Binds a buffer to the GL_ARRAY_BUFFER target for use not related to
+     * vertexAttribPointer
+     */
+    public static void bindGLArrayBuffer(IBufferGL buffer) {
         if (currentArrayBuffer != buffer) {
             _wglBindBuffer(GL_ARRAY_BUFFER, buffer);
             currentArrayBuffer = buffer;
@@ -2835,7 +3010,10 @@ public class GL11 {
 
     static IBufferGL currentUniformBuffer = null;
 
-    public static final void bindGLUniformBuffer(IBufferGL buffer) {
+    /**
+     * Binds a buffer to the GL_UNIFORM_BUFFER target
+     */
+    public static void bindGLUniformBuffer(IBufferGL buffer) {
         if (currentUniformBuffer != buffer) {
             _wglBindBuffer(0x8A11, buffer);
             currentUniformBuffer = buffer;
@@ -2844,7 +3022,7 @@ public class GL11 {
 
     static IProgramGL currentShaderProgram = null;
 
-    public static final void bindGLShaderProgram(IProgramGL prog) {
+    public static void bindGLShaderProgram(IProgramGL prog) {
         if (currentShaderProgram != prog) {
             _wglUseProgram(prog);
             currentShaderProgram = prog;
@@ -2855,7 +3033,7 @@ public class GL11 {
     private static final int[] currentUniformBlockBindingOffset = new int[16];
     private static final int[] currentUniformBlockBindingSize = new int[16];
 
-    public static final void bindUniformBufferRange(int index, IBufferGL buffer, int offset, int size) {
+    public static void bindUniformBufferRange(int index, IBufferGL buffer, int offset, int size) {
         if (currentUniformBlockBindings[index] != buffer || currentUniformBlockBindingOffset[index] != offset
                 || currentUniformBlockBindingSize[index] != size) {
             _wglBindBufferRange(0x8A11, index, buffer, offset, size);
@@ -2868,26 +3046,26 @@ public class GL11 {
     public static final int CLEAR_BINDING_TEXTURE = 1;
     public static final int CLEAR_BINDING_TEXTURE0 = 2;
     public static final int CLEAR_BINDING_ACTIVE_TEXTURE = 4;
-    public static final int CLEAR_BINDING_BUFFER_ARRAY = 8;
+    public static final int CLEAR_BINDING_VERTEX_ARRAY = 8;
     public static final int CLEAR_BINDING_ARRAY_BUFFER = 16;
     public static final int CLEAR_BINDING_SHADER_PROGRAM = 32;
 
-    public static final void clearCurrentBinding(int mask) {
+    public static void clearCurrentBinding(int mask) {
         if ((mask & CLEAR_BINDING_TEXTURE) != 0) {
-            int[] i = GL11.boundTexture;
+            int[] i = boundTexture;
             for (int j = 0; j < i.length; ++j) {
                 i[j] = -1;
             }
         }
         if ((mask & CLEAR_BINDING_TEXTURE0) != 0) {
-            GL11.boundTexture[0] = -1;
+            boundTexture[0] = -1;
         }
         if ((mask & CLEAR_BINDING_ACTIVE_TEXTURE) != 0) {
-            GL11.activeTexture = 0;
+            activeTexture = 0;
             _wglActiveTexture(GL_TEXTURE0);
         }
-        if ((mask & CLEAR_BINDING_BUFFER_ARRAY) != 0) {
-            currentBufferArray = null;
+        if ((mask & CLEAR_BINDING_VERTEX_ARRAY) != 0) {
+            currentVertexArray = null;
         }
         if ((mask & CLEAR_BINDING_ARRAY_BUFFER) != 0) {
             currentArrayBuffer = currentVAOArrayBuffer = null;
@@ -2902,7 +3080,7 @@ public class GL11 {
     public static final int ATTRIB_NORMAL = 4;
     public static final int ATTRIB_LIGHTMAP = 8;
 
-    public static final void renderBuffer(ByteBuffer buffer, int attrib, int mode, int count) {
+    public static void renderBuffer(ByteBuffer buffer, int attrib, int mode, int count) {
         if (currentList != null) {
             if (currentList.attribs == -1) {
                 currentList.attribs = attrib;
@@ -2931,92 +3109,87 @@ public class GL11 {
         }
     }
 
-    public static final void optimize() {
-        FixedFunctionPipeline.optimize();
+    private static long lastRecyclerFlush = 0l;
+
+    public static void optimize() {
+        long millis = EagRuntime.currentTimeMillis();
+        if (millis - lastRecyclerFlush > 120000l) {
+            lastRecyclerFlush = millis;
+            arrayBufferRecycler.compact();
+            elementArrayBufferRecycler.compact();
+            VAORecycler.compact();
+        }
     }
 
     private static FixedFunctionPipeline lastRender = null;
     private static int lastMode = 0;
     private static int lastCount = 0;
 
-    public static final void renderAgain() {
+    public static void renderAgain() {
         if (lastRender == null) {
             throw new UnsupportedOperationException(
                     "Cannot render the same verticies twice while generating display list");
         }
-        bindGLBufferArray(lastRender.getDirectModeBufferArray());
+        bindGLVertexArray(lastRender.getDirectModeVertexArray());
         lastRender.update().drawDirectArrays(lastMode, 0, lastCount);
     }
 
     private static IBufferGL listIndicesBuffer = null;
     private static int listIndicesBufferSize = 0;
 
+    public static final int quad16MaxVertices = 65536;
+
     private static IBufferGL quad16EmulationBuffer = null;
-    private static int quad16EmulationBufferSize = 0;
 
     private static IBufferGL quad32EmulationBuffer = null;
     private static int quad32EmulationBufferSize = 0;
 
-    public static final void attachListIndicesBuffer(int vertexCount, boolean bind) {
+    public static void attachListIndicesBuffer(int vertexCount, boolean bind) {
         IBufferGL buf = listIndicesBuffer;
         if (buf == null) {
             listIndicesBuffer = buf = _wglGenBuffers();
-            GL11.bindVAOGLElementArrayBufferNow(buf);
+            bindVAOGLElementArrayBufferNow(buf);
         } else {
             int cnt = listIndicesBufferSize;
             if (cnt < vertexCount) {
-                GL11.bindVAOGLElementArrayBufferNow(buf);
+                bindVAOGLElementArrayBufferNow(buf);
             } else if (bind) {
-                GL11.bindVAOGLElementArrayBuffer(buf);
+                bindVAOGLElementArrayBuffer(buf);
             }
         }
     }
 
-    public static final void attachQuad16EmulationBuffer(int vertexCount, boolean bind) {
+    public static void attachQuad16EmulationBuffer(boolean bind) {
         IBufferGL buf = quad16EmulationBuffer;
         if (buf == null) {
             quad16EmulationBuffer = buf = _wglGenBuffers();
-            int newSize = quad16EmulationBufferSize = (vertexCount & 0xFFFFF000) + 0x2000;
-            if (newSize > 0xFFFF) {
-                newSize = 0xFFFF;
-            }
-            GL11.bindVAOGLElementArrayBufferNow(buf);
-            resizeQuad16EmulationBuffer(newSize >> 2);
-        } else {
-            int cnt = quad16EmulationBufferSize;
-            if (cnt < vertexCount) {
-                int newSize = quad16EmulationBufferSize = (vertexCount & 0xFFFFF000) + 0x2000;
-                if (newSize > 0xFFFF) {
-                    newSize = 0xFFFF;
-                }
-                GL11.bindVAOGLElementArrayBufferNow(buf);
-                resizeQuad16EmulationBuffer(newSize >> 2);
-            } else if (bind) {
-                GL11.bindVAOGLElementArrayBuffer(buf);
-            }
+            bindVAOGLElementArrayBufferNow(buf);
+            resizeQuad16EmulationBuffer(quad16MaxVertices >> 2);
+        } else if (bind) {
+            bindVAOGLElementArrayBuffer(buf);
         }
     }
 
-    public static final void attachQuad32EmulationBuffer(int vertexCount, boolean bind) {
+    public static void attachQuad32EmulationBuffer(int vertexCount, boolean bind) {
         IBufferGL buf = quad32EmulationBuffer;
         if (buf == null) {
             quad32EmulationBuffer = buf = _wglGenBuffers();
-            int newSize = quad32EmulationBufferSize = (vertexCount & 0xFFFFC000) + 0x8000;
-            GL11.bindVAOGLElementArrayBufferNow(buf);
+            int newSize = quad32EmulationBufferSize = (vertexCount + 0xFFFF) & 0xFFFF0000;
+            bindVAOGLElementArrayBufferNow(buf);
             resizeQuad32EmulationBuffer(newSize >> 2);
         } else {
             int cnt = quad32EmulationBufferSize;
             if (cnt < vertexCount) {
-                int newSize = quad32EmulationBufferSize = (vertexCount & 0xFFFFC000) + 0x8000;
-                GL11.bindVAOGLElementArrayBufferNow(buf);
+                int newSize = quad32EmulationBufferSize = (vertexCount + 0xFFFF) & 0xFFFF0000;
+                bindVAOGLElementArrayBufferNow(buf);
                 resizeQuad32EmulationBuffer(newSize >> 2);
             } else if (bind) {
-                GL11.bindVAOGLElementArrayBuffer(buf);
+                bindVAOGLElementArrayBuffer(buf);
             }
         }
     }
 
-    private static final void resizeQuad16EmulationBuffer(int quadCount) {
+    private static void resizeQuad16EmulationBuffer(int quadCount) {
         IntBuffer buf = EagRuntime.allocateIntBuffer(quadCount * 3);
         int v1, v2, v3, v4;
         for (int i = 0; i < quadCount; ++i) {
@@ -3033,7 +3206,7 @@ public class GL11 {
         EagRuntime.freeIntBuffer(buf);
     }
 
-    private static final void resizeQuad32EmulationBuffer(int quadCount) {
+    private static void resizeQuad32EmulationBuffer(int quadCount) {
         IntBuffer buf = EagRuntime.allocateIntBuffer(quadCount * 6);
         int v1, v2, v3, v4;
         for (int i = 0; i < quadCount; ++i) {
@@ -3053,11 +3226,11 @@ public class GL11 {
         EagRuntime.freeIntBuffer(buf);
     }
 
-    public static final ITextureGL getNativeTexture(int tex) {
+    public static ITextureGL getNativeTexture(int tex) {
         return mapTexturesGL.get(tex);
     }
 
-    public static final void regenerateTexture(int tex) {
+    public static void regenerateTexture(int tex) {
         ITextureGL webglTex = mapTexturesGL.get(tex);
         if (webglTex != null) {
             unbindTextureIfCached(tex);
@@ -3082,17 +3255,17 @@ public class GL11 {
     static boolean npotCapable = false;
     static int uniformBufferOffsetAlignment = -1;
 
-    public static final void createFramebufferHDR16FTexture(int target, int level, int w, int h, int format,
+    public static void createFramebufferHDR16FTexture(int target, int level, int w, int h, int format,
             boolean allow32bitFallback) {
         createFramebufferHDR16FTexture(target, level, w, h, format, allow32bitFallback, null);
     }
 
-    public static final void createFramebufferHDR16FTexture(int target, int level, int w, int h, int format,
+    public static void createFramebufferHDR16FTexture(int target, int level, int w, int h, int format,
             ByteBuffer pixelData) {
         createFramebufferHDR16FTexture(target, level, w, h, format, false, pixelData);
     }
 
-    private static final void createFramebufferHDR16FTexture(int target, int level, int w, int h, int format,
+    private static void createFramebufferHDR16FTexture(int target, int level, int w, int h, int format,
             boolean allow32bitFallback, ByteBuffer pixelData) {
         if (hasFramebufferHDR16FSupport) {
             int internalFormat;
@@ -3133,17 +3306,17 @@ public class GL11 {
         }
     }
 
-    public static final void createFramebufferHDR32FTexture(int target, int level, int w, int h, int format,
+    public static void createFramebufferHDR32FTexture(int target, int level, int w, int h, int format,
             boolean allow16bitFallback) {
         createFramebufferHDR32FTexture(target, level, w, h, format, allow16bitFallback, null);
     }
 
-    public static final void createFramebufferHDR32FTexture(int target, int level, int w, int h, int format,
+    public static void createFramebufferHDR32FTexture(int target, int level, int w, int h, int format,
             ByteBuffer pixelData) {
         createFramebufferHDR32FTexture(target, level, w, h, format, false, pixelData);
     }
 
-    private static final void createFramebufferHDR32FTexture(int target, int level, int w, int h, int format,
+    private static void createFramebufferHDR32FTexture(int target, int level, int w, int h, int format,
             boolean allow16bitFallback, ByteBuffer pixelData) {
         if (hasFramebufferHDR32FSupport) {
             int internalFormat;
@@ -3178,7 +3351,7 @@ public class GL11 {
         }
     }
 
-    public static final void warmUpCache() {
+    public static void warmUpCache() {
         glGetString(7936);
         glGetString(7937);
         glGetString(7938);
@@ -3230,7 +3403,7 @@ public class GL11 {
             logger.info(
                     "Note: Could not unlock instancing via OpenGL extensions, using slow vanilla font and particle rendering");
         }
-        emulatedVAOState = emulatedVAOs ? new SoftGLBufferState() : null;
+        emulatedVAOState = emulatedVAOs ? new SoftGLVertexState() : null;
         PlatformOpenGL.enterVAOEmulationHook();
         GLSLHeader.init();
         DrawUtils.init();
@@ -3238,7 +3411,7 @@ public class GL11 {
         DrawUtils.vshLocal = null;
     }
 
-    public static final void destroyCache() {
+    public static void destroyCache() {
         GLSLHeader.destroy();
         DrawUtils.destroy();
         FixedFunctionPipeline.flushCache();
@@ -3257,43 +3430,43 @@ public class GL11 {
         displayLists.clear();
     }
 
-    public static final int checkOpenGLESVersion() {
+    public static int checkOpenGLESVersion() {
         return glesVers;
     }
 
-    public static final boolean checkFBORenderMipmapCapable() {
+    public static boolean checkFBORenderMipmapCapable() {
         return fboRenderMipmapCapable;
     }
 
-    public static final boolean checkVAOCapable() {
+    public static boolean checkVAOCapable() {
         return vertexArrayCapable;
     }
 
-    public static final boolean checkInstancingCapable() {
+    public static boolean checkInstancingCapable() {
         return instancingCapable;
     }
 
-    public static final boolean checkTexStorageCapable() {
+    public static boolean checkTexStorageCapable() {
         return texStorageCapable;
     }
 
-    public static final boolean checkTextureLODCapable() {
+    public static boolean checkTextureLODCapable() {
         return textureLODCapable;
     }
 
-    public static final boolean checkShader5Capable() {
+    public static boolean checkShader5Capable() {
         return shader5Capable;
     }
 
-    public static final boolean checkNPOTCapable() {
+    public static boolean checkNPOTCapable() {
         return npotCapable;
     }
 
-    public static final int getUniformBufferOffsetAlignment() {
+    public static int getUniformBufferOffsetAlignment() {
         return uniformBufferOffsetAlignment;
     }
 
-    public static final boolean checkHDRFramebufferSupport(int bits) {
+    public static boolean checkHDRFramebufferSupport(int bits) {
         switch (bits) {
             case 16:
                 return hasFramebufferHDR16FSupport;
@@ -3304,7 +3477,7 @@ public class GL11 {
         }
     }
 
-    public static final boolean checkLinearHDRFilteringSupport(int bits) {
+    public static boolean checkLinearHDRFilteringSupport(int bits) {
         switch (bits) {
             case 16:
                 return hasLinearHDR16FSupport;
@@ -3315,37 +3488,37 @@ public class GL11 {
         }
     }
 
-    public static final boolean checkHasHDRFramebufferSupport() {
+    public static boolean checkHasHDRFramebufferSupport() {
         return hasFramebufferHDR16FSupport || hasFramebufferHDR32FSupport;
     }
 
-    public static final boolean checkHasHDRFramebufferSupportWithFilter() {
+    public static boolean checkHasHDRFramebufferSupportWithFilter() {
         return (hasFramebufferHDR16FSupport && hasLinearHDR16FSupport)
                 || (hasFramebufferHDR32FSupport && hasLinearHDR32FSupport);
     }
 
     // legacy
-    public static final boolean checkLinearHDR32FSupport() {
+    public static boolean checkLinearHDR32FSupport() {
         return hasLinearHDR32FSupport;
     }
 
-    public static final void glBegin(int mode, VertexFormat fmt) {
+    public static void glBegin(int mode, VertexFormat fmt) {
         Tessellator.instance.startDrawing(mode, fmt);
     }
 
-    public static final void glEnd() {
+    public static void glEnd() {
         Tessellator.instance.draw();
     }
 
-    public static final void glTexCoord2f(float u, float v) {
+    public static void glTexCoord2f(float u, float v) {
         Tessellator.instance.addUV(u, v);
     }
 
-    public static final void glVertex3f(float x, float y, float z) {
+    public static void glVertex3f(float x, float y, float z) {
         Tessellator.instance.addVertex(x, y, z);
     }
 
-    public static final void glVertex2f(float x, float y) {
+    public static void glVertex2f(float x, float y) {
         Tessellator.instance.addVertex(x, y, 0.0F);
     }
 }

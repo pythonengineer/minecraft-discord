@@ -9,11 +9,12 @@ import static net.lax1dude.eaglercraft.lwjgl.opengl.GL11.GL_OUT_OF_MEMORY;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class GLU {
-    public static final void gluPerspective(float fovy, float aspect, float zNear, float zFar) {
+
+    public static void gluPerspective(float fovy, float aspect, float zNear, float zFar) {
         GL11.gluPerspective(fovy, aspect, zNear, zFar);
     }
 
-    public static final String gluErrorString(int i) {
+    public static String gluErrorString(int i) {
         switch (i) {
             case GL_INVALID_ENUM:
                 return "GL_INVALID_ENUM";

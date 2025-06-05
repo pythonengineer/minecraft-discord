@@ -1,4 +1,5 @@
 random/click.ogg
+random/drr.ogg
 random/explode.ogg
 random/explode1.ogg
 random/explode2.ogg

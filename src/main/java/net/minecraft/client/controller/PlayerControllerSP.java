@@ -3,6 +3,7 @@ package net.minecraft.client.controller;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiInventory;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -17,33 +18,81 @@ public final class PlayerControllerSP extends PlayerController {
 	private int curBlockZ = -1;
 	private int curBlockDamage = 0;
 	private int prevBlockDamage = 0;
-	private int blockHitWait = 0;
+	private int blockDestroySoundCounter = 0;
 	private MobSpawner mobSpawner;
+	private Block[] mainChestArray = new Block[]{Block.stone, Block.grass, Block.cobblestone, Block.planks, Block.sapling, Block.bedrock, Block.sand, Block.gravel, Block.oreGold, Block.oreIron, Block.oreCoal, Block.wood, Block.leaves, Block.sponge, Block.glass, Block.clothRed, Block.clothOrange, Block.clothYellow, Block.clothChartreuse, Block.clothGreen, Block.clothSpringGreen, Block.clothCyan, Block.clothCapri, Block.clothUltramarine, Block.clothViolet, Block.clothPurple, Block.clothMagenta, Block.clothRose, Block.clothDarkGray, Block.clothGray, Block.clothWhite, Block.plantYellow, Block.plantRed, Block.mushroomBrown, Block.mushroomRed, Block.blockGold, Block.blockSteel, Block.stairSingle, Block.brick, Block.tnt, Block.bookShelf, Block.cobblestoneMossy, Block.obsidian, Block.torch, Block.waterSource, Block.lavaSource, Block.chest};
 
 	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
 	}
 
 	public final void openInventory() {
-		this.mc.displayGuiScreen(new GuiInventory());
+		this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
 	}
 
 	public final void flipPlayer(EntityPlayer var1) {
-		var1.inventory.mainInventory[4] = new ItemStack(Block.clothWhite, 99);
-		var1.inventory.mainInventory[5] = new ItemStack(Block.glass, 99);
-		var1.inventory.mainInventory[6] = new ItemStack(Block.torch, 99);
-		var1.inventory.mainInventory[7] = new ItemStack(Block.tnt, 99);
-		var1.inventory.mainInventory[8] = new ItemStack(Block.bookShelf, 99);
-		int var2 = 0;
+		int var2 = (int)var1.posX;
+		int var3 = (int)var1.posY;
+		int var9 = (int)var1.posZ;
 
-		for(int var3 = 256; var3 < 1024 && var2 < 4; ++var3) {
+		for(int var4 = var2 - 3; var4 <= var2 + 3; ++var4) {
+			for(int var5 = var3 - 2; var5 <= var3 + 2; ++var5) {
+				for(int var6 = var9 - 3; var6 <= var9 + 3; ++var6) {
+					int var7 = var5 < var3 - 1 ? Block.obsidian.blockID : 0;
+					if(var4 == var2 - 3 || var6 == var9 - 3 || var4 == var2 + 3 || var6 == var9 + 3 || var5 == var3 - 2 || var5 == var3 + 2) {
+						var7 = Block.cobblestoneMossy.blockID;
+					}
+
+					if(var5 == var3 && var6 == var9 && (var4 == var2 - 3 + 1 || var4 == var2 + 3 - 1)) {
+						var7 = Block.torch.blockID;
+					}
+
+					if(var6 == var9 - 3 && var4 == var2 && var5 >= var3 - 1 && var5 <= var3) {
+						var7 = 0;
+					}
+
+					this.mc.theWorld.setBlockWithNotify(var4, var5, var6, var7);
+				}
+			}
+		}
+
+		this.mc.theWorld.setBlockWithNotify(var2 - 2, var3 - 1, var9 - 2, Block.chest.blockID);
+		IInventory var12 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 - 2, var3 - 1, var9 - 2);
+		this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var9 - 2, Block.chest.blockID);
+		IInventory var13 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var9 - 2);
+		this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var9 - 1, Block.chest.blockID);
+		IInventory var14 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var9 - 1);
+		this.mc.theWorld.setBlockWithNotify(var2 - 1, var3 - 1, var9 + 2, Block.chest.blockID);
+		IInventory var15 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 - 1, var3 - 1, var9 + 2);
+		this.mc.theWorld.setBlockWithNotify(var2, var3 - 1, var9 + 2, Block.chest.blockID);
+		IInventory var10 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2, var3 - 1, var9 + 2);
+		var2 = 0;
+
+		int var8;
+		for(var3 = 256; var3 < 1024 && var2 < 27; ++var3) {
 			if(Item.itemsList[var3] != null) {
-				var1.inventory.mainInventory[var2] = new ItemStack(var3);
+				var8 = Item.itemsList[var3].getItemStackLimit();
+				var12.setInventorySlotContents(var2, new ItemStack(var3, var8));
 				++var2;
 			}
 		}
 
-		var1.inventory.mainInventory[9] = new ItemStack(Item.apple.shiftedIndex, 99);
+		for(var3 = 0; var3 < 27; ++var3) {
+			var8 = Block.tnt.blockID;
+			ItemStack var11 = new ItemStack(var8, Item.itemsList[var8].getItemStackLimit());
+			var15.setInventorySlotContents(var3, var11);
+			var10.setInventorySlotContents(var3, var11);
+		}
+
+		for(var3 = 0; var3 < this.mainChestArray.length && var3 < 54; ++var3) {
+			ItemStack var16 = new ItemStack(this.mainChestArray[var3], Item.itemsList[this.mainChestArray[var3].blockID].getItemStackLimit());
+			if(var3 >= 27) {
+				var14.setInventorySlotContents(var3 - 27, var16);
+			} else {
+				var13.setInventorySlotContents(var3, var16);
+			}
+		}
+
 	}
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {
@@ -58,7 +107,7 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public final void clickBlock(int var1, int var2, int var3) {
 		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		if(var4 > 0 && Block.blocksList[var4].blockStrength(this.mc.thePlayer) == 0) {
+		if(var4 > 0 && Block.blocksList[var4].blockStrength(this.mc.thePlayer) <= 0) {
 			this.sendBlockRemoved(var1, var2, var3);
 		}
 
@@ -66,12 +115,12 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public final void resetBlockRemoving() {
 		this.curBlockDamage = 0;
-		this.blockHitWait = 0;
+		this.blockDestroySoundCounter = 0;
 	}
 
 	public final void sendBlockRemoving(int var1, int var2, int var3, int var4) {
-		if(this.blockHitWait > 0) {
-			--this.blockHitWait;
+		if(this.blockDestroySoundCounter > 0) {
+			--this.blockDestroySoundCounter;
 		} else {
 			super.sendBlockRemoving(var1, var2, var3, var4);
 			if(var1 == this.curBlockX && var2 == this.curBlockY && var3 == this.curBlockZ) {
@@ -95,7 +144,7 @@ public final class PlayerControllerSP extends PlayerController {
 					if(this.curBlockDamage == this.prevBlockDamage + 1) {
 						this.sendBlockRemoved(var1, var2, var3);
 						this.curBlockDamage = 0;
-						this.blockHitWait = 5;
+						this.blockDestroySoundCounter = 5;
 					}
 
 				}
@@ -126,12 +175,12 @@ public final class PlayerControllerSP extends PlayerController {
 		int var2 = var1.width * var1.length * var1.height / 64 / 64 / 64;
 
 		for(int var3 = 0; var3 < var2; ++var3) {
-			this.mobSpawner.performSpawning(var2, var1.playerEntity, null);
+			this.mobSpawner.spawnMob(var2, var1.playerEntity, null);
 		}
 
 	}
 
 	public final void onUpdate() {
-		this.mobSpawner.performSpawning();
+		this.mobSpawner.spawnMobs();
 	}
 }

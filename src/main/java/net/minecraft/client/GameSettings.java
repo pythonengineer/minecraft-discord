@@ -11,6 +11,8 @@ import net.lax1dude.eaglercraft.EaglerOutputStream;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 
 public final class GameSettings {
+    private static final String[] GUI_SCALES = new String[]{"AUTO", "SMALL",
+            "NORMAL", "LARGE" };
 	private static final String[] RENDER_DISTANCES = new String[]{"FAR", "NORMAL", "SHORT", "TINY"};
     public boolean music = true;
     public boolean sound = true;
@@ -20,6 +22,7 @@ public final class GameSettings {
 	public boolean viewBobbing = true;
 	public boolean anaglyph = false;
 	public boolean limitFramerate = false;
+    public int guiScale = 3;
 	public KeyBinding keyBindForward = new KeyBinding("Forward", 17);
 	public KeyBinding keyBindLeft = new KeyBinding("Left", 30);
 	public KeyBinding keyBindBack = new KeyBinding("Back", 31);
@@ -33,7 +36,7 @@ public final class GameSettings {
 	public KeyBinding keyBindLoad = new KeyBinding("Load location", 19);
     public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
 	private Minecraft mc;
-	public int numberOfOptions = 8;
+	public int numberOfOptions = 9;
 
 	public GameSettings(Minecraft var1) {
 		this.mc = var1;
@@ -85,11 +88,15 @@ public final class GameSettings {
 			this.limitFramerate = !this.limitFramerate;
 		}
 
+		if(var1 == 8) {
+            this.guiScale = this.guiScale + var2 & 3;
+		}
+
 		this.saveOptions();
 	}
 
 	public final String setOptionString(int var1) {
-		return var1 == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (var1 == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (var1 == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (var1 == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (var1 == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (var1 == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (var1 == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (var1 == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : "")))))));
+		return var1 == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (var1 == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (var1 == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (var1 == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (var1 == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (var1 == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (var1 == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (var1 == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (var1 == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : ""))))))));
 	}
 
 	private void loadOptions() {
@@ -127,6 +134,10 @@ public final class GameSettings {
 						this.renderDistance = Integer.parseInt(var5[1]);
 					}
 
+                    if(var5[0].equals("guiScale")) {
+                        this.guiScale = Integer.parseInt(var5[1]);
+                    }
+
 					if(var5[0].equals("bobView")) {
 						this.viewBobbing = var5[1].equals("true");
 					}
@@ -161,6 +172,7 @@ public final class GameSettings {
 			var1.println("invertYMouse:" + this.invertMouse);
 			var1.println("showFrameRate:" + this.showFPS);
 			var1.println("viewDistance:" + this.renderDistance);
+            var1.println("guiScale:" + this.guiScale);
 			var1.println("bobView:" + this.viewBobbing);
 			var1.println("anaglyph3d:" + this.anaglyph);
 			var1.println("limitFramerate:" + this.limitFramerate);

@@ -17,6 +17,7 @@ public final class GuiSaveLevel extends GuiLoadLevel {
 			((GuiButton)this.controlList.get(var2)).visible = true;
 		}
 
+        ((GuiButton)this.controlList.get(5)).visible = true;
 	}
 
 	protected final void openLevel(int var1) {

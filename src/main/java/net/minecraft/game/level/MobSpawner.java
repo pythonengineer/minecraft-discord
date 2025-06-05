@@ -13,18 +13,18 @@ public class MobSpawner {
         this.worldObj = var1;
     }
 
-    public final void performSpawning() {
+    public final void spawnMobs() {
         int var1 = this.worldObj.width * this.worldObj.length * this.worldObj.height / 64 / 64 / 64;
         if(this.worldObj.random.nextInt(100) < var1) {
             int var2 = this.worldObj.entitiesInLevelList(EntityLiving.class);
             if(var2 < var1 * 20) {
-                this.performSpawning(var1, this.worldObj.playerEntity, (IProgressUpdate)null);
+                this.spawnMob(var1, this.worldObj.playerEntity, (IProgressUpdate)null);
             }
         }
 
     }
 
-    public final int performSpawning(int var1, Entity var2, IProgressUpdate var3) {
+    public final int spawnMob(int var1, Entity var2, IProgressUpdate var3) {
         int var19 = 0;
 
         for(int var4 = 0; var4 < var1; ++var4) {
@@ -70,10 +70,10 @@ public class MobSpawner {
                             EntityLiving var20 = new EntityLiving(this.worldObj);
                             var18 = this.worldObj.random.nextFloat() * 360.0F;
                             var20.setPositionAndRotation(var13, var14, var15, var18, 0.0F);
-                            var20.setEntityAI(new AILiving());
+                            var20.setAI(new AILiving());
                             if(this.worldObj.checkIfAABBIsClear1(var20.boundingBox)) {
                                 ++var19;
-                                this.worldObj.releaseEntitySkin(var20);
+                                this.worldObj.spawnEntityInWorld(var20);
                             }
                         }
                     }

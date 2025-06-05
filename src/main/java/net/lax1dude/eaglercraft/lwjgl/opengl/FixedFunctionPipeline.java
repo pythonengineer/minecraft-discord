@@ -9,7 +9,7 @@ import java.util.List;
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 
-import net.lax1dude.eaglercraft.internal.IBufferArrayGL;
+import net.lax1dude.eaglercraft.internal.IVertexArrayGL;
 import net.lax1dude.eaglercraft.internal.IProgramGL;
 import net.lax1dude.eaglercraft.internal.IShaderGL;
 import net.lax1dude.eaglercraft.internal.IUniformGL;
@@ -49,7 +49,7 @@ public class FixedFunctionPipeline {
 
     private static final Logger LOGGER = LogManager.getLogger("FixedFunctionPipeline");
 
-    static final int getFragmentState() {
+    static int getFragmentState() {
         return (GL11.stateTexture[0] ? STATE_ENABLE_TEXTURE2D : 0) | (GL11.stateTexture[1] ? STATE_ENABLE_LIGHTMAP : 0)
                 | (GL11.stateAlphaTest ? STATE_ENABLE_ALPHA_TEST : 0)
                 | ((GL11.stateLighting && GL11.stateMaterial) ? STATE_ENABLE_MC_LIGHTING : 0)
@@ -75,7 +75,7 @@ public class FixedFunctionPipeline {
         StreamBufferInstance sb = self.streamBuffer.getBuffer(buffer.remaining());
         self.currentVertexArray = sb;
 
-        GL11.bindGLBufferArray(sb.getVertexArray());
+        GL11.bindGLVertexArray(sb.getVertexArray());
         GL11.bindGLArrayBuffer(sb.getVertexBuffer());
 
         _wglBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
@@ -96,7 +96,7 @@ public class FixedFunctionPipeline {
             self = getPipelineInstanceCore(baseState);
         }
 
-        GL11.bindGLBufferArray(list.vertexArray);
+        GL11.bindGLVertexArray(list.vertexArray);
         GL11.bindVAOGLArrayBuffer(list.vertexBuffer);
 
         GL11.enableVertexAttribArray(0);
@@ -137,14 +137,14 @@ public class FixedFunctionPipeline {
 
     public void drawArrays(int mode, int offset, int count) {
         GL11.bindGLShaderProgram(shaderProgram);
-        GL11.doDrawArrays(mode, offset, count);
+        GL11.drawArrays(mode, offset, count);
     }
 
     public void drawDirectArrays(int mode, int offset, int count) {
         GL11.bindGLShaderProgram(shaderProgram);
         if (mode == GL_QUADS) {
             StreamBufferInstance sb = currentVertexArray;
-            if (count > 0xFFFF) {
+            if (count > GL11.quad16MaxVertices) {
                 if (!sb.bindQuad32) {
                     sb.bindQuad16 = false;
                     sb.bindQuad32 = true;
@@ -152,25 +152,23 @@ public class FixedFunctionPipeline {
                 } else {
                     GL11.attachQuad32EmulationBuffer(count, false);
                 }
-                GL11.doDrawElements(GL_TRIANGLES, count + (count >> 1), GL_UNSIGNED_INT, 0);
+                GL11.drawElements(GL_TRIANGLES, (count >> 2) * 6, GL_UNSIGNED_INT, 0);
             } else {
                 if (!sb.bindQuad16) {
                     sb.bindQuad16 = true;
                     sb.bindQuad32 = false;
-                    GL11.attachQuad16EmulationBuffer(count, true);
-                } else {
-                    GL11.attachQuad16EmulationBuffer(count, false);
+                    GL11.attachQuad16EmulationBuffer(true);
                 }
-                GL11.doDrawElements(GL_TRIANGLES, count + (count >> 1), GL_UNSIGNED_SHORT, 0);
+                GL11.drawElements(GL_TRIANGLES, (count >> 2) * 6, GL_UNSIGNED_SHORT, 0);
             }
         } else {
-            GL11.doDrawArrays(mode, offset, count);
+            GL11.drawArrays(mode, offset, count);
         }
     }
 
     public void drawElements(int mode, int count, int type, int offset) {
         GL11.bindGLShaderProgram(shaderProgram);
-        GL11.doDrawElements(mode, count, type, offset);
+        GL11.drawElements(mode, count, type, offset);
     }
 
     private static IExtPipelineCompiler extensionProvider;
@@ -283,6 +281,7 @@ public class FixedFunctionPipeline {
         _wglCompileShader(vsh);
 
         if (_wglGetShaderi(vsh, GL_COMPILE_STATUS) != GL_TRUE) {
+            Display.checkContextLost();
             LOGGER.error("Failed to compile GL_VERTEX_SHADER for state {} !",
                     (visualizeBits(coreBits) + (enableExt && extBits != 0 ? " ext " + visualizeBits(extBits) : "")));
             String log = _wglGetShaderInfoLog(vsh);
@@ -302,6 +301,7 @@ public class FixedFunctionPipeline {
         _wglCompileShader(fsh);
 
         if (_wglGetShaderi(fsh, GL_COMPILE_STATUS) != GL_TRUE) {
+            Display.checkContextLost();
             LOGGER.error("Failed to compile GL_FRAGMENT_SHADER for state {} !",
                     (visualizeBits(coreBits) + (enableExt && extBits != 0 ? " ext " + visualizeBits(extBits) : "")));
             String log = _wglGetShaderInfoLog(fsh);
@@ -544,6 +544,7 @@ public class FixedFunctionPipeline {
         _wglLinkProgram(compiledProg);
 
         if (_wglGetProgrami(compiledProg, GL_LINK_STATUS) != GL_TRUE) {
+            Display.checkContextLost();
             LOGGER.error("Program could not be linked for state {} !", (visualizeBits(bits)
                     + (extensionProvider != null && extBits != 0 ? " ext " + visualizeBits(extBits) : "")));
             String log = _wglGetProgramInfoLog(compiledProg);
@@ -556,9 +557,8 @@ public class FixedFunctionPipeline {
             throw new IllegalStateException("Program could not be linked!");
         }
 
-        streamBuffer = new StreamBuffer(FixedFunctionShader.initialSize, FixedFunctionShader.initialCount,
-                FixedFunctionShader.maxCount, (vertexArray, vertexBuffer) -> {
-                    GL11.bindGLBufferArray(vertexArray);
+        streamBuffer = new StreamBuffer((vertexArray, vertexBuffer) -> {
+                    GL11.bindGLVertexArray(vertexArray);
                     GL11.bindVAOGLArrayBuffer(vertexBuffer);
 
                     GL11.enableVertexAttribArray(0);
@@ -1047,12 +1047,6 @@ public class FixedFunctionPipeline {
         return this;
     }
 
-    public static void optimize() {
-        for (int i = 0, l = pipelineListTracker.size(); i < l; ++i) {
-            pipelineListTracker.get(i).streamBuffer.optimize();
-        }
-    }
-
     public static void flushCache() {
         shaderSourceCacheVSH = null;
         shaderSourceCacheFSH = null;
@@ -1088,7 +1082,7 @@ public class FixedFunctionPipeline {
         streamBuffer.destroy();
     }
 
-    public IBufferArrayGL getDirectModeBufferArray() {
+    public IVertexArrayGL getDirectModeVertexArray() {
         return currentVertexArray.vertexArray;
     }
 }

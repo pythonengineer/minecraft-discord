@@ -1,5 +1,7 @@
 package net.minecraft.client.effect;
 
+import com.mojang.nbt.NBTTagCompound;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.entity.Entity;
@@ -12,7 +14,7 @@ public class EntityFX extends Entity {
 	protected int particleTextureIndex;
 	protected float particleTextureJitterX;
 	protected float particleTextureJitterY;
-	private int particleAge = 0;
+	protected int particleAge = 0;
 	protected int particleMaxAge = 0;
 	protected float particleScale;
 	protected float particleGravity;
@@ -34,10 +36,10 @@ public class EntityFX extends Entity {
 		this.motionX1 = this.motionX1 / var2 * var8 * 0.4F;
 		this.motionY1 = this.motionY1 / var2 * var8 * 0.4F + 0.1F;
 		this.motionZ1 = this.motionZ1 / var2 * var8 * 0.4F;
-		this.particleTextureJitterX = (float)Math.random() * 3.0F;
-		this.particleTextureJitterY = (float)Math.random() * 3.0F;
-		this.particleScale = (float)(Math.random() * 0.5D + 0.5D);
-		this.particleMaxAge = (int)(4.0D / (Math.random() * 0.9D + 0.1D));
+		this.particleTextureJitterX = this.rand.nextFloat() * 3.0F;
+		this.particleTextureJitterY = this.rand.nextFloat() * 3.0F;
+		this.particleScale = this.rand.nextFloat() * 0.5F + 0.5F;
+		this.particleMaxAge = (int)(4.0F / (this.rand.nextFloat() * 0.9F + 0.1F));
 		this.particleAge = 0;
 		this.canTriggerWalking = false;
 	}
@@ -94,5 +96,15 @@ public class EntityFX extends Entity {
 
 	public int getFXLayer() {
 		return 0;
+	}
+
+	protected final void writeEntityToNBT(NBTTagCompound var1) {
+	}
+
+	protected final String getEntityString() {
+		return null;
+	}
+
+	protected final void readEntityFromNBT(NBTTagCompound var1) {
 	}
 }

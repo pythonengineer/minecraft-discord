@@ -1,5 +1,11 @@
 package net.minecraft.client;
 
+import com.mojang.nbt.NBTBase;
+import com.mojang.nbt.NBTTagCompound;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
@@ -7,19 +13,20 @@ import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.Tessellator;
 
 public final class LoadingScreenRenderer implements IProgressUpdate {
-	private String text = "";
-	private Minecraft mc;
-	private String title = "";
-	private long start = EagRuntime.currentTimeMillis();
+    private String text;
+    private Minecraft mc;
+    private String title;
+    private long start;
 
 	public LoadingScreenRenderer(Minecraft var1) {
+        this.text = "";
+        this.title = "";
+        this.start = EagRuntime.currentTimeMillis();
 		this.mc = var1;
 	}
 
 	public final void displayProgressMessage(String var1) {
-		if(!this.mc.running) {
-			throw new MinecraftError();
-		} else {
+		if(this.mc.running) {
 			this.title = var1;
             int var3 = this.mc.scaledResolution.getScaledWidth();
             int var2 = this.mc.scaledResolution.getScaledHeight();
@@ -34,9 +41,7 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
 	}
 
 	public final void displayLoadingString(String var1) {
-		if(!this.mc.running) {
-			throw new MinecraftError();
-		} else {
+		if(this.mc.running) {
 			this.start = 0L;
 			this.text = var1;
 			this.setLoadingProgress(-1);
@@ -45,9 +50,7 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
 	}
 
 	public final void setLoadingProgress(int var1) {
-		if(!this.mc.running) {
-			throw new MinecraftError();
-		} else {
+		if(this.mc.running) {
 			long var2 = EagRuntime.currentTimeMillis();
 			if(var2 - this.start >= 20L) {
 				this.start = var2;
@@ -102,4 +105,25 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
 			}
 		}
 	}
+
+    public LoadingScreenRenderer() {
+    }
+
+    public static NBTTagCompound writeLevelTags(InputStream var0) throws IOException {
+        DataInputStream var4 = new DataInputStream(new GZIPInputStream(var0));
+
+        NBTTagCompound var5;
+        try {
+            NBTBase var1 = NBTBase.readTag(var4);
+            if(!(var1 instanceof NBTTagCompound)) {
+                throw new IOException("Root tag must be a named compound tag");
+            }
+
+            var5 = (NBTTagCompound)var1;
+        } finally {
+            var4.close();
+        }
+
+        return var5;
+    }
 }

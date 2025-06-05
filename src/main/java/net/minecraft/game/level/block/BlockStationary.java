@@ -4,11 +4,11 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.material.Material;
 
-public final class BlockStationary extends BlockFlowing {
+public final class BlockStationary extends BlockFluid {
 	protected BlockStationary(int var1, Material var2) {
 		super(var1, var2);
-		this.movingId1 = var1 - 1;
-		this.stillId1 = var1;
+		this.movingId0 = var1 - 1;
+		this.stillId0 = var1;
 		this.setTickOnLoad(false);
 	}
 
@@ -17,23 +17,23 @@ public final class BlockStationary extends BlockFlowing {
 
 	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		boolean var6 = false;
-		if(this.canFlow(var1, var2 - 1, var3, var4)) {
-			var6 = true;
-		}
-
-		if(this.canFlow(var1, var2 + 1, var3, var4)) {
-			var6 = true;
-		}
-
-		if(this.canFlow(var1, var2, var3, var4 - 1)) {
-			var6 = true;
-		}
-
-		if(this.canFlow(var1, var2, var3, var4 + 1)) {
-			var6 = true;
-		}
-
 		if(this.canFlow(var1, var2, var3 - 1, var4)) {
+			var6 = true;
+		}
+
+		if(!var6 && this.canFlow(var1, var2 - 1, var3, var4)) {
+			var6 = true;
+		}
+
+		if(!var6 && this.canFlow(var1, var2 + 1, var3, var4)) {
+			var6 = true;
+		}
+
+		if(!var6 && this.canFlow(var1, var2, var3, var4 - 1)) {
+			var6 = true;
+		}
+
+		if(!var6 && this.canFlow(var1, var2, var3, var4 + 1)) {
 			var6 = true;
 		}
 
@@ -50,8 +50,8 @@ public final class BlockStationary extends BlockFlowing {
 		}
 
 		if(var6) {
-			var1.setTileNoUpdate(var2, var3, var4, this.movingId1);
-			var1.scheduleBlockUpdate(var2, var3, var4, this.movingId1);
+			var1.setTileNoUpdate(var2, var3, var4, this.movingId0);
+			var1.scheduleBlockUpdate(var2, var3, var4, this.movingId0);
 		}
 
 	}

@@ -9,6 +9,7 @@ public final class ItemTool extends Item {
     public ItemTool(int var1, Block[] var2) {
         super(var1);
         this.blocksEffectiveAgainst = var2;
+        this.maxStackSize = 1;
     }
 
     public final float getStrVsBlock(Block var1) {

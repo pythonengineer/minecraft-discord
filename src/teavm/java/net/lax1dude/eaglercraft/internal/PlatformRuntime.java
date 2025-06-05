@@ -358,6 +358,11 @@ public class PlatformRuntime {
 
         webgl = (WebGL2RenderingContext)webgl_;
         webglExperimental = experimental;
+
+        if (webgl.isContextLost()) {
+            throw new ContextLostError();
+        }
+
         PlatformOpenGL.setCurrentContext(glesVer, webgl);
 
         logger.info("OpenGL Version: {}", PlatformOpenGL._wglGetString(0x1F02));
@@ -1052,6 +1057,9 @@ public class PlatformRuntime {
 
     @JSBody(params = {}, script = "delete __isEaglerX188Running;")
     private static native void clearRunningFlag();
+
+    @JSBody(params = {"webgl"}, script = "var loseCtx = webgl.getExtension(\"WEBGL_lose_context\"); if (loseCtx) loseCtx.loseContext();")
+    private static native void loseWebGLContext(WebGL2RenderingContext webgl);
 
     public static void postCreate() {
     }

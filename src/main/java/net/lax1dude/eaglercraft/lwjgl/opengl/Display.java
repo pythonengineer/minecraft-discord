@@ -1,6 +1,7 @@
 package net.lax1dude.eaglercraft.lwjgl.opengl;
 
 import net.lax1dude.eaglercraft.EagRuntime;
+import net.lax1dude.eaglercraft.internal.ContextLostError;
 import net.lax1dude.eaglercraft.internal.PlatformInput;
 
 /**
@@ -21,11 +22,20 @@ import net.lax1dude.eaglercraft.internal.PlatformInput;
  */
 public class Display {
     private static DisplayMode displayMode;
+    private static DisplayMode desktopDisplayMode;
     private static long lastDPIUpdate = -250l;
     private static float cacheDPI = 1.0f;
 
     public static void setDisplayMode(DisplayMode displayMode) {
+        if (desktopDisplayMode == null) {
+            desktopDisplayMode = displayMode;
+        }
+
         Display.displayMode = displayMode;
+    }
+
+    public static DisplayMode getDesktopDisplayMode() {
+        return desktopDisplayMode;
     }
 
     public static DisplayMode getDisplayMode() {
@@ -95,6 +105,12 @@ public class Display {
         return PlatformInput.contextLost();
     }
 
+    public static void checkContextLost() {
+        if (PlatformInput.contextLost()) {
+            throw new ContextLostError();
+        }
+    }
+
     public static boolean wasResized() {
         return PlatformInput.wasResized();
     }
@@ -104,9 +120,6 @@ public class Display {
     }
 
     public static void setFullscreen(boolean fullscreen) {
-        if (fullscreen) {
-            setDisplayMode(new DisplayMode(854, 480));
-        }
         PlatformInput.setStartupFullscreen(fullscreen);
     }
 

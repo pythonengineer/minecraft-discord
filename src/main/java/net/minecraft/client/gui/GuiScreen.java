@@ -63,6 +63,7 @@ public class GuiScreen extends Gui {
 		this.fontRenderer = var1.fontRenderer;
 		this.width = var2;
 		this.height = var3;
+		this.controlList.clear();
 		this.initGui();
 	}
 
@@ -98,6 +99,11 @@ public class GuiScreen extends Gui {
 
 	public final void handleKeyboardInput() {
 		if(Keyboard.getEventKeyState()) {
+            if(Keyboard.getEventKey() == Keyboard.KEY_F11) {
+                this.mc.toggleFullScreen();
+                return;
+            }
+
 			this.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 		}
 

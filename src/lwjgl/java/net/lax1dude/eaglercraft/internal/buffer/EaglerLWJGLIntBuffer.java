@@ -19,7 +19,7 @@ import net.lax1dude.unsafememcpy.UnsafeUtils;
  * POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-public class EaglerLWJGLIntBuffer implements IntBuffer {
+public class EaglerLWJGLIntBuffer extends IntBuffer {
 
     final long address;
     final boolean original;

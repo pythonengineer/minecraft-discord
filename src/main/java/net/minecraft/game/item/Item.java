@@ -1,17 +1,20 @@
 package net.minecraft.game.item;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 
-public abstract class Item {
+public class Item {
+    protected static EaglercraftRandom rand = new EaglercraftRandom();
     public static Item[] itemsList = new Item[1024];
-    public static Item apple;
-    public final int shiftedIndex;
+    public static Item arrow;
+    public final int itemID;
+    protected int maxStackSize = 99;
     protected int iconIndex;
 
     protected Item(int var1) {
-        this.shiftedIndex = var1;
+        this.itemID = var1;
         itemsList[var1] = this;
     }
 
@@ -26,8 +29,12 @@ public abstract class Item {
         return 1.0F;
     }
 
-    public boolean onPlaced(ItemStack var1, EntityPlayer var2) {
+    public boolean onItemRightClick(ItemStack var1, World var2, EntityPlayer var3) {
         return false;
+    }
+
+    public final int getItemStackLimit() {
+        return this.maxStackSize;
     }
 
     public boolean shouldUseOnTouchEagler(ItemStack itemStack) {
@@ -53,14 +60,22 @@ public abstract class Item {
         var1 = 84;
         var2 = var10000;
         var2.iconIndex = var1;
-        ItemFlintAndSteel var5 = new ItemFlintAndSteel(259);
+        ItemFlintAndSteel var7 = new ItemFlintAndSteel(259);
         var1 = 5;
-        ItemFlintAndSteel var3 = var5;
+        ItemFlintAndSteel var3 = var7;
         var3.iconIndex = var1;
-        ItemFood var6 = new ItemFood(260, 4);
+        ItemFood var8 = new ItemFood(260, 4);
         var1 = 4;
-        ItemFood var4 = var6;
+        ItemFood var4 = var8;
         var4.iconIndex = var1;
-        apple = var4;
+        ItemBow var9 = new ItemBow(261);
+        var1 = 21;
+        ItemBow var5 = var9;
+        var5.iconIndex = var1;
+        Item var10 = new Item(262);
+        var1 = 37;
+        Item var6 = var10;
+        var6.iconIndex = var1;
+        arrow = var6;
     }
 }

@@ -18,10 +18,6 @@ package net.lax1dude.eaglercraft.opengl;
  */
 public class FixedFunctionShader {
 
-    public static final int initialSize = 0x8000;
-    public static final int initialCount = 3;
-    public static final int maxCount = 8;
-
     public class FixedFunctionState {
 
         public static final int fixedFunctionStatesCount = 12;

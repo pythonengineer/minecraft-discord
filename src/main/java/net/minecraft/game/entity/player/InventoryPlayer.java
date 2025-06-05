@@ -1,9 +1,10 @@
 package net.minecraft.game.entity.player;
 
+import net.minecraft.game.IInventory;
 import net.minecraft.game.item.ItemStack;
 
-public final class InventoryPlayer {
-    public ItemStack[] mainInventory = new ItemStack[64];
+public final class InventoryPlayer implements IInventory {
+    public ItemStack[] mainInventory = new ItemStack[40];
     public int currentItem = 0;
 
     public final ItemStack getCurrentItem() {
@@ -37,44 +38,116 @@ public final class InventoryPlayer {
         }
     }
 
-    public final void swapSlots(int var1, int var2) {
-        ItemStack var3 = this.mainInventory[var2];
-        this.mainInventory[var2] = this.mainInventory[var1];
-        this.mainInventory[var1] = var3;
+    public final boolean consumeInventoryItem(int var1) {
+        var1 = this.getInventorySlotContainItem(var1);
+        if(var1 < 0) {
+            return false;
+        } else {
+            if(--this.mainInventory[var1].stackSize <= 0) {
+                this.mainInventory[var1] = null;
+            }
+
+            return true;
+        }
     }
 
     public final boolean addItemStackToInventory(ItemStack var1) {
-        int var2;
-        if(var1.itemID < 256) {
-            var2 = var1.itemID;
-            int var3 = this.getInventorySlotContainItem(var2);
-            if(var3 < 0) {
-                var3 = this.storeItemStack();
+        int var4 = var1.stackSize;
+        int var3 = var1.itemID;
+        int var6 = var3;
+        InventoryPlayer var5 = this;
+        int var7 = 0;
+
+        int var10001;
+        ItemStack var8;
+        while(true) {
+            if(var7 >= var5.mainInventory.length) {
+                var10001 = -1;
+                break;
             }
 
-            if(var3 < 0) {
-                return false;
-            } else {
-                if(this.mainInventory[var3] == null) {
-                    this.mainInventory[var3] = new ItemStack(var2, 0);
-                }
-
-                if(this.mainInventory[var3].stackSize >= 99) {
-                    return false;
-                } else {
-                    ++this.mainInventory[var3].stackSize;
-                    this.mainInventory[var3].animationsToGo = 5;
-                    return true;
+            if(var5.mainInventory[var7] != null && var5.mainInventory[var7].itemID == var6) {
+                var8 = var5.mainInventory[var7];
+                if(var5.mainInventory[var7].stackSize < var8.getItem().getItemStackLimit()) {
+                    var10001 = var7;
+                    break;
                 }
             }
+
+            ++var7;
+        }
+
+        int var9 = var10001;
+        if(var9 < 0) {
+            var9 = this.storeItemStack();
+        }
+
+        if(var9 < 0) {
+            var10001 = var4;
         } else {
-            var2 = this.storeItemStack();
+            if(this.mainInventory[var9] == null) {
+                this.mainInventory[var9] = new ItemStack(var3, 0);
+            }
+
+            var3 = var4;
+            var8 = this.mainInventory[var9];
+            if(var4 > var8.getItem().getItemStackLimit() - this.mainInventory[var9].stackSize) {
+                var8 = this.mainInventory[var9];
+                var3 = var8.getItem().getItemStackLimit() - this.mainInventory[var9].stackSize;
+            }
+
+            if(var3 == 0) {
+                var10001 = var4;
+            } else {
+                var4 -= var3;
+                this.mainInventory[var9].stackSize += var3;
+                this.mainInventory[var9].animationsToGo = 5;
+                var10001 = var4;
+            }
+        }
+
+        var1.stackSize = var10001;
+        if(var1.stackSize == 0) {
+            return true;
+        } else {
+            int var2 = this.storeItemStack();
             if(var2 >= 0) {
                 this.mainInventory[var2] = var1;
+                this.mainInventory[var2].animationsToGo = 5;
                 return true;
             } else {
                 return false;
             }
         }
+    }
+
+    public final ItemStack decrStackSize(int var1, int var2) {
+        if(this.mainInventory[var1] != null) {
+            if(this.mainInventory[var1].stackSize <= var2) {
+                ItemStack var3 = this.mainInventory[var1];
+                this.mainInventory[var1] = null;
+                return var3;
+            } else {
+                return this.mainInventory[var1].splitStack();
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public final void setInventorySlotContents(int var1, ItemStack var2) {
+        this.mainInventory[var1] = var2;
+    }
+
+    public final int getSizeInventory() {
+        return this.mainInventory.length;
+    }
+
+    public final ItemStack getStackInSlot(int var1) {
+        return this.mainInventory[var1];
+    }
+
+    public final String getInvName() {
+        return "Inventory";
     }
 }

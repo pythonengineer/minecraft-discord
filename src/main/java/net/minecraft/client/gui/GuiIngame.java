@@ -27,20 +27,17 @@ public final class GuiIngame extends Gui {
     private List chatMessageList = new ArrayList();
 	private EaglercraftRandom rand = new EaglercraftRandom();
 	private Minecraft mc;
-    private int scaledWidth;
-    private int scaledHeight;
     private int updateCounter = 0;
 	private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
 
-	public GuiIngame(Minecraft var1, int var2, int var3) {
+	public GuiIngame(Minecraft var1) {
 		this.mc = var1;
 	}
 
-	public final void renderGameOverlay() {
-        this.scaledWidth = this.mc.scaledResolution.getScaledWidth();
-        this.scaledHeight = this.mc.scaledResolution.getScaledHeight();
+	public final void renderGameOverlay(float var1) {
+        int scaledWidth = this.mc.scaledResolution.getScaledWidth();
+        int scaledHeight = this.mc.scaledResolution.getScaledHeight();
 
-        FontRenderer var1 = this.mc.fontRenderer;
 		this.mc.entityRenderer.setupOverlayRendering();
 
         onBeginHotbarDraw();
@@ -50,17 +47,17 @@ public final class GuiIngame extends Gui {
 		GL11.glEnable(GL11.GL_BLEND);
         InventoryPlayer var2 = this.mc.thePlayer.inventory;
 		this.zLevel = -90.0F;
-        int i = this.scaledWidth / 2;
-		this.drawTexturedModalRect(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
+        int i = scaledWidth / 2;
+		this.drawTexturedModalRect(i - 91, scaledHeight - 22, 0, 0, 182, 22);
 
         if (PointerInputAbstraction.isTouchMode()) {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
-            this.drawTexturedModalRect(i + 89, this.scaledHeight - 22, 234, 0, 22, 22);
+            this.drawTexturedModalRect(i + 89, scaledHeight - 22, 234, 0, 22, 22);
             int areaHAdd = 12;
-            hotbarAreaX = (i - 91) * this.mc.displayWidth / this.scaledWidth;
-            hotbarAreaY = (this.scaledHeight - 22 - areaHAdd) * this.mc.displayHeight / this.scaledHeight;
-            hotbarAreaW = 203 * this.mc.displayWidth / this.scaledWidth;
-            hotbarAreaH = (22 + areaHAdd) * this.mc.displayHeight / this.scaledHeight;
+            hotbarAreaX = (i - 91) * this.mc.displayWidth / scaledWidth;
+            hotbarAreaY = (scaledHeight - 22 - areaHAdd) * this.mc.displayHeight / scaledHeight;
+            hotbarAreaW = 203 * this.mc.displayWidth / scaledWidth;
+            hotbarAreaH = (22 + areaHAdd) * this.mc.displayHeight / scaledHeight;
         } else {
             hotbarAreaX = -1;
             hotbarAreaY = -1;
@@ -69,7 +66,7 @@ public final class GuiIngame extends Gui {
         }
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
-		this.drawTexturedModalRect(i - 91 - 1 + var2.currentItem * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+		this.drawTexturedModalRect(i - 91 - 1 + var2.currentItem * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
         boolean var9 = this.mc.thePlayer.heartsLife / 3 % 2 == 1;
         if(this.mc.thePlayer.heartsLife < 10) {
@@ -90,8 +87,8 @@ public final class GuiIngame extends Gui {
                     var6 = 1;
                 }
 
-                var7 = this.scaledWidth / 2 - 91 + (var5 << 3);
-                var8 = this.scaledHeight - 32;
+                var7 = scaledWidth / 2 - 91 + (var5 << 3);
+                var8 = scaledHeight - 32;
                 if(var3 <= 4) {
                     var8 += this.rand.nextInt(2);
                 }
@@ -122,9 +119,9 @@ public final class GuiIngame extends Gui {
 
                 for(var7 = 0; var7 < var5 + var12; ++var7) {
                     if(var7 < var5) {
-                        this.drawTexturedModalRect(this.scaledWidth / 2 - 91 + (var7 << 3), this.scaledHeight - 32 - 9, 16, 18, 9, 9);
+                        this.drawTexturedModalRect(scaledWidth / 2 - 91 + (var7 << 3), scaledHeight - 32 - 9, 16, 18, 9, 9);
                     } else {
-                        this.drawTexturedModalRect(this.scaledWidth / 2 - 91 + (var7 << 3), this.scaledHeight - 32 - 9, 25, 18, 9, 9);
+                        this.drawTexturedModalRect(scaledWidth / 2 - 91 + (var7 << 3), scaledHeight - 32 - 9, 25, 18, 9, 9);
                     }
                 }
             }
@@ -138,8 +135,8 @@ public final class GuiIngame extends Gui {
 		GL11.glPopMatrix();
 
         for(var5 = 0; var5 < 9; ++var5) {
-            var12 = this.scaledWidth / 2 - 90 + var5 * 20 + 2;
-            var7 = this.scaledHeight - 16 - 3;
+            var12 = scaledWidth / 2 - 90 + var5 * 20 + 2;
+            var7 = scaledHeight - 16 - 3;
             ItemStack var13 = this.mc.thePlayer.inventory.mainInventory[var5];
             if(var13 == null) {
                 if(var5 > 50) {
@@ -150,12 +147,21 @@ public final class GuiIngame extends Gui {
                     GL11.glEnable(GL11.GL_LIGHTING);
                 }
             } else {
-                String var14 = null;
                 var3 = var13.itemID;
+                float var141 = (float)var13.animationsToGo - var1;
+                if(var141 > 0.0F) {
+                    GL11.glPushMatrix();
+                    float var17 = 1.0F + var141 / 5.0F;
+                    GL11.glTranslatef((float)(var12 + 8), (float)(var7 + 12), 0.0F);
+                    GL11.glScalef(1.0F / var17, (var17 + 1.0F) / 2.0F, 1.0F);
+                    GL11.glTranslatef((float)(-(var12 + 8)), (float)(-(var7 + 12)), 0.0F);
+                }
+
                 if(var13.itemID < 256) {
-                    var8 = this.mc.renderEngine.getTexture("/terrain.png");
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
-                    Block var10 = Block.blocksList[var3];
+                    int var10 = var13.itemID;
+                    int var121 = this.mc.renderEngine.getTexture("/terrain.png");
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var121);
+                    Block var19 = Block.blocksList[var10];
                     GL11.glPushMatrix();
                     GL11.glTranslatef((float)(var12 - 2), (float)(var7 + 3), 0.0F);
                     GL11.glScalef(10.0F, 10.0F, 10.0F);
@@ -163,7 +169,7 @@ public final class GuiIngame extends Gui {
                     GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
                     GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                    this.blockRenderer.renderBlockOnInventory(var10);
+                    this.blockRenderer.renderBlockOnInventory(var19);
                     GL11.glPopMatrix();
                 } else if(var13.getItem().getIconIndex() >= 0) {
                     GL11.glDisable(GL11.GL_LIGHTING);
@@ -173,11 +179,15 @@ public final class GuiIngame extends Gui {
                     GL11.glEnable(GL11.GL_LIGHTING);
                 }
 
+                if(var141 > 0.0F) {
+                    GL11.glPopMatrix();
+                }
+
                 if(var13.stackSize > 1) {
-                    var14 = "" + var13.stackSize;
+                    String var20 = "" + var13.stackSize;
                     GL11.glDisable(GL11.GL_LIGHTING);
                     GL11.glDisable(GL11.GL_DEPTH_TEST);
-                    this.mc.fontRenderer.drawStringWithShadow(var14, var12 + 19 - 2 - this.mc.fontRenderer.getStringWidth(var14), var7 + 6 + 3, 16777215);
+                    this.mc.fontRenderer.drawStringWithShadow(var20, var12 + 19 - 2 - this.mc.fontRenderer.getStringWidth(var20), var7 + 6 + 3, 16777215);
                     GL11.glEnable(GL11.GL_LIGHTING);
                     GL11.glEnable(GL11.GL_DEPTH_TEST);
                 }
@@ -192,14 +202,14 @@ public final class GuiIngame extends Gui {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
-        this.drawTexturedModalRect(i - 7, this.scaledHeight / 2 - 7, 0, 0, 16, 16);
+        this.drawTexturedModalRect(i - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
 
         onBeginTouchGUI();
 
-		var1.drawStringWithShadow("0.31", 2, 2, 16777215);
+        this.mc.fontRenderer.drawStringWithShadow("0.31", 2, 2, 16777215);
 		if(this.mc.options.showFPS) {
-			var1.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
+		    this.mc.fontRenderer.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
 		}
 
         onEndTouchGUI();
@@ -212,20 +222,17 @@ public final class GuiIngame extends Gui {
 			String var17 = "Score: &e" + this.mc.thePlayer.getScore();
             if (PointerInputAbstraction.isTouchMode()) {
                 onBeginTouchGUI();
-                var1.drawStringWithShadow(var17, (this.scaledWidth + var1.getStringWidth(var17)) / 2, 3, 16777215);
+                this.mc.fontRenderer.drawStringWithShadow(var17, (scaledWidth + this.mc.fontRenderer.getStringWidth(var17)) / 2, 3, 16777215);
                 onEndTouchGUI();
             } else {
-                var1.drawStringWithShadow(var17, this.scaledWidth - var1.getStringWidth(var17) - 2, 2, 16777215);
+                this.mc.fontRenderer.drawStringWithShadow(var17, scaledWidth - this.mc.fontRenderer.getStringWidth(var17) - 2, 2, 16777215);
             }
-            onBeginHotbarDraw();
-			var1.drawStringWithShadow("Arrows: " + this.mc.thePlayer.arrows, this.scaledWidth / 2 + 8, this.scaledHeight - 33, 16777215);
-			onEndHotbarDraw();
 		}
 
         for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
             if(((ChatLine)this.chatMessageList.get(var7)).updateCounter < 200) {
                 this.chatMessageList.get(var7);
-                var1.drawStringWithShadow((String)null, 2, this.scaledHeight - 8 - var7 * 9 - 20, 16777215);
+                this.mc.fontRenderer.drawStringWithShadow((String)null, 2, scaledHeight - 8 - var7 * 9 - 20, 16777215);
             }
         }
 

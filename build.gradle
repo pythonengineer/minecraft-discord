@@ -12,6 +12,9 @@ sourceSets {
             srcDir 'src/main/java'
             srcDir 'src/teavm/java'
         }
+        resources {
+            srcDir 'src/teavm/resources'
+        }
     }
 }
 
@@ -29,6 +32,7 @@ def folder = "discord/client/public"
 def name = "classes.js"
 
 teavm.js {
+    compileJava.options.encoding = "UTF-8"
     obfuscated = true
     sourceMap = false
     targetFileName = "../classes.js"

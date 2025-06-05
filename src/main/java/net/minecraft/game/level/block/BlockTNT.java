@@ -20,12 +20,12 @@ public final class BlockTNT extends Block {
     public final void onBlockDestroyedByExplosion(World var1, int var2, int var3, int var4) {
         EntityTNTPrimed var5 = new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F);
         var5.fuse = var1.random.nextInt(var5.fuse / 4) + var5.fuse / 8;
-        var1.releaseEntitySkin(var5);
+        var1.spawnEntityInWorld(var5);
     }
 
     public final void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4) {
         EntityTNTPrimed var5 = new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F);
-        var1.releaseEntitySkin(var5);
+        var1.spawnEntityInWorld(var5);
         var1.playSoundAtEntity(var5, "random.fuse", 1.0F, 1.0F);
     }
 }

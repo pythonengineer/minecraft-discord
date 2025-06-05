@@ -187,21 +187,14 @@ public final class EntityRenderer {
             float var18 = this.mc.playerController.getBlockReachDistance();
             Vec3D var22 = var14.addVector(var7 * var18, var17 * var18, var9 * var18);
             this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(var14, var22);
-            var8 = var18;
             if(this.mc.objectMouseOver != null) {
-                var8 = this.mc.objectMouseOver.hitVec.distanceTo(var14);
+                this.mc.objectMouseOver.hitVec.distanceTo(var14);
             }
 
             var14 = this.orientCamera(var11);
-            if(this.mc.playerController instanceof PlayerControllerCreative) {
-                var18 = 32.0F;
-            } else {
-                var18 = var8;
-            }
-
-            var22 = var14.addVector(var7 * var18, var17 * var18, var9 * var18);
+            var22 = var14.addVector(var7 * 32.0F, var17 * 32.0F, var9 * 32.0F);
             this.pointedEntity = null;
-            List var19 = this.mc.theWorld.entityMap.getEntitiesWithinAABBExcludingEntity(var12, var12.boundingBox.addCoord(var7 * var18, var17 * var18, var9 * var18));
+            List var19 = this.mc.theWorld.entityMap.getEntitiesWithinAABBExcludingEntity(var12, var12.boundingBox.addCoord(var7 * 32.0F, var17 * 32.0F, var9 * 32.0F));
             float var20 = 0.0F;
 
             for(int var21 = 0; var21 < var19.size(); ++var21) {
@@ -276,7 +269,7 @@ public final class EntityRenderer {
                     var13 = var44.prevPosY + (var44.posY - var44.prevPosY) * var5;
                     var17 = var44.prevPosZ + (var44.posZ - var44.prevPosZ) * var5;
                     GL11.glTranslatef(-var16, -var13, -var17);
-                    ClippingHelper var38 = ClippingHelperImplementation.init();
+                    ClippingHelper var38 = ClippingHelperImpl.init();
                     this.mc.renderGlobal.clipRenderersByFrustrum(var38);
                     this.mc.renderGlobal.updateRenderers(var32);
                     this.setupFog();
@@ -416,7 +409,7 @@ public final class EntityRenderer {
                 GL11.glColorMask(true, true, true, false);
             }
 
-            this.mc.ingameGUI.renderGameOverlay();
+            this.mc.ingameGUI.renderGameOverlay(var5);
         } else {
             GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
             GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);

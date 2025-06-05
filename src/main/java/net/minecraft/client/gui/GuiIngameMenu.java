@@ -1,5 +1,13 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
+
+import net.lax1dude.eaglercraft.EagRuntime;
+import net.lax1dude.eaglercraft.EaglerInputStream;
+import net.lax1dude.eaglercraft.EaglerOutputStream;
+import net.minecraft.client.PlayerLoader;
+import net.minecraft.game.level.World;
+
 public final class GuiIngameMenu extends GuiScreen {
 	public final void initGui() {
 		this.controlList.clear();
@@ -8,8 +16,6 @@ public final class GuiIngameMenu extends GuiScreen {
 		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 48, "Save level.."));
 		this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 72, "Load level.."));
 		this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 120, "Back to game"));
-        ((GuiButton)this.controlList.get(2)).enabled = false;
-        ((GuiButton)this.controlList.get(3)).enabled = false;
 		if(this.mc.session == null) {
 			//((GuiButton)this.controlList.get(2)).enabled = false;
 			//((GuiButton)this.controlList.get(3)).enabled = false;
@@ -29,10 +35,32 @@ public final class GuiIngameMenu extends GuiScreen {
 		//if(this.mc.session != null) {
 			if(var1.id == 2) {
 			    //this.mc.displayGuiScreen(new GuiSaveLevel(this));
-			}
+                try {
+                    EaglerOutputStream var3 = new EaglerOutputStream();
+                    (new PlayerLoader(this.mc, this.mc.loadingScreen)).save(this.mc.theWorld, var3);
+                    var3.close();
+                    byte[] level = var3.toByteArray();
+                    if(level != null) {
+                        EagRuntime.setStorage("level.mclevel", level);
+                    }
+                } catch (IOException var2) {
+                    var2.printStackTrace();
+                }
+            }
 
-			if(var1.id == 3) {
-			    //this.mc.displayGuiScreen(new GuiLoadLevel(this));
+            if (var1.id == 3) {
+                //this.mc.displayGuiScreen(new GuiLoadLevel(this));
+                try {
+                    byte[] level = EagRuntime.getStorage("level.mclevel");
+                    if(level != null) {
+                        EaglerInputStream var4 = new EaglerInputStream(level);
+                        World var2 = (new PlayerLoader(this.mc, this.mc.loadingScreen)).load(var4);
+                        var4.close();
+                        this.mc.setLevel(var2);
+                    }
+                } catch (IOException var3) {
+                    var3.printStackTrace();
+		        }
 			}
 		//}
 

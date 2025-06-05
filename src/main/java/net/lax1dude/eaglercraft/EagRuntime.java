@@ -25,6 +25,7 @@ import net.lax1dude.eaglercraft.internal.PlatformAssets;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
+import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 /**
@@ -64,6 +65,7 @@ public class EagRuntime {
         angleBackend = PlatformRuntime.getPlatformANGLE();
         GL11.warmUpCache();
         PlatformRuntime.postCreate();
+        Display.checkContextLost();
     }
 
     public static void destroy() {

@@ -19,7 +19,7 @@ import net.lax1dude.unsafememcpy.UnsafeUtils;
  * POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-public class EaglerLWJGLFloatBuffer implements FloatBuffer {
+public class EaglerLWJGLFloatBuffer extends FloatBuffer {
 
     final long address;
     final boolean original;

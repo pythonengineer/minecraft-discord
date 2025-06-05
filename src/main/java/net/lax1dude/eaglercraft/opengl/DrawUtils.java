@@ -6,10 +6,11 @@ import static net.lax1dude.eaglercraft.lwjgl.opengl.GL11.*;
 import java.util.List;
 
 import net.lax1dude.eaglercraft.EagRuntime;
-import net.lax1dude.eaglercraft.internal.IBufferArrayGL;
+import net.lax1dude.eaglercraft.internal.IVertexArrayGL;
 import net.lax1dude.eaglercraft.internal.IBufferGL;
 import net.lax1dude.eaglercraft.internal.IShaderGL;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
+import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GLSLHeader;
 
@@ -62,8 +63,8 @@ public class DrawUtils {
             + "";
     public static final String vertexShaderPrecision = "precision highp float;\n";
 
-    public static IBufferArrayGL standardQuad2DVAO = null;
-    public static IBufferArrayGL standardQuad3DVAO = null;
+    public static IVertexArrayGL standardQuad2DVAO = null;
+    public static IVertexArrayGL standardQuad3DVAO = null;
     public static IBufferGL standardQuadVBO = null;
 
     public static IShaderGL vshLocal = null;
@@ -71,8 +72,8 @@ public class DrawUtils {
 
     public static void init() {
         if (standardQuad2DVAO == null) {
-            standardQuad2DVAO = GL11.createGLBufferArray();
-            standardQuad3DVAO = GL11.createGLBufferArray();
+            standardQuad2DVAO = GL11.createGLVertexArray();
+            standardQuad3DVAO = GL11.createGLVertexArray();
             standardQuadVBO = _wglGenBuffers();
 
             FloatBuffer verts = EagRuntime.allocateFloatBuffer(18);
@@ -84,12 +85,12 @@ public class DrawUtils {
             _wglBufferData(GL_ARRAY_BUFFER, verts, GL_STATIC_DRAW);
             EagRuntime.freeFloatBuffer(verts);
 
-            GL11.bindGLBufferArray(standardQuad2DVAO);
+            GL11.bindGLVertexArray(standardQuad2DVAO);
 
             GL11.enableVertexAttribArray(0);
             GL11.vertexAttribPointer(0, 2, GL_FLOAT, false, 12, 0);
 
-            GL11.bindGLBufferArray(standardQuad3DVAO);
+            GL11.bindGLVertexArray(standardQuad3DVAO);
 
             GL11.enableVertexAttribArray(0);
             GL11.vertexAttribPointer(0, 3, GL_FLOAT, false, 12, 0);
@@ -103,6 +104,7 @@ public class DrawUtils {
             _wglCompileShader(vshLocal);
 
             if (_wglGetShaderi(vshLocal, GL_COMPILE_STATUS) != GL_TRUE) {
+                Display.checkContextLost();
                 GL11.logger.error("Failed to compile GL_VERTEX_SHADER local!");
                 String log = _wglGetShaderInfoLog(vshLocal);
                 if (log != null) {
@@ -117,22 +119,22 @@ public class DrawUtils {
     }
 
     public static void drawStandardQuad2D() {
-        GL11.bindGLBufferArray(standardQuad2DVAO);
-        GL11.doDrawArrays(GL_TRIANGLES, 0, 6);
+        GL11.bindGLVertexArray(standardQuad2DVAO);
+        GL11.drawArrays(GL_TRIANGLES, 0, 6);
     }
 
     public static void drawStandardQuad3D() {
-        GL11.bindGLBufferArray(standardQuad3DVAO);
-        GL11.doDrawArrays(GL_TRIANGLES, 0, 6);
+        GL11.bindGLVertexArray(standardQuad3DVAO);
+        GL11.drawArrays(GL_TRIANGLES, 0, 6);
     }
 
     public static void destroy() {
         if (standardQuad2DVAO != null) {
-            GL11.destroyGLBufferArray(standardQuad2DVAO);
+            GL11.destroyGLVertexArray(standardQuad2DVAO);
             standardQuad2DVAO = null;
         }
         if (standardQuad3DVAO != null) {
-            GL11.destroyGLBufferArray(standardQuad3DVAO);
+            GL11.destroyGLVertexArray(standardQuad3DVAO);
             standardQuad3DVAO = null;
         }
         if (standardQuadVBO != null) {

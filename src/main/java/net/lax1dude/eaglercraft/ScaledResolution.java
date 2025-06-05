@@ -14,7 +14,11 @@ public class ScaledResolution {
         this.scaledWidth = parMinecraft.displayWidth;
         this.scaledHeight = parMinecraft.displayHeight;
         this.scaleFactor = 1;
-        int i = 2;
+        int i = parMinecraft.options.guiScale;
+        if (i == 0) {
+            i = 1000;
+        }
+
         i = Math.round(i * Math.max(parMinecraft.displayDPI, 0.5f));
 
         while (this.scaleFactor < i && this.scaledWidth / (this.scaleFactor + 1) >= 320

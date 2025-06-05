@@ -1770,7 +1770,7 @@ public class PlatformInput {
         ClientMain.removeErrorHandler(win);
     }
 
-    public static void clearEvenBuffers() {
+    public static void clearEventBuffers() {
         mouseEvents.clear();
         keyEvents.clear();
         touchEvents.clear();

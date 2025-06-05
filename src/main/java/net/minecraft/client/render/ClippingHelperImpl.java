@@ -5,17 +5,17 @@ import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public final class ClippingHelperImplementation extends ClippingHelper {
-	private static ClippingHelperImplementation instance = new ClippingHelperImplementation();
+public final class ClippingHelperImpl extends ClippingHelper {
+	private static ClippingHelperImpl instance = new ClippingHelperImpl();
 	private FloatBuffer projectionMatrixBuffer = BufferUtils.createFloatBuffer(16);
 	private FloatBuffer modelviewMatrixBuffer = BufferUtils.createFloatBuffer(16);
-	private FloatBuffer clippingMatrixBuffer = BufferUtils.createFloatBuffer(16);
+	private FloatBuffer ICamera = BufferUtils.createFloatBuffer(16);
 
 	public static ClippingHelper init() {
-		ClippingHelperImplementation var0 = instance;
+		ClippingHelperImpl var0 = instance;
 		var0.projectionMatrixBuffer.clear();
 		var0.modelviewMatrixBuffer.clear();
-		var0.clippingMatrixBuffer.clear();
+		var0.ICamera.clear();
 		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, var0.projectionMatrixBuffer);
 		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, var0.modelviewMatrixBuffer);
 		var0.projectionMatrixBuffer.flip().limit(16);

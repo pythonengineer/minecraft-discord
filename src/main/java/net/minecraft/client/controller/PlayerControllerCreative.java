@@ -17,7 +17,7 @@ public final class PlayerControllerCreative extends PlayerController {
 	}
 
 	public final void openInventory() {
-		this.mc.displayGuiScreen(new GuiInventory());
+        this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
 	}
 
 	public final void onRespawn(EntityPlayer var1) {
@@ -41,13 +41,13 @@ public final class PlayerControllerCreative extends PlayerController {
 		this.mobSpawner = new MobSpawner(var1);
 		int var2 = var1.width * var1.length * var1.height / 64 / 64 / 64;
 
-		for(int var3 = 0; var3 < var2; ++var3) {
-			this.mobSpawner.performSpawning(var2, var1.playerEntity, null);
-		}
+        for(int var3 = 0; var3 < var2; ++var3) {
+            this.mobSpawner.spawnMob(var2, var1.playerEntity, null);
+        }
 
-	}
+    }
 
-	public final void onUpdate() {
-		this.mobSpawner.performSpawning();
-	}
+    public final void onUpdate() {
+        this.mobSpawner.spawnMobs();
+    }
 }

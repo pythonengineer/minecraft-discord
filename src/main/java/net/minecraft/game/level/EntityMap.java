@@ -53,6 +53,7 @@ public final class EntityMap {
 
 	public final void remove(Entity var1) {
         this.slot.init(var1.lastTickPosX, var1.lastTickPosY, var1.lastTickPosZ).remove(var1);
+        this.slot.init(var1.posX, var1.posY, var1.posZ).remove(var1);
 		this.all.remove(var1);
 	}
 

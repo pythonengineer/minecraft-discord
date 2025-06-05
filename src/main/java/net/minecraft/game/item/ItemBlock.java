@@ -45,7 +45,7 @@ public final class ItemBlock extends Item {
                 if(this.blockID > 0 && var9 == null || var9 == Block.waterMoving || var9 == Block.waterStill || var9 == Block.lavaMoving || var9 == Block.lavaStill || var9 == Block.fire) {
                     var9 = Block.blocksList[this.blockID];
                     AxisAlignedBB var7 = var9.getCollisionBoundingBoxFromPool(var3, var4, var5);
-                    if(var2.checkIfAABBIsClear1(var7)) {
+                    if(var2.checkIfAABBIsClear(var7) && var9.canPlaceBlockAt(var2, var3, var4, var5)) {
                         var2.setBlockWithNotify(var3, var4, var5, this.blockID);
                         float var10001 = (float)var3 + 0.5F;
                         float var10002 = (float)var4 + 0.5F;

@@ -3,7 +3,7 @@ package net.minecraft.client.player;
 import net.minecraft.client.GameSettings;
 
 public final class MovementInputFromOptions extends MovementInput {
-    private boolean[] movementKeyStates = new boolean[10];
+    private boolean[] keys = new boolean[10];
     private GameSettings gameSettings;
 
     public MovementInputFromOptions(GameSettings var1) {
@@ -33,14 +33,14 @@ public final class MovementInputFromOptions extends MovementInput {
         }
 
         if(var3 >= 0) {
-            this.movementKeyStates[var3] = var2;
+            this.keys[var3] = var2;
         }
 
     }
 
     public final void resetKeyState() {
         for(int var1 = 0; var1 < 10; ++var1) {
-            this.movementKeyStates[var1] = false;
+            this.keys[var1] = false;
         }
 
     }
@@ -48,22 +48,22 @@ public final class MovementInputFromOptions extends MovementInput {
     public final void updatePlayerMoveState() {
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;
-        if(this.movementKeyStates[0]) {
+        if(this.keys[0]) {
             --this.moveForward;
         }
 
-        if(this.movementKeyStates[1]) {
+        if(this.keys[1]) {
             ++this.moveForward;
         }
 
-        if(this.movementKeyStates[2]) {
+        if(this.keys[2]) {
             --this.moveStrafe;
         }
 
-        if(this.movementKeyStates[3]) {
+        if(this.keys[3]) {
             ++this.moveStrafe;
         }
 
-        this.jump = this.movementKeyStates[4];
+        this.jump = this.keys[4];
     }
 }

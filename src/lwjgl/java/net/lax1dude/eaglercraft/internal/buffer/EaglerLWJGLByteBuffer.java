@@ -19,7 +19,7 @@ import net.lax1dude.unsafememcpy.UnsafeUtils;
  * POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-public class EaglerLWJGLByteBuffer implements ByteBuffer {
+public class EaglerLWJGLByteBuffer extends ByteBuffer {
 
     final long address;
     final boolean original;
