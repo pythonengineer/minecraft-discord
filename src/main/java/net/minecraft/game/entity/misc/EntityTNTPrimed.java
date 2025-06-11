@@ -20,7 +20,7 @@ public class EntityTNTPrimed extends Entity {
 		this.motionY = 0.2F;
 		this.motionZ = -MathHelper.cos(var5 * (float)Math.PI / 180.0F) * 0.02F;
 		this.canTriggerWalking = false;
-		this.fuse = 40;
+		this.fuse = 80;
 		this.prevPosX = var2;
 		this.prevPosY = var3;
 		this.prevPosZ = var4;

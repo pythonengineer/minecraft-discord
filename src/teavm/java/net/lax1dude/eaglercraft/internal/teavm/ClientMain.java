@@ -269,7 +269,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"0.31 20100124\"\n");
+        str.append("minecraft.version = \"0.31 20100125\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

@@ -2,7 +2,6 @@ package com.mojang.nbt;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 
 public final class NBTTagShort extends NBTBase {
 	public short shortValue;
@@ -14,12 +13,16 @@ public final class NBTTagShort extends NBTBase {
 		this.shortValue = var1;
 	}
 
-	final void writeTagContents(DataOutput var1) throws IOException {
-		var1.writeShort(this.shortValue);
+	final void writeTagContents(DataOutput var1) {
+        try{
+        var1.writeShort(this.shortValue);
+    } catch (java.io.IOException exc) {}
 	}
 
-	final void readTagContents(DataInput var1) throws IOException {
-		this.shortValue = var1.readShort();
+	final void readTagContents(DataInput var1) {
+        try{
+        this.shortValue = var1.readShort();
+    } catch (java.io.IOException exc) {}
 	}
 
 	public final byte getType() {

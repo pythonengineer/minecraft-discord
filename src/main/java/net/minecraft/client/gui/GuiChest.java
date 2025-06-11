@@ -35,12 +35,12 @@ public final class GuiChest extends GuiInventory {
 
     }
 
-    protected final void b_() {
+    protected final void drawGuiContainerForegroundLayer() {
         this.fontRenderer.drawString(this.lowerChestInventory.getInvName(), 8, 6, 4210752);
         this.fontRenderer.drawString(this.upperChestInventory.getInvName(), 8, this.ySize - 96 + 2, 4210752);
     }
 
-    protected final void b() {
+    protected final void drawGuiContainerBackgroundLayer() {
         int var1 = this.mc.renderEngine.getTexture("/gui/container.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, var1);

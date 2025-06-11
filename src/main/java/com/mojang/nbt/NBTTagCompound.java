@@ -2,7 +2,6 @@ package com.mojang.nbt;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,20 +9,21 @@ import java.util.Map;
 public final class NBTTagCompound extends NBTBase {
 	private Map tagMap = new HashMap();
 
-	final void writeTagContents(DataOutput var1) throws IOException {
+	final void writeTagContents(DataOutput var1) {
 		Iterator var2 = this.tagMap.values().iterator();
-
+        try{
 		while(var2.hasNext()) {
 			NBTBase var3 = (NBTBase)var2.next();
 			NBTBase.writeTag(var3, var1);
 		}
 
 		var1.writeByte(0);
+    } catch (java.io.IOException exc) {}
 	}
 
-	final void readTagContents(DataInput var1) throws IOException {
+	final void readTagContents(DataInput var1) {
 		this.tagMap.clear();
-
+        try{
 		while(true) {
 			NBTBase var2 = NBTBase.readTag(var1);
 			if(var2.getType() == 0) {
@@ -32,6 +32,7 @@ public final class NBTTagCompound extends NBTBase {
 
 			this.tagMap.put(var2.getKey(), var2);
 		}
+    } catch (java.io.IOException exc) {}
 	}
 
 	public final byte getType() {

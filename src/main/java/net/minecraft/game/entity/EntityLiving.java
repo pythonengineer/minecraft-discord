@@ -46,11 +46,22 @@ public class EntityLiving extends Entity {
 
 	public final void onEntityUpdate() {
 		super.onEntityUpdate();
-		if(this.isInsideOfMaterial()) {
-			if(this.air > 0) {
-				--this.air;
-			} else {
-				this.attackEntityFrom((Entity)null, 2);
+        float var2;
+        float var3;
+        float var4;
+        if(this.isInsideOfMaterial()) {
+            --this.air;
+            if(this.air == -20) {
+                this.air = 0;
+
+                for(int var1 = 0; var1 < 8; ++var1) {
+                    var2 = this.rand.nextFloat() - this.rand.nextFloat();
+                    var3 = this.rand.nextFloat() - this.rand.nextFloat();
+                    var4 = this.rand.nextFloat() - this.rand.nextFloat();
+                    this.worldObj.spawnParticle("bubble", this.posX + var2, this.posY + var3, this.posZ + var4, this.motionX, this.motionY, this.motionZ);
+                }
+
+                this.attackEntityFrom((Entity)null, 2);
 			}
 
             this.fire = 0;
@@ -84,9 +95,9 @@ public class EntityLiving extends Entity {
 		++this.ticksExisted;
 		this.onLivingUpdate();
 		float var1 = this.posX - this.prevPosX;
-		float var2 = this.posZ - this.prevPosZ;
-		float var3 = MathHelper.sqrt_float(var1 * var1 + var2 * var2);
-		float var4 = this.renderYawOffset;
+		var2 = this.posZ - this.prevPosZ;
+		var3 = MathHelper.sqrt_float(var1 * var1 + var2 * var2);
+		var4 = this.renderYawOffset;
 		float var5 = 0.0F;
 		float var6 = 0.0F;
 		if(var3 > 0.05F) {

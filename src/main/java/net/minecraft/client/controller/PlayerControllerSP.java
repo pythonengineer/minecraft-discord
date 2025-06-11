@@ -20,7 +20,8 @@ public final class PlayerControllerSP extends PlayerController {
 	private int prevBlockDamage = 0;
 	private int blockDestroySoundCounter = 0;
 	private MobSpawner mobSpawner;
-	private Block[] mainChestArray = new Block[]{Block.stone, Block.grass, Block.cobblestone, Block.planks, Block.sapling, Block.bedrock, Block.sand, Block.gravel, Block.oreGold, Block.oreIron, Block.oreCoal, Block.wood, Block.leaves, Block.sponge, Block.glass, Block.clothRed, Block.clothOrange, Block.clothYellow, Block.clothChartreuse, Block.clothGreen, Block.clothSpringGreen, Block.clothCyan, Block.clothCapri, Block.clothUltramarine, Block.clothViolet, Block.clothPurple, Block.clothMagenta, Block.clothRose, Block.clothDarkGray, Block.clothGray, Block.clothWhite, Block.plantYellow, Block.plantRed, Block.mushroomBrown, Block.mushroomRed, Block.blockGold, Block.blockSteel, Block.stairSingle, Block.brick, Block.tnt, Block.bookShelf, Block.cobblestoneMossy, Block.obsidian, Block.torch, Block.waterSource, Block.lavaSource, Block.chest};
+    private Block[] mainChestArray = new Block[]{Block.stone, Block.grass, Block.cobblestone, Block.planks, Block.sapling, Block.bedrock, Block.sand, Block.gravel, Block.oreGold, Block.oreIron, Block.oreCoal, Block.wood, Block.leaves, Block.sponge, Block.glass, Block.plantYellow, Block.plantRed, Block.mushroomBrown, Block.mushroomRed, Block.blockGold, Block.blockSteel, Block.stairSingle, Block.brick, Block.tnt, Block.bookShelf, Block.cobblestoneMossy, Block.obsidian, Block.torch, Block.waterSource, Block.lavaSource, Block.chest};
+    private Block[] woolChestArray = new Block[]{Block.clothRed, Block.clothOrange, Block.clothYellow, Block.clothChartreuse, Block.clothGreen, Block.clothSpringGreen, Block.clothCyan, Block.clothCapri, Block.clothUltramarine, Block.clothViolet, Block.clothPurple, Block.clothMagenta, Block.clothRose, Block.clothDarkGray, Block.clothGray, Block.clothWhite};
 
 	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
@@ -66,6 +67,8 @@ public final class PlayerControllerSP extends PlayerController {
 		IInventory var15 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 - 1, var3 - 1, var9 + 2);
 		this.mc.theWorld.setBlockWithNotify(var2, var3 - 1, var9 + 2, Block.chest.blockID);
 		IInventory var10 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2, var3 - 1, var9 + 2);
+        this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var9 + 1, Block.chest.blockID);
+        IInventory var11 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var9 + 1);
 		var2 = 0;
 
 		int var8;
@@ -77,21 +80,27 @@ public final class PlayerControllerSP extends PlayerController {
 			}
 		}
 
+        ItemStack var16;
 		for(var3 = 0; var3 < 27; ++var3) {
 			var8 = Block.tnt.blockID;
-			ItemStack var11 = new ItemStack(var8, Item.itemsList[var8].getItemStackLimit());
-			var15.setInventorySlotContents(var3, var11);
-			var10.setInventorySlotContents(var3, var11);
+			var16 = new ItemStack(var8, Item.itemsList[var8].getItemStackLimit());
+			var15.setInventorySlotContents(var3, var16);
+			var10.setInventorySlotContents(var3, var16);
 		}
 
 		for(var3 = 0; var3 < this.mainChestArray.length && var3 < 54; ++var3) {
-			ItemStack var16 = new ItemStack(this.mainChestArray[var3], Item.itemsList[this.mainChestArray[var3].blockID].getItemStackLimit());
+			var16 = new ItemStack(this.mainChestArray[var3], Item.itemsList[this.mainChestArray[var3].blockID].getItemStackLimit());
 			if(var3 >= 27) {
 				var14.setInventorySlotContents(var3 - 27, var16);
 			} else {
 				var13.setInventorySlotContents(var3, var16);
 			}
 		}
+
+        for(var3 = 0; var3 < this.woolChestArray.length && var3 < 54; ++var3) {
+            var16 = new ItemStack(this.woolChestArray[var3], Item.itemsList[this.woolChestArray[var3].blockID].getItemStackLimit());
+            var11.setInventorySlotContents(var3, var16);
+        }
 
 	}
 
@@ -141,7 +150,7 @@ public final class PlayerControllerSP extends PlayerController {
 					}
 
 					++this.curBlockDamage;
-					if(this.curBlockDamage == this.prevBlockDamage + 1) {
+					if(this.curBlockDamage >= this.prevBlockDamage + 1) {
 						this.sendBlockRemoved(var1, var2, var3);
 						this.curBlockDamage = 0;
 						this.blockDestroySoundCounter = 5;

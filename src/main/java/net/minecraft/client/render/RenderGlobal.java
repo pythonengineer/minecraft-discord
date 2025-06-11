@@ -14,6 +14,8 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.effect.EntityBubbleFX;
 import net.minecraft.client.effect.EntityExplodeFX;
+import net.minecraft.client.effect.EntityFlameFX;
+import net.minecraft.client.effect.EntityLavaFX;
 import net.minecraft.client.effect.EntitySmokeFX;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.render.entity.RenderManager;
@@ -27,7 +29,6 @@ import net.minecraft.game.level.block.Block;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
-import net.minecraft.game.level.World;
 
 public final class RenderGlobal implements IWorldAccess {
     private World worldObj;
@@ -362,16 +363,18 @@ public final class RenderGlobal implements IWorldAccess {
 
     public final void updateRenderers(EntityPlayer var1) {
         Collections.sort(this.worldRenderersToUpdate, new RenderSorter(var1));
-        int var5 = this.worldRenderersToUpdate.size() - 1;
-        int var2 = this.worldRenderersToUpdate.size();
-        if(var2 > 3) {
-            var2 = 3;
-        }
+        int var2 = this.worldRenderersToUpdate.size() - 1;
+        int var3 = this.worldRenderersToUpdate.size();
 
-        for(int var3 = 0; var3 < var2; ++var3) {
-            WorldRenderer var4 = (WorldRenderer)this.worldRenderersToUpdate.remove(var5 - var3);
-            var4.updateRenderer();
-            var4.needsUpdate = false;
+        for(int var4 = 0; var4 < var3; ++var4) {
+            WorldRenderer var5 = (WorldRenderer)this.worldRenderersToUpdate.get(var2 - var4);
+            if(var5.distanceToEntitySquared(var1) > 2500.0F && var4 > 2) {
+                return;
+            }
+
+            this.worldRenderersToUpdate.remove(var5);
+            var5.updateRenderer();
+            var5.needsUpdate = false;
         }
 
     }
@@ -517,9 +520,13 @@ public final class RenderGlobal implements IWorldAccess {
             this.mc.effectRenderer.addEffect(new EntityBubbleFX(this.worldObj, var2, var3, var4, var5, var6, var7));
         } else if(var1 == "smoke") {
             this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.worldObj, var2, var3, var4));
+        } else if(var1 == "explode") {
+            this.mc.effectRenderer.addEffect(new EntityExplodeFX(this.worldObj, var2, var3, var4, var5, var6, var7));
+        } else if(var1 == "flame") {
+            this.mc.effectRenderer.addEffect(new EntityFlameFX(this.worldObj, var2, var3, var4));
         } else {
-            if(var1 == "explode") {
-                this.mc.effectRenderer.addEffect(new EntityExplodeFX(this.worldObj, var2, var3, var4, var5, var6, var7));
+            if(var1 == "lava") {
+                this.mc.effectRenderer.addEffect(new EntityLavaFX(this.worldObj, var2, var3, var4));
             }
 
         }

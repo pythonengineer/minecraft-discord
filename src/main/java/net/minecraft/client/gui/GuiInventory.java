@@ -53,7 +53,7 @@ public class GuiInventory extends GuiScreen {
         drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
         int var3 = (this.width - this.xSize) / 2;
         int var4 = (this.height - this.ySize) / 2;
-        this.b();
+        this.drawGuiContainerBackgroundLayer();
         GL11.glPushMatrix();
         GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
@@ -100,20 +100,20 @@ public class GuiInventory extends GuiScreen {
         RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        this.b_();
+        this.drawGuiContainerForegroundLayer();
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
     }
 
-    protected void b_() {
+    protected void drawGuiContainerForegroundLayer() {
         this.fontRenderer.drawString("PLAYER NAME", 84, 8, 4210752);
         this.fontRenderer.drawString("ATK: 100", 84, 24, 4210752);
         this.fontRenderer.drawString("DEF: 100", 84, 32, 4210752);
         this.fontRenderer.drawString("SPD: 100", 84, 40, 4210752);
     }
 
-    protected void b() {
+    protected void drawGuiContainerBackgroundLayer() {
         int var1 = this.mc.renderEngine.getTexture("/gui/inventory.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, var1);

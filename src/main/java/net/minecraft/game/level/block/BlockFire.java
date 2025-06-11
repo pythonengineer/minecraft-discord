@@ -141,6 +141,68 @@ public final class BlockFire extends Block {
         return this.chanceToEncourageFire[var1] > 0;
     }
 
+    public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        int var6;
+        float var7;
+        float var8;
+        float var9;
+        if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !Block.fire.canBlockCatchFire(var1, var2, var3 - 1, var4)) {
+            if(Block.fire.canBlockCatchFire(var1, var2 - 1, var3, var4)) {
+                for(var6 = 0; var6 < 2; ++var6) {
+                    var7 = (float)var2 + var5.nextFloat() * 0.1F;
+                    var8 = (float)var3 + var5.nextFloat();
+                    var9 = (float)var4 + var5.nextFloat();
+                    var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+            if(Block.fire.canBlockCatchFire(var1, var2 + 1, var3, var4)) {
+                for(var6 = 0; var6 < 2; ++var6) {
+                    var7 = (float)(var2 + 1) - var5.nextFloat() * 0.1F;
+                    var8 = (float)var3 + var5.nextFloat();
+                    var9 = (float)var4 + var5.nextFloat();
+                    var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+            if(Block.fire.canBlockCatchFire(var1, var2, var3, var4 - 1)) {
+                for(var6 = 0; var6 < 2; ++var6) {
+                    var7 = (float)var2 + var5.nextFloat();
+                    var8 = (float)var3 + var5.nextFloat();
+                    var9 = (float)var4 + var5.nextFloat() * 0.1F;
+                    var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+            if(Block.fire.canBlockCatchFire(var1, var2, var3, var4 + 1)) {
+                for(var6 = 0; var6 < 2; ++var6) {
+                    var7 = (float)var2 + var5.nextFloat();
+                    var8 = (float)var3 + var5.nextFloat();
+                    var9 = (float)(var4 + 1) - var5.nextFloat() * 0.1F;
+                    var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+            if(Block.fire.canBlockCatchFire(var1, var2, var3 + 1, var4)) {
+                for(var6 = 0; var6 < 2; ++var6) {
+                    var7 = (float)var2 + var5.nextFloat();
+                    var8 = (float)(var3 + 1) - var5.nextFloat() * 0.1F;
+                    var9 = (float)var4 + var5.nextFloat();
+                    var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+        } else {
+            for(var6 = 0; var6 < 3; ++var6) {
+                var7 = (float)var2 + var5.nextFloat();
+                var8 = (float)var3 + var5.nextFloat();
+                var9 = (float)var4 + var5.nextFloat();
+                var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+            }
+
+        }
+    }
+
     public final void fireSpread(World var1, int var2, int var3, int var4) {
         boolean var5 = false;
         var5 = fireCheck(var1, var2, var3 + 1, var4);

@@ -47,13 +47,41 @@ public final class Tessellator {
 	}
 
 	public final void setColorOpaque_F(float var1, float var2, float var3) {
-		if(!this.drawMode) {
-			this.hasColor = true;
-			this.r = var1;
-			this.g = var2;
-			this.b = var3;
-		}
+        this.setColorOpaque((int)(var1 * 255.0F), (int)(var2 * 255.0F), (int)(var3 * 255.0F));
 	}
+
+    private void setColorOpaque(int var1, int var2, int var3) {
+        if(!this.drawMode) {
+            if(var1 > 255) {
+                var1 = 255;
+            }
+
+            if(var2 > 255) {
+                var2 = 255;
+            }
+
+            if(var3 > 255) {
+                var3 = 255;
+            }
+
+            if(var1 < 0) {
+                var1 = 0;
+            }
+
+            if(var2 < 0) {
+                var2 = 0;
+            }
+
+            if(var3 < 0) {
+                var3 = 0;
+            }
+
+            this.hasColor = true;
+            this.r = (float)(var1 & 255) / 255.0F;
+            this.g = (float)(var2 & 255) / 255.0F;
+            this.b = (float)(var3 & 255) / 255.0F;
+        }
+    }
 
     public final void addUV(float u, float v) {
         worldRenderer.tex(u, v);
@@ -82,18 +110,7 @@ public final class Tessellator {
         int var2 = var1 >> 16 & 255;
         int var3 = var1 >> 8 & 255;
         var1 &= 255;
-        byte var10001 = (byte)var2;
-        byte var10002 = (byte)var3;
-        byte var4 = (byte)var1;
-        byte var6 = var10002;
-        byte var5 = var10001;
-        if(!this.drawMode) {
-            this.hasColor = true;
-            this.r = (float)(var5 & 255) / 255.0F;
-            this.g = (float)(var6 & 255) / 255.0F;
-            this.b = (float)(var4 & 255) / 255.0F;
-        }
-
+        this.setColorOpaque(var2, var3, var1);
 	}
 
 	public final void disableColor() {

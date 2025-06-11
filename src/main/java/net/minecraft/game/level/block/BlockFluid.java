@@ -23,6 +23,7 @@ public class BlockFluid extends Block {
         this.stillId0 = var1 + 1;
         this.setBlockBounds(0.01F, -0.09F, 0.01F, 1.01F, 0.90999997F, 1.01F);
         this.setTickOnLoad(true);
+        this.setResistance(2.0F);
     }
 
     public final int getBlockTexture(int var1) {
@@ -176,5 +177,15 @@ public class BlockFluid extends Block {
 
     public int getRenderBlockPass() {
         return this.material == Material.water ? 1 : 0;
+    }
+
+    public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        if(this.material == Material.lava && var1.getBlockMaterial(var2, var3 + 1, var4) == Material.air && !var1.isBlockNormalCube(var2, var3 + 1, var4) && var5.nextInt(100) == 0) {
+            float var6 = (float)var2 + var5.nextFloat();
+            float var7 = (float)var3 + this.maxY;
+            float var8 = (float)var4 + var5.nextFloat();
+            var1.spawnParticle("lava", var6, var7, var8, 0.0F, 0.0F, 0.0F);
+        }
+
     }
 }

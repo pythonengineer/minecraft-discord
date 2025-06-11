@@ -2,7 +2,6 @@ package com.mojang.nbt;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 
 public final class NBTTagLong extends NBTBase {
 	public long longValue;
@@ -14,12 +13,16 @@ public final class NBTTagLong extends NBTBase {
 		this.longValue = var1;
 	}
 
-	final void writeTagContents(DataOutput var1) throws IOException {
-		var1.writeLong(this.longValue);
+	final void writeTagContents(DataOutput var1) {
+        try{
+        var1.writeLong(this.longValue);
+    } catch (java.io.IOException exc) {}
 	}
 
-	final void readTagContents(DataInput var1) throws IOException {
-		this.longValue = var1.readLong();
+	final void readTagContents(DataInput var1) {
+        try{
+        this.longValue = var1.readLong();
+    } catch (java.io.IOException exc) {}
 	}
 
 	public final byte getType() {

@@ -7,9 +7,9 @@ import java.io.IOException;
 public abstract class NBTBase {
 	private String key = null;
 
-	abstract void writeTagContents(DataOutput var1) throws IOException;
+	abstract void writeTagContents(DataOutput var1);
 
-	abstract void readTagContents(DataInput var1) throws IOException;
+	abstract void readTagContents(DataInput var1);
 
 	public abstract byte getType();
 

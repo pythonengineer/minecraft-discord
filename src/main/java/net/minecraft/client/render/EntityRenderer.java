@@ -216,197 +216,206 @@ public final class EntityRenderer {
                 this.mc.objectMouseOver = new MovingObjectPosition(this.pointedEntity);
             }
 
-            label179: {
-                for(int var29 = 0; var29 < 2; ++var29) {
-                    if(this.mc.options.anaglyph) {
-                        if(var29 == 0) {
-                            GL11.glColorMask(false, true, true, false);
-                        } else {
-                            GL11.glColorMask(true, false, false, false);
-                        }
-                    }
+            int var29 = 0;
 
-                    EntityPlayerSP var32 = this.mc.thePlayer;
-                    World var34 = this.mc.theWorld;
-                    RenderGlobal var23 = this.mc.renderGlobal;
-                    EffectRenderer var35 = this.mc.effectRenderer;
-                    GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
-                    this.updateFogColor(var5);
-                    GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-                    this.fogColorMultiplier = 1.0F;
-                    GL11.glEnable(GL11.GL_CULL_FACE);
-                    this.farPlaneDistance = (float)(512 >> (this.mc.options.renderDistance << 1));
-                    GL11.glMatrixMode(GL11.GL_PROJECTION);
-                    GL11.glLoadIdentity();
-                    if(this.mc.options.anaglyph) {
-                        GL11.glTranslatef((float)(-((var29 << 1) - 1)) * 0.07F, 0.0F, 0.0F);
-                    }
+            while(true) {
+                if(var29 >= 2) {
+                    GL11.glColorMask(true, true, true, false);
+                    break;
+                }
 
-                    EntityPlayerSP var44 = this.mc.thePlayer;
-                    var16 = 70.0F;
-                    if(var44.health <= 0) {
-                        var13 = (float)var44.deathTime + var5;
-                        var16 = 70.0F / ((1.0F - 500.0F / (var13 + 500.0F)) * 2.0F + 1.0F);
-                    }
-
-                    GLU.gluPerspective(var16, (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance);
-                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                    GL11.glLoadIdentity();
-                    if(this.mc.options.anaglyph) {
-                        GL11.glTranslatef((float)((var29 << 1) - 1) * 0.1F, 0.0F, 0.0F);
-                    }
-
-                    this.hurtCameraEffect(var5);
-                    if(this.mc.options.viewBobbing) {
-                        this.setupViewBobbing(var5);
-                    }
-
-                    var44 = this.mc.thePlayer;
-                    GL11.glTranslatef(0.0F, 0.0F, -0.1F);
-                    GL11.glRotatef(var44.prevRotationPitch + (var44.rotationPitch - var44.prevRotationPitch) * var5, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(var44.prevRotationYaw + (var44.rotationYaw - var44.prevRotationYaw) * var5, 0.0F, 1.0F, 0.0F);
-                    var16 = var44.prevPosX + (var44.posX - var44.prevPosX) * var5;
-                    var13 = var44.prevPosY + (var44.posY - var44.prevPosY) * var5;
-                    var17 = var44.prevPosZ + (var44.posZ - var44.prevPosZ) * var5;
-                    GL11.glTranslatef(-var16, -var13, -var17);
-                    ClippingHelper var38 = ClippingHelperImpl.init();
-                    this.mc.renderGlobal.clipRenderersByFrustrum(var38);
-                    this.mc.renderGlobal.updateRenderers(var32);
-                    this.setupFog();
-                    GL11.glEnable(GL11.GL_FOG);
-                    var23.sortAndRender(var32, 0);
-                    int var39;
-                    int var41;
-                    int var45;
-                    int var47;
-                    int var49;
-                    if(var34.isSolid(var32.posX, var32.posY, var32.posZ, 0.1F)) {
-                        var39 = (int)var32.posX;
-                        int var40 = (int)var32.posY;
-                        var41 = (int)var32.posZ;
-                        RenderBlocks var42 = new RenderBlocks(Tessellator.instance, var34);
-
-                        for(var45 = var39 - 1; var45 <= var39 + 1; ++var45) {
-                            for(int var46 = var40 - 1; var46 <= var40 + 1; ++var46) {
-                                for(var47 = var41 - 1; var47 <= var41 + 1; ++var47) {
-                                    var49 = var34.getBlockId(var45, var46, var47);
-                                    if(var49 > 0) {
-                                        var42.renderBlockAllFaces(Block.blocksList[var49], var45, var46, var47);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    RenderHelper.enableStandardItemLighting();
-                    var23.renderEntities(this.orientCamera(var5), var38, var5);
-                    RenderHelper.disableStandardItemLighting();
-                    this.setupFog();
-                    var35.renderParticles(var32, var5);
-                    var23.oobGroundRenderer();
-                    this.setupFog();
-                    var23.renderSky(var5);
-                    this.setupFog();
-                    if(this.mc.objectMouseOver != null) {
-                        GL11.glDisable(GL11.GL_ALPHA_TEST);
-                        var23.drawBlockBreaking(this.mc.objectMouseOver, 0, var32.inventory.getCurrentItem());
-                        var23.drawSelectionBox(this.mc.objectMouseOver, 0);
-                        GL11.glEnable(GL11.GL_ALPHA_TEST);
-                    }
-
-                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                    this.setupFog();
-                    var23.oobWaterRenderer();
-                    GL11.glEnable(GL11.GL_BLEND);
-                    GL11.glDisable(GL11.GL_CULL_FACE);
-                    GL11.glColorMask(false, false, false, false);
-                    var39 = var23.sortAndRender(var32, 1);
-                    GL11.glColorMask(true, true, true, true);
-                    if(this.mc.options.anaglyph) {
-                        if(var29 == 0) {
-                            GL11.glColorMask(false, true, true, false);
-                        } else {
-                            GL11.glColorMask(true, false, false, false);
-                        }
-                    }
-
-                    if(var39 > 0) {
-                        var23.renderAllRenderLists();
-                    }
-
-                    GL11.glDepthMask(true);
-                    GL11.glEnable(GL11.GL_CULL_FACE);
-                    GL11.glDisable(GL11.GL_BLEND);
-                    GL11.glDisable(GL11.GL_FOG);
-                    if(this.mc.renderRain) {
-                        var11 = var5;
-                        var12 = this.mc.thePlayer;
-                        World var24 = this.mc.theWorld;
-                        var41 = (int)var12.posX;
-                        int var43 = (int)var12.posY;
-                        var45 = (int)var12.posZ;
-                        Tessellator var48 = Tessellator.instance;
-                        GL11.glDisable(GL11.GL_CULL_FACE);
-                        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-                        GL11.glEnable(GL11.GL_BLEND);
-                        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/rain.png"));
-
-                        for(var47 = var41 - 5; var47 <= var41 + 5; ++var47) {
-                            for(int var33 = var45 - 5; var33 <= var45 + 5; ++var33) {
-                                int var36 = var24.getMapHeight(var47, var33);
-                                int var37 = var43 - 5;
-                                var49 = var43 + 5;
-                                if(var37 < var36) {
-                                    var37 = var36;
-                                }
-
-                                if(var49 < var36) {
-                                    var49 = var36;
-                                }
-
-                                if(var37 != var49) {
-                                    var8 = ((float)((this.entityRendererInt1 + var47 * 3121 + var33 * 418711) % 32) + var11) / 32.0F;
-                                    float var50 = (float)var47 + 0.5F - var12.posX;
-                                    var20 = (float)var33 + 0.5F - var12.posZ;
-                                    float var51 = MathHelper.sqrt_float(var50 * var50 + var20 * var20) / 5.0F;
-                                    GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - var51 * var51) * 0.7F);
-                                    var48.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                                    var48.addVertexWithUV((float)var47, (float)var37, (float)var33, 0.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.addVertexWithUV((float)(var47 + 1), (float)var37, (float)(var33 + 1), 2.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.addVertexWithUV((float)(var47 + 1), (float)var49, (float)(var33 + 1), 2.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.addVertexWithUV((float)var47, (float)var49, (float)var33, 0.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.addVertexWithUV((float)var47, (float)var37, (float)(var33 + 1), 0.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.addVertexWithUV((float)(var47 + 1), (float)var37, (float)var33, 2.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.addVertexWithUV((float)(var47 + 1), (float)var49, (float)var33, 2.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.addVertexWithUV((float)var47, (float)var49, (float)(var33 + 1), 0.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
-                                    var48.draw();
-                                }
-                            }
-                        }
-
-                        GL11.glEnable(GL11.GL_CULL_FACE);
-                        GL11.glDisable(GL11.GL_BLEND);
-                    }
-
-                    GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-                    GL11.glLoadIdentity();
-                    if(this.mc.options.anaglyph) {
-                        GL11.glTranslatef((float)((var29 << 1) - 1) * 0.1F, 0.0F, 0.0F);
-                    }
-
-                    this.hurtCameraEffect(var5);
-                    if(this.mc.options.viewBobbing) {
-                        this.setupViewBobbing(var5);
-                    }
-
-                    this.itemRenderer.renderItemInFirstPerson(var5);
-                    if(!this.mc.options.anaglyph) {
-                        break label179;
+                if(this.mc.options.anaglyph) {
+                    if(var29 == 0) {
+                        GL11.glColorMask(false, true, true, false);
+                    } else {
+                        GL11.glColorMask(true, false, false, false);
                     }
                 }
 
-                GL11.glColorMask(true, true, true, false);
+                EntityPlayerSP var32 = this.mc.thePlayer;
+                World var34 = this.mc.theWorld;
+                RenderGlobal var23 = this.mc.renderGlobal;
+                EffectRenderer var35 = this.mc.effectRenderer;
+                GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
+                this.updateFogColor(var5);
+                GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+                this.fogColorMultiplier = 1.0F;
+                GL11.glEnable(GL11.GL_CULL_FACE);
+                this.farPlaneDistance = (float)(512 >> (this.mc.options.renderDistance << 1));
+                GL11.glMatrixMode(GL11.GL_PROJECTION);
+                GL11.glLoadIdentity();
+                if(this.mc.options.anaglyph) {
+                    GL11.glTranslatef((float)(-((var29 << 1) - 1)) * 0.07F, 0.0F, 0.0F);
+                }
+
+                EntityPlayerSP var44 = this.mc.thePlayer;
+                var16 = 70.0F;
+                if(var44.isInsideOfMaterial()) {
+                    var16 = 60.0F;
+                }
+
+                if(var44.health <= 0) {
+                    var13 = (float)var44.deathTime + var5;
+                    var16 /= (1.0F - 500.0F / (var13 + 500.0F)) * 2.0F + 1.0F;
+                }
+
+                GLU.gluPerspective(var16, (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance);
+                GL11.glMatrixMode(GL11.GL_MODELVIEW);
+                GL11.glLoadIdentity();
+                if(this.mc.options.anaglyph) {
+                    GL11.glTranslatef((float)((var29 << 1) - 1) * 0.1F, 0.0F, 0.0F);
+                }
+
+                this.hurtCameraEffect(var5);
+                if(this.mc.options.viewBobbing) {
+                    this.setupViewBobbing(var5);
+                }
+
+                var44 = this.mc.thePlayer;
+                GL11.glTranslatef(0.0F, 0.0F, -0.1F);
+                GL11.glRotatef(var44.prevRotationPitch + (var44.rotationPitch - var44.prevRotationPitch) * var5, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(var44.prevRotationYaw + (var44.rotationYaw - var44.prevRotationYaw) * var5, 0.0F, 1.0F, 0.0F);
+                var16 = var44.prevPosX + (var44.posX - var44.prevPosX) * var5;
+                var13 = var44.prevPosY + (var44.posY - var44.prevPosY) * var5;
+                var17 = var44.prevPosZ + (var44.posZ - var44.prevPosZ) * var5;
+                GL11.glTranslatef(-var16, -var13, -var17);
+                ClippingHelper var38 = ClippingHelperImpl.init();
+                this.mc.renderGlobal.clipRenderersByFrustrum(var38);
+                this.mc.renderGlobal.updateRenderers(var32);
+                this.setupFog();
+                GL11.glEnable(GL11.GL_FOG);
+                var23.sortAndRender(var32, 0);
+                int var39;
+                int var41;
+                int var45;
+                int var47;
+                int var49;
+                if(var34.isSolid(var32.posX, var32.posY, var32.posZ, 0.1F)) {
+                    var39 = (int)var32.posX;
+                    int var40 = (int)var32.posY;
+                    var41 = (int)var32.posZ;
+                    RenderBlocks var42 = new RenderBlocks(Tessellator.instance, var34);
+
+                    for(var45 = var39 - 1; var45 <= var39 + 1; ++var45) {
+                        for(int var46 = var40 - 1; var46 <= var40 + 1; ++var46) {
+                            for(var47 = var41 - 1; var47 <= var41 + 1; ++var47) {
+                                var49 = var34.getBlockId(var45, var46, var47);
+                                if(var49 > 0) {
+                                    var42.renderBlockAllFaces(Block.blocksList[var49], var45, var46, var47);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                RenderHelper.enableStandardItemLighting();
+                var23.renderEntities(this.orientCamera(var5), var38, var5);
+                RenderHelper.disableStandardItemLighting();
+                this.setupFog();
+                var35.renderParticles(var32, var5);
+                var23.oobGroundRenderer();
+                this.setupFog();
+                var23.renderSky(var5);
+                this.setupFog();
+                if(this.mc.objectMouseOver != null) {
+                    GL11.glDisable(GL11.GL_ALPHA_TEST);
+                    var23.drawBlockBreaking(this.mc.objectMouseOver, 0, var32.inventory.getCurrentItem());
+                    var23.drawSelectionBox(this.mc.objectMouseOver, 0);
+                    GL11.glEnable(GL11.GL_ALPHA_TEST);
+                }
+
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                this.setupFog();
+                var23.oobWaterRenderer();
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glDisable(GL11.GL_CULL_FACE);
+                GL11.glColorMask(false, false, false, false);
+                var39 = var23.sortAndRender(var32, 1);
+                GL11.glColorMask(true, true, true, true);
+                if(this.mc.options.anaglyph) {
+                    if(var29 == 0) {
+                        GL11.glColorMask(false, true, true, false);
+                    } else {
+                        GL11.glColorMask(true, false, false, false);
+                    }
+                }
+
+                if(var39 > 0) {
+                    var23.renderAllRenderLists();
+                }
+
+                GL11.glDepthMask(true);
+                GL11.glEnable(GL11.GL_CULL_FACE);
+                GL11.glDisable(GL11.GL_BLEND);
+                GL11.glDisable(GL11.GL_FOG);
+                if(this.mc.renderRain) {
+                    var11 = var5;
+                    var12 = this.mc.thePlayer;
+                    World var24 = this.mc.theWorld;
+                    var41 = (int)var12.posX;
+                    int var43 = (int)var12.posY;
+                    var45 = (int)var12.posZ;
+                    Tessellator var48 = Tessellator.instance;
+                    GL11.glDisable(GL11.GL_CULL_FACE);
+                    GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+                    GL11.glEnable(GL11.GL_BLEND);
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/rain.png"));
+
+                    for(var47 = var41 - 5; var47 <= var41 + 5; ++var47) {
+                        for(int var33 = var45 - 5; var33 <= var45 + 5; ++var33) {
+                            int var36 = var24.getMapHeight(var47, var33);
+                            int var37 = var43 - 5;
+                            var49 = var43 + 5;
+                            if(var37 < var36) {
+                                var37 = var36;
+                            }
+
+                            if(var49 < var36) {
+                                var49 = var36;
+                            }
+
+                            if(var37 != var49) {
+                                var8 = ((float)((this.entityRendererInt1 + var47 * 3121 + var33 * 418711) % 32) + var11) / 32.0F;
+                                float var50 = (float)var47 + 0.5F - var12.posX;
+                                var20 = (float)var33 + 0.5F - var12.posZ;
+                                float var51 = MathHelper.sqrt_float(var50 * var50 + var20 * var20) / 5.0F;
+                                GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - var51 * var51) * 0.7F);
+                                var48.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                                var48.addVertexWithUV((float)var47, (float)var37, (float)var33, 0.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.addVertexWithUV((float)(var47 + 1), (float)var37, (float)(var33 + 1), 2.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.addVertexWithUV((float)(var47 + 1), (float)var49, (float)(var33 + 1), 2.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.addVertexWithUV((float)var47, (float)var49, (float)var33, 0.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.addVertexWithUV((float)var47, (float)var37, (float)(var33 + 1), 0.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.addVertexWithUV((float)(var47 + 1), (float)var37, (float)var33, 2.0F, (float)var37 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.addVertexWithUV((float)(var47 + 1), (float)var49, (float)var33, 2.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.addVertexWithUV((float)var47, (float)var49, (float)(var33 + 1), 0.0F, (float)var49 * 2.0F / 8.0F + var8 * 2.0F);
+                                var48.draw();
+                            }
+                        }
+                    }
+
+                    GL11.glEnable(GL11.GL_CULL_FACE);
+                    GL11.glDisable(GL11.GL_BLEND);
+                }
+
+                GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+                GL11.glLoadIdentity();
+                if(this.mc.options.anaglyph) {
+                    GL11.glTranslatef((float)((var29 << 1) - 1) * 0.1F, 0.0F, 0.0F);
+                }
+
+                this.hurtCameraEffect(var5);
+                if(this.mc.options.viewBobbing) {
+                    this.setupViewBobbing(var5);
+                }
+
+                this.itemRenderer.renderItemInFirstPerson(var5);
+                if(!this.mc.options.anaglyph) {
+                    break;
+                }
+
+                ++var29;
             }
 
             this.mc.ingameGUI.renderGameOverlay(var5);

@@ -23,8 +23,6 @@ import net.minecraft.client.controller.PlayerController;
 import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.controller.PlayerControllerSP;
 import net.minecraft.client.effect.EffectRenderer;
-import net.minecraft.client.effect.EntityFX;
-import net.minecraft.client.effect.EntityRainFX;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraft.client.gui.GuiGameOver;
@@ -78,7 +76,7 @@ public final class Minecraft implements Runnable {
 	public MovingObjectPosition objectMouseOver;
 	public GameSettings options;
     public SoundManager sndManager;
-    private String serverIp;
+    private String server;
     private TextureWaterFX textureWaterFX;
     private TextureLavaFX textureLavaFX;
     volatile boolean running;
@@ -97,7 +95,7 @@ public final class Minecraft implements Runnable {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
         this.sndManager = new SoundManager();
-		this.serverIp = null;
+		this.server = null;
         this.textureWaterFX = new TextureWaterFX();
         this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -114,7 +112,7 @@ public final class Minecraft implements Runnable {
 	}
 
     public final void setServer(String var1, int var2) {
-        this.serverIp = var1;
+        this.server = var1;
     }
 
 	public final void displayGuiScreen(GuiScreen var1) {
@@ -211,7 +209,7 @@ public final class Minecraft implements Runnable {
             this.scaledResolution = new ScaledResolution(this);
             PointerInputAbstraction.init(this);
 
-			if(this.serverIp != null && this.session != null) {
+			if(this.server != null && this.session != null) {
 				World var43 = new World();
 				var43.generate(8, 8, 8, new byte[512]);
 				this.setLevel(var43);
@@ -587,11 +585,7 @@ public final class Minecraft implements Runnable {
 		}
 
 		int var4;
-		int var6;
 		int var14;
-		EffectRenderer var16;
-		int var21;
-		int var24;
 		if(this.currentScreen == null || this.currentScreen.allowUserInput) {
             boolean touched;
             boolean moused = false;
@@ -820,6 +814,7 @@ public final class Minecraft implements Runnable {
             this.renderGlobal.updateClouds();
             this.theWorld.updateEntities();
             this.theWorld.tick();
+            this.theWorld.randomDisplayUpdates((int)this.thePlayer.posX, (int)this.thePlayer.posY, (int)this.thePlayer.posZ);
             this.effectRenderer.updateEffects();
         }
 

@@ -351,11 +351,11 @@ public abstract class Entity {
 		}
 	}
 
-	public final float getBrightness() {
-		int var1 = (int)this.posX;
+	public float getBrightness(float var1) {
+		int var4 = (int)this.posX;
 		int var2 = (int)(this.posY + this.yOffset / 2.0F);
 		int var3 = (int)this.posZ;
-        return this.worldObj.getBlockLightValue(var1, var2, var3);
+        return this.worldObj.getBlockLightValue(var4, var2, var3);
     }
 
     public final void setWorld(World var1) {

@@ -10,6 +10,7 @@ public final class EntityDiggingFX extends EntityFX {
 		this.particleTextureIndex = var8.blockIndexInTexture;
 		this.particleGravity = var8.blockParticleGravity;
 		this.particleRed = this.particleGreen = this.particleBlue = 0.6F;
+        this.particleScale /= 2.0F;
 	}
 
 	public final int getFXLayer() {
@@ -24,12 +25,12 @@ public final class EntityDiggingFX extends EntityFX {
 		float var12 = 0.1F * this.particleScale;
 		float var13 = this.prevPosX + (this.posX - this.prevPosX) * var2;
 		float var14 = this.prevPosY + (this.posY - this.prevPosY) * var2;
-		var2 = this.prevPosZ + (this.posZ - this.prevPosZ) * var2;
-		float var15 = this.getBrightness();
-		var1.setColorOpaque_F(var15 * this.particleRed, var15 * this.particleGreen, var15 * this.particleBlue);
-		var1.addVertexWithUV(var13 - var3 * var12 - var6 * var12, var14 - var4 * var12, var2 - var5 * var12 - var7 * var12, var8, var11);
-		var1.addVertexWithUV(var13 - var3 * var12 + var6 * var12, var14 + var4 * var12, var2 - var5 * var12 + var7 * var12, var8, var10);
-		var1.addVertexWithUV(var13 + var3 * var12 + var6 * var12, var14 + var4 * var12, var2 + var5 * var12 + var7 * var12, var9, var10);
-		var1.addVertexWithUV(var13 + var3 * var12 - var6 * var12, var14 - var4 * var12, var2 + var5 * var12 - var7 * var12, var9, var11);
+		float var15 = this.prevPosZ + (this.posZ - this.prevPosZ) * var2;
+		var2 = this.getBrightness(var2);
+        var1.setColorOpaque_F(var2 * this.particleRed, var2 * this.particleGreen, var2 * this.particleBlue);
+        var1.addVertexWithUV(var13 - var3 * var12 - var6 * var12, var14 - var4 * var12, var15 - var5 * var12 - var7 * var12, var8, var11);
+        var1.addVertexWithUV(var13 - var3 * var12 + var6 * var12, var14 + var4 * var12, var15 - var5 * var12 + var7 * var12, var8, var10);
+        var1.addVertexWithUV(var13 + var3 * var12 + var6 * var12, var14 + var4 * var12, var15 + var5 * var12 + var7 * var12, var9, var10);
+        var1.addVertexWithUV(var13 + var3 * var12 - var6 * var12, var14 - var4 * var12, var15 + var5 * var12 - var7 * var12, var9, var11);
 	}
 }

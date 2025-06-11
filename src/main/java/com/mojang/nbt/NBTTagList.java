@@ -2,7 +2,6 @@ package com.mojang.nbt;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,15 +9,16 @@ public final class NBTTagList extends NBTBase {
 	private List a = new ArrayList();
 	private byte b;
 
-	final void writeTagContents(DataOutput var1) throws IOException {
+	final void writeTagContents(DataOutput var1) {
 		if(this.a.size() > 0) {
 			this.b = ((NBTBase)this.a.get(0)).getType();
 		} else {
 			this.b = 1;
 		}
-
+        try{
 		var1.writeByte(this.b);
 		var1.writeInt(this.a.size());
+    } catch (java.io.IOException exc) {}
 
 		for(int var2 = 0; var2 < this.a.size(); ++var2) {
 			((NBTBase)this.a.get(var2)).writeTagContents(var1);
@@ -26,9 +26,12 @@ public final class NBTTagList extends NBTBase {
 
 	}
 
-	final void readTagContents(DataInput var1) throws IOException {
+	final void readTagContents(DataInput var1) {
+        int var2 = 0;
+        try{
 		this.b = var1.readByte();
-		int var2 = var1.readInt();
+		var2 = var1.readInt();
+    } catch (java.io.IOException exc) {}
 		this.a = new ArrayList();
 
 		for(int var3 = 0; var3 < var2; ++var3) {

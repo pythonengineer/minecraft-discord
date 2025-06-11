@@ -2,7 +2,6 @@ package com.mojang.nbt;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.IOException;
 
 public final class NBTTagByte extends NBTBase {
 	public byte byteValue;
@@ -14,12 +13,16 @@ public final class NBTTagByte extends NBTBase {
 		this.byteValue = var1;
 	}
 
-	final void writeTagContents(DataOutput var1) throws IOException {
-		var1.writeByte(this.byteValue);
+	final void writeTagContents(DataOutput var1) {
+        try {
+        var1.writeByte(this.byteValue);
+    } catch (java.io.IOException exc) {}
 	}
 
-	final void readTagContents(DataInput var1) throws IOException {
-		this.byteValue = var1.readByte();
+	final void readTagContents(DataInput var1) {
+        try{
+        this.byteValue = var1.readByte();
+    } catch (java.io.IOException exc) {}
 	}
 
 	public final byte getType() {

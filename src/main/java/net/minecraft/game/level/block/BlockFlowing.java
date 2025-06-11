@@ -90,6 +90,8 @@ public final class BlockFlowing extends BlockFluid {
 								var10 = this.a(var1, var2, var3, var4, var2, var3, var4 + 1);
 							}
 						}
+                    } else if(this.material1 == Material.lava) {
+                        var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
 					} else {
 						var1.setBlockWithNotify(var2, var3, var4, 0);
 					}
