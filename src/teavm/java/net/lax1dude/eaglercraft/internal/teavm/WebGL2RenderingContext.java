@@ -10,7 +10,7 @@ import org.teavm.jso.webgl.WebGLUniformLocation;
 
 /**
  * Copyright (c) 2022-2023 lax1dude. All Rights Reserved.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -22,26 +22,26 @@ import org.teavm.jso.webgl.WebGLUniformLocation;
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 public interface WebGL2RenderingContext extends WebGLRenderingContext {
 
-	int TEXTURE_MAX_LEVEL              = 0x0000813D;
-	int TEXTURE_MAX_ANISOTROPY_EXT     = 0x000084FE;
-	int UNSIGNED_INT_24_8              = 0x000084FA;
-	int ANY_SAMPLES_PASSED             = 0x00008D6A; 
-	int QUERY_RESULT                   = 0x00008866;
-	int QUERY_RESULT_AVAILABLE         = 0x00008867;
-	int DEPTH24_STENCIL8               = 0x000088F0;
-	int DEPTH_COMPONENT24              = 0x000081A6;
-	int DEPTH_COMPONENT32F             = 0x00008CAC;
-	int READ_FRAMEBUFFER               = 0x00008CA8;
-	int DRAW_FRAMEBUFFER               = 0x00008CA9;
-	int RGB8                           = 0x00008051;
-	int RGBA8                          = 0x00008058;
-	int R8                             = 0x00008229;
-	int RED                            = 0x00001903;
-	
+    int TEXTURE_MAX_LEVEL              = 0x0000813D;
+    int TEXTURE_MAX_ANISOTROPY_EXT     = 0x000084FE;
+    int UNSIGNED_INT_24_8              = 0x000084FA;
+    int ANY_SAMPLES_PASSED             = 0x00008D6A;
+    int QUERY_RESULT                   = 0x00008866;
+    int QUERY_RESULT_AVAILABLE         = 0x00008867;
+    int DEPTH24_STENCIL8               = 0x000088F0;
+    int DEPTH_COMPONENT24              = 0x000081A6;
+    int DEPTH_COMPONENT32F             = 0x00008CAC;
+    int READ_FRAMEBUFFER               = 0x00008CA8;
+    int DRAW_FRAMEBUFFER               = 0x00008CA9;
+    int RGB8                           = 0x00008051;
+    int RGBA8                          = 0x00008058;
+    int R8                             = 0x00008229;
+    int RED                            = 0x00001903;
+
     WebGLQuery createQuery();
 
     void beginQuery(int p1, WebGLQuery obj);
@@ -71,6 +71,8 @@ public interface WebGL2RenderingContext extends WebGLRenderingContext {
     void drawArraysInstanced(int p1, int p2, int p3, int p4);
 
     void drawElementsInstanced(int p1, int p2, int p3, int p4, int p5);
+
+    void drawRangeElements(int p1, int p2, int p3, int p4, int p5, int p6);
 
     int getUniformBlockIndex(WebGLProgram p1, String p2);
 

@@ -201,9 +201,9 @@ public final class RenderGlobal implements IWorldAccess {
                     if(var12.size() != 0) {
                         float var13 = (float)((var11 << 4) - 2);
                         float var14 = (float)((var11 + 1 << 4) + 2);
-                        boolean var15 = var2.isBoundingBoxInFrustrum(var6, var9, var13, var7, var10, var14);
+                        boolean var15 = var2.checkInFrustrum(var6, var9, var13, var7, var10, var14);
                         if(var15) {
-                            boolean var24 = var2.isBoundingBoxInFrustrum1(var6, var9, var13, var7, var10, var14);
+                            boolean var24 = var2.isVisible(var6, var9, var13, var7, var10, var14);
 
                             for(int var25 = 0; var25 < var12.size(); ++var25) {
                                 Entity var26 = (Entity)var12.get(var25);
@@ -496,7 +496,7 @@ public final class RenderGlobal implements IWorldAccess {
 
 	}
 
-    public final void markBlockNeedsUpdate(int var1, int var2, int var3) {
+    public final void markBlockAndNeighborsNeedsUpdate(int var1, int var2, int var3) {
         this.markBlocksForUpdate(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
     }
 

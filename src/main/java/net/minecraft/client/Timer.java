@@ -47,8 +47,8 @@ public final class Timer {
 
         this.elapsedPartialTicks = (float)((double)this.elapsedPartialTicks + var9 * (double)this.timerSpeed * (double)this.ticksPerSecond);
         this.elapsedTicks = (int)this.elapsedPartialTicks;
-        if(this.elapsedTicks > 100) {
-            this.elapsedTicks = 100;
+        if(this.elapsedTicks > 10) {
+            this.elapsedTicks = 10;
         }
 
         this.elapsedPartialTicks -= (float)this.elapsedTicks;

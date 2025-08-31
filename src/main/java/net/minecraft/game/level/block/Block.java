@@ -3,6 +3,8 @@ package net.minecraft.game.level.block;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.Item;
+import net.minecraft.game.item.ItemBlock;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.material.Material;
@@ -78,10 +80,13 @@ public class Block {
     public static final Block waterSource;
     public static final Block lavaSource;
     public static final Block chest;
+    public static final Block cog;
+    public static final Block oreDiamond;
+    public static final Block blockDiamond;
     public int blockIndexInTexture;
     public final int blockID;
-    private float blockHardness;
-    private float blockResistance;
+    private float hardness;
+    private float resistance;
     public float minX;
     public float minY;
     public float minZ;
@@ -94,13 +99,17 @@ public class Block {
     protected Block(int var1) {
         this.stepSound = soundPowderFootstep;
         this.blockParticleGravity = 1.0F;
-        blocksList[var1] = this;
-        this.blockID = var1;
-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        opaqueCubeLookup[var1] = this.isOpaqueCube();
-        lightOpacity[var1] = this.isOpaqueCube() ? 255 : 0;
-        canBlockGrass[var1] = this.renderAsNormalBlock();
-        isBlockContainer[var1] = false;
+        if(blocksList[var1] != null) {
+            throw new IllegalArgumentException("Slot " + var1 + " is already occupied by " + blocksList[var1] + " when adding " + this);
+        } else {
+            blocksList[var1] = this;
+            this.blockID = var1;
+            this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+            opaqueCubeLookup[var1] = this.isOpaqueCube();
+            lightOpacity[var1] = this.isOpaqueCube() ? 255 : 0;
+            canBlockGrass[var1] = this.renderAsNormalBlock();
+            isBlockContainer[var1] = false;
+        }
     }
 
     private Block setLightOpacity(int var1) {
@@ -114,7 +123,7 @@ public class Block {
     }
 
     protected final Block setResistance(float var1) {
-        this.blockResistance = var1 * 3.0F;
+        this.resistance = var1 * 3.0F;
         return this;
     }
 
@@ -127,9 +136,9 @@ public class Block {
     }
 
     protected final Block setHardness(float var1) {
-        this.blockHardness = var1;
-        if(this.blockResistance < var1 * 5.0F) {
-            this.blockResistance = var1 * 5.0F;
+        this.hardness = var1;
+        if(this.resistance < var1 * 5.0F) {
+            this.resistance = var1 * 5.0F;
         }
 
         return this;
@@ -220,7 +229,7 @@ public class Block {
     }
 
     public final int blockStrength(EntityPlayer var1) {
-        return (int)(this.blockHardness / var1.getStrVsBlock(this) * 30.0F);
+        return (int)(this.hardness / var1.getStrVsBlock(this) * 30.0F);
     }
 
     public void dropBlockAsItem(World var1, int var2, int var3, int var4) {
@@ -244,7 +253,7 @@ public class Block {
     }
 
     public final float getExplosionResistance() {
-        return this.blockResistance / 5.0F;
+        return this.resistance / 5.0F;
     }
 
     public MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
@@ -619,5 +628,27 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         chest = var0;
+        var10000 = (new BlockGears(55, 62)).setHardness(0.5F);
+        var1 = soundMetalFootstep;
+        var0 = var10000;
+        var0.stepSound = var1;
+        cog = var0;
+        var10000 = (new BlockOre(56, 50)).setHardness(3.0F).setResistance(5.0F);
+        var1 = soundStoneFootstep;
+        var0 = var10000;
+        var0.stepSound = var1;
+        oreDiamond = var0;
+        var10000 = (new BlockOreBlock(57, 104)).setHardness(5.0F).setResistance(10.0F);
+        var1 = soundMetalFootstep;
+        var0 = var10000;
+        var0.stepSound = var1;
+        blockDiamond = var0;
+
+        for(int var2 = 0; var2 < 256; ++var2) {
+            if(blocksList[var2] != null) {
+                Item.itemsList[var2] = new ItemBlock(var2 - 256);
+            }
+        }
+
     }
 }

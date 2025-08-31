@@ -6,7 +6,6 @@ import java.util.List;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
-import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.touch.TouchControls;
@@ -330,7 +329,7 @@ public final class GuiIngame extends Gui {
                 } else if (currentHotbarSlotTouch == 9) {
                     hotbarSlotTouchAlreadySelected = false;
                     currentHotbarSlotTouch = 69;
-                    this.mc.playerController.openInventory();
+                    this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
                 }
                 return true;
             }

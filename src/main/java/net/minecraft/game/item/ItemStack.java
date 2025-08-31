@@ -28,9 +28,9 @@ public final class ItemStack {
         this.stackSize = var1.getByte("Count");
     }
 
-    public final ItemStack splitStack() {
-        --this.stackSize;
-        return new ItemStack(this.itemID, 1);
+    public final ItemStack splitStack(int var1) {
+        this.stackSize -= var1;
+        return new ItemStack(this.itemID, var1);
     }
 
     public final Item getItem() {

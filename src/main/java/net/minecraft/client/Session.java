@@ -7,9 +7,11 @@ import net.minecraft.game.level.block.Block;
 public final class Session {
     public static List registeredBlocksList;
 	public String username;
+    public String sessionId;
 
 	public Session(String var1, String var2) {
 		this.username = var1;
+        this.sessionId = var2;
 	}
 
 	static {

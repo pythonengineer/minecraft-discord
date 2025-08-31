@@ -10,7 +10,7 @@ public final class ItemBlock extends Item {
 
     public ItemBlock(int var1) {
         super(var1);
-        this.blockID = var1;
+        this.blockID = var1 + 256;
     }
 
     public final void onItemUse(ItemStack var1, World var2, int var3, int var4, int var5, int var6) {

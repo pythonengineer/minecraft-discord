@@ -83,8 +83,7 @@ public class DisplayList {
     final int id;
     ArrayList<ListOperation> ops = new ArrayList<ListOperation>();
     IntBuffer indices = null;
-    boolean bindQuad16 = false;
-    boolean bindQuad32 = false;
+    byte bindQuad = 0;
 
     DisplayList(int id) {
         this.id = id;

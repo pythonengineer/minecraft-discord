@@ -51,7 +51,7 @@ public final class InventoryPlayer implements IInventory {
         }
     }
 
-    public final boolean addItemStackToInventory(ItemStack var1) {
+    public final boolean storePartialItemStack(ItemStack var1) {
         int var4 = var1.stackSize;
         int var3 = var1.itemID;
         int var6 = var3;
@@ -68,7 +68,7 @@ public final class InventoryPlayer implements IInventory {
 
             if(var5.mainInventory[var7] != null && var5.mainInventory[var7].itemID == var6) {
                 var8 = var5.mainInventory[var7];
-                if(var5.mainInventory[var7].stackSize < var8.getItem().getItemStackLimit()) {
+                if(var5.mainInventory[var7].stackSize < var8.getItem().getItemStackLimit() && var5.mainInventory[var7].stackSize < 50) {
                     var10001 = var7;
                     break;
                 }
@@ -94,6 +94,10 @@ public final class InventoryPlayer implements IInventory {
             if(var4 > var8.getItem().getItemStackLimit() - this.mainInventory[var9].stackSize) {
                 var8 = this.mainInventory[var9];
                 var3 = var8.getItem().getItemStackLimit() - this.mainInventory[var9].stackSize;
+            }
+
+            if(var3 > 50 - this.mainInventory[var9].stackSize) {
+                var3 = 50 - this.mainInventory[var9].stackSize;
             }
 
             if(var3 == 0) {
@@ -128,7 +132,12 @@ public final class InventoryPlayer implements IInventory {
                 this.mainInventory[var1] = null;
                 return var3;
             } else {
-                return this.mainInventory[var1].splitStack();
+                ItemStack var3 = this.mainInventory[var1].splitStack(1);
+                if(this.mainInventory[var1].stackSize == 0) {
+                    this.mainInventory[var1] = null;
+                }
+
+                return var3;
             }
         } else {
             return null;
@@ -149,5 +158,9 @@ public final class InventoryPlayer implements IInventory {
 
     public final String getInvName() {
         return "Inventory";
+    }
+
+    public final int getInventoryStackLimit() {
+        return 50;
     }
 }

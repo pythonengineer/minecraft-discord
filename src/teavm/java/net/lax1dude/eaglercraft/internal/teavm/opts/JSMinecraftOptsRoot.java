@@ -128,4 +128,10 @@ public abstract class JSMinecraftOptsRoot implements JSObject {
     @JSBody(params = {
             "def"}, script = "return (typeof this.singleThreadMode === \"boolean\") ? this.singleThreadMode : def;")
     public native boolean getSingleThreadMode(boolean deobfStackTraces);
+
+    @JSBody(params = {"def"}, script = "return (typeof this.keepAliveHack === \"boolean\") ? this.keepAliveHack : def;")
+    public native boolean getKeepAliveHack(boolean keepAliveHack);
+
+    @JSBody(params = {"def"}, script = "return (typeof this.finishOnSwap === \"boolean\") ? this.finishOnSwap : def;")
+    public native boolean getFinishOnSwap(boolean finishOnSwap);
 }

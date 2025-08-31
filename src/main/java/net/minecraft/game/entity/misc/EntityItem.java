@@ -155,7 +155,7 @@ public class EntityItem extends Entity {
 	}
 
 	public final void onCollideWithPlayer(EntityPlayer var1) {
-		if(this.delayBeforeCanPickup == 0 && var1.inventory.addItemStackToInventory(this.item)) {
+		if(this.delayBeforeCanPickup == 0 && var1.inventory.storePartialItemStack(this.item)) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			this.setEntityDead();
 		}

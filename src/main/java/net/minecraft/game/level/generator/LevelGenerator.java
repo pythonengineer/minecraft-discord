@@ -226,13 +226,14 @@ public final class LevelGenerator {
 
 				while(true) {
 					if(var17 >= var51) {
-						this.populateOre(Block.oreCoal.blockID, 90, 1, 4);
-						this.populateOre(Block.oreIron.blockID, 70, 2, 4);
-						this.populateOre(Block.oreGold.blockID, 50, 3, 4);
+                        this.populateOre(Block.oreCoal.blockID, 90, 1, 5);
+                        this.populateOre(Block.oreIron.blockID, 70, 2, 5);
+                        this.populateOre(Block.oreGold.blockID, 30, 3, 5);
+                        this.populateOre(Block.oreDiamond.blockID, 20, 4, 5);
 						break;
 					}
 
-					var9.setNextPhase(var17 * 100 / (var51 - 1) / 4);
+					var9.setNextPhase(var17 * 100 / (var51 - 1) / 5);
 					float var54 = var9.rand.nextFloat() * (float)var45;
 					float var56 = var9.rand.nextFloat() * (float)var48;
 					float var57 = var9.rand.nextFloat() * (float)var47;
@@ -558,7 +559,7 @@ public final class LevelGenerator {
 		int var7 = var4 * var5 * var6 / 256 / 64 * var2 / 100;
 
 		for(int var8 = 0; var8 < var7; ++var8) {
-			this.setNextPhase(var8 * 100 / (var7 - 1) / 4 + var3 * 100 / 4);
+			this.setNextPhase(var8 * 100 / (var7 - 1) / 5 + var3 * 100 / 5);
 			float var9 = this.rand.nextFloat() * (float)var4;
 			float var10 = this.rand.nextFloat() * (float)var6;
 			float var11 = this.rand.nextFloat() * (float)var5;

@@ -40,7 +40,7 @@ public final class World {
     private int[] heightMap;
     public EaglercraftRandom random = new EaglercraftRandom();
     private EaglercraftRandom rand = new EaglercraftRandom();
-    private int randInt = this.random.nextInt();
+    private int randId = this.random.nextInt();
     public EntityMap entityMap;
     public int waterLevel;
     public int groundLevel;
@@ -67,7 +67,7 @@ public final class World {
             Arrays.fill(this.heightMap, this.height);
             this.updateSkylight(0, 0, this.width, this.length);
             this.random = new EaglercraftRandom();
-            this.randInt = this.random.nextInt();
+            this.randId = this.random.nextInt();
             this.tickList = new ArrayList();
             if(this.entityMap == null) {
                 this.entityMap = new EntityMap(this.width, this.height, this.length);
@@ -462,7 +462,7 @@ public final class World {
                 this.updateLight(var1, var2, var3, var1 + 1, var2 + 1, var3 + 1);
 
                 for(var4 = 0; var4 < this.worldAccesses.size(); ++var4) {
-                    ((IWorldAccess)this.worldAccesses.get(var4)).markBlockNeedsUpdate(var1, var2, var3);
+                    ((IWorldAccess)this.worldAccesses.get(var4)).markBlockAndNeighborsNeedsUpdate(var1, var2, var3);
                 }
 
                 return true;
@@ -634,8 +634,8 @@ public final class World {
         this.updateLCG -= var6 * MAX_TICKS;
 
         for(var7 = 0; var7 < var6; ++var7) {
-            this.randInt = this.randInt * 3 + 1013904223;
-            int var13 = this.randInt >> 2;
+            this.randId = this.randId * 3 + 1013904223;
+            int var13 = this.randId >> 2;
             int var14 = var13 & var4;
             var10 = var13 >> var1 & var3;
             var13 = var13 >> var1 + var2 & var5;

@@ -1,10 +1,10 @@
 package net.lax1dude.eaglercraft.touch;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.Touch;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.

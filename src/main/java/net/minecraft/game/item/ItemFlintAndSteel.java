@@ -5,7 +5,7 @@ import net.minecraft.game.level.block.Block;
 
 public final class ItemFlintAndSteel extends Item {
     public ItemFlintAndSteel(int var1) {
-        super(259);
+        super(3);
         this.maxStackSize = 1;
     }
 

@@ -18,9 +18,6 @@ public class PlayerController {
 	public void onWorldChange(World var1) {
 	}
 
-	public void openInventory() {
-	}
-
 	public void clickBlock(int var1, int var2, int var3) {
 		this.sendBlockRemoved(var1, var2, var3);
 	}

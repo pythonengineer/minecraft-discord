@@ -7,7 +7,7 @@ public final class ItemFood extends Item {
     private int healAmount = 4;
 
     public ItemFood(int var1, int var2) {
-        super(260);
+        super(4);
     }
 
     public final boolean onItemRightClick(ItemStack var1, World var2, EntityPlayer var3) {

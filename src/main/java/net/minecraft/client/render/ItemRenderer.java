@@ -48,79 +48,152 @@ public final class ItemRenderer {
 			var4 = ((float)this.swingProgress + var1) / 8.0F;
 			var5 = MathHelper.sin(var4 * var4 * (float)Math.PI);
 			var6 = MathHelper.sin(MathHelper.sqrt_float(var4) * (float)Math.PI);
-			GL11.glRotatef(var6 * 80.0F, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(-var5 * 20.0F, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(-var5 * 20.0F, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(-var6 * 20.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glRotatef(-var6 * 80.0F, 1.0F, 0.0F, 0.0F);
 		}
 
 		var4 = this.mc.theWorld.getBlockLightValue((int)var3.posX, (int)var3.posY, (int)var3.posZ);
 		GL11.glColor4f(var4, var4, var4, 1.0F);
-		float var9;
-		if(this.itemToRender != null) {
-			GL11.glScalef(0.4F, 0.4F, 0.4F);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-			if(this.itemToRender.itemID < 256) {
-				this.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[this.itemToRender.itemID]);
-			} else {
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/items.png"));
-				GL11.glDisable(GL11.GL_LIGHTING);
-				Tessellator var13 = Tessellator.instance;
-				ItemStack var11 = this.itemToRender;
-				var1 = (float)(var11.getItem().getIconIndex() % 16 << 4) / 256.0F;
-				var11 = this.itemToRender;
-				var2 = (float)((var11.getItem().getIconIndex() % 16 << 4) + 16) / 256.0F;
-				var11 = this.itemToRender;
-				var9 = (float)(var11.getItem().getIconIndex() / 16 << 4) / 256.0F;
-				var11 = this.itemToRender;
-				var4 = (float)((var11.getItem().getIconIndex() / 16 << 4) + 16) / 256.0F;
-				var13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-				var13.addVertexWithUV(-0.4F, -0.2F, -0.4F, var1, var4);
-				var13.addVertexWithUV(0.29999998F, -0.2F, 0.29999998F, var2, var4);
-				var13.addVertexWithUV(0.29999998F, 0.8F, 0.29999998F, var2, var9);
-				var13.addVertexWithUV(-0.4F, 0.8F, -0.4F, var1, var9);
-				var13.draw();
-				GL11.glEnable(GL11.GL_LIGHTING);
-			}
-		} else {
-			GL11.glScalef(1.0F, -1.0F, -1.0F);
-			GL11.glTranslatef(0.0F, 0.2F, 0.0F);
-			GL11.glRotatef(-120.0F, 0.0F, 0.0F, 1.0F);
-			GL11.glScalef(1.0F, 1.0F, 1.0F);
-		}
+        float var11;
+        int var14;
+        if(this.itemToRender != null) {
+            GL11.glScalef(0.4F, 0.4F, 0.4F);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+            if(this.itemToRender.itemID < 256) {
+                this.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[this.itemToRender.itemID]);
+            } else {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/items.png"));
+                Tessellator var15 = Tessellator.instance;
+                ItemStack var13 = this.itemToRender;
+                var1 = (float)(var13.getItem().getIconIndex() % 16 << 4) / 256.0F;
+                var13 = this.itemToRender;
+                var2 = (float)((var13.getItem().getIconIndex() % 16 << 4) + 16) / 256.0F;
+                var13 = this.itemToRender;
+                var11 = (float)(var13.getItem().getIconIndex() / 16 << 4) / 256.0F;
+                var13 = this.itemToRender;
+                var4 = (float)((var13.getItem().getIconIndex() / 16 << 4) + 16) / 256.0F;
+                GL11.glEnable(GL11.GL_NORMALIZE);
+                GL11.glTranslatef(0.0F, -0.3F, 0.0F);
+                GL11.glScalef(1.5F, 1.5F, 1.5F);
+                GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glRotatef(335.0F, 0.0F, 0.0F, 1.0F);
+                GL11.glTranslatef(-(15.0F / 16.0F), -(1.0F / 16.0F), 0.0F);
+                Tessellator.setNormal(0.0F, 0.0F, 1.0F);
+                var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                var15.addVertexWithUV(0.0F, 0.0F, 0.0F, var2, var4);
+                var15.addVertexWithUV(1.0F, 0.0F, 0.0F, var1, var4);
+                var15.addVertexWithUV(1.0F, 1.0F, 0.0F, var1, var11);
+                var15.addVertexWithUV(0.0F, 1.0F, 0.0F, var2, var11);
+                var15.draw();
+                Tessellator.setNormal(0.0F, 0.0F, -1.0F);
+                var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                var15.addVertexWithUV(0.0F, 1.0F, -(1.0F / 16.0F), var2, var11);
+                var15.addVertexWithUV(1.0F, 1.0F, -(1.0F / 16.0F), var1, var11);
+                var15.addVertexWithUV(1.0F, 0.0F, -(1.0F / 16.0F), var1, var4);
+                var15.addVertexWithUV(0.0F, 0.0F, -(1.0F / 16.0F), var2, var4);
+                var15.draw();
+                Tessellator.setNormal(-1.0F, 0.0F, 0.0F);
+                var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+
+                float var7;
+                float var8;
+                for(var14 = 0; var14 < 16; ++var14) {
+                    var7 = (float)var14 / 16.0F;
+                    var8 = var2 + (var1 - var2) * var7 + 0.001953125F;
+                    var7 = var7 * 1.0F - 1.0F / 16.0F;
+                    var15.addVertexWithUV(var7, 0.0F, -(1.0F / 16.0F), var8, var4);
+                    var15.addVertexWithUV(var7, 0.0F, 0.0F, var8, var4);
+                    var15.addVertexWithUV(var7, 1.0F, 0.0F, var8, var11);
+                    var15.addVertexWithUV(var7, 1.0F, -(1.0F / 16.0F), var8, var11);
+                }
+
+                var15.draw();
+                Tessellator.setNormal(1.0F, 0.0F, 0.0F);
+                var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+
+                for(var14 = 0; var14 < 16; ++var14) {
+                    var7 = (float)var14 / 16.0F;
+                    var8 = var2 + (var1 - var2) * var7 + 0.001953125F;
+                    var7 *= 1.0F;
+                    var15.addVertexWithUV(var7, 1.0F, -(1.0F / 16.0F), var8, var11);
+                    var15.addVertexWithUV(var7, 1.0F, 0.0F, var8, var11);
+                    var15.addVertexWithUV(var7, 0.0F, 0.0F, var8, var4);
+                    var15.addVertexWithUV(var7, 0.0F, -(1.0F / 16.0F), var8, var4);
+                }
+
+                var15.draw();
+                Tessellator.setNormal(0.0F, 1.0F, 0.0F);
+                var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+
+                for(var14 = 0; var14 < 16; ++var14) {
+                    var7 = (float)var14 / 16.0F;
+                    var8 = var4 + (var11 - var4) * var7 - 0.001953125F;
+                    var7 = var7 * 1.0F + 1.0F / 16.0F;
+                    var15.addVertexWithUV(0.0F, var7, 0.0F, var2, var8);
+                    var15.addVertexWithUV(1.0F, var7, 0.0F, var1, var8);
+                    var15.addVertexWithUV(1.0F, var7, -(1.0F / 16.0F), var1, var8);
+                    var15.addVertexWithUV(0.0F, var7, -(1.0F / 16.0F), var2, var8);
+                }
+
+                var15.draw();
+                Tessellator.setNormal(0.0F, -1.0F, 0.0F);
+                var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+
+                for(var14 = 0; var14 < 16; ++var14) {
+                    var7 = (float)var14 / 16.0F;
+                    var8 = var4 + (var11 - var4) * var7 - 0.001953125F;
+                    var7 *= 1.0F;
+                    var15.addVertexWithUV(1.0F, var7, 0.0F, var1, var8);
+                    var15.addVertexWithUV(0.0F, var7, 0.0F, var2, var8);
+                    var15.addVertexWithUV(0.0F, var7, -(1.0F / 16.0F), var2, var8);
+                    var15.addVertexWithUV(1.0F, var7, -(1.0F / 16.0F), var1, var8);
+                }
+
+                var15.draw();
+                GL11.glDisable(GL11.GL_NORMALIZE);
+            }
+        } else {
+            GL11.glScalef(1.0F, -1.0F, -1.0F);
+            GL11.glTranslatef(0.0F, 0.2F, 0.0F);
+            GL11.glRotatef(-120.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glScalef(1.0F, 1.0F, 1.0F);
+        }
 
 		GL11.glDisable(GL11.GL_NORMALIZE);
 		GL11.glPopMatrix();
 		RenderHelper.disableStandardItemLighting();
-		if(this.mc.thePlayer.fire > 0) {
-			int var12 = this.mc.renderEngine.getTexture("/terrain.png");
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var12);
-			Tessellator var7 = Tessellator.instance;
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        if(this.mc.thePlayer.fire > 0) {
+            var14 = this.mc.renderEngine.getTexture("/terrain.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var14);
+            Tessellator var9 = Tessellator.instance;
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-			for(int var8 = 0; var8 < 2; ++var8) {
-				GL11.glPushMatrix();
-				int var10 = Block.fire.blockIndexInTexture + (var8 << 4);
-				int var14 = (var10 & 15) << 4;
-				var10 &= 240;
-				var5 = (float)var14 / 256.0F;
-				var4 = ((float)var14 + 15.99F) / 256.0F;
-				var6 = (float)var10 / 256.0F;
-				var9 = ((float)var10 + 15.99F) / 256.0F;
-				GL11.glTranslatef((float)(-((var8 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
-				GL11.glRotatef((float)((var8 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
-				var7.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-				var7.addVertexWithUV(-0.5F, -0.5F, -0.5F, var4, var9);
-				var7.addVertexWithUV(0.5F, -0.5F, -0.5F, var5, var9);
-				var7.addVertexWithUV(0.5F, 0.5F, -0.5F, var5, var6);
-				var7.addVertexWithUV(-0.5F, 0.5F, -0.5F, var4, var6);
-				var7.draw();
-				GL11.glPopMatrix();
-			}
+            for(int var10 = 0; var10 < 2; ++var10) {
+                GL11.glPushMatrix();
+                int var12 = Block.fire.blockIndexInTexture + (var10 << 4);
+                int var16 = (var12 & 15) << 4;
+                var12 &= 240;
+                var5 = (float)var16 / 256.0F;
+                var4 = ((float)var16 + 15.99F) / 256.0F;
+                var6 = (float)var12 / 256.0F;
+                var11 = ((float)var12 + 15.99F) / 256.0F;
+                GL11.glTranslatef((float)(-((var10 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
+                GL11.glRotatef((float)((var10 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
+                var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                var9.addVertexWithUV(-0.5F, -0.5F, -0.5F, var4, var11);
+                var9.addVertexWithUV(0.5F, -0.5F, -0.5F, var5, var11);
+                var9.addVertexWithUV(0.5F, 0.5F, -0.5F, var5, var6);
+                var9.addVertexWithUV(-0.5F, 0.5F, -0.5F, var4, var6);
+                var9.draw();
+                GL11.glPopMatrix();
+            }
 
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glDisable(GL11.GL_BLEND);
-		}
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glDisable(GL11.GL_BLEND);
+        }
 
 	}
 
@@ -160,9 +233,5 @@ public final class ItemRenderer {
 	public final void swingItem() {
 		this.swingProgress = -1;
 		this.itemSwingState = true;
-	}
-
-	public final void resetEquippedProgress2() {
-		this.equippedProgress = 0.0F;
 	}
 }

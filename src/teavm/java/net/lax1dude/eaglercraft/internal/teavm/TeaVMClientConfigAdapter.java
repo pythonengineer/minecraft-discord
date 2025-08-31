@@ -51,6 +51,8 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
     private boolean disableBlobURLs = false;
     private boolean ramdiskMode = false;
     private boolean singleThreadMode = false;
+    private boolean keepAliveHack = true;
+    private boolean finishOnSwap = true;
 
     public void loadNative(JSObject jsObject) {
         JSMinecraftOptsRoot minecraftOpts = (JSMinecraftOptsRoot)jsObject;
@@ -76,6 +78,8 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
         disableBlobURLs = minecraftOpts.getDisableBlobURLs(false);
         ramdiskMode = minecraftOpts.getRamdiskMode(false);
         singleThreadMode = minecraftOpts.getSingleThreadMode(false);
+        keepAliveHack = minecraftOpts.getKeepAliveHack(true);
+        finishOnSwap = minecraftOpts.getFinishOnSwap(true);
     }
 
     @Override
@@ -156,6 +160,14 @@ public class TeaVMClientConfigAdapter implements IClientConfigAdapter {
 
     public boolean isSingleThreadModeTeaVM() {
         return singleThreadMode;
+    }
+
+    public boolean isKeepAliveHackTeaVM() {
+        return keepAliveHack;
+    }
+
+    public boolean isFinishOnSwapTeaVM() {
+        return finishOnSwap;
     }
 
     @Override

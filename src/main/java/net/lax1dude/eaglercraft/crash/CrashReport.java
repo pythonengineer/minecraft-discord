@@ -66,7 +66,7 @@ public class CrashReport {
     private void populateEnvironment() {
         this.theReportCategory.addCrashSectionCallable("Minecraft Version", new Callable<String>() {
             public String call() {
-                return "0.31 20100125";
+                return "0.31 20100128";
             }
         });
         this.theReportCategory.addCrashSectionCallable("Operating System", new Callable<String>() {
@@ -158,6 +158,14 @@ public class CrashReport {
         EagRuntime.getStackTrace(this.cause, (s) -> {
             stackTrace.append("\tat ").append(s).append('\n');
         });
+        Throwable t = this.cause.getCause();
+        while (t != null) {
+            stackTrace.append("Caused by: " + t.toString()).append('\n');
+            EagRuntime.getStackTrace(t, (s) -> {
+                stackTrace.append("\tat ").append(s).append('\n');
+            });
+            t = t.getCause();
+        }
         return stackTrace.toString();
     }
 

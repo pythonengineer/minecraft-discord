@@ -1,4 +1,4 @@
-package net.lax1dude.eaglercraft;
+package net.minecraft.client.gui;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;

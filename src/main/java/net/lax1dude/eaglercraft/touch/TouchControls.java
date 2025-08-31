@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.touch.EnumTouchControl.TouchAction;
 import net.minecraft.client.Minecraft;
-import net.lax1dude.eaglercraft.ScaledResolution;
+import net.minecraft.client.gui.ScaledResolution;
 
 import java.util.*;
 

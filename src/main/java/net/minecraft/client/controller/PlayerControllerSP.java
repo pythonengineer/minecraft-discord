@@ -1,7 +1,6 @@
 package net.minecraft.client.controller;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiInventory;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -25,10 +24,6 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
-	}
-
-	public final void openInventory() {
-		this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
 	}
 
 	public final void flipPlayer(EntityPlayer var1) {
@@ -85,6 +80,7 @@ public final class PlayerControllerSP extends PlayerController {
 			var8 = Block.tnt.blockID;
 			var16 = new ItemStack(var8, Item.itemsList[var8].getItemStackLimit());
 			var15.setInventorySlotContents(var3, var16);
+            var16 = new ItemStack(var8, Item.itemsList[var8].getItemStackLimit());
 			var10.setInventorySlotContents(var3, var16);
 		}
 
@@ -184,12 +180,12 @@ public final class PlayerControllerSP extends PlayerController {
 		int var2 = var1.width * var1.length * var1.height / 64 / 64 / 64;
 
 		for(int var3 = 0; var3 < var2; ++var3) {
-			this.mobSpawner.spawnMob(var2, var1.playerEntity, null);
+			this.mobSpawner.performSpawning(var2, var1.playerEntity, null);
 		}
 
 	}
 
 	public final void onUpdate() {
-		this.mobSpawner.spawnMobs();
+		this.mobSpawner.performSpawning();
 	}
 }

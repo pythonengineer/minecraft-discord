@@ -25,7 +25,7 @@ public class PCMToWAVLoader {
         int i = 44;
         int j = floating ? 4 : 2;
         int k;
-        for(float[][] f : data) {
+        for (float[][] f : data) {
             k = f.length;
             if(k == 0) continue;
             i += k * f[0].length * j;
@@ -34,7 +34,7 @@ public class PCMToWAVLoader {
     }
 
     public static void createWAV16(List<float[][]> data, int chCount, int sampleRate, ByteBuffer bufferOut) {
-        if(chCount == 0 || data.isEmpty()) return;
+        if (chCount == 0 || data.isEmpty()) return;
         int finalSize = bufferOut.remaining();
 
         // header
@@ -56,9 +56,9 @@ public class PCMToWAVLoader {
         bufferOut.putInt(0x61746164); // magic
         bufferOut.putInt(finalSize - 44);
 
-        for(float[][] f : data) {
-            for(int i = 0, l = f[0].length; i < l; ++i) {
-                for(int c = 0; c < chCount; ++c) {
+        for (float[][] f : data) {
+            for (int i = 0, l = f[0].length; i < l; ++i) {
+                for (int c = 0; c < chCount; ++c) {
                     int val = (int)(f[c][i] * 32767.0f);
                     if (val > 32767) {
                         val = 32767;
@@ -66,21 +66,18 @@ public class PCMToWAVLoader {
                     if (val < -32768) {
                         val = -32768;
                     }
-                    if (val < 0) {
-                        val |= 32768;
-                    }
                     bufferOut.putShort((short)val);
                 }
             }
         }
 
-        if(bufferOut.hasRemaining()) {
+        if (bufferOut.hasRemaining()) {
             throw new IllegalStateException("Buffer was the wrong size! " + bufferOut.remaining() + " remaining");
         }
     }
 
     public static void createWAV32F(List<float[][]> data, int chCount, int sampleRate, ByteBuffer bufferOut) {
-        if(chCount == 0 || data.isEmpty()) return;
+        if (chCount == 0 || data.isEmpty()) return;
         int finalSize = bufferOut.remaining();
 
         // header
@@ -102,15 +99,15 @@ public class PCMToWAVLoader {
         bufferOut.putInt(0x61746164); // magic
         bufferOut.putInt(finalSize - 44);
 
-        for(float[][] f : data) {
-            for(int i = 0, l = f[0].length; i < l; ++i) {
-                for(int c = 0; c < chCount; ++c) {
+        for (float[][] f : data) {
+            for (int i = 0, l = f[0].length; i < l; ++i) {
+                for (int c = 0; c < chCount; ++c) {
                     bufferOut.putFloat(f[c][i]);
                 }
             }
         }
 
-        if(bufferOut.hasRemaining()) {
+        if (bufferOut.hasRemaining()) {
             throw new IllegalStateException("Buffer was the wrong size! " + finalSize + " " + bufferOut.remaining() + " remaining");
         }
     }

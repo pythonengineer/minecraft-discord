@@ -2,7 +2,7 @@ package net.minecraft.game.item;
 
 import net.minecraft.game.level.block.Block;
 
-public final class ItemTool extends Item {
+public class ItemTool extends Item {
     private Block[] blocksEffectiveAgainst;
     private float efficiencyOnProperMaterial = 4.0F;
 

@@ -206,7 +206,7 @@ public class FixedFunctionShader {
                 + "\r\n"
                 + "#ifdef COMPILE_ENABLE_MC_LIGHTING\r\n"
                 + "uniform int u_lightsEnabled1i;\r\n"
-                + "uniform vec4 u_lightsDirections4fv[4];\r\n"
+                + "uniform vec4 u_lightsDirections4fv[2];\r\n"
                 + "uniform vec3 u_lightsAmbient3f;\r\n"
                 + "#ifndef COMPILE_NORMAL_ATTRIB\r\n"
                 + "uniform vec3 u_uniformNormal3f;\r\n"
@@ -311,20 +311,14 @@ public class FixedFunctionShader {
                 + "#else\r\n"
                 + "    vec3 normal = u_uniformNormal3f;\r\n"
                 + "#endif\r\n"
-                + "    float diffuse = 0.0;\r\n"
                 + "    vec4 light;\r\n"
-                + "#ifdef EAGLER_HAS_GLES_300\r\n"
-                + "    for(int i = 0; i < u_lightsEnabled1i; ++i) {\r\n"
-                + "#else\r\n"
-                + "    for(int i = 0; i < 4; ++i) {\r\n"
-                + "#endif\r\n"
-                + "        light = u_lightsDirections4fv[i];\r\n"
-                + "        diffuse += max(dot(light.xyz, normal), 0.0) * light.w;\r\n"
-                + "#ifndef EAGLER_HAS_GLES_300\r\n"
-                + "        if(i + 1 >= u_lightsEnabled1i) {\r\n"
+                + "    float diffuse = 0.0;\r\n"
+                + "    for(int i = 0; i < 2; ++i) {\r\n"
+                + "        if(i >= u_lightsEnabled1i) {\r\n"
                 + "            break;\r\n"
                 + "        }\r\n"
-                + "#endif\r\n"
+                + "        light = u_lightsDirections4fv[i];\r\n"
+                + "        diffuse += max(dot(light.xyz, normal), 0.0) * light.w;\r\n"
                 + "    }\r\n"
                 + "    color.rgb *= min(u_lightsAmbient3f + vec3(diffuse), 1.0);\r\n"
                 + "#endif\r\n"
@@ -343,7 +337,7 @@ public class FixedFunctionShader {
                 + "    EAGLER_FRAG_COLOR = color;\r\n"
                 + "}\r\n";
 
-        public static final String PRECISION_INT = "lowp";
+        public static final String PRECISION_INT = "mediump";
         public static final String PRECISION_FLOAT = "highp";
         public static final String PRECISION_SAMPLER = "mediump";
 

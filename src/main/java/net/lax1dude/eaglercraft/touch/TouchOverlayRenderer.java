@@ -4,11 +4,10 @@ import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.opengl.GameOverlayFramebuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-
-import net.lax1dude.eaglercraft.ScaledResolution;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.render.Tessellator;
 
 import static net.lax1dude.eaglercraft.lwjgl.opengl.GL11.*;

@@ -118,6 +118,6 @@ public final class WorldRenderer {
 	}
 
 	public final void updateInFrustrum(ClippingHelper var1) {
-	    this.isInFrustrum = var1.isBoundingBoxInFrustrum((float)this.posX, (float)this.posY, (float)this.posZ, (float)(this.posX + this.sizeWidth), (float)(this.posY + this.sizeHeight), (float)(this.posZ + this.sizeDepth));
+	    this.isInFrustrum = var1.checkInFrustrum((float)this.posX, (float)this.posY, (float)this.posZ, (float)(this.posX + this.sizeWidth), (float)(this.posY + this.sizeHeight), (float)(this.posZ + this.sizeDepth));
 	}
 }

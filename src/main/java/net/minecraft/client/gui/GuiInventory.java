@@ -7,6 +7,7 @@ import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.RenderHelper;
+import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.IInventory;
@@ -14,23 +15,17 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.block.Block;
 
 public class GuiInventory extends GuiScreen {
-    private RenderBlocks blockRenderer;
-    private Slot selectedItem;
-    protected int xSize;
-    protected int ySize;
-    protected List slotsList;
+    private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
+    private ItemStack selectedItem = null;
+    protected int xSize = 176;
+    protected int ySize = 166;
+    protected List slotsList = new ArrayList();
 
     public GuiInventory() {
-        this.blockRenderer = new RenderBlocks(Tessellator.instance);
-        this.selectedItem = null;
-        this.xSize = 176;
-        this.ySize = 166;
-        this.slotsList = new ArrayList();
-        this.allowUserInput = true;
     }
 
     public GuiInventory(IInventory var1) {
-        this();
+        this.allowUserInput = true;
 
         int var2;
         for(var2 = 0; var2 < 4; ++var2) {
@@ -75,14 +70,20 @@ public class GuiInventory extends GuiScreen {
 
         for(int var5 = 0; var5 < this.slotsList.size(); ++var5) {
             Slot var6 = (Slot)this.slotsList.get(var5);
-            this.renderItem(Slot.b(var6), var6.slotIndex, var6.xPos, var6.yPos);
+            IInventory var10001 = Slot.a(var6);
+            int var11 = var6.yPos;
+            int var10 = var6.xPos;
+            int var9 = var6.slotIndex;
+            IInventory var8 = var10001;
+            ItemStack var13 = var8.getStackInSlot(var9);
+            this.renderItem(var13, var10, var11);
             if(var6.isAtCursorPos(var1, var2) &&
                (!PointerInputAbstraction.isTouchMode() || primaryTouchPoint != -1)) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
                 int var7 = var6.xPos;
-                int var9 = var6.yPos;
-                drawGradientRect(var7, var9, var7 + 16, var9 + 16, -2130706433, -2130706433);
+                int var12 = var6.yPos;
+                drawGradientRect(var7, var12, var7 + 16, var12 + 16, -2130706433, -2130706433);
                 GL11.glEnable(GL11.GL_LIGHTING);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
@@ -90,10 +91,7 @@ public class GuiInventory extends GuiScreen {
 
         if(this.selectedItem != null) {
             GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-            Slot var8 = this.selectedItem;
-            this.selectedItem = null;
-            this.renderItem(Slot.b(var8), var8.slotIndex, var1 - var3 - 8, var2 - var4 - 8);
-            this.selectedItem = var8;
+            this.renderItem(this.selectedItem, var1 - var3 - 8, var2 - var4 - 8);
         }
 
         GL11.glDisable(GL11.GL_NORMALIZE);
@@ -122,46 +120,36 @@ public class GuiInventory extends GuiScreen {
         this.drawTexturedModalRect(var1, var2, 0, 0, this.xSize, this.ySize);
     }
 
-    private void renderItem(IInventory var1, int var2, int var3, int var4) {
-        ItemStack var5 = var1.getStackInSlot(var2);
-        int var6;
-        if(var5 == null || this.selectedItem != null && this.selectedItem.slotIndex == var2 && Slot.b(this.selectedItem) == var1) {
-            if(var2 > 50) {
-                GL11.glDisable(GL11.GL_LIGHTING);
-                var6 = this.mc.renderEngine.getTexture("/gui/items.png");
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var6);
-                this.drawTexturedModalRect(var3, var4, 240, 63 - var2 << 4, 16, 16);
-                GL11.glEnable(GL11.GL_LIGHTING);
-            }
-
-        } else {
-            if(var5.itemID < 256) {
-                var6 = var5.itemID;
-                var2 = this.mc.renderEngine.getTexture("/terrain.png");
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2);
-                Block var7 = Block.blocksList[var6];
+    private void renderItem(ItemStack var1, int var2, int var3) {
+        if(var1 != null) {
+            int var4;
+            if(var1.itemID < 256) {
+                var4 = var1.itemID;
+                int var5 = this.mc.renderEngine.getTexture("/terrain.png");
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
+                Block var6 = Block.blocksList[var4];
                 GL11.glPushMatrix();
-                GL11.glTranslatef((float)(var3 - 2), (float)(var4 + 3), 0.0F);
+                GL11.glTranslatef((float)(var2 - 2), (float)(var3 + 3), 0.0F);
                 GL11.glScalef(10.0F, 10.0F, 10.0F);
                 GL11.glTranslatef(1.0F, 0.5F, 8.0F);
                 GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.blockRenderer.renderBlockOnInventory(var7);
+                this.blockRenderer.renderBlockOnInventory(var6);
                 GL11.glPopMatrix();
-            } else if(var5.getItem().getIconIndex() >= 0) {
+            } else if(var1.getItem().getIconIndex() >= 0) {
                 GL11.glDisable(GL11.GL_LIGHTING);
-                var6 = this.mc.renderEngine.getTexture("/gui/items.png");
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var6);
-                this.drawTexturedModalRect(var3, var4, var5.getItem().getIconIndex() % 16 << 4, var5.getItem().getIconIndex() / 16 << 4, 16, 16);
+                var4 = this.mc.renderEngine.getTexture("/gui/items.png");
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var4);
+                this.drawTexturedModalRect(var2, var3, var1.getItem().getIconIndex() % 16 << 4, var1.getItem().getIconIndex() / 16 << 4, 16, 16);
                 GL11.glEnable(GL11.GL_LIGHTING);
             }
 
-            if(var5.stackSize > 1) {
-                String var8 = "" + var5.stackSize;
+            if(var1.stackSize > 1) {
+                String var7 = "" + var1.stackSize;
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
-                this.fontRenderer.drawStringWithShadow(var8, var3 + 19 - 2 - this.fontRenderer.getStringWidth(var8), var4 + 6 + 3, 16777215);
+                this.fontRenderer.drawStringWithShadow(var7, var2 + 19 - 2 - this.fontRenderer.getStringWidth(var7), var3 + 6 + 3, 16777215);
                 GL11.glEnable(GL11.GL_LIGHTING);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
@@ -170,56 +158,130 @@ public class GuiInventory extends GuiScreen {
     }
 
     protected final void mouseClicked(int var1, int var2, int var3) {
-        if(var3 == 0) {
-            int var5 = var2;
-            int var4 = var1;
-            GuiInventory var10 = this;
-            int var6 = 0;
+        if(var3 == 0 || var3 == 1) {
+            int var6 = var2;
+            int var5 = var1;
+            GuiInventory var4 = this;
+            int var7 = 0;
 
             Slot var10000;
             while(true) {
-                if(var6 >= var10.slotsList.size()) {
+                if(var7 >= var4.slotsList.size()) {
                     var10000 = null;
                     break;
                 }
 
-                Slot var7 = (Slot)var10.slotsList.get(var6);
-                if(var7.isAtCursorPos(var4, var5)) {
-                    var10000 = var7;
+                Slot var8 = (Slot)var4.slotsList.get(var7);
+                if(var8.isAtCursorPos(var5, var6)) {
+                    var10000 = var8;
                     break;
                 }
 
-                ++var6;
+                ++var7;
             }
 
             Slot var11 = var10000;
             if(var11 != null) {
-                if(var11 == this.selectedItem) {
-                    this.selectedItem = null;
+                ItemStack var12 = var11.getCurrentItemStack();
+                if(var12 == null && this.selectedItem == null) {
                     return;
                 }
 
-                if(Slot.b(var11).getStackInSlot(var11.slotIndex) != null) {
-                    if(this.selectedItem == null) {
-                        this.selectedItem = var11;
+                if(var12 != null && this.selectedItem == null) {
+                    var6 = var3 == 0 ? var12.stackSize : 1;
+                    this.selectedItem = var12.splitStack(var6);
+                    if(var12.stackSize == 0) {
+                        var11.putStack((ItemStack)null);
+                    }
+
+                    var11.onPickupFromSlot();
+                } else if(var12 == null && this.selectedItem != null && var11.isItemValid()) {
+                    var6 = var3 == 0 ? this.selectedItem.stackSize : 1;
+                    if(var6 > Slot.a(var11).getInventoryStackLimit()) {
+                        var6 = Slot.a(var11).getInventoryStackLimit();
+                    }
+
+                    var11.putStack(this.selectedItem.splitStack(var6));
+                    if(this.selectedItem.stackSize == 0) {
+                        this.selectedItem = null;
+                    }
+                } else {
+                    if(var12 == null || this.selectedItem == null || !var11.isItemValid()) {
                         return;
                     }
 
-                    this.selectedItem.putStacks(var11);
-                    return;
-                }
+                    if(var12.itemID != this.selectedItem.itemID) {
+                        if(this.selectedItem.stackSize > Slot.a(var11).getInventoryStackLimit()) {
+                            return;
+                        }
 
-                if(this.selectedItem != null) {
-                    this.selectedItem.putStacks(var11);
-                    this.selectedItem = null;
-                    return;
+                        var11.putStack(this.selectedItem);
+                        this.selectedItem = var12;
+                    } else {
+                        if(var12.itemID != this.selectedItem.itemID) {
+                            return;
+                        }
+
+                        ItemStack var9;
+                        if(var3 != 0) {
+                            if(var3 == 1) {
+                                var6 = 1;
+                                if(1 > Slot.a(var11).getInventoryStackLimit() - var12.stackSize) {
+                                    var6 = Slot.a(var11).getInventoryStackLimit() - var12.stackSize;
+                                }
+
+                                var9 = this.selectedItem;
+                                if(var6 > var9.getItem().getItemStackLimit() - var12.stackSize) {
+                                    var9 = this.selectedItem;
+                                    var6 = var9.getItem().getItemStackLimit() - var12.stackSize;
+                                }
+
+                                this.selectedItem.splitStack(var6);
+                                if(this.selectedItem.stackSize == 0) {
+                                    this.selectedItem = null;
+                                }
+
+                                var12.stackSize += var6;
+                            }
+
+                            return;
+                        }
+
+                        var6 = this.selectedItem.stackSize;
+                        if(var6 > Slot.a(var11).getInventoryStackLimit() - var12.stackSize) {
+                            var6 = Slot.a(var11).getInventoryStackLimit() - var12.stackSize;
+                        }
+
+                        var9 = this.selectedItem;
+                        if(var6 > var9.getItem().getItemStackLimit() - var12.stackSize) {
+                            var9 = this.selectedItem;
+                            var6 = var9.getItem().getItemStackLimit() - var12.stackSize;
+                        }
+
+                        this.selectedItem.splitStack(var6);
+                        if(this.selectedItem.stackSize == 0) {
+                            this.selectedItem = null;
+                        }
+
+                        var12.stackSize += var6;
+                    }
                 }
             } else if(this.selectedItem != null) {
-                var3 = (this.width - this.xSize) / 2;
-                var4 = (this.height - this.ySize) / 2;
-                if(var1 < var3 || var2 < var4 || var1 >= var3 + this.xSize || var2 >= var4 + this.xSize) {
-                    ItemStack var9 = Slot.b(this.selectedItem).decrStackSize(this.selectedItem.slotIndex, 1);
-                    this.mc.thePlayer.dropPlayerItemWithRandomChoice(var9);
+                var5 = (this.width - this.xSize) / 2;
+                var6 = (this.height - this.ySize) / 2;
+                if(var1 < var5 || var2 < var6 || var1 >= var5 + this.xSize || var2 >= var6 + this.xSize) {
+                    EntityPlayerSP var10 = this.mc.thePlayer;
+                    if(var3 == 0) {
+                        var10.dropPlayerItemWithRandomChoice(this.selectedItem);
+                        this.selectedItem = null;
+                    }
+
+                    if(var3 == 1) {
+                        var10.dropPlayerItemWithRandomChoice(this.selectedItem.splitStack(1));
+                        if(this.selectedItem.stackSize == 0) {
+                            this.selectedItem = null;
+                        }
+                    }
                 } else if (PointerInputAbstraction.isTouchMode()) {
                     this.selectedItem = null;
                 }
@@ -231,6 +293,13 @@ public class GuiInventory extends GuiScreen {
     protected final void keyTyped(char var1, int var2) {
         if(var2 == 1 || var2 == this.mc.options.keyBindInventory.keyCode) {
             this.mc.displayGuiScreen((GuiScreen)null);
+        }
+
+    }
+
+    public void onGuiClosed() {
+        if(this.selectedItem != null) {
+            this.mc.thePlayer.dropPlayerItemWithRandomChoice(this.selectedItem);
         }
 
     }

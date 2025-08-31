@@ -237,7 +237,7 @@ public class EntityLiving extends Entity {
 
 	}
 
-    public final void setAI(AI var1) {
+    public final void setEntityAI(AI var1) {
         this.entityAI = var1;
     }
 

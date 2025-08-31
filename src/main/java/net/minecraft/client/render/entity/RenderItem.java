@@ -12,7 +12,7 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.block.Block;
 
 public final class RenderItem extends Render {
-	private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
+	private RenderBlocks renderBlocks = new RenderBlocks(Tessellator.instance);
 	private EaglercraftRandom rand = new EaglercraftRandom();
 
 	public final void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6) {
@@ -58,7 +58,7 @@ public final class RenderItem extends Render {
 					GL11.glTranslatef(var4, var5, var6);
 				}
 
-				var12.blockRenderer.renderBlockOnInventory(Block.blocksList[var7.itemID]);
+				var12.renderBlocks.renderBlockOnInventory(Block.blocksList[var7.itemID]);
 				GL11.glPopMatrix();
 			}
 		} else {

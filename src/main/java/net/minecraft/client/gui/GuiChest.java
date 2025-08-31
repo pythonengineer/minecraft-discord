@@ -11,6 +11,7 @@ public final class GuiChest extends GuiInventory {
     public GuiChest(IInventory var1, IInventory var2) {
         this.upperChestInventory = var1;
         this.lowerChestInventory = var2;
+        this.allowUserInput = false;
         this.inventoryRows = var2.getSizeInventory() / 9;
         this.ySize = 114 + this.inventoryRows * 18;
         int var3 = (this.inventoryRows - 4) * 18;

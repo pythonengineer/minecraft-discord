@@ -7,8 +7,8 @@ import net.minecraft.game.level.material.Material;
 public final class BlockStationary extends BlockFluid {
 	protected BlockStationary(int var1, Material var2) {
 		super(var1, var2);
-		this.movingId0 = var1 - 1;
-		this.stillId0 = var1;
+		this.movingId = var1 - 1;
+		this.stillId = var1;
 		this.setTickOnLoad(false);
 	}
 
@@ -39,19 +39,19 @@ public final class BlockStationary extends BlockFluid {
 
 		if(var5 != 0) {
 			Material var7 = Block.blocksList[var5].getBlockMaterial();
-			if(this.material == Material.water && var7 == Material.lava || var7 == Material.water && this.material == Material.lava) {
+			if(this.liquidMaterial == Material.water && var7 == Material.lava || var7 == Material.water && this.liquidMaterial == Material.lava) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
 				return;
 			}
 		}
 
-		if(Block.fire.canBlockCatchFire(var5)) {
+		if(Block.fire.getChanceOfNeighborsEncouragingFire(var5)) {
 			var6 = true;
 		}
 
 		if(var6) {
-			var1.setTileNoUpdate(var2, var3, var4, this.movingId0);
-			var1.scheduleBlockUpdate(var2, var3, var4, this.movingId0);
+			var1.setTileNoUpdate(var2, var3, var4, this.movingId);
+			var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
 		}
 
 	}

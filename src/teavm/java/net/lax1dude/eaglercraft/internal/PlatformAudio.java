@@ -11,6 +11,8 @@ import org.teavm.interop.AsyncCallback;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.dom.events.EventListener;
+import org.teavm.jso.dom.html.HTMLAudioElement;
+import org.teavm.jso.dom.html.HTMLSourceElement;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
 import org.teavm.jso.webaudio.AudioBuffer;
@@ -27,6 +29,7 @@ import org.teavm.jso.webaudio.PannerNode;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.teavm.JOrbisAudioBufferDecoder;
+import net.lax1dude.eaglercraft.internal.teavm.TeaVMBlobURLManager;
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMClientConfigAdapter;
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMUtils;
 import net.lax1dude.eaglercraft.log4j.LogManager;
@@ -55,6 +58,7 @@ public class PlatformAudio {
     static final Logger logger = LogManager.getLogger("BrowserAudio");
 
     static AudioContext audioctx = null;
+    static HTMLAudioElement silenceElement = null;
     private static final Map<String, BrowserAudioResource> soundCache = new HashMap<>();
     private static final List<BrowserAudioHandle> activeSounds = new LinkedList<>();
 
@@ -236,6 +240,41 @@ public class PlatformAudio {
 
         PlatformInput.clearEventBuffers();
 
+        if (((TeaVMClientConfigAdapter)PlatformRuntime.getClientConfigAdapter()).isKeepAliveHackTeaVM()) {
+            byte[] silenceFile = PlatformAssets.getResourceBytes("/assets/eagler/silence_loop.wav");
+            if (silenceFile != null) {
+                HTMLAudioElement audio = (HTMLAudioElement) PlatformRuntime.doc.createElement("audio");
+                audio.getClassList().add("_eaglercraftX_keepalive_hack");
+                audio.setAttribute("style", "display:none;");
+                audio.setAutoplay(false);
+                audio.setLoop(true);
+                audio.addEventListener("seeked", (e) -> {
+                    // NOP, wakes up the browser's event loop
+                });
+                audio.addEventListener("canplay", (e) -> {
+                    if (PlatformRuntime.doc != null && silenceElement != null &&
+                            !PlatformInput.getVisibilityState(PlatformRuntime.doc)) {
+                        silenceElement.play();
+                    }
+                });
+                HTMLSourceElement source = (HTMLSourceElement) PlatformRuntime.doc.createElement("source");
+                source.setType("audio/wav");
+                source.setSrc(TeaVMBlobURLManager.registerNewURLByte(silenceFile, "audio/wav").toExternalForm());
+                audio.appendChild(source);
+                PlatformRuntime.parent.appendChild(audio);
+                silenceElement = audio;
+            }
+        }
+    }
+
+    static void handleVisibilityChange() {
+        if (silenceElement != null) {
+            if (!PlatformInput.getVisibilityState(PlatformRuntime.doc)) {
+                silenceElement.play();
+            } else {
+                silenceElement.pause();
+            }
+        }
     }
 
     @JSBody(params = { "ctx" }, script = "var tmpBuf = ctx.createBuffer(2, 16, 16000); return (typeof tmpBuf.copyToChannel === \"function\");")
@@ -520,6 +559,10 @@ public class PlatformAudio {
             audioctx.close();
             audioctx = null;
         }
+        if(silenceElement != null) {
+            silenceElement.pause();
+            silenceElement.delete();
+            silenceElement = null;
+        }
     }
-
 }
