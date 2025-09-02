@@ -1,7 +1,6 @@
 package net.minecraft.client.gui;
 
 import net.minecraft.game.IInventory;
-import net.minecraft.game.item.ItemStack;
 
 public final class SlotCrafting extends Slot {
     private GuiCrafting craftMatrix;
@@ -17,7 +16,9 @@ public final class SlotCrafting extends Slot {
 
     public final void onPickupFromSlot() {
         for(int var1 = 0; var1 < 9; ++var1) {
-            GuiCrafting.a(this.craftMatrix).setInventorySlotContents(var1, (ItemStack)null);
+            if(GuiCrafting.a(this.craftMatrix).getStackInSlot(var1) != null) {
+                GuiCrafting.a(this.craftMatrix).decrStackSize(var1, 1);
+            }
         }
 
     }

@@ -15,7 +15,8 @@ public final class RenderMD3 extends Render {
 		this.shadowSize = 0.5F;
 
 		try {
-			this.model[0] = new MD3Model((new MD3Loader()).loadModel("/test2.md3"));
+            this.model[0] = new MD3Model((new MD3Loader()).loadModel("/mcexport01.MD3"));
+            System.out.println("Animation frames: " + this.model[0].getTotalFrames());
 		} catch (IOException var2) {
 			var2.printStackTrace();
 		}
@@ -34,12 +35,23 @@ public final class RenderMD3 extends Render {
 		try {
 			var2 = var9.prevRenderYawOffset + (var9.renderYawOffset - var9.prevRenderYawOffset) * var6;
 			GL11.glTranslatef(var3, var4, var5);
-			var8.loadTexture("/cube-nes.png");
+            if(var9.af == 0) {
+                var8.loadTexture("/mcexport2.png");
+            }
+
+            if(var9.af == 1) {
+                var8.loadTexture("/mcexport.png");
+            }
+
 			GL11.glRotatef(-var2 + 180.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glScalef(0.02F, -0.02F, 0.02F);
+            var2 = ((float)var9.ticksExisted + var6) * var9.unused1;
+            int var11 = (int)var2 % var8.model[0].getTotalFrames();
+            int var12 = (var11 + 1) % var8.model[0].getTotalFrames();
+            var2 -= (float)((int)var2);
 			GL11.glEnable(GL11.GL_NORMALIZE);
-			var8.model[0].renderModelVertices(0, 0, 0.0F);
+            var8.model[0].renderModelVertices(var11, var12, var2);
 			GL11.glDisable(GL11.GL_NORMALIZE);
 		} catch (Exception var7) {
 			var7.printStackTrace();

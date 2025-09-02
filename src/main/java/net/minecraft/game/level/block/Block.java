@@ -245,7 +245,7 @@ public class Block {
                 float var9 = var1.random.nextFloat() * 0.7F + 0.15F;
                 float var10 = var1.random.nextFloat() * 0.7F + 0.15F;
                 EntityItem var11 = new EntityItem(var1, (float)var2 + var8, (float)var3 + var9, (float)var4 + var10, new ItemStack(this.idDropped()));
-                var11.delayBeforeCanPickup = 20;
+                var11.delayBeforeCanPickup = 10;
                 var1.spawnEntityInWorld(var11);
             }
         }
@@ -370,6 +370,10 @@ public class Block {
     }
 
     public boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
+        return false;
+    }
+
+    public boolean onBlockPlaced(World var1, float var2, float var3, float var4) {
         return false;
     }
 

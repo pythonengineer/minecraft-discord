@@ -129,6 +129,22 @@ public class EntityItem extends Entity {
 
 	}
 
+    protected final void dealFireDamage(int var1) {
+        float var5 = this.posZ;
+        float var4 = this.posY;
+        float var3 = this.posX;
+        World var2 = this.worldObj;
+        ItemStack var6 = this.item;
+        if(var6.getItem().onPlaced(var2, var3, var4, var5)) {
+            var6.stackSize = 0;
+        }
+
+        if(this.item.stackSize == 0) {
+            this.setEntityDead();
+        }
+
+    }
+
 	public final void attackEntityFrom(Entity var1, int var2) {
 		this.health -= var2;
 		if(this.health <= 0) {

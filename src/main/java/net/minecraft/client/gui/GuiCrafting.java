@@ -57,7 +57,7 @@ public final class GuiCrafting extends GuiInventory {
             }
         }
 
-        this.iInventory.setInventorySlotContents(0, CraftingManager.addRecipe(var1));
+        this.iInventory.setInventorySlotContents(0, CraftingManager.getInstance().addRecipe(var1));
     }
 
     protected final void drawGuiContainerForegroundLayer() {

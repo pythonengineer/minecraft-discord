@@ -62,4 +62,8 @@ public final class ItemBlock extends Item {
             }
         }
     }
+
+    public final boolean onPlaced(World var1, float var2, float var3, float var4) {
+        return Block.blocksList[this.blockID].onBlockPlaced(var1, var2, var3, var4);
+    }
 }

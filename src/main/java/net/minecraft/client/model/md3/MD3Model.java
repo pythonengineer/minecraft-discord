@@ -19,20 +19,23 @@ public final class MD3Model {
         this.vertices = var1;
     }
 
+    public final int getTotalFrames() {
+        return this.vertices.totalFrames;
+    }
+
     public final void renderModelVertices(int var1, int var2, float var3) {
         if(this.displayList == 0) {
-            MD3Model var8 = this;
             this.displayList = GL11.glGenLists(this.vertices.totalFrames);
 
-            for(var2 = 0; var2 < var8.vertices.totalFrames; ++var2) {
-                GL11.glNewList(var8.displayList + var2, GL11.GL_COMPILE);
+            for(int var10 = 0; var10 < this.vertices.totalFrames; ++var10) {
+                GL11.glNewList(this.displayList + var10, GL11.GL_COMPILE);
                 Tessellator tessellator = Tessellator.instance;
 
-                for(int var9 = 0; var9 < var8.vertices.buffersMD3.length; ++var9) {
-                    MD3Buffers var10000 = var8.vertices.buffersMD3[var9];
+                for(int var9 = 0; var9 < this.vertices.buffersMD3.length; ++var9) {
+                    MD3Buffers var10000 = this.vertices.buffersMD3[var9];
                     float var7 = 0.0F;
                     MD3Buffers var4 = var10000;
-                    var4.setAndClearBuffers(var2, var2, var7);
+                    var4.setAndClearBuffers(var10, var10, var7);
                     var4.vertices.position(0);
                     var4.triangles.position(0);
                     var4.normals.position(0);
@@ -50,6 +53,6 @@ public final class MD3Model {
             }
         }
 
-        GL11.glCallList(this.displayList);
+        GL11.glCallList(this.displayList + var1);
     }
 }

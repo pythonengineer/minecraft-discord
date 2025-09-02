@@ -8,8 +8,20 @@ public final class ItemStack {
     public int animationsToGo;
     public int itemID;
 
+    public ItemStack(Block var1) {
+        this((Block)var1, 1);
+    }
+
     public ItemStack(Block var1, int var2) {
         this(var1.blockID, var2);
+    }
+
+    public ItemStack(Item var1) {
+        this((Item)var1, 1);
+    }
+
+    public ItemStack(Item var1, int var2) {
+        this(var1.shiftedIndex, var2);
     }
 
     public ItemStack(int var1) {

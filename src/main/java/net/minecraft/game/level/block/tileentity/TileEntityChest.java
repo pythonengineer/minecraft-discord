@@ -18,6 +18,10 @@ public final class TileEntityChest extends TileEntity implements IInventory {
 
     public final void setInventorySlotContents(int var1, ItemStack var2) {
         this.chestContents[var1] = var2;
+        if(var2 != null && var2.stackSize > 64) {
+            var2.stackSize = 64;
+        }
+
     }
 
     public final String getInvName() {
@@ -53,6 +57,6 @@ public final class TileEntityChest extends TileEntity implements IInventory {
     }
 
     public final int getInventoryStackLimit() {
-        return 100;
+        return 64;
     }
 }

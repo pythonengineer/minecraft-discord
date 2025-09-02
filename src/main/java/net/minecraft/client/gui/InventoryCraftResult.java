@@ -27,7 +27,7 @@ class InventoryCraftResult implements IInventory {
     }
 
     public final int getInventoryStackLimit() {
-        return 100;
+        return 64;
     }
 
     InventoryCraftResult(GuiCrafting var1) {

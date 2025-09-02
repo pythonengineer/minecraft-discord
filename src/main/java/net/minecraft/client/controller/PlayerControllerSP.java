@@ -2,7 +2,6 @@ package net.minecraft.client.controller;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -19,85 +18,46 @@ public final class PlayerControllerSP extends PlayerController {
 	private int prevBlockDamage = 0;
 	private int blockDestroySoundCounter = 0;
 	private MobSpawner mobSpawner;
-    private Block[] mainChestArray = new Block[]{Block.stone, Block.grass, Block.cobblestone, Block.planks, Block.sapling, Block.bedrock, Block.sand, Block.gravel, Block.oreGold, Block.oreIron, Block.oreCoal, Block.wood, Block.leaves, Block.sponge, Block.glass, Block.plantYellow, Block.plantRed, Block.mushroomBrown, Block.mushroomRed, Block.blockGold, Block.blockSteel, Block.stairSingle, Block.brick, Block.tnt, Block.bookShelf, Block.cobblestoneMossy, Block.obsidian, Block.torch, Block.waterSource, Block.lavaSource, Block.chest};
-    private Block[] woolChestArray = new Block[]{Block.clothRed, Block.clothOrange, Block.clothYellow, Block.clothChartreuse, Block.clothGreen, Block.clothSpringGreen, Block.clothCyan, Block.clothCapri, Block.clothUltramarine, Block.clothViolet, Block.clothPurple, Block.clothMagenta, Block.clothRose, Block.clothDarkGray, Block.clothGray, Block.clothWhite};
 
 	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
+        Block[] var10000 = new Block[]{Block.stone, Block.grass, Block.cobblestone, Block.planks, Block.sapling, Block.bedrock, Block.sand, Block.gravel, Block.oreGold, Block.oreIron, Block.oreCoal, Block.wood, Block.leaves, Block.sponge, Block.glass, Block.plantYellow, Block.plantRed, Block.mushroomBrown, Block.mushroomRed, Block.blockGold, Block.blockSteel, Block.stairSingle, Block.brick, Block.tnt, Block.bookShelf, Block.cobblestoneMossy, Block.obsidian, Block.torch, Block.waterSource, Block.lavaSource, Block.chest};
+        var10000 = new Block[]{Block.clothRed, Block.clothOrange, Block.clothYellow, Block.clothChartreuse, Block.clothGreen, Block.clothSpringGreen, Block.clothCyan, Block.clothCapri, Block.clothUltramarine, Block.clothViolet, Block.clothPurple, Block.clothMagenta, Block.clothRose, Block.clothDarkGray, Block.clothGray, Block.clothWhite};
 	}
 
 	public final void flipPlayer(EntityPlayer var1) {
-		int var2 = (int)var1.posX;
-		int var3 = (int)var1.posY;
-		int var9 = (int)var1.posZ;
+        int var2 = (int)var1.posX;
+        int var3 = (int)var1.posY;
+        int var4 = (int)var1.posZ;
 
-		for(int var4 = var2 - 3; var4 <= var2 + 3; ++var4) {
-			for(int var5 = var3 - 2; var5 <= var3 + 2; ++var5) {
-				for(int var6 = var9 - 3; var6 <= var9 + 3; ++var6) {
-					int var7 = var5 < var3 - 1 ? Block.obsidian.blockID : 0;
-					if(var4 == var2 - 3 || var6 == var9 - 3 || var4 == var2 + 3 || var6 == var9 + 3 || var5 == var3 - 2 || var5 == var3 + 2) {
-						var7 = Block.cobblestoneMossy.blockID;
-					}
+        for(int var5 = var2 - 3; var5 <= var2 + 3; ++var5) {
+            for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
+                for(int var7 = var4 - 3; var7 <= var4 + 3; ++var7) {
+                    int var8 = var6 < var3 - 1 ? Block.obsidian.blockID : 0;
+                    if(var5 == var2 - 3 || var7 == var4 - 3 || var5 == var2 + 3 || var7 == var4 + 3 || var6 == var3 - 2 || var6 == var3 + 2) {
+                        var8 = Block.cobblestoneMossy.blockID;
+                    }
 
-					if(var5 == var3 && var6 == var9 && (var4 == var2 - 3 + 1 || var4 == var2 + 3 - 1)) {
-						var7 = Block.torch.blockID;
-					}
+                    if(var6 == var3 && var7 == var4 && (var5 == var2 - 3 + 1 || var5 == var2 + 3 - 1)) {
+                        var8 = Block.torch.blockID;
+                    }
 
-					if(var6 == var9 - 3 && var4 == var2 && var5 >= var3 - 1 && var5 <= var3) {
-						var7 = 0;
-					}
+                    if(var7 == var4 - 3 && var5 == var2 && var6 >= var3 - 1 && var6 <= var3) {
+                        var8 = 0;
+                    }
 
-					this.mc.theWorld.setBlockWithNotify(var4, var5, var6, var7);
-				}
-			}
-		}
-
-		this.mc.theWorld.setBlockWithNotify(var2 - 2, var3 - 1, var9 - 2, Block.chest.blockID);
-		IInventory var12 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 - 2, var3 - 1, var9 - 2);
-		this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var9 - 2, Block.chest.blockID);
-		IInventory var13 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var9 - 2);
-		this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var9 - 1, Block.chest.blockID);
-		IInventory var14 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var9 - 1);
-		this.mc.theWorld.setBlockWithNotify(var2 - 1, var3 - 1, var9 + 2, Block.chest.blockID);
-		IInventory var15 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 - 1, var3 - 1, var9 + 2);
-		this.mc.theWorld.setBlockWithNotify(var2, var3 - 1, var9 + 2, Block.chest.blockID);
-		IInventory var10 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2, var3 - 1, var9 + 2);
-        this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var9 + 1, Block.chest.blockID);
-        IInventory var11 = (IInventory)this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var9 + 1);
-		var2 = 0;
-
-		int var8;
-		for(var3 = 256; var3 < 1024 && var2 < 27; ++var3) {
-			if(Item.itemsList[var3] != null) {
-				var8 = Item.itemsList[var3].getItemStackLimit();
-				var12.setInventorySlotContents(var2, new ItemStack(var3, var8));
-				++var2;
-			}
-		}
-
-        ItemStack var16;
-		for(var3 = 0; var3 < 27; ++var3) {
-			var8 = Block.tnt.blockID;
-			var16 = new ItemStack(var8, Item.itemsList[var8].getItemStackLimit());
-			var15.setInventorySlotContents(var3, var16);
-            var16 = new ItemStack(var8, Item.itemsList[var8].getItemStackLimit());
-			var10.setInventorySlotContents(var3, var16);
-		}
-
-		for(var3 = 0; var3 < this.mainChestArray.length && var3 < 54; ++var3) {
-			var16 = new ItemStack(this.mainChestArray[var3], Item.itemsList[this.mainChestArray[var3].blockID].getItemStackLimit());
-			if(var3 >= 27) {
-				var14.setInventorySlotContents(var3 - 27, var16);
-			} else {
-				var13.setInventorySlotContents(var3, var16);
-			}
-		}
-
-        for(var3 = 0; var3 < this.woolChestArray.length && var3 < 54; ++var3) {
-            var16 = new ItemStack(this.woolChestArray[var3], Item.itemsList[this.woolChestArray[var3].blockID].getItemStackLimit());
-            var11.setInventorySlotContents(var3, var16);
+                    this.mc.theWorld.setBlockWithNotify(var5, var6, var7, var8);
+                }
+            }
         }
 
+        this.mc.theWorld.setBlockWithNotify(var2 - 2, var3 - 1, var4 - 2, Block.chest.blockID);
+        this.mc.theWorld.getBlockTileEntity(var2 - 2, var3 - 1, var4 - 2);
+        this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var4 - 2, Block.chest.blockID);
+        this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var4 - 2);
+        this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var4 - 1, Block.chest.blockID);
+        this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var4 - 1);
+        var1.inventory.mainInventory[8] = new ItemStack(Item.flintSteel);
 	}
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {

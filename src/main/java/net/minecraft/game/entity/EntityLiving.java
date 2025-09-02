@@ -25,6 +25,7 @@ public class EntityLiving extends Entity {
 	protected AI entityAI = null;
 	public int unused0 = -1;
 	public float unused1 = (float)(Math.random() * (double)0.9F + (double)0.1F);
+	public int af = this.rand.nextInt(2);
 
 	public EntityLiving(World var1) {
 		super(var1);

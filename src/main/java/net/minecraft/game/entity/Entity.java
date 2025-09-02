@@ -299,7 +299,7 @@ public abstract class Entity {
             this.ySize *= 0.4F;
             boolean var20 = this.handleWaterMovement();
             if(this.worldObj.isBoundingBoxBurning(this.boundingBox)) {
-                this.attackEntityFrom((Entity)null, 1);
+                this.dealFireDamage(1);
                 if(!var20) {
                     ++this.fire;
                     if(this.fire == 0) {
@@ -316,6 +316,10 @@ public abstract class Entity {
             }
 
         }
+    }
+
+    protected void dealFireDamage(int var1) {
+        this.attackEntityFrom((Entity)null, 1);
     }
 
 	protected void fall(float var1) {

@@ -68,7 +68,7 @@ public final class InventoryPlayer implements IInventory {
 
             if(var5.mainInventory[var7] != null && var5.mainInventory[var7].itemID == var6) {
                 var8 = var5.mainInventory[var7];
-                if(var5.mainInventory[var7].stackSize < var8.getItem().getItemStackLimit() && var5.mainInventory[var7].stackSize < 50) {
+                if(var5.mainInventory[var7].stackSize < var8.getItem().getItemStackLimit() && var5.mainInventory[var7].stackSize < 64) {
                     var10001 = var7;
                     break;
                 }
@@ -96,8 +96,8 @@ public final class InventoryPlayer implements IInventory {
                 var3 = var8.getItem().getItemStackLimit() - this.mainInventory[var9].stackSize;
             }
 
-            if(var3 > 50 - this.mainInventory[var9].stackSize) {
-                var3 = 50 - this.mainInventory[var9].stackSize;
+            if(var3 > 64 - this.mainInventory[var9].stackSize) {
+                var3 = 64 - this.mainInventory[var9].stackSize;
             }
 
             if(var3 == 0) {
@@ -161,6 +161,6 @@ public final class InventoryPlayer implements IInventory {
     }
 
     public final int getInventoryStackLimit() {
-        return 50;
+        return 64;
     }
 }
