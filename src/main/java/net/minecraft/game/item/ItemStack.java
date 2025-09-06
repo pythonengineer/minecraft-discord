@@ -54,4 +54,9 @@ public final class ItemStack {
         var1.setByte("Count", (byte)this.stackSize);
         return var1;
     }
+
+    public ItemStack copy() {
+        ItemStack itemstack = new ItemStack(this.itemID, this.stackSize);
+        return itemstack;
+    }
 }

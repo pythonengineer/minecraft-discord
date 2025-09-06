@@ -46,17 +46,22 @@ public final class RenderGlobal implements IWorldAccess {
     private RenderBlocks globalRenderBlocks;
     public RenderManager renderManager = new RenderManager();
 	private int[] dummyBuf50k = new int['\uc350'];
-    private int cloudOffsetX = 0;
-	private float prevSortX = -9999.0F;
-	private float prevSortY = -9999.0F;
-	private float prevSortZ = -9999.0F;
+    private int cloudOffsetX;
+    private float prevSortX;
+    private float prevSortY;
+    private float prevSortZ;
 	public float damagePartialTime;
 
 	public RenderGlobal(Minecraft var1, RenderEngine var2) {
+        BufferUtils.createIntBuffer(64);
+        this.cloudOffsetX = 0;
+        this.prevSortX = -9999.0F;
+        this.prevSortY = -9999.0F;
+        this.prevSortZ = -9999.0F;
 		this.mc = var1;
 		this.renderEngine = var2;
 		this.glGenList = GL11.glGenLists(2);
-		this.glRenderListBase = GL11.glGenLists(4096 << 6 << 1);
+        this.glRenderListBase = GL11.glGenLists(6291456);
 	}
 
     public final void changeWorld(World var1) {
@@ -83,9 +88,9 @@ public final class RenderGlobal implements IWorldAccess {
 			}
 		}
 
-		this.renderChunksWide = this.worldObj.width / 16;
-		this.renderChunksTall = this.worldObj.height / 16;
-		this.renderChunksDeep = this.worldObj.length / 16;
+		this.renderChunksWide = this.worldObj.width / 8;
+		this.renderChunksTall = this.worldObj.height / 8;
+		this.renderChunksDeep = this.worldObj.length / 8;
 		this.worldRenderers = new WorldRenderer[this.renderChunksWide * this.renderChunksTall * this.renderChunksDeep];
 		this.sortedWorldRenderers = new WorldRenderer[this.renderChunksWide * this.renderChunksTall * this.renderChunksDeep];
 		var1 = 0;
@@ -95,9 +100,9 @@ public final class RenderGlobal implements IWorldAccess {
 		for(var2 = 0; var2 < this.renderChunksWide; ++var2) {
 			for(int var3 = 0; var3 < this.renderChunksTall; ++var3) {
 				for(var4 = 0; var4 < this.renderChunksDeep; ++var4) {
-					this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = new WorldRenderer(this.worldObj, var2 << 4, var3 << 4, var4 << 4, 16, this.glRenderListBase + var1);
-					this.sortedWorldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2];
-					var1 += 2;
+                    this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = new WorldRenderer(this.worldObj, var2 << 3, var3 << 3, var4 << 3, 8, this.glRenderListBase + var1);
+                    this.sortedWorldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2];
+                    var1 += 3;
 				}
 			}
 		}
@@ -240,7 +245,7 @@ public final class RenderGlobal implements IWorldAccess {
 		float var3 = var1.posX - this.prevSortX;
 		float var4 = var1.posY - this.prevSortY;
 		float var5 = var1.posZ - this.prevSortZ;
-		if(var3 * var3 + var4 * var4 + var5 * var5 > 64.0F) {
+		if(var3 * var3 + var4 * var4 + var5 * var5 > 16.0F) {
 			this.prevSortX = var1.posX;
 			this.prevSortY = var1.posY;
 			this.prevSortZ = var1.posZ;
@@ -250,14 +255,15 @@ public final class RenderGlobal implements IWorldAccess {
 		int var6 = 0;
 
 		for(int var7 = 0; var7 < this.sortedWorldRenderers.length; ++var7) {
-			var6 = this.sortedWorldRenderers[var7].getGLCallListForPass(this.dummyBuf50k, var6, var2);
+            if(this.sortedWorldRenderers[var7].isInFrustrum) {
+                var6 = this.sortedWorldRenderers[var7].getGLCallListForPass(this.dummyBuf50k, var6, var2);
+            }
 		}
 
 		this.renderIntBuffer.clear();
 		this.renderIntBuffer.put(this.dummyBuf50k, 0, var6);
 		this.renderIntBuffer.flip();
 		if(this.renderIntBuffer.remaining() > 0) {
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png"));
 			GL11.glCallLists(this.renderIntBuffer);
 		}
 
@@ -452,12 +458,12 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     private void markBlocksForUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
-		var1 /= 16;
-		var2 /= 16;
-		var3 /= 16;
-		var4 /= 16;
-		var5 /= 16;
-		var6 /= 16;
+		var1 /= 8;
+		var2 /= 8;
+		var3 /= 8;
+		var4 /= 8;
+		var5 /= 8;
+		var6 /= 8;
 		if(var1 < 0) {
 			var1 = 0;
 		}

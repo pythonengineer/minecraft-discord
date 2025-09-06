@@ -11,7 +11,7 @@ import net.minecraft.client.render.Tessellator;
 public final class MD3Model {
     private MD3Vertices vertices;
     private boolean unknownMD3Bool = false;
-    private int displayList = 0;
+    private int frame = 0;
 
     public MD3Model(MD3Vertices var1) {
         new HashMap();
@@ -24,11 +24,11 @@ public final class MD3Model {
     }
 
     public final void renderModelVertices(int var1, int var2, float var3) {
-        if(this.displayList == 0) {
-            this.displayList = GL11.glGenLists(this.vertices.totalFrames);
+        if(this.frame == 0) {
+            this.frame = GL11.glGenLists(this.vertices.totalFrames);
 
             for(int var10 = 0; var10 < this.vertices.totalFrames; ++var10) {
-                GL11.glNewList(this.displayList + var10, GL11.GL_COMPILE);
+                GL11.glNewList(this.frame + var10, GL11.GL_COMPILE);
                 Tessellator tessellator = Tessellator.instance;
 
                 for(int var9 = 0; var9 < this.vertices.buffersMD3.length; ++var9) {
@@ -53,6 +53,6 @@ public final class MD3Model {
             }
         }
 
-        GL11.glCallList(this.displayList + var1);
+        GL11.glCallList(this.frame + var1);
     }
 }

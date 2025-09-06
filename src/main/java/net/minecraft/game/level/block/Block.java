@@ -83,6 +83,7 @@ public class Block {
     public static final Block cog;
     public static final Block oreDiamond;
     public static final Block blockDiamond;
+    public static final Block workbench;
     public int blockIndexInTexture;
     public final int blockID;
     private float hardness;
@@ -647,6 +648,11 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         blockDiamond = var0;
+        var10000 = (new BlockWorkbench(58)).setHardness(2.5F);
+        var1 = soundWoodFootstep;
+        var0 = var10000;
+        var0.stepSound = var1;
+        workbench = var0;
 
         for(int var2 = 0; var2 < 256; ++var2) {
             if(blocksList[var2] != null) {

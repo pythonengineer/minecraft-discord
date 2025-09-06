@@ -23,14 +23,13 @@ import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.controller.PlayerControllerSP;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiCrafting;
 import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiInventory;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.container.GuiInventory;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromOptions;
@@ -56,6 +55,7 @@ public final class Minecraft implements Runnable {
 	private boolean fullScreen = false;
 	public int displayWidth;
 	public int displayHeight;
+    private OpenGlCapsChecker glCapabilities;
 	private Timer timer = new Timer(20.0F);
 	public World theWorld;
 	public RenderGlobal renderGlobal;
@@ -79,7 +79,7 @@ public final class Minecraft implements Runnable {
 	public MovingObjectPosition objectMouseOver;
 	public GameSettings options;
     public SoundManager sndManager;
-    private String server;
+    private String serverIp;
     private TextureWaterFX textureWaterFX;
     private TextureLavaFX textureLavaFX;
     volatile boolean running;
@@ -98,7 +98,7 @@ public final class Minecraft implements Runnable {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
         this.sndManager = new SoundManager();
-		this.server = null;
+		this.serverIp = null;
         this.textureWaterFX = new TextureWaterFX();
         this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -115,7 +115,7 @@ public final class Minecraft implements Runnable {
 	}
 
     public final void setServer(String var1, int var2) {
-        this.server = var1;
+        this.serverIp = var1;
     }
 
 	public final void displayGuiScreen(GuiScreen var1) {
@@ -195,6 +195,7 @@ public final class Minecraft implements Runnable {
 			GL11.glLoadIdentity();
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
+            this.glCapabilities = new OpenGlCapsChecker();
 			this.renderEngine = new RenderEngine(this.options);
             this.renderEngine.registerTextureFX(this.textureLavaFX);
             this.renderEngine.registerTextureFX(this.textureWaterFX);
@@ -214,7 +215,7 @@ public final class Minecraft implements Runnable {
             this.scaledResolution = new ScaledResolution(this);
             PointerInputAbstraction.init(this);
 
-			if(this.server != null && this.session != null) {
+			if(this.serverIp != null && this.session != null) {
 				World var43 = new World();
 				var43.generate(8, 8, 8, new byte[512]);
 				this.setLevel(var43);
@@ -253,6 +254,7 @@ public final class Minecraft implements Runnable {
                     Display.checkContextLost();
 
                     PointerInputAbstraction.runGameLoop();
+                    this.options.touchscreen = PointerInputAbstraction.isTouchMode();
 
 					for(int var38 = 0; var38 < this.timer.elapsedTicks; ++var38) {
 						++this.ticksRan;
@@ -451,17 +453,17 @@ public final class Minecraft implements Runnable {
                 this.rightClickDelayTimer = 4;
             }
 
-            World var4;
+            int var3;
+            World var5;
             if(var1 == 1) {
                 ItemStack var2 = this.thePlayer.inventory.getCurrentItem();
                 if(var2 != null) {
-                    EntityPlayerSP var5 = this.thePlayer;
-                    var4 = this.theWorld;
-                    if(var2.getItem().onItemRightClick(var2, var4, var5)) {
-                        if(var2.stackSize == 0) {
-                            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-                        }
-
+                    var3 = var2.stackSize;
+                    EntityPlayerSP var7 = this.thePlayer;
+                    var5 = this.theWorld;
+                    ItemStack var4 = var2.getItem().onItemRightClick(var2, var5, var7);
+                    if(var4 != var2 || var4 != null && var4.stackSize != var3) {
+                        this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = var4;
                         this.entityRenderer.itemRenderer.resetEquippedProgress();
                     }
                 }
@@ -480,7 +482,7 @@ public final class Minecraft implements Runnable {
                     }
                 } else if(this.objectMouseOver.typeOfHit == 0) {
                     int var10 = this.objectMouseOver.blockX;
-                    int var3 = this.objectMouseOver.blockY;
+                    var3 = this.objectMouseOver.blockY;
                     int var11 = this.objectMouseOver.blockZ;
                     int var12 = this.objectMouseOver.sideHit;
                     Block var6 = Block.blocksList[this.theWorld.getBlockId(var10, var3, var11)];
@@ -502,9 +504,9 @@ public final class Minecraft implements Runnable {
                         }
 
                         var13 = var9.stackSize;
-                        int var7 = var11;
-                        var4 = this.theWorld;
-                        var9.getItem().onItemUse(var9, var4, var10, var3, var7, var12);
+                        int var8 = var12;
+                        var5 = this.theWorld;
+                        var9.getItem().onItemUse(var9, var5, var10, var3, var11, var8);
                         if(var9.stackSize == 0) {
                             this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
                             return;
@@ -743,10 +745,6 @@ public final class Minecraft implements Runnable {
 
                             if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
                                 this.displayGuiScreen(new GuiInventory(this.thePlayer.inventory));
-                            }
-
-                            if(Keyboard.getEventKey() == Keyboard.KEY_B) {
-                                this.displayGuiScreen(new GuiCrafting(this.thePlayer.inventory));
                             }
 
                             if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {

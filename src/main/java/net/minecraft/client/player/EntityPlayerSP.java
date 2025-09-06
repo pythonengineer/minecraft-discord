@@ -3,7 +3,8 @@ package net.minecraft.client.player;
 import com.mojang.nbt.NBTTagCompound;
 import com.mojang.nbt.NBTTagList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChest;
+import net.minecraft.client.gui.container.GuiChest;
+import net.minecraft.client.gui.container.GuiCrafting;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
@@ -65,4 +66,8 @@ public class EntityPlayerSP extends EntityPlayer {
 	public final void displayGUIChest(IInventory var1) {
 		this.mc.displayGuiScreen(new GuiChest(this.inventory, var1));
 	}
+
+    public final void displayWorkbenchGUI() {
+        this.mc.displayGuiScreen(new GuiCrafting(this.inventory));
+    }
 }

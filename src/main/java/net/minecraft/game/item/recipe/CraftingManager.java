@@ -1,6 +1,7 @@
 package net.minecraft.game.item.recipe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import net.minecraft.game.item.Item;
@@ -16,64 +17,27 @@ public final class CraftingManager {
 	}
 
 	private CraftingManager() {
-		for(int var1 = 0; var1 < 4; ++var1) {
-			Object var2 = null;
-			if(var1 == 0) {
-				var2 = Block.planks;
-			}
-
-			if(var1 == 1) {
-				var2 = Block.cobblestone;
-			}
-
-			if(var1 == 2) {
-				var2 = Item.ingotIron;
-			}
-
-			if(var1 == 3) {
-				var2 = Item.diamond;
-			}
-
-			Item var3 = null;
-			Item var4 = null;
-			Item var5 = null;
-			Item var6 = null;
-			if(var1 == 0) {
-				var3 = Item.pickaxeWood;
-				var4 = Item.shovelWood;
-				var5 = Item.axeWood;
-				var6 = Item.swordWood;
-			} else if(var1 == 1) {
-				var3 = Item.pickaxeStone;
-				var4 = Item.shovelStone;
-				var5 = Item.axeStone;
-				var6 = Item.swordStone;
-			} else if(var1 == 2) {
-				var3 = Item.pickaxeSteel;
-				var4 = Item.shovel;
-				var5 = Item.axeSteel;
-				var6 = Item.swordSteel;
-			} else {
-				var3 = Item.pickaxeDiamond;
-				var4 = Item.shovelDiamond;
-				var5 = Item.axeDiamond;
-				var6 = Item.swordDiamond;
-			}
-
-			this.addRecipe(new ItemStack(var3), new Object[]{"XXX", " # ", " # ", Character.valueOf('#'), Item.stick, Character.valueOf('X'), var2});
-			this.addRecipe(new ItemStack(var4), new Object[]{"X", "#", "#", Character.valueOf('#'), Item.stick, Character.valueOf('X'), var2});
-			this.addRecipe(new ItemStack(var5), new Object[]{"XX", "X#", " #", Character.valueOf('#'), Item.stick, Character.valueOf('X'), var2});
-			this.addRecipe(new ItemStack(var6), new Object[]{"X", "X", "#", Character.valueOf('#'), Item.stick, Character.valueOf('X'), var2});
-		}
-
+		(new RecipesTools()).addRecipes(this);
+		new RecipesWeapons();
+		RecipesWeapons.addRecipes(this);
+		(new RecipesIngots()).addRecipes(this);
+		new RecipesBowl();
+		this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", Character.valueOf('X'), Block.mushroomBrown, Character.valueOf('Y'), Block.mushroomRed, Character.valueOf('#'), Item.bowlEmpty});
+		this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", Character.valueOf('X'), Block.mushroomRed, Character.valueOf('Y'), Block.mushroomBrown, Character.valueOf('#'), Item.bowlEmpty});
+		new RecipesBlocks();
+		this.addRecipe(new ItemStack(Block.chest), new Object[]{"###", "# #", "###", Character.valueOf('#'), Block.planks});
+		this.addRecipe(new ItemStack(Block.workbench), new Object[]{"##", "##", Character.valueOf('#'), Block.planks});
+		this.addRecipe(new ItemStack(Block.tnt, 1), new Object[]{"X#X", "#X#", "X#X", Character.valueOf('X'), Item.gunpowder, Character.valueOf('#'), Block.sand});
+		this.addRecipe(new ItemStack(Item.bow, 1), new Object[]{" #X", "# X", " #X", Character.valueOf('X'), Item.silk, Character.valueOf('#'), Item.stick});
+		this.addRecipe(new ItemStack(Block.stairSingle, 3), new Object[]{"###", Character.valueOf('#'), Block.cobblestone});
+		this.addRecipe(new ItemStack(Item.arrow, 4), new Object[]{"X", "#", "Y", Character.valueOf('Y'), Item.feather, Character.valueOf('X'), Item.ingotIron, Character.valueOf('#'), Item.stick});
 		this.addRecipe(new ItemStack(Item.stick, 4), new Object[]{"#", "#", Character.valueOf('#'), Block.planks});
-		this.addRecipe(new ItemStack(Block.blockGold), new Object[]{"##", "##", Character.valueOf('#'), Item.ingotGold});
-		this.addRecipe(new ItemStack(Block.blockSteel), new Object[]{"##", "##", Character.valueOf('#'), Item.ingotIron});
-		this.addRecipe(new ItemStack(Block.blockDiamond), new Object[]{"##", "##", Character.valueOf('#'), Item.diamond});
 		this.addRecipe(new ItemStack(Block.torch, 4), new Object[]{"X", "#", Character.valueOf('X'), Item.coal, Character.valueOf('#'), Item.stick});
+		this.addRecipe(new ItemStack(Item.bowlEmpty, 4), new Object[]{"# #", " # ", Character.valueOf('#'), Block.planks});
+		Collections.sort(this.recipes, new RecipeSorter(this));
 	}
 
-	private void addRecipe(ItemStack var1, Object... var2) {
+	final void addRecipe(ItemStack var1, Object... var2) {
 		String var3 = "";
 		int var4 = 0;
 		int var5 = 0;
@@ -114,7 +78,7 @@ public final class CraftingManager {
 		this.recipes.add(new ShapedRecipes(var5, var6, var12, var1));
 	}
 
-	public final ItemStack addRecipe(int[] var1) {
+	public final ItemStack findMatchingRecipe(int[] var1) {
 		for(int var2 = 0; var2 < this.recipes.size(); ++var2) {
 			ShapedRecipes var3 = (ShapedRecipes)this.recipes.get(var2);
 			if(var3.matches(var1)) {

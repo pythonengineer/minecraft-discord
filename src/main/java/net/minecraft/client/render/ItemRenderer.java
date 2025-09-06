@@ -59,11 +59,16 @@ public final class ItemRenderer {
         int var14;
         if(this.itemToRender != null) {
             GL11.glScalef(0.4F, 0.4F, 0.4F);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-            if(this.itemToRender.itemID < 256) {
+            if(this.itemToRender.itemID < 256 && Block.blocksList[this.itemToRender.itemID].getRenderType() == 0) {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
                 this.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[this.itemToRender.itemID]);
             } else {
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/items.png"));
+                if(this.itemToRender.itemID < 256) {
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+                } else {
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/items.png"));
+                }
+
                 Tessellator var15 = Tessellator.instance;
                 ItemStack var13 = this.itemToRender;
                 var1 = (float)(var13.getItem().getIconIndex() % 16 << 4) / 256.0F;
@@ -100,8 +105,8 @@ public final class ItemRenderer {
                 float var8;
                 for(var14 = 0; var14 < 16; ++var14) {
                     var7 = (float)var14 / 16.0F;
-                    var8 = var2 + (var1 - var2) * var7 + 0.001953125F;
-                    var7 = var7 * 1.0F - 1.0F / 16.0F;
+                    var8 = var2 + (var1 - var2) * var7 - 0.001953125F;
+                    var7 *= 1.0F;
                     var15.addVertexWithUV(var7, 0.0F, -(1.0F / 16.0F), var8, var4);
                     var15.addVertexWithUV(var7, 0.0F, 0.0F, var8, var4);
                     var15.addVertexWithUV(var7, 1.0F, 0.0F, var8, var11);
@@ -114,8 +119,8 @@ public final class ItemRenderer {
 
                 for(var14 = 0; var14 < 16; ++var14) {
                     var7 = (float)var14 / 16.0F;
-                    var8 = var2 + (var1 - var2) * var7 + 0.001953125F;
-                    var7 *= 1.0F;
+                    var8 = var2 + (var1 - var2) * var7 - 0.001953125F;
+                    var7 = var7 * 1.0F + 1.0F / 16.0F;
                     var15.addVertexWithUV(var7, 1.0F, -(1.0F / 16.0F), var8, var11);
                     var15.addVertexWithUV(var7, 1.0F, 0.0F, var8, var11);
                     var15.addVertexWithUV(var7, 0.0F, 0.0F, var8, var4);

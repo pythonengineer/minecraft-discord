@@ -8,7 +8,9 @@ import java.util.ArrayList;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.StepSound;
@@ -467,5 +469,9 @@ public abstract class Entity {
 
     public float getShadowSize() {
         return this.height / 2.0F;
+    }
+
+    public final void entityDropItem(int var1, int var2) {
+        this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(var1, 1)));
     }
 }

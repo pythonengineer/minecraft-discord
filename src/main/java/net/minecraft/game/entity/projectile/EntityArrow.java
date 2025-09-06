@@ -144,7 +144,7 @@ public class EntityArrow extends Entity {
     }
 
     public final void onCollideWithPlayer(EntityPlayer var1) {
-        if(this.inGround && this.owner == var1 && this.arrowShake <= 0 && var1.inventory.storePartialItemStack(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+        if(this.inGround && this.owner == var1 && this.arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
             this.setEntityDead();
         }
 

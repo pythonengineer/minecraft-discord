@@ -39,13 +39,13 @@ public final class BlockStationary extends BlockFluid {
 
 		if(var5 != 0) {
 			Material var7 = Block.blocksList[var5].getBlockMaterial();
-			if(this.liquidMaterial == Material.water && var7 == Material.lava || var7 == Material.water && this.liquidMaterial == Material.lava) {
+			if(this.material0 == Material.water && var7 == Material.lava || var7 == Material.water && this.material0 == Material.lava) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
 				return;
 			}
 		}
 
-		if(Block.fire.getChanceOfNeighborsEncouragingFire(var5)) {
+		if(Block.fire.canBlockCatchFire(var5)) {
 			var6 = true;
 		}
 

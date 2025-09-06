@@ -357,12 +357,14 @@ public class PlatformAudio {
     }
 
     private static void finishAudioData(SoundPoolEntry sound, String filename, boolean holdInCache, BrowserAudioResource buffer) {
-        if (holdInCache) {
-            soundCache.put(filename, buffer);
-        }
+        if (buffer != null) {
+            if (holdInCache) {
+                soundCache.put(filename, buffer);
+            }
 
-        if (buffer.buffer != null) {
-            buffer.cacheHit = PlatformRuntime.steadyTimeMillis();
+            if (buffer.buffer != null) {
+                buffer.cacheHit = PlatformRuntime.steadyTimeMillis();
+            }
         }
 
         sound.finish(buffer);

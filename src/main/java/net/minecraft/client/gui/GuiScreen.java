@@ -11,17 +11,19 @@ import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.internal.EnumTouchEvent;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
-import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.minecraft.client.Minecraft;
 
 public class GuiScreen extends Gui {
 	protected Minecraft mc;
-	protected int width;
-	protected int height;
+	public int width;
+	public int height;
 	protected List controlList = new ArrayList();
 	public boolean allowUserInput = false;
 	protected FontRenderer fontRenderer;
+    private int eventButton;
+    private long lastMouseEvent;
+    private int touchValue;
     protected int touchModeCursorPosX = -1;
     protected int touchModeCursorPosY = -1;
     private long lastTouchEvent;
@@ -54,6 +56,12 @@ public class GuiScreen extends Gui {
 		}
 
 	}
+
+    protected void mouseReleased(int i, int j, int k) {
+    }
+
+    protected void mouseClickMove(int var1, int var2, int var3, long var4) {
+    }
 
 	protected void actionPerformed(GuiButton var1) {
 	}
@@ -89,11 +97,31 @@ public class GuiScreen extends Gui {
     }
 
 	public final void handleMouseInput() {
-		if(Mouse.getEventButtonState()) {
-			int var1 = Mouse.getEventX() * this.width / this.mc.displayWidth;
-			int var2 = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-			this.mouseClicked(var1, var2, Mouse.getEventButton());
-		}
+        float f = getEaglerScale();
+        int i = applyEaglerScale(f, Mouse.getEventX() * this.width / this.mc.displayWidth, this.width);
+        int j = applyEaglerScale(f, this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1,
+                this.height);
+        int k = Mouse.getEventButton();
+        if (Mouse.getEventButtonState()) {
+            PointerInputAbstraction.enterMouseModeHook();
+            if (this.mc.options.touchscreen && this.touchValue++ > 0) {
+                return;
+            }
+
+            this.eventButton = k;
+            this.lastMouseEvent = EagRuntime.currentTimeMillis();
+            this.mouseClicked(i, j, this.eventButton);
+        } else if (k != -1) {
+            if (this.mc.options.touchscreen && --this.touchValue > 0) {
+                return;
+            }
+
+            this.eventButton = -1;
+            this.mouseReleased(i, j, k);
+        } else if (this.eventButton != -1 && this.lastMouseEvent > 0L) {
+            long l = EagRuntime.currentTimeMillis() - this.lastMouseEvent;
+            this.mouseClickMove(i, j, this.eventButton, l);
+        }
 
 	}
 
@@ -129,7 +157,7 @@ public class GuiScreen extends Gui {
     protected void touchTapped(int parInt1, int parInt2, int parInt3) {
         if (shouldTouchGenerateMouseEvents()) {
             this.mouseClicked(parInt1, parInt2, 0);
-            //this.mouseReleased(parInt1, parInt2, 0);
+            this.mouseReleased(parInt1, parInt2, 0);
         }
     }
 
@@ -138,7 +166,7 @@ public class GuiScreen extends Gui {
 
     protected void touchEndMove(int parInt1, int parInt2, int parInt3) {
         if (shouldTouchGenerateMouseEvents()) {
-            //this.mouseReleased(parInt1, parInt2, 12345);
+            this.mouseReleased(parInt1, parInt2, 12345);
         }
     }
 
@@ -195,7 +223,7 @@ public class GuiScreen extends Gui {
                 touchStarts.put(u, new int[] { i, j, (ck != null && isTouchDraggingStateLocked(u)) ? ck[2] : 1 });
                 this.touchMoved(i, j, u);
                 if (t == 0 && shouldTouchGenerateMouseEvents()) {
-                    //this.mouseClickMove(i, j, 0, EagRuntime.currentTimeMillis() - lastTouchEvent);
+                    this.mouseClickMove(i, j, 0, EagRuntime.currentTimeMillis() - lastTouchEvent);
                 }
                 break;
             case TOUCHEND:

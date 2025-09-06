@@ -6,13 +6,13 @@ import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public class BlockFluid extends Block {
-	protected Material liquidMaterial;
+	protected Material material0;
 	protected int stillId;
 	protected int movingId;
 
 	protected BlockFluid(int var1, Material var2) {
 		super(var1);
-		this.liquidMaterial = var2;
+		this.material0 = var2;
 		this.blockIndexInTexture = 14;
 		if(var2 == Material.lava) {
 			this.blockIndexInTexture = 30;
@@ -27,7 +27,7 @@ public class BlockFluid extends Block {
 	}
 
 	public final int getBlockTexture(int var1) {
-		return this.liquidMaterial == Material.lava ? this.blockIndexInTexture : (var1 == 1 ? this.blockIndexInTexture : (var1 == 0 ? this.blockIndexInTexture : this.blockIndexInTexture + 32));
+		return this.material0 == Material.lava ? this.blockIndexInTexture : (var1 == 1 ? this.blockIndexInTexture : (var1 == 0 ? this.blockIndexInTexture : this.blockIndexInTexture + 32));
 	}
 
 	public final boolean renderAsNormalBlock() {
@@ -52,17 +52,17 @@ public class BlockFluid extends Block {
 			if(var6) {
 				var7 = true;
 			}
-		} while(var6 && this.liquidMaterial != Material.lava);
+		} while(var6 && this.material0 != Material.lava);
 
 		++var3;
-		if(this.liquidMaterial == Material.water || !var7) {
+		if(this.material0 == Material.water || !var7) {
 			var7 |= this.flow(var1, var2 - 1, var3, var4);
 			var7 |= this.flow(var1, var2 + 1, var3, var4);
 			var7 |= this.flow(var1, var2, var3, var4 - 1);
 			var7 |= this.flow(var1, var2, var3, var4 + 1);
 		}
 
-		if(this.liquidMaterial == Material.lava) {
+		if(this.material0 == Material.lava) {
 			var7 |= extinguishFireLava(var1, var2 - 1, var3, var4);
 			var7 |= extinguishFireLava(var1, var2 + 1, var3, var4);
 			var7 |= extinguishFireLava(var1, var2, var3, var4 - 1);
@@ -83,7 +83,7 @@ public class BlockFluid extends Block {
 		if(var5 != 0 && var5 != Block.fire.blockID) {
 			return false;
 		} else {
-			if(this.liquidMaterial == Material.water) {
+			if(this.material0 == Material.water) {
 				for(var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
 					for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
 						for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
@@ -100,7 +100,7 @@ public class BlockFluid extends Block {
 	}
 
 	private static boolean extinguishFireLava(World var0, int var1, int var2, int var3) {
-		if(Block.fire.getChanceOfNeighborsEncouragingFire(var0.getBlockId(var1, var2, var3))) {
+		if(Block.fire.canBlockCatchFire(var0.getBlockId(var1, var2, var3))) {
 			Block.fire.fireSpread(var0, var1, var2, var3);
 			return true;
 		} else {
@@ -122,7 +122,7 @@ public class BlockFluid extends Block {
 	}
 
 	public final float getBlockBrightness(World var1, int var2, int var3, int var4) {
-		return this.liquidMaterial == Material.lava ? 100.0F : var1.getBlockLightValue(var2, var3, var4);
+		return this.material0 == Material.lava ? 100.0F : var1.getBlockLightValue(var2, var3, var4);
 	}
 
 	public boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
@@ -147,13 +147,13 @@ public class BlockFluid extends Block {
 	}
 
 	public Material getBlockMaterial() {
-		return this.liquidMaterial;
+		return this.material0;
 	}
 
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		if(var5 != 0) {
 			Material var6 = Block.blocksList[var5].getBlockMaterial();
-			if(this.liquidMaterial == Material.water && var6 == Material.lava || var6 == Material.water && this.liquidMaterial == Material.lava) {
+			if(this.material0 == Material.water && var6 == Material.lava || var6 == Material.water && this.material0 == Material.lava) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
 			}
 		}
@@ -162,7 +162,7 @@ public class BlockFluid extends Block {
 	}
 
 	public int tickRate() {
-		return this.liquidMaterial == Material.lava ? 25 : 5;
+		return this.material0 == Material.lava ? 25 : 5;
 	}
 
 	public void dropBlockAsItemWithChance(World var1, int var2, int var3, int var4, float var5) {
@@ -176,11 +176,11 @@ public class BlockFluid extends Block {
 	}
 
 	public int getRenderBlockPass() {
-		return this.liquidMaterial == Material.water ? 1 : 0;
+		return this.material0 == Material.water ? 1 : 0;
 	}
 
 	public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		if(this.liquidMaterial == Material.lava && var1.getBlockMaterial(var2, var3 + 1, var4) == Material.air && !var1.isBlockNormalCube(var2, var3 + 1, var4) && var5.nextInt(100) == 0) {
+		if(this.material0 == Material.lava && var1.getBlockMaterial(var2, var3 + 1, var4) == Material.air && !var1.isBlockNormalCube(var2, var3 + 1, var4) && var5.nextInt(100) == 0) {
 			float var6 = (float)var2 + var5.nextFloat();
 			float var7 = (float)var3 + this.maxY;
 			float var8 = (float)var4 + var5.nextFloat();

@@ -22,6 +22,7 @@ public final class GameSettings {
     public boolean viewBobbing = true;
     public boolean anaglyph = false;
     public boolean limitFramerate = false;
+    public boolean touchscreen;
     public int guiScale = 3;
     public KeyBinding keyBindForward = new KeyBinding("Forward", 17);
     public KeyBinding keyBindLeft = new KeyBinding("Left", 30);

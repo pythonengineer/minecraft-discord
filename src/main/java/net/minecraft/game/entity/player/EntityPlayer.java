@@ -141,6 +141,9 @@ public class EntityPlayer extends EntityLiving {
     public void displayGUIChest(IInventory var1) {
     }
 
+    public void displayWorkbenchGUI() {
+    }
+
     public final void dropOneItem(boolean flag) {
         this.dropPlayerItemWithRandomChoice(this.inventory.decrStackSize(this.inventory.currentItem,
             flag && this.inventory.getCurrentItem() != null ? this.inventory.getCurrentItem().stackSize : 1));

@@ -16,7 +16,7 @@ public final class PlayerControllerSP extends PlayerController {
 	private int curBlockZ = -1;
 	private int curBlockDamage = 0;
 	private int prevBlockDamage = 0;
-	private int blockDestroySoundCounter = 0;
+	private int blockHitWait = 0;
 	private MobSpawner mobSpawner;
 
 	public PlayerControllerSP(Minecraft var1) {
@@ -51,12 +51,6 @@ public final class PlayerControllerSP extends PlayerController {
             }
         }
 
-        this.mc.theWorld.setBlockWithNotify(var2 - 2, var3 - 1, var4 - 2, Block.chest.blockID);
-        this.mc.theWorld.getBlockTileEntity(var2 - 2, var3 - 1, var4 - 2);
-        this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var4 - 2, Block.chest.blockID);
-        this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var4 - 2);
-        this.mc.theWorld.setBlockWithNotify(var2 + 2, var3 - 1, var4 - 1, Block.chest.blockID);
-        this.mc.theWorld.getBlockTileEntity(var2 + 2, var3 - 1, var4 - 1);
         var1.inventory.mainInventory[8] = new ItemStack(Item.flintSteel);
 	}
 
@@ -80,12 +74,12 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public final void resetBlockRemoving() {
 		this.curBlockDamage = 0;
-		this.blockDestroySoundCounter = 0;
+		this.blockHitWait = 0;
 	}
 
 	public final void sendBlockRemoving(int var1, int var2, int var3, int var4) {
-		if(this.blockDestroySoundCounter > 0) {
-			--this.blockDestroySoundCounter;
+		if(this.blockHitWait > 0) {
+			--this.blockHitWait;
 		} else {
 			super.sendBlockRemoving(var1, var2, var3, var4);
 			if(var1 == this.curBlockX && var2 == this.curBlockY && var3 == this.curBlockZ) {
@@ -109,7 +103,7 @@ public final class PlayerControllerSP extends PlayerController {
 					if(this.curBlockDamage >= this.prevBlockDamage + 1) {
 						this.sendBlockRemoved(var1, var2, var3);
 						this.curBlockDamage = 0;
-						this.blockDestroySoundCounter = 5;
+						this.blockHitWait = 5;
 					}
 
 				}

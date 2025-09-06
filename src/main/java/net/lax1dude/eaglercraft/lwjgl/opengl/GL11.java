@@ -1153,7 +1153,7 @@ public class GL11 {
             stateLightsStackPointer = push;
         } else {
             Throwable t = new IndexOutOfBoundsException("GL_LIGHT direction stack overflow!" + " Exceeded "
-                    + stateLightsStack.length + " calls to GlStateManager.pushLightCoords");
+                    + stateLightsStack.length + " calls to GL11.pushLightCoords");
             logger.error(t);
         }
     }
@@ -1163,7 +1163,7 @@ public class GL11 {
             --stateLightsStackPointer;
         } else {
             Throwable t = new IndexOutOfBoundsException("GL_LIGHT direction stack underflow!"
-                    + " Called GlStateManager.popLightCoords on an empty light stack");
+                    + " Called GL11.popLightCoords on an empty light stack");
             logger.error(t);
         }
     }
@@ -1855,7 +1855,7 @@ public class GL11 {
                     modelMatrixStackPointer = push;
                 } else {
                     Throwable t = new IndexOutOfBoundsException("GL_MODELVIEW matrix stack overflow!" + " Exceeded "
-                            + modelMatrixStack.length + " calls to GlStateManager.pushMatrix");
+                            + modelMatrixStack.length + " calls to GL11.pushMatrix");
                     logger.error(t);
                 }
                 break;
@@ -1867,7 +1867,7 @@ public class GL11 {
                     projectionMatrixStackPointer = push;
                 } else {
                     Throwable t = new IndexOutOfBoundsException("GL_PROJECTION matrix stack overflow!" + " Exceeded "
-                            + projectionMatrixStack.length + " calls to GlStateManager.pushMatrix");
+                            + projectionMatrixStack.length + " calls to GL11.pushMatrix");
                     logger.error(t);
                 }
                 break;
@@ -1881,7 +1881,7 @@ public class GL11 {
                 } else {
                     Throwable t = new IndexOutOfBoundsException(
                             "GL_TEXTURE #" + activeTexture + " matrix stack overflow!" + " Exceeded "
-                                    + textureMatrixStack.length + " calls to GlStateManager.pushMatrix");
+                                    + textureMatrixStack.length + " calls to GL11.pushMatrix");
                     logger.error(t);
                 }
                 break;
@@ -1896,7 +1896,7 @@ public class GL11 {
                     --modelMatrixStackPointer;
                 } else {
                     Throwable t = new IndexOutOfBoundsException("GL_MODELVIEW matrix stack underflow!"
-                            + " Called GlStateManager.popMatrix on an empty matrix stack");
+                            + " Called GL11.popMatrix on an empty matrix stack");
                     logger.error(t);
                 }
                 break;
@@ -1905,7 +1905,7 @@ public class GL11 {
                     --projectionMatrixStackPointer;
                 } else {
                     Throwable t = new IndexOutOfBoundsException("GL_PROJECTION matrix stack underflow!"
-                            + " Called GlStateManager.popMatrix on an empty matrix stack");
+                            + " Called GL11.popMatrix on an empty matrix stack");
                     logger.error(t);
                 }
                 break;
@@ -1914,7 +1914,7 @@ public class GL11 {
                     --textureMatrixStackPointer[activeTexture];
                 } else {
                     Throwable t = new IndexOutOfBoundsException("GL_TEXTURE #" + activeTexture
-                            + " matrix stack underflow!  Called GlStateManager.popMatrix on an empty matrix stack");
+                            + " matrix stack underflow!  Called GL11.popMatrix on an empty matrix stack");
                     logger.error(t);
                 }
                 break;
@@ -2416,7 +2416,8 @@ public class GL11 {
         }
         DisplayList dp = currentList = displayLists.get(target);
         if (dp == null) {
-            throw new IllegalArgumentException("Unknown display list: " + target);
+            dp = currentList = new DisplayList(target);
+            displayLists.put(target, dp);
         }
         if (dp.vertexArray != null && dp.attribs > 0) {
             bindGLVertexArray(dp.vertexArray);
@@ -2762,8 +2763,7 @@ public class GL11 {
     public static int glGenLists(int size) {
         int base = displayListId + 1;
         for (int i = 0; i < size; i++) {
-            int id = ++displayListId;
-            displayLists.put(id, new DisplayList(id));
+            ++displayListId;
         }
         return base;
     }

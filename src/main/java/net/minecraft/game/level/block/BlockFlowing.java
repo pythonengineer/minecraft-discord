@@ -6,15 +6,15 @@ import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public final class BlockFlowing extends BlockFluid {
-	private Material liquidMaterial1;
+	private Material material;
 	private int stillId1;
 	private int movingId1;
-	private EaglercraftRandom rand = new EaglercraftRandom();
-	private int[] liquidIntArray = new int[]{0, 1, 2, 3};
+	private EaglercraftRandom random = new EaglercraftRandom();
+	private int[] flowArray = new int[]{0, 1, 2, 3};
 
 	protected BlockFlowing(int var1, Material var2) {
 		super(var1, var2);
-		this.liquidMaterial1 = var2;
+		this.material = var2;
 		this.blockIndexInTexture = 14;
 		if(var2 == Material.lava) {
 			this.blockIndexInTexture = 30;
@@ -34,7 +34,7 @@ public final class BlockFlowing extends BlockFluid {
 	public final boolean update(World var1, int var2, int var3, int var4, int var5) {
 		boolean var10 = false;
 		boolean var6 = this.canFlow(var1, var2 - 1, var3, var4) || this.canFlow(var1, var2 + 1, var3, var4) || this.canFlow(var1, var2, var3, var4 - 1) || this.canFlow(var1, var2, var3, var4 + 1);
-		if(var6 && var1.getBlockMaterial(var2, var3 - 1, var4) == this.liquidMaterial1 && !var1.floodFill(var2, var3 - 1, var4, this.movingId1, this.stillId1)) {
+		if(var6 && var1.getBlockMaterial(var2, var3 - 1, var4) == this.material && !var1.floodFill(var2, var3 - 1, var4, this.movingId1, this.stillId1)) {
 			return false;
 		} else {
 			var10 = this.liquidSpread2(var1, var2, var3, var4, var2, var3 - 1, var4);
@@ -43,54 +43,54 @@ public final class BlockFlowing extends BlockFluid {
 			int var8;
 			int var9;
 			for(var7 = 0; var7 < 4; ++var7) {
-				var8 = this.rand.nextInt(4 - var7) + var7;
-				var9 = this.liquidIntArray[var7];
-				this.liquidIntArray[var7] = this.liquidIntArray[var8];
-				this.liquidIntArray[var8] = var9;
-				if(this.liquidIntArray[var7] == 0 && !var10) {
+				var8 = this.random.nextInt(4 - var7) + var7;
+				var9 = this.flowArray[var7];
+				this.flowArray[var7] = this.flowArray[var8];
+				this.flowArray[var8] = var9;
+				if(this.flowArray[var7] == 0 && !var10) {
 					var10 = this.liquidSpread2(var1, var2, var3, var4, var2 - 1, var3, var4);
 				}
 
-				if(this.liquidIntArray[var7] == 1 && !var10) {
+				if(this.flowArray[var7] == 1 && !var10) {
 					var10 = this.liquidSpread2(var1, var2, var3, var4, var2 + 1, var3, var4);
 				}
 
-				if(this.liquidIntArray[var7] == 2 && !var10) {
+				if(this.flowArray[var7] == 2 && !var10) {
 					var10 = this.liquidSpread2(var1, var2, var3, var4, var2, var3, var4 - 1);
 				}
 
-				if(this.liquidIntArray[var7] == 3 && !var10) {
+				if(this.flowArray[var7] == 3 && !var10) {
 					var10 = this.liquidSpread2(var1, var2, var3, var4, var2, var3, var4 + 1);
 				}
 			}
 
 			if(!var10 && var6) {
-				if(this.rand.nextInt(3) == 0) {
-					if(this.rand.nextInt(3) == 0) {
+				if(this.random.nextInt(3) == 0) {
+					if(this.random.nextInt(3) == 0) {
 						var10 = false;
 
 						for(var7 = 0; var7 < 4; ++var7) {
-							var8 = this.rand.nextInt(4 - var7) + var7;
-							var9 = this.liquidIntArray[var7];
-							this.liquidIntArray[var7] = this.liquidIntArray[var8];
-							this.liquidIntArray[var8] = var9;
-							if(this.liquidIntArray[var7] == 0 && !var10) {
+							var8 = this.random.nextInt(4 - var7) + var7;
+							var9 = this.flowArray[var7];
+							this.flowArray[var7] = this.flowArray[var8];
+							this.flowArray[var8] = var9;
+							if(this.flowArray[var7] == 0 && !var10) {
 								var10 = this.liquidSpread(var1, var2, var3, var4, var2 - 1, var3, var4);
 							}
 
-							if(this.liquidIntArray[var7] == 1 && !var10) {
+							if(this.flowArray[var7] == 1 && !var10) {
 								var10 = this.liquidSpread(var1, var2, var3, var4, var2 + 1, var3, var4);
 							}
 
-							if(this.liquidIntArray[var7] == 2 && !var10) {
+							if(this.flowArray[var7] == 2 && !var10) {
 								var10 = this.liquidSpread(var1, var2, var3, var4, var2, var3, var4 - 1);
 							}
 
-							if(this.liquidIntArray[var7] == 3 && !var10) {
+							if(this.flowArray[var7] == 3 && !var10) {
 								var10 = this.liquidSpread(var1, var2, var3, var4, var2, var3, var4 + 1);
 							}
 						}
-					} else if(this.liquidMaterial1 == Material.lava) {
+					} else if(this.material == Material.lava) {
 						var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
 					} else {
 						var1.setBlockWithNotify(var2, var3, var4, 0);
@@ -99,14 +99,14 @@ public final class BlockFlowing extends BlockFluid {
 
 				return false;
 			} else {
-				if(this.liquidMaterial1 == Material.water) {
+				if(this.material == Material.water) {
 					var10 |= extinguishFireLava(var1, var2 - 1, var3, var4);
 					var10 |= extinguishFireLava(var1, var2 + 1, var3, var4);
 					var10 |= extinguishFireLava(var1, var2, var3, var4 - 1);
 					var10 |= extinguishFireLava(var1, var2, var3, var4 + 1);
 				}
 
-				if(this.liquidMaterial1 == Material.lava) {
+				if(this.material == Material.lava) {
 					var10 |= flow(var1, var2 - 1, var3, var4);
 					var10 |= flow(var1, var2 + 1, var3, var4);
 					var10 |= flow(var1, var2, var3, var4 - 1);
@@ -184,14 +184,14 @@ public final class BlockFlowing extends BlockFluid {
 	}
 
 	public final Material getBlockMaterial() {
-		return this.liquidMaterial1;
+		return this.material;
 	}
 
 	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 	}
 
 	public final int tickRate() {
-		return this.liquidMaterial1 == Material.lava ? 25 : 5;
+		return this.material == Material.lava ? 25 : 5;
 	}
 
 	public final void dropBlockAsItemWithChance(World var1, int var2, int var3, int var4, float var5) {
@@ -205,7 +205,7 @@ public final class BlockFlowing extends BlockFluid {
 	}
 
 	public final int getRenderBlockPass() {
-		return this.liquidMaterial1 == Material.water ? 1 : 0;
+		return this.material == Material.water ? 1 : 0;
 	}
 
 	private static boolean extinguishFireLava(World var0, int var1, int var2, int var3) {
@@ -221,7 +221,7 @@ public final class BlockFlowing extends BlockFluid {
 	}
 
 	private static boolean flow(World var0, int var1, int var2, int var3) {
-		if(Block.fire.getChanceOfNeighborsEncouragingFire(var0.getBlockId(var1, var2, var3))) {
+		if(Block.fire.canBlockCatchFire(var0.getBlockId(var1, var2, var3))) {
 			Block.fire.fireSpread(var0, var1, var2, var3);
 			return true;
 		} else {

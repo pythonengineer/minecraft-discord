@@ -31,6 +31,14 @@ public final class InventoryPlayer implements IInventory {
         return -1;
     }
 
+    public int getFirstEmptyStack() {
+        for (int i = 0; i < this.mainInventory.length; ++i) {
+            if (this.mainInventory[i] != null) continue;
+            return i;
+        }
+        return -1;
+    }
+
     public final void getFirstEmptyStack(int var1) {
         var1 = this.getInventorySlotContainItem(var1);
         if(var1 >= 0 && var1 < 9) {
@@ -51,7 +59,7 @@ public final class InventoryPlayer implements IInventory {
         }
     }
 
-    public final boolean storePartialItemStack(ItemStack var1) {
+    public final boolean addItemStackToInventory(ItemStack var1) {
         int var4 = var1.stackSize;
         int var3 = var1.itemID;
         int var6 = var3;
@@ -127,12 +135,13 @@ public final class InventoryPlayer implements IInventory {
 
     public final ItemStack decrStackSize(int var1, int var2) {
         if(this.mainInventory[var1] != null) {
+            ItemStack var3;
             if(this.mainInventory[var1].stackSize <= var2) {
-                ItemStack var3 = this.mainInventory[var1];
+                var3 = this.mainInventory[var1];
                 this.mainInventory[var1] = null;
                 return var3;
             } else {
-                ItemStack var3 = this.mainInventory[var1].splitStack(1);
+                var3 = this.mainInventory[var1].splitStack(var2);
                 if(this.mainInventory[var1].stackSize == 0) {
                     this.mainInventory[var1] = null;
                 }

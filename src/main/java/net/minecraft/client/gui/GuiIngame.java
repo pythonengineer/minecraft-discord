@@ -10,24 +10,20 @@ import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
-import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.ChatLine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
-import net.minecraft.client.controller.PlayerControllerCreative;
-import net.minecraft.client.controller.PlayerControllerSP;
-import net.minecraft.client.render.RenderBlocks;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.gui.container.GuiInventory;
+import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.block.Block;
 
 public final class GuiIngame extends Gui {
+    private static RenderItem itemRenderer = new RenderItem();
     private List chatMessageList = new ArrayList();
 	private EaglercraftRandom rand = new EaglercraftRandom();
 	private Minecraft mc;
     private int updateCounter = 0;
-	private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
 
 	public GuiIngame(Minecraft var1) {
 		this.mc = var1;
@@ -137,15 +133,7 @@ public final class GuiIngame extends Gui {
             var12 = scaledWidth / 2 - 90 + var5 * 20 + 2;
             var7 = scaledHeight - 16 - 3;
             ItemStack var13 = this.mc.thePlayer.inventory.mainInventory[var5];
-            if(var13 == null) {
-                if(var5 > 50) {
-                    GL11.glDisable(GL11.GL_LIGHTING);
-                    var8 = this.mc.renderEngine.getTexture("/gui/items.png");
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
-                    this.drawTexturedModalRect(var12, var7, 240, 63 - var5 << 4, 16, 16);
-                    GL11.glEnable(GL11.GL_LIGHTING);
-                }
-            } else {
+            if(var13 != null) {
                 var3 = var13.itemID;
                 float var141 = (float)var13.animationsToGo - var1;
                 if(var141 > 0.0F) {
@@ -156,28 +144,7 @@ public final class GuiIngame extends Gui {
                     GL11.glTranslatef((float)(-(var12 + 8)), (float)(-(var7 + 12)), 0.0F);
                 }
 
-                if(var13.itemID < 256) {
-                    int var10 = var13.itemID;
-                    int var121 = this.mc.renderEngine.getTexture("/terrain.png");
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var121);
-                    Block var19 = Block.blocksList[var10];
-                    GL11.glPushMatrix();
-                    GL11.glTranslatef((float)(var12 - 2), (float)(var7 + 3), 0.0F);
-                    GL11.glScalef(10.0F, 10.0F, 10.0F);
-                    GL11.glTranslatef(1.0F, 0.5F, 8.0F);
-                    GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-                    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                    this.blockRenderer.renderBlockOnInventory(var19);
-                    GL11.glPopMatrix();
-                } else if(var13.getItem().getIconIndex() >= 0) {
-                    GL11.glDisable(GL11.GL_LIGHTING);
-                    var8 = this.mc.renderEngine.getTexture("/gui/items.png");
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
-                    this.drawTexturedModalRect(var12, var7, var13.getItem().getIconIndex() % 16 << 4, var13.getItem().getIconIndex() / 16 << 4, 16, 16);
-                    GL11.glEnable(GL11.GL_LIGHTING);
-                }
-
+                itemRenderer.renderItemIntoGUI(this.mc.fontRenderer, this.mc.renderEngine, var13, var12, var7);
                 if(var141 > 0.0F) {
                     GL11.glPopMatrix();
                 }
@@ -212,21 +179,6 @@ public final class GuiIngame extends Gui {
 		}
 
         onEndTouchGUI();
-
-        if (PointerInputAbstraction.isTouchMode()) {
-            GL11.glPopMatrix();
-        }
-
-		if(this.mc.playerController instanceof PlayerControllerSP) {
-			String var17 = "Score: &e" + this.mc.thePlayer.getScore();
-            if (PointerInputAbstraction.isTouchMode()) {
-                onBeginTouchGUI();
-                this.mc.fontRenderer.drawStringWithShadow(var17, (scaledWidth + this.mc.fontRenderer.getStringWidth(var17)) / 2, 3, 16777215);
-                onEndTouchGUI();
-            } else {
-                this.mc.fontRenderer.drawStringWithShadow(var17, scaledWidth - this.mc.fontRenderer.getStringWidth(var17) - 2, 2, 16777215);
-            }
-		}
 
         for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
             if(((ChatLine)this.chatMessageList.get(var7)).updateCounter < 200) {

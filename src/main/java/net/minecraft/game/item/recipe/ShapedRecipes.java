@@ -18,38 +18,11 @@ public final class ShapedRecipes {
     public final boolean matches(int[] var1) {
         for(int var2 = 0; var2 <= 3 - this.recipeWidth; ++var2) {
             for(int var3 = 0; var3 <= 3 - this.recipeHeight; ++var3) {
-                int var7 = var3;
-                int var6 = var2;
-                int[] var5 = var1;
-                ShapedRecipes var4 = this;
-                int var8 = 0;
-
-                boolean var10000;
-                label50:
-                while(true) {
-                    if(var8 >= 3) {
-                        var10000 = true;
-                        break;
-                    }
-
-                    for(int var9 = 0; var9 < 3; ++var9) {
-                        int var10 = var8 - var6;
-                        int var11 = var9 - var7;
-                        int var12 = -1;
-                        if(var10 >= 0 && var11 >= 0 && var10 < var4.recipeWidth && var11 < var4.recipeHeight) {
-                            var12 = var4.recipeItems[var10 + var11 * var4.recipeWidth];
-                        }
-
-                        if(var5[var8 + var9 * 3] != var12) {
-                            var10000 = false;
-                            break label50;
-                        }
-                    }
-
-                    ++var8;
+                if(this.func_21137_a(var1, var2, var3, true)) {
+                    return true;
                 }
 
-                if(var10000) {
+                if(this.func_21137_a(var1, var2, var3, false)) {
                     return true;
                 }
             }
@@ -58,7 +31,34 @@ public final class ShapedRecipes {
         return false;
     }
 
+    private boolean func_21137_a(int[] var1, int var2, int var3, boolean var4) {
+        for(int var5 = 0; var5 < 3; ++var5) {
+            for(int var6 = 0; var6 < 3; ++var6) {
+                int var7 = var5 - var2;
+                int var8 = var6 - var3;
+                int var9 = -1;
+                if(var7 >= 0 && var8 >= 0 && var7 < this.recipeWidth && var8 < this.recipeHeight) {
+                    if(var4) {
+                        var9 = this.recipeItems[this.recipeWidth - var7 - 1 + var8 * this.recipeWidth];
+                    } else {
+                        var9 = this.recipeItems[var7 + var8 * this.recipeWidth];
+                    }
+                }
+
+                if(var1[var5 + var6 * 3] != var9) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public final ItemStack getCraftingResult() {
         return new ItemStack(this.recipeOutput.itemID, this.recipeOutput.stackSize);
+    }
+
+    public final int b() {
+        return this.recipeWidth * this.recipeHeight;
     }
 }

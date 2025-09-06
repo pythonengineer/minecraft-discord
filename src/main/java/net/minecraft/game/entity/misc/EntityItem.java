@@ -136,7 +136,7 @@ public class EntityItem extends Entity {
         World var2 = this.worldObj;
         ItemStack var6 = this.item;
         if(var6.getItem().onPlaced(var2, var3, var4, var5)) {
-            var6.stackSize = 0;
+            --var6.stackSize;
         }
 
         if(this.item.stackSize == 0) {
@@ -171,7 +171,7 @@ public class EntityItem extends Entity {
 	}
 
 	public final void onCollideWithPlayer(EntityPlayer var1) {
-		if(this.delayBeforeCanPickup == 0 && var1.inventory.storePartialItemStack(this.item)) {
+        if(this.delayBeforeCanPickup == 0 && var1.inventory.addItemStackToInventory(this.item)) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			this.setEntityDead();
 		}

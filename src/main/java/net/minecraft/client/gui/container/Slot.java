@@ -1,4 +1,4 @@
-package net.minecraft.client.gui;
+package net.minecraft.client.gui.container;
 
 import net.minecraft.game.IInventory;
 import net.minecraft.game.item.ItemStack;
@@ -7,10 +7,10 @@ public class Slot {
 	public final int slotIndex;
 	public final int xPos;
 	public final int yPos;
-	private IInventory inventory;
-	private GuiInventory guiHandler;
+	public final IInventory inventory;
+	private final GuiContainer guiHandler;
 
-	public Slot(GuiInventory var1, IInventory var2, int var3, int var4, int var5) {
+	public Slot(GuiContainer var1, IInventory var2, int var3, int var4, int var5) {
 		this.guiHandler = var1;
 		this.inventory = var2;
 		this.slotIndex = var3;
@@ -33,15 +33,19 @@ public class Slot {
 		return true;
 	}
 
-	public final ItemStack getCurrentItemStack() {
-		return this.inventory.getStackInSlot(this.slotIndex);
-	}
+    public ItemStack getStack() {
+        return this.inventory.getStackInSlot(this.slotIndex);
+    }
+
+    public boolean getHasStack() {
+        return this.getStack() != null;
+    }
+
+    public ItemStack decrStackSize(int i) {
+        return this.inventory.decrStackSize(this.slotIndex, i);
+    }
 
 	public final void putStack(ItemStack var1) {
 		this.inventory.setInventorySlotContents(this.slotIndex, var1);
-	}
-
-	static IInventory a(Slot var0) {
-		return var0.inventory;
 	}
 }

@@ -137,7 +137,7 @@ public final class BlockFire extends Block {
 		}
 	}
 
-	public final boolean getChanceOfNeighborsEncouragingFire(int var1) {
+	public final boolean canBlockCatchFire(int var1) {
 		return this.chanceToEncourageFire[var1] > 0;
 	}
 

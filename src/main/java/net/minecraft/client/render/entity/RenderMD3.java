@@ -35,12 +35,16 @@ public final class RenderMD3 extends Render {
 		try {
 			var2 = var9.prevRenderYawOffset + (var9.renderYawOffset - var9.prevRenderYawOffset) * var6;
 			GL11.glTranslatef(var3, var4, var5);
-            if(var9.af == 0) {
+            if(var9.unused2 == 0) {
+                var8.loadTexture("/mcexport.png");
+            }
+
+            if(var9.unused2 == 1) {
                 var8.loadTexture("/mcexport2.png");
             }
 
-            if(var9.af == 1) {
-                var8.loadTexture("/mcexport.png");
+            if(var9.unused2 == 2) {
+                var8.loadTexture("/mcexport3.png");
             }
 
 			GL11.glRotatef(-var2 + 180.0F, 0.0F, 1.0F, 0.0F);

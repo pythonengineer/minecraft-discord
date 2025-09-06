@@ -88,7 +88,9 @@ public final class World {
             for(var5 = 0; var5 < this.length; ++var5) {
                 for(var6 = 0; var6 < this.height; ++var6) {
                     int var7 = 0;
-                    if(var6 < this.groundLevel - 1) {
+                    if(var6 == 0 && var6 < this.groundLevel - 1) {
+                        var7 = Block.lavaStill.blockID;
+                    } else if(var6 < this.groundLevel - 1) {
                         var7 = Block.bedrock.blockID;
                     } else if(var6 < this.groundLevel) {
                         if(this.groundLevel > this.waterLevel && this.defaultFluid == Block.waterMoving.blockID) {

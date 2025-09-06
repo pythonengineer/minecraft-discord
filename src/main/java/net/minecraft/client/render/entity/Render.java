@@ -9,6 +9,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
+import net.minecraft.game.physics.AxisAlignedBB;
 
 public abstract class Render {
 	protected RenderManager renderManager;
@@ -27,6 +28,45 @@ public abstract class Render {
 		int var3 = var2.getTexture(var1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, var3);
 	}
+
+    public static void renderOffsetAABB(AxisAlignedBB var0) {
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        Tessellator var1 = Tessellator.instance;
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        var1.startDrawingQuads(DefaultVertexFormats.POSITION_NORMAL);
+        var1.normal(0.0F, 0.0F, -1.0F);
+        var1.addVertex(var0.minX, var0.maxY, var0.minZ);
+        var1.addVertex(var0.maxX, var0.maxY, var0.minZ);
+        var1.addVertex(var0.maxX, var0.minY, var0.minZ);
+        var1.addVertex(var0.minX, var0.minY, var0.minZ);
+        var1.normal(0.0F, 0.0F, 1.0F);
+        var1.addVertex(var0.minX, var0.minY, var0.maxZ);
+        var1.addVertex(var0.maxX, var0.minY, var0.maxZ);
+        var1.addVertex(var0.maxX, var0.maxY, var0.maxZ);
+        var1.addVertex(var0.minX, var0.maxY, var0.maxZ);
+        var1.normal(0.0F, -1.0F, 0.0F);
+        var1.addVertex(var0.minX, var0.minY, var0.minZ);
+        var1.addVertex(var0.maxX, var0.minY, var0.minZ);
+        var1.addVertex(var0.maxX, var0.minY, var0.maxZ);
+        var1.addVertex(var0.minX, var0.minY, var0.maxZ);
+        var1.normal(0.0F, 1.0F, 0.0F);
+        var1.addVertex(var0.minX, var0.maxY, var0.maxZ);
+        var1.addVertex(var0.maxX, var0.maxY, var0.maxZ);
+        var1.addVertex(var0.maxX, var0.maxY, var0.minZ);
+        var1.addVertex(var0.minX, var0.maxY, var0.minZ);
+        var1.normal(-1.0F, 0.0F, 0.0F);
+        var1.addVertex(var0.minX, var0.minY, var0.maxZ);
+        var1.addVertex(var0.minX, var0.maxY, var0.maxZ);
+        var1.addVertex(var0.minX, var0.maxY, var0.minZ);
+        var1.addVertex(var0.minX, var0.minY, var0.minZ);
+        var1.normal(1.0F, 0.0F, 0.0F);
+        var1.addVertex(var0.maxX, var0.minY, var0.minZ);
+        var1.addVertex(var0.maxX, var0.maxY, var0.minZ);
+        var1.addVertex(var0.maxX, var0.maxY, var0.maxZ);
+        var1.addVertex(var0.maxX, var0.minY, var0.maxZ);
+        var1.draw();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
 
 	public final void setRenderManager(RenderManager var1) {
 		this.renderManager = var1;

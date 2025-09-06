@@ -2,6 +2,7 @@ package net.minecraft.game.entity;
 
 import com.mojang.nbt.NBTTagCompound;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.StepSound;
@@ -25,7 +26,7 @@ public class EntityLiving extends Entity {
 	protected AI entityAI = null;
 	public int unused0 = -1;
 	public float unused1 = (float)(Math.random() * (double)0.9F + (double)0.1F);
-	public int af = this.rand.nextInt(2);
+	public int unused2 = this.rand.nextInt(3);
 
 	public EntityLiving(World var1) {
 		super(var1);
@@ -223,6 +224,26 @@ public class EntityLiving extends Entity {
 	}
 
 	public void onDeath(Entity var1) {
+        int var3 = this.rand.nextInt(3);
+        int var2;
+        if(this.unused2 == 0) {
+            for(var2 = 0; var2 < var3; ++var2) {
+                this.entityDropItem(Item.silk.shiftedIndex, 1);
+            }
+
+        } else if(this.unused2 == 1) {
+            for(var2 = 0; var2 < var3; ++var2) {
+                this.entityDropItem(Item.gunpowder.shiftedIndex, 1);
+            }
+
+        } else {
+            if(this.unused2 == 2) {
+                for(var2 = 0; var2 < var3; ++var2) {
+                    this.entityDropItem(Item.feather.shiftedIndex, 1);
+                }
+            }
+
+        }
 	}
 
 	protected final void fall(float var1) {

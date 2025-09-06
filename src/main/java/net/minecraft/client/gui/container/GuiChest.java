@@ -1,9 +1,11 @@
-package net.minecraft.client.gui;
+package net.minecraft.client.gui.container;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.game.IInventory;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.ItemStack;
 
-public final class GuiChest extends GuiInventory {
+public final class GuiChest extends GuiContainer {
     private IInventory upperChestInventory;
     private IInventory lowerChestInventory;
     private int inventoryRows = 0;
@@ -20,18 +22,18 @@ public final class GuiChest extends GuiInventory {
         int var5;
         for(var4 = 0; var4 < this.inventoryRows; ++var4) {
             for(var5 = 0; var5 < 9; ++var5) {
-                this.slotsList.add(new Slot(this, var2, var5 + var4 * 9, 8 + var5 * 18, 18 + var4 * 18));
+                this.inventorySlots.add(new Slot(this, var2, var5 + var4 * 9, 8 + var5 * 18, 18 + var4 * 18));
             }
         }
 
         for(var4 = 0; var4 < 3; ++var4) {
             for(var5 = 0; var5 < 9; ++var5) {
-                this.slotsList.add(new Slot(this, var1, var5 + (var4 + 1) * 9, 8 + var5 * 18, 103 + var4 * 18 + var3));
+                this.inventorySlots.add(new Slot(this, var1, var5 + (var4 + 1) * 9, 8 + var5 * 18, 103 + var4 * 18 + var3));
             }
         }
 
         for(var4 = 0; var4 < 9; ++var4) {
-            this.slotsList.add(new Slot(this, var1, var4, 8 + var4 * 18, var3 + 161));
+            this.inventorySlots.add(new Slot(this, var1, var4, 8 + var4 * 18, var3 + 161));
         }
 
     }
@@ -49,5 +51,27 @@ public final class GuiChest extends GuiInventory {
         int var2 = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(var1, var2, 0, 0, this.xSize, this.inventoryRows * 18 + 17);
         this.drawTexturedModalRect(var1, var2 + this.inventoryRows * 18 + 17, 0, 126, this.xSize, 96);
+    }
+
+    public ItemStack transferStackInSlot(EntityPlayer var1, int i) {
+        ItemStack itemstack = null;
+        Slot slot = (Slot) this.inventorySlots.get(i);
+        if (slot != null && slot.getHasStack()) {
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
+            if (i < this.inventoryRows * 9) {
+                if (!this.mergeItemStack(itemstack1, this.inventoryRows * 9, this.inventorySlots.size(), true)) {
+                    return null;
+                }
+            } else if (!this.mergeItemStack(itemstack1, 0, this.inventoryRows * 9, false)) {
+                return null;
+            }
+
+            if (itemstack1.stackSize == 0) {
+                slot.putStack((ItemStack) null);
+            }
+        }
+
+        return itemstack;
     }
 }
