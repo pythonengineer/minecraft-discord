@@ -364,7 +364,7 @@ public final class EntityRenderer {
             this.setupFog();
             var23.renderSky(var1);
             this.setupFog();
-            if(this.mc.objectMouseOver != null) {
+            if(this.mc.objectMouseOver != null && var30.isInsideOfMaterial()) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 var23.drawBlockBreaking(this.mc.objectMouseOver, 0, var30.inventory.getCurrentItem());
                 var23.drawSelectionBox(this.mc.objectMouseOver, 0);
@@ -394,6 +394,13 @@ public final class EntityRenderer {
             GL11.glDepthMask(true);
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_BLEND);
+            if(this.mc.objectMouseOver != null && !var30.isInsideOfMaterial()) {
+                GL11.glDisable(GL11.GL_ALPHA_TEST);
+                var23.drawBlockBreaking(this.mc.objectMouseOver, 0, var30.inventory.getCurrentItem());
+                var23.drawSelectionBox(this.mc.objectMouseOver, 0);
+                GL11.glEnable(GL11.GL_ALPHA_TEST);
+            }
+
             GL11.glDisable(GL11.GL_FOG);
             if(this.mc.renderRain) {
                 float var41 = var1;
@@ -508,8 +515,8 @@ public final class EntityRenderer {
         this.fogColorGreen *= this.fogColorMultiplier;
         this.fogColorBlue *= this.fogColorMultiplier;
         Block var8 = Block.blocksList[var2.getBlockId((int)var3.posX, (int)(var3.posY + 0.12F), (int)var3.posZ)];
-        if(var8 != null && var8.getBlockMaterial() != Material.air) {
-            Material var9 = var8.getBlockMaterial();
+        if(var8 != null && var8.material != Material.air) {
+            Material var9 = var8.material;
             if(var9 == Material.water) {
                 this.fogColorRed = 0.02F;
                 this.fogColorGreen = 0.02F;
@@ -552,8 +559,8 @@ public final class EntityRenderer {
         GL11.glNormal3f(0.0F, -1.0F, 0.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         Block var7 = Block.blocksList[var1.getBlockId((int)var2.posX, (int)(var2.posY + 0.12F), (int)var2.posZ)];
-        if(var7 != null && var7.getBlockMaterial() != Material.air) {
-            Material var8 = var7.getBlockMaterial();
+        if(var7 != null && var7.material != Material.air) {
+            Material var8 = var7.material;
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
             if(var8 == Material.water) {
                 GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F);

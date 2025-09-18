@@ -8,9 +8,11 @@ import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
+import net.minecraft.game.level.material.Material;
 
 public class EntityPlayer extends EntityLiving {
     public InventoryPlayer inventory = new InventoryPlayer();
@@ -129,6 +131,17 @@ public class EntityPlayer extends EntityLiving {
         }
 
         return var3;
+    }
+
+    public final boolean canHarvestBlock(Block var1) {
+        Block var2 = var1;
+        InventoryPlayer var3 = this.inventory;
+        if(var2.material != Material.rock) {
+            return true;
+        } else {
+            ItemStack var4 = var3.getStackInSlot(var3.currentItem);
+            return var4 != null ? Item.itemsList[var4.itemID].canHarvestBlock(var2) : false;
+        }
     }
 
     protected void writeEntityToNBT(NBTTagCompound var1) {

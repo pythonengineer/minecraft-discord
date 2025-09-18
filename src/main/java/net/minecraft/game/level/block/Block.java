@@ -96,13 +96,15 @@ public class Block {
     public float maxZ;
     public StepSound stepSound;
     public float blockParticleGravity;
+    public final Material material;
 
-    protected Block(int var1) {
+    protected Block(int var1, Material var2) {
         this.stepSound = soundPowderFootstep;
         this.blockParticleGravity = 1.0F;
         if(blocksList[var1] != null) {
             throw new IllegalArgumentException("Slot " + var1 + " is already occupied by " + blocksList[var1] + " when adding " + this);
         } else {
+            this.material = var2;
             blocksList[var1] = this;
             this.blockID = var1;
             this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -111,6 +113,11 @@ public class Block {
             canBlockGrass[var1] = this.renderAsNormalBlock();
             isBlockContainer[var1] = false;
         }
+    }
+
+    protected Block(int var1, int var2, Material var3) {
+        this(var1, var3);
+        this.blockIndexInTexture = var2;
     }
 
     private Block setLightOpacity(int var1) {
@@ -158,11 +165,6 @@ public class Block {
         this.maxZ = var6;
     }
 
-    protected Block(int var1, int var2) {
-        this(var1);
-        this.blockIndexInTexture = var2;
-    }
-
     public float getBlockBrightness(World var1, int var2, int var3, int var4) {
         return var1.getBlockLightValue(var2, var3, var4);
     }
@@ -204,10 +206,6 @@ public class Block {
     public void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4) {
     }
 
-    public Material getBlockMaterial() {
-        return Material.air;
-    }
-
     public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
     }
 
@@ -230,7 +228,7 @@ public class Block {
     }
 
     public final int blockStrength(EntityPlayer var1) {
-        return (int)(this.hardness / var1.getStrVsBlock(this) * 30.0F);
+        return this.hardness < 0.0F ? -1 : (!var1.canHarvestBlock(this) ? -1 : (int)(this.hardness / var1.getStrVsBlock(this) * 30.0F));
     }
 
     public void dropBlockAsItem(World var1, int var2, int var3, int var4) {
@@ -379,7 +377,7 @@ public class Block {
     }
 
     static {
-        Block var10000 = (new BlockStone(1, 1)).setHardness(1.0F).setResistance(10.0F);
+        Block var10000 = (new BlockStone(1, 1)).setHardness(1.5F).setResistance(10.0F);
         StepSound var1 = soundStoneFootstep;
         Block var0 = var10000;
         var0.stepSound = var1;
@@ -394,12 +392,12 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         dirt = var0;
-        var10000 = (new Block(4, 16)).setHardness(1.5F).setResistance(10.0F);
+        var10000 = (new Block(4, 16, Material.rock)).setHardness(2.0F).setResistance(10.0F);
         var1 = soundStoneFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         cobblestone = var0;
-        var10000 = (new Block(5, 4)).setHardness(1.5F).setResistance(5.0F);
+        var10000 = (new Block(5, 4, Material.wood)).setHardness(1.5F).setResistance(5.0F);
         var1 = soundWoodFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -409,7 +407,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         sapling = var0;
-        var10000 = (new Block(7, 17)).setHardness(999.0F).setResistance(6000000.0F);
+        var10000 = (new Block(7, 17, Material.rock)).setHardness(-1.0F).setResistance(6000000.0F);
         var1 = soundStoneFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -443,7 +441,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         oreCoal = var0;
-        var10000 = (new BlockLog(17)).setHardness(2.5F);
+        var10000 = (new BlockLog(17)).setHardness(1.0F);
         var1 = soundWoodFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -458,87 +456,87 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         sponge = var0;
-        var10000 = (new BlockGlass(20, 49, false)).setHardness(0.3F);
+        var10000 = (new BlockGlass(20, 49, Material.glass, false)).setHardness(0.3F);
         var1 = soundMetalFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         glass = var0;
-        var10000 = (new Block(21, 64)).setHardness(0.8F);
+        var10000 = (new Block(21, 64, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothRed = var0;
-        var10000 = (new Block(22, 65)).setHardness(0.8F);
+        var10000 = (new Block(22, 65, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothOrange = var0;
-        var10000 = (new Block(23, 66)).setHardness(0.8F);
+        var10000 = (new Block(23, 66, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothYellow = var0;
-        var10000 = (new Block(24, 67)).setHardness(0.8F);
+        var10000 = (new Block(24, 67, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothChartreuse = var0;
-        var10000 = (new Block(25, 68)).setHardness(0.8F);
+        var10000 = (new Block(25, 68, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothGreen = var0;
-        var10000 = (new Block(26, 69)).setHardness(0.8F);
+        var10000 = (new Block(26, 69, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothSpringGreen = var0;
-        var10000 = (new Block(27, 70)).setHardness(0.8F);
+        var10000 = (new Block(27, 70, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothCyan = var0;
-        var10000 = (new Block(28, 71)).setHardness(0.8F);
+        var10000 = (new Block(28, 71, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothCapri = var0;
-        var10000 = (new Block(29, 72)).setHardness(0.8F);
+        var10000 = (new Block(29, 72, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothUltramarine = var0;
-        var10000 = (new Block(30, 73)).setHardness(0.8F);
+        var10000 = (new Block(30, 73, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothViolet = var0;
-        var10000 = (new Block(31, 74)).setHardness(0.8F);
+        var10000 = (new Block(31, 74, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothPurple = var0;
-        var10000 = (new Block(32, 75)).setHardness(0.8F);
+        var10000 = (new Block(32, 75, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothMagenta = var0;
-        var10000 = (new Block(33, 76)).setHardness(0.8F);
+        var10000 = (new Block(33, 76, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothRose = var0;
-        var10000 = (new Block(34, 77)).setHardness(0.8F);
+        var10000 = (new Block(34, 77, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothDarkGray = var0;
-        var10000 = (new Block(35, 78)).setHardness(0.8F);
+        var10000 = (new Block(35, 78, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
         clothGray = var0;
-        var10000 = (new Block(36, 79)).setHardness(0.8F);
+        var10000 = (new Block(36, 79, Material.cloth)).setHardness(0.8F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -583,7 +581,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         stairSingle = var0;
-        var10000 = (new Block(45, 7)).setHardness(2.0F).setResistance(10.0F);
+        var10000 = (new Block(45, 7, Material.rock)).setHardness(2.0F).setResistance(10.0F);
         var1 = soundStoneFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -598,7 +596,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         bookShelf = var0;
-        var10000 = (new Block(48, 36)).setHardness(1.0F).setResistance(10.0F);
+        var10000 = (new Block(48, 36, Material.rock)).setHardness(2.0F).setResistance(10.0F);
         var1 = soundStoneFootstep;
         var0 = var10000;
         var0.stepSound = var1;

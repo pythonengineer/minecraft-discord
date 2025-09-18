@@ -1,10 +1,11 @@
 package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockLog extends Block {
     protected BlockLog(int var1) {
-		super(17);
+        super(17, Material.wood);
 		this.blockIndexInTexture = 20;
 	}
 

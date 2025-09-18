@@ -2,12 +2,13 @@ package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockSource extends Block {
     private int fluid;
 
     protected BlockSource(int var1, int var2) {
-        super(var1, Block.blocksList[var2].blockIndexInTexture);
+        super(var1, Block.blocksList[var2].blockIndexInTexture, Material.water);
         this.fluid = var2;
         this.setTickOnLoad(true);
     }

@@ -2,10 +2,11 @@ package net.minecraft.game.level.block;
 
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockWorkbench extends Block {
     protected BlockWorkbench(int var1) {
-        super(58);
+        super(58, Material.wood);
         this.blockIndexInTexture = 59;
     }
 

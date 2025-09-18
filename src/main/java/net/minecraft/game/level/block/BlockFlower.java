@@ -2,11 +2,12 @@ package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public class BlockFlower extends Block {
 	protected BlockFlower(int var1, int var2) {
-		super(var1);
+        super(var1, Material.plants);
 		this.blockIndexInTexture = var2;
 		this.setTickOnLoad(true);
         this.setBlockBounds(0.3F, 0.0F, 0.3F, 0.7F, 0.6F, 0.7F);

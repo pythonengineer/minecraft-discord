@@ -24,6 +24,7 @@ public final class GameSettings {
     public boolean limitFramerate = false;
     public boolean touchscreen;
     public int guiScale = 3;
+    public boolean openAlFail = false;
     public KeyBinding keyBindForward = new KeyBinding("Forward", 17);
     public KeyBinding keyBindLeft = new KeyBinding("Left", 30);
     public KeyBinding keyBindBack = new KeyBinding("Back", 31);
@@ -151,6 +152,10 @@ public final class GameSettings {
                         this.limitFramerate = var5[1].equals("true");
                     }
 
+                    if(var5[0].equals("openAlFail")) {
+                        this.openAlFail = var5[1].equals("true");
+                    }
+
                     for(int var3 = 0; var3 < this.keyBindings.length; ++var3) {
                         if(var5[0].equals("key_" + this.keyBindings[var3].keyDescription)) {
                             this.keyBindings[var3].keyCode = Integer.parseInt(var5[1]);
@@ -164,7 +169,7 @@ public final class GameSettings {
         }
     }
 
-    private void saveOptions() {
+    public final void saveOptions() {
         try {
             EaglerOutputStream bao = new EaglerOutputStream();
             PrintWriter var1 = new PrintWriter(new OutputStreamWriter(bao));
@@ -177,6 +182,9 @@ public final class GameSettings {
             var1.println("bobView:" + this.viewBobbing);
             var1.println("anaglyph3d:" + this.anaglyph);
             var1.println("limitFramerate:" + this.limitFramerate);
+            if(this.openAlFail) {
+                var1.println("openAlFail:" + this.openAlFail);
+            }
 
             for(int var2 = 0; var2 < this.keyBindings.length; ++var2) {
                 var1.println("key_" + this.keyBindings[var2].keyDescription + ":" + this.keyBindings[var2].keyCode);

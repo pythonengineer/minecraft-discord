@@ -1,10 +1,11 @@
 package net.minecraft.game.level.block;
 
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockSponge extends Block {
     protected BlockSponge(int var1) {
-		super(19);
+        super(19, Material.sponge);
 		this.blockIndexInTexture = 48;
 	}
 

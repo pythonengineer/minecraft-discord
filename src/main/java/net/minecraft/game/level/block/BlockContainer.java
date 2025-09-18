@@ -2,10 +2,11 @@ package net.minecraft.game.level.block;
 
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.tileentity.TileEntity;
+import net.minecraft.game.level.material.Material;
 
 public abstract class BlockContainer extends Block {
-    protected BlockContainer(int var1) {
-        super(var1);
+    protected BlockContainer(int var1, Material var2) {
+        super(var1, var2);
     }
 
     public final void onBlockAdded(World var1, int var2, int var3, int var4) {

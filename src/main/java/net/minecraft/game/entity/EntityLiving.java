@@ -228,7 +228,7 @@ public class EntityLiving extends Entity {
 	}
 
 	public void onDeath(Entity var1) {
-        int var3 = this.rand.nextInt(3);
+        int var3 = this.rand.nextInt(4);
         int var2 = this.rand.nextInt(3);
         if(var3 == 0) {
             for(var3 = 0; var3 < var2; ++var3) {
@@ -240,11 +240,14 @@ public class EntityLiving extends Entity {
                 this.entityDropItem(Item.gunpowder.shiftedIndex, 1);
             }
 
+        } else if(var3 != 2) {
+            if(var3 == 3) {
+                this.entityDropItem(Item.flintSteel.shiftedIndex, 1);
+            }
+
         } else {
-            if(var3 == 2) {
-                for(var3 = 0; var3 < var2; ++var3) {
-                    this.entityDropItem(Item.feather.shiftedIndex, 1);
-                }
+            for(var3 = 0; var3 < var2; ++var3) {
+                this.entityDropItem(Item.feather.shiftedIndex, 1);
             }
 
         }

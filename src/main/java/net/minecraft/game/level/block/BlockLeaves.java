@@ -1,10 +1,11 @@
 package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockLeaves extends BlockLeavesBase {
     protected BlockLeaves(int var1, int var2) {
-        super(18, 22, true);
+        super(18, 22, Material.plants, true);
 	}
 
 	public final int quantityDropped(EaglercraftRandom var1) {

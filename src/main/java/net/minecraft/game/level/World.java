@@ -717,7 +717,7 @@ public final class World {
             for(var2 = var4; var2 < var5; ++var2) {
                 for(int var8 = var6; var8 < var7; ++var8) {
                     Block var9 = Block.blocksList[this.getBlockId(var10, var2, var8)];
-                    if(var9 != null && var9.getBlockMaterial() != Material.air) {
+                    if(var9 != null && var9.material.getIsLiquid()) {
                         return true;
                     }
                 }
@@ -761,7 +761,7 @@ public final class World {
             for(int var8 = var5; var8 < var6; ++var8) {
                 for(int var9 = var7; var9 < var11; ++var9) {
                     Block var10 = Block.blocksList[this.getBlockId(var3, var8, var9)];
-                    if(var10 != null && var10.getBlockMaterial() == var2) {
+                    if(var10 != null && var10.material == var2) {
                         return true;
                     }
                 }
@@ -813,7 +813,7 @@ public final class World {
 
     private int getFirstUncoveredBlock(int var1, int var2) {
         int var3;
-        for(var3 = this.height; (this.getBlockId(var1, var3 - 1, var2) == 0 || Block.blocksList[this.getBlockId(var1, var3 - 1, var2)].getBlockMaterial() != Material.air) && var3 > 0; --var3) {
+        for(var3 = this.height; (this.getBlockId(var1, var3 - 1, var2) == 0 || Block.blocksList[this.getBlockId(var1, var3 - 1, var2)].material == Material.air) && var3 > 0; --var3) {
         }
 
         return var3;
@@ -894,12 +894,12 @@ public final class World {
 
     public final Material getBlockMaterial(int var1, int var2, int var3) {
         var1 = this.getBlockId(var1, var2, var3);
-        return var1 == 0 ? Material.air : Block.blocksList[var1].getBlockMaterial();
+        return var1 == 0 ? Material.air : Block.blocksList[var1].material;
     }
 
     public final boolean isWater(int var1, int var2, int var3) {
         var1 = this.getBlockId(var1, var2, var3);
-        return var1 > 0 && Block.blocksList[var1].getBlockMaterial() == Material.water;
+        return var1 > 0 && Block.blocksList[var1].material == Material.water;
     }
 
     public final MovingObjectPosition rayTraceBlocks(Vec3D var1, Vec3D var2) {
@@ -1021,7 +1021,7 @@ public final class World {
 
                     int var21 = this.getBlockId(var6, var7, var8);
                     Block var23 = Block.blocksList[var21];
-                    if(var21 > 0 && var23.getBlockMaterial() == Material.air && var23.isCollidable()) {
+                    if(var21 > 0 && var23.isCollidable()) {
                         MovingObjectPosition var22 = var23.collisionRayTrace(this, var6, var7, var8, var1, var2);
                         if(var22 != null) {
                             return var22;
@@ -1402,7 +1402,7 @@ public final class World {
         }
     }
 
-    public final boolean floodFill(int var1, int var2, int var3, int var4, int var5) {
+    public final int floodFill(int var1, int var2, int var3, int var4, int var5) {
         if(var1 >= 0 && var2 >= 0 && var3 >= 0 && var1 < this.width && var2 < this.height && var3 < this.length) {
             if(++floodFillCounter == 30000) {
                 Arrays.fill(this.floodFillCounters, (short)0);
@@ -1417,7 +1417,7 @@ public final class World {
                 int var7;
                 do {
                     if(var11 <= 0) {
-                        return true;
+                        return 1;
                     }
 
                     --var11;
@@ -1427,7 +1427,7 @@ public final class World {
                 var1 = var7 % 1024;
                 var3 = var7 / 1024;
                 if(var1 == 0 || var1 == this.width - 1 || var2 == 0 || var2 == this.height - 1 || var3 == 0 || var3 == this.length - 1) {
-                    return false;
+                    return 2;
                 }
 
                 while(var1 > 0 && this.floodFillCounters[var7 - 1] != floodFillCounter && (this.blocks[(var2 * this.length + var3) * this.width + var1 - 1] == var4 || this.blocks[(var2 * this.length + var3) * this.width + var1 - 1] == var5)) {
@@ -1436,14 +1436,14 @@ public final class World {
                 }
 
                 if(var1 > 0 && this.blocks[(var2 * this.length + var3) * this.width + var1 - 1] == 0) {
-                    return false;
+                    return 0;
                 }
 
                 boolean var8 = false;
 
                 for(boolean var9 = false; var1 < this.width && this.floodFillCounters[var7] != floodFillCounter && (this.blocks[(var2 * this.length + var3) * this.width + var1] == var4 || this.blocks[(var2 * this.length + var3) * this.width + var1] == var5); ++var1) {
                     if(var1 == 0 || var1 == this.width - 1) {
-                        return false;
+                        return 2;
                     }
 
                     byte var10;
@@ -1451,7 +1451,7 @@ public final class World {
                     if(var3 > 0) {
                         var10 = this.blocks[(var2 * this.length + var3 - 1) * this.width + var1];
                         if(var10 == 0) {
-                            return false;
+                            return 0;
                         }
 
                         var12 = this.floodFillCounters[var7 - 1024] != floodFillCounter && (var10 == var4 || var10 == var5);
@@ -1465,7 +1465,7 @@ public final class World {
                     if(var3 < this.length - 1) {
                         var10 = this.blocks[(var2 * this.length + var3 + 1) * this.width + var1];
                         if(var10 == 0) {
-                            return false;
+                            return 0;
                         }
 
                         var12 = this.floodFillCounters[var7 + 1024] != floodFillCounter && (var10 == var4 || var10 == var5);
@@ -1481,9 +1481,9 @@ public final class World {
                 }
             } while(var1 >= this.width || this.blocks[(var2 * this.length + var3) * this.width + var1] != 0);
 
-            return false;
+            return 0;
         } else {
-            return false;
+            return 0;
         }
     }
 

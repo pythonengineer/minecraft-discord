@@ -1,12 +1,13 @@
 package net.minecraft.game.level.block;
 
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 
 public class BlockLeavesBase extends Block {
     private boolean renderThrough = true;
 
-    protected BlockLeavesBase(int var1, int var2, boolean var3) {
-        super(var1, var2);
+    protected BlockLeavesBase(int var1, int var2, Material var3, boolean var4) {
+        super(var1, var2, var3);
     }
 
     public final boolean isOpaqueCube() {

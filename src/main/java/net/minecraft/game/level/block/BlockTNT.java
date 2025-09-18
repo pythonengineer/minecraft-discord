@@ -3,10 +3,11 @@ package net.minecraft.game.level.block;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockTNT extends Block {
     public BlockTNT(int var1, int var2) {
-		super(46, 8);
+        super(46, 8, Material.tnt);
 	}
 
 	public final int getBlockTexture(int var1) {

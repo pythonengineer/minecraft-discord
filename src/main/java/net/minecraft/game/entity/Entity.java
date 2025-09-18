@@ -339,7 +339,7 @@ public abstract class Entity {
 
     public final boolean isInsideOfMaterial() {
         int var1 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY + 0.12F), (int)this.posZ);
-        return var1 != 0 ? Block.blocksList[var1].getBlockMaterial().equals(Material.water) : false;
+        return var1 != 0 ? Block.blocksList[var1].material == Material.water : false;
     }
 
     public final boolean handleLavaMovement() {

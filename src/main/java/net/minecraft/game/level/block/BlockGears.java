@@ -1,11 +1,12 @@
 package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public final class BlockGears extends Block {
     protected BlockGears(int var1, int var2) {
-        super(55, 62);
+        super(55, 62, Material.circuits);
     }
 
     public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {

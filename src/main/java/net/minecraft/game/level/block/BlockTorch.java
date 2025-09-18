@@ -2,13 +2,14 @@ package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
 
 public final class BlockTorch extends Block {
     protected BlockTorch(int var1, int var2) {
-        super(50, 80);
+        super(50, 80, Material.circuits);
     }
 
     public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {

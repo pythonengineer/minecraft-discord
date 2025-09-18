@@ -9,12 +9,13 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.tileentity.TileEntity;
 import net.minecraft.game.level.block.tileentity.TileEntityChest;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockChest extends BlockContainer {
     private EaglercraftRandom random = new EaglercraftRandom();
 
     protected BlockChest(int var1) {
-        super(54);
+        super(54, Material.wood);
         this.blockIndexInTexture = 26;
     }
 

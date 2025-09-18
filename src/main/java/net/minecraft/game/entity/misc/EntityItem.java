@@ -6,6 +6,7 @@ import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
+import net.minecraft.game.level.material.Material;
 
 public class EntityItem extends Entity {
 	public ItemStack item;
@@ -38,6 +39,13 @@ public class EntityItem extends Entity {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		this.motionY -= 0.04F;
+        if(this.worldObj.getBlockMaterial((int)this.posX, (int)this.posY, (int)this.posZ) == Material.lava) {
+            this.motionY = 0.2F;
+            this.motionX = (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F;
+            this.motionZ = (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F;
+            this.worldObj.playSoundAtEntity(this, "random.fizz", 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
+        }
+
 		float var4 = this.posZ;
 		float var3 = this.posY;
 		float var2 = this.posX;

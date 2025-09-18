@@ -11,6 +11,7 @@ public class Item {
     public static Item shovel;
     public static Item pickaxeSteel;
     public static Item axeSteel;
+    public static Item flintSteel;
     public static Item bow;
     public static Item arrow;
     public static Item coal;
@@ -92,6 +93,10 @@ public class Item {
         return 1;
     }
 
+    public boolean canHarvestBlock(Block var1) {
+        return false;
+    }
+
     public boolean shouldUseOnTouchEagler(ItemStack itemStack) {
         return false;
     }
@@ -116,6 +121,7 @@ public class Item {
         var1 = 5;
         ItemFlintAndSteel var4 = var12;
         var4.iconIndex = var1;
+        flintSteel = var4;
         ItemFood var13 = new ItemFood(4, 4);
         var1 = 4;
         ItemFood var5 = var13;

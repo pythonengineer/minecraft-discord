@@ -2,6 +2,7 @@ package net.minecraft.game.level.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public final class BlockFire extends Block {
@@ -9,7 +10,7 @@ public final class BlockFire extends Block {
 	private int[] abilityToCatchFire = new int[256];
 
 	protected BlockFire(int var1, int var2) {
-		super(51, 31);
+        super(51, 31, Material.fire);
 		this.setBurnRate(Block.planks.blockID, 5, 20);
 		this.setBurnRate(Block.wood.blockID, 5, 5);
 		this.setBurnRate(Block.leaves.blockID, 30, 60);

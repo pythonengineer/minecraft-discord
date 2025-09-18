@@ -18,12 +18,7 @@ public final class SoundManager {
 
     public final void loadSoundSettings(GameSettings var1) {
         this.options = var1;
-
-        try {
-            this.sndManager = new EaglercraftSoundManager();
-        } catch (Exception var2) {
-            System.err.println("error linking with the LibraryJavaSound plug-in");
-        }
+        this.sndManager = new EaglercraftSoundManager();
     }
 
     public final void registerSounds() {

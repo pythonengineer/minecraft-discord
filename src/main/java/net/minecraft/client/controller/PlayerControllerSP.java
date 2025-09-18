@@ -75,7 +75,7 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public final void clickBlock(int var1, int var2, int var3) {
 		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		if(var4 > 0 && Block.blocksList[var4].blockStrength(this.mc.thePlayer) <= 0) {
+		if(var4 > 0 && Block.blocksList[var4].blockStrength(this.mc.thePlayer) == 0) {
 			this.sendBlockRemoved(var1, var2, var3);
 		}
 
@@ -96,6 +96,11 @@ public final class PlayerControllerSP extends PlayerController {
 				if(var4 != 0) {
 					Block var6 = Block.blocksList[var4];
 					this.prevBlockDamage = var6.blockStrength(this.mc.thePlayer);
+                    if(this.prevBlockDamage < 0) {
+                        this.curBlockDamage %= 4;
+                        this.prevBlockDamage = 99999999;
+                    }
+
 					if(this.curBlockDamage % 4 == 0 && var6 != null) {
 						SoundManager var10000 = this.mc.sndManager;
 						String var10001 = "step." + var6.stepSound.soundDir;

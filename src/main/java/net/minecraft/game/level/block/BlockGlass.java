@@ -1,12 +1,13 @@
 package net.minecraft.game.level.block;
 
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 
 public final class BlockGlass extends Block {
     private boolean renderThrough = false;
 
-    protected BlockGlass(int var1, int var2, boolean var3) {
-        super(20, 49);
+    protected BlockGlass(int var1, int var2, Material var3, boolean var4) {
+        super(20, 49, var3);
     }
 
     public final boolean isOpaqueCube() {
