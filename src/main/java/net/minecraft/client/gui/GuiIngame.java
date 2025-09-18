@@ -144,19 +144,12 @@ public final class GuiIngame extends Gui {
                     GL11.glTranslatef((float)(-(var12 + 8)), (float)(-(var7 + 12)), 0.0F);
                 }
 
-                itemRenderer.renderItemIntoGUI(this.mc.fontRenderer, this.mc.renderEngine, var13, var12, var7);
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, var13, var12, var7);
                 if(var141 > 0.0F) {
                     GL11.glPopMatrix();
                 }
 
-                if(var13.stackSize > 1) {
-                    String var20 = "" + var13.stackSize;
-                    GL11.glDisable(GL11.GL_LIGHTING);
-                    GL11.glDisable(GL11.GL_DEPTH_TEST);
-                    this.mc.fontRenderer.drawStringWithShadow(var20, var12 + 19 - 2 - this.mc.fontRenderer.getStringWidth(var20), var7 + 6 + 3, 16777215);
-                    GL11.glEnable(GL11.GL_LIGHTING);
-                    GL11.glEnable(GL11.GL_DEPTH_TEST);
-                }
+                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var13, var12, var7);
             }
         }
 

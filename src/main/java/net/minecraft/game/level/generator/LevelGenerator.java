@@ -226,10 +226,10 @@ public final class LevelGenerator {
 
 				while(true) {
 					if(var17 >= var51) {
-                        this.populateOre(Block.oreCoal.blockID, 90, 1, 5);
-                        this.populateOre(Block.oreIron.blockID, 70, 2, 5);
-                        this.populateOre(Block.oreGold.blockID, 30, 3, 5);
-                        this.populateOre(Block.oreDiamond.blockID, 20, 4, 5);
+                        this.populateOre(Block.oreCoal.blockID, 90, 1, 5, (var4 << 2) / 4);
+                        this.populateOre(Block.oreIron.blockID, 70, 2, 5, var4 * 3 / 4);
+                        this.populateOre(Block.oreGold.blockID, 30, 3, 5, (var4 << 1) / 4);
+                        this.populateOre(Block.oreDiamond.blockID, 20, 4, 5, var4 / 4);
 						break;
 					}
 
@@ -551,57 +551,59 @@ public final class LevelGenerator {
 
 	}
 
-	private void populateOre(int var1, int var2, int var3, int var4) {
-		byte var25 = (byte)var1;
-		var4 = this.width;
-		int var5 = this.depth;
-		int var6 = this.height;
-		int var7 = var4 * var5 * var6 / 256 / 64 * var2 / 100;
+    private void populateOre(int var1, int var2, int var3, int var4, int var5) {
+        byte var26 = (byte)var1;
+        var4 = this.width;
+        int var6 = this.depth;
+        int var7 = this.height;
+        int var8 = var4 * var6 * var7 / 256 / 64 * var2 / 100;
 
-		for(int var8 = 0; var8 < var7; ++var8) {
-			this.setNextPhase(var8 * 100 / (var7 - 1) / 5 + var3 * 100 / 5);
-			float var9 = this.rand.nextFloat() * (float)var4;
-			float var10 = this.rand.nextFloat() * (float)var6;
-			float var11 = this.rand.nextFloat() * (float)var5;
-			int var12 = (int)((this.rand.nextFloat() + this.rand.nextFloat()) * 75.0F * (float)var2 / 100.0F);
-			float var13 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-			float var14 = 0.0F;
-			float var15 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-			float var16 = 0.0F;
+        for(int var9 = 0; var9 < var8; ++var9) {
+            this.setNextPhase(var9 * 100 / (var8 - 1) / 5 + var3 * 100 / 5);
+            float var10 = this.rand.nextFloat() * (float)var4;
+            float var11 = this.rand.nextFloat() * (float)var7;
+            float var12 = this.rand.nextFloat() * (float)var6;
+            if(var11 <= (float)var5) {
+                int var13 = (int)((this.rand.nextFloat() + this.rand.nextFloat()) * 75.0F * (float)var2 / 100.0F);
+                float var14 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+                float var15 = 0.0F;
+                float var16 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+                float var17 = 0.0F;
 
-			for(int var17 = 0; var17 < var12; ++var17) {
-				var9 += MathHelper.sin(var13) * MathHelper.cos(var15);
-				var11 += MathHelper.cos(var13) * MathHelper.cos(var15);
-				var10 += MathHelper.sin(var15);
-				var13 += var14 * 0.2F;
-				var14 *= 0.9F;
-				var14 += this.rand.nextFloat() - this.rand.nextFloat();
-				var15 += var16 * 0.5F;
-				var15 *= 0.5F;
-				var16 *= 0.9F;
-				var16 += this.rand.nextFloat() - this.rand.nextFloat();
-				float var18 = MathHelper.sin((float)var17 * (float)Math.PI / (float)var12) * (float)var2 / 100.0F + 1.0F;
+                for(int var18 = 0; var18 < var13; ++var18) {
+                    var10 += MathHelper.sin(var14) * MathHelper.cos(var16);
+                    var12 += MathHelper.cos(var14) * MathHelper.cos(var16);
+                    var11 += MathHelper.sin(var16);
+                    var14 += var15 * 0.2F;
+                    var15 *= 0.9F;
+                    var15 += this.rand.nextFloat() - this.rand.nextFloat();
+                    var16 += var17 * 0.5F;
+                    var16 *= 0.5F;
+                    var17 *= 0.9F;
+                    var17 += this.rand.nextFloat() - this.rand.nextFloat();
+                    float var19 = MathHelper.sin((float)var18 * (float)Math.PI / (float)var13) * (float)var2 / 100.0F + 1.0F;
 
-				for(int var19 = (int)(var9 - var18); var19 <= (int)(var9 + var18); ++var19) {
-					for(int var20 = (int)(var10 - var18); var20 <= (int)(var10 + var18); ++var20) {
-						for(int var21 = (int)(var11 - var18); var21 <= (int)(var11 + var18); ++var21) {
-							float var22 = (float)var19 - var9;
-							float var23 = (float)var20 - var10;
-							float var24 = (float)var21 - var11;
-							var22 = var22 * var22 + var23 * var23 * 2.0F + var24 * var24;
-							if(var22 < var18 * var18 && var19 > 0 && var20 > 0 && var21 > 0 && var19 < this.width - 1 && var20 < this.height - 1 && var21 < this.depth - 1) {
-								int var26 = (var20 * this.depth + var21) * this.width + var19;
-								if(this.blocksByteArray[var26] == Block.stone.blockID) {
-									this.blocksByteArray[var26] = var25;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+                    for(int var20 = (int)(var10 - var19); var20 <= (int)(var10 + var19); ++var20) {
+                        for(int var21 = (int)(var11 - var19); var21 <= (int)(var11 + var19); ++var21) {
+                            for(int var22 = (int)(var12 - var19); var22 <= (int)(var12 + var19); ++var22) {
+                                float var23 = (float)var20 - var10;
+                                float var24 = (float)var21 - var11;
+                                float var25 = (float)var22 - var12;
+                                var23 = var23 * var23 + var24 * var24 * 2.0F + var25 * var25;
+                                if(var23 < var19 * var19 && var20 > 0 && var21 > 0 && var22 > 0 && var20 < this.width - 1 && var21 < this.height - 1 && var22 < this.depth - 1) {
+                                    int var27 = (var21 * this.depth + var22) * this.width + var20;
+                                    if(this.blocksByteArray[var27] == Block.stone.blockID) {
+                                        this.blocksByteArray[var27] = var26;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-	}
+    }
 
 	private void setNextPhase(int var1) {
 		this.guiLoading.setLoadingProgress(var1);

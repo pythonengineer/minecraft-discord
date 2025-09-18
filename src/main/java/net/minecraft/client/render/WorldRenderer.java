@@ -35,7 +35,7 @@ public final class WorldRenderer {
 		this.posX = var2;
 		this.posY = var3;
 		this.posZ = var4;
-        this.sizeWidth = this.sizeHeight = this.sizeDepth = 8;
+        this.sizeWidth = this.sizeHeight = this.sizeDepth = 16;
         this.posXPlus = var2 + this.sizeWidth / 2;
         this.posYPlus = var3 + this.sizeHeight / 2;
         this.posZPlus = var4 + this.sizeDepth / 2;

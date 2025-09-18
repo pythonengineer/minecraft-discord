@@ -13,8 +13,9 @@ public class EntityLiving extends Entity {
 	public float prevRenderYawOffset = 0.0F;
 	private float rotationYawHead;
 	private float prevRotationYawHead;
+    public String texture = "/char.png";
     private int scoreValue = 0;
-	public int health = 20;
+	public int health;
 	public int prevHealth;
 	public int hurtTime;
 	public int maxHurtTime;
@@ -24,12 +25,14 @@ public class EntityLiving extends Entity {
 	public float prevCameraPitch;
 	public float cameraPitch;
 	protected AI entityAI = null;
-	public int unused0 = -1;
-	public float unused1 = (float)(Math.random() * (double)0.9F + (double)0.1F);
-	public int unused2 = this.rand.nextInt(3);
+    public float moveStrafing;
+    public float moveForward;
+    public float randomYawVelocity;
 
 	public EntityLiving(World var1) {
 		super(var1);
+        Math.random();
+        this.health = 20;
         this.preventEntitySpawning = true;
 		Math.random();
 		this.setPosition(this.posX, this.posY, this.posZ);
@@ -182,6 +185,7 @@ public class EntityLiving extends Entity {
 	public final void attackEntityFrom(Entity var1, int var2) {
 		if(this.worldObj.survivalWorld) {
 			if(this.health > 0) {
+                this.moveForward = 1.5F;
 				if((float)this.heartsLife > (float)this.heartsHalvesLife / 2.0F) {
 					if(this.prevHealth - var2 >= this.health) {
 						return;
@@ -225,20 +229,20 @@ public class EntityLiving extends Entity {
 
 	public void onDeath(Entity var1) {
         int var3 = this.rand.nextInt(3);
-        int var2;
-        if(this.unused2 == 0) {
-            for(var2 = 0; var2 < var3; ++var2) {
+        int var2 = this.rand.nextInt(3);
+        if(var3 == 0) {
+            for(var3 = 0; var3 < var2; ++var3) {
                 this.entityDropItem(Item.silk.shiftedIndex, 1);
             }
 
-        } else if(this.unused2 == 1) {
-            for(var2 = 0; var2 < var3; ++var2) {
+        } else if(var3 == 1) {
+            for(var3 = 0; var3 < var2; ++var3) {
                 this.entityDropItem(Item.gunpowder.shiftedIndex, 1);
             }
 
         } else {
-            if(this.unused2 == 2) {
-                for(var2 = 0; var2 < var3; ++var2) {
+            if(var3 == 2) {
+                for(var3 = 0; var3 < var2; ++var3) {
                     this.entityDropItem(Item.feather.shiftedIndex, 1);
                 }
             }

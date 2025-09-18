@@ -118,6 +118,12 @@ public abstract class Entity {
                 }
 
                 this.worldObj.playSoundAtEntity(this, "random.splash", var1, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+
+                for(int var4 = 0; (float)var4 < 1.0F + this.width * 20.0F; ++var4) {
+                    float var2 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
+                    float var3 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
+                    this.worldObj.spawnParticle("bubble", this.posX + var2, this.boundingBox.minY - this.rand.nextFloat() * 0.2F, this.posZ + var3, this.motionX, this.motionY, this.motionZ);
+                }
             }
 
             this.fallDistance = 0.0F;

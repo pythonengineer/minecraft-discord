@@ -29,6 +29,7 @@ public class EntityItem extends Entity {
 	}
 
 	public final void onEntityUpdate() {
+        super.onEntityUpdate();
 		if(this.delayBeforeCanPickup > 0) {
 			--this.delayBeforeCanPickup;
 		}

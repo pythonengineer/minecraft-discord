@@ -17,11 +17,7 @@ public final class RenderItem extends Render {
 	private RenderBlocks renderBlocks = new RenderBlocks(Tessellator.instance);
 	private EaglercraftRandom random = new EaglercraftRandom();
 
-    public final void renderItemIntoGUI(FontRenderer var1, RenderEngine var2, ItemStack var3, int var4, int var5) {
-        this.renderItemIntoGUI(var1, var2, var3, var4, var5, null);
-    }
-
-    public final void renderItemIntoGUI(FontRenderer var1, RenderEngine var2, ItemStack var3, int var4, int var5, String s) {
+    public final void renderItemIntoGUI(RenderEngine var2, ItemStack var3, int var4, int var5) {
         if(var3 != null) {
             int var7;
             if(var3.itemID < 256 && Block.blocksList[var3.itemID].getRenderType() == 0) {
@@ -63,20 +59,55 @@ public final class RenderItem extends Render {
                 var9.draw();
                 GL11.glEnable(GL11.GL_LIGHTING);
             }
+        }
+    }
 
-            if(s == null && var3.stackSize > 1) {
-                s = "" + var3.stackSize;
+    public final void renderItemOverlayIntoGUI(FontRenderer var1, ItemStack var3, int var4, int var5) {
+        this.renderItemOverlayIntoGUI(var1, var3, var4, var5, null);
+    }
+
+    public final void renderItemOverlayIntoGUI(FontRenderer var1, ItemStack var2, int var3, int var4, String s) {
+        if(var2 != null) {
+            if(s == null && var2.stackSize > 1) {
+                s = "" + var2.stackSize;
             }
 
             if(s != null) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
-                var1.drawStringWithShadow(s, var4 + 19 - 2 - var1.getStringWidth(s), var5 + 6 + 3, 16777215);
+                var1.drawStringWithShadow(s, var3 + 19 - 2 - var1.getStringWidth(s), var4 + 6 + 3, 16777215);
+                GL11.glEnable(GL11.GL_LIGHTING);
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
+            }
+
+            if(var2.itemDamage > 0) {
+                int var9 = 13 - var2.itemDamage * 13 / var2.isItemStackDamageable();
+                int var7 = 255 - var2.itemDamage * 255 / var2.isItemStackDamageable();
+                GL11.glDisable(GL11.GL_LIGHTING);
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                Tessellator var8 = Tessellator.instance;
+                int var6 = 255 - var7 << 16 | var7 << 8;
+                var7 = (255 - var7) / 4 << 16 | 16128;
+                renderQuad(var8, var3 + 2, var4 + 13, 13, 2, 0);
+                renderQuad(var8, var3 + 2, var4 + 13, 12, 1, var7);
+                renderQuad(var8, var3 + 2, var4 + 13, var9, 1, var6);
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
                 GL11.glEnable(GL11.GL_LIGHTING);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
 
         }
+    }
+
+    private static void renderQuad(Tessellator var0, int var1, int var2, int var3, int var4, int var5) {
+        var0.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
+        var0.setColorOpaque_I(var5);
+        var0.addVertex((float)var1, (float)var2, 0.0F);
+        var0.addVertex((float)var1, (float)(var2 + var4), 0.0F);
+        var0.addVertex((float)(var1 + var3), (float)(var2 + var4), 0.0F);
+        var0.addVertex((float)(var1 + var3), (float)var2, 0.0F);
+        var0.draw();
     }
 
 	public final void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6) {

@@ -151,7 +151,7 @@ public final class BlockChest extends BlockContainer {
                     }
 
                     var7.stackSize -= var11;
-                    EntityItem var12 = new EntityItem(var1, (float)var2 + var8, (float)var3 + var9, (float)var4 + var10, new ItemStack(var7.itemID, var11));
+                    EntityItem var12 = new EntityItem(var1, (float)var2 + var8, (float)var3 + var9, (float)var4 + var10, new ItemStack(var7.itemID, var11, var7.itemDamage));
                     var12.motionX = (float)this.random.nextGaussian() * 0.05F;
                     var12.motionY = (float)this.random.nextGaussian() * 0.05F + 0.2F;
                     var12.motionZ = (float)this.random.nextGaussian() * 0.05F;

@@ -70,4 +70,8 @@ public class EntityPlayerSP extends EntityPlayer {
     public final void displayWorkbenchGUI() {
         this.mc.displayGuiScreen(new GuiCrafting(this.inventory));
     }
+
+    public final void displayGUIInventory() {
+        this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
+    }
 }

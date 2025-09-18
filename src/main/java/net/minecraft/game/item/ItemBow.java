@@ -14,10 +14,9 @@ public final class ItemBow extends Item {
         if(var3.inventory.consumeInventoryItem(Item.arrow.shiftedIndex)) {
             var2.playSoundAtEntity(var3, "random.bow", 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
             var2.spawnEntityInWorld(new EntityArrow(var2, var3));
-            return var1;
-        } else {
-            return null;
         }
+
+        return var1;
     }
 
     public boolean shouldUseOnTouchEagler(ItemStack itemStack) {

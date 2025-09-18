@@ -13,6 +13,15 @@ public final class Vec3D {
 		this.zCoord = var3;
 	}
 
+    public final Vec3D subtract(Vec3D var1) {
+        return new Vec3D(this.xCoord - var1.xCoord, this.yCoord - var1.yCoord, this.zCoord - var1.zCoord);
+    }
+
+    public final Vec3D normalize() {
+        float var1 = MathHelper.sqrt_float(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
+        return new Vec3D(this.xCoord / var1, this.yCoord / var1, this.zCoord / var1);
+    }
+
 	public final Vec3D addVector(float var1, float var2, float var3) {
 		return new Vec3D(this.xCoord + var1, this.yCoord + var2, this.zCoord + var3);
 	}

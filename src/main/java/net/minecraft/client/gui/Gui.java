@@ -55,6 +55,10 @@ public class Gui {
 		var0.drawStringWithShadow(var1, var2 - var0.getStringWidth(var1) / 2, var3, var4);
 	}
 
+    public static void drawString(FontRenderer var0, String var1, int var2, int var3, int var4) {
+        var0.drawStringWithShadow(var1, var2, var3, var4);
+    }
+
 	public final void drawTexturedModalRect(int var1, int var2, int var3, int var4, int var5, int var6) {
 		float var7 = 0.00390625F;
 		float var8 = 0.00390625F;

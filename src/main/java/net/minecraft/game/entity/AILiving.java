@@ -3,6 +3,7 @@ package net.minecraft.game.entity;
 import java.util.List;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.level.World;
 
 public class AILiving extends AI {
@@ -103,12 +104,22 @@ public class AILiving extends AI {
 			}
 		}
 
-        List var12 = var1.getEntitiesWithinAABBExcludingEntity(var2, var2.boundingBox.expand(0.2F, 0.0F, 0.2F));
-        if(var12 != null && var12.size() > 0) {
-            for(int var9 = 0; var9 < var12.size(); ++var9) {
-                Entity var11 = (Entity)var12.get(var9);
-                if(var11.canBePushed()) {
-                    var11.applyEntityCollision(var2);
+        var2.moveStrafing = var2.moveForward;
+        var6 = var2.posX - var2.prevPosX;
+        var4 = var2.posZ - var2.prevPosZ;
+        var4 = MathHelper.sqrt_float(var6 * var6 + var4 * var4) * 4.0F;
+        if(var4 > 1.0F) {
+            var4 = 1.0F;
+        }
+
+        var2.moveForward += (var4 - var2.moveForward) * 0.4F;
+        var2.randomYawVelocity += var2.moveForward;
+        List var11 = var1.getEntitiesWithinAABBExcludingEntity(var2, var2.boundingBox.expand(0.2F, 0.0F, 0.2F));
+        if(var11 != null && var11.size() > 0) {
+            for(int var9 = 0; var9 < var11.size(); ++var9) {
+                Entity var12 = (Entity)var11.get(var9);
+                if(var12.canBePushed()) {
+                    var12.applyEntityCollision(var2);
                 }
             }
         }

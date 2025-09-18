@@ -128,7 +128,8 @@ public abstract class GuiContainer extends GuiScreen {
                     drawRect(var10, var11, var10 + 16, var11 + 16, -2130706433);
                 }
 
-                itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, itemstack, var10, var11, s);
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemstack, var10, var11);
+                itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemstack, var10, var11, s);
             }
 
             if(!this.mc.options.touchscreen && var6.isAtCursorPos(var1, var2)) {
@@ -159,7 +160,8 @@ public abstract class GuiContainer extends GuiScreen {
             }
 
             GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-            itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2, s);
+            itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2);
+            itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2, s);
         }
 
         if (this.returningStack != null) {
@@ -173,7 +175,8 @@ public abstract class GuiContainer extends GuiScreen {
             int l2 = this.returningStackDestSlot.yPos - this.touchUpY;
             int l1 = this.touchUpX + (int) ((float) k2 * f1);
             int i2 = this.touchUpY + (int) ((float) l2 * f1);
-            itemRenderer.renderItemIntoGUI(this.fontRenderer, this.mc.renderEngine, this.returningStack, l1, i2);
+            itemRenderer.renderItemIntoGUI(this.mc.renderEngine, this.returningStack, l1, i2);
+            itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.returningStack, l1, i2);
         }
 
         GL11.glDisable(GL11.GL_NORMALIZE);
@@ -565,7 +568,7 @@ public abstract class GuiContainer extends GuiScreen {
             if (k == 0 || k == 1) {
                 if (this.draggedStack == null) {
                     if (slot != this.clickedSlot && this.clickedSlot.getStack() != null) {
-                        this.draggedStack = new ItemStack(this.clickedSlot.getStack().itemID, this.clickedSlot.getStack().stackSize);
+                        this.draggedStack = this.clickedSlot.getStack().copy();
                     }
                 } else if (this.draggedStack.stackSize > 1 && slot != null
                         && canAddItemToSlot(slot, this.draggedStack, false)) {
@@ -598,7 +601,7 @@ public abstract class GuiContainer extends GuiScreen {
             this.dragSplittingRemnant = this.itemStack.stackSize;
 
             for (Slot slot : this.dragSplittingSlots) {
-                ItemStack itemstack1 = new ItemStack(this.itemStack.itemID, this.itemStack.stackSize);
+                ItemStack itemstack1 = this.itemStack.copy();
                 int i = slot.getStack() == null ? 0 : slot.getStack().stackSize;
                 computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack1, i);
                 if (itemstack1.stackSize > itemstack1.getItem().getItemStackLimit()) {
@@ -819,7 +822,7 @@ public abstract class GuiContainer extends GuiScreen {
 
     public static boolean canAddItemToSlot(Slot slotIn, ItemStack stack, boolean stackSizeMatters) {
         boolean flag = slotIn == null || !(slotIn.getStack() != null);
-        if (slotIn != null && slotIn.getStack() != null && stack != null && stack.itemID == slotIn.getStack().itemID) {
+        if (slotIn != null && slotIn.getStack() != null && stack != null && stack.itemID == slotIn.getStack().itemID && stack.itemDamage == slotIn.getStack().itemDamage) {
             flag |= slotIn.getStack().stackSize + (stackSizeMatters ? 0 : stack.stackSize) <= stack.getItem().getItemStackLimit();
         }
 

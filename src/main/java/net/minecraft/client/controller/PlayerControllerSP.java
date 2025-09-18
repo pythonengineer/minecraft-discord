@@ -1,6 +1,7 @@
 package net.minecraft.client.controller;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
@@ -51,12 +52,20 @@ public final class PlayerControllerSP extends PlayerController {
             }
         }
 
-        var1.inventory.mainInventory[8] = new ItemStack(Item.flintSteel);
 	}
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {
 		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
 		boolean var5 = super.sendBlockRemoved(var1, var2, var3);
+        EntityPlayerSP var6 = this.mc.thePlayer;
+        ItemStack var8 = var6.inventory.getCurrentItem();
+        if(var8 != null) {
+            Item.itemsList[var8.itemID].onBlockDestroyed(var8);
+            if(var8.stackSize == 0) {
+                this.mc.thePlayer.displayGUIInventory();
+            }
+        }
+
 		if(var5) {
 			Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3);
 		}

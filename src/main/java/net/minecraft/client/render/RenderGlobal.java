@@ -61,7 +61,7 @@ public final class RenderGlobal implements IWorldAccess {
 		this.mc = var1;
 		this.renderEngine = var2;
 		this.glGenList = GL11.glGenLists(2);
-        this.glRenderListBase = GL11.glGenLists(6291456);
+        this.glRenderListBase = GL11.glGenLists(786432);
 	}
 
     public final void changeWorld(World var1) {
@@ -88,9 +88,9 @@ public final class RenderGlobal implements IWorldAccess {
 			}
 		}
 
-		this.renderChunksWide = this.worldObj.width / 8;
-		this.renderChunksTall = this.worldObj.height / 8;
-		this.renderChunksDeep = this.worldObj.length / 8;
+		this.renderChunksWide = this.worldObj.width / 16;
+		this.renderChunksTall = this.worldObj.height / 16;
+		this.renderChunksDeep = this.worldObj.length / 16;
 		this.worldRenderers = new WorldRenderer[this.renderChunksWide * this.renderChunksTall * this.renderChunksDeep];
 		this.sortedWorldRenderers = new WorldRenderer[this.renderChunksWide * this.renderChunksTall * this.renderChunksDeep];
 		var1 = 0;
@@ -100,7 +100,7 @@ public final class RenderGlobal implements IWorldAccess {
 		for(var2 = 0; var2 < this.renderChunksWide; ++var2) {
 			for(int var3 = 0; var3 < this.renderChunksTall; ++var3) {
 				for(var4 = 0; var4 < this.renderChunksDeep; ++var4) {
-                    this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = new WorldRenderer(this.worldObj, var2 << 3, var3 << 3, var4 << 3, 8, this.glRenderListBase + var1);
+                    this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = new WorldRenderer(this.worldObj, var2 << 4, var3 << 4, var4 << 4, 16, this.glRenderListBase + var1);
                     this.sortedWorldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2] = this.worldRenderers[(var4 * this.renderChunksTall + var3) * this.renderChunksWide + var2];
                     var1 += 3;
 				}
@@ -458,12 +458,12 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     private void markBlocksForUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
-		var1 /= 8;
-		var2 /= 8;
-		var3 /= 8;
-		var4 /= 8;
-		var5 /= 8;
-		var6 /= 8;
+        var1 /= 16;
+        var2 /= 16;
+        var3 /= 16;
+        var4 /= 16;
+        var5 /= 16;
+        var6 /= 16;
 		if(var1 < 0) {
 			var1 = 0;
 		}

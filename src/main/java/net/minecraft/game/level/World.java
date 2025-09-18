@@ -88,7 +88,7 @@ public final class World {
             for(var5 = 0; var5 < this.length; ++var5) {
                 for(var6 = 0; var6 < this.height; ++var6) {
                     int var7 = 0;
-                    if(var6 == 0 && var6 < this.groundLevel - 1) {
+                    if(var6 <= 1 && var6 < this.groundLevel - 1 && var4[((var6 + 1) * this.length + var5) * this.width + var2] == 0) {
                         var7 = Block.lavaStill.blockID;
                     } else if(var6 < this.groundLevel - 1) {
                         var7 = Block.bedrock.blockID;
@@ -103,7 +103,7 @@ public final class World {
                     }
 
                     var4[(var6 * this.length + var5) * this.width + var2] = (byte)var7;
-                    if(var6 == 0 && var2 != 0 && var5 != 0 && var2 != this.width - 1 && var5 != this.length - 1) {
+                    if(var6 == 1 && var2 != 0 && var5 != 0 && var2 != this.width - 1 && var5 != this.length - 1) {
                         var6 = this.height - 2;
                     }
                 }

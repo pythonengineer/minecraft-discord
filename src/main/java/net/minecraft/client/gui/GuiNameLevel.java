@@ -7,7 +7,7 @@ public final class GuiNameLevel extends GuiScreen {
 	private String title = "Enter level name:";
     private int slot;
 	private String name;
-	private int id = 0;
+	private int counter = 0;
 
 	public GuiNameLevel(GuiScreen var1, String var2, int var3) {
 		this.parent = var1;
@@ -32,7 +32,7 @@ public final class GuiNameLevel extends GuiScreen {
 	}
 
 	public final void updateScreen() {
-		++this.id;
+		++this.counter;
 	}
 
 	protected final void actionPerformed(GuiButton var1) {
@@ -69,15 +69,7 @@ public final class GuiNameLevel extends GuiScreen {
 		int var4 = this.height / 2 - 10;
 		drawRect(var3 - 1, var4 - 1, var3 + 200 + 1, var4 + 20 + 1, -6250336);
 		drawRect(var3, var4, var3 + 200, var4 + 20, -16777216);
-		FontRenderer var10000 = this.fontRenderer;
-		String var10001 = this.name + (this.id / 6 % 2 == 0 ? "_" : "");
-		int var10002 = var3 + 4;
-		int var10003 = var4 + 6;
-		int var6 = 14737632;
-		int var5 = var10003;
-		var3 = var10002;
-		String var7 = var10001;
-		var10000.drawStringWithShadow(var7, var3, var5, var6);
+        drawString(this.fontRenderer, this.name + (this.counter / 6 % 2 == 0 ? "_" : ""), var3 + 4, var4 + 6, 14737632);
 		super.drawScreen(var1, var2);
 	}
 }

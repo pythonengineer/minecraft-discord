@@ -14,6 +14,9 @@ public final class GuiGameOver extends GuiScreen {
 
 	}
 
+    protected final void keyTyped(char var1, int var2) {
+    }
+
 	protected final void actionPerformed(GuiButton var1) {
         if(var1.id == 0) {
             this.mc.displayGuiScreen(new GuiOptions(this, this.mc.options));

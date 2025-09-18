@@ -168,9 +168,14 @@ public final class ItemRenderer {
 		GL11.glDisable(GL11.GL_NORMALIZE);
 		GL11.glPopMatrix();
 		RenderHelper.disableStandardItemLighting();
+    }
+
+    public final void renderOverlays(float var1) {
+        int var2;
+        Tessellator var3;
         if(this.mc.thePlayer.fire > 0) {
-            var14 = this.mc.renderEngine.getTexture("/terrain.png");
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var14);
+            var2 = this.mc.renderEngine.getTexture("/terrain.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2);
             Tessellator var9 = Tessellator.instance;
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
             GL11.glEnable(GL11.GL_BLEND);
@@ -181,10 +186,10 @@ public final class ItemRenderer {
                 int var12 = Block.fire.blockIndexInTexture + (var10 << 4);
                 int var16 = (var12 & 15) << 4;
                 var12 &= 240;
-                var5 = (float)var16 / 256.0F;
-                var4 = ((float)var16 + 15.99F) / 256.0F;
-                var6 = (float)var12 / 256.0F;
-                var11 = ((float)var12 + 15.99F) / 256.0F;
+                float var5 = (float)var16 / 256.0F;
+                float var4 = ((float)var16 + 15.99F) / 256.0F;
+                float var6 = (float)var12 / 256.0F;
+                float var11 = ((float)var12 + 15.99F) / 256.0F;
                 GL11.glTranslatef((float)(-((var10 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
                 GL11.glRotatef((float)((var10 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
                 var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
@@ -196,6 +201,26 @@ public final class ItemRenderer {
                 GL11.glPopMatrix();
             }
 
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glDisable(GL11.GL_BLEND);
+        }
+
+        if(this.mc.thePlayer.isInsideOfMaterial()) {
+            var2 = this.mc.renderEngine.getTexture("/water.png");
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2);
+            var3 = Tessellator.instance;
+            var1 = this.mc.thePlayer.getBrightness(var1);
+            GL11.glColor4f(var1, var1, var1, 0.5F);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GL11.glPushMatrix();
+            var3.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+            var3.addVertexWithUV(-1.0F, -1.0F, -0.5F, 4.0F, 4.0F);
+            var3.addVertexWithUV(1.0F, -1.0F, -0.5F, 0.0F, 4.0F);
+            var3.addVertexWithUV(1.0F, 1.0F, -0.5F, 0.0F, 0.0F);
+            var3.addVertexWithUV(-1.0F, 1.0F, -0.5F, 4.0F, 0.0F);
+            var3.draw();
+            GL11.glPopMatrix();
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glDisable(GL11.GL_BLEND);
         }

@@ -557,7 +557,7 @@ public class Block {
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
-        mushroomBrown = var0;
+        mushroomBrown = var0.setLightValue(2.0F / 16.0F);
         var10000 = (new BlockMushroom(40, 28)).setHardness(0.0F);
         var1 = soundGrassFootstep;
         var0 = var10000;

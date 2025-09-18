@@ -1107,6 +1107,8 @@ public class GL11 {
 
     private static final Matrix4f tmpInvertedMatrix = new Matrix4f();
 
+    private static boolean fixedDrawing = false;
+
     static {
         populateStack(modelMatrixStack);
         populateStack(projectionMatrixStack);
@@ -2608,10 +2610,14 @@ public class GL11 {
     }
 
     public static void glNormal3f(float x, float y, float z) {
-        stateNormalX = x;
-        stateNormalY = y;
-        stateNormalZ = z;
-        ++stateNormalSerial;
+        if (fixedDrawing) {
+            Tessellator.instance.normal(x, y, z);
+        } else {
+            stateNormalX = x;
+            stateNormalY = y;
+            stateNormalZ = z;
+            ++stateNormalSerial;
+        }
     }
 
     private static final Map<Integer, String> stringCache = new HashMap<>();
@@ -3527,11 +3533,13 @@ public class GL11 {
     }
 
     public static void glBegin(int mode, VertexFormat fmt) {
+        fixedDrawing = true;
         Tessellator.instance.startDrawing(mode, fmt);
     }
 
     public static void glEnd() {
         Tessellator.instance.draw();
+        fixedDrawing = false;
     }
 
     public static void glTexCoord2f(float u, float v) {

@@ -20,7 +20,7 @@ public final class RenderManager {
 	public RenderManager() {
 		this.entityRenderMap.put(Entity.class, new RenderEntity());
 		this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
-		this.entityRenderMap.put(EntityLiving.class, new RenderMD3());
+		this.entityRenderMap.put(EntityLiving.class, new RenderLiving());
 		this.entityRenderMap.put(EntityItem.class, new RenderItem());
 		this.entityRenderMap.put(EntityTNTPrimed.class, new RenderTNTPrimed());
 		Iterator var1 = this.entityRenderMap.values().iterator();
