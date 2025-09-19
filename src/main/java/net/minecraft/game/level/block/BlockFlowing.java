@@ -36,7 +36,7 @@ public final class BlockFlowing extends BlockFluid {
 		int var8;
 		int var9;
 		if(var6 && var1.getBlockMaterial(var2, var3 - 1, var4) == this.material) {
-			var5 = var1.floodFill(var2, var3 - 1, var4, this.stillId1, this.az);
+			var5 = var1.floodFill(var2, var3, var4, this.stillId1, this.az);
 			if(var5 <= 0) {
 				return false;
 			}
@@ -52,9 +52,8 @@ public final class BlockFlowing extends BlockFluid {
 					var7 >>= 10;
 					var9 = var7 % 1024;
 					var7 >>= 10;
-					var5 = var7 % 1024;
-					var1.setBlockWithNotify(var8, var5, var9, 0);
-					var1.scheduleBlockUpdate(var2, var3, var4, this.stillId1);
+                    var2 = var7 % 1024;
+                    var1.setBlockWithNotify(var8, var2, var9, 0);
 					return false;
 				}
 

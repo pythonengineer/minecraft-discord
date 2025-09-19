@@ -9,7 +9,7 @@ public final class ItemSword extends Item {
         super(var1);
         this.maxStackSize = 1;
         this.maxDamage = 32 << var2;
-        this.weaponDamage = 4 * (var2 + 1);
+        this.weaponDamage = 4 + (var2 << 1);
     }
 
     public final float getStrVsBlock(Block var1) {

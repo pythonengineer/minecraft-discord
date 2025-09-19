@@ -50,12 +50,14 @@ public final class TileEntityChest extends TileEntity implements IInventory {
 
     public final void readFromNBT(NBTTagCompound var1) {
         NBTTagList var5 = var1.getTagList("Items");
-        this.chestContents = new ItemStack[64];
+        this.chestContents = new ItemStack[27];
 
         for(int var2 = 0; var2 < var5.tagCount(); ++var2) {
             NBTTagCompound var3 = (NBTTagCompound)var5.tagAt(var2);
             int var4 = var3.getByte("Slot") & 255;
-            this.chestContents[var4] = new ItemStack(var3);
+            if(var4 >= 0 && var4 < this.chestContents.length) {
+                this.chestContents[var4] = new ItemStack(var3);
+            }
         }
 
     }

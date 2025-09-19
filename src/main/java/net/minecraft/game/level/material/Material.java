@@ -20,4 +20,12 @@ public class Material {
     public boolean getIsLiquid() {
         return false;
     }
+
+    public boolean isSolid() {
+        return true;
+    }
+
+    public boolean getCanBlockGrass() {
+        return true;
+    }
 }

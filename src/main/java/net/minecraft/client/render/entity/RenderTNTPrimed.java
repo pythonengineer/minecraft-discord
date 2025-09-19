@@ -10,6 +10,10 @@ import net.minecraft.game.level.block.Block;
 public final class RenderTNTPrimed extends Render {
 	private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
 
+    public RenderTNTPrimed() {
+        this.shadowSize = 0.5F;
+    }
+
 	public final void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6) {
         EntityTNTPrimed var10001 = (EntityTNTPrimed)var1;
         var5 = var4;

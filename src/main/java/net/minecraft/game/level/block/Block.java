@@ -228,7 +228,7 @@ public class Block {
     }
 
     public final int blockStrength(EntityPlayer var1) {
-        return this.hardness < 0.0F ? -1 : (!var1.canHarvestBlock(this) ? -1 : (int)(this.hardness / var1.getStrVsBlock(this) * 30.0F));
+        return this.hardness < 0.0F ? -1 : (!var1.canHarvestBlock(this) ? (int)(this.hardness * 100.0F) : (int)(this.hardness / var1.getStrVsBlock(this) * 30.0F));
     }
 
     public void dropBlockAsItem(World var1, int var2, int var3, int var4) {

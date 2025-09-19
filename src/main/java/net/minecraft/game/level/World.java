@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -34,8 +35,8 @@ public final class World {
     public int zSpawn;
     public float rotSpawn;
     public int defaultFluid = Block.waterMoving.blockID;
-    private ArrayList worldAccesses = new ArrayList();
-    private ArrayList tickList = new ArrayList();
+    private List worldAccesses = new ArrayList();
+    private List tickList = new LinkedList();
     public Map map = new HashMap();
     private int[] heightMap;
     public EaglercraftRandom random = new EaglercraftRandom();
@@ -84,10 +85,11 @@ public final class World {
 
         int var5;
         int var6;
+        int var7;
         for(var2 = 0; var2 < this.width; ++var2) {
             for(var5 = 0; var5 < this.length; ++var5) {
                 for(var6 = 0; var6 < this.height; ++var6) {
-                    int var7 = 0;
+                    var7 = 0;
                     if(var6 <= 1 && var6 < this.groundLevel - 1 && var4[((var6 + 1) * this.length + var5) * this.width + var2] == 0) {
                         var7 = Block.lavaStill.blockID;
                     } else if(var6 < this.groundLevel - 1) {
@@ -113,33 +115,33 @@ public final class World {
         this.data = new byte[var4.length];
         this.heightMap = new int[var1 * var3];
         Arrays.fill(this.heightMap, this.height);
-        World var9 = this;
+        World var10 = this;
         var2 = (int)(15.0F * this.skyBrightness);
 
-        int var11;
-        for(var3 = 0; var3 < var9.width; ++var3) {
-            for(var11 = 0; var11 < var9.length; ++var11) {
-                for(var5 = var9.height - 1; var5 > 0 && Block.lightOpacity[var9.getBlockId(var3, var5, var11)] == 0; --var5) {
+        int var12;
+        for(var3 = 0; var3 < var10.width; ++var3) {
+            for(var12 = 0; var12 < var10.length; ++var12) {
+                for(var5 = var10.height - 1; var5 > 0 && Block.lightOpacity[var10.getBlockId(var3, var5, var12)] == 0; --var5) {
                 }
 
-                var9.heightMap[var3 + var11 * var9.width] = var5 + 1;
+                var10.heightMap[var3 + var12 * var10.width] = var5 + 1;
 
-                for(var5 = 0; var5 < var9.height; ++var5) {
-                    var6 = var9.heightMap[var3 + var11 * var9.width];
+                for(var5 = 0; var5 < var10.height; ++var5) {
+                    var6 = var10.heightMap[var3 + var12 * var10.width];
                     var6 = var5 >= var6 ? var2 : 0;
-                    byte var12 = var9.blocks[(var5 * var9.length + var11) * var9.width + var3];
-                    if(var6 < Block.lightValue[var12]) {
-                        var6 = Block.lightValue[var12];
+                    byte var13 = var10.blocks[(var5 * var10.length + var12) * var10.width + var3];
+                    if(var6 < Block.lightValue[var13]) {
+                        var6 = Block.lightValue[var13];
                     }
 
-                    var9.data[(var5 * var9.length + var11) * var9.width + var3] = (byte)((var9.data[(var5 * var9.length + var11) * var9.width + var3] & 240) + var6);
+                    var10.data[(var5 * var10.length + var12) * var10.width + var3] = (byte)((var10.data[(var5 * var10.length + var12) * var10.width + var3] & 240) + var6);
                 }
             }
         }
 
-        for(var3 = 0; var3 < var9.width; ++var3) {
-            for(var11 = 0; var11 < var9.length; ++var11) {
-                var9.updateLight(var3, 0, var11, var3 + 1, var9.height, var11 + 1);
+        for(var3 = 0; var3 < var10.width; ++var3) {
+            for(var12 = 0; var12 < var10.length; ++var12) {
+                var10.updateLight(var3, 0, var12, var3 + 1, var10.height, var12 + 1);
             }
         }
 
@@ -148,29 +150,37 @@ public final class World {
         }
 
         this.tickList.clear();
-        var9 = this;
-        EaglercraftRandom var10 = new EaglercraftRandom();
+        var10 = this;
+        EaglercraftRandom var11 = new EaglercraftRandom();
         var3 = 0;
 
+        label112:
         while(true) {
-            do {
-                ++var3;
-                var11 = var10.nextInt(var9.width / 2) + var9.width / 4;
-                var5 = var10.nextInt(var9.length / 2) + var9.length / 4;
-                var6 = var9.getFirstUncoveredBlock(var11, var5) + 1;
-            } while(var6 < 4);
-
+            ++var3;
+            var12 = var11.nextInt(var10.width / 2) + var10.width / 4;
+            var5 = var11.nextInt(var10.length / 2) + var10.length / 4;
+            var6 = var10.getFirstUncoveredBlock(var12, var5) + 1;
             if(var3 == 10000) {
-                var9.xSpawn = var11;
-                var9.ySpawn = -100;
-                var9.zSpawn = var5;
+                var10.xSpawn = var12;
+                var10.ySpawn = var10.height + 100;
+                var10.zSpawn = var5;
                 break;
             }
 
-            if(var6 > var9.waterLevel) {
-                var9.xSpawn = var11;
-                var9.ySpawn = var6;
-                var9.zSpawn = var5;
+            if(var6 >= 4 && var6 > var10.waterLevel) {
+                for(var7 = var12 - 5; var7 <= var12 + 5; ++var7) {
+                    for(int var8 = var6; var8 <= var6 + 2; ++var8) {
+                        for(int var9 = var5 - 5; var9 <= var5 + 5; ++var9) {
+                            if(var10.getBlockMaterial(var7, var8, var9).isSolid()) {
+                                continue label112;
+                            }
+                        }
+                    }
+                }
+
+                var10.xSpawn = var12;
+                var10.ySpawn = var6;
+                var10.zSpawn = var5;
                 break;
             }
         }
@@ -1129,13 +1139,11 @@ public final class World {
         float var8;
         float var9;
         float var10;
-        float var14;
         float var15;
         int var16;
         int var17;
         int var18;
         int var19;
-        int var20;
         int var23;
         for(var23 = 0; var23 < 16; ++var23) {
             for(var6 = 0; var6 < 16; ++var6) {
@@ -1150,7 +1158,7 @@ public final class World {
                         var10 /= var11;
                         float var12 = 4.0F * (0.7F + this.random.nextFloat() * 0.6F);
                         float var13 = var2;
-                        var14 = var3;
+                        float var14 = var3;
 
                         for(var15 = var4; var12 > 0.0F; var12 -= 0.22500001F) {
                             var16 = (int)var13;
@@ -1162,7 +1170,7 @@ public final class World {
                             }
 
                             if(var12 > 0.0F) {
-                                var20 = var16 + (var17 << 10) + (var18 << 10 << 10);
+                                int var20 = var16 + (var17 << 10) + (var18 << 10 << 10);
                                 var21.add(Integer.valueOf(var20));
                             }
 
@@ -1175,88 +1183,105 @@ public final class World {
             }
         }
 
-        var23 = (int)(var2 - 6.0F - 1.0F);
-        var6 = (int)(var2 + 6.0F + 1.0F);
-        var7 = (int)(var3 - 6.0F - 1.0F);
-        int var27 = (int)(var3 + 6.0F + 1.0F);
-        int var28 = (int)(var4 - 6.0F - 1.0F);
-        int var29 = (int)(var4 + 6.0F + 1.0F);
-        List var30 = this.entityMap.getEntities((Entity)null, (float)var23, (float)var7, (float)var28, (float)var6, (float)var27, (float)var29);
+        var23 = (int)(var2 - 8.0F - 1.0F);
+        var6 = (int)(var2 + 8.0F + 1.0F);
+        var7 = (int)(var3 - 8.0F - 1.0F);
+        int var26 = (int)(var3 + 8.0F + 1.0F);
+        int var27 = (int)(var4 - 8.0F - 1.0F);
+        int var28 = (int)(var4 + 8.0F + 1.0F);
+        List var29 = this.entityMap.getEntities((Entity)null, (float)var23, (float)var7, (float)var27, (float)var6, (float)var26, (float)var28);
+        Vec3D var30 = new Vec3D(var2, var3, var4);
 
         float var24;
-        float var26;
-        for(int var31 = 0; var31 < var30.size(); ++var31) {
-            Entity var32 = (Entity)var30.get(var31);
-            var24 = var32.posX - var2;
-            var26 = var32.posY - var3;
-            var5 = var32.posZ - var4;
-            var14 = MathHelper.sqrt_float(var24 * var24 + var26 * var26 + var5 * var5) / 6.0F;
-            if(var14 <= 1.0F) {
-                var15 = 1.0F - var14;
-                var23 = (int)var32.boundingBox.minX;
-                var16 = (int)var32.boundingBox.maxX;
-                var17 = (int)var32.boundingBox.minY;
-                var18 = (int)var32.boundingBox.maxY;
-                var19 = (int)var32.boundingBox.minZ;
-                var20 = (int)var32.boundingBox.maxZ;
-                boolean var25 = false;
-
-                for(var7 = var23; var2 <= (float)var16 && !var25; ++var2) {
-                    for(var27 = var17; var3 <= (float)var18 && !var25; ++var3) {
-                        for(var28 = var19; var4 <= (float)var20 && !var25; ++var4) {
-                            var29 = var7 + (var27 << 10) + (var28 << 10 << 10);
-                            if(var21.contains(Integer.valueOf(var29))) {
-                                var25 = true;
-                            }
-                        }
-                    }
-                }
-
-                if(var25) {
-                    var32.attackEntityFrom((Entity)null, (int)((var15 * var15 + var15) / 2.0F * 64.0F + 1.0F));
-                }
+        float var25;
+        float var40;
+        for(int var31 = 0; var31 < var29.size(); ++var31) {
+            Entity var33 = (Entity)var29.get(var31);
+            var24 = var33.posX - var2;
+            var25 = var33.posY - var3;
+            var5 = var33.posZ - var4;
+            var15 = MathHelper.sqrt_float(var24 * var24 + var25 * var25 + var5 * var5) / 8.0F;
+            if(var15 <= 1.0F) {
+                var5 = var33.posX - var2;
+                float var36 = var33.posY - var3;
+                float var37 = var33.posZ - var4;
+                float var38 = MathHelper.sqrt_float(var5 * var5 + var36 * var36 + var37 * var37);
+                var5 /= var38;
+                var36 /= var38;
+                var37 /= var38;
+                float var39 = this.getBlockDensity(var30, var33.boundingBox);
+                var40 = (1.0F - var15) * var39;
+                var33.attackEntityFrom((Entity)null, (int)((var40 * var40 + var40) / 2.0F * 64.0F + 1.0F));
+                var33.motionX += var5 * var40;
+                var33.motionY += var36 * var40;
+                var33.motionZ += var37 * var40;
             }
         }
 
-        ArrayList var33 = new ArrayList();
-        var33.addAll(var21);
+        ArrayList var32 = new ArrayList();
+        var32.addAll(var21);
 
-        for(int var34 = var33.size() - 1; var34 >= 0; --var34) {
-            int var35 = ((Integer)var33.get(var34)).intValue();
-            int var36 = var35 & 1023;
-            var23 = var35 >> 10 & 1023;
-            var16 = var35 >> 20 & 1023;
-            if(var36 >= 0 && var23 >= 0 && var16 >= 0 && var36 < this.width && var23 < this.height && var16 < this.length) {
-                var17 = this.getBlockId(var36, var23, var16);
+        for(int var34 = var32.size() - 1; var34 >= 0; --var34) {
+            int var35 = ((Integer)var32.get(var34)).intValue();
+            var23 = var35 & 1023;
+            var16 = var35 >> 10 & 1023;
+            var17 = var35 >> 20 & 1023;
+            if(var23 >= 0 && var16 >= 0 && var17 >= 0 && var23 < this.width && var16 < this.height && var17 < this.length) {
+                var18 = this.getBlockId(var23, var16, var17);
 
-                for(var18 = 0; var18 <= 0; ++var18) {
-                    float var37 = (float)var36 + this.random.nextFloat();
-                    float var38 = (float)var23 + this.random.nextFloat();
+                for(var19 = 0; var19 <= 0; ++var19) {
+                    var40 = (float)var23 + this.random.nextFloat();
                     var24 = (float)var16 + this.random.nextFloat();
-                    var26 = var37 - var2;
-                    var8 = var38 - var3;
-                    var9 = var24 - var4;
-                    var10 = MathHelper.sqrt_float(var26 * var26 + var8 * var8 + var9 * var9);
-                    var26 /= var10;
+                    float var22 = (float)var17 + this.random.nextFloat();
+                    var25 = var40 - var2;
+                    var8 = var24 - var3;
+                    var9 = var22 - var4;
+                    var10 = MathHelper.sqrt_float(var25 * var25 + var8 * var8 + var9 * var9);
+                    var25 /= var10;
                     var8 /= var10;
                     var9 /= var10;
-                    float var22 = 0.5F / (var10 / 4.0F + 0.1F);
-                    var22 *= this.random.nextFloat() * this.random.nextFloat() + 0.3F;
-                    var26 *= var22;
-                    var8 *= var22;
-                    var9 *= var22;
-                    this.spawnParticle("explode", (var37 + var2) / 2.0F, (var38 + var3) / 2.0F, (var24 + var4) / 2.0F, var26, var8, var9);
-                    this.spawnParticle("smoke", var37, var38, var24, var26, var8, var9);
+                    var10 = 0.5F / (var10 / 4.0F + 0.1F);
+                    var10 *= this.random.nextFloat() * this.random.nextFloat() + 0.3F;
+                    var25 *= var10;
+                    var8 *= var10;
+                    var9 *= var10;
+                    this.spawnParticle("explode", (var40 + var2) / 2.0F, (var24 + var3) / 2.0F, (var22 + var4) / 2.0F, var25, var8, var9);
+                    this.spawnParticle("smoke", var40, var24, var22, var25, var8, var9);
                 }
 
-                if(var17 > 0) {
-                    Block.blocksList[var17].dropBlockAsItemWithChance(this, var36, var23, var16, 0.3F);
-                    this.setBlockWithNotify(var36, var23, var16, 0);
-                    Block.blocksList[var17].onBlockDestroyedByExplosion(this, var36, var23, var16);
+                if(var18 > 0) {
+                    Block.blocksList[var18].dropBlockAsItemWithChance(this, var23, var16, var17, 0.3F);
+                    this.setBlockWithNotify(var23, var16, var17, 0);
+                    Block.blocksList[var18].onBlockDestroyedByExplosion(this, var23, var16, var17);
                 }
             }
         }
 
+    }
+
+    private float getBlockDensity(Vec3D var1, AxisAlignedBB var2) {
+        float var3 = 1.0F / ((var2.maxX - var2.minX) * 2.0F + 1.0F);
+        float var4 = 1.0F / ((var2.maxY - var2.minY) * 2.0F + 1.0F);
+        float var5 = 1.0F / ((var2.maxZ - var2.minZ) * 2.0F + 1.0F);
+        int var6 = 0;
+        int var7 = 0;
+
+        for(float var8 = 0.0F; var8 <= 1.0F; var8 += var3) {
+            for(float var9 = 0.0F; var9 <= 1.0F; var9 += var4) {
+                for(float var10 = 0.0F; var10 <= 1.0F; var10 += var5) {
+                    float var11 = var2.minX + (var2.maxX - var2.minX) * var8;
+                    float var12 = var2.minY + (var2.maxY - var2.minY) * var9;
+                    float var13 = var2.minZ + (var2.maxZ - var2.minZ) * var10;
+                    if(this.rayTraceBlocks(new Vec3D(var11, var12, var13), var1) == null) {
+                        ++var6;
+                    }
+
+                    ++var7;
+                }
+            }
+        }
+
+        return (float)var6 / (float)var7;
     }
 
     public final Entity findSubclassOf(Class var1) {
@@ -1584,6 +1609,15 @@ public final class World {
             }
         }
 
+    }
+
+    public final String getDebugLoadedEntities() {
+        EntityMap var1 = this.entityMap;
+        return "" + var1.all.size();
+    }
+
+    public final String getDebugMapInfo() {
+        return "" + this.tickList.size() + " / " + this.map.size();
     }
 
     static {

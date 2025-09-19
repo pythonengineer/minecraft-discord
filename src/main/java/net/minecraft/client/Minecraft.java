@@ -195,7 +195,7 @@ public final class Minecraft implements Runnable {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glDepthFunc(GL11.GL_LEQUAL);
 			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
+			GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 			GL11.glCullFace(GL11.GL_BACK);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();

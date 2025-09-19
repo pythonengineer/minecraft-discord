@@ -17,6 +17,8 @@ import net.minecraft.game.level.World;
 
 public final class GuiMainTitle extends GuiScreen {
     private float updateCounter = 0.0F;
+    private String[] i = new String[]{"Pre-beta!", "Now on Discord!", "Uses Eaglercraft!", "Music by C418!", "Christ is King", "As seen on TV!", "Awesome!", "100% pure!", "May contain nuts!", "Better than Prey!", "More polygons!", "Sexy!", "Limited edition!", "Flashing letters!", "Made by Notch!", "Coming soon!", "Best in class!", "When it\'s finished!", "Absolutely dragon free!", "Excitement!", "More than 4000 sold!", "One of a kind!", "700+ hits on YouTube!", "Indev!", "Spiders everywhere!", "Check it out!", "Holy cow, man!", "It\'s a game!", "Made in Sweden!", "Uses LWJGL!", "Reticulating splines!", "Minecraft!", "Yaaay!", "Alpha version!", "Singleplayer!", "Keyboard compatible!", "Undocumented!", "Ingots!"};
+    private String j = this.i[(int)(Math.random() * (double)this.i.length)];
 
     public final void updateScreen() {
         this.updateCounter += 0.01F;
@@ -32,9 +34,9 @@ public final class GuiMainTitle extends GuiScreen {
         this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 96, "Play tutorial level"));
         this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, "Options..."));
         ((GuiButton)this.controlList.get(2)).enabled = false;
-        if(this.mc.session == null) {
+        //if(this.mc.session == null) {
             //((GuiButton)this.controlList.get(1)).enabled = false;
-        }
+        //}
 
     }
 
@@ -88,7 +90,7 @@ public final class GuiMainTitle extends GuiScreen {
         GL11.glRotatef(-20.0F, 0.0F, 0.0F, 1.0F);
         float var4 = 1.8F - MathHelper.abs(MathHelper.sin((float)(EagRuntime.currentTimeMillis() % 1000L) / 1000.0F * (float)Math.PI * 2.0F) * 0.1F);
         GL11.glScalef(var4, var4, var4);
-        drawCenteredString(this.fontRenderer, "Pre-beta!", 0, -8, 16776960);
+        drawCenteredString(this.fontRenderer, this.j, 0, -8, 16776960);
         GL11.glPopMatrix();
         String var5 = "Copyright Mojang Specifications. Do not distribute.";
         drawString(this.fontRenderer, var5, this.width - this.fontRenderer.getStringWidth(var5) - 2, this.height - 10, 16777215);

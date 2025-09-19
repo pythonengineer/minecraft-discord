@@ -61,6 +61,7 @@ public abstract class Entity {
     private boolean inWater = false;
     public int heartsLife = 0;
     public int air = 300;
+    private boolean firstUpdate = true;
 
 	public Entity(World var1) {
 		this.worldObj = var1;
@@ -89,7 +90,7 @@ public abstract class Entity {
 		this.isDead = true;
 	}
 
-    protected final void setSize(float var1, float var2) {
+    protected void setSize(float var1, float var2) {
         this.width = var1;
         this.height = var2;
 	}
@@ -111,18 +112,28 @@ public abstract class Entity {
 		this.prevRotationPitch = this.rotationPitch;
 		this.prevRotationYaw = this.rotationYaw;
         if(this.handleWaterMovement()) {
-            if(!this.inWater) {
+            if(!this.inWater && !this.firstUpdate) {
                 float var1 = MathHelper.sqrt_float(this.motionX * this.motionX * 0.2F + this.motionY * this.motionY + this.motionZ * this.motionZ * 0.2F) * 0.2F;
                 if(var1 > 1.0F) {
                     var1 = 1.0F;
                 }
 
                 this.worldObj.playSoundAtEntity(this, "random.splash", var1, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+                var1 = (float)((int)this.boundingBox.minY);
 
-                for(int var4 = 0; (float)var4 < 1.0F + this.width * 20.0F; ++var4) {
-                    float var2 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
-                    float var3 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
-                    this.worldObj.spawnParticle("bubble", this.posX + var2, this.boundingBox.minY - this.rand.nextFloat() * 0.2F, this.posZ + var3, this.motionX, this.motionY, this.motionZ);
+                int var2;
+                float var3;
+                float var4;
+                for(var2 = 0; (float)var2 < 1.0F + this.width * 20.0F; ++var2) {
+                    var3 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
+                    var4 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
+                    this.worldObj.spawnParticle("bubble", this.posX + var3, var1 + 1.0F, this.posZ + var4, this.motionX, this.motionY - this.rand.nextFloat() * 0.2F, this.motionZ);
+                }
+
+                for(var2 = 0; (float)var2 < 1.0F + this.width * 20.0F; ++var2) {
+                    var3 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
+                    var4 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width * 2.0F;
+                    this.worldObj.spawnParticle("splash", this.posX + var3, var1 + 1.0F, this.posZ + var4, this.motionX, this.motionY, this.motionZ);
                 }
             }
 
@@ -146,6 +157,7 @@ public abstract class Entity {
             this.fire = 600;
         }
 
+        this.firstUpdate = false;
 	}
 
 	public final boolean isOffsetPositionInLiquid(float var1, float var2, float var3) {
@@ -338,8 +350,12 @@ public abstract class Entity {
     }
 
     public final boolean isInsideOfMaterial() {
-        int var1 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY + 0.12F), (int)this.posZ);
+        int var1 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY + this.getEyeHeight()), (int)this.posZ);
         return var1 != 0 ? Block.blocksList[var1].material == Material.water : false;
+    }
+
+    protected float getEyeHeight() {
+        return 0.0F;
     }
 
     public final boolean handleLavaMovement() {

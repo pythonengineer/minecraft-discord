@@ -5,6 +5,7 @@ import net.minecraft.game.level.block.Block;
 public class ItemTool extends Item {
     private Block[] blocksEffectiveAgainst;
     private float efficiencyOnProperMaterial = 4.0F;
+    private int damageVsEntity;
 
     public ItemTool(int var1, int var2, int var3, Block[] var4) {
         super(var1);
@@ -12,6 +13,7 @@ public class ItemTool extends Item {
         this.maxStackSize = 1;
         this.maxDamage = 32 << var3;
         this.efficiencyOnProperMaterial = (float)(var3 + 1 << 1);
+        this.damageVsEntity = var2 + var3;
     }
 
     public final float getStrVsBlock(Block var1) {
@@ -33,6 +35,6 @@ public class ItemTool extends Item {
     }
 
     public final int getDamageVsEntity() {
-        return 0;
+        return this.damageVsEntity;
     }
 }

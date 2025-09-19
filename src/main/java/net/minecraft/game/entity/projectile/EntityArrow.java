@@ -20,6 +20,7 @@ public class EntityArrow extends Entity {
     private boolean inGround = false;
     public int arrowShake = 0;
     private EntityLiving owner;
+    private int ticksInGround;
 
     public EntityArrow(World var1, EntityLiving var2) {
         super(var1);
@@ -40,6 +41,7 @@ public class EntityArrow extends Entity {
         float var3 = MathHelper.sqrt_float(this.motionX * this.motionX + this.motionZ * this.motionZ);
         this.prevRotationYaw = this.rotationYaw = (float)(Math.atan2((double)this.motionX, (double)this.motionZ) * 180.0D / (double)((float)Math.PI));
         this.prevRotationPitch = this.rotationPitch = (float)(Math.atan2((double)this.motionY, (double)var3) * 180.0D / (double)((float)Math.PI));
+        this.ticksInGround = 0;
     }
 
     public final void onEntityUpdate() {
@@ -52,6 +54,11 @@ public class EntityArrow extends Entity {
         if(this.inGround) {
             var1 = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile);
             if(var1 == this.inTile) {
+                ++this.ticksInGround;
+                if(this.ticksInGround == 1200) {
+                    this.setEntityDead();
+                }
+
                 return;
             }
 
@@ -59,6 +66,7 @@ public class EntityArrow extends Entity {
             this.motionX *= this.rand.nextFloat() * 0.2F;
             this.motionY *= this.rand.nextFloat() * 0.2F;
             this.motionZ *= this.rand.nextFloat() * 0.2F;
+            this.ticksInGround = 0;
         }
 
         Vec3D var3 = new Vec3D(this.posX, this.posY, this.posZ);
@@ -111,7 +119,7 @@ public class EntityArrow extends Entity {
                 this.worldObj.spawnParticle("bubble", this.posX - this.motionX * 0.25F, this.posY - this.motionY * 0.25F, this.posZ - this.motionZ * 0.25F, this.motionX, this.motionY, this.motionZ);
             }
 
-            var5 = 0.85F;
+            var5 = 0.8F;
         }
 
         this.motionX *= var5;
@@ -145,6 +153,7 @@ public class EntityArrow extends Entity {
 
     public final void onCollideWithPlayer(EntityPlayer var1) {
         if(this.inGround && this.owner == var1 && this.arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+            var1.onItemPickup(this);
             this.setEntityDead();
         }
 

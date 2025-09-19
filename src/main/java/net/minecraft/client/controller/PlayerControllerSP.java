@@ -22,8 +22,6 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
-        Block[] var10000 = new Block[]{Block.stone, Block.grass, Block.cobblestone, Block.planks, Block.sapling, Block.bedrock, Block.sand, Block.gravel, Block.oreGold, Block.oreIron, Block.oreCoal, Block.wood, Block.leaves, Block.sponge, Block.glass, Block.plantYellow, Block.plantRed, Block.mushroomBrown, Block.mushroomRed, Block.blockGold, Block.blockSteel, Block.stairSingle, Block.brick, Block.tnt, Block.bookShelf, Block.cobblestoneMossy, Block.obsidian, Block.torch, Block.waterSource, Block.lavaSource, Block.chest};
-        var10000 = new Block[]{Block.clothRed, Block.clothOrange, Block.clothYellow, Block.clothChartreuse, Block.clothGreen, Block.clothSpringGreen, Block.clothCyan, Block.clothCapri, Block.clothUltramarine, Block.clothViolet, Block.clothPurple, Block.clothMagenta, Block.clothRose, Block.clothDarkGray, Block.clothGray, Block.clothWhite};
 	}
 
 	public final void flipPlayer(EntityPlayer var1) {

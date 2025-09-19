@@ -38,6 +38,7 @@ public class Gui {
 		float var13 = (float)(var5 & 255) / 255.0F;
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
 		GL11.glColor4f(var7, var8, var12, var6);
@@ -48,6 +49,7 @@ public class Gui {
 		GL11.glVertex2f((float)var2, (float)var3);
 		GL11.glEnd();
 		GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 

@@ -1,13 +1,18 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
+
+import net.lax1dude.eaglercraft.EagRuntime;
+import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.client.PlayerLoader;
+import net.minecraft.game.level.World;
 
 public final class GuiGameOver extends GuiScreen {
 	public final void initGui() {
 		this.controlList.clear();
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, "Generate new level..."));
 		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, "Load level.."));
-        ((GuiButton)this.controlList.get(1)).enabled = false;
 		//if(this.mc.session == null) {
 		//	((GuiButton)this.controlList.get(1)).enabled = false;
 		//}
@@ -28,6 +33,19 @@ public final class GuiGameOver extends GuiScreen {
 
 		if(var1.id == 2) {// && this.mc.session != null) {
 		    //this.mc.displayGuiScreen(new GuiLoadLevel(this));
+            try {
+                byte[] level = EagRuntime.getStorage("level.mclevel");
+                if(level != null) {
+                    EaglerInputStream var4 = new EaglerInputStream(level);
+                    World var2 = (new PlayerLoader(this.mc, this.mc.loadingScreen)).load(var4);
+                    var4.close();
+                    this.mc.setLevel(var2);
+                    this.mc.displayGuiScreen((GuiScreen)null);
+                    this.mc.setIngameFocus();
+                }
+            } catch (IOException var3) {
+                var3.printStackTrace();
+            }
 		}
 
 	}

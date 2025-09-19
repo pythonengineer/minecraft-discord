@@ -17,7 +17,7 @@ import net.minecraft.client.effect.EntityExplodeFX;
 import net.minecraft.client.effect.EntityFlameFX;
 import net.minecraft.client.effect.EntityLavaFX;
 import net.minecraft.client.effect.EntitySmokeFX;
-import net.minecraft.client.player.EntityPlayerSP;
+import net.minecraft.client.effect.EntitySplashFX;
 import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -44,7 +44,6 @@ public final class RenderGlobal implements IWorldAccess {
 	private int glRenderListBase;
     private Minecraft mc;
     private RenderBlocks globalRenderBlocks;
-    public RenderManager renderManager = new RenderManager();
 	private int[] dummyBuf50k = new int['\uc350'];
     private int cloudOffsetX;
     private float prevSortX;
@@ -69,8 +68,7 @@ public final class RenderGlobal implements IWorldAccess {
             this.worldObj.removeWorldAccess(this);
         }
 
-        RenderManager var2 = this.renderManager;
-        var2.worldObj = var1;
+        RenderManager.instance.setWorld(var1);
         this.worldObj = var1;
         this.globalRenderBlocks = new RenderBlocks(Tessellator.instance, var1);
         if(var1 != null) {
@@ -185,13 +183,7 @@ public final class RenderGlobal implements IWorldAccess {
 
     public final void renderEntities(Vec3D var1, ClippingHelper var2, float var3) {
         EntityMap var4 = this.worldObj.entityMap;
-        EntityPlayerSP var19 = this.mc.thePlayer;
-        RenderEngine var18 = this.renderEngine;
-        World var17 = this.worldObj;
-        RenderManager var16 = this.renderManager;
-        var16.worldObj = var17;
-        var16.renderEngine = var18;
-        var16.playerViewY = var19.prevRotationYaw + (var19.rotationYaw - var19.prevRotationYaw) * var3;
+        RenderManager.instance.cacheActiveRenderInfo(this.worldObj, this.renderEngine, this.mc.thePlayer, var3);
 
         for(int var5 = 0; var5 < var4.width; ++var5) {
             float var6 = (float)((var5 << 4) - 2);
@@ -208,29 +200,22 @@ public final class RenderGlobal implements IWorldAccess {
                         float var14 = (float)((var11 + 1 << 4) + 2);
                         boolean var15 = var2.checkInFrustrum(var6, var9, var13, var7, var10, var14);
                         if(var15) {
-                            boolean var24 = var2.isVisible(var6, var9, var13, var7, var10, var14);
+                            boolean var20 = var2.isVisible(var6, var9, var13, var7, var10, var14);
 
-                            for(int var25 = 0; var25 < var12.size(); ++var25) {
-                                Entity var26 = (Entity)var12.get(var25);
-                                float var30 = var26.posX - var1.xCoord;
-                                float var31 = var26.posY - var1.yCoord;
-                                float var20 = var26.posZ - var1.zCoord;
-                                float var21 = var30 * var30 + var31 * var31 + var20 * var20;
-                                AxisAlignedBB var27 = var26.boundingBox;
-                                float var29 = var27.maxX - var27.minX;
-                                var30 = var27.maxY - var27.minY;
-                                float var28 = var27.maxZ - var27.minZ;
-                                var28 = (var29 + var30 + var28) / 3.0F;
-                                var28 *= 64.0F;
-                                if(var21 < var28 * var28 && (var24 || var2.isBoundingBoxInFrustrum(var26.boundingBox)) && !(var26 instanceof EntityPlayer)) {
-                                    var16 = this.renderManager;
-                                    var31 = var26.lastTickPosX + (var26.posX - var26.lastTickPosX) * var3;
-                                    var20 = var26.lastTickPosY + (var26.posY - var26.lastTickPosY) * var3;
-                                    var21 = var26.lastTickPosZ + (var26.posZ - var26.lastTickPosZ) * var3;
-                                    float var22 = var26.prevRotationYaw + (var26.rotationYaw - var26.prevRotationYaw) * var3;
-                                    float var23 = var16.worldObj.getBlockLightValue((int)var31, (int)(var20 + var26.getShadowSize()), (int)var21);
-                                    GL11.glColor3f(var23, var23, var23);
-                                    var16.renderEntityWithPosYaw(var26, var31, var20, var21, var22, var3);
+                            for(int var21 = 0; var21 < var12.size(); ++var21) {
+                                Entity var22 = (Entity)var12.get(var21);
+                                float var18 = var22.posX - var1.xCoord;
+                                float var19 = var22.posY - var1.yCoord;
+                                float var17 = var22.posZ - var1.zCoord;
+                                var17 = var18 * var18 + var19 * var19 + var17 * var17;
+                                AxisAlignedBB var16 = var22.boundingBox;
+                                var18 = var16.maxX - var16.minX;
+                                var19 = var16.maxY - var16.minY;
+                                float var23 = var16.maxZ - var16.minZ;
+                                var23 = (var18 + var19 + var23) / 3.0F;
+                                var23 *= 64.0F;
+                                if(var17 < var23 * var23 && (var20 || var2.isBoundingBoxInFrustrum(var22.boundingBox)) && var22 != this.worldObj.playerEntity) {
+                                    RenderManager.instance.renderEntity(var22, var3);
                                 }
                             }
                         }
@@ -295,7 +280,6 @@ public final class RenderGlobal implements IWorldAccess {
         }
 
         Tessellator var9 = Tessellator.instance;
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5F);
         float var6 = (float)this.worldObj.cloudHeight;
         var1 = ((float)this.cloudOffsetX + var1) * (0.5F / 1024.0F) * 0.03F;
         var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -317,7 +301,6 @@ public final class RenderGlobal implements IWorldAccess {
 
         var9.draw();
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
         var9.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
         var1 = (float)(this.worldObj.skyColor >> 16 & 255) / 255.0F;
         var2 = (float)(this.worldObj.skyColor >> 8 & 255) / 255.0F;
@@ -400,6 +383,7 @@ public final class RenderGlobal implements IWorldAccess {
             GL11.glPushMatrix();
             var5 = this.worldObj.getBlockId(var1.blockX, var1.blockY, var1.blockZ);
             Block var6 = var5 > 0 ? Block.blocksList[var5] : null;
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
             var4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
             var4.disableColor();
             if(var6 == null) {
@@ -408,6 +392,7 @@ public final class RenderGlobal implements IWorldAccess {
 
             this.globalRenderBlocks.renderBlockAllFaces(var6, var1.blockX, var1.blockY, var1.blockZ, 240 + (int)(this.damagePartialTime * 10.0F));
             var4.draw();
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glDepthMask(true);
             GL11.glPopMatrix();
         }
@@ -522,19 +507,26 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final void spawnParticle(String var1, float var2, float var3, float var4, float var5, float var6, float var7) {
-        if(var1 == "bubble") {
-            this.mc.effectRenderer.addEffect(new EntityBubbleFX(this.worldObj, var2, var3, var4, var5, var6, var7));
-        } else if(var1 == "smoke") {
-            this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.worldObj, var2, var3, var4));
-        } else if(var1 == "explode") {
-            this.mc.effectRenderer.addEffect(new EntityExplodeFX(this.worldObj, var2, var3, var4, var5, var6, var7));
-        } else if(var1 == "flame") {
-            this.mc.effectRenderer.addEffect(new EntityFlameFX(this.worldObj, var2, var3, var4));
-        } else {
-            if(var1 == "lava") {
+        float var8 = this.worldObj.playerEntity.posX - var2;
+        float var9 = this.worldObj.playerEntity.posY - var3;
+        float var10 = this.worldObj.playerEntity.posZ - var4;
+        if(var8 * var8 + var9 * var9 + var10 * var10 <= 256.0F) {
+            if(var1 == "bubble") {
+                this.mc.effectRenderer.addEffect(new EntityBubbleFX(this.worldObj, var2, var3, var4, var5, var6, var7));
+            } else if(var1 == "smoke") {
+                this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.worldObj, var2, var3, var4));
+            } else if(var1 == "explode") {
+                this.mc.effectRenderer.addEffect(new EntityExplodeFX(this.worldObj, var2, var3, var4, var5, var6, var7));
+            } else if(var1 == "flame") {
+                this.mc.effectRenderer.addEffect(new EntityFlameFX(this.worldObj, var2, var3, var4));
+            } else if(var1 == "lava") {
                 this.mc.effectRenderer.addEffect(new EntityLavaFX(this.worldObj, var2, var3, var4));
-            }
+            } else {
+                if(var1 == "splash") {
+                    this.mc.effectRenderer.addEffect(new EntitySplashFX(this.worldObj, var2, var3, var4));
+                }
 
+            }
         }
     }
 }

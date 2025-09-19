@@ -169,6 +169,8 @@ public final class GuiIngame extends Gui {
         this.mc.fontRenderer.drawStringWithShadow("0.31", 2, 2, 16777215);
 		if(this.mc.options.showFPS) {
 		    this.mc.fontRenderer.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
+            Minecraft var15 = this.mc;
+            this.mc.fontRenderer.drawStringWithShadow("E: " + var15.theWorld.getDebugLoadedEntities() + ". P: " + var15.effectRenderer.getStatistics() + ". LT: " + var15.theWorld.getDebugMapInfo(), 2, 22, 16777215);
 		}
 
         onEndTouchGUI();

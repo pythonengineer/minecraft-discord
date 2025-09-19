@@ -130,13 +130,22 @@ public class EntityPlayer extends EntityLiving {
             var3 = 1.0F * var5.getItem().getStrVsBlock(var2);
         }
 
-        return var3;
+        float var6 = var3;
+        if(this.isInsideOfMaterial()) {
+            var6 = var3 / 5.0F;
+        }
+
+        if(!this.onGround) {
+            var6 /= 5.0F;
+        }
+
+        return var6;
     }
 
     public final boolean canHarvestBlock(Block var1) {
         Block var2 = var1;
         InventoryPlayer var3 = this.inventory;
-        if(var2.material != Material.rock) {
+        if(var2.material != Material.rock && var2.material != Material.iron) {
             return true;
         } else {
             ItemStack var4 = var3.getStackInSlot(var3.currentItem);
@@ -155,6 +164,13 @@ public class EntityPlayer extends EntityLiving {
     }
 
     public void displayWorkbenchGUI() {
+    }
+
+    public void onItemPickup(Entity var1) {
+    }
+
+    protected final float getEyeHeight() {
+        return 0.12F;
     }
 
     public final void dropOneItem(boolean flag) {

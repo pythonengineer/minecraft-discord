@@ -499,7 +499,7 @@ public class PlatformAudio {
         panner.setConeInnerAngle(360.0f);
         panner.setConeOuterAngle(0.0f);
         panner.setConeOuterGain(0.0f);
-        panner.setOrientation(0.0f, 0.0f, 0.0f);
+        panner.setOrientation(0.0f, 1.0f, 0.0f);
 
         GainNode gain = audioctx.createGain();
         float v2 = volume;

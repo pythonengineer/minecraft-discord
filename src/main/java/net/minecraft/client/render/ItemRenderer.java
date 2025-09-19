@@ -171,12 +171,15 @@ public final class ItemRenderer {
     }
 
     public final void renderOverlays(float var1) {
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
         int var2;
         Tessellator var3;
+        float var7;
+        float var9;
         if(this.mc.thePlayer.fire > 0) {
             var2 = this.mc.renderEngine.getTexture("/terrain.png");
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2);
-            Tessellator var9 = Tessellator.instance;
+            var3 = Tessellator.instance;
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -192,12 +195,12 @@ public final class ItemRenderer {
                 float var11 = ((float)var12 + 15.99F) / 256.0F;
                 GL11.glTranslatef((float)(-((var10 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
                 GL11.glRotatef((float)((var10 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
-                var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                var9.addVertexWithUV(-0.5F, -0.5F, -0.5F, var4, var11);
-                var9.addVertexWithUV(0.5F, -0.5F, -0.5F, var5, var11);
-                var9.addVertexWithUV(0.5F, 0.5F, -0.5F, var5, var6);
-                var9.addVertexWithUV(-0.5F, 0.5F, -0.5F, var4, var6);
-                var9.draw();
+                var3.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                var3.addVertexWithUV(-0.5F, -0.5F, -0.5F, var4, var11);
+                var3.addVertexWithUV(0.5F, -0.5F, -0.5F, var5, var11);
+                var3.addVertexWithUV(0.5F, 0.5F, -0.5F, var5, var6);
+                var3.addVertexWithUV(-0.5F, 0.5F, -0.5F, var4, var6);
+                var3.draw();
                 GL11.glPopMatrix();
             }
 
@@ -214,17 +217,20 @@ public final class ItemRenderer {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GL11.glPushMatrix();
+            var7 = -this.mc.thePlayer.rotationYaw / 64.0F;
+            var9 = this.mc.thePlayer.rotationPitch / 64.0F;
             var3.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-            var3.addVertexWithUV(-1.0F, -1.0F, -0.5F, 4.0F, 4.0F);
-            var3.addVertexWithUV(1.0F, -1.0F, -0.5F, 0.0F, 4.0F);
-            var3.addVertexWithUV(1.0F, 1.0F, -0.5F, 0.0F, 0.0F);
-            var3.addVertexWithUV(-1.0F, 1.0F, -0.5F, 4.0F, 0.0F);
+            var3.addVertexWithUV(-1.0F, -1.0F, -0.5F, var7 + 4.0F, var9 + 4.0F);
+            var3.addVertexWithUV(1.0F, -1.0F, -0.5F, var7 + 0.0F, var9 + 4.0F);
+            var3.addVertexWithUV(1.0F, 1.0F, -0.5F, var7 + 0.0F, var9 + 0.0F);
+            var3.addVertexWithUV(-1.0F, 1.0F, -0.5F, var7 + 4.0F, var9 + 0.0F);
             var3.draw();
             GL11.glPopMatrix();
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glDisable(GL11.GL_BLEND);
         }
 
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
 	}
 
 	public final void updateEquippedItem() {

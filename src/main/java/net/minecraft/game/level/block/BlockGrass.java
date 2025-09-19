@@ -16,7 +16,7 @@ public final class BlockGrass extends Block {
 	}
 
 	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		if(!var1.isHalfLit(var2, var3 + 1, var4) && var1.getBlockMaterial(var2, var3 + 1, var4) == Material.air) {
+		if(!var1.isHalfLit(var2, var3 + 1, var4) && var1.getBlockMaterial(var2, var3 + 1, var4).getCanBlockGrass()) {
 			if(var5.nextInt(4) == 0) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
 			}
@@ -24,7 +24,7 @@ public final class BlockGrass extends Block {
 			var2 = var2 + var5.nextInt(3) - 1;
 			var3 = var3 + var5.nextInt(5) - 3;
 			var4 = var4 + var5.nextInt(3) - 1;
-			if(var1.getBlockId(var2, var3, var4) == Block.dirt.blockID && var1.isHalfLit(var2, var3 + 1, var4) && var1.getBlockMaterial(var2, var3 + 1, var4) == Material.air) {
+			if(var1.getBlockId(var2, var3, var4) == Block.dirt.blockID && var1.isHalfLit(var2, var3 + 1, var4) && !var1.getBlockMaterial(var2, var3 + 1, var4).getCanBlockGrass()) {
 				var1.setBlockWithNotify(var2, var3, var4, Block.grass.blockID);
 			}
 

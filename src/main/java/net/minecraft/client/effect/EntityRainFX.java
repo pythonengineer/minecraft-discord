@@ -2,8 +2,9 @@ package net.minecraft.client.effect;
 
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.material.Material;
 
-public final class EntityRainFX extends EntityFX {
+public class EntityRainFX extends EntityFX {
 	public EntityRainFX(World var1, float var2, float var3, float var4) {
 		super(var1, var2, var3, var4, 0.0F, 0.0F, 0.0F);
 		this.motionX1 *= 0.3F;
@@ -14,6 +15,7 @@ public final class EntityRainFX extends EntityFX {
 		this.particleBlue = 1.0F;
 		this.particleTextureIndex = 16;
 		this.setSize(0.01F, 0.01F);
+        this.particleGravity = 0.06F;
 		this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.2D));
 	}
 
@@ -25,7 +27,7 @@ public final class EntityRainFX extends EntityFX {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
-		this.motionY1 = (float)((double)this.motionY1 - 0.06D);
+        this.motionY1 -= this.particleGravity;
 		this.moveEntity(this.motionX1, this.motionY1, this.motionZ1);
 		this.motionX1 *= 0.98F;
 		this.motionY1 *= 0.98F;
@@ -41,6 +43,11 @@ public final class EntityRainFX extends EntityFX {
 
             this.motionX1 *= 0.7F;
             this.motionZ1 *= 0.7F;
+        }
+
+        Material var1 = this.worldObj.getBlockMaterial((int)this.posX, (int)this.posY, (int)this.posZ);
+        if(var1.getIsLiquid() || var1.isSolid()) {
+            this.setEntityDead();
         }
 
 	}

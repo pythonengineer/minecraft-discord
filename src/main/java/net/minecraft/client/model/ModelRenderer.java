@@ -84,7 +84,7 @@ public final class ModelRenderer {
     public final void setRotationPoint(float var1, float var2, float var3) {
         this.rotationPointX = var1;
         this.rotationPointY = var2;
-        this.rotationPointZ = 0.0F;
+        this.rotationPointZ = var3;
     }
 
     public final void render(float var1) {

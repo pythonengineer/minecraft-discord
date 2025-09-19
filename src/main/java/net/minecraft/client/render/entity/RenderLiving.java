@@ -3,15 +3,15 @@ package net.minecraft.client.render.entity;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelBiped;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 
 public final class RenderLiving extends Render {
-    private ModelBase mainModel = new ModelBiped();
+    private ModelBase mainModel;
 
-    public RenderLiving() {
-        this.shadowSize = 0.5F;
+    public RenderLiving(ModelBase var1, float var2) {
+        this.mainModel = var1;
+        this.shadowSize = var2;
     }
 
     public final void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6) {
@@ -23,6 +23,7 @@ public final class RenderLiving extends Render {
         EntityLiving var12 = var10001;
         RenderLiving var11 = this;
         GL11.glPushMatrix();
+        GL11.glDisable(GL11.GL_CULL_FACE);
 
         try {
             float var7 = var12.prevRenderYawOffset + (var12.renderYawOffset - var12.prevRenderYawOffset) * var6;
@@ -38,7 +39,7 @@ public final class RenderLiving extends Render {
                     var3 = 1.0F;
                 }
 
-                GL11.glRotatef(var3 * 90.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(var3 * 90.0F, 0.0F, 0.0F, 1.0F);
             }
 
             GL11.glScalef(-(1.0F / 16.0F), -(1.0F / 16.0F), 1.0F / 16.0F);
@@ -53,11 +54,17 @@ public final class RenderLiving extends Render {
             var11.mainModel.render(var4, var3, 0.0F, var8 - var7, var9, 1.0F);
             if(var12.hurtTime > 0 || var12.deathTime > 0) {
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
+                var2 = var12.getBrightness(var6);
+                GL11.glColor4f(var2, 0.0F, 0.0F, 0.4F);
+                GL11.glDisable(GL11.GL_ALPHA_TEST);
                 GL11.glColor4f(1.0F, 0.0F, 0.0F, 0.5F);
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                GL11.glDepthFunc(GL11.GL_EQUAL);
                 var11.mainModel.render(var4, var3, 0.0F, var8 - var7, var9, 1.0F);
+                GL11.glDepthFunc(GL11.GL_LEQUAL);
                 GL11.glDisable(GL11.GL_BLEND);
+                GL11.glEnable(GL11.GL_ALPHA_TEST);
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
             }
 
@@ -66,6 +73,7 @@ public final class RenderLiving extends Render {
             var10.printStackTrace();
         }
 
+        GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();
     }
 }

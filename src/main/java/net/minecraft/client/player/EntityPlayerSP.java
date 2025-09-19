@@ -3,9 +3,11 @@ package net.minecraft.client.player;
 import com.mojang.nbt.NBTTagCompound;
 import com.mojang.nbt.NBTTagList;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.effect.EntityPickupFX;
 import net.minecraft.client.gui.container.GuiChest;
 import net.minecraft.client.gui.container.GuiCrafting;
 import net.minecraft.game.IInventory;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
@@ -49,13 +51,15 @@ public class EntityPlayerSP extends EntityPlayer {
 		NBTTagList var6 = var1.getTagList("Inventory");
 		NBTTagList var2 = var6;
 		InventoryPlayer var7 = this.inventory;
-		var7.mainInventory = new ItemStack[64];
+        var7.mainInventory = new ItemStack[var7.getSizeInventory()];
 
-		for(int var3 = 0; var3 < var2.tagCount(); ++var3) {
-			NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
-			int var5 = var4.getByte("Slot") & 255;
-			var7.mainInventory[var5] = new ItemStack(var4);
-		}
+        for(int var3 = 0; var3 < var2.tagCount(); ++var3) {
+            NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
+            int var5 = var4.getByte("Slot") & 255;
+            if(var5 >= 0 && var5 < var7.mainInventory.length) {
+                var7.mainInventory[var5] = new ItemStack(var4);
+            }
+        }
 
 	}
 
@@ -73,5 +77,9 @@ public class EntityPlayerSP extends EntityPlayer {
 
     public final void displayGUIInventory() {
         this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
+    }
+
+    public final void onItemPickup(Entity var1) {
+        this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, var1, this, -0.5F));
     }
 }

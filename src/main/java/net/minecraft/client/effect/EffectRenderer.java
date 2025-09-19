@@ -15,7 +15,7 @@ import net.minecraft.game.level.block.Block;
 
 public final class EffectRenderer {
     private World worldObj;
-    private List[] fxLayers = new List[2];
+    private List[] fxLayers = new List[3];
     private RenderEngine renderEngine;
     private EaglercraftRandom rand = new EaglercraftRandom();
 
@@ -26,7 +26,7 @@ public final class EffectRenderer {
 
         this.renderEngine = var2;
 
-        for(int var3 = 0; var3 < 2; ++var3) {
+        for(int var3 = 0; var3 < 3; ++var3) {
             this.fxLayers[var3] = new ArrayList();
         }
 
@@ -38,7 +38,7 @@ public final class EffectRenderer {
     }
 
     public final void updateEffects() {
-        for(int var1 = 0; var1 < 2; ++var1) {
+        for(int var1 = 0; var1 < 3; ++var1) {
             for(int var2 = 0; var2 < this.fxLayers[var1].size(); ++var2) {
                 EntityFX var3 = (EntityFX)this.fxLayers[var1].get(var2);
                 var3.onEntityUpdate();
@@ -83,10 +83,22 @@ public final class EffectRenderer {
 
     }
 
+    public final void renderLitParticles(float var1) {
+        if(this.fxLayers[2].size() != 0) {
+            Tessellator var2 = Tessellator.instance;
+
+            for(int var3 = 0; var3 < this.fxLayers[2].size(); ++var3) {
+                EntityFX var4 = (EntityFX)this.fxLayers[2].get(var3);
+                var4.renderParticle(var2, var1, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+            }
+
+        }
+    }
+
     public final void clearEffects(World var1) {
         this.worldObj = var1;
 
-        for(int var2 = 0; var2 < 2; ++var2) {
+        for(int var2 = 0; var2 < 3; ++var2) {
             this.fxLayers[var2].clear();
         }
 
@@ -144,5 +156,9 @@ public final class EffectRenderer {
 
             this.addEffect((new EntityDiggingFX(this.worldObj, var6, var7, var8, 0.0F, 0.0F, 0.0F, var9)).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
         }
+    }
+
+    public final String getStatistics() {
+        return "" + (this.fxLayers[0].size() + this.fxLayers[1].size() + this.fxLayers[2].size());
     }
 }

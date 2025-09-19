@@ -17,6 +17,11 @@ public final class RenderItem extends Render {
 	private RenderBlocks renderBlocks = new RenderBlocks(Tessellator.instance);
 	private EaglercraftRandom random = new EaglercraftRandom();
 
+    public RenderItem() {
+        this.shadowSize = 0.15F;
+        this.shadowOpaque = 12.0F / 16.0F;
+    }
+
     public final void renderItemIntoGUI(RenderEngine var2, ItemStack var3, int var4, int var5) {
         if(var3 != null) {
             int var7;

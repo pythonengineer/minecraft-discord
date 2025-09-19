@@ -357,6 +357,7 @@ public final class EntityRenderer {
 
             RenderHelper.enableStandardItemLighting();
             var23.renderEntities(this.orientCamera(var1), var40, var1);
+            this.mc.effectRenderer.renderLitParticles(var1);
             RenderHelper.disableStandardItemLighting();
             this.setupFog();
             this.mc.effectRenderer.renderParticles(var30, var1);
@@ -436,7 +437,7 @@ public final class EntityRenderer {
                         }
 
                         if(var38 != var51) {
-                            var9 = ((float)((this.entityRendererInt1 + var48 * 3121 + var35 * 418711) % 32) + var41) / 32.0F;
+                            var9 = ((float)((this.rendererUpdateCount + var48 * 3121 + var35 * 418711) % 32) + var41) / 32.0F;
                             float var52 = (float)var48 + 0.5F - var13.posX;
                             var21 = (float)var35 + 0.5F - var13.posZ;
                             float var53 = MathHelper.sqrt_float(var52 * var52 + var21 * var21) / 5.0F;
@@ -559,7 +560,7 @@ public final class EntityRenderer {
         GL11.glNormal3f(0.0F, -1.0F, 0.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         Block var7 = Block.blocksList[var1.getBlockId((int)var2.posX, (int)(var2.posY + 0.12F), (int)var2.posZ)];
-        if(var7 != null && var7.material != Material.air) {
+        if(var7 != null && var7.material.getIsLiquid()) {
             Material var8 = var7.material;
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
             if(var8 == Material.water) {

@@ -32,7 +32,7 @@ public class EntityLiving extends Entity {
 	public EntityLiving(World var1) {
 		super(var1);
         Math.random();
-        this.health = 20;
+        this.health = 10;
         this.preventEntitySpawning = true;
 		Math.random();
 		this.setPosition(this.posX, this.posY, this.posZ);
@@ -48,6 +48,10 @@ public class EntityLiving extends Entity {
 	public final boolean canBePushed() {
 		return !this.isDead;
 	}
+
+    protected float getEyeHeight() {
+        return this.height * 0.85F;
+    }
 
 	public final void onEntityUpdate() {
 		super.onEntityUpdate();
@@ -181,6 +185,10 @@ public class EntityLiving extends Entity {
 		}
 
 	}
+
+    protected final void setSize(float var1, float var2) {
+        super.setSize(var1, var2);
+    }
 
 	public final void attackEntityFrom(Entity var1, int var2) {
 		if(this.worldObj.survivalWorld) {
