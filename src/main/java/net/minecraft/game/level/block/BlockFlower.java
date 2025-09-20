@@ -13,9 +13,26 @@ public class BlockFlower extends Block {
         this.setBlockBounds(0.3F, 0.0F, 0.3F, 0.7F, 0.6F, 0.7F);
 	}
 
-	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        int var6 = var1.getBlockId(var2, var3 - 1, var4);
-        if(!var1.isHalfLit(var2, var3, var4) || var6 != Block.dirt.blockID && var6 != Block.grass.blockID) {
+    public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
+        return this.canThisPlantGrowOnThisBlockID(var1.getBlockId(var2, var3 - 1, var4));
+    }
+
+    protected boolean canThisPlantGrowOnThisBlockID(int var1) {
+        return var1 == Block.grass.blockID || var1 == Block.dirt.blockID || var1 == Block.tilledField.blockID;
+    }
+
+    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
+        super.onNeighborBlockChange(var1, var2, var3, var4, var5);
+        this.checkFlowerChange(var1, var2, var3, var4);
+    }
+
+    public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        this.checkFlowerChange(var1, var2, var3, var4);
+    }
+
+    protected void checkFlowerChange(World var1, int var2, int var3, int var4) {
+        int var5 = var1.getBlockId(var2, var3 - 1, var4);
+        if(!var1.isHalfLit(var2, var3, var4) || !this.canThisPlantGrowOnThisBlockID(var5)) {
             var1.setBlockWithNotify(var2, var3, var4, 0);
         }
 
@@ -33,7 +50,7 @@ public class BlockFlower extends Block {
         return false;
     }
 
-    public final int getRenderType() {
+    public int getRenderType() {
         return 1;
     }
 }

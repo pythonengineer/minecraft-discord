@@ -7,7 +7,7 @@ import net.minecraft.game.level.World;
 import net.minecraft.game.level.material.Material;
 
 public final class BlockSand extends Block {
-    private EaglercraftRandom a = new EaglercraftRandom();
+    private EaglercraftRandom rand = new EaglercraftRandom();
 
     public BlockSand(int var1, int var2) {
         super(var1, var2, Material.sand);
@@ -59,7 +59,7 @@ public final class BlockSand extends Block {
 
     public final boolean onBlockPlaced(World var1, float var2, float var3, float var4) {
         int var5 = Block.glass.blockID;
-        int var6 = this.a.nextInt(3) + 1;
+        int var6 = this.rand.nextInt(3) + 1;
 
         for(int var7 = 0; var7 < var6; ++var7) {
             if(var1.random.nextFloat() <= 1.0F) {

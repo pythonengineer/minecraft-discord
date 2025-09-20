@@ -12,11 +12,11 @@ public final class GuiErrorScreen extends GuiScreen {
 	public final void initGui() {
 	}
 
-	public final void drawScreen(int var1, int var2) {
-		drawGradientRect(0, 0, this.width, this.height, -12574688, -11530224);
-		drawCenteredString(this.fontRenderer, this.title, this.width / 2, 90, 16777215);
-		drawCenteredString(this.fontRenderer, this.text, this.width / 2, 110, 16777215);
-		super.drawScreen(var1, var2);
+    public final void drawScreen(int var1, int var2, float var3) {
+        drawGradientRect(0, 0, this.width, this.height, -12574688, -11530224);
+        drawCenteredString(this.fontRenderer, this.title, this.width / 2, 90, 16777215);
+        drawCenteredString(this.fontRenderer, this.text, this.width / 2, 110, 16777215);
+        super.drawScreen(var1, var2, var3);
 	}
 
 	protected final void keyTyped(char var1, int var2) {

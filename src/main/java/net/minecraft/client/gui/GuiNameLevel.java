@@ -62,14 +62,14 @@ public final class GuiNameLevel extends GuiScreen {
 		((GuiButton)this.controlList.get(0)).enabled = this.name.trim().length() > 1;
 	}
 
-	public final void drawScreen(int var1, int var2) {
-		drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
-		drawCenteredString(this.fontRenderer, this.title, this.width / 2, 40, 16777215);
-		int var3 = this.width / 2 - 100;
-		int var4 = this.height / 2 - 10;
-		drawRect(var3 - 1, var4 - 1, var3 + 200 + 1, var4 + 20 + 1, -6250336);
-		drawRect(var3, var4, var3 + 200, var4 + 20, -16777216);
-        drawString(this.fontRenderer, this.name + (this.counter / 6 % 2 == 0 ? "_" : ""), var3 + 4, var4 + 6, 14737632);
-		super.drawScreen(var1, var2);
-	}
+    public final void drawScreen(int var1, int var2, float var3) {
+        this.drawDefaultBackground();
+        drawCenteredString(this.fontRenderer, this.title, this.width / 2, 40, 16777215);
+        int var4 = this.width / 2 - 100;
+        int var5 = this.height / 2 - 10;
+        drawRect(var4 - 1, var5 - 1, var4 + 200 + 1, var5 + 20 + 1, -6250336);
+        drawRect(var4, var5, var4 + 200, var5 + 20, -16777216);
+        drawString(this.fontRenderer, this.name + (this.counter / 6 % 2 == 0 ? "_" : ""), var4 + 4, var5 + 6, 14737632);
+        super.drawScreen(var1, var2, var3);
+    }
 }

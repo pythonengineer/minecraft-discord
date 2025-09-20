@@ -14,7 +14,7 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.block.Block;
 
 public final class RenderItem extends Render {
-	private RenderBlocks renderBlocks = new RenderBlocks(Tessellator.instance);
+	private RenderBlocks renderBlocks = new RenderBlocks();
 	private EaglercraftRandom random = new EaglercraftRandom();
 
     public RenderItem() {

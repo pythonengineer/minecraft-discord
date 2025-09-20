@@ -1,12 +1,45 @@
 package net.minecraft.game.entity.monster;
 
-import net.minecraft.game.entity.EntityLiving;
+import com.mojang.nbt.NBTTagCompound;
+
+import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.level.World;
 
-public class EntitySpider extends EntityLiving {
-    public EntitySpider(World var1) {
-        super(var1);
-        this.texture = "/mob/spider.png";
-        this.setSize(1.4F, 0.9F);
-    }
+public class EntitySpider extends EntityMob {
+	public EntitySpider(World var1) {
+		super(var1);
+		this.texture = "/mob/spider.png";
+		this.setSize(1.4F, 0.9F);
+		this.moveSpeed = 0.8F;
+	}
+
+	protected final void attackEntity(Entity var1, float var2) {
+		if(var2 > 2.0F && var2 < 6.0F && this.rand.nextInt(5) == 0) {
+			if(this.onGround) {
+				var2 = var1.posX - this.posX;
+				float var4 = var1.posZ - this.posZ;
+				float var3 = MathHelper.sqrt_float(var2 * var2 + var4 * var4);
+				this.motionX = var2 / var3 * 0.5F * 0.8F + this.motionX * 0.2F;
+				this.motionZ = var4 / var3 * 0.5F * 0.8F + this.motionZ * 0.2F;
+				this.motionY = 0.4F;
+				return;
+			}
+		} else {
+			super.attackEntity(var1, var2);
+		}
+
+	}
+
+	protected final void writeEntityToNBT(NBTTagCompound var1) {
+		super.writeEntityToNBT(var1);
+	}
+
+	protected final void readEntityFromNBT(NBTTagCompound var1) {
+		super.readEntityFromNBT(var1);
+	}
+
+	protected final String getEntityString() {
+		return "Spider";
+	}
 }

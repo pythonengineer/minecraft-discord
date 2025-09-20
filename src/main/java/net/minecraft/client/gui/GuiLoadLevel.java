@@ -59,13 +59,13 @@ public class GuiLoadLevel extends GuiScreen implements Runnable {
 		this.mc.setIngameFocus();
 	}
 
-	public final void drawScreen(int var1, int var2) {
-		drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
-		drawCenteredString(this.fontRenderer, this.title, this.width / 2, 20, 16777215);
-		if(!this.loaded) {
-			drawCenteredString(this.fontRenderer, this.status, this.width / 2, this.height / 2 - 4, 16777215);
-		}
+    public final void drawScreen(int var1, int var2, float var3) {
+        this.drawDefaultBackground();
+        drawCenteredString(this.fontRenderer, this.title, this.width / 2, 20, 16777215);
+        if(!this.loaded) {
+            drawCenteredString(this.fontRenderer, this.status, this.width / 2, this.height / 2 - 4, 16777215);
+        }
 
-		super.drawScreen(var1, var2);
-	}
+        super.drawScreen(var1, var2, var3);
+    }
 }

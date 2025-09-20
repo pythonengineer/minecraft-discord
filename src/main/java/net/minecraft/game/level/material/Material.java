@@ -8,6 +8,7 @@ public class Material {
     public static final Material iron = new Material();
     public static final Material water = new MaterialLiquid();
     public static final Material lava = new MaterialLiquid();
+    public static final Material leaves = new Material();
     public static final Material plants = new MaterialLogic();
     public static final Material sponge = new Material();
     public static final Material cloth = new Material();
@@ -26,6 +27,10 @@ public class Material {
     }
 
     public boolean getCanBlockGrass() {
+        return true;
+    }
+
+    public boolean getIsSolid() {
         return true;
     }
 }

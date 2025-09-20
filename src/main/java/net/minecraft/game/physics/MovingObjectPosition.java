@@ -23,5 +23,6 @@ public final class MovingObjectPosition {
 	public MovingObjectPosition(Entity var1) {
 		this.typeOfHit = 1;
 		this.entityHit = var1;
+        this.hitVec = new Vec3D(var1.posX, var1.posY, var1.posZ);
 	}
 }

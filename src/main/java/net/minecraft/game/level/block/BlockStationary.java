@@ -7,8 +7,8 @@ import net.minecraft.game.level.material.Material;
 public final class BlockStationary extends BlockFluid {
 	protected BlockStationary(int var1, Material var2) {
 		super(var1, var2);
-		this.stillId = var1 - 1;
-		this.a = var1;
+        this.movingId = var1 - 1;
+        this.stillId = var1;
 		this.setTickOnLoad(false);
 	}
 
@@ -45,14 +45,14 @@ public final class BlockStationary extends BlockFluid {
 			}
 		}
 
-		if(Block.fire.canBlockCatchFire(var5)) {
-			var6 = true;
-		}
+        if(Block.fire.getChanceOfNeighborsEncouragingFire(var5)) {
+            var6 = true;
+        }
 
-		if(var6) {
-			var1.setTileNoUpdate(var2, var3, var4, this.stillId);
-			var1.scheduleBlockUpdate(var2, var3, var4, this.stillId);
-		}
+        if(var6) {
+            var1.setTileNoUpdate(var2, var3, var4, this.movingId);
+            var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
+        }
 
 	}
 }

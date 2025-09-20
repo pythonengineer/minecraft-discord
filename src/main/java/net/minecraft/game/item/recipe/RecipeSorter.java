@@ -7,9 +7,9 @@ final class RecipeSorter implements Comparator {
     }
 
     public final int compare(Object var1, Object var2) {
-        ShapedRecipes var10000 = (ShapedRecipes)var1;
-        ShapedRecipes var4 = (ShapedRecipes)var2;
-        ShapedRecipes var3 = var10000;
+        CraftingRecipe var10000 = (CraftingRecipe)var1;
+        CraftingRecipe var4 = (CraftingRecipe)var2;
+        CraftingRecipe var3 = var10000;
         return var4.b() < var3.b() ? -1 : (var4.b() > var3.b() ? 1 : 0);
     }
 }

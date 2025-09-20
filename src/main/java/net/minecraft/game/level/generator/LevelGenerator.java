@@ -219,10 +219,10 @@ public final class LevelGenerator {
                 while(true) {
                     int var43;
                     if(var20 >= var53) {
-                        var40 = this.a(Block.oreCoal.blockID, 1000, 10, 1, 5, (var4 << 2) / 5);
-                        var43 = this.a(Block.oreIron.blockID, 800, 8, 2, 5, var4 * 3 / 5);
-                        var44 = this.a(Block.oreGold.blockID, 500, 6, 3, 5, (var4 << 1) / 5);
-                        var48 = this.a(Block.oreDiamond.blockID, 800, 2, 4, 5, var4 / 5);
+                        var40 = this.populateOre(Block.oreCoal.blockID, 1000, 10, 1, 5, (var4 << 2) / 5);
+                        var43 = this.populateOre(Block.oreIron.blockID, 800, 8, 2, 5, var4 * 3 / 5);
+                        var44 = this.populateOre(Block.oreGold.blockID, 500, 6, 3, 5, (var4 << 1) / 5);
+                        var48 = this.populateOre(Block.oreDiamond.blockID, 800, 2, 4, 5, var4 / 5);
                         System.out.println("Coal: " + var40 + ", Iron: " + var43 + ", Gold: " + var44 + ", Diamond: " + var48);
                         break;
                     }
@@ -281,14 +281,14 @@ public final class LevelGenerator {
             }
 
             this.guiLoading.displayLoadingString("Watering..");
-            this.a();
+            this.liquidThemeSpawner();
             this.guiLoading.displayLoadingString("Melting..");
-            this.b();
+            this.lavaGen();
             this.guiLoading.displayLoadingString("Growing..");
-            this.a(var8);
+            this.growGravelAndSand(var8);
             this.guiLoading.displayLoadingString("Planting..");
-            this.b(var8);
-            this.c(var8);
+            this.growPlants(var8);
+            this.growMushrooms(var8);
         }
 
         var5.cloudHeight = var4 + 2;
@@ -307,7 +307,7 @@ public final class LevelGenerator {
             var5.cloudColor = 2164736;
             var5.fogColor = 1049600;
             var5.skyColor = 1049600;
-            var5.skyBrightness = 0.3F;
+            var5.skyBrightness = 0.5F;
             var5.defaultFluid = Block.lavaMoving.blockID;
             if(this.floatingGen) {
                 var5.cloudHeight = var4 + 2;
@@ -318,20 +318,20 @@ public final class LevelGenerator {
         var5.waterLevel = this.waterLevel;
         var5.groundLevel = this.groundLevel;
         this.guiLoading.displayLoadingString("Calculating light..");
-        var5.generate(var2, var4, var3, this.blocksByteArray);
+        var5.generate2(var2, var4, var3, this.blocksByteArray);
         this.guiLoading.displayLoadingString("Post-processing..");
         if(this.levelType != 1) {
-            this.growTrees(var5);
+            this.growGrassOnDirt(var5);
         }
 
-        this.b(var5);
+        this.growTrees(var5);
         var5.createTime = EagRuntime.currentTimeMillis();
         var5.authorName = var1;
         var5.name = "A Nice World";
         return var5;
     }
 
-    private void growTrees(World var1) {
+    private void growGrassOnDirt(World var1) {
         for(int var2 = 0; var2 < this.width; ++var2) {
             for(int var3 = 0; var3 < this.height; ++var3) {
                 for(int var4 = 0; var4 < this.depth; ++var4) {
@@ -344,7 +344,7 @@ public final class LevelGenerator {
 
     }
 
-    private void a(int[] var1) {
+    private void growGravelAndSand(int[] var1) {
         int var2 = this.width;
         int var3 = this.depth;
         NoiseGeneratorOctaves var4 = new NoiseGeneratorOctaves(this.rand, 8);
@@ -382,7 +382,7 @@ public final class LevelGenerator {
 
     }
 
-    private void b(World var1) {
+    private void growTrees(World var1) {
         int var2 = this.width * this.depth * this.height / 32000;
 
         for(int var3 = 0; var3 < var2; ++var3) {
@@ -409,7 +409,7 @@ public final class LevelGenerator {
 
     }
 
-    private void b(int[] var1) {
+    private void growPlants(int[] var1) {
         int var2 = this.width;
         int var3 = this.width * this.depth / 3000;
 
@@ -447,7 +447,7 @@ public final class LevelGenerator {
 
     }
 
-    private void c(int[] var1) {
+    private void growMushrooms(int[] var1) {
         int var2 = this.width;
         int var3 = this.width * this.depth * this.height / 2000;
 
@@ -487,7 +487,7 @@ public final class LevelGenerator {
 
     }
 
-    private int a(int var1, int var2, int var3, int var4, int var5, int var6) {
+    private int populateOre(int var1, int var2, int var3, int var4, int var5, int var6) {
         var5 = 0;
         byte var27 = (byte)var1;
         int var7 = this.width;
@@ -544,7 +544,7 @@ public final class LevelGenerator {
         return var5;
     }
 
-    private void a() {
+    private void liquidThemeSpawner() {
         int var1 = Block.waterStill.blockID;
         if(this.levelType == 1) {
             var1 = Block.lavaStill.blockID;
@@ -592,7 +592,7 @@ public final class LevelGenerator {
         this.guiLoading.setLoadingProgress(var1);
     }
 
-    private void b() {
+    private void lavaGen() {
         int var1 = this.width * this.depth * this.height / 2000;
         int var2 = this.groundLevel;
 

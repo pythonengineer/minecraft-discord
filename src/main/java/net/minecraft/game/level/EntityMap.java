@@ -16,9 +16,9 @@ public final class EntityMap {
 	private List tmp = new ArrayList();
 
 	public EntityMap(int var1, int var2, int var3) {
-		this.width = var1 / 16;
-		this.depth = var2 / 16;
-		this.height = var3 / 16;
+		this.width = var1 / 8;
+		this.depth = var2 / 8;
+		this.height = var3 / 8;
 		if(this.width == 0) {
 			this.width = 1;
 		}
@@ -101,17 +101,16 @@ public final class EntityMap {
 			var2.lastTickPosY = var2.posY;
 			var2.lastTickPosZ = var2.posZ;
 			var2.onEntityUpdate();
-			++var2.ticksExisted;
 			if(var2.isDead) {
 				this.all.remove(var1--);
                 this.slot.init(var2.lastTickPosX, var2.lastTickPosY, var2.lastTickPosZ).remove(var2);
 			} else {
-				int var3 = (int)(var2.lastTickPosX / 16.0F);
-				int var4 = (int)(var2.lastTickPosY / 16.0F);
-				int var5 = (int)(var2.lastTickPosZ / 16.0F);
-				int var6 = (int)(var2.posX / 16.0F);
-				int var7 = (int)(var2.posY / 16.0F);
-				int var8 = (int)(var2.posZ / 16.0F);
+                int var3 = (int)(var2.lastTickPosX / 8.0F);
+                int var4 = (int)(var2.lastTickPosY / 8.0F);
+                int var5 = (int)(var2.lastTickPosZ / 8.0F);
+                int var6 = (int)(var2.posX / 8.0F);
+                int var7 = (int)(var2.posY / 8.0F);
+                int var8 = (int)(var2.posZ / 8.0F);
 				if(var3 != var6 || var4 != var7 || var5 != var8) {
                     EntityMapSlot var11 = this.slot.init(var2.lastTickPosX, var2.lastTickPosY, var2.lastTickPosZ);
                     EntityMapSlot var9 = this.slot2.init(var2.posX, var2.posY, var2.posZ);

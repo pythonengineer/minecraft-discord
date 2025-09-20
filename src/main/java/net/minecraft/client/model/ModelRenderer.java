@@ -2,6 +2,7 @@ package net.minecraft.client.model;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.physics.Vec3D;
 
 public final class ModelRenderer {
@@ -94,25 +95,26 @@ public final class ModelRenderer {
                 ModelRenderer var2 = this;
                 this.displayList = GL11.glGenLists(1);
                 GL11.glNewList(this.displayList, GL11.GL_COMPILE);
-                GL11.glBegin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+                Tessellator var4 = Tessellator.instance;
 
-                for(int var4 = 0; var4 < var2.faces.length; ++var4) {
-                    TexturedQuad var10000 = var2.faces[var4];
-                    float var6 = var3;
-                    TexturedQuad var5 = var10000;
-                    Vec3D var7 = var5.vertexPositions[1].vector3D.subtract(var5.vertexPositions[0].vector3D).normalize();
-                    Vec3D var8 = var5.vertexPositions[1].vector3D.subtract(var5.vertexPositions[2].vector3D).normalize();
-                    var7 = (new Vec3D(var7.yCoord * var8.zCoord - var7.zCoord * var8.yCoord, var7.zCoord * var8.xCoord - var7.xCoord * var8.zCoord, var7.xCoord * var8.yCoord - var7.yCoord * var8.xCoord)).normalize();
-                    GL11.glNormal3f(-var7.xCoord, -var7.yCoord, -var7.zCoord);
+                for(int var5 = 0; var5 < var2.faces.length; ++var5) {
+                    var4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                    TexturedQuad var10000 = var2.faces[var5];
+                    float var8 = var3;
+                    Tessellator var7 = var4;
+                    TexturedQuad var6 = var10000;
+                    Vec3D var9 = var6.vertexPositions[1].vector3D.subtract(var6.vertexPositions[0].vector3D).normalize();
+                    Vec3D var10 = var6.vertexPositions[1].vector3D.subtract(var6.vertexPositions[2].vector3D).normalize();
+                    var9 = (new Vec3D(var9.yCoord * var10.zCoord - var9.zCoord * var10.yCoord, var9.zCoord * var10.xCoord - var9.xCoord * var10.zCoord, var9.xCoord * var10.yCoord - var9.yCoord * var10.xCoord)).normalize();
+                    var4.normal(-var9.xCoord, -var9.yCoord, -var9.zCoord);
 
-                    for(int var9 = 0; var9 < 4; ++var9) {
-                        PositionTextureVertex var10 = var5.vertexPositions[var9];
-                        GL11.glTexCoord2f(var10.texturePositionX, var10.texturePositionY);
-                        GL11.glVertex3f(var10.vector3D.xCoord * var6, var10.vector3D.yCoord * var6, var10.vector3D.zCoord * var6);
+                    for(int var11 = 0; var11 < 4; ++var11) {
+                        PositionTextureVertex var12 = var6.vertexPositions[var11];
+                        var7.addVertexWithUV(var12.vector3D.xCoord * var8, var12.vector3D.yCoord * var8, var12.vector3D.zCoord * var8, var12.texturePositionX, var12.texturePositionY);
                     }
-                }
 
-                GL11.glEnd();
+                    var4.draw();
+                }
                 GL11.glEndList();
                 var2.compiled = true;
             }

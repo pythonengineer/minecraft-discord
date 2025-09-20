@@ -7,7 +7,7 @@ public final class BlockStone extends Block {
         super(var1, var2, Material.rock);
 	}
 
-    public final int idDropped() {
+    public final int idDropped(int var1) {
         return Block.cobblestone.blockID;
     }
 }

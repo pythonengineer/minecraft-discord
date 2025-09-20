@@ -13,9 +13,9 @@ final class EntityMapSlot {
     }
 
     public final EntityMapSlot init(float var1, float var2, float var3) {
-        this.xSlot = (int)(var1 / 16.0F);
-        this.ySlot = (int)(var2 / 16.0F);
-        this.zSlot = (int)(var3 / 16.0F);
+        this.xSlot = (int)(var1 / 8.0F);
+        this.ySlot = (int)(var2 / 8.0F);
+        this.zSlot = (int)(var3 / 8.0F);
         if(this.xSlot < 0) {
             this.xSlot = 0;
         }

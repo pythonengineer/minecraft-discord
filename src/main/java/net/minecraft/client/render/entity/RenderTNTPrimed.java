@@ -2,13 +2,12 @@ package net.minecraft.client.render.entity;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.render.RenderBlocks;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.level.block.Block;
 
 public final class RenderTNTPrimed extends Render {
-	private RenderBlocks blockRenderer = new RenderBlocks(Tessellator.instance);
+	private RenderBlocks blockRenderer = new RenderBlocks();
 
     public RenderTNTPrimed() {
         this.shadowSize = 0.5F;

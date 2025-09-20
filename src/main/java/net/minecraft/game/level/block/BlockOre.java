@@ -12,7 +12,7 @@ public final class BlockOre extends Block {
 		super(var1, var2, Material.rock);
 	}
 
-	public final int idDropped() {
+    public final int idDropped(int var1) {
 		return this.blockID == Block.oreCoal.blockID ? Item.coal.shiftedIndex : (this.blockID == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : this.blockID);
 	}
 

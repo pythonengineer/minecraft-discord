@@ -29,6 +29,10 @@ public class EntityItem extends Entity {
 		this.canTriggerWalking = false;
 	}
 
+    public EntityItem(World var1) {
+        super(var1);
+    }
+
 	public final void onEntityUpdate() {
         super.onEntityUpdate();
 		if(this.delayBeforeCanPickup > 0) {
@@ -154,8 +158,9 @@ public class EntityItem extends Entity {
 
     }
 
-	public final void attackEntityFrom(Entity var1, int var2) {
-	}
+    public final boolean attackEntityFrom(Entity var1, int var2) {
+        return false;
+    }
 
 	protected final void writeEntityToNBT(NBTTagCompound var1) {
 		var1.setShort("Health", (byte)this.health);

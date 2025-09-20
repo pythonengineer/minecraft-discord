@@ -11,7 +11,7 @@ public final class BlockGrass extends Block {
 		this.setTickOnLoad(true);
 	}
 
-	public final int getBlockTexture(int var1) {
+	public final int getBlockTextureFromSide(int var1) {
 		return var1 == 1 ? 0 : (var1 == 0 ? 2 : 3);
 	}
 
@@ -31,7 +31,7 @@ public final class BlockGrass extends Block {
 		}
 	}
 
-	public final int idDropped() {
-		return Block.dirt.idDropped();
+    public final int idDropped(int var1) {
+        return Block.dirt.idDropped(0);
 	}
 }

@@ -10,8 +10,8 @@ public final class BlockWorkbench extends Block {
         this.blockIndexInTexture = 59;
     }
 
-    public final int getBlockTexture(int var1) {
-        return var1 == 1 ? this.blockIndexInTexture - 16 : (var1 == 0 ? Block.planks.getBlockTexture(0) : (var1 != 2 && var1 != 4 ? this.blockIndexInTexture : this.blockIndexInTexture + 1));
+    public final int getBlockTextureFromSide(int var1) {
+        return var1 == 1 ? this.blockIndexInTexture - 16 : (var1 == 0 ? Block.planks.getBlockTextureFromSide(0) : (var1 != 2 && var1 != 4 ? this.blockIndexInTexture : this.blockIndexInTexture + 1));
     }
 
     public final boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {

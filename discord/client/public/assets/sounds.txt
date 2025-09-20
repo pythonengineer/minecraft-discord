@@ -1,3 +1,5 @@
+fire/fire.ogg
+fire/ignite.ogg
 random/click.ogg
 random/drr.ogg
 random/explode.ogg

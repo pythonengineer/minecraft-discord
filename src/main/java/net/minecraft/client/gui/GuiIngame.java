@@ -166,12 +166,17 @@ public final class GuiIngame extends Gui {
 
         onBeginTouchGUI();
 
-        this.mc.fontRenderer.drawStringWithShadow("0.31", 2, 2, 16777215);
-		if(this.mc.options.showFPS) {
-		    this.mc.fontRenderer.drawStringWithShadow(this.mc.debug, 2, 12, 16777215);
+        if(this.mc.options.showFPS) {
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Indev (" + this.mc.debug + ")", 2, 2, 16777215);
             Minecraft var15 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow("E: " + var15.theWorld.getDebugLoadedEntities() + ". P: " + var15.effectRenderer.getStatistics() + ". LT: " + var15.theWorld.getDebugMapInfo(), 2, 22, 16777215);
-		}
+            this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoRenders(), 2, 12, 16777215);
+            var15 = this.mc;
+            this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoEntities(), 2, 22, 16777215);
+            var15 = this.mc;
+            this.mc.fontRenderer.drawStringWithShadow("P: " + var15.effectRenderer.getStatistics() + ". T: " + var15.theWorld.debugSkylightUpdates(), 2, 32, 16777215);
+        } else {
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Indev", 2, 2, 16777215);
+        }
 
         onEndTouchGUI();
 

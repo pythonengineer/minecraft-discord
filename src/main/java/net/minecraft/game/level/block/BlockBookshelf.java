@@ -8,7 +8,7 @@ public final class BlockBookshelf extends Block {
         super(47, 35, Material.wood);
 	}
 
-	public final int getBlockTexture(int var1) {
+	public final int getBlockTextureFromSide(int var1) {
 		return var1 <= 1 ? 4 : this.blockIndexInTexture;
 	}
 

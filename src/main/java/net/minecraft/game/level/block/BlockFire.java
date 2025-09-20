@@ -109,7 +109,7 @@ public final class BlockFire extends Block {
 			}
 
 			if(var8) {
-				Block.tnt.onBlockDestroyedByPlayer(var1, var2, var3, var4);
+				Block.tnt.onBlockDestroyedByPlayer(var1, var2, var3, var4, 0);
 			}
 		}
 
@@ -138,9 +138,9 @@ public final class BlockFire extends Block {
 		}
 	}
 
-	public final boolean canBlockCatchFire(int var1) {
-		return this.chanceToEncourageFire[var1] > 0;
-	}
+    public final boolean getChanceOfNeighborsEncouragingFire(int var1) {
+        return this.chanceToEncourageFire[var1] > 0;
+    }
 
 	public final void fireSpread(World var1, int var2, int var3, int var4) {
 		boolean var5 = false;
@@ -172,6 +172,10 @@ public final class BlockFire extends Block {
 	}
 
 	public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        if(var5.nextInt(10) == 0) {
+            var1.playSoundAtPlayer((float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F, "fire.fire", 1.0F + var5.nextFloat(), var5.nextFloat() * 0.7F + 0.3F);
+        }
+
 		int var6;
 		float var7;
 		float var8;

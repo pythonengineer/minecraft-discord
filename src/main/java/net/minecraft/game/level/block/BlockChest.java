@@ -19,7 +19,7 @@ public final class BlockChest extends BlockContainer {
         this.blockIndexInTexture = 26;
     }
 
-    public final int getBlockTextureFromSideAndMetadata(World var1, int var2, int var3, int var4, int var5) {
+    public final int getBlockTexture(World var1, int var2, int var3, int var4, int var5) {
         if(var5 == 1) {
             return this.blockIndexInTexture - 1;
         } else if(var5 == 0) {
@@ -106,7 +106,7 @@ public final class BlockChest extends BlockContainer {
         }
     }
 
-    public final int getBlockTexture(int var1) {
+    public final int getBlockTextureFromSide(int var1) {
         return var1 == 1 ? this.blockIndexInTexture - 1 : (var1 == 0 ? this.blockIndexInTexture - 1 : (var1 == 3 ? this.blockIndexInTexture + 1 : this.blockIndexInTexture));
     }
 
@@ -128,10 +128,10 @@ public final class BlockChest extends BlockContainer {
             ++var5;
         }
 
-        return var5 > 1 ? false : (this.h(var1, var2 - 1, var3, var4) ? false : (this.h(var1, var2 + 1, var3, var4) ? false : (this.h(var1, var2, var3, var4 - 1) ? false : !this.h(var1, var2, var3, var4 + 1))));
+        return var5 > 1 ? false : (this.isThereANeighborChest(var1, var2 - 1, var3, var4) ? false : (this.isThereANeighborChest(var1, var2 + 1, var3, var4) ? false : (this.isThereANeighborChest(var1, var2, var3, var4 - 1) ? false : !this.isThereANeighborChest(var1, var2, var3, var4 + 1))));
     }
 
-    private boolean h(World var1, int var2, int var3, int var4) {
+    private boolean isThereANeighborChest(World var1, int var2, int var3, int var4) {
         return var1.getBlockId(var2, var3, var4) != this.blockID ? false : (var1.getBlockId(var2 - 1, var3, var4) == this.blockID ? true : (var1.getBlockId(var2 + 1, var3, var4) == this.blockID ? true : (var1.getBlockId(var2, var3, var4 - 1) == this.blockID ? true : var1.getBlockId(var2, var3, var4 + 1) == this.blockID)));
     }
 

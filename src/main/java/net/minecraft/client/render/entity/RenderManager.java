@@ -6,11 +6,9 @@ import java.util.Map;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelCreeper;
 import net.minecraft.client.model.ModelPig;
 import net.minecraft.client.model.ModelSheep;
 import net.minecraft.client.model.ModelSkeleton;
-import net.minecraft.client.model.ModelSpider;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.game.entity.Entity;
@@ -20,6 +18,7 @@ import net.minecraft.game.entity.animal.EntitySheep;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.entity.monster.EntityCreeper;
+import net.minecraft.game.entity.monster.EntityGiantZombie;
 import net.minecraft.game.entity.monster.EntitySkeleton;
 import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
@@ -37,12 +36,14 @@ public final class RenderManager {
     private float viewerPosZ;
 
     private RenderManager() {
-        this.entityRenderMap.put(EntitySpider.class, new RenderLiving(new ModelSpider(), 1.0F));
+        this.entityRenderMap.put(EntitySpider.class, new RenderSpider());
         this.entityRenderMap.put(EntityPig.class, new RenderLiving(new ModelPig(), 0.7F));
         this.entityRenderMap.put(EntitySheep.class, new RenderLiving(new ModelSheep(), 0.7F));
-        this.entityRenderMap.put(EntityCreeper.class, new RenderLiving(new ModelCreeper(), 0.5F));
+        this.entityRenderMap.put(EntityCreeper.class, new RenderCreeper());
         this.entityRenderMap.put(EntitySkeleton.class, new RenderLiving(new ModelSkeleton(), 0.5F));
         this.entityRenderMap.put(EntityZombie.class, new RenderLiving(new ModelZombie(), 0.5F));
+        this.entityRenderMap.put(EntityPlayer.class, new RenderLiving(new ModelBiped(), 0.5F));
+        this.entityRenderMap.put(EntityGiantZombie.class, new RenderGiantZombie(new ModelZombie(), 0.5F, 6.0F));
         this.entityRenderMap.put(EntityLiving.class, new RenderLiving(new ModelBiped(), 0.5F));
 		this.entityRenderMap.put(Entity.class, new RenderEntity());
 		this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
@@ -71,12 +72,12 @@ public final class RenderManager {
         float var4 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * var2;
         float var5 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * var2;
         float var6 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
-        float var7 = this.worldObj.getBlockLightValue((int)var3, (int)(var4 + var1.getShadowSize()), (int)var5);
+        float var7 = this.worldObj.getBrightness((int)var3, (int)(var4 + var1.getShadowSize()), (int)var5);
         GL11.glColor3f(var7, var7, var7);
-        this.renderEntityWithPosYaw(var1, var3, var4, var5, var6, var2);
+        this.getEntityRenderObject(var1, var3, var4, var5, var6, var2);
     }
 
-	public final void renderEntityWithPosYaw(Entity var1, float var2, float var3, float var4, float var5, float var6) {
+	public final void getEntityRenderObject(Entity var1, float var2, float var3, float var4, float var5, float var6) {
 		Class var8 = var1.getClass();
 		Render var9 = (Render)this.entityRenderMap.get(var8);
 		if(var9 == null && var8 != Entity.class) {
@@ -91,7 +92,7 @@ public final class RenderManager {
 
 	}
 
-    public final void setWorld(World var1) {
+    public final void set(World var1) {
         this.worldObj = var1;
     }
 

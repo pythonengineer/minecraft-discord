@@ -8,6 +8,8 @@ import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.entity.monster.EntityMob;
+import net.minecraft.game.entity.projectile.EntityArrow;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
@@ -46,6 +48,10 @@ public class EntityPlayer extends EntityLiving {
     }
 
     public void onLivingUpdate() {
+        if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 << 2 == 0) {
+            this.heal(1);
+        }
+
         InventoryPlayer var3 = this.inventory;
 
         for(int var4 = 0; var4 < var3.mainInventory.length; ++var4) {
@@ -82,10 +88,6 @@ public class EntityPlayer extends EntityLiving {
             }
         }
 
-    }
-
-    public final int getScore() {
-        return this.getScore;
     }
 
     public final void onDeath(Entity var1) {
@@ -171,6 +173,24 @@ public class EntityPlayer extends EntityLiving {
 
     protected final float getEyeHeight() {
         return 0.12F;
+    }
+
+    public final boolean attackEntityFrom(Entity var1, int var2) {
+        if(var1 instanceof EntityMob || var1 instanceof EntityArrow) {
+            if(this.worldObj.difficultySetting == 0) {
+                var2 = 0;
+            }
+
+            if(this.worldObj.difficultySetting == 1) {
+                var2 = var2 / 3 + 1;
+            }
+
+            if(this.worldObj.difficultySetting == 3) {
+                var2 = var2 * 3 / 2;
+            }
+        }
+
+        return super.attackEntityFrom(var1, var2);
     }
 
     public final void dropOneItem(boolean flag) {

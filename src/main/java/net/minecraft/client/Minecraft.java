@@ -55,7 +55,7 @@ import net.minecraft.game.physics.MovingObjectPosition;
 
 public final class Minecraft implements Runnable {
 	public PlayerController playerController = new PlayerControllerSP(this);
-	private boolean fullScreen = false;
+	private boolean fullscreen = false;
 	public int displayWidth;
 	public int displayHeight;
     private OpenGlCapsChecker glCapabilities;
@@ -87,7 +87,7 @@ public final class Minecraft implements Runnable {
     private TextureLavaFX textureLavaFX;
     volatile boolean running;
 	public String debug;
-    public boolean ingameFocus;
+    public boolean inGameHasFocus;
     private int prevFrameTime;
     public boolean renderRain;
     public boolean mouseGrabSupported = false;
@@ -97,7 +97,7 @@ public final class Minecraft implements Runnable {
     public TouchOverlayRenderer touchOverlayRenderer;
     public static Minecraft minecraft;
 
-	public Minecraft(int width, int height, boolean fullScreen) {
+	public Minecraft(int width, int height, boolean fullscreen) {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
         this.sndManager = new SoundManager();
@@ -106,12 +106,12 @@ public final class Minecraft implements Runnable {
         this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
 		this.debug = "";
-        this.ingameFocus = false;
+        this.inGameHasFocus = false;
         this.prevFrameTime = 0;
         this.renderRain = false;
 		this.displayWidth = width;
 		this.displayHeight = height;
-		this.fullScreen = fullScreen;
+		this.fullscreen = fullscreen;
         this.options = new GameSettings(this);
         this.sndManager.loadSoundSettings(this.options);
         this.sndManager.registerSounds();
@@ -128,7 +128,7 @@ public final class Minecraft implements Runnable {
 			}
 
             if(var1 == null && this.theWorld == null) {
-                var1 = new GuiMainTitle();
+                var1 = new GuiMainMenu();
             } else if(var1 == null && this.thePlayer.health <= 0) {
                 var1 = new GuiGameOver();
             }
@@ -159,7 +159,7 @@ public final class Minecraft implements Runnable {
 			Minecraft var4 = this;
 	        this.displayWidth = Display.getVisualViewportW() != 0 ? Display.getVisualViewportW() : this.displayWidth;
 	        this.displayHeight = Display.getVisualViewportH() != 0 ? Display.getVisualViewportH() : this.displayHeight;
-			if(this.fullScreen) {
+			if(this.fullscreen) {
 				Display.setFullscreen(true);
 				this.displayWidth = Display.getDisplayMode().getWidth();
 				this.displayHeight = Display.getDisplayMode().getHeight();
@@ -169,7 +169,7 @@ public final class Minecraft implements Runnable {
 
 	        this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-			Display.setTitle("Minecraft 0.31");
+			Display.setTitle("Minecraft Indev");
 
 			try {
 				Display.create();
@@ -223,10 +223,10 @@ public final class Minecraft implements Runnable {
 
 			if(this.serverIp != null && this.session != null) {
 				World var43 = new World();
-				var43.generate(8, 8, 8, new byte[512]);
+				var43.generate2(8, 8, 8, new byte[512]);
 				this.setLevel(var43);
 			} else {
-                this.displayGuiScreen(new GuiMainTitle());
+                this.displayGuiScreen(new GuiMainMenu());
 			}
 
 			this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
@@ -283,7 +283,7 @@ public final class Minecraft implements Runnable {
                     this.updateDisplay();
 
                     if(!Display.isActive()) {
-                        if(this.fullScreen) {
+                        if(this.fullscreen) {
                             this.toggleFullscreen();
                         }
 
@@ -295,7 +295,7 @@ public final class Minecraft implements Runnable {
 					}
 
 					++var3;
-                    this.isGamePaused = !Display.isActive();
+                    this.isGamePaused = this.currentScreen != null && this.currentScreen.doesGuiPauseGame();
 				} catch (Exception var32) {
 					this.displayGuiScreen(new GuiErrorScreen("Client error", "The game broke! [" + var32 + "]"));
 					var32.printStackTrace();
@@ -358,7 +358,7 @@ public final class Minecraft implements Runnable {
 
     protected void checkWindowResize() {
         float dpiFetch = -1.0f;
-        if (!this.fullScreen
+        if (!this.fullscreen
                 && (Display.wasResized() || (dpiFetch = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f)) != this.displayDPI)) {
             int i = this.displayWidth;
             int j = this.displayHeight;
@@ -383,9 +383,9 @@ public final class Minecraft implements Runnable {
 
     public final void toggleFullscreen() {
         try {
-            this.fullScreen = !this.fullScreen;
+            this.fullscreen = !this.fullscreen;
             System.out.println("Toggle fullscreen!");
-            if(this.fullScreen) {
+            if(this.fullscreen) {
                 Display.setDisplayMode(Display.getDesktopDisplayMode());
                 this.displayWidth = Display.getDisplayMode().getWidth();
                 this.displayHeight = Display.getDisplayMode().getHeight();
@@ -397,11 +397,11 @@ public final class Minecraft implements Runnable {
             }
 
             this.setIngameNotInFocus();
-            Display.setFullscreen(this.fullScreen);
+            Display.setFullscreen(this.fullscreen);
             this.resize(this.displayWidth, this.displayHeight);
             this.updateDisplay();
             Thread.sleep(1000L);
-            if(this.fullScreen) {
+            if(this.fullscreen) {
                 this.setIngameFocus();
             }
 
@@ -424,8 +424,8 @@ public final class Minecraft implements Runnable {
 	public final void setIngameFocus() {
         boolean touch = PointerInputAbstraction.isTouchMode();
         if (touch || Display.isActive()) {
-            if(!this.ingameFocus) {
-                this.ingameFocus = true;
+            if(!this.inGameHasFocus) {
+                this.inGameHasFocus = true;
                 if (!touch && mouseGrabSupported) {
                     Mouse.setGrabbed(true);
                 }
@@ -436,13 +436,13 @@ public final class Minecraft implements Runnable {
 	}
 
     public void setIngameNotInFocus() {
-        if (this.ingameFocus) {
+        if (this.inGameHasFocus) {
             if(this.thePlayer != null) {
                 EntityPlayerSP var1 = this.thePlayer;
                 var1.movementInput.resetKeyState();
             }
 
-            this.ingameFocus = false;
+            this.inGameHasFocus = false;
             if (!PointerInputAbstraction.isTouchMode() && mouseGrabSupported) {
                 Mouse.setGrabbed(false);
             }
@@ -476,6 +476,9 @@ public final class Minecraft implements Runnable {
                     if(var4 != var2 || var4 != null && var4.stackSize != var3) {
                         this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = var4;
                         this.entityRenderer.itemRenderer.resetEquippedProgress();
+                        if(var4.stackSize == 0) {
+                            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+                        }
                     }
                 }
             }
@@ -534,7 +537,10 @@ public final class Minecraft implements Runnable {
                         var16 = var9.stackSize;
                         int var18 = var15;
                         var5 = this.theWorld;
-                        var9.getItem().onItemUse(var9, var5, var10, var3, var13, var18);
+                        if(var9.getItem().onItemUse(var9, var5, var10, var3, var13, var18)) {
+                            this.entityRenderer.itemRenderer.swingItem();
+                        }
+
                         if(var9.stackSize == 0) {
                             this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
                             return;
@@ -811,18 +817,18 @@ public final class Minecraft implements Runnable {
             }
 
             if(this.currentScreen == null) {
-                if((Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F && this.ingameFocus) {
+                if((Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
                     this.clickMouse(0);
                     this.prevFrameTime = this.ticksRan;
                 }
 
-                if((Mouse.isButtonDown(1) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F && this.ingameFocus) {
+                if((Mouse.isButtonDown(1) || miningTouch) && (float)(this.ticksRan - this.prevFrameTime) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
                     this.clickMouse(1);
                     this.prevFrameTime = this.ticksRan;
                 }
             }
 
-            boolean var20 = this.currentScreen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch && this.ingameFocus;
+            boolean var20 = this.currentScreen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch && this.inGameHasFocus;
             if(!this.playerController.isInTestMode && this.leftClickCounter <= 0) {
                 if(var20 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) {
                     int var2 = this.objectMouseOver.blockX;
@@ -848,8 +854,15 @@ public final class Minecraft implements Runnable {
 		}
 
         if(this.theWorld != null) {
-            this.entityRenderer.updateRenderer();
-            this.renderGlobal.updateClouds();
+            this.theWorld.difficultySetting = this.options.difficulty;
+            if(!this.isGamePaused) {
+                this.entityRenderer.updateRenderer();
+            }
+
+            if(!this.isGamePaused) {
+                this.renderGlobal.updateClouds();
+            }
+
             if(!this.isGamePaused) {
                 this.theWorld.updateEntities();
             }
@@ -858,13 +871,18 @@ public final class Minecraft implements Runnable {
                 this.theWorld.tick();
             }
 
-            this.theWorld.randomDisplayUpdates((int)this.thePlayer.posX, (int)this.thePlayer.posY, (int)this.thePlayer.posZ);
-            this.effectRenderer.updateEffects();
+            if(!this.isGamePaused) {
+                this.theWorld.randomDisplayUpdates((int)this.thePlayer.posX, (int)this.thePlayer.posY, (int)this.thePlayer.posZ);
+            }
+
+            if(!this.isGamePaused) {
+                this.effectRenderer.updateEffects();
+            }
         }
 
 	}
 
-    public final void generateNewLevel(int var1, int var2, int var3, int var4) {
+    public final void generateLevel(int var1, int var2, int var3, int var4) {
         String var5 = this.session != null ? this.session.username : "anonymous";
         LevelGenerator var6 = new LevelGenerator(this.loadingScreen);
         var6.islandGen = var3 == 1;

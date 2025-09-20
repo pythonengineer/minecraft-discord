@@ -53,13 +53,17 @@ public final class AxisAlignedBB {
     }
 
     public final AxisAlignedBB expand(float var1, float var2, float var3) {
-        float var4 = this.minX - var1;
-        float var5 = this.minY - var2;
-        float var6 = this.minZ - var3;
-        var1 += this.maxX;
-        var2 += this.maxY;
-        var3 += this.maxZ;
-        return new AxisAlignedBB(var4, var5, var6, var1, var2, var3);
+        if(this.minY > this.maxY) {
+            throw new IllegalArgumentException("NOOOOOO!");
+        } else {
+            float var4 = this.minX - var1;
+            float var5 = this.minY - var2;
+            float var6 = this.minZ - var3;
+            var1 += this.maxX;
+            var2 += this.maxY;
+            var3 += this.maxZ;
+            return new AxisAlignedBB(var4, var5, var6, var1, var2, var3);
+        }
     }
 
     public final float calculateXOffset(AxisAlignedBB var1, float var2) {
@@ -258,5 +262,9 @@ public final class AxisAlignedBB {
 
     private boolean isVecInXY(Vec3D var1) {
         return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.yCoord >= this.minY && var1.yCoord <= this.maxY;
+    }
+
+    public final Vec3D getAverageEdgeLength() {
+        return new Vec3D((this.maxX + this.minX) / 2.0F, (this.maxY + this.minY) / 2.0F, (this.maxZ + this.minZ) / 2.0F);
     }
 }

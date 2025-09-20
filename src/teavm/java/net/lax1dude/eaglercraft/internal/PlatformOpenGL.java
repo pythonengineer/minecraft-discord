@@ -1,7 +1,9 @@
 package net.lax1dude.eaglercraft.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.teavm.jso.webgl.WebGLShader;
 import org.teavm.jso.webgl.WebGLUniformLocation;
@@ -16,6 +18,7 @@ import net.lax1dude.eaglercraft.internal.teavm.WebGLANGLEInstancedArrays;
 import net.lax1dude.eaglercraft.internal.teavm.WebGLBackBuffer;
 import net.lax1dude.eaglercraft.internal.teavm.WebGLOESVertexArrayObject;
 import net.lax1dude.eaglercraft.internal.teavm.WebGLVertexArray;
+import net.lax1dude.eaglercraft.internal.OpenGLObjects.QueryGL;
 import net.lax1dude.eaglercraft.log4j.Level;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
@@ -55,6 +58,7 @@ public class PlatformOpenGL {
     static boolean hasOESTextureHalfFloat = false;
     static boolean hasOESTextureHalfFloatLinear = false;
     static boolean hasEXTTextureFilterAnisotropic = false;
+    static boolean hasEXTOcclusionQuery = false;
     static boolean hasWEBGLDebugRendererInfo = false;
 
     static WebGLANGLEInstancedArrays ANGLEInstancedArrays = null;
@@ -74,6 +78,9 @@ public class PlatformOpenGL {
     static final int INSTANCE_IMPL_CORE = 0;
     static final int INSTANCE_IMPL_ANGLE = 1;
     static int instancingImpl = INSTANCE_IMPL_NONE;
+
+    static int queryIds = 0;
+    static final HashMap<Integer, IQueryGL> queries = new HashMap<>();
 
     static void setCurrentContext(int glesVersIn, WebGL2RenderingContext context) {
         ctx = context;
@@ -102,6 +109,7 @@ public class PlatformOpenGL {
                 hasOESTextureHalfFloatLinear = glesVersIn == 200
                         && ctx.getExtension("OES_texture_half_float_linear") != null;
                 hasEXTTextureFilterAnisotropic = ctx.getExtension("EXT_texture_filter_anisotropic") != null;
+                hasEXTOcclusionQuery = glesVersIn >= 200;
             } else {
                 hasANGLEInstancedArrays = false;
                 hasEXTColorBufferFloat = false;
@@ -114,6 +122,7 @@ public class PlatformOpenGL {
                 hasOESTextureHalfFloat = false;
                 hasOESTextureHalfFloatLinear = false;
                 hasEXTTextureFilterAnisotropic = false;
+                hasEXTOcclusionQuery = false;
             }
             hasWEBGLDebugRendererInfo = ctx.getExtension("WEBGL_debug_renderer_info") != null;
 
@@ -149,6 +158,7 @@ public class PlatformOpenGL {
             hasOESTextureHalfFloat = false;
             hasOESTextureHalfFloatLinear = false;
             hasEXTTextureFilterAnisotropic = false;
+            hasEXTOcclusionQuery = false;
             hasWEBGLDebugRendererInfo = false;
             ANGLEInstancedArrays = null;
             OESVertexArrayObject = null;
@@ -172,6 +182,7 @@ public class PlatformOpenGL {
         if (hasOESTextureHalfFloat) exts.add("OES_texture_half_float");
         if (hasOESTextureHalfFloatLinear) exts.add("OES_texture_half_float_linear");
         if (hasEXTTextureFilterAnisotropic) exts.add("EXT_texture_filter_anisotropic");
+        if (hasEXTOcclusionQuery) exts.add("EXT_occlusion_query_boolean");
         if (hasWEBGLDebugRendererInfo) exts.add("WEBGL_debug_renderer_info");
         return exts;
     }
@@ -330,6 +341,34 @@ public class PlatformOpenGL {
 
     public static IQueryGL _wglGenQueries() {
         return new OpenGLObjects.QueryGL(ctx.createQuery());
+    }
+
+    public static void _wglGenQueries(java.nio.IntBuffer buffer) {
+        int i = queryIds;
+        for (queryIds = queryIds; queryIds < i + buffer.limit(); ++queryIds) {
+            buffer.put(queryIds);
+        }
+    }
+
+    public static void _wglGetQueryObjectuiv(int id, int pname, java.nio.IntBuffer buffer) {
+        QueryGL q = (QueryGL)queries.get(id);
+        if (q == null) {
+            throw new NullPointerException("Bad query ID for glGetQueryObjectuiv: " + id);
+        }
+        buffer.put(ctx.getQueryParameter(q.ptr, pname));
+    }
+
+    public static void _wglBeginQuery(int target, int query) {
+        QueryGL q = (QueryGL)queries.get(query);
+        if (q == null) {
+            q = (QueryGL)_wglGenQueries();
+            queries.put(query, q);
+        }
+        ctx.beginQuery(target, q.ptr);
+    }
+
+    public static void _wglEndQuery(int target) {
+        ctx.endQuery(target);
     }
 
     public static void _wglDeleteBuffers(IBufferGL obj) {
@@ -857,6 +896,10 @@ public class PlatformOpenGL {
 
     public static boolean checkAnisotropicFilteringSupport() {
         return hasEXTTextureFilterAnisotropic;
+    }
+
+    public static boolean checkOcclusionQuerySupport() {
+        return hasEXTOcclusionQuery;
     }
 
     public static boolean checkNPOTCapable() {

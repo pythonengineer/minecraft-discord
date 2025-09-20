@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
+import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.level.World;
@@ -28,9 +29,12 @@ public final class WorldRenderer {
 	public boolean needsUpdate;
     private AxisAlignedBB rendererBoundingBox;
 	private RenderBlocks renderBlocks;
+    public boolean isVisible = true;
+    public boolean isWaitingOnOcclusionQuery;
+    public int glOcclusionQuery;
 
 	public WorldRenderer(World var1, int var2, int var3, int var4, int var5, int var6) {
-		this.renderBlocks = new RenderBlocks(Tessellator.instance, var1);
+		this.renderBlocks = new RenderBlocks(var1);
 		this.worldObj = var1;
 		this.posX = var2;
 		this.posY = var3;
@@ -134,7 +138,11 @@ public final class WorldRenderer {
 		}
 	}
 
-	public final void updateInFrustrum(ClippingHelper var1) {
-	    this.isInFrustrum = var1.isBoundingBoxInFrustrum(this.rendererBoundingBox);
-	}
+    public final void updateInFrustrum(ICamera var1) {
+        this.isInFrustrum = var1.isBoundingBoxInFrustrum(this.rendererBoundingBox);
+    }
+
+    public final void callOcclusionQueryList() {
+        GL11.glCallList(this.glRenderList + 2);
+    }
 }

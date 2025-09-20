@@ -14,6 +14,14 @@ import java.util.zip.GZIPOutputStream;
 import net.minecraft.client.IProgressUpdate;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.animal.EntityPig;
+import net.minecraft.game.entity.animal.EntitySheep;
+import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.entity.monster.EntityCreeper;
+import net.minecraft.game.entity.monster.EntityGiantZombie;
+import net.minecraft.game.entity.monster.EntitySkeleton;
+import net.minecraft.game.entity.monster.EntitySpider;
+import net.minecraft.game.entity.monster.EntityZombie;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.tileentity.TileEntity;
 import net.minecraft.game.level.block.tileentity.TileEntityChest;
@@ -34,11 +42,11 @@ public abstract class LevelLoader {
 			this.guiLoading.displayLoadingString("Reading..");
 		}
 
-		NBTTagCompound var11 = LoadingScreenRenderer.writeLevelTags(var1);
-		NBTTagCompound var2 = var11.getCompoundTag("About");
-		NBTTagCompound var3 = var11.getCompoundTag("Map");
-		NBTTagCompound var4 = var11.getCompoundTag("Environment");
-		NBTTagList var5 = var11.getTagList("Entities");
+        NBTTagCompound var13 = LoadingScreenRenderer.writeLevelTags(var1);
+        NBTTagCompound var2 = var13.getCompoundTag("About");
+        NBTTagCompound var3 = var13.getCompoundTag("Map");
+        NBTTagCompound var4 = var13.getCompoundTag("Environment");
+        NBTTagList var5 = var13.getTagList("Entities");
 		short var6 = var3.getShort("Width");
 		short var7 = var3.getShort("Length");
 		short var8 = var3.getShort("Height");
@@ -62,43 +70,57 @@ public abstract class LevelLoader {
 		var9.groundLevel = var4.getShort("SurroundingGroundHeight");
 		var9.waterLevel = var4.getShort("SurroundingWaterHeight");
 		var9.defaultFluid = var4.getByte("SurroundingWaterType");
-		var9.generate(var6, var8, var7, var3.getByteArray("Blocks"));
+		var9.generate(var6, var8, var7, var3.getByteArray("Blocks"), var3.getByteArray("Data"));
 		if(this.guiLoading != null) {
 			this.guiLoading.displayLoadingString("Preparing entities..");
 		}
 
-		for(int var14 = 0; var14 < var5.tagCount(); ++var14) {
-			var3 = (NBTTagCompound)var5.tagAt(var14);
-			String var17 = var3.getString("id");
-			Entity var20 = this.loadEntity(var9, var17);
-			if(var20 != null) {
-				var20.readFromNBT(var3);
-				var9.spawnEntityInWorld(var20);
-			}
-		}
+        for(int var16 = 0; var16 < var5.tagCount(); ++var16) {
+            try {
+                var3 = (NBTTagCompound)var5.tagAt(var16);
+                String var19 = var3.getString("id");
+                Entity var22 = this.loadEntity(var9, var19);
+                if(var22 != null) {
+                    var22.readFromNBT(var3);
+                    var9.spawnEntityInWorld(var22);
+                } else {
+                    System.out.println("Skipping unknown entity id \"" + var19 + "\"");
+                }
+            } catch (Exception var12) {
+                System.out.println("Error reading entity");
+                var12.printStackTrace();
+            }
+        }
 
-		NBTTagList var15 = var11.getTagList("TileEntities");
+        NBTTagList var17 = var13.getTagList("TileEntities");
 
-		for(int var16 = 0; var16 < var15.tagCount(); ++var16) {
-			var4 = (NBTTagCompound)var15.tagAt(var16);
-			int var21 = var4.getInteger("Pos");
-			String var12 = var4.getString("id");
-			TileEntityChest var13 = var12.equals("Chest") ? new TileEntityChest() : null;
-			if(var13 != null) {
-				var13.readFromNBT(var4);
-				int var18 = var21 % 1024;
-				int var19 = (var21 >> 10) % 1024;
-				var21 = (var21 >> 20) % 1024;
-				var9.setBlockTileEntity(var18, var19, var21, var13);
-			}
-		}
+        for(int var18 = 0; var18 < var17.tagCount(); ++var18) {
+            try {
+                var4 = (NBTTagCompound)var17.tagAt(var18);
+                int var23 = var4.getInteger("Pos");
+                String var14 = var4.getString("id");
+                TileEntityChest var21 = var14.equals("Chest") ? new TileEntityChest() : null;
+                if(var21 != null) {
+                    var21.readFromNBT(var4);
+                    int var15 = var23 % 1024;
+                    int var20 = (var23 >> 10) % 1024;
+                    var23 = (var23 >> 20) % 1024;
+                    var9.setBlockTileEntity(var15, var20, var23, var21);
+                } else {
+                    System.out.println("Skipping unknown tile entity id \"" + var14 + "\"");
+                }
+            } catch (Exception var11) {
+                System.out.println("Error reading tileentity");
+                var11.printStackTrace();
+            }
+        }
 
-		return var9;
-	}
+        return var9;
+    }
 
-	protected Entity loadEntity(World var1, String var2) {
-		return null;
-	}
+    protected Entity loadEntity(World var1, String var2) {
+        return (Entity)(var2.equals("Pig") ? new EntityPig(var1) : (var2.equals("Sheep") ? new EntitySheep(var1) : (var2.equals("Creeper") ? new EntityCreeper(var1) : (var2.equals("Skeleton") ? new EntitySkeleton(var1) : (var2.equals("Spider") ? new EntitySpider(var1) : (var2.equals("Zombie") ? new EntityZombie(var1) : (var2.equals("Giant") ? new EntityGiantZombie(var1) : (var2.equals("Item") ? new EntityItem(var1) : null))))))));
+    }
 
 	public final void save(World var1, OutputStream var2) throws IOException {
 		if(this.guiLoading != null) {

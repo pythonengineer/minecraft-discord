@@ -760,6 +760,7 @@ public class GL11 {
     public static final int GL_SRC1_ALPHA = 34185;
     public static final int GL_SRC2_ALPHA = 34186;
     public static final int GL_SAMPLES_PASSED = 35092;
+    public static final int GL_ANY_SAMPLES_PASSED = 35887;
     public static final int GL_QUERY_COUNTER_BITS = 34916;
     public static final int GL_CURRENT_QUERY = 34917;
     public static final int GL_QUERY_RESULT = 34918;
@@ -2171,6 +2172,10 @@ public class GL11 {
     }
 
     public static void glTranslatef(float x, float y, float z) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(x, y, z));
+            return;
+        }
         Matrix4f matrix = getMatrixIncr();
         matrix.m30 = matrix.m00 * x + matrix.m10 * y + matrix.m20 * z + matrix.m30;
         matrix.m31 = matrix.m01 * x + matrix.m11 * y + matrix.m21 * z + matrix.m31;
@@ -2179,6 +2184,10 @@ public class GL11 {
     }
 
     public static void glTranslatef(double x, double y, double z) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation((float)x, (float)y, (float)z));
+            return;
+        }
         float _x = (float)x;
         float _y = (float)y;
         float _z = (float)z;
@@ -2528,7 +2537,7 @@ public class GL11 {
     public static void glCallList(int displayList) {
         DisplayList dp = displayLists.get(displayList);
         if (dp == null) {
-            throw new NullPointerException("Tried to call a display list that does not exist: " + displayList);
+            return;//throw new NullPointerException("Tried to call a display list that does not exist: " + displayList);
         }
         for (int i = 0; i < dp.ops.size(); ++i) {
             ListOperation op = dp.ops.get(i);
@@ -2575,6 +2584,9 @@ public class GL11 {
                 } else {
                     p.drawArrays(dp.mode, op.offset, cnt);
                 }
+            }
+            if (op.hasTranslate) {
+                glTranslatef(op.x, op.y, op.z);
             }
         }
     }
@@ -2657,6 +2669,16 @@ public class GL11 {
                 break;
             default:
                 throw new UnsupportedOperationException("glGetInteger only accepts GL_VIEWPORT as a parameter");
+        }
+    }
+
+    public static void glGetInteger(int param, java.nio.IntBuffer values) {
+        switch (param) {
+            case GL_QUERY_COUNTER_BITS:
+                values.put(glGetInteger(param));
+                break;
+            default:
+                throw new UnsupportedOperationException("glGetInteger only accepts GL_QUERY_COUNTER_BITS as a parameter");
         }
     }
 
@@ -3276,6 +3298,7 @@ public class GL11 {
     static boolean hasFramebufferHDR32FSupport = false;
     static boolean hasLinearHDR16FSupport = false;
     static boolean hasLinearHDR32FSupport = false;
+    static boolean hasOcclusionQuerySupport = false;
     static boolean fboRenderMipmapCapable = false;
     static boolean vertexArrayCapable = false;
     static boolean instancingCapable = false;
@@ -3433,6 +3456,12 @@ public class GL11 {
             logger.info(
                     "Note: Could not unlock instancing via OpenGL extensions, using slow vanilla font and particle rendering");
         }
+        hasOcclusionQuerySupport = PlatformOpenGL.checkOcclusionQuerySupport();
+        if (hasOcclusionQuerySupport) {
+            logger.info("Occlusion query support: true");
+        } else {
+            logger.error("Occlusion query support: false");
+        }
         emulatedVAOState = emulatedVAOs ? new SoftGLVertexState() : null;
         PlatformOpenGL.enterVAOEmulationHook();
         GLSLHeader.init();
@@ -3455,6 +3484,7 @@ public class GL11 {
         hasFramebufferHDR16FSupport = false;
         hasFramebufferHDR32FSupport = false;
         hasLinearHDR32FSupport = false;
+        hasOcclusionQuerySupport = false;
         stringCache.clear();
         mapTexturesGL.clear();
         displayLists.clear();
@@ -3530,6 +3560,26 @@ public class GL11 {
     // legacy
     public static boolean checkLinearHDR32FSupport() {
         return hasLinearHDR32FSupport;
+    }
+
+    public static boolean checkOcclusionQuerySupport() {
+        return hasOcclusionQuerySupport;
+    }
+
+    public static void glGenQueriesARB(java.nio.IntBuffer buffer) {
+        _wglGenQueries(buffer);
+    }
+
+    public static void glGetQueryObjectuARB(int id, int pname, java.nio.IntBuffer buffer) {
+        _wglGetQueryObjectuiv(id, pname, buffer);
+    }
+
+    public static void glBeginQueryARB(int target, int query) {
+        _wglBeginQuery(target, query);
+    }
+
+    public static void glEndQueryARB(int target) {
+        _wglEndQuery(target);
     }
 
     public static void glBegin(int mode, VertexFormat fmt) {

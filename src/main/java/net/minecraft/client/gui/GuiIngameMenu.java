@@ -71,9 +71,9 @@ public final class GuiIngameMenu extends GuiScreen {
 
 	}
 
-	public final void drawScreen(int var1, int var2) {
-		drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
-		drawCenteredString(this.fontRenderer, "Game menu", this.width / 2, 40, 16777215);
-		super.drawScreen(var1, var2);
+    public final void drawScreen(int var1, int var2, float var3) {
+        this.drawDefaultBackground();
+        drawCenteredString(this.fontRenderer, "Game menu", this.width / 2, 40, 16777215);
+        super.drawScreen(var1, var2, var3);
 	}
 }

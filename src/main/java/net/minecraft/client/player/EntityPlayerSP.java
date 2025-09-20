@@ -20,7 +20,12 @@ public class EntityPlayerSP extends EntityPlayer {
 	public EntityPlayerSP(Minecraft var1, World var2) {
 		super(var2);
 		this.mc = var1;
-		this.entityAI = new EntityPlayerInput(this);
+    }
+
+    public final void updatePlayerActionState() {
+        this.moveStrafing = this.movementInput.moveStrafe;
+        this.moveForward = this.movementInput.moveForward;
+        this.isJumping = this.movementInput.jump;
 	}
 
 	public final void onLivingUpdate() {

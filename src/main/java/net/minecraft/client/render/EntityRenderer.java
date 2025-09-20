@@ -19,6 +19,8 @@ import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.effect.EntityRainFX;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.player.EntityPlayerSP;
+import net.minecraft.client.render.camera.Frustrum;
+import net.minecraft.client.render.camera.IsomCamera;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
@@ -54,7 +56,7 @@ public final class EntityRenderer {
 
     public final void updateRenderer() {
         this.prevFogColor = this.fogColor;
-        float var1 = this.mc.theWorld.getBlockLightValue((int)this.mc.thePlayer.posX, (int)this.mc.thePlayer.posY, (int)this.mc.thePlayer.posZ);
+        float var1 = this.mc.theWorld.getBrightness((int)this.mc.thePlayer.posX, (int)this.mc.thePlayer.posY, (int)this.mc.thePlayer.posZ);
         float var2 = (float)(3 - this.mc.options.renderDistance) / 3.0F;
         var1 = var1 * (1.0F - var2) + var2;
         this.fogColor += (var1 - this.fogColor) * 0.1F;
@@ -135,7 +137,7 @@ public final class EntityRenderer {
         this.displayActive = Display.isActive();
         int var5;
         int var6;
-        if(this.mc.ingameFocus) {
+        if(this.mc.inGameHasFocus) {
             int var2 = PointerInputAbstraction.getDX();
             int var3 = PointerInputAbstraction.getDY();
             byte var4 = 1;
@@ -211,7 +213,7 @@ public final class EntityRenderer {
                 GL11.glScalef(f, f, f);
             }
             ff[0] = f;
-            this.mc.currentScreen.drawScreen(mx, my);
+            this.mc.currentScreen.drawScreen(mx, my, var1);
             if (f != 1.0f) {
                 GL11.glPopMatrix();
             }
@@ -325,12 +327,13 @@ public final class EntityRenderer {
             var14 = this.mc.thePlayer.prevPosY + (this.mc.thePlayer.posY - this.mc.thePlayer.prevPosY) * var1;
             var18 = this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * var1;
             GL11.glTranslatef(-var17, -var14, -var18);
-            ClippingHelper var40 = ClippingHelperImpl.init();
+            Frustrum var40 = new Frustrum(var30, this.farPlaneDistance, var1);
             this.mc.renderGlobal.clipRenderersByFrustrum(var40);
             this.mc.renderGlobal.updateRenderers(var30);
             this.setupFog();
             GL11.glEnable(GL11.GL_FOG);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+            RenderHelper.disableStandardItemLighting();
             var23.sortAndRender(var30, 0);
             int var12;
             int var43;
@@ -341,7 +344,9 @@ public final class EntityRenderer {
                 var12 = (int)var30.posX;
                 int var42 = (int)var30.posY;
                 var43 = (int)var30.posZ;
-                RenderBlocks var44 = new RenderBlocks(Tessellator.instance, var34);
+                RenderBlocks var44 = new RenderBlocks(var34);
+                Tessellator t = Tessellator.instance;
+                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
 
                 for(var47 = var12 - 1; var47 <= var12 + 1; ++var47) {
                     for(int var49 = var42 - 1; var49 <= var42 + 1; ++var49) {
@@ -353,6 +358,8 @@ public final class EntityRenderer {
                         }
                     }
                 }
+
+                t.draw();
             }
 
             RenderHelper.enableStandardItemLighting();
@@ -570,7 +577,7 @@ public final class EntityRenderer {
             }
         } else {
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-            GL11.glFogf(GL11.GL_FOG_START, 0.0F);
+            GL11.glFogf(GL11.GL_FOG_START, this.farPlaneDistance / 4.0F);
             GL11.glFogf(GL11.GL_FOG_END, this.farPlaneDistance);
         }
 

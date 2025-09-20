@@ -10,7 +10,7 @@ public final class BlockTNT extends Block {
         super(46, 8, Material.tnt);
 	}
 
-	public final int getBlockTexture(int var1) {
+    public final int getBlockTextureFromSide(int var1) {
 		return var1 == 0 ? this.blockIndexInTexture + 2 : (var1 == 1 ? this.blockIndexInTexture + 1 : this.blockIndexInTexture);
 	}
 
@@ -24,9 +24,9 @@ public final class BlockTNT extends Block {
         var1.spawnEntityInWorld(var5);
     }
 
-    public final void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4) {
-        EntityTNTPrimed var5 = new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F);
-        var1.spawnEntityInWorld(var5);
-        var1.playSoundAtEntity(var5, "random.fuse", 1.0F, 1.0F);
+    public final void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4, int var5) {
+        EntityTNTPrimed var6 = new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F);
+        var1.spawnEntityInWorld(var6);
+        var1.playSoundAtEntity(var6, "random.fuse", 1.0F, 1.0F);
     }
 }

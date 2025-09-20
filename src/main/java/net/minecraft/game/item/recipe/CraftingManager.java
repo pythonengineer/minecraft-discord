@@ -20,10 +20,10 @@ public final class CraftingManager {
 		(new RecipesTools()).addRecipes(this);
         (new RecipesWeapons()).addRecipes(this);
 		(new RecipesIngots()).addRecipes(this);
-		new RecipesBowl();
+		new RecipesCrafting();
 		this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", Character.valueOf('X'), Block.mushroomBrown, Character.valueOf('Y'), Block.mushroomRed, Character.valueOf('#'), Item.bowlEmpty});
 		this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", Character.valueOf('X'), Block.mushroomRed, Character.valueOf('Y'), Block.mushroomBrown, Character.valueOf('#'), Item.bowlEmpty});
-		new RecipesBlocks();
+		new RecipesCrafting();
 		this.addRecipe(new ItemStack(Block.chest), new Object[]{"###", "# #", "###", Character.valueOf('#'), Block.planks});
 		this.addRecipe(new ItemStack(Block.workbench), new Object[]{"##", "##", Character.valueOf('#'), Block.planks});
         this.addRecipe(new ItemStack(Block.clothGray, 1), new Object[]{"###", "###", "###", Character.valueOf('#'), Item.silk});
@@ -32,6 +32,7 @@ public final class CraftingManager {
 		this.addRecipe(new ItemStack(Item.stick, 4), new Object[]{"#", "#", Character.valueOf('#'), Block.planks});
 		this.addRecipe(new ItemStack(Block.torch, 4), new Object[]{"X", "#", Character.valueOf('X'), Item.coal, Character.valueOf('#'), Item.stick});
 		this.addRecipe(new ItemStack(Item.bowlEmpty, 4), new Object[]{"# #", " # ", Character.valueOf('#'), Block.planks});
+        this.addRecipe(new ItemStack(Item.bread, 1), new Object[]{"###", "###", Character.valueOf('#'), Item.wheat});
 		Collections.sort(this.recipes, new RecipeSorter(this));
         System.out.println(this.recipes.size() + " recipes");
 	}
@@ -74,17 +75,17 @@ public final class CraftingManager {
 			}
 		}
 
-		this.recipes.add(new ShapedRecipes(var5, var6, var12, var1));
-	}
+        this.recipes.add(new CraftingRecipe(var5, var6, var12, var1));
+    }
 
-	public final ItemStack findMatchingRecipe(int[] var1) {
-		for(int var2 = 0; var2 < this.recipes.size(); ++var2) {
-			ShapedRecipes var3 = (ShapedRecipes)this.recipes.get(var2);
-			if(var3.matches(var1)) {
-				return var3.getCraftingResult();
-			}
-		}
+    public final ItemStack findMatchingRecipe(int[] var1) {
+        for(int var2 = 0; var2 < this.recipes.size(); ++var2) {
+            CraftingRecipe var3 = (CraftingRecipe)this.recipes.get(var2);
+            if(var3.matchRecipe(var1)) {
+                return var3.createResult();
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

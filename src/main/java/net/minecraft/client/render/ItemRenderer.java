@@ -16,7 +16,7 @@ public final class ItemRenderer {
 	private float prevEquippedProgress = 0.0F;
 	private int swingProgress = 0;
 	private boolean itemSwingState = false;
-	private RenderBlocks renderBlocksInstance = new RenderBlocks(Tessellator.instance);
+	private RenderBlocks renderBlocksInstance = new RenderBlocks();
 
 	public ItemRenderer(Minecraft var1) {
 		this.mc = var1;
@@ -53,7 +53,7 @@ public final class ItemRenderer {
             GL11.glRotatef(-var6 * 80.0F, 1.0F, 0.0F, 0.0F);
 		}
 
-		var4 = this.mc.theWorld.getBlockLightValue((int)var3.posX, (int)var3.posY, (int)var3.posZ);
+		var4 = this.mc.theWorld.getBrightness((int)var3.posX, (int)var3.posY, (int)var3.posZ);
 		GL11.glColor4f(var4, var4, var4, 1.0F);
         float var11;
         int var14;

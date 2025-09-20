@@ -27,6 +27,7 @@ public class DisplayList {
     public class ListOperation {
         boolean hasTex = false;
         boolean hasColor = false;
+        boolean hasTranslate = false;
         boolean hasCount = false;
         boolean hasSetting = false;
         boolean doBlend = false;
@@ -42,6 +43,9 @@ public class DisplayList {
         float g;
         float b;
         float a;
+        float x;
+        float y;
+        float z;
 
         public ListOperation(int tex) {
             this.hasTex = true;
@@ -73,6 +77,13 @@ public class DisplayList {
             this.g = g;
             this.b = b;
             this.a = a;
+        }
+
+        public ListOperation(float x, float y, float z) {
+            this.hasTranslate = true;
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
     }
     IVertexArrayGL vertexArray = null;

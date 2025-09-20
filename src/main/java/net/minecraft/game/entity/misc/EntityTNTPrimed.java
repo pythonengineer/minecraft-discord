@@ -46,7 +46,6 @@ public class EntityTNTPrimed extends Entity {
 		}
 
 		if(this.fuse-- <= 0) {
-			this.worldObj.playSoundAtEntity(this, "random.explode", 4.0F, (1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F) * 0.7F);
 			this.setEntityDead();
 			this.worldObj.createExplosion((Entity)null, this.posX, this.posY, this.posZ, 4.0F);
 		} else {

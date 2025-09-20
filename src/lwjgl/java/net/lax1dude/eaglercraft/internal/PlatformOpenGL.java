@@ -51,6 +51,7 @@ public class PlatformOpenGL {
     private static boolean hasOESTextureHalfFloat = false;
     private static boolean hasOESTextureHalfFloatLinear = false;
     private static boolean hasEXTTextureFilterAnisotropic = false;
+    private static boolean hasEXTOcclusionQuery = false;
 
     private static boolean hasFBO16FSupport = false;
     private static boolean hasFBO32FSupport = false;
@@ -93,6 +94,7 @@ public class PlatformOpenGL {
         hasOESVertexArrayObject = glesVersIn == 200 && caps.GL_OES_vertex_array_object;
         hasLinearHDR32FSupport = caps.GL_OES_texture_float_linear;
         hasEXTTextureFilterAnisotropic = caps.GL_EXT_texture_filter_anisotropic;
+        hasEXTOcclusionQuery = caps.GL_EXT_occlusion_query_boolean;
 
         hasFBO16FSupport = glesVersIn >= 320 || ((glesVersIn >= 300 || hasOESTextureFloat)
                 && (hasEXTColorBufferFloat || hasEXTColorBufferHalfFloat));
@@ -133,6 +135,7 @@ public class PlatformOpenGL {
         if (hasOESTextureHalfFloat) exts.add("OES_texture_half_float");
         if (hasOESTextureHalfFloatLinear) exts.add("OES_texture_half_float_linear");
         if (hasEXTTextureFilterAnisotropic) exts.add("EXT_texture_filter_anisotropic");
+        if (hasEXTOcclusionQuery) exts.add("EXT_occlusion_query_boolean");
         return exts;
     }
 
@@ -280,6 +283,22 @@ public class PlatformOpenGL {
 
     public static IQueryGL _wglGenQueries() {
         return new OpenGLObjects.QueryGL(glGenQueries());
+    }
+
+    public static void _wglGenQueries(java.nio.IntBuffer buffer) {
+        glGenQueries(buffer);
+    }
+
+    public static void _wglGetQueryObjectuiv(int id, int pname, java.nio.IntBuffer buffer) {
+        glGetQueryObjectuiv(id, pname, buffer);
+    }
+
+    public static void _wglBeginQuery(int target, int query) {
+        glBeginQuery(target, query);
+    }
+
+    public static void _wglEndQuery(int target) {
+        glEndQuery(target);
     }
 
     public static void _wglDeleteBuffers(IBufferGL obj) {
@@ -800,6 +819,10 @@ public class PlatformOpenGL {
 
     public static boolean checkAnisotropicFilteringSupport() {
         return hasEXTTextureFilterAnisotropic;
+    }
+
+    public static boolean checkOcclusionQuerySupport() {
+        return hasEXTOcclusionQuery;
     }
 
     public static String[] getAllExtensions() {

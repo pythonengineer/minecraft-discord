@@ -7,21 +7,18 @@ import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.material.Material;
 
 public final class RenderBlocks {
-	private Tessellator tessellator;
 	private World blockAccess;
 	private int overrideBlockTexture = -1;
 	private boolean flipTexture = false;
 
-	public RenderBlocks(Tessellator var1, World var2) {
-		this.tessellator = var1;
-		this.blockAccess = var2;
+	public RenderBlocks(World var1) {
+		this.blockAccess = var1;
 	}
 
-	public RenderBlocks(Tessellator var1) {
-		this.tessellator = var1;
+	public RenderBlocks() {
 	}
 
-	public final void renderBlockAllFaces(Block var1, int var2, int var3, int var4, int var5) {
+	public final void renderBlockUsingTexture(Block var1, int var2, int var3, int var4, int var5) {
 		this.overrideBlockTexture = var5;
 		this.renderBlockByRenderType(var1, var2, var3, var4);
 		this.overrideBlockTexture = -1;
@@ -33,669 +30,751 @@ public final class RenderBlocks {
 		this.flipTexture = false;
 	}
 
-    public final boolean renderBlockByRenderType(Block var1, int var2, int var3, int var4) {
-        int var5 = var1.getRenderType();
-        float var9;
-        boolean var22;
-        if(var5 == 0) {
-            var22 = false;
-            if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
-                var9 = var1.getBlockBrightness(this.blockAccess, var2, var3 - 1, var4);
-                this.tessellator.setColorOpaque_F(0.5F * var9, 0.5F * var9, 0.5F * var9);
-                this.renderBlockBottom(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTextureFromSideAndMetadata(this.blockAccess, var2, var3, var4, 0));
-                var22 = true;
-            }
+	public final boolean renderBlockByRenderType(Block var1, int var2, int var3, int var4) {
+		int var5 = var1.getRenderType();
+		Tessellator var6;
+		float var10;
+		boolean var23;
+		if(var5 == 0) {
+			var6 = Tessellator.instance;
+			var23 = false;
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
+				var10 = var1.getBlockBrightness(this.blockAccess, var2, var3 - 1, var4);
+				var6.setColorOpaque_F(0.5F * var10, 0.5F * var10, 0.5F * var10);
+				this.renderBlockBottom(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTexture(this.blockAccess, var2, var3, var4, 0));
+				var23 = true;
+			}
 
-            if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
-                var9 = var1.getBlockBrightness(this.blockAccess, var2, var3 + 1, var4);
-                this.tessellator.setColorOpaque_F(var9 * 1.0F, var9 * 1.0F, var9 * 1.0F);
-                this.renderBlockTop(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTextureFromSideAndMetadata(this.blockAccess, var2, var3, var4, 1));
-                var22 = true;
-            }
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
+				var10 = var1.getBlockBrightness(this.blockAccess, var2, var3 + 1, var4);
+				var6.setColorOpaque_F(var10 * 1.0F, var10 * 1.0F, var10 * 1.0F);
+				this.renderBlockTop(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTexture(this.blockAccess, var2, var3, var4, 1));
+				var23 = true;
+			}
 
-            if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
-                var9 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 - 1);
-                this.tessellator.setColorOpaque_F(0.8F * var9, 0.8F * var9, 0.8F * var9);
-                this.renderBlockNorth(var1, var2, var3, var4, var1.getBlockTextureFromSideAndMetadata(this.blockAccess, var2, var3, var4, 2));
-                var22 = true;
-            }
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
+				var10 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 - 1);
+				var6.setColorOpaque_F(0.8F * var10, 0.8F * var10, 0.8F * var10);
+				this.renderBlockNorth(var1, var2, var3, var4, var1.getBlockTexture(this.blockAccess, var2, var3, var4, 2));
+				var23 = true;
+			}
 
-            if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
-                var9 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 + 1);
-                this.tessellator.setColorOpaque_F(0.8F * var9, 0.8F * var9, 0.8F * var9);
-                this.renderBlockSouth(var1, var2, var3, var4, var1.getBlockTextureFromSideAndMetadata(this.blockAccess, var2, var3, var4, 3));
-                var22 = true;
-            }
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
+				var10 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 + 1);
+				var6.setColorOpaque_F(0.8F * var10, 0.8F * var10, 0.8F * var10);
+				this.renderBlockSouth(var1, var2, var3, var4, var1.getBlockTexture(this.blockAccess, var2, var3, var4, 3));
+				var23 = true;
+			}
 
-            if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
-                var9 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
-                this.tessellator.setColorOpaque_F(0.6F * var9, 0.6F * var9, 0.6F * var9);
-                this.renderBlockWest(var1, var2, var3, var4, var1.getBlockTextureFromSideAndMetadata(this.blockAccess, var2, var3, var4, 4));
-                var22 = true;
-            }
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
+				var10 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
+				var6.setColorOpaque_F(0.6F * var10, 0.6F * var10, 0.6F * var10);
+				this.renderBlockWest(var1, var2, var3, var4, var1.getBlockTexture(this.blockAccess, var2, var3, var4, 4));
+				var23 = true;
+			}
 
-            if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
-                var9 = var1.getBlockBrightness(this.blockAccess, var2 + 1, var3, var4);
-                this.tessellator.setColorOpaque_F(0.6F * var9, 0.6F * var9, 0.6F * var9);
-                this.renderBlockEast(var1, var2, var3, var4, var1.getBlockTextureFromSideAndMetadata(this.blockAccess, var2, var3, var4, 5));
-                var22 = true;
-            }
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
+				var10 = var1.getBlockBrightness(this.blockAccess, var2 + 1, var3, var4);
+				var6.setColorOpaque_F(0.6F * var10, 0.6F * var10, 0.6F * var10);
+				this.renderBlockEast(var1, var2, var3, var4, var1.getBlockTexture(this.blockAccess, var2, var3, var4, 5));
+				var23 = true;
+			}
 
-            return var22;
-        } else {
-            float var10;
-            float var20;
-            if(var5 == 4) {
-                var22 = false;
-                var9 = var1.minY;
-                var10 = var1.maxY;
-                var1.maxY = var10 - this.shouldSideBeRendered(var2, var3, var4);
-                if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
-                    var20 = var1.getBlockBrightness(this.blockAccess, var2, var3 - 1, var4);
-                    this.tessellator.setColorOpaque_F(0.5F * var20, 0.5F * var20, 0.5F * var20);
-                    this.renderBlockBottom(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTexture(0));
-                    var22 = true;
-                }
+			return var23;
+		} else {
+			float var11;
+			float var21;
+			if(var5 == 4) {
+				var6 = Tessellator.instance;
+				var23 = false;
+				var10 = var1.minY;
+				var11 = var1.maxY;
+				var1.maxY = var11 - this.materialNotWater(var2, var3, var4);
+				if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
+					var21 = var1.getBlockBrightness(this.blockAccess, var2, var3 - 1, var4);
+					var6.setColorOpaque_F(0.5F * var21, 0.5F * var21, 0.5F * var21);
+					this.renderBlockBottom(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTextureFromSide(0));
+					var23 = true;
+				}
 
-                if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
-                    var20 = var1.getBlockBrightness(this.blockAccess, var2, var3 + 1, var4);
-                    this.tessellator.setColorOpaque_F(var20 * 1.0F, var20 * 1.0F, var20 * 1.0F);
-                    this.renderBlockTop(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTexture(1));
-                    var22 = true;
-                }
+				if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
+					var21 = var1.getBlockBrightness(this.blockAccess, var2, var3 + 1, var4);
+					var6.setColorOpaque_F(var21 * 1.0F, var21 * 1.0F, var21 * 1.0F);
+					this.renderBlockTop(var1, (float)var2, (float)var3, (float)var4, var1.getBlockTextureFromSide(1));
+					var23 = true;
+				}
 
-                var1.minY = var10 - this.shouldSideBeRendered(var2, var3, var4 - 1);
-                if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
-                    var20 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 - 1);
-                    this.tessellator.setColorOpaque_F(0.8F * var20, 0.8F * var20, 0.8F * var20);
-                    this.renderBlockNorth(var1, var2, var3, var4, var1.getBlockTexture(2));
-                    var22 = true;
-                }
+				var1.minY = var11 - this.materialNotWater(var2, var3, var4 - 1);
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
+					var21 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 - 1);
+					var6.setColorOpaque_F(0.8F * var21, 0.8F * var21, 0.8F * var21);
+					this.renderBlockNorth(var1, var2, var3, var4, var1.getBlockTextureFromSide(2));
+					var23 = true;
+				}
 
-                var1.minY = var10 - this.shouldSideBeRendered(var2, var3, var4 + 1);
-                if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
-                    var20 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 + 1);
-                    this.tessellator.setColorOpaque_F(0.8F * var20, 0.8F * var20, 0.8F * var20);
-                    this.renderBlockSouth(var1, var2, var3, var4, var1.getBlockTexture(3));
-                    var22 = true;
-                }
+				var1.minY = var11 - this.materialNotWater(var2, var3, var4 + 1);
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
+					var21 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 + 1);
+					var6.setColorOpaque_F(0.8F * var21, 0.8F * var21, 0.8F * var21);
+					this.renderBlockSouth(var1, var2, var3, var4, var1.getBlockTextureFromSide(3));
+					var23 = true;
+				}
 
-                var1.minY = var10 - this.shouldSideBeRendered(var2 - 1, var3, var4);
-                if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
-                    var20 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
-                    this.tessellator.setColorOpaque_F(0.6F * var20, 0.6F * var20, 0.6F * var20);
-                    this.renderBlockWest(var1, var2, var3, var4, var1.getBlockTexture(4));
-                    var22 = true;
-                }
+				var1.minY = var11 - this.materialNotWater(var2 - 1, var3, var4);
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
+					var21 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
+					var6.setColorOpaque_F(0.6F * var21, 0.6F * var21, 0.6F * var21);
+					this.renderBlockWest(var1, var2, var3, var4, var1.getBlockTextureFromSide(4));
+					var23 = true;
+				}
 
-                var1.minY = var10 - this.shouldSideBeRendered(var2 + 1, var3, var4);
-                if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
-                    var20 = var1.getBlockBrightness(this.blockAccess, var2 + 1, var3, var4);
-                    this.tessellator.setColorOpaque_F(0.6F * var20, 0.6F * var20, 0.6F * var20);
-                    this.renderBlockEast(var1, var2, var3, var4, var1.getBlockTexture(5));
-                    var22 = true;
-                }
+				var1.minY = var11 - this.materialNotWater(var2 + 1, var3, var4);
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
+					var21 = var1.getBlockBrightness(this.blockAccess, var2 + 1, var3, var4);
+					var6.setColorOpaque_F(0.6F * var21, 0.6F * var21, 0.6F * var21);
+					this.renderBlockEast(var1, var2, var3, var4, var1.getBlockTextureFromSide(5));
+					var23 = true;
+				}
 
-                var1.minY = var9;
-                var1.maxY = var10;
-                return var22;
-            } else if(var5 == 1) {
-                var20 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4);
-                this.tessellator.setColorOpaque_F(var20, var20, var20);
-                this.renderBlockPlant(var1, (float)var2, (float)var3, (float)var4);
-                return true;
-            } else if(var5 == 2) {
-                var20 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4);
-                if(Block.lightValue[var1.blockID] > 0) {
-                    var20 = 1.0F;
-                }
+				var1.minY = var10;
+				var1.maxY = var11;
+				return var23;
+			} else if(var5 == 1) {
+				var6 = Tessellator.instance;
+				var21 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4);
+				var6.setColorOpaque_F(var21, var21, var21);
+				this.renderBlockPlant(var1, this.blockAccess.getBlockMetadata(var2, var3, var4), (float)var2, (float)var3, (float)var4);
+				return true;
+			} else if(var5 == 6) {
+				var6 = Tessellator.instance;
+				var21 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4);
+				var6.setColorOpaque_F(var21, var21, var21);
+				this.renderBlockCrops(var1, this.blockAccess.getBlockMetadata(var2, var3, var4), (float)var2, (float)var3 - 1.0F / 16.0F, (float)var4);
+				return true;
+			} else if(var5 == 2) {
+				var6 = Tessellator.instance;
+				var21 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4);
+				if(Block.lightValue[var1.blockID] > 0) {
+					var21 = 1.0F;
+				}
 
-                this.tessellator.setColorOpaque_F(var20, var20, var20);
-                if(this.blockAccess.isBlockNormalCube(var2 - 1, var3, var4)) {
-                    this.renderBlockTorch(var1, (float)var2 - 10.0F * 0.01F, (float)var3 + 0.2F, (float)var4, -0.4F, 0.0F);
-                } else if(this.blockAccess.isBlockNormalCube(var2 + 1, var3, var4)) {
-                    this.renderBlockTorch(var1, (float)var2 + 10.0F * 0.01F, (float)var3 + 0.2F, (float)var4, 0.4F, 0.0F);
-                } else if(this.blockAccess.isBlockNormalCube(var2, var3, var4 - 1)) {
-                    this.renderBlockTorch(var1, (float)var2, (float)var3 + 0.2F, (float)var4 - 10.0F * 0.01F, 0.0F, -0.4F);
-                } else if(this.blockAccess.isBlockNormalCube(var2, var3, var4 + 1)) {
-                    this.renderBlockTorch(var1, (float)var2, (float)var3 + 0.2F, (float)var4 + 10.0F * 0.01F, 0.0F, 0.4F);
-                } else {
-                    this.renderBlockTorch(var1, (float)var2, (float)var3, (float)var4, 0.0F, 0.0F);
-                }
+				var6.setColorOpaque_F(var21, var21, var21);
+				if(this.blockAccess.isBlockNormalCube(var2 - 1, var3, var4)) {
+					this.renderBlockTorch(var1, (float)var2 - 10.0F * 0.01F, (float)var3 + 0.2F, (float)var4, -0.4F, 0.0F);
+				} else if(this.blockAccess.isBlockNormalCube(var2 + 1, var3, var4)) {
+					this.renderBlockTorch(var1, (float)var2 + 10.0F * 0.01F, (float)var3 + 0.2F, (float)var4, 0.4F, 0.0F);
+				} else if(this.blockAccess.isBlockNormalCube(var2, var3, var4 - 1)) {
+					this.renderBlockTorch(var1, (float)var2, (float)var3 + 0.2F, (float)var4 - 10.0F * 0.01F, 0.0F, -0.4F);
+				} else if(this.blockAccess.isBlockNormalCube(var2, var3, var4 + 1)) {
+					this.renderBlockTorch(var1, (float)var2, (float)var3 + 0.2F, (float)var4 + 10.0F * 0.01F, 0.0F, 0.4F);
+				} else {
+					this.renderBlockTorch(var1, (float)var2, (float)var3, (float)var4, 0.0F, 0.0F);
+				}
 
-                return true;
-            } else {
-                int var6;
-                int var7;
-                float var11;
-                float var12;
-                float var13;
-                float var14;
-                float var19;
-                if(var5 == 3) {
-                    var5 = var4;
-                    var4 = var3;
-                    var3 = var2;
-                    var6 = var1.getBlockTexture(0);
-                    if(this.overrideBlockTexture >= 0) {
-                        var6 = this.overrideBlockTexture;
-                    }
+				return true;
+			} else {
+				int var7;
+				int var8;
+				float var12;
+				float var13;
+				float var14;
+				float var15;
+				float var20;
+				if(var5 == 3) {
+					var5 = var4;
+					var4 = var3;
+					var3 = var2;
+					var6 = Tessellator.instance;
+					var7 = var1.getBlockTextureFromSide(0);
+					if(this.overrideBlockTexture >= 0) {
+						var7 = this.overrideBlockTexture;
+					}
 
-                    var19 = var1.getBlockBrightness(this.blockAccess, var2, var4, var5);
-                    this.tessellator.setColorOpaque_F(var19, var19, var19);
-                    var2 = (var6 & 15) << 4;
-                    var7 = var6 & 240;
-                    float var21 = (float)var2 / 256.0F;
-                    var9 = ((float)var2 + 15.99F) / 256.0F;
-                    var10 = (float)var7 / 256.0F;
-                    var20 = ((float)var7 + 15.99F) / 256.0F;
-                    float var15;
-                    float var16;
-                    if(!this.blockAccess.isBlockNormalCube(var3, var4 - 1, var5) && !Block.fire.canBlockCatchFire(this.blockAccess, var3, var4 - 1, var5)) {
-                        if((var3 + var4 + var5 & 1) == 1) {
-                            var21 = (float)var2 / 256.0F;
-                            var9 = ((float)var2 + 15.99F) / 256.0F;
-                            var10 = (float)(var7 + 16) / 256.0F;
-                            var20 = ((float)var7 + 15.99F + 16.0F) / 256.0F;
-                        }
+					var20 = var1.getBlockBrightness(this.blockAccess, var2, var4, var5);
+					var6.setColorOpaque_F(var20, var20, var20);
+					var2 = (var7 & 15) << 4;
+					var8 = var7 & 240;
+					float var22 = (float)var2 / 256.0F;
+					var10 = ((float)var2 + 15.99F) / 256.0F;
+					var11 = (float)var8 / 256.0F;
+					var21 = ((float)var8 + 15.99F) / 256.0F;
+					float var16;
+					float var19;
+					if(!this.blockAccess.isBlockNormalCube(var3, var4 - 1, var5) && !Block.fire.canBlockCatchFire(this.blockAccess, var3, var4 - 1, var5)) {
+						if((var3 + var4 + var5 & 1) == 1) {
+							var22 = (float)var2 / 256.0F;
+							var10 = ((float)var2 + 15.99F) / 256.0F;
+							var11 = (float)(var8 + 16) / 256.0F;
+							var21 = ((float)var8 + 15.99F + 16.0F) / 256.0F;
+						}
 
-                        if((var3 / 2 + var4 / 2 + var5 / 2 & 1) == 1) {
-                            var13 = var9;
-                            var9 = var21;
-                            var21 = var13;
-                        }
+						if((var3 / 2 + var4 / 2 + var5 / 2 & 1) == 1) {
+							var14 = var10;
+							var10 = var22;
+							var22 = var14;
+						}
 
-                        if(Block.fire.canBlockCatchFire(this.blockAccess, var3 - 1, var4, var5)) {
-                            this.tessellator.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var9, var10);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var9, var20);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var21, var20);
-                            this.tessellator.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var21, var10);
-                            this.tessellator.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var21, var10);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var21, var20);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var9, var20);
-                            this.tessellator.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var9, var10);
-                        }
+						if(Block.fire.canBlockCatchFire(this.blockAccess, var3 - 1, var4, var5)) {
+							var6.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var10, var11);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var10, var21);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var22, var21);
+							var6.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var22, var11);
+							var6.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var22, var11);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var22, var21);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var10, var21);
+							var6.addVertexWithUV((float)var3 + 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var10, var11);
+						}
 
-                        if(Block.fire.canBlockCatchFire(this.blockAccess, var3 + 1, var4, var5)) {
-                            this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var21, var10);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var21, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var9, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var9, var10);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var9, var10);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var9, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var21, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var21, var10);
-                        }
+						if(Block.fire.canBlockCatchFire(this.blockAccess, var3 + 1, var4, var5)) {
+							var6.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var22, var11);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var22, var21);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var10, var21);
+							var6.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var10, var11);
+							var6.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1), var10, var11);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var10, var21);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var22, var21);
+							var6.addVertexWithUV((float)(var3 + 1) - 0.2F, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5, var22, var11);
+						}
 
-                        if(Block.fire.canBlockCatchFire(this.blockAccess, var3, var4, var5 - 1)) {
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var9, var10);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var9, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var21, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var21, var10);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var21, var10);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var21, var20);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var9, var20);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var9, var10);
-                        }
+						if(Block.fire.canBlockCatchFire(this.blockAccess, var3, var4, var5 - 1)) {
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var10, var11);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var10, var21);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var22, var21);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var22, var11);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var22, var11);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)var5, var22, var21);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)var5, var10, var21);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)var5 + 0.2F, var10, var11);
+						}
 
-                        if(Block.fire.canBlockCatchFire(this.blockAccess, var3, var4, var5 + 1)) {
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var21, var10);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var21, var20);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var9, var20);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var9, var10);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var9, var10);
-                            this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var9, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var21, var20);
-                            this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var21, var10);
-                        }
+						if(Block.fire.canBlockCatchFire(this.blockAccess, var3, var4, var5 + 1)) {
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var22, var11);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var22, var21);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var10, var21);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var10, var11);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var10, var11);
+							var6.addVertexWithUV((float)var3, (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var10, var21);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.0F / 16.0F, (float)(var5 + 1), var22, var21);
+							var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F + 1.0F / 16.0F, (float)(var5 + 1) - 0.2F, var22, var11);
+						}
 
-                        if(Block.fire.canBlockCatchFire(this.blockAccess, var3, var4 + 1, var5)) {
-                            var13 = (float)var3 + 0.5F + 0.5F;
-                            var14 = (float)var3 + 0.5F - 0.5F;
-                            var15 = (float)var5 + 0.5F + 0.5F;
-                            var16 = (float)var5 + 0.5F - 0.5F;
-                            var21 = (float)var2 / 256.0F;
-                            var9 = ((float)var2 + 15.99F) / 256.0F;
-                            var10 = (float)var7 / 256.0F;
-                            var20 = ((float)var7 + 15.99F) / 256.0F;
-                            ++var4;
-                            if((var3 + var4 + var5 & 1) == 0) {
-                                this.tessellator.addVertexWithUV(var14, (float)var4 + -0.2F, (float)var5, var9, var10);
-                                this.tessellator.addVertexWithUV(var13, (float)var4, (float)var5, var9, var20);
-                                this.tessellator.addVertexWithUV(var13, (float)var4, (float)(var5 + 1), var21, var20);
-                                this.tessellator.addVertexWithUV(var14, (float)var4 + -0.2F, (float)(var5 + 1), var21, var10);
-                                var21 = (float)var2 / 256.0F;
-                                var9 = ((float)var2 + 15.99F) / 256.0F;
-                                var10 = (float)(var7 + 16) / 256.0F;
-                                var20 = ((float)var7 + 15.99F + 16.0F) / 256.0F;
-                                this.tessellator.addVertexWithUV(var13, (float)var4 + -0.2F, (float)(var5 + 1), var9, var10);
-                                this.tessellator.addVertexWithUV(var14, (float)var4, (float)(var5 + 1), var9, var20);
-                                this.tessellator.addVertexWithUV(var14, (float)var4, (float)var5, var21, var20);
-                                this.tessellator.addVertexWithUV(var13, (float)var4 + -0.2F, (float)var5, var21, var10);
-                            } else {
-                                this.tessellator.addVertexWithUV((float)var3, (float)var4 + -0.2F, var15, var9, var10);
-                                this.tessellator.addVertexWithUV((float)var3, (float)var4, var16, var9, var20);
-                                this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4, var16, var21, var20);
-                                this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + -0.2F, var15, var21, var10);
-                                var21 = (float)var2 / 256.0F;
-                                var9 = ((float)var2 + 15.99F) / 256.0F;
-                                var10 = (float)(var7 + 16) / 256.0F;
-                                var20 = ((float)var7 + 15.99F + 16.0F) / 256.0F;
-                                this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + -0.2F, var16, var9, var10);
-                                this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4, var15, var9, var20);
-                                this.tessellator.addVertexWithUV((float)var3, (float)var4, var15, var21, var20);
-                                this.tessellator.addVertexWithUV((float)var3, (float)var4 + -0.2F, var16, var21, var10);
-                            }
-                        }
-                    } else {
-                        var11 = (float)var3 + 0.5F + 0.2F;
-                        var12 = (float)var3 + 0.5F - 0.2F;
-                        var13 = (float)var5 + 0.5F + 0.2F;
-                        var14 = (float)var5 + 0.5F - 0.2F;
-                        var15 = (float)var3 + 0.5F - 0.3F;
-                        var16 = (float)var3 + 0.5F + 0.3F;
-                        float var17 = (float)var5 + 0.5F - 0.3F;
-                        float var18 = (float)var5 + 0.5F + 0.3F;
-                        this.tessellator.addVertexWithUV(var15, (float)var4 + 1.4F, (float)(var5 + 1), var9, var10);
-                        this.tessellator.addVertexWithUV(var11, (float)var4, (float)(var5 + 1), var9, var20);
-                        this.tessellator.addVertexWithUV(var11, (float)var4, (float)var5, var21, var20);
-                        this.tessellator.addVertexWithUV(var15, (float)var4 + 1.4F, (float)var5, var21, var10);
-                        this.tessellator.addVertexWithUV(var16, (float)var4 + 1.4F, (float)var5, var9, var10);
-                        this.tessellator.addVertexWithUV(var12, (float)var4, (float)var5, var9, var20);
-                        this.tessellator.addVertexWithUV(var12, (float)var4, (float)(var5 + 1), var21, var20);
-                        this.tessellator.addVertexWithUV(var16, (float)var4 + 1.4F, (float)(var5 + 1), var21, var10);
-                        var21 = (float)var2 / 256.0F;
-                        var9 = ((float)var2 + 15.99F) / 256.0F;
-                        var10 = (float)(var7 + 16) / 256.0F;
-                        var20 = ((float)var7 + 15.99F + 16.0F) / 256.0F;
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var18, var9, var10);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4, var14, var9, var20);
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4, var14, var21, var20);
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F, var18, var21, var10);
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F, var17, var9, var10);
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4, var13, var9, var20);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4, var13, var21, var20);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var17, var21, var10);
-                        var11 = (float)var3 + 0.5F - 0.5F;
-                        var12 = (float)var3 + 0.5F + 0.5F;
-                        var13 = (float)var5 + 0.5F - 0.5F;
-                        var14 = (float)var5 + 0.5F + 0.5F;
-                        var15 = (float)var3 + 0.5F - 0.4F;
-                        var16 = (float)var3 + 0.5F + 0.4F;
-                        var17 = (float)var5 + 0.5F - 0.4F;
-                        var18 = (float)var5 + 0.5F + 0.4F;
-                        this.tessellator.addVertexWithUV(var15, (float)var4 + 1.4F, (float)var5, var21, var10);
-                        this.tessellator.addVertexWithUV(var11, (float)var4, (float)var5, var21, var20);
-                        this.tessellator.addVertexWithUV(var11, (float)var4, (float)(var5 + 1), var9, var20);
-                        this.tessellator.addVertexWithUV(var15, (float)var4 + 1.4F, (float)(var5 + 1), var9, var10);
-                        this.tessellator.addVertexWithUV(var16, (float)var4 + 1.4F, (float)(var5 + 1), var21, var10);
-                        this.tessellator.addVertexWithUV(var12, (float)var4, (float)(var5 + 1), var21, var20);
-                        this.tessellator.addVertexWithUV(var12, (float)var4, (float)var5, var9, var20);
-                        this.tessellator.addVertexWithUV(var16, (float)var4 + 1.4F, (float)var5, var9, var10);
-                        var21 = (float)var2 / 256.0F;
-                        var9 = ((float)var2 + 15.99F) / 256.0F;
-                        var10 = (float)var7 / 256.0F;
-                        var20 = ((float)var7 + 15.99F) / 256.0F;
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F, var18, var21, var10);
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4, var14, var21, var20);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4, var14, var9, var20);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var18, var9, var10);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var17, var21, var10);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1), (float)var4, var13, var21, var20);
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4, var13, var9, var20);
-                        this.tessellator.addVertexWithUV((float)var3, (float)var4 + 1.4F, var17, var9, var10);
-                    }
+						if(Block.fire.canBlockCatchFire(this.blockAccess, var3, var4 + 1, var5)) {
+							var14 = (float)var3 + 0.5F + 0.5F;
+							var15 = (float)var3 + 0.5F - 0.5F;
+							var19 = (float)var5 + 0.5F + 0.5F;
+							var16 = (float)var5 + 0.5F - 0.5F;
+							var22 = (float)var2 / 256.0F;
+							var10 = ((float)var2 + 15.99F) / 256.0F;
+							var11 = (float)var8 / 256.0F;
+							var21 = ((float)var8 + 15.99F) / 256.0F;
+							++var4;
+							if((var3 + var4 + var5 & 1) == 0) {
+								var6.addVertexWithUV(var15, (float)var4 + -0.2F, (float)var5, var10, var11);
+								var6.addVertexWithUV(var14, (float)var4, (float)var5, var10, var21);
+								var6.addVertexWithUV(var14, (float)var4, (float)(var5 + 1), var22, var21);
+								var6.addVertexWithUV(var15, (float)var4 + -0.2F, (float)(var5 + 1), var22, var11);
+								var22 = (float)var2 / 256.0F;
+								var10 = ((float)var2 + 15.99F) / 256.0F;
+								var11 = (float)(var8 + 16) / 256.0F;
+								var21 = ((float)var8 + 15.99F + 16.0F) / 256.0F;
+								var6.addVertexWithUV(var14, (float)var4 + -0.2F, (float)(var5 + 1), var10, var11);
+								var6.addVertexWithUV(var15, (float)var4, (float)(var5 + 1), var10, var21);
+								var6.addVertexWithUV(var15, (float)var4, (float)var5, var22, var21);
+								var6.addVertexWithUV(var14, (float)var4 + -0.2F, (float)var5, var22, var11);
+							} else {
+								var6.addVertexWithUV((float)var3, (float)var4 + -0.2F, var19, var10, var11);
+								var6.addVertexWithUV((float)var3, (float)var4, var16, var10, var21);
+								var6.addVertexWithUV((float)(var3 + 1), (float)var4, var16, var22, var21);
+								var6.addVertexWithUV((float)(var3 + 1), (float)var4 + -0.2F, var19, var22, var11);
+								var22 = (float)var2 / 256.0F;
+								var10 = ((float)var2 + 15.99F) / 256.0F;
+								var11 = (float)(var8 + 16) / 256.0F;
+								var21 = ((float)var8 + 15.99F + 16.0F) / 256.0F;
+								var6.addVertexWithUV((float)(var3 + 1), (float)var4 + -0.2F, var16, var10, var11);
+								var6.addVertexWithUV((float)(var3 + 1), (float)var4, var19, var10, var21);
+								var6.addVertexWithUV((float)var3, (float)var4, var19, var22, var21);
+								var6.addVertexWithUV((float)var3, (float)var4 + -0.2F, var16, var22, var11);
+							}
+						}
+					} else {
+						var12 = (float)var3 + 0.5F + 0.2F;
+						var13 = (float)var3 + 0.5F - 0.2F;
+						var14 = (float)var5 + 0.5F + 0.2F;
+						var15 = (float)var5 + 0.5F - 0.2F;
+						var19 = (float)var3 + 0.5F - 0.3F;
+						var16 = (float)var3 + 0.5F + 0.3F;
+						float var17 = (float)var5 + 0.5F - 0.3F;
+						float var18 = (float)var5 + 0.5F + 0.3F;
+						var6.addVertexWithUV(var19, (float)var4 + 1.4F, (float)(var5 + 1), var10, var11);
+						var6.addVertexWithUV(var12, (float)var4, (float)(var5 + 1), var10, var21);
+						var6.addVertexWithUV(var12, (float)var4, (float)var5, var22, var21);
+						var6.addVertexWithUV(var19, (float)var4 + 1.4F, (float)var5, var22, var11);
+						var6.addVertexWithUV(var16, (float)var4 + 1.4F, (float)var5, var10, var11);
+						var6.addVertexWithUV(var13, (float)var4, (float)var5, var10, var21);
+						var6.addVertexWithUV(var13, (float)var4, (float)(var5 + 1), var22, var21);
+						var6.addVertexWithUV(var16, (float)var4 + 1.4F, (float)(var5 + 1), var22, var11);
+						var22 = (float)var2 / 256.0F;
+						var10 = ((float)var2 + 15.99F) / 256.0F;
+						var11 = (float)(var8 + 16) / 256.0F;
+						var21 = ((float)var8 + 15.99F + 16.0F) / 256.0F;
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var18, var10, var11);
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4, var15, var10, var21);
+						var6.addVertexWithUV((float)var3, (float)var4, var15, var22, var21);
+						var6.addVertexWithUV((float)var3, (float)var4 + 1.4F, var18, var22, var11);
+						var6.addVertexWithUV((float)var3, (float)var4 + 1.4F, var17, var10, var11);
+						var6.addVertexWithUV((float)var3, (float)var4, var14, var10, var21);
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4, var14, var22, var21);
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var17, var22, var11);
+						var12 = (float)var3 + 0.5F - 0.5F;
+						var13 = (float)var3 + 0.5F + 0.5F;
+						var14 = (float)var5 + 0.5F - 0.5F;
+						var15 = (float)var5 + 0.5F + 0.5F;
+						var19 = (float)var3 + 0.5F - 0.4F;
+						var16 = (float)var3 + 0.5F + 0.4F;
+						var17 = (float)var5 + 0.5F - 0.4F;
+						var18 = (float)var5 + 0.5F + 0.4F;
+						var6.addVertexWithUV(var19, (float)var4 + 1.4F, (float)var5, var22, var11);
+						var6.addVertexWithUV(var12, (float)var4, (float)var5, var22, var21);
+						var6.addVertexWithUV(var12, (float)var4, (float)(var5 + 1), var10, var21);
+						var6.addVertexWithUV(var19, (float)var4 + 1.4F, (float)(var5 + 1), var10, var11);
+						var6.addVertexWithUV(var16, (float)var4 + 1.4F, (float)(var5 + 1), var22, var11);
+						var6.addVertexWithUV(var13, (float)var4, (float)(var5 + 1), var22, var21);
+						var6.addVertexWithUV(var13, (float)var4, (float)var5, var10, var21);
+						var6.addVertexWithUV(var16, (float)var4 + 1.4F, (float)var5, var10, var11);
+						var22 = (float)var2 / 256.0F;
+						var10 = ((float)var2 + 15.99F) / 256.0F;
+						var11 = (float)var8 / 256.0F;
+						var21 = ((float)var8 + 15.99F) / 256.0F;
+						var6.addVertexWithUV((float)var3, (float)var4 + 1.4F, var18, var22, var11);
+						var6.addVertexWithUV((float)var3, (float)var4, var15, var22, var21);
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4, var15, var10, var21);
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var18, var10, var11);
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4 + 1.4F, var17, var22, var11);
+						var6.addVertexWithUV((float)(var3 + 1), (float)var4, var14, var22, var21);
+						var6.addVertexWithUV((float)var3, (float)var4, var14, var10, var21);
+						var6.addVertexWithUV((float)var3, (float)var4 + 1.4F, var17, var10, var11);
+					}
 
-                    return true;
-                } else if(var5 == 5) {
-                    var5 = var4;
-                    var4 = var3;
-                    var3 = var2;
-                    var6 = var1.getBlockTexture(0);
-                    if(this.overrideBlockTexture >= 0) {
-                        var6 = this.overrideBlockTexture;
-                    }
+					return true;
+				} else if(var5 == 5) {
+					var5 = var4;
+					var4 = var3;
+					var3 = var2;
+					var6 = Tessellator.instance;
+					var7 = var1.getBlockTextureFromSide(0);
+					if(this.overrideBlockTexture >= 0) {
+						var7 = this.overrideBlockTexture;
+					}
 
-                    var19 = var1.getBlockBrightness(this.blockAccess, var2, var4, var5);
-                    this.tessellator.setColorOpaque_F(var19, var19, var19);
-                    var2 = ((var6 & 15) << 4) + 16;
-                    var7 = (var6 & 15) << 4;
-                    int var8 = var6 & 240;
-                    if((var3 + var4 + var5 & 1) == 1) {
-                        var2 = (var6 & 15) << 4;
-                        var7 = ((var6 & 15) << 4) + 16;
-                    }
+					var20 = var1.getBlockBrightness(this.blockAccess, var2, var4, var5);
+					var6.setColorOpaque_F(var20, var20, var20);
+					var2 = ((var7 & 15) << 4) + 16;
+					var8 = (var7 & 15) << 4;
+					int var9 = var7 & 240;
+					if((var3 + var4 + var5 & 1) == 1) {
+						var2 = (var7 & 15) << 4;
+						var8 = ((var7 & 15) << 4) + 16;
+					}
 
-                    var9 = (float)var2 / 256.0F;
-                    var10 = ((float)var2 + 15.99F) / 256.0F;
-                    var20 = (float)var8 / 256.0F;
-                    var19 = ((float)var8 + 15.99F) / 256.0F;
-                    var11 = (float)var7 / 256.0F;
-                    var12 = ((float)var7 + 15.99F) / 256.0F;
-                    var13 = (float)var8 / 256.0F;
-                    var14 = ((float)var8 + 15.99F) / 256.0F;
-                    if(this.blockAccess.isBlockNormalCube(var3 - 1, var4, var5)) {
-                        this.tessellator.addVertexWithUV((float)var3 + 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var9, var20);
-                        this.tessellator.addVertexWithUV((float)var3 + 0.05F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var9, var19);
-                        this.tessellator.addVertexWithUV((float)var3 + 0.05F, (float)var4 - 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var10, var19);
-                        this.tessellator.addVertexWithUV((float)var3 + 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var10, var20);
-                    }
+					var10 = (float)var2 / 256.0F;
+					var11 = ((float)var2 + 15.99F) / 256.0F;
+					var21 = (float)var9 / 256.0F;
+					var20 = ((float)var9 + 15.99F) / 256.0F;
+					var12 = (float)var8 / 256.0F;
+					var13 = ((float)var8 + 15.99F) / 256.0F;
+					var14 = (float)var9 / 256.0F;
+					var15 = ((float)var9 + 15.99F) / 256.0F;
+					if(this.blockAccess.isBlockNormalCube(var3 - 1, var4, var5)) {
+						var6.addVertexWithUV((float)var3 + 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var10, var21);
+						var6.addVertexWithUV((float)var3 + 0.05F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var10, var20);
+						var6.addVertexWithUV((float)var3 + 0.05F, (float)var4 - 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var11, var20);
+						var6.addVertexWithUV((float)var3 + 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var11, var21);
+					}
 
-                    if(this.blockAccess.isBlockNormalCube(var3 + 1, var4, var5)) {
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var10, var19);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var10, var20);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var9, var20);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)var4 - 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var9, var19);
-                    }
+					if(this.blockAccess.isBlockNormalCube(var3 + 1, var4, var5)) {
+						var6.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var11, var20);
+						var6.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) + 2.0F / 16.0F, var11, var21);
+						var6.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var10, var21);
+						var6.addVertexWithUV((float)(var3 + 1) - 0.05F, (float)var4 - 2.0F / 16.0F, (float)var5 - 2.0F / 16.0F, var10, var20);
+					}
 
-                    if(this.blockAccess.isBlockNormalCube(var3, var4, var5 - 1)) {
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)var5 + 0.05F, var12, var14);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 + 0.05F, var12, var13);
-                        this.tessellator.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 + 0.05F, var11, var13);
-                        this.tessellator.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)var5 + 0.05F, var11, var14);
-                    }
+					if(this.blockAccess.isBlockNormalCube(var3, var4, var5 - 1)) {
+						var6.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)var5 + 0.05F, var13, var15);
+						var6.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 + 0.05F, var13, var14);
+						var6.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)var5 + 0.05F, var12, var14);
+						var6.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)var5 + 0.05F, var12, var15);
+					}
 
-                    if(this.blockAccess.isBlockNormalCube(var3, var4, var5 + 1)) {
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var11, var13);
-                        this.tessellator.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var11, var14);
-                        this.tessellator.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var12, var14);
-                        this.tessellator.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var12, var13);
-                    }
+					if(this.blockAccess.isBlockNormalCube(var3, var4, var5 + 1)) {
+						var6.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var12, var14);
+						var6.addVertexWithUV((float)(var3 + 1) + 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var12, var15);
+						var6.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)var4 - 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var13, var15);
+						var6.addVertexWithUV((float)var3 - 2.0F / 16.0F, (float)(var4 + 1) + 2.0F / 16.0F, (float)(var5 + 1) - 0.05F, var13, var14);
+					}
 
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-    }
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+	}
 
-    private void renderBlockTorch(Block var1, float var2, float var3, float var4, float var5, float var6) {
-        int var18 = var1.getBlockTexture(0);
-        if(this.overrideBlockTexture >= 0) {
-            var18 = this.overrideBlockTexture;
-        }
+	private void renderBlockTorch(Block var1, float var2, float var3, float var4, float var5, float var6) {
+		Tessellator var7 = Tessellator.instance;
+		int var19 = var1.getBlockTextureFromSide(0);
+		if(this.overrideBlockTexture >= 0) {
+			var19 = this.overrideBlockTexture;
+		}
 
-        int var7 = (var18 & 15) << 4;
-        var18 &= 240;
-        float var8 = (float)var7 / 256.0F;
-        float var20 = ((float)var7 + 15.99F) / 256.0F;
-        float var9 = (float)var18 / 256.0F;
-        float var19 = ((float)var18 + 15.99F) / 256.0F;
-        float var10 = var8 + 0.02734375F;
-        float var11 = var9 + 0.0234375F;
-        float var12 = var8 + 0.03515625F;
-        float var13 = var9 + 0.03125F;
-        var2 += 0.5F;
-        var4 += 0.5F;
-        float var14 = var2 - 0.5F;
-        float var15 = var2 + 0.5F;
-        float var16 = var4 - 0.5F;
-        float var17 = var4 + 0.5F;
-        this.tessellator.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) - 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) - 1.0F / 16.0F, var10, var11);
-        this.tessellator.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) - 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) + 1.0F / 16.0F, var10, var13);
-        this.tessellator.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) + 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) + 1.0F / 16.0F, var12, var13);
-        this.tessellator.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) + 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) - 1.0F / 16.0F, var12, var11);
-        this.tessellator.addVertexWithUV(var2 - 1.0F / 16.0F, var3 + 1.0F, var16, var8, var9);
-        this.tessellator.addVertexWithUV(var2 - 1.0F / 16.0F + var5, var3, var16 + var6, var8, var19);
-        this.tessellator.addVertexWithUV(var2 - 1.0F / 16.0F + var5, var3, var17 + var6, var20, var19);
-        this.tessellator.addVertexWithUV(var2 - 1.0F / 16.0F, var3 + 1.0F, var17, var20, var9);
-        this.tessellator.addVertexWithUV(var2 + 1.0F / 16.0F, var3 + 1.0F, var17, var8, var9);
-        this.tessellator.addVertexWithUV(var2 + var5 + 1.0F / 16.0F, var3, var17 + var6, var8, var19);
-        this.tessellator.addVertexWithUV(var2 + var5 + 1.0F / 16.0F, var3, var16 + var6, var20, var19);
-        this.tessellator.addVertexWithUV(var2 + 1.0F / 16.0F, var3 + 1.0F, var16, var20, var9);
-        this.tessellator.addVertexWithUV(var14, var3 + 1.0F, var4 + 1.0F / 16.0F, var8, var9);
-        this.tessellator.addVertexWithUV(var14 + var5, var3, var4 + 1.0F / 16.0F + var6, var8, var19);
-        this.tessellator.addVertexWithUV(var15 + var5, var3, var4 + 1.0F / 16.0F + var6, var20, var19);
-        this.tessellator.addVertexWithUV(var15, var3 + 1.0F, var4 + 1.0F / 16.0F, var20, var9);
-        this.tessellator.addVertexWithUV(var15, var3 + 1.0F, var4 - 1.0F / 16.0F, var8, var9);
-        this.tessellator.addVertexWithUV(var15 + var5, var3, var4 - 1.0F / 16.0F + var6, var8, var19);
-        this.tessellator.addVertexWithUV(var14 + var5, var3, var4 - 1.0F / 16.0F + var6, var20, var19);
-        this.tessellator.addVertexWithUV(var14, var3 + 1.0F, var4 - 1.0F / 16.0F, var20, var9);
-    }
+		int var8 = (var19 & 15) << 4;
+		var19 &= 240;
+		float var9 = (float)var8 / 256.0F;
+		float var21 = ((float)var8 + 15.99F) / 256.0F;
+		float var10 = (float)var19 / 256.0F;
+		float var20 = ((float)var19 + 15.99F) / 256.0F;
+		float var11 = var9 + 0.02734375F;
+		float var12 = var10 + 0.0234375F;
+		float var13 = var9 + 0.03515625F;
+		float var14 = var10 + 0.03125F;
+		var2 += 0.5F;
+		var4 += 0.5F;
+		float var15 = var2 - 0.5F;
+		float var16 = var2 + 0.5F;
+		float var17 = var4 - 0.5F;
+		float var18 = var4 + 0.5F;
+		var7.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) - 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) - 1.0F / 16.0F, var11, var12);
+		var7.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) - 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) + 1.0F / 16.0F, var11, var14);
+		var7.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) + 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) + 1.0F / 16.0F, var13, var14);
+		var7.addVertexWithUV(var2 + var5 * (6.0F / 16.0F) + 1.0F / 16.0F, var3 + 10.0F / 16.0F, var4 + var6 * (6.0F / 16.0F) - 1.0F / 16.0F, var13, var12);
+		var7.addVertexWithUV(var2 - 1.0F / 16.0F, var3 + 1.0F, var17, var9, var10);
+		var7.addVertexWithUV(var2 - 1.0F / 16.0F + var5, var3, var17 + var6, var9, var20);
+		var7.addVertexWithUV(var2 - 1.0F / 16.0F + var5, var3, var18 + var6, var21, var20);
+		var7.addVertexWithUV(var2 - 1.0F / 16.0F, var3 + 1.0F, var18, var21, var10);
+		var7.addVertexWithUV(var2 + 1.0F / 16.0F, var3 + 1.0F, var18, var9, var10);
+		var7.addVertexWithUV(var2 + var5 + 1.0F / 16.0F, var3, var18 + var6, var9, var20);
+		var7.addVertexWithUV(var2 + var5 + 1.0F / 16.0F, var3, var17 + var6, var21, var20);
+		var7.addVertexWithUV(var2 + 1.0F / 16.0F, var3 + 1.0F, var17, var21, var10);
+		var7.addVertexWithUV(var15, var3 + 1.0F, var4 + 1.0F / 16.0F, var9, var10);
+		var7.addVertexWithUV(var15 + var5, var3, var4 + 1.0F / 16.0F + var6, var9, var20);
+		var7.addVertexWithUV(var16 + var5, var3, var4 + 1.0F / 16.0F + var6, var21, var20);
+		var7.addVertexWithUV(var16, var3 + 1.0F, var4 + 1.0F / 16.0F, var21, var10);
+		var7.addVertexWithUV(var16, var3 + 1.0F, var4 - 1.0F / 16.0F, var9, var10);
+		var7.addVertexWithUV(var16 + var5, var3, var4 - 1.0F / 16.0F + var6, var9, var20);
+		var7.addVertexWithUV(var15 + var5, var3, var4 - 1.0F / 16.0F + var6, var21, var20);
+		var7.addVertexWithUV(var15, var3 + 1.0F, var4 - 1.0F / 16.0F, var21, var10);
+	}
 
-    private void renderBlockPlant(Block var1, float var2, float var3, float var4) {
-        int var10 = var1.getBlockTexture(0);
-        if(this.overrideBlockTexture >= 0) {
-            var10 = this.overrideBlockTexture;
-        }
+	private void renderBlockPlant(Block var1, int var2, float var3, float var4, float var5) {
+		Tessellator var6 = Tessellator.instance;
+		int var11 = var1.getBlockTextureFromSideAndMetadata(0, var2);
+		if(this.overrideBlockTexture >= 0) {
+			var11 = this.overrideBlockTexture;
+		}
 
-        int var5 = (var10 & 15) << 4;
-        var10 &= 240;
-        float var6 = (float)var5 / 256.0F;
-        float var12 = ((float)var5 + 15.99F) / 256.0F;
-        float var7 = (float)var10 / 256.0F;
-        float var11 = ((float)var10 + 15.99F) / 256.0F;
-        float var8 = var2 + 0.5F - 0.45F;
-        var2 = var2 + 0.5F + 0.45F;
-        float var9 = var4 + 0.5F - 0.45F;
-        var4 = var4 + 0.5F + 0.45F;
-        this.tessellator.addVertexWithUV(var8, var3 + 1.0F, var9, var6, var7);
-        this.tessellator.addVertexWithUV(var8, var3, var9, var6, var11);
-        this.tessellator.addVertexWithUV(var2, var3, var4, var12, var11);
-        this.tessellator.addVertexWithUV(var2, var3 + 1.0F, var4, var12, var7);
-        this.tessellator.addVertexWithUV(var2, var3 + 1.0F, var4, var6, var7);
-        this.tessellator.addVertexWithUV(var2, var3, var4, var6, var11);
-        this.tessellator.addVertexWithUV(var8, var3, var9, var12, var11);
-        this.tessellator.addVertexWithUV(var8, var3 + 1.0F, var9, var12, var7);
-        this.tessellator.addVertexWithUV(var8, var3 + 1.0F, var4, var6, var7);
-        this.tessellator.addVertexWithUV(var8, var3, var4, var6, var11);
-        this.tessellator.addVertexWithUV(var2, var3, var9, var12, var11);
-        this.tessellator.addVertexWithUV(var2, var3 + 1.0F, var9, var12, var7);
-        this.tessellator.addVertexWithUV(var2, var3 + 1.0F, var9, var6, var7);
-        this.tessellator.addVertexWithUV(var2, var3, var9, var6, var11);
-        this.tessellator.addVertexWithUV(var8, var3, var4, var12, var11);
-        this.tessellator.addVertexWithUV(var8, var3 + 1.0F, var4, var12, var7);
-    }
+		var2 = (var11 & 15) << 4;
+		var11 &= 240;
+		float var7 = (float)var2 / 256.0F;
+		float var12 = ((float)var2 + 15.99F) / 256.0F;
+		float var8 = (float)var11 / 256.0F;
+		float var13 = ((float)var11 + 15.99F) / 256.0F;
+		float var9 = var3 + 0.5F - 0.45F;
+		var3 = var3 + 0.5F + 0.45F;
+		float var10 = var5 + 0.5F - 0.45F;
+		var5 = var5 + 0.5F + 0.45F;
+		var6.addVertexWithUV(var9, var4 + 1.0F, var10, var7, var8);
+		var6.addVertexWithUV(var9, var4, var10, var7, var13);
+		var6.addVertexWithUV(var3, var4, var5, var12, var13);
+		var6.addVertexWithUV(var3, var4 + 1.0F, var5, var12, var8);
+		var6.addVertexWithUV(var3, var4 + 1.0F, var5, var7, var8);
+		var6.addVertexWithUV(var3, var4, var5, var7, var13);
+		var6.addVertexWithUV(var9, var4, var10, var12, var13);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var10, var12, var8);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var5, var7, var8);
+		var6.addVertexWithUV(var9, var4, var5, var7, var13);
+		var6.addVertexWithUV(var3, var4, var10, var12, var13);
+		var6.addVertexWithUV(var3, var4 + 1.0F, var10, var12, var8);
+		var6.addVertexWithUV(var3, var4 + 1.0F, var10, var7, var8);
+		var6.addVertexWithUV(var3, var4, var10, var7, var13);
+		var6.addVertexWithUV(var9, var4, var5, var12, var13);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var5, var12, var8);
+	}
 
-    private float shouldSideBeRendered(int var1, int var2, int var3) {
-        return this.blockAccess.getBlockMaterial(var1, var2, var3) != Material.water ? 1.0F : (float)this.blockAccess.getBlockBrightness(var1, var2, var3) / 9.0F;
-    }
+	private void renderBlockCrops(Block var1, int var2, float var3, float var4, float var5) {
+		Tessellator var6 = Tessellator.instance;
+		int var13 = var1.getBlockTextureFromSideAndMetadata(0, var2);
+		if(this.overrideBlockTexture >= 0) {
+			var13 = this.overrideBlockTexture;
+		}
+
+		var2 = (var13 & 15) << 4;
+		var13 &= 240;
+		float var7 = (float)var2 / 256.0F;
+		float var14 = ((float)var2 + 15.99F) / 256.0F;
+		float var8 = (float)var13 / 256.0F;
+		float var15 = ((float)var13 + 15.99F) / 256.0F;
+		float var9 = var3 + 0.5F - 0.25F;
+		float var10 = var3 + 0.5F + 0.25F;
+		float var11 = var5 + 0.5F - 0.5F;
+		float var12 = var5 + 0.5F + 0.5F;
+		var6.addVertexWithUV(var9, var4 + 1.0F, var11, var7, var8);
+		var6.addVertexWithUV(var9, var4, var11, var7, var15);
+		var6.addVertexWithUV(var9, var4, var12, var14, var15);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var12, var14, var8);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var12, var7, var8);
+		var6.addVertexWithUV(var9, var4, var12, var7, var15);
+		var6.addVertexWithUV(var9, var4, var11, var14, var15);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var11, var14, var8);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var12, var7, var8);
+		var6.addVertexWithUV(var10, var4, var12, var7, var15);
+		var6.addVertexWithUV(var10, var4, var11, var14, var15);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var11, var14, var8);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var11, var7, var8);
+		var6.addVertexWithUV(var10, var4, var11, var7, var15);
+		var6.addVertexWithUV(var10, var4, var12, var14, var15);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var12, var14, var8);
+		var9 = var3 + 0.5F - 0.5F;
+		var10 = var3 + 0.5F + 0.5F;
+		var11 = var5 + 0.5F - 0.25F;
+		var12 = var5 + 0.5F + 0.25F;
+		var6.addVertexWithUV(var9, var4 + 1.0F, var11, var7, var8);
+		var6.addVertexWithUV(var9, var4, var11, var7, var15);
+		var6.addVertexWithUV(var10, var4, var11, var14, var15);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var11, var14, var8);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var11, var7, var8);
+		var6.addVertexWithUV(var10, var4, var11, var7, var15);
+		var6.addVertexWithUV(var9, var4, var11, var14, var15);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var11, var14, var8);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var12, var7, var8);
+		var6.addVertexWithUV(var10, var4, var12, var7, var15);
+		var6.addVertexWithUV(var9, var4, var12, var14, var15);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var12, var14, var8);
+		var6.addVertexWithUV(var9, var4 + 1.0F, var12, var7, var8);
+		var6.addVertexWithUV(var9, var4, var12, var7, var15);
+		var6.addVertexWithUV(var10, var4, var12, var14, var15);
+		var6.addVertexWithUV(var10, var4 + 1.0F, var12, var14, var8);
+	}
+
+	private float materialNotWater(int var1, int var2, int var3) {
+		return this.blockAccess.getBlockMaterial(var1, var2, var3) != Material.water ? 1.0F : (float)this.blockAccess.getBlockMetadata(var1, var2, var3) / 9.0F;
+	}
 
 	private void renderBlockBottom(Block var1, float var2, float var3, float var4, int var5) {
+		Tessellator var6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			var5 = this.overrideBlockTexture;
 		}
 
-		int var6 = (var5 & 15) << 4;
+		int var7 = (var5 & 15) << 4;
 		var5 &= 240;
-		float var7 = (float)var6 / 256.0F;
-		float var12 = ((float)var6 + 15.99F) / 256.0F;
-		float var8 = (float)var5 / 256.0F;
+		float var8 = (float)var7 / 256.0F;
+		float var14 = ((float)var7 + 15.99F) / 256.0F;
+		float var9 = (float)var5 / 256.0F;
 		float var13 = ((float)var5 + 15.99F) / 256.0F;
-		float var9 = var2 + var1.minX;
+		float var10 = var2 + var1.minX;
 		var2 += var1.maxX;
 		var3 += var1.minY;
-		float var10 = var4 + var1.minZ;
-		float var11 = var4 + var1.maxZ;
-		this.tessellator.addVertexWithUV(var9, var3, var11, var7, var13);
-		this.tessellator.addVertexWithUV(var9, var3, var10, var7, var8);
-		this.tessellator.addVertexWithUV(var2, var3, var10, var12, var8);
-		this.tessellator.addVertexWithUV(var2, var3, var11, var12, var13);
+		float var11 = var4 + var1.minZ;
+		float var12 = var4 + var1.maxZ;
+		var6.addVertexWithUV(var10, var3, var12, var8, var13);
+		var6.addVertexWithUV(var10, var3, var11, var8, var9);
+		var6.addVertexWithUV(var2, var3, var11, var14, var9);
+		var6.addVertexWithUV(var2, var3, var12, var14, var13);
 	}
 
 	private void renderBlockTop(Block var1, float var2, float var3, float var4, int var5) {
+		Tessellator var6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			var5 = this.overrideBlockTexture;
 		}
 
-		int var6 = (var5 & 15) << 4;
+		int var7 = (var5 & 15) << 4;
 		var5 &= 240;
-		float var7 = (float)var6 / 256.0F;
-		float var12 = ((float)var6 + 15.99F) / 256.0F;
-		float var8 = (float)var5 / 256.0F;
+		float var8 = (float)var7 / 256.0F;
+		float var14 = ((float)var7 + 15.99F) / 256.0F;
+		float var9 = (float)var5 / 256.0F;
 		float var13 = ((float)var5 + 15.99F) / 256.0F;
-		float var9 = var2 + var1.minX;
+		float var10 = var2 + var1.minX;
 		var2 += var1.maxX;
 		var3 += var1.maxY;
-		float var10 = var4 + var1.minZ;
-		float var11 = var4 + var1.maxZ;
-		this.tessellator.addVertexWithUV(var2, var3, var11, var12, var13);
-		this.tessellator.addVertexWithUV(var2, var3, var10, var12, var8);
-		this.tessellator.addVertexWithUV(var9, var3, var10, var7, var8);
-		this.tessellator.addVertexWithUV(var9, var3, var11, var7, var13);
+		float var11 = var4 + var1.minZ;
+		float var12 = var4 + var1.maxZ;
+		var6.addVertexWithUV(var2, var3, var12, var14, var13);
+		var6.addVertexWithUV(var2, var3, var11, var14, var9);
+		var6.addVertexWithUV(var10, var3, var11, var8, var9);
+		var6.addVertexWithUV(var10, var3, var12, var8, var13);
 	}
 
 	private void renderBlockNorth(Block var1, int var2, int var3, int var4, int var5) {
+		Tessellator var6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			var5 = this.overrideBlockTexture;
 		}
 
-		int var6 = (var5 & 15) << 4;
+		int var7 = (var5 & 15) << 4;
 		var5 &= 240;
-		float var7 = (float)var6 / 256.0F;
-		float var14 = ((float)var6 + 15.99F) / 256.0F;
-		float var8;
+		float var8 = (float)var7 / 256.0F;
+		float var16 = ((float)var7 + 15.99F) / 256.0F;
+		float var9;
 		float var15;
 		if(var1.minY >= 0.0F && var1.maxY <= 1.0F) {
-			var8 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
+			var9 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
 			var15 = ((float)var5 + var1.maxY * 15.99F) / 256.0F;
 		} else {
-			var8 = (float)var5 / 256.0F;
+			var9 = (float)var5 / 256.0F;
 			var15 = ((float)var5 + 15.99F) / 256.0F;
 		}
 
-		float var9 = (float)var2 + var1.minX;
-		float var12 = (float)var2 + var1.maxX;
-		float var10 = (float)var3 + var1.minY;
-		float var13 = (float)var3 + var1.maxY;
-		float var11 = (float)var4 + var1.minZ;
-		this.tessellator.addVertexWithUV(var9, var13, var11, var14, var8);
-		this.tessellator.addVertexWithUV(var12, var13, var11, var7, var8);
-		this.tessellator.addVertexWithUV(var12, var10, var11, var7, var15);
-		this.tessellator.addVertexWithUV(var9, var10, var11, var14, var15);
+		float var10 = (float)var2 + var1.minX;
+		float var13 = (float)var2 + var1.maxX;
+		float var11 = (float)var3 + var1.minY;
+		float var14 = (float)var3 + var1.maxY;
+		float var12 = (float)var4 + var1.minZ;
+		var6.addVertexWithUV(var10, var14, var12, var16, var9);
+		var6.addVertexWithUV(var13, var14, var12, var8, var9);
+		var6.addVertexWithUV(var13, var11, var12, var8, var15);
+		var6.addVertexWithUV(var10, var11, var12, var16, var15);
 	}
 
 	private void renderBlockSouth(Block var1, int var2, int var3, int var4, int var5) {
+		Tessellator var6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			var5 = this.overrideBlockTexture;
 		}
 
-		int var6 = (var5 & 15) << 4;
+		int var7 = (var5 & 15) << 4;
 		var5 &= 240;
-		float var7 = (float)var6 / 256.0F;
-		float var14 = ((float)var6 + 15.99F) / 256.0F;
-		float var8;
+		float var8 = (float)var7 / 256.0F;
+		float var16 = ((float)var7 + 15.99F) / 256.0F;
+		float var9;
 		float var15;
 		if(var1.minY >= 0.0F && var1.maxY <= 1.0F) {
-			var8 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
+			var9 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
 			var15 = ((float)var5 + var1.maxY * 15.99F) / 256.0F;
 		} else {
-			var8 = (float)var5 / 256.0F;
+			var9 = (float)var5 / 256.0F;
 			var15 = ((float)var5 + 15.99F) / 256.0F;
 		}
 
-		float var9 = (float)var2 + var1.minX;
-		float var12 = (float)var2 + var1.maxX;
-		float var10 = (float)var3 + var1.minY;
-		float var13 = (float)var3 + var1.maxY;
-		float var11 = (float)var4 + var1.maxZ;
-		this.tessellator.addVertexWithUV(var9, var13, var11, var7, var8);
-		this.tessellator.addVertexWithUV(var9, var10, var11, var7, var15);
-		this.tessellator.addVertexWithUV(var12, var10, var11, var14, var15);
-		this.tessellator.addVertexWithUV(var12, var13, var11, var14, var8);
+		float var10 = (float)var2 + var1.minX;
+		float var13 = (float)var2 + var1.maxX;
+		float var11 = (float)var3 + var1.minY;
+		float var14 = (float)var3 + var1.maxY;
+		float var12 = (float)var4 + var1.maxZ;
+		var6.addVertexWithUV(var10, var14, var12, var8, var9);
+		var6.addVertexWithUV(var10, var11, var12, var8, var15);
+		var6.addVertexWithUV(var13, var11, var12, var16, var15);
+		var6.addVertexWithUV(var13, var14, var12, var16, var9);
 	}
 
 	private void renderBlockWest(Block var1, int var2, int var3, int var4, int var5) {
+		Tessellator var6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			var5 = this.overrideBlockTexture;
 		}
 
-		int var6 = (var5 & 15) << 4;
+		int var7 = (var5 & 15) << 4;
 		var5 &= 240;
-		float var7 = (float)var6 / 256.0F;
-		float var14 = ((float)var6 + 15.99F) / 256.0F;
-		float var8;
+		float var8 = (float)var7 / 256.0F;
+		float var16 = ((float)var7 + 15.99F) / 256.0F;
+		float var9;
 		float var15;
 		if(var1.minY >= 0.0F && var1.maxY <= 1.0F) {
-			var8 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
+			var9 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
 			var15 = ((float)var5 + var1.maxY * 15.99F) / 256.0F;
 		} else {
-			var8 = (float)var5 / 256.0F;
+			var9 = (float)var5 / 256.0F;
 			var15 = ((float)var5 + 15.99F) / 256.0F;
 		}
 
-		float var12 = (float)var2 + var1.minX;
-		float var9 = (float)var3 + var1.minY;
-		float var13 = (float)var3 + var1.maxY;
-		float var10 = (float)var4 + var1.minZ;
-		float var11 = (float)var4 + var1.maxZ;
-		this.tessellator.addVertexWithUV(var12, var13, var11, var14, var8);
-		this.tessellator.addVertexWithUV(var12, var13, var10, var7, var8);
-		this.tessellator.addVertexWithUV(var12, var9, var10, var7, var15);
-		this.tessellator.addVertexWithUV(var12, var9, var11, var14, var15);
+		float var13 = (float)var2 + var1.minX;
+		float var10 = (float)var3 + var1.minY;
+		float var14 = (float)var3 + var1.maxY;
+		float var11 = (float)var4 + var1.minZ;
+		float var12 = (float)var4 + var1.maxZ;
+		var6.addVertexWithUV(var13, var14, var12, var16, var9);
+		var6.addVertexWithUV(var13, var14, var11, var8, var9);
+		var6.addVertexWithUV(var13, var10, var11, var8, var15);
+		var6.addVertexWithUV(var13, var10, var12, var16, var15);
 	}
 
 	private void renderBlockEast(Block var1, int var2, int var3, int var4, int var5) {
+		Tessellator var6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			var5 = this.overrideBlockTexture;
 		}
 
-		int var6 = (var5 & 15) << 4;
+		int var7 = (var5 & 15) << 4;
 		var5 &= 240;
-		float var7 = (float)var6 / 256.0F;
-		float var14 = ((float)var6 + 15.99F) / 256.0F;
-		float var8;
+		float var8 = (float)var7 / 256.0F;
+		float var16 = ((float)var7 + 15.99F) / 256.0F;
+		float var9;
 		float var15;
 		if(var1.minY >= 0.0F && var1.maxY <= 1.0F) {
-			var8 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
+			var9 = ((float)var5 + var1.minY * 15.99F) / 256.0F;
 			var15 = ((float)var5 + var1.maxY * 15.99F) / 256.0F;
 		} else {
-			var8 = (float)var5 / 256.0F;
+			var9 = (float)var5 / 256.0F;
 			var15 = ((float)var5 + 15.99F) / 256.0F;
 		}
 
-		float var12 = (float)var2 + var1.maxX;
-		float var9 = (float)var3 + var1.minY;
-		float var13 = (float)var3 + var1.maxY;
-		float var10 = (float)var4 + var1.minZ;
-		float var11 = (float)var4 + var1.maxZ;
-		this.tessellator.addVertexWithUV(var12, var9, var11, var7, var15);
-		this.tessellator.addVertexWithUV(var12, var9, var10, var14, var15);
-		this.tessellator.addVertexWithUV(var12, var13, var10, var14, var8);
-		this.tessellator.addVertexWithUV(var12, var13, var11, var7, var8);
+		float var13 = (float)var2 + var1.maxX;
+		float var10 = (float)var3 + var1.minY;
+		float var14 = (float)var3 + var1.maxY;
+		float var11 = (float)var4 + var1.minZ;
+		float var12 = (float)var4 + var1.maxZ;
+		var6.addVertexWithUV(var13, var10, var12, var8, var15);
+		var6.addVertexWithUV(var13, var10, var11, var16, var15);
+		var6.addVertexWithUV(var13, var14, var11, var16, var9);
+		var6.addVertexWithUV(var13, var14, var12, var8, var9);
 	}
 
 	public final void renderBlockOnInventory(Block var1) {
-		int var2 = var1.getRenderType();
-		if(var2 == 0) {
+		Tessellator var2 = Tessellator.instance;
+		int var3 = var1.getRenderType();
+		if(var3 == 0) {
 			GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(0.0F, -1.0F, 0.0F);
-			this.renderBlockBottom(var1, 0.0F, 0.0F, 0.0F, var1.getBlockTexture(0));
-			this.tessellator.draw();
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(0.0F, 1.0F, 0.0F);
-			this.renderBlockTop(var1, 0.0F, 0.0F, 0.0F, var1.getBlockTexture(1));
-			this.tessellator.draw();
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(0.0F, 0.0F, -1.0F);
-			this.renderBlockNorth(var1, 0, 0, 0, var1.getBlockTexture(2));
-			this.tessellator.draw();
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(0.0F, 0.0F, 1.0F);
-			this.renderBlockSouth(var1, 0, 0, 0, var1.getBlockTexture(3));
-			this.tessellator.draw();
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(-1.0F, 0.0F, 0.0F);
-			this.renderBlockWest(var1, 0, 0, 0, var1.getBlockTexture(4));
-			this.tessellator.draw();
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(1.0F, 0.0F, 0.0F);
-			this.renderBlockEast(var1, 0, 0, 0, var1.getBlockTexture(5));
-			this.tessellator.draw();
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(0.0F, -1.0F, 0.0F);
+			this.renderBlockBottom(var1, 0.0F, 0.0F, 0.0F, var1.getBlockTextureFromSide(0));
+			var2.draw();
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(0.0F, 1.0F, 0.0F);
+			this.renderBlockTop(var1, 0.0F, 0.0F, 0.0F, var1.getBlockTextureFromSide(1));
+			var2.draw();
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(0.0F, 0.0F, -1.0F);
+			this.renderBlockNorth(var1, 0, 0, 0, var1.getBlockTextureFromSide(2));
+			var2.draw();
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(0.0F, 0.0F, 1.0F);
+			this.renderBlockSouth(var1, 0, 0, 0, var1.getBlockTextureFromSide(3));
+			var2.draw();
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(-1.0F, 0.0F, 0.0F);
+			this.renderBlockWest(var1, 0, 0, 0, var1.getBlockTextureFromSide(4));
+			var2.draw();
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(1.0F, 0.0F, 0.0F);
+			this.renderBlockEast(var1, 0, 0, 0, var1.getBlockTextureFromSide(5));
+			var2.draw();
 			GL11.glTranslatef(0.5F, 0.5F, 0.5F);
-		} else if(var2 == 1) {
-			this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			this.tessellator.normal(0.0F, -1.0F, 0.0F);
-			this.renderBlockPlant(var1, -0.5F, -0.5F, -0.5F);
-			this.tessellator.draw();
+		} else if(var3 == 1) {
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(0.0F, -1.0F, 0.0F);
+			this.renderBlockPlant(var1, -1, -0.5F, -0.5F, -0.5F);
+			var2.draw();
+		} else if(var3 == 6) {
+			var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			var2.normal(0.0F, -1.0F, 0.0F);
+			this.renderBlockCrops(var1, -1, -0.5F, -0.5F, -0.5F);
+			var2.draw();
 		} else {
-			if(var2 == 2) {
-				this.tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-				this.tessellator.normal(0.0F, -1.0F, 0.0F);
+			if(var3 == 2) {
+				var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+				var2.normal(0.0F, -1.0F, 0.0F);
 				this.renderBlockTorch(var1, -0.5F, -0.5F, -0.5F, 0.0F, 0.0F);
-				this.tessellator.draw();
+				var2.draw();
 			}
 
 		}

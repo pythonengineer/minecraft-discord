@@ -6,8 +6,8 @@ import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public class BlockFluid extends Block {
-	protected int a;
 	protected int stillId;
+	protected int movingId;
 
 	protected BlockFluid(int var1, Material var2) {
 		super(var1, var2);
@@ -16,15 +16,15 @@ public class BlockFluid extends Block {
 			this.blockIndexInTexture = 30;
 		}
 
-		Block.isBlockContainer[var1] = true;
-		this.stillId = var1;
-		this.a = var1 + 1;
+		Block.isBlockFluid[var1] = true;
+		this.movingId = var1;
+		this.stillId = var1 + 1;
 		this.setBlockBounds(0.01F, -0.09F, 0.01F, 1.01F, 0.90999997F, 1.01F);
 		this.setTickOnLoad(true);
 		this.setResistance(2.0F);
 	}
 
-	public final int getBlockTexture(int var1) {
+	public final int getBlockTextureFromSide(int var1) {
 		return this.material == Material.lava ? this.blockIndexInTexture : (var1 == 1 ? this.blockIndexInTexture : (var1 == 0 ? this.blockIndexInTexture : this.blockIndexInTexture + 32));
 	}
 
@@ -46,7 +46,7 @@ public class BlockFluid extends Block {
 				break;
 			}
 
-			var6 = var1.setBlockWithNotify(var2, var3, var4, this.stillId);
+			var6 = var1.setBlockWithNotify(var2, var3, var4, this.movingId);
 			if(var6) {
 				var7 = true;
 			}
@@ -68,9 +68,9 @@ public class BlockFluid extends Block {
 		}
 
 		if(!var7) {
-			var1.setTileNoUpdate(var2, var3, var4, this.a);
+			var1.setTileNoUpdate(var2, var3, var4, this.stillId);
 		} else {
-			var1.scheduleBlockUpdate(var2, var3, var4, this.stillId);
+			var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
 		}
 
 		return var7;
@@ -98,7 +98,7 @@ public class BlockFluid extends Block {
 	}
 
 	private static boolean extinguishFireLava(World var0, int var1, int var2, int var3) {
-		if(Block.fire.canBlockCatchFire(var0.getBlockId(var1, var2, var3))) {
+		if(Block.fire.getChanceOfNeighborsEncouragingFire(var0.getBlockId(var1, var2, var3))) {
 			Block.fire.fireSpread(var0, var1, var2, var3);
 			return true;
 		} else {
@@ -110,9 +110,9 @@ public class BlockFluid extends Block {
 		if(!this.canFlow(var1, var2, var3, var4)) {
 			return false;
 		} else {
-			boolean var5 = var1.setBlockWithNotify(var2, var3, var4, this.stillId);
+			boolean var5 = var1.setBlockWithNotify(var2, var3, var4, this.movingId);
 			if(var5) {
-				var1.scheduleBlockUpdate(var2, var3, var4, this.stillId);
+				var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
 			}
 
 			return false;
@@ -120,13 +120,13 @@ public class BlockFluid extends Block {
 	}
 
 	public final float getBlockBrightness(World var1, int var2, int var3, int var4) {
-		return this.material == Material.lava ? 100.0F : var1.getBlockLightValue(var2, var3, var4);
+		return this.material == Material.lava ? 100.0F : var1.getBrightness(var2, var3, var4);
 	}
 
 	public boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
 		if(var2 >= 0 && var3 >= 0 && var4 >= 0 && var2 < var1.width && var4 < var1.length) {
 			int var6 = var1.getBlockId(var2, var3, var4);
-			return var6 != this.stillId && var6 != this.a ? (var5 != 1 || var1.getBlockId(var2 - 1, var3, var4) != 0 && var1.getBlockId(var2 + 1, var3, var4) != 0 && var1.getBlockId(var2, var3, var4 - 1) != 0 && var1.getBlockId(var2, var3, var4 + 1) != 0 ? super.shouldSideBeRendered(var1, var2, var3, var4, var5) : true) : false;
+			return var6 != this.movingId && var6 != this.stillId ? (var5 != 1 || var1.getBlockId(var2 - 1, var3, var4) != 0 && var1.getBlockId(var2 + 1, var3, var4) != 0 && var1.getBlockId(var2, var3, var4 - 1) != 0 && var1.getBlockId(var2, var3, var4 + 1) != 0 ? super.shouldSideBeRendered(var1, var2, var3, var4, var5) : true) : false;
 		} else {
 			return false;
 		}
@@ -157,12 +157,6 @@ public class BlockFluid extends Block {
 
 	public int tickRate() {
 		return this.material == Material.lava ? 25 : 5;
-	}
-
-	public void dropBlockAsItemWithChance(World var1, int var2, int var3, int var4, float var5) {
-	}
-
-	public void dropBlockAsItem(World var1, int var2, int var3, int var4) {
 	}
 
 	public int quantityDropped(EaglercraftRandom var1) {

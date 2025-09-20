@@ -9,12 +9,13 @@ public final class Tessellator {
 	private float r;
 	private float g;
 	private float b;
+    private float a;
 	private float nx;
 	private float ny;
 	private float nz;
 	private boolean hasColor = false;
     private boolean hasNormal = false;
-	private boolean drawMode = false;
+    private boolean isColorDisabled = false;
 	public static Tessellator instance = new Tessellator();
 
 	public final void draw() {
@@ -39,7 +40,7 @@ public final class Tessellator {
         worldRenderer.begin(mode, fmt);
         this.hasNormal = false;
         this.hasColor = false;
-        this.drawMode = false;
+        this.isColorDisabled = false;
     }
 
 	public final void startDrawingQuads(VertexFormat fmt) {
@@ -50,8 +51,16 @@ public final class Tessellator {
         this.setColorOpaque((int)(var1 * 255.0F), (int)(var2 * 255.0F), (int)(var3 * 255.0F));
 	}
 
+    public final void setColorRGBA_F(float var1, float var2, float var3, float var4) {
+        this.setColorRGBA((int)(var1 * 255.0F), (int)(var2 * 255.0F), (int)(var3 * 255.0F), (int)(var4 * 255.0F));
+    }
+
     private void setColorOpaque(int var1, int var2, int var3) {
-        if(!this.drawMode) {
+        this.setColorRGBA(var1, var2, var3, 255);
+    }
+
+    private void setColorRGBA(int var1, int var2, int var3, int var4) {
+        if(!this.isColorDisabled) {
             if(var1 > 255) {
                 var1 = 255;
             }
@@ -62,6 +71,10 @@ public final class Tessellator {
 
             if(var3 > 255) {
                 var3 = 255;
+            }
+
+            if(var4 > 255) {
+                var4 = 255;
             }
 
             if(var1 < 0) {
@@ -76,10 +89,15 @@ public final class Tessellator {
                 var3 = 0;
             }
 
+            if(var4 < 0) {
+                var4 = 0;
+            }
+
             this.hasColor = true;
             this.r = (float)(var1 & 255) / 255.0F;
             this.g = (float)(var2 & 255) / 255.0F;
             this.b = (float)(var3 & 255) / 255.0F;
+            this.a = (float)(var4 & 255) / 255.0F;
         }
     }
 
@@ -94,7 +112,7 @@ public final class Tessellator {
 
 	public final void addVertex(float x, float y, float z) {
         if (this.hasColor) {
-            worldRenderer.color(this.r, this.g, this.b, 1);
+            worldRenderer.color(this.r, this.g, this.b, this.a);
         }
 
         worldRenderer.pos(x, y, z);
@@ -114,7 +132,7 @@ public final class Tessellator {
 	}
 
 	public final void disableColor() {
-		this.drawMode = true;
+        this.isColorDisabled = true;
 	}
 
     public void normal(float x, float y, float z) {

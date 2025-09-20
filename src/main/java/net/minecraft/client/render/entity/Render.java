@@ -18,7 +18,7 @@ public abstract class Render {
 
 	public Render() {
 		new ModelBiped();
-		new RenderBlocks(Tessellator.instance);
+		new RenderBlocks();
 		this.shadowSize = 0.0F;
         this.shadowOpaque = 1.0F;
 	}
@@ -107,7 +107,7 @@ public abstract class Render {
                             if(var15 > 0 && var11.isHalfLit(var29, var13, var14)) {
                                 Block var16 = Block.blocksList[var15];
                                 Tessellator var25 = Tessellator.instance;
-                                var34 = (var9 - (var7 - (float)var13) / 2.0F) * 0.5F * var27.renderManager.worldObj.getBlockLightValue(var29, var13, var14);
+                                var34 = (var9 - (var7 - (float)var13) / 2.0F) * 0.5F * var27.renderManager.worldObj.getBrightness(var29, var13, var14);
                                 if(var34 >= 0.0F) {
                                     GL11.glColor4f(1.0F, 1.0F, 1.0F, var34);
                                     var25.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);

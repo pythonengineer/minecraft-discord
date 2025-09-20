@@ -15,7 +15,6 @@ import net.minecraft.client.RenderHelper;
 import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.render.entity.RenderItem;
-import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
@@ -64,8 +63,8 @@ public abstract class GuiContainer extends GuiScreen {
         this.guiTop = (this.height - this.ySize) / 2;
     }
 
-    public final void drawScreen(int var1, int var2) {
-        drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
+    public void drawScreen(int var1, int var2, float var3) {
+        this.drawDefaultBackground();
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
         this.drawGuiContainerBackgroundLayer();
@@ -75,16 +74,6 @@ public abstract class GuiContainer extends GuiScreen {
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glTranslatef(this.guiLeft, this.guiTop, 0.0F);
-        GL11.glEnable(GL11.GL_NORMALIZE);
-        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-        GL11.glPushMatrix();
-        GL11.glTranslatef(52.0F, 73.0F, 24.0F);
-        GL11.glScalef(24.0F, -24.0F, 24.0F);
-        GL11.glRotatef(10.0F, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(10.0F, 1.0F, 0.0F, 0.0F);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderManager.instance.renderEntityWithPosYaw(this.mc.thePlayer, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-        GL11.glPopMatrix();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glEnable(GL11.GL_NORMALIZE);
 
@@ -210,6 +199,10 @@ public abstract class GuiContainer extends GuiScreen {
     }
 
     public void guiCraftingItemsCheck() {
+    }
+
+    public final boolean doesGuiPauseGame() {
+        return false;
     }
 
     protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType) {

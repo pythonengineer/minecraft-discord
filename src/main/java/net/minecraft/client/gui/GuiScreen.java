@@ -11,8 +11,11 @@ import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.internal.EnumTouchEvent;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
+import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.Tessellator;
 
 public class GuiScreen extends Gui {
 	protected Minecraft mc;
@@ -28,13 +31,13 @@ public class GuiScreen extends Gui {
     protected int touchModeCursorPosY = -1;
     private long lastTouchEvent;
 
-	public void drawScreen(int var1, int var2) {
-		for(int var3 = 0; var3 < this.controlList.size(); ++var3) {
-			GuiButton var10000 = (GuiButton)this.controlList.get(var3);
-            var10000.drawButton(this.mc, var1, var2);
-		}
+    public void drawScreen(int var1, int var2, float var3) {
+        for(int var5 = 0; var5 < this.controlList.size(); ++var5) {
+            GuiButton var4 = (GuiButton)this.controlList.get(var5);
+            var4.drawButton(this.mc, var1, var2);
+        }
 
-	}
+    }
 
 	protected void keyTyped(char var1, int var2) {
 		if(var2 == 1) {
@@ -142,6 +145,30 @@ public class GuiScreen extends Gui {
 
     public void onGuiClosed() {
 	}
+
+    public final void drawDefaultBackground() {
+        boolean var1 = false;
+        if(this.mc.theWorld != null) {
+            drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
+        } else {
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glDisable(GL11.GL_FOG);
+            Tessellator var2 = Tessellator.instance;
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/dirt.png"));
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+            var2.setColorOpaque_I(4210752);
+            var2.addVertexWithUV(0.0F, (float)this.height, 0.0F, 0.0F, (float)this.height / 32.0F);
+            var2.addVertexWithUV((float)this.width, (float)this.height, 0.0F, (float)this.width / 32.0F, (float)this.height / 32.0F);
+            var2.addVertexWithUV((float)this.width, 0.0F, 0.0F, (float)this.width / 32.0F, 0.0F);
+            var2.addVertexWithUV(0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+            var2.draw();
+        }
+    }
+
+    public boolean doesGuiPauseGame() {
+        return true;
+    }
 
     public void touchEvent() {
         this.handleTouchInput();

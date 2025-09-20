@@ -15,8 +15,9 @@ public final class PlayerControllerSP extends PlayerController {
 	private int curBlockX = -1;
 	private int curBlockY = -1;
 	private int curBlockZ = -1;
-	private int curBlockDamage = 0;
-	private int prevBlockDamage = 0;
+    private float curBlockDamage = 0.0F;
+    private float prevBlockDamage = 0.0F;
+    private float blockDestroySoundCounter = 0.0F;
 	private int blockHitWait = 0;
 	private MobSpawner mobSpawner;
 
@@ -54,33 +55,34 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {
 		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		boolean var5 = super.sendBlockRemoved(var1, var2, var3);
-        EntityPlayerSP var6 = this.mc.thePlayer;
-        ItemStack var8 = var6.inventory.getCurrentItem();
-        if(var8 != null) {
-            Item.itemsList[var8.itemID].onBlockDestroyed(var8);
-            if(var8.stackSize == 0) {
+        byte var5 = this.mc.theWorld.getBlockMetadata(var1, var2, var3);
+        boolean var6 = super.sendBlockRemoved(var1, var2, var3);
+        EntityPlayerSP var7 = this.mc.thePlayer;
+        ItemStack var9 = var7.inventory.getCurrentItem();
+        if(var9 != null) {
+            Item.itemsList[var9.itemID].onBlockDestroyed(var9);
+            if(var9.stackSize == 0) {
                 this.mc.thePlayer.displayGUIInventory();
             }
         }
 
-		if(var5) {
-			Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3);
-		}
+        if(var6) {
+            Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3, var5);
+        }
 
-		return var5;
+        return var6;
 	}
 
 	public final void clickBlock(int var1, int var2, int var3) {
 		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		if(var4 > 0 && Block.blocksList[var4].blockStrength(this.mc.thePlayer) == 0) {
+		if(var4 > 0 && Block.blocksList[var4].blockStrength(this.mc.thePlayer) >= 1.0F) {
 			this.sendBlockRemoved(var1, var2, var3);
 		}
 
 	}
 
 	public final void resetBlockRemoving() {
-		this.curBlockDamage = 0;
+		this.curBlockDamage = 0.0F;
 		this.blockHitWait = 0;
 	}
 
@@ -93,15 +95,10 @@ public final class PlayerControllerSP extends PlayerController {
 				var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
 				if(var4 != 0) {
 					Block var6 = Block.blocksList[var4];
-					this.prevBlockDamage = var6.blockStrength(this.mc.thePlayer);
-                    if(this.prevBlockDamage < 0) {
-                        this.curBlockDamage %= 4;
-                        this.prevBlockDamage = 99999999;
-                    }
-
-					if(this.curBlockDamage % 4 == 0 && var6 != null) {
-						SoundManager var10000 = this.mc.sndManager;
-						String var10001 = "step." + var6.stepSound.soundDir;
+                    this.curBlockDamage += var6.blockStrength(this.mc.thePlayer);
+                    if(this.blockDestroySoundCounter % 4.0F == 0.0F && var6 != null) {
+                        SoundManager var10000 = this.mc.sndManager;
+                        String var10001 = "step." + var6.stepSound.sound;
 						float var10002 = (float)var1 + 0.5F;
 						float var10003 = (float)var2 + 0.5F;
 						float var10004 = (float)var3 + 0.5F;
@@ -111,16 +108,20 @@ public final class PlayerControllerSP extends PlayerController {
 						var10000.playSound(var10001, var10002, var10003, var10004, var10005, var5.soundPitch * 0.5F);
 					}
 
-					++this.curBlockDamage;
-					if(this.curBlockDamage >= this.prevBlockDamage + 1) {
-						this.sendBlockRemoved(var1, var2, var3);
-						this.curBlockDamage = 0;
+                    ++this.blockDestroySoundCounter;
+                    if(this.curBlockDamage >= 1.0F) {
+                        this.sendBlockRemoved(var1, var2, var3);
+                        this.curBlockDamage = 0.0F;
+                        this.prevBlockDamage = 0.0F;
+                        this.blockDestroySoundCounter = 0.0F;
 						this.blockHitWait = 5;
 					}
 
 				}
 			} else {
-				this.curBlockDamage = 0;
+                this.curBlockDamage = 0.0F;
+                this.prevBlockDamage = 0.0F;
+                this.blockDestroySoundCounter = 0.0F;
 				this.curBlockX = var1;
 				this.curBlockY = var2;
 				this.curBlockZ = var3;
@@ -129,11 +130,12 @@ public final class PlayerControllerSP extends PlayerController {
 	}
 
 	public final void setPartialTime(float var1) {
-		if(this.curBlockDamage <= 0) {
-			this.mc.renderGlobal.damagePartialTime = 0.0F;
-		} else {
-			this.mc.renderGlobal.damagePartialTime = ((float)this.curBlockDamage + var1 - 1.0F) / (float)this.prevBlockDamage;
-		}
+        if(this.curBlockDamage <= 0.0F) {
+            this.mc.renderGlobal.damagePartialTime = 0.0F;
+        } else {
+            var1 = this.prevBlockDamage + (this.curBlockDamage - this.prevBlockDamage) * var1;
+            this.mc.renderGlobal.damagePartialTime = var1;
+        }
 	}
 
 	public final float getBlockReachDistance() {
@@ -152,6 +154,7 @@ public final class PlayerControllerSP extends PlayerController {
 	}
 
 	public final void onUpdate() {
+        this.prevBlockDamage = this.curBlockDamage;
 		this.mobSpawner.performSpawning();
 	}
 }

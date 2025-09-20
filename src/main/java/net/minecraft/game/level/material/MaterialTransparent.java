@@ -8,4 +8,8 @@ public final class MaterialTransparent extends Material {
     public final boolean getCanBlockGrass() {
         return false;
     }
+
+    public final boolean getIsSolid() {
+        return false;
+    }
 }

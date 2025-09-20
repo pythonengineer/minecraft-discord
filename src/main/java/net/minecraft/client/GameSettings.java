@@ -14,6 +14,7 @@ public final class GameSettings {
     private static final String[] GUI_SCALES = new String[]{"AUTO", "SMALL",
             "NORMAL", "LARGE" };
     private static final String[] RENDER_DISTANCES = new String[]{"FAR", "NORMAL", "SHORT", "TINY"};
+    private static final String[] DIFFICULTIES = new String[]{"Peaceful", "Easy", "Normal", "Hard"};
     public boolean music = true;
     public boolean sound = true;
     public boolean invertMouse = false;
@@ -39,6 +40,7 @@ public final class GameSettings {
     public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
     private Minecraft mc;
     public int numberOfOptions = 9;
+    public int difficulty = 2;
 
     public GameSettings(Minecraft var1) {
         this.mc = var1;
@@ -94,11 +96,15 @@ public final class GameSettings {
             this.guiScale = this.guiScale + var2 & 3;
         }
 
+        if(var1 == 9) {
+            this.difficulty = this.difficulty + var2 & 3;
+        }
+
         this.saveOptions();
     }
 
     public final String setOptionString(int var1) {
-        return var1 == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (var1 == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (var1 == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (var1 == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (var1 == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (var1 == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (var1 == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (var1 == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (var1 == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : ""))))))));
+        return var1 == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (var1 == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (var1 == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (var1 == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (var1 == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (var1 == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (var1 == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (var1 == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (var1 == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (var1 == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : "")))))))));
     }
 
     private void loadOptions() {
@@ -156,6 +162,10 @@ public final class GameSettings {
                         this.openAlFail = var5[1].equals("true");
                     }
 
+                    if(var5[0].equals("difficulty")) {
+                        this.difficulty = Integer.parseInt(var5[1]);
+                    }
+
                     for(int var3 = 0; var3 < this.keyBindings.length; ++var3) {
                         if(var5[0].equals("key_" + this.keyBindings[var3].keyDescription)) {
                             this.keyBindings[var3].keyCode = Integer.parseInt(var5[1]);
@@ -182,6 +192,7 @@ public final class GameSettings {
             var1.println("bobView:" + this.viewBobbing);
             var1.println("anaglyph3d:" + this.anaglyph);
             var1.println("limitFramerate:" + this.limitFramerate);
+            var1.println("difficulty:" + this.difficulty);
             if(this.openAlFail) {
                 var1.println("openAlFail:" + this.openAlFail);
             }

@@ -37,9 +37,8 @@ public final class GuiNewLevel extends GuiScreen {
         if(var1.id == 5) {
             this.mc.displayGuiScreen(this.prevGui);
         } else if(var1.id == 4) {
-            this.mc.generateNewLevel(this.selectedWorldSize, this.selectedWorldShape, this.selectedWorldType, this.selectedWorldTheme);
+            this.mc.generateLevel(this.selectedWorldSize, this.selectedWorldShape, this.selectedWorldType, this.selectedWorldTheme);
             this.mc.displayGuiScreen((GuiScreen)null);
-            this.mc.setIngameFocus();
         } else if(var1.id == 0) {
             this.selectedWorldType = (this.selectedWorldType + 1) % this.worldType.length;
         } else if(var1.id == 1) {
@@ -53,9 +52,9 @@ public final class GuiNewLevel extends GuiScreen {
         this.worldOptions();
     }
 
-    public final void drawScreen(int var1, int var2) {
-        drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
+    public final void drawScreen(int var1, int var2, float var3) {
+        this.drawDefaultBackground();
         drawCenteredString(this.fontRenderer, "Generate new level", this.width / 2, 40, 16777215);
-        super.drawScreen(var1, var2);
+        super.drawScreen(var1, var2, var3);
     }
 }

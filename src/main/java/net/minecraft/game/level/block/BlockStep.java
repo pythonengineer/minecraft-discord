@@ -15,7 +15,7 @@ public final class BlockStep extends Block {
 
     }
 
-    public final int getBlockTexture(int var1) {
+    public final int getBlockTextureFromSide(int var1) {
         return var1 <= 1 ? 6 : 5;
     }
 
@@ -41,7 +41,7 @@ public final class BlockStep extends Block {
 
     }
 
-    public final int idDropped() {
+    public final int idDropped(int var1) {
         return Block.stairSingle.blockID;
     }
 
