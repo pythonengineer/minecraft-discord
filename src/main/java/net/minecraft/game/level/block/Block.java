@@ -123,7 +123,7 @@ public class Block {
         this.blockIndexInTexture = var2;
     }
 
-    private Block setLightOpacity(int var1) {
+    protected final Block setLightOpacity(int var1) {
         lightOpacity[this.blockID] = var1;
         return this;
     }

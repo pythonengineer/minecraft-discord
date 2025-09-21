@@ -13,6 +13,7 @@ public final class BlockStep extends Block {
             this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
         }
 
+        this.setLightOpacity(255);
     }
 
     public final int getBlockTextureFromSide(int var1) {

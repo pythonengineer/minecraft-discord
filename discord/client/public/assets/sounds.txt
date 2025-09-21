@@ -1,5 +1,7 @@
 fire/fire.ogg
 fire/ignite.ogg
+liquid/lava.ogg
+liquid/water.ogg
 random/click.ogg
 random/drr.ogg
 random/explode.ogg

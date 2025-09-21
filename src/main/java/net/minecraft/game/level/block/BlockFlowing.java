@@ -25,6 +25,10 @@ public final class BlockFlowing extends BlockFluid {
 		this.setTickOnLoad(true);
 	}
 
+    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
+        var1.scheduleBlockUpdate(var2, var3, var4, this.movingId1);
+    }
+
 	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		this.update(var1, var2, var3, var4, 0);
 	}
@@ -36,7 +40,7 @@ public final class BlockFlowing extends BlockFluid {
 		int var8;
 		int var9;
 		if(var6 && var1.getBlockMaterial(var2, var3 - 1, var4) == this.material) {
-			var5 = var1.floodFill(var2, var3, var4, this.movingId1, this.stillId1);
+			var5 = var1.floodFill(var2, var3 - 1, var4, this.movingId1, this.stillId1);
 			if(var5 <= 0) {
 				return false;
 			}

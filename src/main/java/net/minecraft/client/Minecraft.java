@@ -173,6 +173,10 @@ public final class Minecraft implements Runnable {
 
 			try {
 				Display.create();
+                System.out.println("GLES version: " + GL11.checkOpenGLESVersion());
+                System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
+                System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
+                System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
                 Mouse.destroy();
 			} catch (Exception var31) {
 				var31.printStackTrace();
@@ -299,6 +303,7 @@ public final class Minecraft implements Runnable {
 				} catch (Exception var32) {
 					this.displayGuiScreen(new GuiErrorScreen("Client error", "The game broke! [" + var32 + "]"));
 					var32.printStackTrace();
+					return;
 				}
 
 				while(EagRuntime.currentTimeMillis() >= var1 + 1000L) {

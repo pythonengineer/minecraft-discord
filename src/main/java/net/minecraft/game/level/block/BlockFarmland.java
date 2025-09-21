@@ -11,6 +11,7 @@ public final class BlockFarmland extends Block {
         this.blockIndexInTexture = 87;
         this.setTickOnLoad(true);
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 15.0F / 16.0F, 1.0F);
+        this.setLightOpacity(255);
     }
 
     public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
@@ -102,6 +103,15 @@ public final class BlockFarmland extends Block {
 
     public final void onEntityWalking(World var1, int var2, int var3, int var4) {
         if(var1.random.nextInt(4) == 0) {
+            var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
+        }
+
+    }
+
+    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
+        super.onNeighborBlockChange(var1, var2, var3, var4, var5);
+        Material var6 = var1.getBlockMaterial(var2, var3 + 1, var4);
+        if(var6.isSolid()) {
             var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
         }
 

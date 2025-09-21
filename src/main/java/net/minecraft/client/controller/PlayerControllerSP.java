@@ -28,29 +28,30 @@ public final class PlayerControllerSP extends PlayerController {
 	public final void flipPlayer(EntityPlayer var1) {
         int var2 = (int)var1.posX;
         int var3 = (int)var1.posY;
-        int var4 = (int)var1.posZ;
+        int var8 = (int)var1.posZ;
 
-        for(int var5 = var2 - 3; var5 <= var2 + 3; ++var5) {
-            for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
-                for(int var7 = var4 - 3; var7 <= var4 + 3; ++var7) {
-                    int var8 = var6 < var3 - 1 ? Block.obsidian.blockID : 0;
-                    if(var5 == var2 - 3 || var7 == var4 - 3 || var5 == var2 + 3 || var7 == var4 + 3 || var6 == var3 - 2 || var6 == var3 + 2) {
-                        var8 = Block.cobblestoneMossy.blockID;
+        for(int var4 = var2 - 3; var4 <= var2 + 3; ++var4) {
+            for(int var5 = var3 - 2; var5 <= var3 + 2; ++var5) {
+                for(int var6 = var8 - 3; var6 <= var8 + 3; ++var6) {
+                    int var7 = var5 < var3 - 1 ? Block.obsidian.blockID : 0;
+                    if(var4 == var2 - 3 || var6 == var8 - 3 || var4 == var2 + 3 || var6 == var8 + 3 || var5 == var3 - 2 || var5 == var3 + 2) {
+                        var7 = Block.cobblestoneMossy.blockID;
                     }
 
-                    if(var6 == var3 && var7 == var4 && (var5 == var2 - 3 + 1 || var5 == var2 + 3 - 1)) {
-                        var8 = Block.torch.blockID;
+                    if(var5 == var3 && var6 == var8 && (var4 == var2 - 3 + 1 || var4 == var2 + 3 - 1)) {
+                        var7 = Block.torch.blockID;
                     }
 
-                    if(var7 == var4 - 3 && var5 == var2 && var6 >= var3 - 1 && var6 <= var3) {
-                        var8 = 0;
+                    if(var6 == var8 - 3 && var4 == var2 && var5 >= var3 - 1 && var5 <= var3) {
+                        var7 = 0;
                     }
 
-                    this.mc.theWorld.setBlockWithNotify(var5, var6, var7, var8);
+                    this.mc.theWorld.setBlockWithNotify(var4, var5, var6, var7);
                 }
             }
         }
 
+        this.mc.theWorld.updateBlockLight(var2 - 5, var3 - 5, var8 - 5, var2 + 5, var3 + 5, var8 + 5);
 	}
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {

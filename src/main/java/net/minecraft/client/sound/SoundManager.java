@@ -15,6 +15,7 @@ public final class SoundManager {
     private SoundPool soundPoolSounds = new SoundPool();
     private SoundPool soundPoolMusic = new SoundPool();
     private GameSettings options;
+    private SoundPoolEntry currentMusic;
 
     public final void loadSoundSettings(GameSettings var1) {
         this.options = var1;
@@ -63,10 +64,15 @@ public final class SoundManager {
         }
 
         this.soundPoolMusic.addSound(this.sndManager, var1, var2);
-        if(this.soundPoolMusic.numberOfSoundPoolEntries == 3 && this.options.music) {
-            SoundPoolEntry var3 = this.soundPoolMusic.getRandomSoundFromSoundPool("calm");
-            var3.playStatic = true;
-            this.play(var3);
+    }
+
+    public final void playRandomMusicIfReady(float var1, float var2, float var3) {
+        if(this.options.music) {
+            if (this.currentMusic == null || (!this.sndManager.isSoundPlaying(this.currentMusic) && !this.currentMusic.queued)) {
+                this.currentMusic = this.soundPoolMusic.getRandomSoundFromSoundPool("calm");
+                this.currentMusic.playStatic = true;
+                this.play(this.currentMusic);
+            }
         }
 
     }
@@ -77,13 +83,15 @@ public final class SoundManager {
     }
 
     public final void setListener(EntityLiving var1, float var2) {
-        this.sndManager.setListener(var1, var2);
+        if(this.options.sound) {
+            this.sndManager.setListener(var1, var2);
+        }
     }
 
     public final void playSound(String var1, float var2, float var3, float var4, float var5, float var6) {
         if(this.options.sound) {
             SoundPoolEntry var8 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
-            if(var8 != null) {
+            if(var8 != null && var5 > 0.0F) {
                 this.play(new SoundPoolEntry(var8, var2, var3, var4, var5, var6));
             }
 
@@ -94,7 +102,7 @@ public final class SoundManager {
         if(this.options.sound) {
             SoundPoolEntry var4 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
             if(var4 != null) {
-                this.play(new SoundPoolEntry(var4, true));
+                this.play(new SoundPoolEntry(var4, true, 1.0F, 0.25F));
             }
 
         }

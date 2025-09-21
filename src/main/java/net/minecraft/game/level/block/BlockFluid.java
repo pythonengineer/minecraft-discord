@@ -32,6 +32,10 @@ public class BlockFluid extends Block {
 		return false;
 	}
 
+    public void onBlockAdded(World var1, int var2, int var3, int var4) {
+        var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
+    }
+
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		this.update(var1, var2, var3, var4, 0);
 	}
@@ -77,24 +81,23 @@ public class BlockFluid extends Block {
 	}
 
 	protected final boolean canFlow(World var1, int var2, int var3, int var4) {
-		int var5 = var1.getBlockId(var2, var3, var4);
-		if(var5 != 0 && var5 != Block.fire.blockID) {
-			return false;
-		} else {
-			if(this.material == Material.water) {
-				for(var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
-					for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
-						for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
-							if(var1.getBlockId(var5, var6, var7) == Block.sponge.blockID) {
-								return false;
-							}
-						}
-					}
-				}
-			}
+        if(!var1.getBlockMaterial(var2, var3, var4).liquidSolidCheck()) {
+            return false;
+        } else {
+            if(this.material == Material.water) {
+                for(int var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
+                    for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
+                        for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
+                            if(var1.getBlockId(var5, var6, var7) == Block.sponge.blockID) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 	}
 
 	private static boolean extinguishFireLava(World var0, int var1, int var2, int var3) {
@@ -168,6 +171,16 @@ public class BlockFluid extends Block {
 	}
 
 	public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        if(var5.nextInt(128) == -1 && var1.getBlockMaterial(var2, var3 + 1, var4).getIsSolid()) {
+            if(this.material == Material.lava) {
+                var1.playSoundAtPlayer((float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F, "liquid.lava", var5.nextFloat() * 0.25F + 12.0F / 16.0F, var5.nextFloat() * 0.5F + 0.3F);
+            }
+
+            if(this.material == Material.water) {
+                var1.playSoundAtPlayer((float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F, "liquid.water", var5.nextFloat() * 0.25F + 12.0F / 16.0F, var5.nextFloat() + 0.5F);
+            }
+        }
+
 		if(this.material == Material.lava && var1.getBlockMaterial(var2, var3 + 1, var4) == Material.air && !var1.isBlockNormalCube(var2, var3 + 1, var4) && var5.nextInt(100) == 0) {
 			float var6 = (float)var2 + var5.nextFloat();
 			float var7 = (float)var3 + this.maxY;
@@ -175,5 +188,38 @@ public class BlockFluid extends Block {
 			var1.spawnParticle("lava", var6, var7, var8, 0.0F, 0.0F, 0.0F);
 		}
 
-	}
+        if(this.material == Material.water) {
+            int var9;
+            if(j(var1, var2 + 1, var3, var4)) {
+                for(var9 = 0; var9 < 4; ++var9) {
+                    var1.spawnParticle("splash", (float)(var2 + 1) + 2.0F / 16.0F, (float)var3, (float)var4 + var5.nextFloat(), 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+            if(j(var1, var2 - 1, var3, var4)) {
+                for(var9 = 0; var9 < 4; ++var9) {
+                    var1.spawnParticle("splash", (float)var2 - 2.0F / 16.0F, (float)var3, (float)var4 + var5.nextFloat(), 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+            if(j(var1, var2, var3, var4 + 1)) {
+                for(var9 = 0; var9 < 4; ++var9) {
+                    var1.spawnParticle("splash", (float)var2 + var5.nextFloat(), (float)var3, (float)(var4 + 1) + 2.0F / 16.0F, 0.0F, 0.0F, 0.0F);
+                }
+            }
+
+            if(j(var1, var2, var3, var4 - 1)) {
+                for(var9 = 0; var9 < 4; ++var9) {
+                    var1.spawnParticle("splash", (float)var2 + var5.nextFloat(), (float)var3, (float)var4 - 2.0F / 16.0F, 0.0F, 0.0F, 0.0F);
+                }
+            }
+        }
+
+    }
+
+    private static boolean j(World var0, int var1, int var2, int var3) {
+        Material var4 = var0.getBlockMaterial(var1, var2, var3);
+        Material var5 = var0.getBlockMaterial(var1, var2 - 1, var3);
+        return !var4.getIsSolid() && !var4.getIsLiquid() ? var5.getIsSolid() || var5.getIsLiquid() : false;
+    }
 }

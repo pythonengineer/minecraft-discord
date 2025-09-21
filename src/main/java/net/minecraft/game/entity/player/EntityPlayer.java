@@ -30,6 +30,7 @@ public class EntityPlayer extends EntityLiving {
             var1.releaseEntitySkin(this);
         }
 
+        this.setPositionAndRotation((float)var1.xSpawn, (float)var1.ySpawn, (float)var1.zSpawn, 0.0F, 0.0F);
         this.yOffset = 1.62F;
         this.health = 20;
         this.fireResistance = 20;
@@ -48,6 +49,7 @@ public class EntityPlayer extends EntityLiving {
     }
 
     public void onLivingUpdate() {
+        this.worldObj.playMusic(this.posX, this.posY, this.posZ, "calm", 0.0F);
         if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 << 2 == 0) {
             this.heal(1);
         }

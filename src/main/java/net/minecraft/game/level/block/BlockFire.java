@@ -132,11 +132,21 @@ public final class BlockFire extends Block {
 		return var6 > var5 ? var6 : var5;
 	}
 
+    public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
+        return var1.isBlockNormalCube(var2, var3 - 1, var4) || this.canNeighborCatchFire(var1, var2, var3, var4);
+    }
+
 	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !this.canNeighborCatchFire(var1, var2, var3, var4)) {
 			var1.setBlockWithNotify(var2, var3, var4, 0);
 		}
 	}
+
+    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
+        if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !this.canNeighborCatchFire(var1, var2, var3, var4)) {
+            var1.setBlockWithNotify(var2, var3, var4, 0);
+        }
+    }
 
     public final boolean getChanceOfNeighborsEncouragingFire(int var1) {
         return this.chanceToEncourageFire[var1] > 0;
@@ -172,7 +182,7 @@ public final class BlockFire extends Block {
 	}
 
 	public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        if(var5.nextInt(10) == 0) {
+        if(var5.nextInt(24) == 0) {
             var1.playSoundAtPlayer((float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F, "fire.fire", 1.0F + var5.nextFloat(), var5.nextFloat() * 0.7F + 0.3F);
         }
 

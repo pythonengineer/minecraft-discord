@@ -47,11 +47,11 @@ public final class Timer {
 
         this.elapsedPartialTicks = (float)((double)this.elapsedPartialTicks + var9 * (double)this.timerSpeed * (double)this.ticksPerSecond);
         this.elapsedTicks = (int)this.elapsedPartialTicks;
+        this.elapsedPartialTicks -= (float)this.elapsedTicks;
         if(this.elapsedTicks > 10) {
             this.elapsedTicks = 10;
         }
 
-        this.elapsedPartialTicks -= (float)this.elapsedTicks;
         this.renderPartialTicks = this.elapsedPartialTicks;
     }
 }

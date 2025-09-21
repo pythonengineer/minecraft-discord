@@ -234,6 +234,7 @@ public class EaglercraftSoundManager {
             return;
         }
         if (sound != null) {
+            sound.queued = true;
             IAudioResource trk = null;
             if (EagRuntime.getPlatformType() != EnumPlatformType.DESKTOP) {
                 PlatformAudio.loadAudioDataNew(sound, !sound.playStatic,
@@ -271,6 +272,7 @@ public class EaglercraftSoundManager {
                 logger.error("Unable to play soundEvent(4): {}", sound.soundUrl);
             } else {
                 activeSounds.add(newSound);
+                sound.queued = false;
             }
         }
     }

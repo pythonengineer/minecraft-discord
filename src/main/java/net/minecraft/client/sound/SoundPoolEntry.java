@@ -8,6 +8,7 @@ public final class SoundPoolEntry {
     public String soundName;
     public String soundUrl;
     public boolean playStatic = false;
+    public boolean queued = false;
     public float pitch = 1.0F;
     public float volume = 1.0F;
     public float x;
@@ -29,9 +30,11 @@ public final class SoundPoolEntry {
         this.pitch = pitch;
     }
 
-    public SoundPoolEntry(SoundPoolEntry sound, boolean playStatic) {
+    public SoundPoolEntry(SoundPoolEntry sound, boolean playStatic, float pitch, float volume) {
         this(sound.mgr, sound.soundName, sound.soundUrl);
         this.playStatic = playStatic;
+        this.pitch = pitch;
+        this.volume = volume;
     }
 
     public void finish(IAudioResource buffer) {

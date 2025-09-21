@@ -271,7 +271,7 @@ public final class World {
         this.updateBlockLight(0, 0, 0, 10, 10, 10);
     }
 
-    private void updateBlockLight(int var1, int var2, int var3, int var4, int var5, int var6) {
+    public final void updateBlockLight(int var1, int var2, int var3, int var4, int var5, int var6) {
         int var7 = 0;
         ArrayList var8 = new ArrayList();
         int[] var9 = new int[1024];
@@ -508,7 +508,7 @@ public final class World {
                     Block.blocksList[var4].onBlockAdded(this, var1, var2, var3);
                 }
 
-                this.data[(var2 * this.length + var3) * this.width + var1] = 0;
+                this.setBlockMetadata(var1, var2, var3, 0);
                 this.updateSkylight(var1, var3, 1, 1);
                 this.updateBlockLight(var1, var2, var3, var1 + 1, var2 + 1, var3 + 1);
 
@@ -1590,6 +1590,13 @@ public final class World {
             if(this.playerEntity.getDistanceSqToEntity(var1) < var6 * var6) {
                 ((IWorldAccess)this.worldAccesses.get(var5)).playSound(var2, var1.posX, var1.posY - var1.yOffset, var1.posZ, var3, var4);
             }
+        }
+
+    }
+
+    public final void playMusic(float var1, float var2, float var3, String var4, float var5) {
+        for(int var6 = 0; var6 < this.worldAccesses.size(); ++var6) {
+            ((IWorldAccess)this.worldAccesses.get(var6)).playMusic(var4, var1, var2, var3, 0.0F);
         }
 
     }
