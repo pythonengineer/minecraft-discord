@@ -62,7 +62,7 @@ public final class Pathfinder {
             var8.isFirst = true;
             int var15 = 0;
             byte var16 = 0;
-            if(var20.getVerticalOffset(var8.xCoord, var8.yCoord + 1, var8.zCoord, var26)) {
+            if(var20.getVerticalOffset(var8.xCoord, var8.yCoord + 1, var8.zCoord, var26) > 0) {
                 var16 = 1;
             }
 
@@ -111,17 +111,26 @@ public final class Pathfinder {
     }
 
     private PathPoint getSafePoint(Entity var1, int var2, int var3, int var4, PathPoint var5, int var6) {
-        PathPoint var7 = null;
-        if(this.getVerticalOffset(var2, var3, var4, var5)) {
-            var7 = this.openPoint(var2, var3, var4);
+        PathPoint var8 = null;
+        if(this.getVerticalOffset(var2, var3, var4, var5) > 0) {
+            var8 = this.openPoint(var2, var3, var4);
         }
 
-        if(var7 == null && this.getVerticalOffset(var2, var3 + var6, var4, var5)) {
-            var7 = this.openPoint(var2, var3 + var6, var4);
+        if(var8 == null && this.getVerticalOffset(var2, var3 + var6, var4, var5) > 0) {
+            var8 = this.openPoint(var2, var3 + var6, var4);
         }
 
-        if(var7 != null) {
-            for(var6 = 0; var3 > 0 && this.getVerticalOffset(var2, var3 - 1, var4, var5); var7 = this.openPoint(var2, var3, var4)) {
+        if(var8 != null) {
+            for(var6 = 0; var3 > 0; var8 = this.openPoint(var2, var3, var4)) {
+                int var7 = this.getVerticalOffset(var2, var3 - 1, var4, var5);
+                if(var7 <= 0) {
+                    break;
+                }
+
+                if(var7 < 0) {
+                    return null;
+                }
+
                 ++var6;
                 if(var6 >= 4) {
                     return null;
@@ -131,7 +140,7 @@ public final class Pathfinder {
             }
         }
 
-        return var7;
+        return var8;
     }
 
     private final PathPoint openPoint(int var1, int var2, int var3) {
@@ -145,15 +154,15 @@ public final class Pathfinder {
         return var5;
     }
 
-    private boolean getVerticalOffset(int var1, int var2, int var3, PathPoint var4) {
+    private int getVerticalOffset(int var1, int var2, int var3, PathPoint var4) {
         for(int var5 = var1; var5 < var1 + var4.xCoord; ++var5) {
             if(var5 < 0 || var5 >= this.worldMap.width) {
-                return false;
+                return 0;
             }
 
             for(int var6 = var2; var6 < var2 + var4.yCoord; ++var6) {
                 if(var6 < 0 || var6 >= this.worldMap.height) {
-                    return false;
+                    return 0;
                 }
 
                 int var7 = var3;
@@ -162,7 +171,7 @@ public final class Pathfinder {
                     if(var7 >= 0 && var7 < this.worldMap.length) {
                         Material var8 = this.worldMap.getBlockMaterial(var1, var2, var3);
                         if(var8.getIsSolid()) {
-                            return false;
+                            return 0;
                         }
 
                         if(var8 != Material.water && var8 != Material.lava) {
@@ -170,15 +179,15 @@ public final class Pathfinder {
                             continue;
                         }
 
-                        return false;
+                        return -1;
                     }
 
-                    return false;
+                    return 0;
                 }
             }
         }
 
-        return true;
+        return 1;
     }
 
     private static PathEntity createEntityPath(PathPoint var0) {

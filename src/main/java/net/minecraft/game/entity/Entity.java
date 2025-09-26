@@ -62,6 +62,7 @@ public abstract class Entity {
     public int heartsLife = 0;
     public int air = 300;
     private boolean isFirstUpdate = true;
+    public String skinUrl;
 
 	public Entity(World var1) {
 		this.worldObj = var1;
@@ -337,7 +338,7 @@ public abstract class Entity {
                 if(this.distanceWalkedModified > (float)this.nextStepDistance && var16 > 0) {
                     ++this.nextStepDistance;
                     StepSound var15 = Block.blocksList[var16].stepSound;
-                    this.worldObj.playSoundAtEntity(this, "step." + var15.sound, var15.soundVolume * 0.15F, var15.soundPitch);
+                    this.worldObj.playSoundAtEntity(this, var15.stepSoundDir2(), var15.soundVolume * 0.15F, var15.soundPitch);
                     Block.blocksList[var16].onEntityWalking(this.worldObj, var21, var23, var17);
                 }
             }
@@ -471,6 +472,10 @@ public abstract class Entity {
 		return false;
 	}
 
+    public String getTexture() {
+        return null;
+    }
+
     public final void writeToNBT(NBTTagCompound var1) {
         String var2 = this.getEntityString();
         if(!this.isDead && var2 != null) {
@@ -527,8 +532,15 @@ public abstract class Entity {
         return this.height / 2.0F;
     }
 
-    public final void dropItemWithOffset(int var1, int var2) {
-        this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(var1, 1)));
+    public final EntityItem dropItemWithOffset(int var1, int var2) {
+        return this.entityDropItem(var1, 1, 0.0F);
+    }
+
+    public final EntityItem entityDropItem(int var1, int var2, float var3) {
+        EntityItem var4 = new EntityItem(this.worldObj, this.posX, this.posY + var3, this.posZ, new ItemStack(var1, var2));
+        var4.delayBeforeCanPickup = 10;
+        this.worldObj.spawnEntityInWorld(var4);
+        return var4;
     }
 
     public boolean isEntityAlive() {

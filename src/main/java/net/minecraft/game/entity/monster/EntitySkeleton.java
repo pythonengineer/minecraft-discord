@@ -20,11 +20,11 @@ public class EntitySkeleton extends EntityMob {
 			if(this.attackTime == 0) {
 				EntityArrow var4 = new EntityArrow(this.worldObj, this);
 				++var4.posY;
-				float var6 = var1.posY - var4.posY;
-				float var5 = MathHelper.sqrt_float(var2 * var2 + var3 * var3) * 0.4F;
+				float var6 = var1.posY - 0.2F - var4.posY;
+				float var5 = MathHelper.sqrt_float(var2 * var2 + var3 * var3) * 0.2F;
 				this.worldObj.playSoundAtEntity(this, "random.bow", 1.0F, 1.0F / (this.rand.nextFloat() * 0.4F + 0.8F));
 				this.worldObj.spawnEntityInWorld(var4);
-				var4.setArrowHeading(var2, var6 + var5, var3, 0.6F, 4.0F);
+				var4.setArrowHeading(var2, var6 + var5, var3, 0.6F, 12.0F);
 				this.attackTime = 30;
 			}
 

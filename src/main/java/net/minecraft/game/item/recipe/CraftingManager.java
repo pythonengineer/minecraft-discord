@@ -26,6 +26,7 @@ public final class CraftingManager {
 		new RecipesCrafting();
 		this.addRecipe(new ItemStack(Block.chest), new Object[]{"###", "# #", "###", Character.valueOf('#'), Block.planks});
 		this.addRecipe(new ItemStack(Block.workbench), new Object[]{"##", "##", Character.valueOf('#'), Block.planks});
+		(new RecipesArmor()).addRecipes(this);
         this.addRecipe(new ItemStack(Block.clothGray, 1), new Object[]{"###", "###", "###", Character.valueOf('#'), Item.silk});
 		this.addRecipe(new ItemStack(Block.tnt, 1), new Object[]{"X#X", "#X#", "X#X", Character.valueOf('X'), Item.gunpowder, Character.valueOf('#'), Block.sand});
 		this.addRecipe(new ItemStack(Block.stairSingle, 3), new Object[]{"###", Character.valueOf('#'), Block.cobblestone});
@@ -37,45 +38,56 @@ public final class CraftingManager {
         System.out.println(this.recipes.size() + " recipes");
 	}
 
-	final void addRecipe(ItemStack var1, Object... var2) {
-		String var3 = "";
-		int var4 = 0;
-		int var5 = 0;
+    final void addRecipe(ItemStack var1, Object... var2) {
+        String var3 = "";
+        int var4 = 0;
+        int var5 = 0;
+        int var6 = 0;
+        if(var2[0] instanceof String[]) {
+            ++var4;
+            String[] var11 = (String[])var2[0];
 
-		int var6;
-		String var7;
-		for(var6 = 0; var2[var4] instanceof String; var3 = var3 + var7) {
-			var7 = (String)var2[var4++];
-			++var6;
-			var5 = var7.length();
-		}
+            for(int var8 = 0; var8 < var11.length; ++var8) {
+                String var9 = var11[var8];
+                ++var6;
+                var5 = var9.length();
+                var3 = var3 + var9;
+            }
+        } else {
+            while(var2[var4] instanceof String) {
+                String var7 = (String)var2[var4++];
+                ++var6;
+                var5 = var7.length();
+                var3 = var3 + var7;
+            }
+        }
 
-		int var9;
-		HashMap var11;
-		for(var11 = new HashMap(); var4 < var2.length; var4 += 2) {
-			Character var8 = (Character)var2[var4];
-			var9 = 0;
-			if(var2[var4 + 1] instanceof Item) {
-				var9 = ((Item)var2[var4 + 1]).shiftedIndex;
-			} else if(var2[var4 + 1] instanceof Block) {
-				var9 = ((Block)var2[var4 + 1]).blockID;
-			}
+        HashMap var12;
+        int var15;
+        for(var12 = new HashMap(); var4 < var2.length; var4 += 2) {
+            Character var13 = (Character)var2[var4];
+            var15 = 0;
+            if(var2[var4 + 1] instanceof Item) {
+                var15 = ((Item)var2[var4 + 1]).shiftedIndex;
+            } else if(var2[var4 + 1] instanceof Block) {
+                var15 = ((Block)var2[var4 + 1]).blockID;
+            }
 
-			var11.put(var8, Integer.valueOf(var9));
-		}
+            var12.put(var13, Integer.valueOf(var15));
+        }
 
-		int[] var12 = new int[var5 * var6];
+        int[] var14 = new int[var5 * var6];
 
-		for(var9 = 0; var9 < var5 * var6; ++var9) {
-			char var10 = var3.charAt(var9);
-			if(var11.containsKey(Character.valueOf(var10))) {
-				var12[var9] = ((Integer)var11.get(Character.valueOf(var10))).intValue();
-			} else {
-				var12[var9] = -1;
-			}
-		}
+        for(var15 = 0; var15 < var5 * var6; ++var15) {
+            char var10 = var3.charAt(var15);
+            if(var12.containsKey(Character.valueOf(var10))) {
+                var14[var15] = ((Integer)var12.get(Character.valueOf(var10))).intValue();
+            } else {
+                var14[var15] = -1;
+            }
+        }
 
-        this.recipes.add(new CraftingRecipe(var5, var6, var12, var1));
+        this.recipes.add(new CraftingRecipe(var5, var6, var14, var1));
     }
 
     public final ItemStack findMatchingRecipe(int[] var1) {

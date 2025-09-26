@@ -174,7 +174,7 @@ public final class GameSettings {
         }
     }
 
-    public final void saveOptions() {
+    private void saveOptions() {
         try {
             EaglerOutputStream bao = new EaglerOutputStream();
             PrintWriter var1 = new PrintWriter(new OutputStreamWriter(bao));

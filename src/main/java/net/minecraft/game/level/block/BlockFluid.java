@@ -190,25 +190,25 @@ public class BlockFluid extends Block {
 
         if(this.material == Material.water) {
             int var9;
-            if(j(var1, var2 + 1, var3, var4)) {
+            if(liquidAirCheck(var1, var2 + 1, var3, var4)) {
                 for(var9 = 0; var9 < 4; ++var9) {
                     var1.spawnParticle("splash", (float)(var2 + 1) + 2.0F / 16.0F, (float)var3, (float)var4 + var5.nextFloat(), 0.0F, 0.0F, 0.0F);
                 }
             }
 
-            if(j(var1, var2 - 1, var3, var4)) {
+            if(liquidAirCheck(var1, var2 - 1, var3, var4)) {
                 for(var9 = 0; var9 < 4; ++var9) {
                     var1.spawnParticle("splash", (float)var2 - 2.0F / 16.0F, (float)var3, (float)var4 + var5.nextFloat(), 0.0F, 0.0F, 0.0F);
                 }
             }
 
-            if(j(var1, var2, var3, var4 + 1)) {
+            if(liquidAirCheck(var1, var2, var3, var4 + 1)) {
                 for(var9 = 0; var9 < 4; ++var9) {
                     var1.spawnParticle("splash", (float)var2 + var5.nextFloat(), (float)var3, (float)(var4 + 1) + 2.0F / 16.0F, 0.0F, 0.0F, 0.0F);
                 }
             }
 
-            if(j(var1, var2, var3, var4 - 1)) {
+            if(liquidAirCheck(var1, var2, var3, var4 - 1)) {
                 for(var9 = 0; var9 < 4; ++var9) {
                     var1.spawnParticle("splash", (float)var2 + var5.nextFloat(), (float)var3, (float)var4 - 2.0F / 16.0F, 0.0F, 0.0F, 0.0F);
                 }
@@ -217,7 +217,7 @@ public class BlockFluid extends Block {
 
     }
 
-    private static boolean j(World var0, int var1, int var2, int var3) {
+    private static boolean liquidAirCheck(World var0, int var1, int var2, int var3) {
         Material var4 = var0.getBlockMaterial(var1, var2, var3);
         Material var5 = var0.getBlockMaterial(var1, var2 - 1, var3);
         return !var4.getIsSolid() && !var4.getIsLiquid() ? var5.getIsSolid() || var5.getIsLiquid() : false;

@@ -2006,6 +2006,10 @@ public class GL11 {
     private static final float toRad = 0.0174532925f;
 
     public static void glRotatef(float angle, float x, float y, float z) {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(angle, x, y, z));
+            return;
+        }
         Matrix4f matrix = getMatrixIncr();
         if (x == 0.0f) {
             if (y == 0.0f) {
@@ -2213,7 +2217,7 @@ public class GL11 {
 
     public static void glColor4f(float colorRed, float colorGreen, float colorBlue, float colorAlpha) {
         if (currentList != null) {
-            currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, colorAlpha));
+            currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, colorAlpha, true));
             return;
         }
         stateColorR = colorRed;
@@ -2225,7 +2229,7 @@ public class GL11 {
 
     public static void glColor3f(float colorRed, float colorGreen, float colorBlue) {
         if (currentList != null) {
-            currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, 1.0f));
+            currentList.ops.add(currentList.new ListOperation(colorRed, colorGreen, colorBlue, 1.0f, true));
             return;
         }
         stateColorR = colorRed;
@@ -2553,6 +2557,9 @@ public class GL11 {
             }
             if (op.hasColor) {
                 glColor4f(op.r, op.g, op.b, op.a);
+            }
+            if (op.hasRotate) {
+                glRotatef(op.angle, op.rx, op.ry, op.rz);
             }
             if (op.doBlend) {
                 glBlendFunc(op.srcFactor, op.dstFactor);

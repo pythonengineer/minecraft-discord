@@ -8,17 +8,26 @@ import net.minecraft.game.entity.EntityLiving;
 
 public class RenderLiving extends Render {
     private ModelBase mainModel;
+    private ModelBase e;
 
     public RenderLiving(ModelBase var1, float var2) {
         this.mainModel = var1;
         this.shadowSize = var2;
     }
 
-    protected float getDeathMaxRotation() {
+    public final void setRenderPassModel(ModelBase var1) {
+        this.e = var1;
+    }
+
+    protected boolean shouldRenderPass(EntityLiving var1, int var2) {
+        return false;
+    }
+
+    protected float getDeathMaxRotation(EntityLiving var1) {
         return 90.0F;
     }
 
-    protected int getColorMultiplier(EntityLiving var1, float var2) {
+    protected int getColorMultiplier(EntityLiving var1, float var2, float var3) {
         return 0;
     }
 
@@ -31,59 +40,81 @@ public class RenderLiving extends Render {
         var5 = var4;
         var4 = var3;
         var3 = var2;
-        EntityLiving var13 = var10001;
-        RenderLiving var12 = this;
+        EntityLiving var15 = var10001;
+        RenderLiving var14 = this;
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_CULL_FACE);
 
         try {
-            float var7 = var13.prevRenderYawOffset + (var13.renderYawOffset - var13.prevRenderYawOffset) * var6;
-            float var8 = var13.prevRotationYaw + (var13.rotationYaw - var13.prevRotationYaw) * var6;
-            float var9 = var13.prevRotationPitch + (var13.rotationPitch - var13.prevRotationPitch) * var6;
+            float var7 = var15.prevRenderYawOffset + (var15.renderYawOffset - var15.prevRenderYawOffset) * var6;
+            float var8 = var15.prevRotationYaw + (var15.rotationYaw - var15.prevRotationYaw) * var6;
+            float var9 = var15.prevRotationPitch + (var15.rotationPitch - var15.prevRotationPitch) * var6;
             GL11.glTranslatef(var3, var4, var5);
-            var12.loadTexture(var13.texture);
+            var3 = (float)var15.ticksExisted + var6;
             GL11.glRotatef(180.0F - var7, 0.0F, 1.0F, 0.0F);
-            if(var13.deathTime > 0) {
-                var3 = ((float)var13.deathTime + var6 - 1.0F) / 20.0F * 1.6F;
-                var3 = MathHelper.sqrt_float(var3);
-                if(var3 > 1.0F) {
-                    var3 = 1.0F;
+            if(var15.deathTime > 0) {
+                var4 = ((float)var15.deathTime + var6 - 1.0F) / 20.0F * 1.6F;
+                var4 = MathHelper.sqrt_float(var4);
+                if(var4 > 1.0F) {
+                    var4 = 1.0F;
                 }
 
-                GL11.glRotatef(var3 * var12.getDeathMaxRotation(), 0.0F, 0.0F, 1.0F);
+                GL11.glRotatef(var4 * var14.getDeathMaxRotation(var15), 0.0F, 0.0F, 1.0F);
             }
 
             GL11.glScalef(-(1.0F / 16.0F), -(1.0F / 16.0F), 1.0F / 16.0F);
-            var12.preRenderCallback(var13, var6);
+            var14.preRenderCallback(var15, var6);
             GL11.glTranslatef(0.0F, -24.0F, 0.0F);
             GL11.glEnable(GL11.GL_NORMALIZE);
-            var3 = var13.prevLimbYaw + (var13.limbYaw - var13.prevLimbYaw) * var6;
-            var4 = var13.limbSwing - var13.limbYaw * (1.0F - var6);
-            if(var3 > 1.0F) {
-                var3 = 1.0F;
+            var4 = var15.prevLimbYaw + (var15.limbYaw - var15.prevLimbYaw) * var6;
+            var5 = var15.limbSwing - var15.limbYaw * (1.0F - var6);
+            if(var4 > 1.0F) {
+                var4 = 1.0F;
             }
 
-            var12.mainModel.render(var4, var3, 0.0F, var8 - var7, var9, 1.0F);
-            var5 = var13.getBrightness(var6);
-            int var14 = var12.getColorMultiplier(var13, var6);
-            if(var14 >>> 24 > 0 || var13.hurtTime > 0 || var13.deathTime > 0) {
+            var14.loadDownloadableImageTexture(var15.skinUrl, var15.getTexture());
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            var14.mainModel.render(var5, var4, var3, var8 - var7, var9, 1.0F);
+
+            int var10;
+            for(var10 = 0; var10 < 4; ++var10) {
+                if(var14.shouldRenderPass(var15, var10)) {
+                    var14.e.render(var5, var4, var3, var8 - var7, var9, 1.0F);
+                }
+            }
+
+            float var17 = var15.getBrightness(var6);
+            int var16 = var14.getColorMultiplier(var15, var17, var6);
+            if(var16 >>> 24 > 0 || var15.hurtTime > 0 || var15.deathTime > 0) {
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 GL11.glEnable(GL11.GL_BLEND);
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 GL11.glDepthFunc(GL11.GL_EQUAL);
-                if(var13.hurtTime > 0 || var13.deathTime > 0) {
-                    GL11.glColor4f(var5, 0.0F, 0.0F, 0.4F);
-                    var12.mainModel.render(var4, var3, 0.0F, var8 - var7, var9, 1.0F);
+                if(var15.hurtTime > 0 || var15.deathTime > 0) {
+                    GL11.glColor4f(var17, 0.0F, 0.0F, 0.4F);
+                    var14.mainModel.render(var5, var4, var3, var8 - var7, var9, 1.0F);
+
+                    for(var10 = 0; var10 < 4; ++var10) {
+                        if(var14.shouldRenderPass(var15, var10)) {
+                            var14.e.render(var5, var4, var3, var8 - var7, var9, 1.0F);
+                        }
+                    }
                 }
 
-                if(var14 >>> 24 > 0) {
-                    var2 = (float)(var14 >> 16 & 255) / 255.0F;
-                    var5 = (float)(var14 >> 8 & 255) / 255.0F;
-                    float var10 = (float)(var14 & 255) / 255.0F;
-                    var6 = (float)(var14 >>> 24) / 255.0F;
-                    GL11.glColor4f(var2, var5, var10, var6);
-                    var12.mainModel.render(var4, var3, 0.0F, var8 - var7, var9, 1.0F);
+                if(var16 >>> 24 > 0) {
+                    var17 = (float)(var16 >> 16 & 255) / 255.0F;
+                    float var11 = (float)(var16 >> 8 & 255) / 255.0F;
+                    float var12 = (float)(var16 & 255) / 255.0F;
+                    var6 = (float)(var16 >>> 24) / 255.0F;
+                    GL11.glColor4f(var17, var11, var12, var6);
+                    var14.mainModel.render(var5, var4, var3, var8 - var7, var9, 1.0F);
+
+                    for(var16 = 0; var16 < 4; ++var16) {
+                        if(var14.shouldRenderPass(var15, var16)) {
+                            var14.e.render(var5, var4, var3, var8 - var7, var9, 1.0F);
+                        }
+                    }
                 }
 
                 GL11.glDepthFunc(GL11.GL_LEQUAL);
@@ -93,8 +124,8 @@ public class RenderLiving extends Render {
             }
 
             GL11.glDisable(GL11.GL_NORMALIZE);
-        } catch (Exception var11) {
-            var11.printStackTrace();
+        } catch (Exception var13) {
+            var13.printStackTrace();
         }
 
         GL11.glEnable(GL11.GL_CULL_FACE);

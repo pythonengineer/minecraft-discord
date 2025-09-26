@@ -31,7 +31,6 @@ import net.minecraft.game.physics.Vec3D;
 
 public final class EntityRenderer {
     private Minecraft mc;
-    private float fogColorMultiplier = 1.0F;
     private boolean displayActive = false;
     private float farPlaneDistance = 0.0F;
     public ItemRenderer itemRenderer;
@@ -289,7 +288,6 @@ public final class EntityRenderer {
             GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
             this.updateFogColor(var1);
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-            this.fogColorMultiplier = 1.0F;
             GL11.glEnable(GL11.GL_CULL_FACE);
             this.farPlaneDistance = (float)(512 >> (this.mc.options.renderDistance << 1));
             GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -327,6 +325,9 @@ public final class EntityRenderer {
             var14 = this.mc.thePlayer.prevPosY + (this.mc.thePlayer.posY - this.mc.thePlayer.prevPosY) * var1;
             var18 = this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * var1;
             GL11.glTranslatef(-var17, -var14, -var18);
+            this.setupFog();
+            this.mc.renderGlobal.renderSky(var1);
+            this.setupFog();
             Frustrum var40 = new Frustrum(var30, this.farPlaneDistance, var1);
             this.mc.renderGlobal.clipRenderersByFrustrum(var40);
             this.mc.renderGlobal.updateRenderers(var30);
@@ -369,9 +370,6 @@ public final class EntityRenderer {
             this.setupFog();
             this.mc.effectRenderer.renderParticles(var30, var1);
             var23.oobGroundRenderer();
-            this.setupFog();
-            var23.renderSky(var1);
-            this.setupFog();
             if(this.mc.objectMouseOver != null && var30.isInsideOfMaterial()) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 var23.drawBlockBreaking(this.mc.objectMouseOver, 0, var30.inventory.getCurrentItem());
@@ -510,43 +508,42 @@ public final class EntityRenderer {
         EntityPlayerSP var3 = this.mc.thePlayer;
         float var4 = 1.0F / (float)(4 - this.mc.options.renderDistance);
         var4 = 1.0F - (float)Math.pow((double)var4, 0.25D);
-        float var5 = (float)(var2.skyColor >> 16 & 255) / 255.0F;
-        float var6 = (float)(var2.skyColor >> 8 & 255) / 255.0F;
-        float var7 = (float)(var2.skyColor & 255) / 255.0F;
-        this.fogColorRed = (float)(var2.fogColor >> 16 & 255) / 255.0F;
-        this.fogColorGreen = (float)(var2.fogColor >> 8 & 255) / 255.0F;
-        this.fogColorBlue = (float)(var2.fogColor & 255) / 255.0F;
-        this.fogColorRed += (var5 - this.fogColorRed) * var4;
-        this.fogColorGreen += (var6 - this.fogColorGreen) * var4;
-        this.fogColorBlue += (var7 - this.fogColorBlue) * var4;
-        this.fogColorRed *= this.fogColorMultiplier;
-        this.fogColorGreen *= this.fogColorMultiplier;
-        this.fogColorBlue *= this.fogColorMultiplier;
-        Block var8 = Block.blocksList[var2.getBlockId((int)var3.posX, (int)(var3.posY + 0.12F), (int)var3.posZ)];
-        if(var8 != null && var8.material != Material.air) {
-            Material var9 = var8.material;
-            if(var9 == Material.water) {
+        Vec3D var5 = var2.getSkyColor(var1);
+        float var6 = var5.xCoord;
+        float var7 = var5.yCoord;
+        float var13 = var5.zCoord;
+        Vec3D var8 = var2.getFogColor(var1);
+        this.fogColorRed = var8.xCoord;
+        this.fogColorGreen = var8.yCoord;
+        this.fogColorBlue = var8.zCoord;
+        this.fogColorRed += (var6 - this.fogColorRed) * var4;
+        this.fogColorGreen += (var7 - this.fogColorGreen) * var4;
+        this.fogColorBlue += (var13 - this.fogColorBlue) * var4;
+        Block var9 = Block.blocksList[var2.getBlockId((int)var3.posX, (int)(var3.posY + 0.12F), (int)var3.posZ)];
+        if(var9 != null && var9.material != Material.air) {
+            Material var10 = var9.material;
+            if(var10 == Material.water) {
                 this.fogColorRed = 0.02F;
                 this.fogColorGreen = 0.02F;
                 this.fogColorBlue = 0.2F;
-            } else if(var9 == Material.lava) {
+            } else if(var10 == Material.lava) {
                 this.fogColorRed = 0.6F;
                 this.fogColorGreen = 0.1F;
                 this.fogColorBlue = 0.0F;
             }
         }
 
-        float var10 = this.prevFogColor + (this.fogColor - this.prevFogColor) * var1;
-        this.fogColorRed *= var10;
-        this.fogColorGreen *= var10;
-        this.fogColorBlue *= var10;
+        float var11 = this.prevFogColor + (this.fogColor - this.prevFogColor) * var1;
+        this.fogColorRed *= var11;
+        this.fogColorGreen *= var11;
+        this.fogColorBlue *= var11;
         if(this.mc.options.anaglyph) {
             var1 = (this.fogColorRed * 30.0F + this.fogColorGreen * 59.0F + this.fogColorBlue * 11.0F) / 100.0F;
-            var10 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
-            float var11 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;
+            var11 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
+            float var12 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;
             this.fogColorRed = var1;
-            this.fogColorGreen = var10;
-            this.fogColorBlue = var11;
+            this.fogColorGreen = var11;
+            this.fogColorBlue = var12;
         }
 
         GL11.glClearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);

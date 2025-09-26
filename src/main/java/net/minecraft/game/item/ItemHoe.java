@@ -24,7 +24,7 @@ public final class ItemHoe extends Item {
 				float var10001 = (float)var3 + 0.5F;
 				float var10002 = (float)var4 + 0.5F;
 				float var10003 = (float)var5 + 0.5F;
-				String var10004 = "step." + var12.stepSound.sound;
+				String var10004 = var12.stepSound.stepSoundDir2();
 				StepSound var8 = var12.stepSound;
 				float var10005 = (var8.soundVolume + 1.0F) / 2.0F;
 				var8 = var12.stepSound;

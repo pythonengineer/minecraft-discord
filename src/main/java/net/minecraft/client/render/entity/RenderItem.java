@@ -27,8 +27,7 @@ public final class RenderItem extends Render {
             int var7;
             if(var3.itemID < 256 && Block.blocksList[var3.itemID].getRenderType() == 0) {
                 int var6 = var3.itemID;
-                var7 = var2.getTexture("/terrain.png");
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var7);
+                RenderEngine.bindTexture(var2.getTexture("/terrain.png"));
                 Block var11 = Block.blocksList[var6];
                 GL11.glPushMatrix();
                 GL11.glTranslatef((float)(var4 - 2), (float)(var5 + 3), 0.0F);
@@ -42,11 +41,9 @@ public final class RenderItem extends Render {
             } else if(var3.getItem().getIconIndex() >= 0) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 if(var3.itemID < 256) {
-                    var7 = var2.getTexture("/terrain.png");
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var7);
+                    RenderEngine.bindTexture(var2.getTexture("/terrain.png"));
                 } else {
-                    var7 = var2.getTexture("/gui/items.png");
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var7);
+                    RenderEngine.bindTexture(var2.getTexture("/gui/items.png"));
                 }
 
                 int var10002 = var3.getItem().getIconIndex() % 16 << 4;

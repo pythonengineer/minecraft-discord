@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
@@ -19,15 +20,12 @@ public class RenderEngine {
     private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
     private ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
     private List textureList = new ArrayList();
+    private Map urlToImageDataMap = new HashMap();
     private GameSettings options;
     private boolean clampTexture = false;
 
     public RenderEngine(GameSettings var1) {
         this.options = var1;
-    }
-
-    public final void setClampTexture(boolean var1) {
-        this.clampTexture = var1;
     }
 
 	public final int getTexture(String var1) {
@@ -41,6 +39,10 @@ public class RenderEngine {
 				int var4 = this.singleIntBuffer.get(0);
 				if(var1.startsWith("##")) {
 					this.setupTexture(ImageData.loadImageFile("/assets" + var1.substring(2)), var4);
+                } else if(var1.startsWith("%%")) {
+                    this.clampTexture = true;
+                    this.setupTexture(ImageData.loadImageFile("/assets" + var1.substring(2)), var4);
+                    this.clampTexture = false;
 				} else {
 					this.setupTexture(ImageData.loadImageFile("/assets" + var1), var4);
 				}
@@ -95,6 +97,58 @@ public class RenderEngine {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, var2, var3, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
 	}
 
+    public final int getTextureForDownloadableImage(String var1, String var2) {
+        ThreadDownloadImageData var6 = (ThreadDownloadImageData)this.urlToImageDataMap.get(var1);
+        if(var6 != null && var6.image != null && !var6.textureSetupComplete) {
+            if(var6.textureName < 0) {
+                ImageData var4 = var6.image;
+                this.singleIntBuffer.clear();
+                GL11.glGenTextures(this.singleIntBuffer);
+                int var5 = this.singleIntBuffer.get(0);
+                this.setupTexture(var4, var5);
+                this.textureContentsMap.put(Integer.valueOf(var5), var4);
+                var6.textureName = var5;
+            } else {
+                this.setupTexture(var6.image, var6.textureName);
+            }
+
+            var6.textureSetupComplete = true;
+        }
+
+        return var6 != null && var6.textureName >= 0 ? var6.textureName : this.getTexture(var2);
+    }
+
+    public final ThreadDownloadImageData obtainImageData(String var1, ImageBufferDownload var2) {
+        ThreadDownloadImageData var3 = (ThreadDownloadImageData)this.urlToImageDataMap.get(var1);
+        if(var3 == null) {
+            this.urlToImageDataMap.put(var1, new ThreadDownloadImageData(var1, var2));
+        } else {
+            ++var3.referenceCount;
+        }
+
+        return var3;
+    }
+
+    public final void releaseImageData(String var1) {
+        ThreadDownloadImageData var2 = (ThreadDownloadImageData)this.urlToImageDataMap.get(var1);
+        if(var2 != null) {
+            --var2.referenceCount;
+            if(var2.referenceCount == 0) {
+                if(var2.textureName >= 0) {
+                    int var3 = var2.textureName;
+                    this.textureContentsMap.remove(Integer.valueOf(var3));
+                    this.singleIntBuffer.clear();
+                    this.singleIntBuffer.put(var3);
+                    this.singleIntBuffer.flip();
+                    GL11.glDeleteTextures(this.singleIntBuffer);
+                }
+
+                this.urlToImageDataMap.remove(var1);
+            }
+        }
+
+    }
+
 	public final void registerTextureFX(TextureFX var1) {
 		this.textureList.add(var1);
         var1.onTick();
@@ -137,24 +191,39 @@ public class RenderEngine {
             this.setupTexture(var3, var2);
         }
 
+        ThreadDownloadImageData var5;
+        for(var1 = this.urlToImageDataMap.values().iterator(); var1.hasNext(); var5.textureSetupComplete = false) {
+            var5 = (ThreadDownloadImageData)var1.next();
+        }
+
         var1 = this.textureMap.keySet().iterator();
 
         while(var1.hasNext()) {
-            String var5 = (String)var1.next();
+            String var6 = (String)var1.next();
 
             try {
-                if(var5.startsWith("##")) {
-                    var3 = ImageData.loadImageFile("/assets" + var5.substring(2));
+                if(var6.startsWith("##")) {
+                    var3 = ImageData.loadImageFile("/assets" + var6.substring(2));
+                } else if(var6.startsWith("%%")) {
+                    this.clampTexture = true;
+                    var3 = ImageData.loadImageFile("/assets" + var6.substring(2));
+                    this.clampTexture = false;
                 } else {
-                    var3 = ImageData.loadImageFile("/assets" + var5);
+                    var3 = ImageData.loadImageFile("/assets" + var6);
                 }
 
-                var2 = ((Integer)this.textureMap.get(var5)).intValue();
+                var2 = ((Integer)this.textureMap.get(var6)).intValue();
                 this.setupTexture(var3, var2);
             } catch (Exception var4) {
                 var4.printStackTrace();
             }
         }
 
+    }
+
+    public static void bindTexture(int var0) {
+        if(var0 >= 0) {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, var0);
+        }
     }
 }

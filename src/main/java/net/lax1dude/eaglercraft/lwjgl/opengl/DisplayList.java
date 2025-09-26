@@ -28,6 +28,7 @@ public class DisplayList {
         boolean hasTex = false;
         boolean hasColor = false;
         boolean hasTranslate = false;
+        boolean hasRotate = false;
         boolean hasCount = false;
         boolean hasSetting = false;
         boolean doBlend = false;
@@ -46,6 +47,10 @@ public class DisplayList {
         float x;
         float y;
         float z;
+        float angle;
+        float rx;
+        float ry;
+        float rz;
 
         public ListOperation(int tex) {
             this.hasTex = true;
@@ -71,7 +76,7 @@ public class DisplayList {
             this.dstFactor = dstFactor;
         }
 
-        public ListOperation(float r, float g, float b, float a) {
+        public ListOperation(float r, float g, float b, float a, boolean alpha) {
             this.hasColor = true;
             this.r = r;
             this.g = g;
@@ -85,7 +90,16 @@ public class DisplayList {
             this.y = y;
             this.z = z;
         }
+
+        public ListOperation(float angle, float x, float y, float z) {
+            this.hasRotate = true;
+            this.angle = angle;
+            this.rx = x;
+            this.ry = y;
+            this.rz = z;
+        }
     }
+
     IVertexArrayGL vertexArray = null;
     IBufferGL vertexBuffer = null;
     int attribs = -1;

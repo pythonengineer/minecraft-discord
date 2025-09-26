@@ -12,8 +12,8 @@ public final class EntityMap {
     private EntityMapSlot slot = new EntityMapSlot(this);
     private EntityMapSlot slot2 = new EntityMapSlot(this);
 	public List[] entityGrid;
-	public List all = new ArrayList();
-	private List tmp = new ArrayList();
+	public List entities = new ArrayList();
+	private List entitiesExcludingEntity = new ArrayList();
 
 	public EntityMap(int var1, int var2, int var3) {
 		this.width = var1 / 8;
@@ -44,7 +44,7 @@ public final class EntityMap {
 	}
 
     public final void insert(Entity var1) {
-		this.all.add(var1);
+		this.entities.add(var1);
         this.slot.init(var1.posX, var1.posY, var1.posZ).add(var1);
 		var1.lastTickPosX = var1.posX;
 		var1.lastTickPosY = var1.posY;
@@ -54,12 +54,12 @@ public final class EntityMap {
 	public final void remove(Entity var1) {
         this.slot.init(var1.lastTickPosX, var1.lastTickPosY, var1.lastTickPosZ).remove(var1);
         this.slot.init(var1.posX, var1.posY, var1.posZ).remove(var1);
-		this.all.remove(var1);
+		this.entities.remove(var1);
 	}
 
 	public final List getEntities(Entity var1, float var2, float var3, float var4, float var5, float var6, float var7) {
-		this.tmp.clear();
-		return this.getEntities(var1, var2, var3, var4, var5, var6, var7, this.tmp);
+		this.entitiesExcludingEntity.clear();
+		return this.getEntities(var1, var2, var3, var4, var5, var6, var7, this.entitiesExcludingEntity);
 	}
 
 	private List getEntities(Entity var1, float var2, float var3, float var4, float var5, float var6, float var7, List var8) {
@@ -90,19 +90,19 @@ public final class EntityMap {
 	}
 
 	public final List getEntitiesWithinAABBExcludingEntity(Entity var1, AxisAlignedBB var2) {
-		this.tmp.clear();
-        return var2 == null ? this.tmp : this.getEntities(var1, var2.minX, var2.minY, var2.minZ, var2.maxX, var2.maxY, var2.maxZ, this.tmp);
+		this.entitiesExcludingEntity.clear();
+        return var2 == null ? this.entitiesExcludingEntity : this.getEntities(var1, var2.minX, var2.minY, var2.minZ, var2.maxX, var2.maxY, var2.maxZ, this.entitiesExcludingEntity);
     }
 
 	public final void updateEntities() {
-		for(int var1 = 0; var1 < this.all.size(); ++var1) {
-			Entity var2 = (Entity)this.all.get(var1);
+		for(int var1 = 0; var1 < this.entities.size(); ++var1) {
+			Entity var2 = (Entity)this.entities.get(var1);
 			var2.lastTickPosX = var2.posX;
 			var2.lastTickPosY = var2.posY;
 			var2.lastTickPosZ = var2.posZ;
 			var2.onEntityUpdate();
 			if(var2.isDead) {
-				this.all.remove(var1--);
+				this.entities.remove(var1--);
                 this.slot.init(var2.lastTickPosX, var2.lastTickPosY, var2.lastTickPosZ).remove(var2);
 			} else {
                 int var3 = (int)(var2.lastTickPosX / 8.0F);

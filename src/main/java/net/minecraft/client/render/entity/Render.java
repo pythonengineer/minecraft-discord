@@ -25,11 +25,15 @@ public abstract class Render {
 
 	public abstract void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6);
 
-	protected final void loadTexture(String var1) {
-		RenderEngine var2 = this.renderManager.renderEngine;
-		int var3 = var2.getTexture(var1);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, var3);
-	}
+    protected final void loadTexture(String var1) {
+        RenderEngine var2 = this.renderManager.renderEngine;
+        RenderEngine.bindTexture(var2.getTexture(var1));
+    }
+
+    protected final void loadDownloadableImageTexture(String var1, String var2) {
+        RenderEngine var3 = this.renderManager.renderEngine;
+        RenderEngine.bindTexture(var3.getTextureForDownloadableImage(var1, var2));
+    }
 
     public static void renderOffsetAABB(AxisAlignedBB var0) {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -92,10 +96,7 @@ public abstract class Render {
                 Render var27 = this;
                 GL11.glEnable(GL11.GL_BLEND);
                 RenderEngine var10 = this.renderManager.renderEngine;
-                var10.setClampTexture(true);
-                int var15 = var10.getTexture("/shadow.png");
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var15);
-                var10.setClampTexture(false);
+                RenderEngine.bindTexture(var10.getTexture("%%/shadow.png"));
                 World var11 = this.renderManager.worldObj;
                 GL11.glDepthMask(false);
                 var12 = this.shadowSize;
@@ -103,8 +104,8 @@ public abstract class Render {
                 for(var29 = (int)(var2 - var12); var29 <= (int)(var6 + var12); ++var29) {
                     for(int var13 = (int)(var7 - 2.0F); var13 <= (int)var7; ++var13) {
                         for(int var14 = (int)(var8 - var12); var14 <= (int)(var8 + var12); ++var14) {
-                            var15 = var11.getBlockId(var29, var13 - 1, var14);
-                            if(var15 > 0 && var11.isHalfLit(var29, var13, var14)) {
+                            int var15 = var11.getBlockId(var29, var13 - 1, var14);
+                            if(var15 > 0 && var11.getBlockLightValue(var29, var13, var14) > 3) {
                                 Block var16 = Block.blocksList[var15];
                                 Tessellator var25 = Tessellator.instance;
                                 var34 = (var9 - (var7 - (float)var13) / 2.0F) * 0.5F * var27.renderManager.worldObj.getBrightness(var29, var13, var14);

@@ -49,54 +49,67 @@ public final class BlockFire extends Block {
 		return 0;
 	}
 
-	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		if(this.canNeighborCatchFire(var1, var2, var3, var4) || var1.isBlockNormalCube(var2, var3 - 1, var4) && var5.nextInt(5) != 0) {
-			if(var5.nextInt(4) == 0 && !this.canBlockCatchFire(var1, var2, var3 - 1, var4)) {
-				var1.setBlockWithNotify(var2, var3, var4, 0);
-			} else {
-				this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 300, var5);
-				this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 300, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 100, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 200, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 300, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 300, var5);
+    public final int tickRate() {
+        return 20;
+    }
 
-				for(int var6 = var2 - 1; var6 <= var2 + 1; ++var6) {
-					for(int var7 = var4 - 1; var7 <= var4 + 1; ++var7) {
-						for(int var8 = var3 - 1; var8 <= var3 + 4; ++var8) {
-							if(var6 != var2 || var8 != var3 || var7 != var4) {
-								int var9 = 100;
-								if(var8 > var3 + 1) {
-									var9 = 100 + (var8 - (var3 + 1)) * 100;
-								}
+    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        byte var6 = var1.getBlockMetadata(var2, var3, var4);
+        if(var6 < 15) {
+            var1.setBlockMetadata(var2, var3, var4, var6 + 1);
+            var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
+        }
 
-								int var10000;
-								if(var1.getBlockId(var6, var8, var7) != 0) {
-									var10000 = 0;
-								} else {
-									int var15 = this.getChanceToEncourageFire(var1, var6 + 1, var8, var7, 0);
-									var15 = this.getChanceToEncourageFire(var1, var6 - 1, var8, var7, var15);
-									var15 = this.getChanceToEncourageFire(var1, var6, var8 - 1, var7, var15);
-									var15 = this.getChanceToEncourageFire(var1, var6, var8 + 1, var7, var15);
-									var15 = this.getChanceToEncourageFire(var1, var6, var8, var7 - 1, var15);
-									var15 = this.getChanceToEncourageFire(var1, var6, var8, var7 + 1, var15);
-									var10000 = var15;
-								}
+        if(!this.canNeighborCatchFire(var1, var2, var3, var4)) {
+            if(!var1.isBlockNormalCube(var2, var3 - 1, var4) || var6 > 3) {
+                var1.setBlockWithNotify(var2, var3, var4, 0);
+            }
 
-								int var10 = var10000;
-								if(var10 > 0 && var5.nextInt(var9) <= var10) {
-									var1.setBlockWithNotify(var6, var8, var7, this.blockID);
-								}
-							}
-						}
-					}
-				}
+        } else if(!this.canBlockCatchFire(var1, var2, var3 - 1, var4) && var6 == 15 && var5.nextInt(4) == 0) {
+            var1.setBlockWithNotify(var2, var3, var4, 0);
+        } else {
+            if(var6 % 5 == 0 && var6 > 5) {
+                this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 300, var5);
+                this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 300, var5);
+                this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 100, var5);
+                this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 200, var5);
+                this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 300, var5);
+                this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 300, var5);
 
-			}
-		} else {
-			var1.setBlockWithNotify(var2, var3, var4, 0);
-		}
-	}
+                for(int var16 = var2 - 1; var16 <= var2 + 1; ++var16) {
+                    for(int var7 = var4 - 1; var7 <= var4 + 1; ++var7) {
+                        for(int var8 = var3 - 1; var8 <= var3 + 4; ++var8) {
+                            if(var16 != var2 || var8 != var3 || var7 != var4) {
+                                int var9 = 100;
+                                if(var8 > var3 + 1) {
+                                    var9 = 100 + (var8 - (var3 + 1)) * 100;
+                                }
+
+                                int var10000;
+                                if(var1.getBlockId(var16, var8, var7) != 0) {
+                                    var10000 = 0;
+                                } else {
+                                    int var15 = this.getChanceToEncourageFire(var1, var16 + 1, var8, var7, 0);
+                                    var15 = this.getChanceToEncourageFire(var1, var16 - 1, var8, var7, var15);
+                                    var15 = this.getChanceToEncourageFire(var1, var16, var8 - 1, var7, var15);
+                                    var15 = this.getChanceToEncourageFire(var1, var16, var8 + 1, var7, var15);
+                                    var15 = this.getChanceToEncourageFire(var1, var16, var8, var7 - 1, var15);
+                                    var15 = this.getChanceToEncourageFire(var1, var16, var8, var7 + 1, var15);
+                                    var10000 = var15;
+                                }
+
+                                int var10 = var10000;
+                                if(var10 > 0 && var5.nextInt(var9) <= var10) {
+                                    var1.setBlockWithNotify(var16, var8, var7, this.blockID);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 
 	private void tryToCatchBlockOnFire(World var1, int var2, int var3, int var4, int var5, EaglercraftRandom var6) {
 		int var7 = this.abilityToCatchFire[var1.getBlockId(var2, var3, var4)];
@@ -145,6 +158,8 @@ public final class BlockFire extends Block {
     public final void onBlockAdded(World var1, int var2, int var3, int var4) {
         if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !this.canNeighborCatchFire(var1, var2, var3, var4)) {
             var1.setBlockWithNotify(var2, var3, var4, 0);
+        } else {
+            var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
         }
     }
 
@@ -196,7 +211,7 @@ public final class BlockFire extends Block {
 					var7 = (float)var2 + var5.nextFloat() * 0.1F;
 					var8 = (float)var3 + var5.nextFloat();
 					var9 = (float)var4 + var5.nextFloat();
-					var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+					var1.spawnParticle("largesmoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
 				}
 			}
 
@@ -205,7 +220,7 @@ public final class BlockFire extends Block {
 					var7 = (float)(var2 + 1) - var5.nextFloat() * 0.1F;
 					var8 = (float)var3 + var5.nextFloat();
 					var9 = (float)var4 + var5.nextFloat();
-					var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+					var1.spawnParticle("largesmoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
 				}
 			}
 
@@ -214,7 +229,7 @@ public final class BlockFire extends Block {
 					var7 = (float)var2 + var5.nextFloat();
 					var8 = (float)var3 + var5.nextFloat();
 					var9 = (float)var4 + var5.nextFloat() * 0.1F;
-					var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+					var1.spawnParticle("largesmoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
 				}
 			}
 
@@ -223,7 +238,7 @@ public final class BlockFire extends Block {
 					var7 = (float)var2 + var5.nextFloat();
 					var8 = (float)var3 + var5.nextFloat();
 					var9 = (float)(var4 + 1) - var5.nextFloat() * 0.1F;
-					var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+					var1.spawnParticle("largesmoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
 				}
 			}
 
@@ -232,16 +247,16 @@ public final class BlockFire extends Block {
 					var7 = (float)var2 + var5.nextFloat();
 					var8 = (float)(var3 + 1) - var5.nextFloat() * 0.1F;
 					var9 = (float)var4 + var5.nextFloat();
-					var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+					var1.spawnParticle("largesmoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
 				}
 			}
 
 		} else {
 			for(var6 = 0; var6 < 3; ++var6) {
 				var7 = (float)var2 + var5.nextFloat();
-				var8 = (float)var3 + var5.nextFloat();
+                var8 = (float)var3 + var5.nextFloat() * 0.5F + 0.5F;
 				var9 = (float)var4 + var5.nextFloat();
-				var1.spawnParticle("smoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
+				var1.spawnParticle("largesmoke", var7, var8, var9, 0.0F, 0.0F, 0.0F);
 			}
 
 		}

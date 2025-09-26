@@ -1,4 +1,4 @@
-package net.minecraft.client;
+package net.minecraft.client.render;
 
 import java.io.ByteArrayInputStream;
 
@@ -10,19 +10,19 @@ import net.ellerton.japng.error.PngException;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
-final class ThreadDownloadSkin extends Thread {
-    private Minecraft mc;
+final class ThreadDownloadImage extends Thread {
+    private String username;
+    private ImageBufferDownload buffer;
+    private ThreadDownloadImageData imageData;
 
-    ThreadDownloadSkin(Minecraft mc) {
-        this.mc = mc;
+    ThreadDownloadImage(ThreadDownloadImageData var1, String var2, ImageBufferDownload var3) {
+        this.imageData = var1;
+        this.username = var2;
+        this.buffer = var3;
     }
 
     public final void run() {
-        if (this.mc.session == null) {
-            return;
-        }
-
-        byte[] data = EagRuntime.downloadRemoteURL("https://playerdb.co/api/player/minecraft/" + this.mc.session.username);
+        byte[] data = EagRuntime.downloadSkinDbURL(this.username);
         if (data == null) {
             return;
         }
@@ -39,7 +39,7 @@ final class ThreadDownloadSkin extends Thread {
         } catch (InterruptedException e1) {
         }
 
-        data = EagRuntime.downloadRemoteURL(textureUrl);
+        data = EagRuntime.downloadSkinURL(textureUrl);
         ByteArrayInputStream is = new ByteArrayInputStream(data);
         Argb8888Bitmap png = null;
         try {
@@ -62,5 +62,10 @@ final class ThreadDownloadSkin extends Thread {
         }
 
         ImageData tex = new ImageData(64, 32, skin, true).getSubImage(0, 0, 64, 32);
+        if(this.buffer == null) {
+            this.imageData.image = tex;
+        } else {
+            this.imageData.image = this.buffer.parseUserSkin(tex);
+        }
     }
 }

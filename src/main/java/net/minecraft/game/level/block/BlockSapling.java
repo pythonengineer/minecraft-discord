@@ -11,7 +11,7 @@ public final class BlockSapling extends BlockFlower {
 
     public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
         super.updateTick(var1, var2, var3, var4, var5);
-        if(var5.nextInt(5) == 0) {
+        if(var1.getBlockLightValue(var2, var3 + 1, var4) >= 9 && var5.nextInt(5) == 0) {
             var1.setTileNoUpdate(var2, var3, var4, 0);
             if(!var1.growTrees(var2, var3, var4)) {
                 var1.setTileNoUpdate(var2, var3, var4, this.blockID);

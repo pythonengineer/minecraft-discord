@@ -227,7 +227,7 @@ public final class Minecraft implements Runnable {
 
 			if(this.serverIp != null && this.session != null) {
 				World var43 = new World();
-				var43.generate2(8, 8, 8, new byte[512]);
+				var43.generate(8, 8, 8, new byte[512]);
 				this.setLevel(var43);
 			} else {
                 this.displayGuiScreen(new GuiMainMenu());
@@ -236,7 +236,6 @@ public final class Minecraft implements Runnable {
 			this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
 
 			this.ingameGUI = new GuiIngame(this);
-			(new ThreadDownloadSkin(this)).start();
 		} catch (Exception var36) {
 			var36.printStackTrace();
             EagRuntime.showPopup("Failed to start Minecraft");
@@ -248,6 +247,10 @@ public final class Minecraft implements Runnable {
 
 		try {
 			while(this.running) {
+                if(this.theWorld != null) {
+                    this.theWorld.updateLighting();
+                }
+
 				if(Display.isCloseRequested()) {
 					this.running = false;
 				}
@@ -275,7 +278,6 @@ public final class Minecraft implements Runnable {
 					}
 
                     GL11.optimize();
-                    this.sndManager.setListener(this.thePlayer, this.timer.renderPartialTicks);
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
 					this.playerController.setPartialTime(this.timer.renderPartialTicks);
                     this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
@@ -628,8 +630,10 @@ public final class Minecraft implements Runnable {
             this.playerController.onUpdate();
         }
 
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png"));
-        this.renderEngine.updateDynamicTextures();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png")); 
+		if(!this.isGamePaused) {
+            this.renderEngine.updateDynamicTextures();
+        }
 
 		if(this.currentScreen == null && this.thePlayer != null && this.thePlayer.health <= 0) {
 			this.displayGuiScreen((GuiScreen)null);
@@ -786,7 +790,7 @@ public final class Minecraft implements Runnable {
                             }
 
                             if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
-                                this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1));
+                                this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1), false);
                             }
                         }
 
@@ -888,6 +892,8 @@ public final class Minecraft implements Runnable {
 	}
 
     public final void generateLevel(int var1, int var2, int var3, int var4) {
+        this.setLevel((World)null);
+        System.gc();
         String var5 = this.session != null ? this.session.username : "anonymous";
         LevelGenerator var6 = new LevelGenerator(this.loadingScreen);
         var6.islandGen = var3 == 1;
@@ -911,44 +917,48 @@ public final class Minecraft implements Runnable {
     }
 
     public final void setLevel(World var1) {
+        if(this.theWorld != null) {
+            this.theWorld.setLevel();
+        }
+
 		this.theWorld = var1;
 		if(var1 != null) {
 			var1.load();
 			this.playerController.onWorldChange(var1);
 			this.thePlayer = (EntityPlayerSP)var1.findSubclassOf(EntityPlayerSP.class);
             var1.playerEntity = this.thePlayer;
-		}
 
-		if(this.thePlayer == null) {
-            this.thePlayer = new EntityPlayerSP(this, var1);
-			this.thePlayer.preparePlayerToSpawn();
-            this.playerController.flipPlayer(this.thePlayer);
-			if(var1 != null) {
-                var1.spawnEntityInWorld(this.thePlayer);
-				var1.playerEntity = this.thePlayer;
-			}
-		}
+            if(this.thePlayer == null) {
+                this.thePlayer = new EntityPlayerSP(this, var1, this.session);
+                this.thePlayer.preparePlayerToSpawn();
+                this.playerController.flipPlayer(this.thePlayer);
+                if(var1 != null) {
+                    var1.spawnEntityInWorld(this.thePlayer);
+                    var1.playerEntity = this.thePlayer;
+                }
+            }
 
-		if(this.thePlayer != null) {
-            this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
-            this.playerController.onRespawn(this.thePlayer);
-		}
+            if(this.thePlayer != null) {
+                this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
+                this.playerController.onRespawn(this.thePlayer);
+            }
 
-		if(this.renderGlobal != null) {
-            this.renderGlobal.changeWorld(var1);
-		}
+            if(this.renderGlobal != null) {
+                this.renderGlobal.changeWorld(var1);
+            }
 
-		if(this.effectRenderer != null) {
-            this.effectRenderer.clearEffects(var1);
-		}
+            if(this.effectRenderer != null) {
+                this.effectRenderer.clearEffects(var1);
+            }
 
-        this.textureWaterFX.textureId = 0;
-        this.textureLavaFX.textureId = 0;
-        int var2 = this.renderEngine.getTexture("/water.png");
-        if(var1.defaultFluid == Block.waterMoving.blockID) {
-            this.textureWaterFX.textureId = var2;
-        } else {
-            this.textureLavaFX.textureId = var2;
+            this.textureWaterFX.textureId = 0;
+            this.textureLavaFX.textureId = 0;
+            int var2 = this.renderEngine.getTexture("/water.png");
+            if(var1.defaultFluid == Block.waterMoving.blockID) {
+                this.textureWaterFX.textureId = var2;
+            } else {
+                this.textureLavaFX.textureId = var2;
+            }
         }
 
 		System.gc();

@@ -77,13 +77,13 @@ public final class GuiMainMenu extends GuiScreen {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)(this.width / 2 + 90), 70.0F, 0.0F);
 		GL11.glRotatef(-20.0F, 0.0F, 0.0F, 1.0F);
-		float var5 = 1.8F - MathHelper.abs(MathHelper.sin((float)(EagRuntime.currentTimeMillis() % 1000L) / 1000.0F * (float)Math.PI * 2.0F) * 0.1F);
-		var5 = var5 * 100.0F / (float)(this.fontRenderer.getStringWidth(this.currentSplash) + 32);
-		GL11.glScalef(var5, var5, var5);
-		drawCenteredString(this.fontRenderer, this.currentSplash, 0, -8, 16776960);
-		GL11.glPopMatrix();
-		String var6 = "Copyright Mojang Specifications. Do not distribute.";
-		drawString(this.fontRenderer, var6, this.width - this.fontRenderer.getStringWidth(var6) - 2, this.height - 10, 16777215);
+        float var15 = 1.8F - MathHelper.abs(MathHelper.sin((float)(EagRuntime.currentTimeMillis() % 1000L) / 1000.0F * (float)Math.PI * 2.0F) * 0.1F);
+        var15 = var15 * 100.0F / (float)(this.fontRenderer.getStringWidth(this.currentSplash) + 32);
+        GL11.glScalef(var15, var15, var15);
+        drawCenteredString(this.fontRenderer, this.currentSplash, 0, -8, 16776960);
+        GL11.glPopMatrix();
+        String var16 = "Copyright Mojang Specifications. Do not distribute.";
+        drawString(this.fontRenderer, var16, this.width - this.fontRenderer.getStringWidth(var16) - 2, this.height - 10, 16777215);
 		super.drawScreen(var1, var2, var3);
 	}
 }

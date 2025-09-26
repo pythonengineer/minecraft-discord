@@ -15,10 +15,11 @@ public class EntityLiving extends Entity {
 	public float prevRenderYawOffset = 0.0F;
 	private float rotationYawHead;
 	private float prevRotationYawHead;
-	public String texture = "/char.png";
+    protected String texture = "/char.png";
 	private int scoreValue = 0;
 	public int health;
 	public int prevHealth;
+    private int livingSoundTime;
 	public int hurtTime;
 	public int maxHurtTime;
 	public float attackedAtYaw = 0.0F;
@@ -29,7 +30,7 @@ public class EntityLiving extends Entity {
 	public float prevLimbYaw;
 	public float limbYaw;
 	public float limbSwing;
-	private int entityAge;
+    protected int entityAge;
 	protected float moveStrafing;
 	protected float moveForward;
 	private float randomYawVelocity;
@@ -53,6 +54,10 @@ public class EntityLiving extends Entity {
 		this.stepHeight = 0.5F;
 	}
 
+    public final String getTexture() {
+        return this.texture;
+    }
+
 	public final boolean canBeCollidedWith() {
 		return !this.isDead;
 	}
@@ -67,6 +72,14 @@ public class EntityLiving extends Entity {
 
 	public void onEntityUpdate() {
 		super.onEntityUpdate();
+        if(this.rand.nextInt(1000) < this.livingSoundTime++) {
+            this.livingSoundTime = -80;
+            String var1 = this.getLivingSound();
+            if(var1 != null) {
+                this.worldObj.playSoundAtEntity(this, var1, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+            }
+        }
+
 		float var2;
 		float var3;
 		float var4;
@@ -227,7 +240,6 @@ public class EntityLiving extends Entity {
 					this.hurtTime = this.maxHurtTime = 10;
 				}
 
-				this.worldObj.playSoundAtEntity(this, "random.hurt", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 				this.attackedAtYaw = 0.0F;
 				if(var1 != null) {
 					float var6 = var1.posX - this.posX;
@@ -247,14 +259,29 @@ public class EntityLiving extends Entity {
 					this.attackedAtYaw = (float)((int)(Math.random() * 2.0D) * 180);
 				}
 
-				if(this.health <= 0) {
-					this.onDeath(var1);
-				}
+                if(this.health <= 0) {
+                    this.worldObj.playSoundAtEntity(this, this.getDeathSound(), 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                    this.onDeath(var1);
+                } else {
+                    this.worldObj.playSoundAtEntity(this, this.getHurtSound(), 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+                }
 
 				return true;
 			}
 		}
 	}
+
+    protected String getLivingSound() {
+        return null;
+    }
+
+    protected String getHurtSound() {
+        return "random.hurt";
+    }
+
+    protected String getDeathSound() {
+        return "random.hurt";
+    }
 
 	public void onDeath(Entity var1) {
 		int var3 = this.rand.nextInt(4);
@@ -289,7 +316,7 @@ public class EntityLiving extends Entity {
 			var3 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY - 0.2F - this.yOffset), (int)this.posZ);
 			if(var3 > 0) {
 				StepSound var4 = Block.blocksList[var3].stepSound;
-				this.worldObj.playSoundAtEntity(this, "step." + var4.sound, var4.soundVolume * 0.5F, var4.soundPitch * (12.0F / 16.0F));
+				this.worldObj.playSoundAtEntity(this, var4.stepSoundDir2(), var4.soundVolume * 0.5F, var4.soundPitch * (12.0F / 16.0F));
 			}
 		}
 
@@ -442,6 +469,7 @@ public class EntityLiving extends Entity {
 	}
 
 	public boolean getCanSpawnHere(float var1, float var2, float var3) {
-		return true;
-	}
+        this.setPosition(var1, var2 + this.height / 2.0F, var3);
+        return this.worldObj.checkIfAABBIsClear1(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
+    }
 }

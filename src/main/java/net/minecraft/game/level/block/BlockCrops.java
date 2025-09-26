@@ -20,51 +20,53 @@ public final class BlockCrops extends BlockFlower {
 
     public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
         super.updateTick(var1, var2, var3, var4, var5);
-        byte var6 = var1.getBlockMetadata(var2, var3, var4);
-        if(var6 < 7) {
-            int var11 = var4;
-            int var10 = var3;
-            int var9 = var2;
-            World var8 = var1;
-            float var12 = 1.0F;
-            int var13 = var1.getBlockId(var2, var3, var4 - 1);
-            int var14 = var1.getBlockId(var2, var3, var4 + 1);
-            int var15 = var1.getBlockId(var2 - 1, var3, var4);
-            int var16 = var1.getBlockId(var2 + 1, var3, var4);
-            int var17 = var1.getBlockId(var2 - 1, var3, var4 - 1);
-            int var18 = var1.getBlockId(var2 + 1, var3, var4 - 1);
-            int var19 = var1.getBlockId(var2 + 1, var3, var4 + 1);
-            int var20 = var1.getBlockId(var2 - 1, var3, var4 + 1);
-            boolean var23 = var15 == this.blockID || var16 == this.blockID;
-            boolean var22 = var13 == this.blockID || var14 == this.blockID;
-            boolean var7 = var17 == this.blockID || var18 == this.blockID || var19 == this.blockID || var20 == this.blockID;
-
-            for(var14 = var2 - 1; var14 <= var9 + 1; ++var14) {
-                for(var16 = var11 - 1; var16 <= var11 + 1; ++var16) {
-                    var17 = var8.getBlockId(var14, var10 - 1, var16);
-                    float var24 = 0.0F;
-                    if(var17 == Block.tilledField.blockID) {
-                        var24 = 1.0F;
-                        if(var8.getBlockMetadata(var14, var10 - 1, var16) > 0) {
-                            var24 = 3.0F;
+        if(var1.getBlockLightValue(var2, var3 + 1, var4) >= 9) {
+            byte var6 = var1.getBlockMetadata(var2, var3, var4);
+            if(var6 < 7) {
+                int var11 = var4;
+                int var10 = var3;
+                int var9 = var2;
+                World var8 = var1;
+                float var12 = 1.0F;
+                int var13 = var1.getBlockId(var2, var3, var4 - 1);
+                int var14 = var1.getBlockId(var2, var3, var4 + 1);
+                int var15 = var1.getBlockId(var2 - 1, var3, var4);
+                int var16 = var1.getBlockId(var2 + 1, var3, var4);
+                int var17 = var1.getBlockId(var2 - 1, var3, var4 - 1);
+                int var18 = var1.getBlockId(var2 + 1, var3, var4 - 1);
+                int var19 = var1.getBlockId(var2 + 1, var3, var4 + 1);
+                int var20 = var1.getBlockId(var2 - 1, var3, var4 + 1);
+                boolean var23 = var15 == this.blockID || var16 == this.blockID;
+                boolean var22 = var13 == this.blockID || var14 == this.blockID;
+                boolean var7 = var17 == this.blockID || var18 == this.blockID || var19 == this.blockID || var20 == this.blockID;
+    
+                for(var14 = var2 - 1; var14 <= var9 + 1; ++var14) {
+                    for(var16 = var11 - 1; var16 <= var11 + 1; ++var16) {
+                        var17 = var8.getBlockId(var14, var10 - 1, var16);
+                        float var24 = 0.0F;
+                        if(var17 == Block.tilledField.blockID) {
+                            var24 = 1.0F;
+                            if(var8.getBlockMetadata(var14, var10 - 1, var16) > 0) {
+                                var24 = 3.0F;
+                            }
                         }
+    
+                        if(var14 != var9 || var16 != var11) {
+                            var24 /= 4.0F;
+                        }
+    
+                        var12 += var24;
                     }
-
-                    if(var14 != var9 || var16 != var11) {
-                        var24 /= 4.0F;
-                    }
-
-                    var12 += var24;
                 }
-            }
-
-            if(var7 || var23 && var22) {
-                var12 /= 2.0F;
-            }
-
-            if(var5.nextInt((int)(100.0F / var12)) == 0) {
-                int var21 = var6 + 1;
-                var1.setBlockMetadata(var2, var3, var4, var21);
+    
+                if(var7 || var23 && var22) {
+                    var12 /= 2.0F;
+                }
+    
+                if(var5.nextInt((int)(100.0F / var12)) == 0) {
+                    int var21 = var6 + 1;
+                    var1.setBlockMetadata(var2, var3, var4, var21);
+                }
             }
         }
 
@@ -86,7 +88,7 @@ public final class BlockCrops extends BlockFlower {
         super.onBlockDestroyedByPlayer(var1, var2, var3, var4, var5);
 
         for(int var6 = 0; var6 < 3; ++var6) {
-            if(var1.random.nextInt(24) <= var5) {
+            if(var1.random.nextInt(18) <= var5) {
                 float var7 = var1.random.nextFloat() * 0.7F + 0.15F;
                 float var8 = var1.random.nextFloat() * 0.7F + 0.15F;
                 float var9 = var1.random.nextFloat() * 0.7F + 0.15F;

@@ -30,14 +30,14 @@ public class PlayerController {
         boolean var7 = var4.setBlockWithNotify(var1, var2, var3, 0);
         if(var5 != null && var7) {
             SoundManager var10000 = this.mc.sndManager;
-            String var10001 = "step." + var5.stepSound.sound;
+            var5.stepSound.stepSoundDir();
             float var10002 = (float)var1 + 0.5F;
             float var10003 = (float)var2 + 0.5F;
             float var10004 = (float)var3 + 0.5F;
             StepSound var8 = var5.stepSound;
             float var10005 = (var8.soundVolume + 1.0F) / 2.0F;
             var8 = var5.stepSound;
-            var10000.playSound(var10001, var10002, var10003, var10004, var10005, var8.soundPitch * 0.8F);
+            float var9 = var8.soundPitch * 0.8F;
             var5.onBlockDestroyedByPlayer(var4, var1, var2, var3, var6);
         }
 

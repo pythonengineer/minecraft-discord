@@ -263,8 +263,4 @@ public final class AxisAlignedBB {
     private boolean isVecInXY(Vec3D var1) {
         return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.yCoord >= this.minY && var1.yCoord <= this.maxY;
     }
-
-    public final Vec3D getAverageEdgeLength() {
-        return new Vec3D((this.maxX + this.minX) / 2.0F, (this.maxY + this.minY) / 2.0F, (this.maxZ + this.minZ) / 2.0F);
-    }
 }

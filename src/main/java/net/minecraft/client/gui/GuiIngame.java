@@ -130,7 +130,7 @@ public final class GuiIngame extends Gui {
 		GL11.glPopMatrix();
 
         for(var5 = 0; var5 < 9; ++var5) {
-            var12 = scaledWidth / 2 - 90 + var5 * 20 + 2;
+            var12 = (scaledWidth / 2 - 90 + var5 * 20 + 2);
             var7 = scaledHeight - 16 - 3;
             ItemStack var13 = this.mc.thePlayer.inventory.mainInventory[var5];
             if(var13 != null) {
@@ -158,9 +158,10 @@ public final class GuiIngame extends Gui {
 
         onEndHotbarDraw();
 
-        GL11.glEnable(GL11.GL_BLEND);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR);
         this.drawTexturedModalRect(i - 7, scaledHeight / 2 - 7, 0, 0, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
 

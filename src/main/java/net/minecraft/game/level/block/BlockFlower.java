@@ -30,12 +30,16 @@ public class BlockFlower extends Block {
         this.checkFlowerChange(var1, var2, var3, var4);
     }
 
-    protected void checkFlowerChange(World var1, int var2, int var3, int var4) {
-        int var5 = var1.getBlockId(var2, var3 - 1, var4);
-        if(!var1.isHalfLit(var2, var3, var4) || !this.canThisPlantGrowOnThisBlockID(var5)) {
+    private void checkFlowerChange(World var1, int var2, int var3, int var4) {
+        if(!this.canBlockStay(var1, var2, var3, var4)) {
+            this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
             var1.setBlockWithNotify(var2, var3, var4, 0);
         }
 
+    }
+
+    public boolean canBlockStay(World var1, int var2, int var3, int var4) {
+        return (var1.getBlockLightValue(var2, var3, var4) >= 8 || var1.getBlockLightValue(var2, var3, var4) >= 4 && var1.canBlockSeeTheSky(var2, var3, var4)) && this.canThisPlantGrowOnThisBlockID(var1.getBlockId(var2, var3 - 1, var4));
     }
 
     public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {

@@ -13,6 +13,15 @@ public class EntityMob extends EntityCreature {
         this.health = 20;
     }
 
+    public final void onLivingUpdate() {
+        float var1 = this.getBrightness(1.0F);
+        if(var1 > 0.5F) {
+            this.entityAge += 2;
+        }
+
+        super.onLivingUpdate();
+    }
+
     public final void onEntityUpdate() {
         super.onEntityUpdate();
         if(this.worldObj.difficultySetting == 0) {
@@ -48,5 +57,9 @@ public class EntityMob extends EntityCreature {
 
     protected String getEntityString() {
         return "Monster";
+    }
+
+    public final boolean getCanSpawnHere(float var1, float var2, float var3) {
+        return this.worldObj.getBlockLightValue((int)var1, (int)var2, (int)var3) <= 8 && super.getCanSpawnHere(var1, var2, var3);
     }
 }

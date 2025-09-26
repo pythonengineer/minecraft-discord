@@ -133,6 +133,14 @@ public class ImageData {
         }
     }
 
+    public void drawImage(ImageData input, int x, int y, int width, int height) {
+        this.drawLayer(input, x, y, x + width, y + height, 0, 0, input.getWidth(), input.getHeight());
+    }
+
+    public void drawImage(ImageData input, int x, int y) {
+        this.drawImage(input, x, y, input.getWidth(), input.getHeight());
+    }
+
     public void drawLayer(ImageData input, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2) {
         if (sx2 - sx1 != dx2 - dx1) {
             throw new IllegalArgumentException(

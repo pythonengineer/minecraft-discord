@@ -1,5 +1,7 @@
 package net.minecraft.game.level;
 
+import net.minecraft.game.entity.Entity;
+
 public interface IWorldAccess {
     void markBlockAndNeighborsNeedsUpdate(int var1, int var2, int var3);
 
@@ -12,4 +14,10 @@ public interface IWorldAccess {
     void spawnParticle(String var1, float var2, float var3, float var4, float var5, float var6, float var7);
 
     void playMusic(String var1, float var2, float var3, float var4, float var5);
+
+    void obtainEntitySkin(Entity var1);
+
+    void releaseEntitySkin(Entity var1);
+
+    void updateAllRenderers();
 }

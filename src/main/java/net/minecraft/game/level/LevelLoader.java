@@ -65,11 +65,21 @@ public abstract class LevelLoader {
 		var9.cloudColor = var4.getInteger("CloudColor");
 		var9.skyColor = var4.getInteger("SkyColor");
 		var9.fogColor = var4.getInteger("FogColor");
-		var9.skyBrightness = (float)var4.getByte("SkyBrightness") / 100.0F;
+        var9.skyBrightness = var4.getByte("SkyBrightness");
+        if(var9.skyBrightness < 0) {
+            var9.skyBrightness = 0;
+        }
+
+        if(var9.skyBrightness > 15) {
+            var9.skyBrightness = var9.skyBrightness * 15 / 100;
+        }
+
 		var9.cloudHeight = var4.getShort("CloudHeight");
 		var9.groundLevel = var4.getShort("SurroundingGroundHeight");
 		var9.waterLevel = var4.getShort("SurroundingWaterHeight");
 		var9.defaultFluid = var4.getByte("SurroundingWaterType");
+        var9.worldTime = var4.getShort("TimeOfDay");
+        var9.skylightSubtracted = var9.getSkyBrightness();
 		var9.generate(var6, var8, var7, var3.getByteArray("Blocks"), var3.getByteArray("Data"));
 		if(this.guiLoading != null) {
 			this.guiLoading.displayLoadingString("Preparing entities..");
@@ -135,12 +145,13 @@ public abstract class LevelLoader {
 		var3.setInteger("CloudColor", var1.cloudColor);
 		var3.setInteger("SkyColor", var1.skyColor);
 		var3.setInteger("FogColor", var1.fogColor);
-		var3.setByte("SkyBrightness", (byte)((int)(var1.skyBrightness * 100.0F)));
+        var3.setByte("SkyBrightness", (byte)var1.skyBrightness);
 		var3.setShort("CloudHeight", (short)var1.cloudHeight);
 		var3.setShort("SurroundingGroundHeight", (short)var1.groundLevel);
 		var3.setShort("SurroundingWaterHeight", (short)var1.waterLevel);
 		var3.setByte("SurroundingGroundType", (byte)Block.grass.blockID);
 		var3.setByte("SurroundingWaterType", (byte)var1.defaultFluid);
+        var3.setShort("TimeOfDay", (short)var1.worldTime);
 		NBTTagCompound var4 = new NBTTagCompound();
 		var4.setShort("Width", (short)var1.width);
 		var4.setShort("Length", (short)var1.length);
@@ -161,7 +172,7 @@ public abstract class LevelLoader {
 		}
 
 		NBTTagList var6 = new NBTTagList();
-		Iterator var7 = var1.entityMap.all.iterator();
+		Iterator var7 = var1.entityMap.entities.iterator();
 
 		while(var7.hasNext()) {
 			Entity var8 = (Entity)var7.next();

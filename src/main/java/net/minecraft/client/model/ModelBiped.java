@@ -17,40 +17,43 @@ public class ModelBiped extends ModelBase {
 
     public ModelBiped(float var1) {
         this.bipedHead = new ModelRenderer(0, 0);
-        this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
+        this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1);
         this.bipedHeadWear = new ModelRenderer(32, 0);
-        this.bipedHeadWear.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F);
+        this.bipedHeadWear.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1 + 0.5F);
         this.bipedBody = new ModelRenderer(16, 16);
-        this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F);
+        this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, var1);
         this.bipedRightArm = new ModelRenderer(40, 16);
-        this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, var1);
         this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
         this.bipedLeftArm = new ModelRenderer(40, 16);
         this.bipedLeftArm.mirror = true;
-        this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, var1);
         this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
         this.bipedRightLeg = new ModelRenderer(0, 16);
-        this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, var1);
         this.bipedRightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
         this.bipedLeftLeg = new ModelRenderer(0, 16);
         this.bipedLeftLeg.mirror = true;
-        this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
+        this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, var1);
         this.bipedLeftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
     }
 
     public final void render(float var1, float var2, float var3, float var4, float var5, float var6) {
-        this.setRotationAngles(var1, var2, 0.0F, var4, var5, 1.0F);
+        this.setRotationAngles(var1, var2, var3, var4, var5, 1.0F);
         this.bipedHead.render(1.0F);
         this.bipedBody.render(1.0F);
         this.bipedRightArm.render(1.0F);
         this.bipedLeftArm.render(1.0F);
         this.bipedRightLeg.render(1.0F);
         this.bipedLeftLeg.render(1.0F);
+        this.bipedHeadWear.render(1.0F);
     }
 
     public void setRotationAngles(float var1, float var2, float var3, float var4, float var5, float var6) {
         this.bipedHead.rotateAngleY = var4 / (180.0F / (float)Math.PI);
         this.bipedHead.rotateAngleX = var5 / (180.0F / (float)Math.PI);
+        this.bipedHeadWear.rotateAngleY = this.bipedHead.rotateAngleY;
+        this.bipedHeadWear.rotateAngleX = this.bipedHead.rotateAngleX;
         this.bipedRightArm.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 2.0F * var2;
         this.bipedRightArm.rotateAngleZ = (MathHelper.cos(var1 * 0.2312F) + 1.0F) * var2;
         this.bipedLeftArm.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 2.0F * var2;

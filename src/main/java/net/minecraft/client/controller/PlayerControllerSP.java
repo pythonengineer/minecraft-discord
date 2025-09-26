@@ -38,10 +38,6 @@ public final class PlayerControllerSP extends PlayerController {
                         var7 = Block.cobblestoneMossy.blockID;
                     }
 
-                    if(var5 == var3 && var6 == var8 && (var4 == var2 - 3 + 1 || var4 == var2 + 3 - 1)) {
-                        var7 = Block.torch.blockID;
-                    }
-
                     if(var6 == var8 - 3 && var4 == var2 && var5 >= var3 - 1 && var5 <= var3) {
                         var7 = 0;
                     }
@@ -51,7 +47,8 @@ public final class PlayerControllerSP extends PlayerController {
             }
         }
 
-        this.mc.theWorld.updateBlockLight(var2 - 5, var3 - 5, var8 - 5, var2 + 5, var3 + 5, var8 + 5);
+        this.mc.theWorld.setBlockWithNotify(var2 - 3 + 1, var3, var8, Block.torch.blockID);
+        this.mc.theWorld.setBlockWithNotify(var2 + 3 - 1, var3, var8, Block.torch.blockID);
 	}
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {
@@ -99,14 +96,14 @@ public final class PlayerControllerSP extends PlayerController {
                     this.curBlockDamage += var6.blockStrength(this.mc.thePlayer);
                     if(this.blockDestroySoundCounter % 4.0F == 0.0F && var6 != null) {
                         SoundManager var10000 = this.mc.sndManager;
-                        String var10001 = "step." + var6.stepSound.sound;
+                        var6.stepSound.stepSoundDir2();
 						float var10002 = (float)var1 + 0.5F;
 						float var10003 = (float)var2 + 0.5F;
 						float var10004 = (float)var3 + 0.5F;
 						StepSound var5 = var6.stepSound;
 						float var10005 = (var5.soundVolume + 1.0F) / 8.0F;
 						var5 = var6.stepSound;
-						var10000.playSound(var10001, var10002, var10003, var10004, var10005, var5.soundPitch * 0.5F);
+                        float var7 = var5.soundPitch * 0.5F;
 					}
 
                     ++this.blockDestroySoundCounter;
@@ -146,12 +143,6 @@ public final class PlayerControllerSP extends PlayerController {
 	public final void onWorldChange(World var1) {
 		super.onWorldChange(var1);
 		this.mobSpawner = new MobSpawner(var1);
-		int var2 = var1.width * var1.length * var1.height / 64 / 64 / 64;
-
-		for(int var3 = 0; var3 < var2; ++var3) {
-			this.mobSpawner.performSpawning(var2, var1.playerEntity, null);
-		}
-
 	}
 
 	public final void onUpdate() {

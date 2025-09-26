@@ -21,4 +21,16 @@ public class EntityPig extends EntityAnimal {
 	protected final String getEntityString() {
 		return "Pig";
 	}
+
+    protected final String getLivingSound() {
+        return "mob.pig";
+    }
+
+    protected final String getHurtSound() {
+        return "mob.pig";
+    }
+
+    protected final String getDeathSound() {
+        return "mob.pigdeath";
+    }
 }

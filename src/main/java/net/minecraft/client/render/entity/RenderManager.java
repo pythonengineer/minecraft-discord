@@ -8,6 +8,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPig;
 import net.minecraft.client.model.ModelSheep;
+import net.minecraft.client.model.ModelSheepFur;
 import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.render.RenderEngine;
@@ -38,17 +39,17 @@ public final class RenderManager {
     private RenderManager() {
         this.entityRenderMap.put(EntitySpider.class, new RenderSpider());
         this.entityRenderMap.put(EntityPig.class, new RenderLiving(new ModelPig(), 0.7F));
-        this.entityRenderMap.put(EntitySheep.class, new RenderLiving(new ModelSheep(), 0.7F));
+        this.entityRenderMap.put(EntitySheep.class, new RenderSheep(new ModelSheep(), new ModelSheepFur(), 0.7F));
         this.entityRenderMap.put(EntityCreeper.class, new RenderCreeper());
         this.entityRenderMap.put(EntitySkeleton.class, new RenderLiving(new ModelSkeleton(), 0.5F));
         this.entityRenderMap.put(EntityZombie.class, new RenderLiving(new ModelZombie(), 0.5F));
-        this.entityRenderMap.put(EntityPlayer.class, new RenderLiving(new ModelBiped(), 0.5F));
+        this.entityRenderMap.put(EntityPlayer.class, new RenderPlayer());
         this.entityRenderMap.put(EntityGiantZombie.class, new RenderGiantZombie(new ModelZombie(), 0.5F, 6.0F));
         this.entityRenderMap.put(EntityLiving.class, new RenderLiving(new ModelBiped(), 0.5F));
-		this.entityRenderMap.put(Entity.class, new RenderEntity());
-		this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
-		this.entityRenderMap.put(EntityItem.class, new RenderItem());
-		this.entityRenderMap.put(EntityTNTPrimed.class, new RenderTNTPrimed());
+        this.entityRenderMap.put(Entity.class, new RenderEntity());
+        this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
+        this.entityRenderMap.put(EntityItem.class, new RenderItem());
+        this.entityRenderMap.put(EntityTNTPrimed.class, new RenderTNTPrimed());
 		Iterator var1 = this.entityRenderMap.values().iterator();
 
 		while(var1.hasNext()) {

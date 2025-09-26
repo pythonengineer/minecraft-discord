@@ -1,6 +1,8 @@
 package net.minecraft.client.gui.container;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.client.RenderHelper;
+import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -47,7 +49,7 @@ public final class GuiInventory extends GuiContainer {
         for(int var1 = 0; var1 < this.inventoryCrafting.getSizeInventory(); ++var1) {
             ItemStack var2 = this.inventoryCrafting.getStackInSlot(var1);
             if(var2 != null) {
-                this.mc.thePlayer.dropPlayerItemWithRandomChoice(var2);
+                this.mc.thePlayer.dropPlayerItem(var2);
             }
         }
 
@@ -86,7 +88,7 @@ public final class GuiInventory extends GuiContainer {
 	protected final void drawGuiContainerBackgroundLayer() {
 		int var1 = this.mc.renderEngine.getTexture("/gui/inventory.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, var1);
+        RenderEngine.bindTexture(var1);
 		var1 = (this.width - this.xSize) / 2;
 		int var2 = (this.height - this.ySize) / 2;
 		this.drawTexturedModalRect(var1, var2, 0, 0, this.xSize, this.ySize);
@@ -94,22 +96,26 @@ public final class GuiInventory extends GuiContainer {
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
         GL11.glPushMatrix();
         GL11.glTranslatef((float)(var1 + 51), (float)(var2 + 75), 50.0F);
-        GL11.glScalef(30.0F, 30.0F, 30.0F);
+        GL11.glScalef(-30.0F, 30.0F, 30.0F);
         GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
         float var3 = this.mc.thePlayer.renderYawOffset;
         float var4 = this.mc.thePlayer.rotationYaw;
         float var5 = this.mc.thePlayer.rotationPitch;
         float var6 = (float)(var1 + 51) - this.xSize_lo;
         float var7 = (float)(var2 + 75 - 50) - this.ySize_lo;
+        GL11.glRotatef(135.0F, 0.0F, 1.0F, 0.0F);
+        RenderHelper.enableStandardItemLighting();
+        GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-((float)Math.atan((double)(var7 / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
-        this.mc.thePlayer.renderYawOffset = -((float)Math.atan((double)(var6 / 40.0F))) * 20.0F;
-        this.mc.thePlayer.rotationYaw = -((float)Math.atan((double)(var6 / 40.0F))) * 40.0F;
+        this.mc.thePlayer.renderYawOffset = (float)Math.atan((double)(var6 / 40.0F)) * 20.0F;
+        this.mc.thePlayer.rotationYaw = (float)Math.atan((double)(var6 / 40.0F)) * 40.0F;
         this.mc.thePlayer.rotationPitch = -((float)Math.atan((double)(var7 / 40.0F))) * 20.0F;
         RenderManager.instance.getEntityRenderObject(this.mc.thePlayer, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F);
         this.mc.thePlayer.renderYawOffset = var3;
         this.mc.thePlayer.rotationYaw = var4;
         this.mc.thePlayer.rotationPitch = var5;
         GL11.glPopMatrix();
+        RenderHelper.disableStandardItemLighting();
         GL11.glDisable(GL11.GL_NORMALIZE);
 	}
 

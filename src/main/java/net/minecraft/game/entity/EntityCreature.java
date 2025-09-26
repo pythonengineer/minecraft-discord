@@ -32,7 +32,7 @@ public class EntityCreature extends EntityLiving {
             var8 = var5.posY - super.posY;
             var6 = var5.posZ - super.posZ;
             float var1 = MathHelper.sqrt_float(var7 * var7 + var8 * var8 + var6 * var6);
-            if(this.worldObj.rayTraceBlocks(this.boundingBox.getAverageEdgeLength(), this.playerToAttack.boundingBox.getAverageEdgeLength()) == null) {
+            if(this.worldObj.rayTraceBlocks(new Vec3D(this.posX, this.posY + this.getEyeHeight(), this.posZ), new Vec3D(this.playerToAttack.posX, this.playerToAttack.posY + this.playerToAttack.getEyeHeight(), this.playerToAttack.posZ)) == null) {
                 this.attackEntity(this.playerToAttack, var1);
             }
         }
@@ -134,7 +134,7 @@ public class EntityCreature extends EntityLiving {
         return null;
     }
 
-    public final boolean getCanSpawnHere(float var1, float var2, float var3) {
-        return this.getBlockPathWeight((int)var1, (int)var2, (int)var3) >= 0.0F;
+    public boolean getCanSpawnHere(float var1, float var2, float var3) {
+        return super.getCanSpawnHere(var1, var2, var3) && this.getBlockPathWeight((int)var1, (int)var2, (int)var3) >= 0.0F;
     }
 }

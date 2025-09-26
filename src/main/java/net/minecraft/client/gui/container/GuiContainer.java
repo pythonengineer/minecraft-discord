@@ -193,7 +193,7 @@ public abstract class GuiContainer extends GuiScreen {
 
     public void onGuiClosed() {
         if(this.itemStack != null) {
-            this.mc.thePlayer.dropPlayerItemWithRandomChoice(this.itemStack);
+            this.mc.thePlayer.dropPlayerItem(this.itemStack);
         }
 
     }
@@ -279,12 +279,12 @@ public abstract class GuiContainer extends GuiScreen {
             if (slotId == -999) {
                 if (this.itemStack != null) {
                     if (clickedButton == 0) {
-                        playerIn.dropPlayerItemWithRandomChoice(this.itemStack);
+                        playerIn.dropPlayerItem(this.itemStack);
                         this.itemStack = null;
                     }
 
                     if (clickedButton == 1) {
-                        playerIn.dropPlayerItemWithRandomChoice(this.itemStack.splitStack(1));
+                        playerIn.dropPlayerItem(this.itemStack.splitStack(1));
                         if (this.itemStack.stackSize == 0) {
                             this.itemStack = null;
                         }
@@ -423,7 +423,7 @@ public abstract class GuiContainer extends GuiScreen {
             if (slot3 != null && slot3.getHasStack()) {
                 ItemStack itemstack5 = slot3.decrStackSize(clickedButton == 0 ? 1 : slot3.getStack().stackSize);
                 slot3.onPickupFromSlot();
-                playerIn.dropPlayerItemWithRandomChoice(itemstack5);
+                playerIn.dropPlayerItem(itemstack5);
             }
         } else if (mode == 6 && slotId >= 0) {
             Slot slot2 = (Slot) this.inventorySlots.get(slotId);

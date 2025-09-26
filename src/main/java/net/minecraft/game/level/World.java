@@ -3,7 +3,6 @@ package net.minecraft.game.level;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +36,10 @@ public final class World {
     public int zSpawn;
     public float rotSpawn;
     public int defaultFluid = Block.waterMoving.blockID;
-    private List worldAccesses = new ArrayList();
+    List worldAccesses = new ArrayList();
     private List tickList = new LinkedList();
     public Map map = new HashMap();
-    private int[] heightMap;
+    int[] heightMap;
     public EaglercraftRandom random = new EaglercraftRandom();
     private EaglercraftRandom rand = new EaglercraftRandom();
     private int randId = this.random.nextInt();
@@ -55,8 +54,12 @@ public final class World {
     private int playTime = 0;
     public EntityLiving playerEntity;
     public boolean survivalWorld = true;
-    public float skyBrightness = 1.0F;
+    public int skyBrightness = 15;
+    int skylightSubtracted = 15;
     public Pathfinder pathFinder = new Pathfinder(this);
+    private Light M;
+    public int worldTime = 0;
+    private int N = 24000;
     private static short floodFillCounter;
     private short[] floodFillCounters = new short[1048576];
     private int[] coords = new int[1048576];
@@ -70,7 +73,7 @@ public final class World {
             this.worldAccesses = new ArrayList();
             this.heightMap = new int[this.width * this.length];
             Arrays.fill(this.heightMap, this.height);
-            this.updateSkylight(0, 0, this.width, this.length);
+            this.M.updateSkylight(0, 0, this.width, this.length);
             this.random = new EaglercraftRandom();
             this.randId = this.random.nextInt();
             this.tickList = new ArrayList();
@@ -81,7 +84,7 @@ public final class World {
         }
     }
 
-    public final void generate2(int var1, int var2, int var3, byte[] var4) {
+    public final void generate(int var1, int var2, int var3, byte[] var4) {
         this.width = var1;
         this.length = var3;
         this.height = var2;
@@ -116,6 +119,7 @@ public final class World {
         this.data = new byte[var4.length];
         this.heightMap = new int[var1 * var3];
         Arrays.fill(this.heightMap, this.height);
+        this.M = new Light(this);
         this.calculateLighting();
 
         for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
@@ -163,6 +167,7 @@ public final class World {
         this.data = var5;
         this.heightMap = new int[var1 * var3];
         Arrays.fill(this.heightMap, this.height);
+        this.M = new Light(this);
         this.calculateLighting();
 
         for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
@@ -217,12 +222,10 @@ public final class World {
     }
 
     private void calculateLighting() {
-        int var1 = (int)(15.0F * this.skyBrightness);
+        int var1 = this.skylightSubtracted;
 
-        int var2;
-        int var3;
-        for(var2 = 0; var2 < this.width; ++var2) {
-            for(var3 = 0; var3 < this.length; ++var3) {
+        for(int var2 = 0; var2 < this.width; ++var2) {
+            for(int var3 = 0; var3 < this.length; ++var3) {
                 int var4;
                 for(var4 = this.height - 1; var4 > 0 && Block.lightOpacity[this.getBlockId(var2, var4, var3)] == 0; --var4) {
                 }
@@ -230,203 +233,27 @@ public final class World {
                 this.heightMap[var2 + var3 * this.width] = var4 + 1;
 
                 for(var4 = 0; var4 < this.height; ++var4) {
-                    int var5 = this.heightMap[var2 + var3 * this.width];
-                    var5 = var4 >= var5 ? var1 : 0;
-                    byte var6 = this.blocks[(var4 * this.length + var3) * this.width + var2];
-                    if(var5 < Block.lightValue[var6]) {
-                        var5 = Block.lightValue[var6];
+                    int var5 = (var4 * this.length + var3) * this.width + var2;
+                    int var6 = this.heightMap[var2 + var3 * this.width];
+                    var6 = var4 >= var6 ? var1 : 0;
+                    byte var7 = this.blocks[var5];
+                    if(var6 < Block.lightValue[var7]) {
+                        var6 = Block.lightValue[var7];
                     }
 
-                    this.data[(var4 * this.length + var3) * this.width + var2] = (byte)((this.data[(var4 * this.length + var3) * this.width + var2] & 240) + var5);
+                    this.data[var5] = (byte)((this.data[var5] & 240) + var6);
                 }
             }
         }
 
-        for(var2 = 0; var2 < this.width; ++var2) {
-            for(var3 = 0; var3 < this.length; ++var3) {
-                this.updateBlockLight(var2, 0, var3, var2 + 1, this.height, var3 + 1);
-            }
-        }
-
-    }
-
-    private void updateSkylight(int var1, int var2, int var3, int var4) {
-        for(int var5 = var1; var5 < var1 + var3; ++var5) {
-            for(int var6 = var2; var6 < var2 + var4; ++var6) {
-                int var7 = this.heightMap[var5 + var6 * this.width];
-
-                int var8;
-                for(var8 = this.height - 1; var8 > 0 && Block.lightOpacity[this.getBlockId(var5, var8, var6)] == 0; --var8) {
-                }
-
-                this.heightMap[var5 + var6 * this.width] = var8 + 1;
-                if(var7 != var8) {
-                    int var9 = var7 < var8 ? var7 : var8;
-                    var7 = var7 > var8 ? var7 : var8;
-                    this.updateBlockLight(var5, var9, var6, var5 + 1, var7, var6 + 1);
-                }
-            }
-        }
-
-        this.updateBlockLight(0, 0, 0, 10, 10, 10);
-    }
-
-    public final void updateBlockLight(int var1, int var2, int var3, int var4, int var5, int var6) {
-        int var7 = 0;
-        ArrayList var8 = new ArrayList();
-        int[] var9 = new int[1024];
-
-        int var10;
-        int var11;
-        int var12;
-        for(var10 = var1; var10 < var4; ++var10) {
-            for(var11 = var3; var11 < var6; ++var11) {
-                for(var12 = var2; var12 < var5; ++var12) {
-                    var9[var7++] = var10 << 20 | var12 << 10 | var11;
-                }
-            }
-        }
-
-        var10 = (int)(15.0F * this.skyBrightness);
-
-        while(var7 > 0 || var8.size() > 0) {
-            if(var7 == 0) {
-                var9 = (int[])var8.remove(var8.size() - 1);
-                var7 = var9[var9.length - 1];
-            }
-
-            if(var7 > var9.length - 32) {
-                --var7;
-                var11 = var9[var7];
-                var9[var9.length - 1] = var7;
-                var8.add(var9);
-                var9 = new int[1024];
-                var7 = 1;
-                var9[0] = var11;
-            } else {
-                --var7;
-                var11 = var9[var7];
-                var12 = var11 >> 20 & 1023;
-                int var13 = var11 >> 10 & 1023;
-                var11 &= 1023;
-                int var14 = this.heightMap[var12 + var11 * this.width];
-                var14 = var13 >= var14 ? var10 : 0;
-                byte var15 = this.blocks[(var13 * this.length + var11) * this.width + var12];
-                int var16 = Block.lightOpacity[var15];
-                if(var16 > 100) {
-                    var14 = 0;
-                } else if(var14 < 14) {
-                    var16 = var16;
-                    if(var16 == 0) {
-                        var16 = 1;
-                    }
-
-                    int var17;
-                    if(var12 > 0) {
-                        var17 = (this.data[(var13 * this.length + var11) * this.width + (var12 - 1)] & 15) - var16;
-                        if(var17 > var14) {
-                            var14 = var17;
-                        }
-                    }
-
-                    if(var12 < this.width - 1) {
-                        var17 = (this.data[(var13 * this.length + var11) * this.width + var12 + 1] & 15) - var16;
-                        if(var17 > var14) {
-                            var14 = var17;
-                        }
-                    }
-
-                    if(var13 > 0) {
-                        var17 = (this.data[((var13 - 1) * this.length + var11) * this.width + var12] & 15) - var16;
-                        if(var17 > var14) {
-                            var14 = var17;
-                        }
-                    }
-
-                    if(var13 < this.height - 1) {
-                        var17 = (this.data[((var13 + 1) * this.length + var11) * this.width + var12] & 15) - var16;
-                        if(var17 > var14) {
-                            var14 = var17;
-                        }
-                    }
-
-                    if(var11 > 0) {
-                        var17 = (this.data[(var13 * this.length + (var11 - 1)) * this.width + var12] & 15) - var16;
-                        if(var17 > var14) {
-                            var14 = var17;
-                        }
-                    }
-
-                    if(var11 < this.length - 1) {
-                        var17 = (this.data[(var13 * this.length + var11 + 1) * this.width + var12] & 15) - var16;
-                        if(var17 > var14) {
-                            var14 = var17;
-                        }
-                    }
-                }
-
-                if(var14 < Block.lightValue[var15]) {
-                    var14 = Block.lightValue[var15];
-                }
-
-                if(var12 < var1) {
-                    var1 = var12;
-                } else if(var12 > var4) {
-                    var4 = var12;
-                }
-
-                if(var13 > var5) {
-                    var5 = var13;
-                } else if(var13 < var2) {
-                    var2 = var13;
-                }
-
-                if(var11 < var3) {
-                    var3 = var11;
-                } else if(var11 > var6) {
-                    var6 = var11;
-                }
-
-                var16 = this.data[(var13 * this.length + var11) * this.width + var12] & 15;
-                if(var16 != var14) {
-                    this.data[(var13 * this.length + var11) * this.width + var12] = (byte)((this.data[(var13 * this.length + var11) * this.width + var12] & 240) + var14);
-                    if(var12 > 0 && (this.data[(var13 * this.length + var11) * this.width + (var12 - 1)] & 15) != var14 - 1) {
-                        var9[var7++] = var12 - 1 << 20 | var13 << 10 | var11;
-                    }
-
-                    if(var12 < this.width - 1 && (this.data[(var13 * this.length + var11) * this.width + var12 + 1] & 15) != var14 - 1) {
-                        var9[var7++] = var12 + 1 << 20 | var13 << 10 | var11;
-                    }
-
-                    if(var13 > 0 && (this.data[((var13 - 1) * this.length + var11) * this.width + var12] & 15) != var14 - 1) {
-                        var9[var7++] = var12 << 20 | var13 - 1 << 10 | var11;
-                    }
-
-                    if(var13 < this.height - 1 && (this.data[((var13 + 1) * this.length + var11) * this.width + var12] & 15) != var14 - 1) {
-                        var9[var7++] = var12 << 20 | var13 + 1 << 10 | var11;
-                    }
-
-                    if(var11 > 0 && (this.data[(var13 * this.length + (var11 - 1)) * this.width + var12] & 15) != var14 - 1) {
-                        var9[var7++] = var12 << 20 | var13 << 10 | var11 - 1;
-                    }
-
-                    if(var11 < this.length - 1 && (this.data[(var13 * this.length + var11 + 1) * this.width + var12] & 15) != var14 - 1) {
-                        var9[var7++] = var12 << 20 | var13 << 10 | var11 + 1;
-                    }
-                }
-            }
-        }
-
-        Iterator var18 = this.worldAccesses.iterator();
-
-        while(var18.hasNext()) {
-            IWorldAccess var19 = (IWorldAccess)var18.next();
-            var19.markBlockRangeNeedsUpdate(var1, var2, var3, var4, var5, var6);
-        }
-
+        this.M.updateBlockLight(0, 0, 0, this.width, this.height, this.length);
     }
 
     public final void addWorldAccess(IWorldAccess var1) {
+        for(int var2 = 0; var2 < this.entityMap.entities.size(); ++var2) {
+            var1.obtainEntitySkin((Entity)this.entityMap.entities.get(var2));
+        }
+
         this.worldAccesses.add(var1);
     }
 
@@ -500,6 +327,7 @@ public final class World {
 
                 byte var5 = this.blocks[(var2 * this.length + var3) * this.width + var1];
                 this.blocks[(var2 * this.length + var3) * this.width + var1] = (byte)var4;
+                this.setBlockMetadata(var1, var2, var3, 0);
                 if(var5 != 0) {
                     Block.blocksList[var5].onBlockRemoval(this, var1, var2, var3);
                 }
@@ -508,9 +336,8 @@ public final class World {
                     Block.blocksList[var4].onBlockAdded(this, var1, var2, var3);
                 }
 
-                this.setBlockMetadata(var1, var2, var3, 0);
-                this.updateSkylight(var1, var3, 1, 1);
-                this.updateBlockLight(var1, var2, var3, var1 + 1, var2 + 1, var3 + 1);
+                this.M.updateSkylight(var1, var3, 1, 1);
+                this.M.updateBlockLight(var1, var2, var3, var1 + 1, var2 + 1, var3 + 1);
 
                 for(var4 = 0; var4 < this.worldAccesses.size(); ++var4) {
                     ((IWorldAccess)this.worldAccesses.get(var4)).markBlockAndNeighborsNeedsUpdate(var1, var2, var3);
@@ -547,7 +374,7 @@ public final class World {
                 return false;
             } else {
                 this.blocks[(var2 * this.length + var3) * this.width + var1] = (byte)var4;
-                this.updateBlockLight(var1, var2, var3, var1 + 1, var2 + 1, var3 + 1);
+                this.M.updateBlockLight(var1, var2, var3, var1 + 1, var2 + 1, var3 + 1);
                 return true;
             }
         } else {
@@ -563,50 +390,6 @@ public final class World {
             }
 
         }
-    }
-
-    public final boolean isHalfLit(int var1, int var2, int var3) {
-        if(var1 < 0) {
-            var1 = 0;
-        } else if(var1 >= this.width) {
-            var1 = this.width - 1;
-        }
-
-        if(var2 < 0) {
-            var2 = 0;
-        } else if(var2 >= this.height) {
-            var2 = this.height - 1;
-        }
-
-        if(var3 < 0) {
-            var3 = 0;
-        } else if(var3 >= this.length) {
-            var3 = this.length - 1;
-        }
-
-        return this.getBlockLightValue(var1, var2, var3) > 3;
-    }
-
-    public final boolean isFullyLit(int var1, int var2, int var3) {
-        if(var1 < 0) {
-            var1 = 0;
-        } else if(var1 >= this.width) {
-            var1 = this.width - 1;
-        }
-
-        if(var2 < 0) {
-            var2 = 0;
-        } else if(var2 >= this.height) {
-            var2 = this.height - 1;
-        }
-
-        if(var3 < 0) {
-            var3 = 0;
-        } else if(var3 >= this.length) {
-            var3 = this.length - 1;
-        }
-
-        return this.getBlockLightValue(var1, var2, var3) < 14;
     }
 
     public final int getBlockId(int var1, int var2, int var3) {
@@ -640,9 +423,131 @@ public final class World {
         this.entityMap.updateEntities();
     }
 
+    public final void updateLighting() {
+        this.M.updateLight();
+    }
+
+    public final float getStarBrightness(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = 1.0F - (MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 12.0F / 16.0F);
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        return var1 * var1 * 0.5F;
+    }
+
+    public final Vec3D getSkyColor(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        float var2 = (float)(this.skyColor >> 16 & 255) / 255.0F;
+        float var3 = (float)(this.skyColor >> 8 & 255) / 255.0F;
+        float var4 = (float)(this.skyColor & 255) / 255.0F;
+        var2 *= var1;
+        var3 *= var1;
+        var4 *= var1;
+        return new Vec3D(var2, var3, var4);
+    }
+
+    public final float getCelestialAngle(float var1) {
+        var1 = ((float)this.worldTime + var1) / (float)this.N - 0.2F;
+        return var1;
+    }
+
+    public final Vec3D getFogColor(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        var1 *= (float)(this.skyBrightness / 15);
+        float var2 = (float)(this.fogColor >> 16 & 255) / 255.0F;
+        float var3 = (float)(this.fogColor >> 8 & 255) / 255.0F;
+        float var4 = (float)(this.fogColor & 255) / 255.0F;
+        var2 *= var1 * 0.94F + 0.06F;
+        var3 *= var1 * 0.94F + 0.06F;
+        var4 *= var1 * 0.91F + 0.09F;
+        return new Vec3D(var2, var3, var4);
+    }
+
+    public final Vec3D getCloudColor(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        var1 *= (float)(this.skyBrightness / 15);
+        float var2 = (float)(this.cloudColor >> 16 & 255) / 255.0F;
+        float var3 = (float)(this.cloudColor >> 8 & 255) / 255.0F;
+        float var4 = (float)(this.cloudColor & 255) / 255.0F;
+        var2 *= var1 * 0.9F + 0.1F;
+        var3 *= var1 * 0.9F + 0.1F;
+        var4 *= var1 * 0.85F + 0.15F;
+        return new Vec3D(var2, var3, var4);
+    }
+
+    public final int getSkyBrightness() {
+        float var1 = this.getCelestialAngle(1.0F);
+        var1 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        int var2 = (int)(var1 * ((float)(15 * this.skyBrightness) / 15.0F - 4.0F) + 4.0F);
+        if(var2 > 15) {
+            var2 = 15;
+        }
+
+        if(var2 < 4) {
+            var2 = 4;
+        }
+
+        return var2;
+    }
+
     public final void tick() {
+        ++this.worldTime;
+        if(this.worldTime == this.N) {
+            this.worldTime = 0;
+        }
+
+        int var1 = this.getSkyBrightness();
+        if(this.skylightSubtracted > var1) {
+            this.updateChunkLight(this.skylightSubtracted - 1);
+        }
+
+        if(this.skylightSubtracted < var1) {
+            this.updateChunkLight(this.skylightSubtracted + 1);
+        }
+
         ++this.playTime;
-        int var1 = 1;
+        var1 = 1;
 
         int var2;
         for(var2 = 1; 1 << var1 < this.width; ++var1) {
@@ -701,8 +606,8 @@ public final class World {
     public final int entitiesInLevelList(Class var1) {
         int var2 = 0;
 
-        for(int var3 = 0; var3 < this.entityMap.all.size(); ++var3) {
-            Entity var4 = (Entity)this.entityMap.all.get(var3);
+        for(int var3 = 0; var3 < this.entityMap.entities.size(); ++var3) {
+            Entity var4 = (Entity)this.entityMap.entities.get(var3);
             if(var1.isAssignableFrom(var4.getClass())) {
                 ++var2;
             }
@@ -897,7 +802,7 @@ public final class World {
         return lightBrightnessTable[this.data[(var2 * this.length + var3) * this.width + var1] & 15];
     }
 
-    private byte getBlockLightValue(int var1, int var2, int var3) {
+    public final byte getBlockLightValue(int var1, int var2, int var3) {
         if(var1 < 0) {
             var1 = 0;
         } else if(var1 >= this.width) {
@@ -1191,10 +1096,20 @@ public final class World {
     public final void spawnEntityInWorld(Entity var1) {
         this.entityMap.insert(var1);
         var1.setWorld(this);
+
+        for(int var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
+            ((IWorldAccess)this.worldAccesses.get(var2)).obtainEntitySkin(var1);
+        }
+
     }
 
     public final void releaseEntitySkin(Entity var1) {
         this.entityMap.remove(var1);
+
+        for(int var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
+            ((IWorldAccess)this.worldAccesses.get(var2)).releaseEntitySkin(var1);
+        }
+
     }
 
     public final void createExplosion(Entity var1, float var2, float var3, float var4, float var5) {
@@ -1353,8 +1268,8 @@ public final class World {
     }
 
     public final Entity findSubclassOf(Class var1) {
-        for(int var2 = 0; var2 < this.entityMap.all.size(); ++var2) {
-            Entity var3 = (Entity)this.entityMap.all.get(var2);
+        for(int var2 = 0; var2 < this.entityMap.entities.size(); ++var2) {
+            Entity var3 = (Entity)this.entityMap.entities.get(var2);
             if(var1.isAssignableFrom(var3.getClass())) {
                 return var3;
             }
@@ -1682,14 +1597,46 @@ public final class World {
 
     }
 
+
     public final String debugSkylightUpdates() {
-        return "" + this.tickList.size();
+        return "" + this.tickList.size() + ". L: " + this.M.debugSkylightUpdates();
+    }
+
+    public final void setLevel() {
+        for(int var1 = 0; var1 < this.worldAccesses.size(); ++var1) {
+            IWorldAccess var2 = (IWorldAccess)this.worldAccesses.get(var1);
+
+            for(int var3 = 0; var3 < this.entityMap.entities.size(); ++var3) {
+                var2.releaseEntitySkin((Entity)this.entityMap.entities.get(var1));
+            }
+        }
+
+    }
+
+    private void updateChunkLight(int var1) {
+        this.M.updateDaylightCycle(var1);
+    }
+
+    public final boolean canBlockSeeTheSky(int var1, int var2, int var3) {
+        if(this.heightMap[var1 + var3 * this.width] <= var2) {
+            return true;
+        } else {
+            while(var2 < this.height) {
+                if(Block.opaqueCubeLookup[this.getBlockId(var1, var2, var3)]) {
+                    return false;
+                }
+
+                ++var2;
+            }
+
+            return true;
+        }
     }
 
     static {
         for(int var0 = 0; var0 <= 15; ++var0) {
             float var1 = 1.0F - (float)var0 / 15.0F;
-            lightBrightnessTable[var0] = (1.0F - var1) / (var1 * 3.0F + 1.0F) * 0.9F + 0.1F;
+            lightBrightnessTable[var0] = (1.0F - var1) / (var1 * 3.0F + 1.0F) * 0.95F + 0.05F;
         }
 
         floodFillCounter = 0;

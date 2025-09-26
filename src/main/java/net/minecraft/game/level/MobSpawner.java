@@ -1,8 +1,8 @@
 package net.minecraft.game.level;
 
-import net.minecraft.client.IProgressUpdate;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.animal.EntityAnimal;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
 import net.minecraft.game.entity.monster.EntityCreeper;
@@ -10,7 +10,6 @@ import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.monster.EntitySkeleton;
 import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
-import net.minecraft.game.level.material.Material;
 
 public class MobSpawner {
 	private World worldObj;
@@ -21,118 +20,187 @@ public class MobSpawner {
 
 	public final void performSpawning() {
 		int var1 = this.worldObj.width * this.worldObj.length * this.worldObj.height * 20 / 64 / 64 / 64;
-		int var2 = var1 / 4;
+		var1 /= 2;
 		if(this.worldObj.difficultySetting == 0) {
-			var2 /= 4;
+			var1 = 0 / 4;
 		}
 
 		if(this.worldObj.difficultySetting == 1) {
-			var2 = var2 * 3 / 4;
+			var1 = var1 * 3 / 4;
 		}
 
 		if(this.worldObj.difficultySetting == 2) {
-			var2 = (var2 << 2) / 4;
+			var1 = (var1 << 2) / 4;
 		}
 
 		if(this.worldObj.difficultySetting == 3) {
-			var2 = var2 * 5 / 4;
+			var1 = var1 * 6 / 4;
 		}
 
-		if(this.worldObj.random.nextInt(100) < var1) {
-			int var3 = this.worldObj.entitiesInLevelList(EntityLiving.class);
-			if(var3 < var2) {
-				this.performSpawning(var1, this.worldObj.playerEntity, (IProgressUpdate)null);
-			}
-		}
+		int var2 = this.worldObj.width * this.worldObj.length / 4000;
+		int var3 = this.worldObj.entitiesInLevelList(EntityMob.class);
 
-	}
+		int var4;
+		EntityLiving var5;
+		int var6;
+		int var7;
+		int var8;
+		int var9;
+		int var10;
+		int var11;
+		int var12;
+		int var13;
+		int var14;
+		int var15;
+		float var16;
+		float var17;
+		float var18;
+		float var19;
+		float var20;
+		float var21;
+		MobSpawner var22;
+		Object var23;
+		for(var4 = 0; var4 < 4; ++var4) {
+			if(var3 < var1) {
+				var5 = this.worldObj.playerEntity;
+				var22 = this;
+				var6 = 0;
+				var7 = this.worldObj.random.nextInt(5);
+				var8 = this.worldObj.random.nextInt(this.worldObj.width);
+				var9 = (int)(Math.min(this.worldObj.random.nextFloat(), this.worldObj.random.nextFloat()) * (float)this.worldObj.height);
+				var10 = this.worldObj.random.nextInt(this.worldObj.length);
 
-	public final int performSpawning(int var1, Entity var2, IProgressUpdate var3) {
-		int var20 = 0;
+				for(var11 = 0; var11 < 2; ++var11) {
+					var12 = var8;
+					var13 = var9;
+					var14 = var10;
 
-		for(int var4 = 0; var4 < var1; ++var4) {
-			int var5 = this.worldObj.random.nextInt(7);
-			int var6 = this.worldObj.random.nextInt(this.worldObj.width);
-			int var7 = (int)(Math.min(this.worldObj.random.nextFloat(), this.worldObj.random.nextFloat()) * (float)this.worldObj.height);
-			int var8 = this.worldObj.random.nextInt(this.worldObj.length);
-			if(!this.worldObj.isBlockNormalCube(var6, var7, var8) && this.worldObj.getBlockMaterial(var6, var7, var8) == Material.air && (!this.worldObj.isHalfLit(var6, var7, var8) || this.worldObj.random.nextInt(5) == 0)) {
-				for(int var9 = 0; var9 < 4; ++var9) {
-					int var10 = var6;
-					int var11 = var7;
-					int var12 = var8;
-
-					for(int var13 = 0; var13 < 3; ++var13) {
-						var10 += this.worldObj.random.nextInt(6) - this.worldObj.random.nextInt(6);
-						var11 += this.worldObj.random.nextInt(1) - this.worldObj.random.nextInt(1);
-						var12 += this.worldObj.random.nextInt(6) - this.worldObj.random.nextInt(6);
-						if(var10 >= 0 && var12 > 0 && var11 >= 0 && var11 < this.worldObj.height - 2 && var10 < this.worldObj.width && var12 < this.worldObj.length && this.worldObj.isBlockNormalCube(var10, var11 - 1, var12) && !this.worldObj.isBlockNormalCube(var10, var11, var12) && !this.worldObj.isBlockNormalCube(var10, var11 + 1, var12)) {
-							float var14 = (float)var10 + 0.5F;
-							float var15 = (float)var11 + 1.0F;
-							float var16 = (float)var12 + 0.5F;
-							float var17;
-							float var18;
-							float var19;
-							if(var2 != null) {
-								var17 = var14 - var2.posX;
-								var18 = var15 - var2.posY;
-								var19 = var16 - var2.posZ;
-								var17 = var17 * var17 + var18 * var18 + var19 * var19;
-								if(var17 < 256.0F) {
+					for(var15 = 0; var15 < 3; ++var15) {
+						var12 += var22.worldObj.random.nextInt(6) - var22.worldObj.random.nextInt(6);
+						var13 += var22.worldObj.random.nextInt(1) - var22.worldObj.random.nextInt(1);
+						var14 += var22.worldObj.random.nextInt(6) - var22.worldObj.random.nextInt(6);
+						if(var12 >= 0 && var14 > 0 && var13 >= 0 && var13 < var22.worldObj.height - 2 && var12 < var22.worldObj.width && var14 < var22.worldObj.length) {
+							var16 = (float)var12 + 0.5F;
+							var17 = (float)var13 + 0.5F;
+							var18 = (float)var14 + 0.5F;
+							if(var5 != null) {
+								var19 = var16 - var5.posX;
+								var20 = var17 - var5.posY;
+								var21 = var18 - var5.posZ;
+								var19 = var19 * var19 + var20 * var20 + var21 * var21;
+								if(var19 < 1024.0F) {
 									continue;
 								}
 							} else {
-								var17 = var14 - (float)this.worldObj.xSpawn;
-								var18 = var15 - (float)this.worldObj.ySpawn;
-								var19 = var16 - (float)this.worldObj.zSpawn;
-								var17 = var17 * var17 + var18 * var18 + var19 * var19;
-								if(var17 < 256.0F) {
+								var19 = var16 - (float)var22.worldObj.xSpawn;
+								var20 = var17 - (float)var22.worldObj.ySpawn;
+								var21 = var18 - (float)var22.worldObj.zSpawn;
+								var19 = var19 * var19 + var20 * var20 + var21 * var21;
+								if(var19 < 1024.0F) {
 									continue;
 								}
 							}
 
-							Object var21 = null;
-							if(var5 == 0) {
-								var21 = new EntitySkeleton(this.worldObj);
+							var23 = null;
+							if(var7 == 0) {
+								var23 = new EntitySkeleton(var22.worldObj);
 							}
 
-							if(var5 == 1) {
-								var21 = new EntityPig(this.worldObj);
+							if(var7 == 1) {
+								var23 = new EntityCreeper(var22.worldObj);
 							}
 
-							if(var5 == 2) {
-								var21 = new EntityCreeper(this.worldObj);
+							if(var7 == 2) {
+								var23 = new EntitySpider(var22.worldObj);
 							}
 
-							if(var5 == 3) {
-								var21 = new EntitySpider(this.worldObj);
+							if(var7 == 3) {
+								var23 = new EntityZombie(var22.worldObj);
 							}
 
-							if(var5 == 4) {
-								var21 = new EntitySheep(this.worldObj);
+							if(var23 instanceof EntityMob && var22.worldObj.difficultySetting == 0) {
+								var23 = null;
 							}
 
-							if(var5 == 6) {
-								var21 = new EntityZombie(this.worldObj);
-							}
-
-							if(var21 instanceof EntityMob && this.worldObj.difficultySetting == 0) {
-								var21 = null;
-							}
-
-							if(var21 != null && ((EntityLiving)var21).getCanSpawnHere(var14, var15, var16)) {
-								var19 = this.worldObj.random.nextFloat() * 360.0F;
-								((EntityLiving)var21).setPositionAndRotation(var14, var15, var16, var19, 0.0F);
-								if(var21 != null && this.worldObj.checkIfAABBIsClear1(((EntityLiving)var21).boundingBox)) {
-									++var20;
-									this.worldObj.spawnEntityInWorld((Entity)var21);
-								}
+							if(var23 != null && !var22.worldObj.isBlockNormalCube(var12, var13, var14) && var22.worldObj.isBlockNormalCube(var12, var13 - 1, var14) && ((EntityLiving)var23).getCanSpawnHere(var16, var17, var18)) {
+								var21 = var22.worldObj.random.nextFloat() * 360.0F;
+								((EntityLiving)var23).setPositionAndRotation(var16, var17, var18, var21, 0.0F);
+								++var6;
+								var22.worldObj.spawnEntityInWorld((Entity)var23);
 							}
 						}
 					}
 				}
+
+				var3 += var6;
 			}
 		}
 
-		return var20;
+		var4 = this.worldObj.entitiesInLevelList(EntityAnimal.class);
+
+		for(var1 = 0; var1 < 4; ++var1) {
+			if(var4 < var2) {
+				var5 = this.worldObj.playerEntity;
+				var22 = this;
+				var6 = 0;
+				var7 = this.worldObj.random.nextInt(2);
+				var8 = this.worldObj.random.nextInt(this.worldObj.width);
+				var9 = this.worldObj.random.nextInt(this.worldObj.height);
+				var10 = this.worldObj.random.nextInt(this.worldObj.length);
+
+				for(var11 = 0; var11 < 2; ++var11) {
+					var12 = var8;
+					var13 = var9;
+					var14 = var10;
+
+					for(var15 = 0; var15 < 3; ++var15) {
+						var12 += var22.worldObj.random.nextInt(6) - var22.worldObj.random.nextInt(6);
+						var13 += var22.worldObj.random.nextInt(1) - var22.worldObj.random.nextInt(1);
+						var14 += var22.worldObj.random.nextInt(6) - var22.worldObj.random.nextInt(6);
+						if(var12 >= 0 && var14 > 0 && var13 >= 0 && var13 < var22.worldObj.height - 2 && var12 < var22.worldObj.width && var14 < var22.worldObj.length) {
+							var16 = (float)var12 + 0.5F;
+							var17 = (float)var13 + 0.5F;
+							var18 = (float)var14 + 0.5F;
+							if(var5 != null) {
+								var19 = var16 - var5.posX;
+								var20 = var17 - var5.posY;
+								var21 = var18 - var5.posZ;
+								var19 = var19 * var19 + var20 * var20 + var21 * var21;
+								if(var19 < 1024.0F) {
+									continue;
+								}
+							} else {
+								var19 = var16 - (float)var22.worldObj.xSpawn;
+								var20 = var17 - (float)var22.worldObj.ySpawn;
+								var21 = var18 - (float)var22.worldObj.zSpawn;
+								var19 = var19 * var19 + var20 * var20 + var21 * var21;
+								if(var19 < 1024.0F) {
+									continue;
+								}
+							}
+
+							var23 = null;
+							if(var7 == 0) {
+								var23 = new EntityPig(var22.worldObj);
+							}
+
+							if(var7 == 1) {
+								var23 = new EntitySheep(var22.worldObj);
+							}
+
+							if(var23 != null && !var22.worldObj.isBlockNormalCube(var12, var13, var14) && var22.worldObj.isBlockNormalCube(var12, var13 - 1, var14) && ((EntityLiving)var23).getCanSpawnHere(var16, var17, var18)) {
+								var21 = var22.worldObj.random.nextFloat() * 360.0F;
+								((EntityLiving)var23).setPositionAndRotation(var16, var17, var18, var21, 0.0F);
+								++var6;
+								var22.worldObj.spawnEntityInWorld((Entity)var23);
+							}
+						}
+					}
+				}
+
+				var4 += var6;
+			}
+		}
+
 	}
 }

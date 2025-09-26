@@ -34,12 +34,6 @@ public final class PlayerControllerCreative extends PlayerController {
 		super.onWorldChange(var1);
 		var1.survivalWorld = false;
 		this.mobSpawner = new MobSpawner(var1);
-		int var2 = var1.width * var1.length * var1.height / 64 / 64 / 64;
-
-        for(int var3 = 0; var3 < var2; ++var3) {
-            this.mobSpawner.performSpawning(var2, var1.playerEntity, null);
-        }
-
     }
 
     public final void onUpdate() {

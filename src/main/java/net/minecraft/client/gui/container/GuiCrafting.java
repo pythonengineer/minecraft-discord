@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.container;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.client.render.RenderEngine;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
@@ -40,7 +41,7 @@ public final class GuiCrafting extends GuiContainer {
 		for(int var1 = 0; var1 < 9; ++var1) {
 			ItemStack var2 = this.inventoryCrafting.getStackInSlot(var1);
 			if(var2 != null) {
-				this.mc.thePlayer.dropPlayerItemWithRandomChoice(var2);
+				this.mc.thePlayer.dropPlayerItem(var2);
 			}
 		}
 
@@ -72,7 +73,7 @@ public final class GuiCrafting extends GuiContainer {
 	protected final void drawGuiContainerBackgroundLayer() {
 		int var1 = this.mc.renderEngine.getTexture("/gui/crafting.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, var1);
+        RenderEngine.bindTexture(var1);
 		var1 = (this.width - this.xSize) / 2;
 		int var2 = (this.height - this.ySize) / 2;
 		this.drawTexturedModalRect(var1, var2, 0, 0, this.xSize, this.ySize);
