@@ -110,7 +110,7 @@ public final class GuiInventory extends GuiContainer {
         this.mc.thePlayer.renderYawOffset = (float)Math.atan((double)(var6 / 40.0F)) * 20.0F;
         this.mc.thePlayer.rotationYaw = (float)Math.atan((double)(var6 / 40.0F)) * 40.0F;
         this.mc.thePlayer.rotationPitch = -((float)Math.atan((double)(var7 / 40.0F))) * 20.0F;
-        RenderManager.instance.getEntityRenderObject(this.mc.thePlayer, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F);
+        RenderManager.instance.renderEntityWithPosYaw(this.mc.thePlayer, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F);
         this.mc.thePlayer.renderYawOffset = var3;
         this.mc.thePlayer.rotationYaw = var4;
         this.mc.thePlayer.rotationPitch = var5;

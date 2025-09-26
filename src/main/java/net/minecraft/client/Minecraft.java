@@ -278,6 +278,7 @@ public final class Minecraft implements Runnable {
 					}
 
                     GL11.optimize();
+                    this.sndManager.setListener(this.thePlayer, this.timer.renderPartialTicks);
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
 					this.playerController.setPartialTime(this.timer.renderPartialTicks);
                     this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
@@ -931,7 +932,6 @@ public final class Minecraft implements Runnable {
             if(this.thePlayer == null) {
                 this.thePlayer = new EntityPlayerSP(this, var1, this.session);
                 this.thePlayer.preparePlayerToSpawn();
-                this.playerController.flipPlayer(this.thePlayer);
                 if(var1 != null) {
                     var1.spawnEntityInWorld(this.thePlayer);
                     var1.playerEntity = this.thePlayer;

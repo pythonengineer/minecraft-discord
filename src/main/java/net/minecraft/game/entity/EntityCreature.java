@@ -7,7 +7,7 @@ import net.minecraft.game.physics.Vec3D;
 
 public class EntityCreature extends EntityLiving {
     private PathEntity pathToEntity;
-    private Entity playerToAttack;
+    protected Entity playerToAttack;
     protected boolean hasAttacked = false;
 
     public EntityCreature(World var1) {

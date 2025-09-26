@@ -36,7 +36,7 @@ public final class EntityPickupFX extends EntityFX {
         var9 = var5 + (var8 - var5) * var9;
         var5 = this.worldObj.getBrightness((int)var3, (int)var4, (int)var9);
         GL11.glColor4f(var5, var5, var5, 1.0F);
-        RenderManager.instance.getEntityRenderObject(this.entityToPickUp, var3, var4, var9, this.entityToPickUp.rotationYaw, var2);
+        RenderManager.instance.renderEntityWithPosYaw(this.entityToPickUp, var3, var4, var9, this.entityToPickUp.rotationYaw, var2);
     }
 
     public final void onEntityUpdate() {

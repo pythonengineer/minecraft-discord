@@ -13,7 +13,7 @@ public class EntityMob extends EntityCreature {
         this.health = 20;
     }
 
-    public final void onLivingUpdate() {
+    public void onLivingUpdate() {
         float var1 = this.getBrightness(1.0F);
         if(var1 > 0.5F) {
             this.entityAge += 2;
@@ -30,9 +30,21 @@ public class EntityMob extends EntityCreature {
 
     }
 
-    protected final Entity findPlayerToAttack() {
+    protected Entity findPlayerToAttack() {
         float var1 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
         return var1 < 256.0F ? this.worldObj.playerEntity : null;
+    }
+
+    public final boolean attackEntityFrom(Entity var1, int var2) {
+        if(super.attackEntityFrom(var1, var2)) {
+            if(var1 != this) {
+                this.playerToAttack = var1;
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     protected void attackEntity(Entity var1, float var2) {
@@ -60,6 +72,7 @@ public class EntityMob extends EntityCreature {
     }
 
     public final boolean getCanSpawnHere(float var1, float var2, float var3) {
-        return this.worldObj.getBlockLightValue((int)var1, (int)var2, (int)var3) <= 8 && super.getCanSpawnHere(var1, var2, var3);
+        byte var4 = this.worldObj.getBlockLightValue((int)var1, (int)var2, (int)var3);
+        return var4 <= this.rand.nextInt(8) && super.getCanSpawnHere(var1, var2, var3);
     }
 }

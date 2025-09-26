@@ -38,7 +38,7 @@ public final class GameSettings {
     public KeyBinding keyBindLoad = new KeyBinding("Load location", 19);
     public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
     private Minecraft mc;
-    public int numberOfOptions = 9;
+    public int numberOfOptions = 10;
     public int difficulty = 2;
 
     public GameSettings(Minecraft var1) {
@@ -174,7 +174,7 @@ public final class GameSettings {
         }
     }
 
-    private void saveOptions() {
+    public final void saveOptions() {
         try {
             EaglerOutputStream bao = new EaglerOutputStream();
             PrintWriter var1 = new PrintWriter(new OutputStreamWriter(bao));

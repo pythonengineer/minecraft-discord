@@ -59,6 +59,17 @@ public final class RenderManager {
 
 	}
 
+    public final Render getEntityRenderObject(Entity var1) {
+        Class var2 = var1.getClass();
+        Render var3 = (Render)this.entityRenderMap.get(var2);
+        if(var3 == null && var2 != Entity.class) {
+            var3 = (Render)this.entityRenderMap.get(var2.getSuperclass());
+            this.entityRenderMap.put(var2, var3);
+        }
+
+        return var3;
+    }
+
     public final void cacheActiveRenderInfo(World var1, RenderEngine var2, EntityPlayer var3, float var4) {
         this.worldObj = var1;
         this.renderEngine = var2;
@@ -75,23 +86,17 @@ public final class RenderManager {
         float var6 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
         float var7 = this.worldObj.getBrightness((int)var3, (int)(var4 + var1.getShadowSize()), (int)var5);
         GL11.glColor3f(var7, var7, var7);
-        this.getEntityRenderObject(var1, var3, var4, var5, var6, var2);
+        this.renderEntityWithPosYaw(var1, var3, var4, var5, var6, var2);
     }
 
-	public final void getEntityRenderObject(Entity var1, float var2, float var3, float var4, float var5, float var6) {
-		Class var8 = var1.getClass();
-		Render var9 = (Render)this.entityRenderMap.get(var8);
-		if(var9 == null && var8 != Entity.class) {
-			var9 = (Render)this.entityRenderMap.get(var8.getSuperclass());
-			this.entityRenderMap.put(var8, var9);
-		}
+    public final void renderEntityWithPosYaw(Entity var1, float var2, float var3, float var4, float var5, float var6) {
+        Render var7 = this.getEntityRenderObject(var1);
+        if(var7 != null) {
+            var7.doRender(var1, var2, var3, var4, var5, var6);
+            var7.renderShadow(var1, var2, var3, var4, var6);
+        }
 
-		if(var9 != null) {
-			var9.doRender(var1, var2, var3, var4, var5, var6);
-			var9.renderShadow(var1, var2, var3, var4, var6);
-		}
-
-	}
+    }
 
     public final void set(World var1) {
         this.worldObj = var1;

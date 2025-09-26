@@ -7,7 +7,6 @@ import net.minecraft.game.level.block.Block;
 public final class Light {
     private int lightingUpdateCounter = 0;
     private List lightingUpdateList = new ArrayList();
-    private int[] lightingUpdateList3 = new int[65536];
     private World worldObj;
     private int worldWidth;
     private int worldLength;
@@ -15,11 +14,14 @@ public final class Light {
     private byte[] blocks;
     private byte[] data;
     private int[] heightMap;
-    private List k = new ArrayList();
-    private List l = new ArrayList();
-    private List m = new ArrayList();
+    private List skyLightList = new ArrayList();
+    private List blockLightList = new ArrayList();
+    private List lightingUpdateList1 = new ArrayList();
+    private List lightingUpdateList2 = new ArrayList();
+    private int[] lightingUpdateList3 = this.getLightingUpdates();
+    private byte[] chunks;
     private MetadataChunkBlock metadataChunkBlock = null;
-    private int o = 0;
+    private int lightValue = 0;
     private int skylightSubtracted;
 
     public Light(World var1) {
@@ -27,13 +29,18 @@ public final class Light {
         this.worldWidth = var1.width;
         this.worldLength = var1.length;
         this.worldHeight = var1.height;
+        this.chunks = new byte[var1.blocks.length / 8];
         this.blocks = var1.blocks;
         this.data = var1.data;
         this.heightMap = var1.heightMap;
     }
 
+    private int[] getLightingUpdates() {
+        return this.lightingUpdateList2.size() > 0 ? (int[])this.lightingUpdateList2.remove(this.lightingUpdateList2.size() - 1) : new int[-Short.MIN_VALUE];
+    }
+
     public final void updateSkylight(int var1, int var2, int var3, int var4) {
-        this.m.add(new MetadataChunkBlock(this, var1, var2, 0, var3, var4, 1));
+        this.lightingUpdateList1.add(new MetadataChunkBlock(this, var1, var2, 0, var3, var4, 1));
     }
 
     public final void updateDaylightCycle(int var1) {
@@ -47,28 +54,92 @@ public final class Light {
 
         this.skylightSubtracted = var1 - this.worldObj.skylightSubtracted;
         if(this.skylightSubtracted != 0) {
-            this.o = this.worldObj.skylightSubtracted;
+            this.lightValue = this.worldObj.skylightSubtracted;
             this.worldObj.skylightSubtracted = var1;
+
+            while(this.metadataChunkBlock != null) {
+                this.updateLight(64);
+            }
+
             this.metadataChunkBlock = new MetadataChunkBlock(this, 0, 0, 0, this.worldObj.width, this.worldObj.height, this.worldObj.length);
         }
     }
 
-    public final void updateBlockLight(int var1, int var2, int var3, int var4, int var5, int var6) {
-        this.l.add(new MetadataChunkBlock(this, var1, var2, var3, var4, var5, var6));
+    private void updateLight(int var1) {
+        int var2 = this.metadataChunkBlock.x;
+        int var3 = this.metadataChunkBlock.maxX;
+        int var4 = this.metadataChunkBlock.z;
+        int var5 = this.metadataChunkBlock.maxZ;
+
+        int var6;
+        int var7;
+        for(var2 = var2; var2 < var3; ++var2) {
+            if(var1-- <= 0 && var2 != var3 - 1) {
+                this.metadataChunkBlock.x = var2;
+                return;
+            }
+
+            for(var6 = var4; var6 < var5; ++var6) {
+                for(var7 = this.heightMap[var2 + var6 * this.worldWidth] - 1; var7 > 0 && Block.lightOpacity[this.blocks[(var7 * this.worldLength + var6) * this.worldWidth + var2]] < 100; --var7) {
+                }
+
+                ++var7;
+
+                for(; var7 < this.worldHeight; ++var7) {
+                    int var8 = (var7 * this.worldLength + var6) * this.worldWidth + var2;
+                    if(Block.lightValue[this.blocks[var8]] == 0) {
+                        int var9 = this.data[var8] & 15;
+                        if(var9 <= this.lightValue) {
+                            if(this.skylightSubtracted < 0 && var9 > 0) {
+                                --this.data[var8];
+                            } else if(this.skylightSubtracted > 0 && var9 < 15) {
+                                ++this.data[var8];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for(var6 = 0; var6 < this.worldWidth; var6 += 32) {
+            for(var7 = 0; var7 < this.worldLength; var7 += 32) {
+                this.blockLightList.add(new MetadataChunkBlock(this, var6, 0, var7, var6 + 32, this.worldHeight, var7 + 32));
+                this.skyLightList.add(new MetadataChunkBlock(this, var6, 0, var7, var6 + 32, this.worldHeight, var7 + 32));
+            }
+        }
+
+        for(var6 = 0; var6 < this.worldObj.worldAccesses.size(); ++var6) {
+            IWorldAccess var10 = (IWorldAccess)this.worldObj.worldAccesses.get(var6);
+            var10.updateAllRenderers();
+        }
+
+        this.metadataChunkBlock = null;
     }
 
-    private void b(int var1, int var2, int var3, int var4, int var5, int var6) {
+    public final void updateBlockLight(int var1, int var2, int var3, int var4, int var5, int var6) {
+        this.blockLightList.add(new MetadataChunkBlock(this, var1, var2, var3, var4, var5, var6));
+    }
+
+    private void updateLists(int var1, int var2, int var3, int var4, int var5, int var6) {
         for(var2 = var2; var2 < var5; ++var2) {
             for(int var7 = var3; var7 < var6; ++var7) {
                 for(int var8 = var1; var8 < var4; ++var8) {
-                    this.lightingUpdateList3[this.lightingUpdateCounter++] = var8 << 20 | var2 << 10 | var7;
-                    if(this.lightingUpdateCounter > this.lightingUpdateList3.length - 32) {
-                        int var9 = this.lightingUpdateList3[--this.lightingUpdateCounter];
-                        this.lightingUpdateList3[this.lightingUpdateList3.length - 1] = this.lightingUpdateCounter;
-                        this.lightingUpdateList.add(this.lightingUpdateList3);
-                        this.lightingUpdateList3 = new int[this.lightingUpdateList3.length];
-                        this.lightingUpdateCounter = 1;
-                        this.lightingUpdateList3[0] = var9;
+                    int var9 = var8 + var2 * this.worldWidth + var7 * this.worldWidth * this.worldHeight;
+                    if((this.chunks[var9 >> 3] & 1 << (var9 & 7)) == 0) {
+                        this.chunks[var9 >> 3] = (byte)(this.chunks[var9 >> 3] | 1 << (var9 & 7));
+                        this.lightingUpdateList3[this.lightingUpdateCounter++] = var9;
+                        if((this.chunks[var9 >> 3] & 1 << (var9 & 7)) == 0) {
+                            System.out.println("OMG ERROR!");
+                        }
+
+                        if(this.lightingUpdateCounter > this.lightingUpdateList3.length - 32) {
+                            var9 = this.lightingUpdateList3[--this.lightingUpdateCounter];
+                            this.lightingUpdateList3[this.lightingUpdateList3.length - 1] = this.lightingUpdateCounter;
+                            this.lightingUpdateList.add(this.lightingUpdateList3);
+                            this.lightingUpdateList3 = this.getLightingUpdates();
+                            this.lightingUpdateCounter = 1;
+                            this.lightingUpdateList3[0] = var9;
+                        }
                     }
                 }
             }
@@ -77,156 +148,112 @@ public final class Light {
     }
 
     public final void updateLight() {
-        int var1 = 64;
+        if(this.lightingUpdateList2.size() > 0) {
+            this.lightingUpdateList2.remove(this.lightingUpdateList2.size() - 1);
+        }
 
-        int var3;
-        while(this.k.size() > 0 && var1-- > 0) {
-            MetadataChunkBlock var2 = (MetadataChunkBlock)this.k.remove(0);
+        int var1 = 5;
 
-            for(var3 = 0; var3 < this.worldObj.worldAccesses.size(); ++var3) {
+        while(this.skyLightList.size() > 0 && var1-- > 0) {
+            MetadataChunkBlock var2 = (MetadataChunkBlock)this.skyLightList.remove(0);
+
+            for(int var3 = 0; var3 < this.worldObj.worldAccesses.size(); ++var3) {
                 ((IWorldAccess)this.worldObj.worldAccesses.get(var3)).markBlockRangeNeedsUpdate(var2.x, var2.y, var2.z, var2.maxX, var2.maxY, var2.maxZ);
             }
         }
 
-        int var6;
-        int var7;
-        int var8;
-        int var9;
-        int var10;
-        int var11;
-        int var12;
-        int var13;
-        int var14;
-        int var22;
         if(this.metadataChunkBlock != null) {
-            var3 = 64;
-            Light var19 = this;
-            var22 = this.metadataChunkBlock.x;
-            int var23 = this.metadataChunkBlock.maxX;
-            var6 = this.metadataChunkBlock.z;
-            var7 = this.metadataChunkBlock.maxZ;
-            var8 = this.metadataChunkBlock.maxY;
-
-            for(var9 = var22; var9 < var23; ++var9) {
-                if(var3-- <= 0) {
-                    var19.metadataChunkBlock.x = var22;
-                    var19.metadataChunkBlock.maxY = var8;
-                }
-
-                for(var10 = var6; var10 < var7; ++var10) {
-                    for(var11 = var19.heightMap[var9 + var10 * var19.worldWidth] - 1; var11 > 0 && Block.lightOpacity[var19.blocks[(var11 * var19.worldLength + var10) * var19.worldWidth + var9]] < 100; --var11) {
-                    }
-
-                    for(var12 = var11 + 1; var12 < var19.worldHeight; ++var12) {
-                        var13 = (var12 * var19.worldLength + var10) * var19.worldWidth + var9;
-                        if(Block.lightValue[var19.blocks[var13]] == 0) {
-                            var14 = var19.data[var13] & 15;
-                            if(var14 <= var19.o) {
-                                if(var19.skylightSubtracted < 0 && var14 > 0) {
-                                    --var19.data[var13];
-                                } else if(var19.skylightSubtracted > 0 && var14 < 15) {
-                                    ++var19.data[var13];
-                                }
-                            }
-                        }
-                    }
-
-                    if(var11 < var8) {
-                        var8 = var11;
-                    }
-                }
-            }
-
-            var19.lightingUpdateCounter = 0;
-            var19.lightingUpdateList.clear();
-
-            for(var10 = 0; var10 < var19.worldWidth; var10 += 32) {
-                for(var11 = 0; var11 < var19.worldLength; var11 += 32) {
-                    var19.l.add(new MetadataChunkBlock(var19, var10, var8, var11, var10 + 32, var19.worldHeight, var11 + 32));
-                    var19.k.add(new MetadataChunkBlock(var19, var10, var8, var11, var10 + 32, var19.worldHeight, var11 + 32));
-                }
-            }
-
-            for(var10 = 0; var10 < var19.worldObj.worldAccesses.size(); ++var10) {
-                IWorldAccess var24 = (IWorldAccess)var19.worldObj.worldAccesses.get(var10);
-                var24.updateAllRenderers();
-            }
-
-            var19.metadataChunkBlock = null;
+            this.updateLight(8);
         } else {
-            for(int var20 = 0; var20 < 200; ++var20) {
-                boolean var21 = false;
-                MetadataChunkBlock var4;
-                if(this.l.size() > 0) {
-                    var21 = true;
-                    var4 = (MetadataChunkBlock)this.l.remove(0);
-                    this.b(var4.x, var4.y, var4.z, var4.maxX, var4.maxY, var4.maxZ);
+            for(int var19 = 0; var19 < 16; ++var19) {
+                boolean var20 = false;
+                MetadataChunkBlock var21;
+                if(this.blockLightList.size() > 0) {
+                    var20 = true;
+                    var21 = (MetadataChunkBlock)this.blockLightList.remove(0);
+                    this.updateLists(var21.x, var21.y, var21.z, var21.maxX, var21.maxY, var21.maxZ);
                 }
 
-                Light var5;
-                if(this.m.size() > 0) {
-                    var21 = true;
-                    var4 = (MetadataChunkBlock)this.m.remove(0);
-                    var9 = var4.maxY;
-                    var8 = var4.maxX;
-                    var7 = var4.y;
-                    var6 = var4.x;
-                    var5 = this;
+                int var4;
+                int var5;
+                int var6;
+                int var7;
+                int var8;
+                int var9;
+                int var10;
+                int var11;
+                int var12;
+                int var13;
+                Light var22;
+                if(this.lightingUpdateList1.size() > 0) {
+                    var20 = true;
+                    var21 = (MetadataChunkBlock)this.lightingUpdateList1.remove(0);
+                    var7 = var21.maxY;
+                    var6 = var21.maxX;
+                    var5 = var21.y;
+                    var4 = var21.x;
+                    var22 = this;
 
-                    for(var10 = var6; var10 < var6 + var8; ++var10) {
-                        for(var11 = var7; var11 < var7 + var9; ++var11) {
-                            var12 = var5.heightMap[var10 + var11 * var5.worldWidth];
+                    for(var8 = var4; var8 < var4 + var6; ++var8) {
+                        for(var9 = var5; var9 < var5 + var7; ++var9) {
+                            var10 = var22.heightMap[var8 + var9 * var22.worldWidth];
 
-                            for(var13 = var5.worldHeight - 1; var13 > 0 && Block.lightOpacity[var5.blocks[(var13 * var5.worldLength + var11) * var5.worldWidth + var10]] == 0; --var13) {
+                            for(var11 = var22.worldHeight - 1; var11 > 0 && Block.lightOpacity[var22.blocks[(var11 * var22.worldLength + var9) * var22.worldWidth + var8]] == 0; --var11) {
                             }
 
-                            var5.heightMap[var10 + var11 * var5.worldWidth] = var13 + 1;
-                            if(var12 != var13) {
-                                var14 = var12 < var13 ? var12 : var13;
-                                var3 = var12 > var13 ? var12 : var13;
-                                var5.b(var10, var14, var11, var10 + 1, var3, var11 + 1);
+                            var22.heightMap[var8 + var9 * var22.worldWidth] = var11 + 1;
+                            if(var10 != var11) {
+                                var12 = var10 < var11 ? var10 : var11;
+                                var13 = var10 > var11 ? var10 : var11;
+                                var22.updateLists(var8, var12, var9, var8 + 1, var13, var9 + 1);
                             }
                         }
                     }
                 }
 
-                var5 = this;
-                var6 = this.worldObj.skylightSubtracted;
+                var22 = this;
+                var4 = this.worldObj.skylightSubtracted;
+                var5 = -999;
+                var6 = -999;
                 var7 = -999;
                 var8 = -999;
                 var9 = -999;
                 var10 = -999;
-                var11 = -999;
-                var12 = -999;
-                var13 = 1024;
-                var14 = 0;
+                var11 = 1024;
+                var12 = 0;
 
-                while(var13-- > 0 && (var5.lightingUpdateCounter > 0 || var5.lightingUpdateList.size() > 0)) {
-                    ++var14;
-                    if(var5.lightingUpdateCounter == 0) {
-                        var5.lightingUpdateList3 = (int[])var5.lightingUpdateList.remove(var5.lightingUpdateList.size() - 1);
-                        var5.lightingUpdateCounter = var5.lightingUpdateList3[var5.lightingUpdateList3.length - 1];
+                while(var11-- > 0 && (var22.lightingUpdateCounter > 0 || var22.lightingUpdateList.size() > 0)) {
+                    ++var12;
+                    if(var22.lightingUpdateCounter == 0) {
+                        if(var22.lightingUpdateList3 != null) {
+                            int[] var23 = var22.lightingUpdateList3;
+                            var22.lightingUpdateList2.add(var23);
+                        }
+
+                        var22.lightingUpdateList3 = (int[])var22.lightingUpdateList.remove(var22.lightingUpdateList.size() - 1);
+                        var22.lightingUpdateCounter = var22.lightingUpdateList3[var22.lightingUpdateList3.length - 1];
                     }
 
-                    if(var5.lightingUpdateCounter > var5.lightingUpdateList3.length - 32) {
-                        var3 = var5.lightingUpdateList3[--var5.lightingUpdateCounter];
-                        var5.lightingUpdateList3[var5.lightingUpdateList3.length - 1] = var5.lightingUpdateCounter;
-                        var5.lightingUpdateList.add(var5.lightingUpdateList3);
-                        var5.lightingUpdateList3 = new int[var5.lightingUpdateList3.length];
-                        var5.lightingUpdateCounter = 1;
-                        var5.lightingUpdateList3[0] = var3;
+                    if(var22.lightingUpdateCounter > var22.lightingUpdateList3.length - 32) {
+                        var13 = var22.lightingUpdateList3[--var22.lightingUpdateCounter];
+                        var22.lightingUpdateList3[var22.lightingUpdateList3.length - 1] = var22.lightingUpdateCounter;
+                        var22.lightingUpdateList.add(var22.lightingUpdateList3);
+                        var22.lightingUpdateList3 = var22.getLightingUpdates();
+                        var22.lightingUpdateCounter = 1;
+                        var22.lightingUpdateList3[0] = var13;
                     } else {
-                        var3 = var5.lightingUpdateList3[--var5.lightingUpdateCounter];
-                        var1 = var3 >> 20 & 1023;
-                        var22 = var3 >> 10 & 1023;
-                        var3 &= 1023;
-                        int var15 = var5.heightMap[var1 + var3 * var5.worldWidth];
-                        var15 = var22 >= var15 ? var6 : 0;
-                        byte var16 = var5.blocks[(var22 * var5.worldLength + var3) * var5.worldWidth + var1];
-                        int var17 = Block.lightOpacity[var16];
+                        var13 = var22.lightingUpdateList3[--var22.lightingUpdateCounter];
+                        var1 = var13 % var22.worldWidth;
+                        int var14 = var13 / var22.worldWidth % var22.worldHeight;
+                        int var15 = var13 / var22.worldWidth / var22.worldHeight % var22.worldLength;
+                        var22.chunks[var13 >> 3] = (byte)(var22.chunks[var13 >> 3] ^ 1 << (var13 & 7));
+                        var13 = var22.heightMap[var1 + var15 * var22.worldWidth];
+                        int var16 = var14 >= var13 ? var4 : 0;
+                        byte var24 = var22.blocks[(var14 * var22.worldLength + var15) * var22.worldWidth + var1];
+                        int var17 = Block.lightOpacity[var24];
                         if(var17 > 100) {
-                            var15 = 0;
-                        } else if(var15 < 14) {
+                            var16 = 0;
+                        } else if(var16 < 15) {
                             var17 = var17;
                             if(var17 == 0) {
                                 var17 = 1;
@@ -234,115 +261,139 @@ public final class Light {
 
                             int var18;
                             if(var1 > 0) {
-                                var18 = (var5.data[(var22 * var5.worldLength + var3) * var5.worldWidth + (var1 - 1)] & 15) - var17;
-                                if(var18 > var15) {
-                                    var15 = var18;
+                                var18 = (var22.data[(var14 * var22.worldLength + var15) * var22.worldWidth + (var1 - 1)] & 15) - var17;
+                                if(var18 > var16) {
+                                    var16 = var18;
                                 }
                             }
 
-                            if(var1 < var5.worldWidth - 1) {
-                                var18 = (var5.data[(var22 * var5.worldLength + var3) * var5.worldWidth + var1 + 1] & 15) - var17;
-                                if(var18 > var15) {
-                                    var15 = var18;
+                            if(var1 < var22.worldWidth - 1) {
+                                var18 = (var22.data[(var14 * var22.worldLength + var15) * var22.worldWidth + var1 + 1] & 15) - var17;
+                                if(var18 > var16) {
+                                    var16 = var18;
                                 }
                             }
 
-                            if(var22 > 0) {
-                                var18 = (var5.data[((var22 - 1) * var5.worldLength + var3) * var5.worldWidth + var1] & 15) - var17;
-                                if(var18 > var15) {
-                                    var15 = var18;
+                            if(var14 > 0) {
+                                var18 = (var22.data[((var14 - 1) * var22.worldLength + var15) * var22.worldWidth + var1] & 15) - var17;
+                                if(var18 > var16) {
+                                    var16 = var18;
                                 }
                             }
 
-                            if(var22 < var5.worldHeight - 1) {
-                                var18 = (var5.data[((var22 + 1) * var5.worldLength + var3) * var5.worldWidth + var1] & 15) - var17;
-                                if(var18 > var15) {
-                                    var15 = var18;
+                            if(var14 < var22.worldHeight - 1) {
+                                var18 = (var22.data[((var14 + 1) * var22.worldLength + var15) * var22.worldWidth + var1] & 15) - var17;
+                                if(var18 > var16) {
+                                    var16 = var18;
                                 }
                             }
 
-                            if(var3 > 0) {
-                                var18 = (var5.data[(var22 * var5.worldLength + (var3 - 1)) * var5.worldWidth + var1] & 15) - var17;
-                                if(var18 > var15) {
-                                    var15 = var18;
+                            if(var15 > 0) {
+                                var18 = (var22.data[(var14 * var22.worldLength + (var15 - 1)) * var22.worldWidth + var1] & 15) - var17;
+                                if(var18 > var16) {
+                                    var16 = var18;
                                 }
                             }
 
-                            if(var3 < var5.worldLength - 1) {
-                                var18 = (var5.data[(var22 * var5.worldLength + var3 + 1) * var5.worldWidth + var1] & 15) - var17;
-                                if(var18 > var15) {
-                                    var15 = var18;
+                            if(var15 < var22.worldLength - 1) {
+                                var18 = (var22.data[(var14 * var22.worldLength + var15 + 1) * var22.worldWidth + var1] & 15) - var17;
+                                if(var18 > var16) {
+                                    var16 = var18;
                                 }
                             }
                         }
 
-                        if(var15 < Block.lightValue[var16]) {
-                            var15 = Block.lightValue[var16];
+                        if(var16 < Block.lightValue[var24]) {
+                            var16 = Block.lightValue[var24];
                         }
 
-                        var17 = var5.data[(var22 * var5.worldLength + var3) * var5.worldWidth + var1] & 15;
-                        if(var17 != var15) {
-                            var5.data[(var22 * var5.worldLength + var3) * var5.worldWidth + var1] = (byte)((var5.data[(var22 * var5.worldLength + var3) * var5.worldWidth + var1] & 240) + var15);
-                            if(var1 > 0 && (var5.data[(var22 * var5.worldLength + var3) * var5.worldWidth + (var1 - 1)] & 15) != var15 - 1) {
-                                var5.lightingUpdateList3[var5.lightingUpdateCounter++] = var1 - 1 << 20 | var22 << 10 | var3;
+                        var17 = var22.data[(var14 * var22.worldLength + var15) * var22.worldWidth + var1] & 15;
+                        if(var17 != var16) {
+                            var22.data[(var14 * var22.worldLength + var15) * var22.worldWidth + var1] = (byte)((var22.data[(var14 * var22.worldLength + var15) * var22.worldWidth + var1] & 240) + var16);
+                            if(var1 > 0 && (var22.data[(var14 * var22.worldLength + var15) * var22.worldWidth + (var1 - 1)] & 15) != var16 - 1) {
+                                var13 = var1 - 1 + var14 * var22.worldWidth + var15 * var22.worldWidth * var22.worldHeight;
+                                if((var22.chunks[var13 >> 3] & 1 << (var13 & 7)) == 0) {
+                                    var22.chunks[var13 >> 3] = (byte)(var22.chunks[var13 >> 3] | 1 << (var13 & 7));
+                                    var22.lightingUpdateList3[var22.lightingUpdateCounter++] = var13;
+                                }
                             }
 
-                            if(var1 < var5.worldWidth - 1 && (var5.data[(var22 * var5.worldLength + var3) * var5.worldWidth + var1 + 1] & 15) != var15 - 1) {
-                                var5.lightingUpdateList3[var5.lightingUpdateCounter++] = var1 + 1 << 20 | var22 << 10 | var3;
+                            if(var1 < var22.worldWidth - 1 && (var22.data[(var14 * var22.worldLength + var15) * var22.worldWidth + var1 + 1] & 15) != var16 - 1) {
+                                var13 = var1 + 1 + var14 * var22.worldWidth + var15 * var22.worldWidth * var22.worldHeight;
+                                if((var22.chunks[var13 >> 3] & 1 << (var13 & 7)) == 0) {
+                                    var22.chunks[var13 >> 3] = (byte)(var22.chunks[var13 >> 3] | 1 << (var13 & 7));
+                                    var22.lightingUpdateList3[var22.lightingUpdateCounter++] = var13;
+                                }
                             }
 
-                            if(var22 > 0 && (var5.data[((var22 - 1) * var5.worldLength + var3) * var5.worldWidth + var1] & 15) != var15 - 1) {
-                                var5.lightingUpdateList3[var5.lightingUpdateCounter++] = var1 << 20 | var22 - 1 << 10 | var3;
+                            if(var14 > 0 && (var22.data[((var14 - 1) * var22.worldLength + var15) * var22.worldWidth + var1] & 15) != var16 - 1) {
+                                var13 = var1 + (var14 - 1) * var22.worldWidth + var15 * var22.worldWidth * var22.worldHeight;
+                                if((var22.chunks[var13 >> 3] & 1 << (var13 & 7)) == 0) {
+                                    var22.chunks[var13 >> 3] = (byte)(var22.chunks[var13 >> 3] | 1 << (var13 & 7));
+                                    var22.lightingUpdateList3[var22.lightingUpdateCounter++] = var13;
+                                }
                             }
 
-                            if(var22 < var5.worldHeight - 1 && (var5.data[((var22 + 1) * var5.worldLength + var3) * var5.worldWidth + var1] & 15) != var15 - 1) {
-                                var5.lightingUpdateList3[var5.lightingUpdateCounter++] = var1 << 20 | var22 + 1 << 10 | var3;
+                            if(var14 < var22.worldHeight - 1 && (var22.data[((var14 + 1) * var22.worldLength + var15) * var22.worldWidth + var1] & 15) != var16 - 1) {
+                                var13 = var1 + (var14 + 1) * var22.worldWidth + var15 * var22.worldWidth * var22.worldHeight;
+                                if((var22.chunks[var13 >> 3] & 1 << (var13 & 7)) == 0) {
+                                    var22.chunks[var13 >> 3] = (byte)(var22.chunks[var13 >> 3] | 1 << (var13 & 7));
+                                    var22.lightingUpdateList3[var22.lightingUpdateCounter++] = var13;
+                                }
                             }
 
-                            if(var3 > 0 && (var5.data[(var22 * var5.worldLength + (var3 - 1)) * var5.worldWidth + var1] & 15) != var15 - 1) {
-                                var5.lightingUpdateList3[var5.lightingUpdateCounter++] = var1 << 20 | var22 << 10 | var3 - 1;
+                            if(var15 > 0 && (var22.data[(var14 * var22.worldLength + (var15 - 1)) * var22.worldWidth + var1] & 15) != var16 - 1) {
+                                var13 = var1 + var14 * var22.worldWidth + (var15 - 1) * var22.worldWidth * var22.worldHeight;
+                                if((var22.chunks[var13 >> 3] & 1 << (var13 & 7)) == 0) {
+                                    var22.chunks[var13 >> 3] = (byte)(var22.chunks[var13 >> 3] | 1 << (var13 & 7));
+                                    var22.lightingUpdateList3[var22.lightingUpdateCounter++] = var13;
+                                }
                             }
 
-                            if(var3 < var5.worldLength - 1 && (var5.data[(var22 * var5.worldLength + var3 + 1) * var5.worldWidth + var1] & 15) != var15 - 1) {
-                                var5.lightingUpdateList3[var5.lightingUpdateCounter++] = var1 << 20 | var22 << 10 | var3 + 1;
+                            if(var15 < var22.worldLength - 1 && (var22.data[(var14 * var22.worldLength + var15 + 1) * var22.worldWidth + var1] & 15) != var16 - 1) {
+                                var13 = var1 + var14 * var22.worldWidth + (var15 + 1) * var22.worldWidth * var22.worldHeight;
+                                if((var22.chunks[var13 >> 3] & 1 << (var13 & 7)) == 0) {
+                                    var22.chunks[var13 >> 3] = (byte)(var22.chunks[var13 >> 3] | 1 << (var13 & 7));
+                                    var22.lightingUpdateList3[var22.lightingUpdateCounter++] = var13;
+                                }
                             }
 
-                            if(var7 == -999) {
-                                var7 = var1;
-                                var8 = var1;
-                                var9 = var22;
-                                var10 = var22;
-                                var11 = var3;
-                                var12 = var3;
+                            if(var5 == -999) {
+                                var5 = var1;
+                                var6 = var1;
+                                var7 = var14;
+                                var8 = var14;
+                                var9 = var15;
+                                var10 = var15;
                             }
 
-                            if(var1 < var7) {
-                                var7 = var1;
-                            } else if(var1 > var8) {
-                                var8 = var1;
+                            if(var1 < var5) {
+                                var5 = var1;
+                            } else if(var1 > var6) {
+                                var6 = var1;
                             }
 
-                            if(var22 > var10) {
-                                var10 = var22;
-                            } else if(var22 < var9) {
-                                var9 = var22;
+                            if(var14 > var8) {
+                                var8 = var14;
+                            } else if(var14 < var7) {
+                                var7 = var14;
                             }
 
-                            if(var3 < var11) {
-                                var11 = var3;
-                            } else if(var3 > var12) {
-                                var12 = var3;
+                            if(var15 < var9) {
+                                var9 = var15;
+                            } else if(var15 > var10) {
+                                var10 = var15;
                             }
                         }
                     }
                 }
 
-                if(var7 > -999) {
-                    var5.k.add(new MetadataChunkBlock(var5, var7, var9, var11, var8, var10, var12));
+                if(var5 > -999) {
+                    var22.skyLightList.add(new MetadataChunkBlock(var22, var5, var7, var9, var6, var8, var10));
                 }
 
-                if(var14 > 0) {
-                    var21 = true;
+                if(var12 > 0) {
+                    var20 = true;
                 }
             }
 
@@ -350,6 +401,6 @@ public final class Light {
     }
 
     public final String debugSkylightUpdates() {
-        return "" + (this.l.size() + this.m.size());
+        return "" + (this.blockLightList.size() + this.skyLightList.size());
     }
 }

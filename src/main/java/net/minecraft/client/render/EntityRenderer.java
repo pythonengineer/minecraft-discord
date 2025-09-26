@@ -326,6 +326,7 @@ public final class EntityRenderer {
             var18 = this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * var1;
             GL11.glTranslatef(-var17, -var14, -var18);
             this.setupFog();
+            GL11.glEnable(GL11.GL_FOG);
             this.mc.renderGlobal.renderSky(var1);
             this.setupFog();
             Frustrum var40 = new Frustrum(var30, this.farPlaneDistance, var1);

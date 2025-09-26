@@ -499,7 +499,7 @@ public class PlatformAudio {
         panner.setConeInnerAngle(360.0f);
         panner.setConeOuterAngle(0.0f);
         panner.setConeOuterGain(0.0f);
-        panner.setOrientation(0.0f, 1.0f, 0.0f);
+        panner.setOrientation(0.0f, 0.0f, 0.0f);
 
         GainNode gain = audioctx.createGain();
         float v2 = volume;
@@ -542,17 +542,19 @@ public class PlatformAudio {
     }
 
     public static void setListener(float x, float y, float z, float pitchDegrees, float yawDegrees) {
-        float upX = MathHelper.sin(-yawDegrees * ((float)Math.PI / 180.0F) - (float)Math.PI);
-        float upY = MathHelper.cos(-pitchDegrees * ((float)Math.PI / 180.0F));
-        float upZ = MathHelper.cos(-yawDegrees * ((float)Math.PI / 180.0F) - (float)Math.PI);
+        float upX = MathHelper.sin(-yawDegrees * ((float)Math.PI / 180.0f) - (float)Math.PI);
+        float upY = MathHelper.cos(-pitchDegrees * ((float)Math.PI / 180.0f));
+        float upZ = MathHelper.cos(-yawDegrees * ((float)Math.PI / 180.0f) - (float)Math.PI);
         float lookX = upX * upY;
-        float lookY = MathHelper.sin(-pitchDegrees * ((float)Math.PI / 180.0F));
+        float lookY = MathHelper.sin(-pitchDegrees * ((float)Math.PI / 180.0f));
         float lookZ = upZ * upY;
         upX *= lookY;
         upZ *= lookY;
         AudioListener l = audioctx.getListener();
         l.setPosition(x, y, z);
-        l.setOrientation(lookX, lookY, lookZ, upX, upY, upZ);
+        // WebAudio is very, very broken
+        //l.setOrientation(lookX, lookY, lookZ, upX, upY, upZ);
+        l.setOrientation(lookX, 0.0f, lookZ, 0.0f, 0.0f, 0.0f);
     }
 
     static void destroy() {

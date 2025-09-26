@@ -3,7 +3,6 @@ package net.minecraft.client.controller;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.MobSpawner;
@@ -23,32 +22,6 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
-	}
-
-	public final void flipPlayer(EntityPlayer var1) {
-        int var2 = (int)var1.posX;
-        int var3 = (int)var1.posY;
-        int var8 = (int)var1.posZ;
-
-        for(int var4 = var2 - 3; var4 <= var2 + 3; ++var4) {
-            for(int var5 = var3 - 2; var5 <= var3 + 2; ++var5) {
-                for(int var6 = var8 - 3; var6 <= var8 + 3; ++var6) {
-                    int var7 = var5 < var3 - 1 ? Block.obsidian.blockID : 0;
-                    if(var4 == var2 - 3 || var6 == var8 - 3 || var4 == var2 + 3 || var6 == var8 + 3 || var5 == var3 - 2 || var5 == var3 + 2) {
-                        var7 = Block.cobblestoneMossy.blockID;
-                    }
-
-                    if(var6 == var8 - 3 && var4 == var2 && var5 >= var3 - 1 && var5 <= var3) {
-                        var7 = 0;
-                    }
-
-                    this.mc.theWorld.setBlockWithNotify(var4, var5, var6, var7);
-                }
-            }
-        }
-
-        this.mc.theWorld.setBlockWithNotify(var2 - 3 + 1, var3, var8, Block.torch.blockID);
-        this.mc.theWorld.setBlockWithNotify(var2 + 3 - 1, var3, var8, Block.torch.blockID);
 	}
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {
@@ -96,14 +69,14 @@ public final class PlayerControllerSP extends PlayerController {
                     this.curBlockDamage += var6.blockStrength(this.mc.thePlayer);
                     if(this.blockDestroySoundCounter % 4.0F == 0.0F && var6 != null) {
                         SoundManager var10000 = this.mc.sndManager;
-                        var6.stepSound.stepSoundDir2();
-						float var10002 = (float)var1 + 0.5F;
-						float var10003 = (float)var2 + 0.5F;
-						float var10004 = (float)var3 + 0.5F;
-						StepSound var5 = var6.stepSound;
-						float var10005 = (var5.soundVolume + 1.0F) / 8.0F;
-						var5 = var6.stepSound;
-                        float var7 = var5.soundPitch * 0.5F;
+                        String var10001 = var6.stepSound.stepSoundDir2();
+                        float var10002 = (float)var1 + 0.5F;
+                        float var10003 = (float)var2 + 0.5F;
+                        float var10004 = (float)var3 + 0.5F;
+                        StepSound var5 = var6.stepSound;
+                        float var10005 = (var5.soundVolume + 1.0F) / 8.0F;
+                        var5 = var6.stepSound;
+                        var10000.playSound(var10001, var10002, var10003, var10004, var10005, var5.soundPitch * 0.5F);
 					}
 
                     ++this.blockDestroySoundCounter;

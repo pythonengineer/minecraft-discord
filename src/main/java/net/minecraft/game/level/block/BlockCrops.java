@@ -88,7 +88,7 @@ public final class BlockCrops extends BlockFlower {
         super.onBlockDestroyedByPlayer(var1, var2, var3, var4, var5);
 
         for(int var6 = 0; var6 < 3; ++var6) {
-            if(var1.random.nextInt(18) <= var5) {
+            if(var1.random.nextInt(15) <= var5) {
                 float var7 = var1.random.nextFloat() * 0.7F + 0.15F;
                 float var8 = var1.random.nextFloat() * 0.7F + 0.15F;
                 float var9 = var1.random.nextFloat() * 0.7F + 0.15F;

@@ -111,6 +111,9 @@ public final class RenderGlobal implements IWorldAccess {
             this.worldObj.removeWorldAccess(this);
         }
 
+        this.prevSortX = -9999.0F;
+        this.prevSortY = -9999.0F;
+        this.prevSortZ = -9999.0F;
         RenderManager.instance.set(var1);
         this.worldObj = var1;
         this.globalRenderBlocks = new RenderBlocks(var1);
@@ -721,6 +724,7 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final void playSound(String var1, float var2, float var3, float var4, float var5, float var6) {
+        this.mc.sndManager.playSound(var1, var2, var3, var4, var5, var6);
     }
 
     public final void spawnParticle(String var1, float var2, float var3, float var4, float var5, float var6, float var7) {
@@ -750,6 +754,7 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final void playMusic(String var1, float var2, float var3, float var4, float var5) {
+        this.mc.sndManager.playRandomMusicIfReady(var2, var3, var4);
     }
 
     public final void obtainEntitySkin(Entity var1) {

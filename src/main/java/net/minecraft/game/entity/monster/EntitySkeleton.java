@@ -13,6 +13,15 @@ public class EntitySkeleton extends EntityMob {
 		this.texture = "/mob/skeleton.png";
 	}
 
+    public final void onLivingUpdate() {
+        float var1 = this.getBrightness(1.0F);
+        if(var1 > 0.5F && this.worldObj.canBlockSeeTheSky((int)this.posX, (int)this.posY, (int)this.posZ) && this.rand.nextFloat() * 40.0F < (var1 - 0.5F) * 2.0F) {
+            this.fire = 300;
+        }
+
+        super.onLivingUpdate();
+    }
+
 	protected final void attackEntity(Entity var1, float var2) {
 		if(var2 < 10.0F) {
 			var2 = var1.posX - this.posX;

@@ -14,8 +14,20 @@ public class EntitySpider extends EntityMob {
 		this.moveSpeed = 0.8F;
 	}
 
-	protected final void attackEntity(Entity var1, float var2) {
-		if(var2 > 2.0F && var2 < 6.0F && this.rand.nextInt(5) == 0) {
+    protected final Entity findPlayerToAttack() {
+        float var1 = this.getBrightness(1.0F);
+        if(var1 < 0.5F) {
+            var1 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
+            if(var1 < 256.0F) {
+                return this.worldObj.playerEntity;
+            }
+        }
+
+        return null;
+    }
+
+    protected final void attackEntity(Entity var1, float var2) {
+        if(var2 > 2.0F && var2 < 6.0F && this.rand.nextInt(10) == 0) {
 			if(this.onGround) {
 				var2 = var1.posX - this.posX;
 				float var4 = var1.posZ - this.posZ;

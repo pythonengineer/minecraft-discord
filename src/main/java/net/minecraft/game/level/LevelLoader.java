@@ -70,7 +70,7 @@ public abstract class LevelLoader {
             var9.skyBrightness = 0;
         }
 
-        if(var9.skyBrightness > 15) {
+        if(var9.skyBrightness > 16) {
             var9.skyBrightness = var9.skyBrightness * 15 / 100;
         }
 
