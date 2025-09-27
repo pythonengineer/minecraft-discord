@@ -90,7 +90,7 @@ public final class BlockCrops extends BlockFlower {
                 float var7 = var1.random.nextFloat() * 0.7F + 0.15F;
                 float var8 = var1.random.nextFloat() * 0.7F + 0.15F;
                 float var9 = var1.random.nextFloat() * 0.7F + 0.15F;
-                EntityItem var10 = new EntityItem(var1, (float)var2 + var7, (float)var3 + var8, (float)var4 + var9, new ItemStack(Item.wheat));
+                EntityItem var10 = new EntityItem(var1, (float)var2 + var7, (float)var3 + var8, (float)var4 + var9, new ItemStack(Item.seeds));
                 var10.delayBeforeCanPickup = 10;
                 var1.spawnEntityInWorld(var10);
             }
@@ -100,10 +100,11 @@ public final class BlockCrops extends BlockFlower {
 
     public final int idDropped(int var1) {
         System.out.println("Get resource: " + var1);
-        return var1 == 7 ? Item.bread.shiftedIndex : -1;
+        return var1 == 7 ? Item.wheat.shiftedIndex : -1;
     }
 
     public final int quantityDropped(EaglercraftRandom var1) {
         return 1;
     }
 }
+
