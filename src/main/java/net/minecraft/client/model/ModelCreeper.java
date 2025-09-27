@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public final class ModelCreeper extends ModelBase {
     private ModelRenderer head = new ModelRenderer(0, 0);
-    private ModelRenderer unusedCreeperHeadwear;
+    private ModelRenderer headwear;
     private ModelRenderer body;
     private ModelRenderer leg1;
     private ModelRenderer leg2;
@@ -14,9 +14,9 @@ public final class ModelCreeper extends ModelBase {
     public ModelCreeper() {
         this.head.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
         this.head.setRotationPoint(0.0F, 4.0F, 0.0F);
-        this.unusedCreeperHeadwear = new ModelRenderer(32, 0);
-        this.unusedCreeperHeadwear.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F);
-        this.unusedCreeperHeadwear.setRotationPoint(0.0F, 4.0F, 0.0F);
+        this.headwear = new ModelRenderer(32, 0);
+        this.headwear.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.5F);
+        this.headwear.setRotationPoint(0.0F, 4.0F, 0.0F);
         this.body = new ModelRenderer(16, 16);
         this.body.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, 0.0F);
         this.body.setRotationPoint(0.0F, 4.0F, 0.0F);

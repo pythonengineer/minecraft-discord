@@ -84,7 +84,7 @@ public abstract class Render {
         float var19;
         int var29;
         float var34;
-        float var35;
+        float var36;
         if(this.shadowSize > 0.0F) {
             var5 = this.renderManager.getDistanceToCamera(var2, var3, var4);
             var5 = (1.0F - var5 / 256.0F) * this.shadowOpaque;
@@ -116,14 +116,14 @@ public abstract class Render {
                                     var18 = (float)var29 + var16.maxX;
                                     float var20 = (float)var13 + var16.minY;
                                     float var21 = (float)var14 + var16.minZ;
-                                    var35 = (float)var14 + var16.maxZ;
+                                    var36 = (float)var14 + var16.maxZ;
                                     float var22 = (var6 - var34) / 2.0F / var12 + 0.5F;
                                     float var17 = (var6 - var18) / 2.0F / var12 + 0.5F;
                                     float var23 = (var8 - var21) / 2.0F / var12 + 0.5F;
-                                    var19 = (var8 - var35) / 2.0F / var12 + 0.5F;
+                                    var19 = (var8 - var36) / 2.0F / var12 + 0.5F;
                                     var25.addVertexWithUV(var34, var20, var21, var22, var23);
-                                    var25.addVertexWithUV(var34, var20, var35, var22, var19);
-                                    var25.addVertexWithUV(var18, var20, var35, var17, var19);
+                                    var25.addVertexWithUV(var34, var20, var36, var22, var19);
+                                    var25.addVertexWithUV(var18, var20, var36, var17, var19);
                                     var25.addVertexWithUV(var18, var20, var21, var17, var23);
                                     var25.draw();
                                 }
@@ -152,27 +152,27 @@ public abstract class Render {
             var34 = var1.width * 1.4F;
             GL11.glScalef(var34, var34, var34);
             this.loadTexture("/terrain.png");
-            Tessellator var36 = Tessellator.instance;
-            var35 = 1.0F;
+            Tessellator var35 = Tessellator.instance;
+            var36 = 1.0F;
             var18 = 0.0F;
             var19 = var1.height / var1.width;
             GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
             GL11.glTranslatef(0.0F, 0.0F, 0.4F + (float)((int)var19) * 0.02F);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            var36.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+            var35.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
 
             while(var19 > 0.0F) {
-                var36.addVertexWithUV(-0.5F, 0.0F - var18, 0.0F, var12, var33);
-                var36.addVertexWithUV(var35 - 0.5F, 0.0F - var18, 0.0F, var31, var33);
-                var36.addVertexWithUV(var35 - 0.5F, 1.4F - var18, 0.0F, var31, var32);
-                var36.addVertexWithUV(-0.5F, 1.4F - var18, 0.0F, var12, var32);
+                var35.addVertexWithUV(var36 - 0.5F, 0.0F - var18, 0.0F, var31, var33);
+                var35.addVertexWithUV(-0.5F, 0.0F - var18, 0.0F, var12, var33);
+                var35.addVertexWithUV(-0.5F, 1.4F - var18, 0.0F, var12, var32);
+                var35.addVertexWithUV(var36 - 0.5F, 1.4F - var18, 0.0F, var31, var32);
                 --var19;
                 --var18;
-                var35 *= 0.9F;
+                var36 *= 0.9F;
                 GL11.glTranslatef(0.0F, 0.0F, -0.04F);
             }
 
-            var36.draw();
+            var35.draw();
             GL11.glPopMatrix();
             GL11.glEnable(GL11.GL_LIGHTING);
         }

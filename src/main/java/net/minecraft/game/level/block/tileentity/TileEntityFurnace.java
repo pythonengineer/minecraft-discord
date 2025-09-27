@@ -173,12 +173,12 @@ public final class TileEntityFurnace extends TileEntity implements IInventory {
             return false;
         } else {
             int var1 = smeltItem(this.furnaceItemStacks[0].getItem().shiftedIndex);
-            return var1 < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != var1 ? false : this.furnaceItemStacks[2].stackSize < 64));
+            return var1 < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != var1 ? false : (this.furnaceItemStacks[2].stackSize < 64 ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[var1].getItemStackLimit())));
         }
     }
 
     public static int smeltItem(int var0) {
-        return var0 == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (var0 == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (var0 == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (var0 == Block.sand.blockID ? Block.glass.blockID : (var0 == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : -1))));
+        return var0 == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (var0 == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (var0 == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (var0 == Block.sand.blockID ? Block.glass.blockID : (var0 == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (var0 == Block.cobblestone.blockID ? Block.stone.blockID : -1)))));
     }
 
     private static int getItemBurnTime(ItemStack var0) {

@@ -149,7 +149,7 @@ public final class GuiIngame extends Gui {
 		GL11.glPopMatrix();
 
         for(var10 = 0; var10 < 9; ++var10) {
-            int var25 = (scaledWidth / 2 - 90 + var10 * 20 + 2);
+            int var25 = scaledWidth / 2 - 90 + var10 * 20 + 2;
             int var21 = scaledHeight - 16 - 3;
             ItemStack var22 = this.mc.thePlayer.inventory.mainInventory[var10];
             if(var22 != null) {
