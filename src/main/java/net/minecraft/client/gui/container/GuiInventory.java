@@ -6,6 +6,7 @@ import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.ItemArmor;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.item.recipe.CraftingManager;
 
@@ -28,7 +29,7 @@ public final class GuiInventory extends GuiContainer {
         }
 
 		for(var2 = 0; var2 < 4; ++var2) {
-			this.inventorySlots.add(new Slot(this, var1, var1.getSizeInventory() - 1 - var2, 8, 8 + var2 * 18));
+            this.inventorySlots.add(new SlotArmor(this, this, var1, var1.getSizeInventory() - 1 - var2, 8, 8 + var2 * 18, var2));
 		}
 
 		for(var2 = 0; var2 < 3; ++var2) {
@@ -110,6 +111,7 @@ public final class GuiInventory extends GuiContainer {
         this.mc.thePlayer.renderYawOffset = (float)Math.atan((double)(var6 / 40.0F)) * 20.0F;
         this.mc.thePlayer.rotationYaw = (float)Math.atan((double)(var6 / 40.0F)) * 40.0F;
         this.mc.thePlayer.rotationPitch = -((float)Math.atan((double)(var7 / 40.0F))) * 20.0F;
+        GL11.glTranslatef(0.0F, this.mc.thePlayer.yOffset, 0.0F);
         RenderManager.instance.renderEntityWithPosYaw(this.mc.thePlayer, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F);
         this.mc.thePlayer.renderYawOffset = var3;
         this.mc.thePlayer.rotationYaw = var4;
@@ -137,13 +139,13 @@ public final class GuiInventory extends GuiContainer {
                 if (!this.mergeItemStack(itemstack1, 9, 45, false)) {
                     return null;
                 }
-            //} else if (itemstack.getItem() instanceof ItemArmor
-            //        && !((Slot) this.inventorySlots.get(5 + ((ItemArmor) itemstack.getItem()).armorType))
-            //                .getHasStack()) {
-            //    int j = 5 + ((ItemArmor) itemstack.getItem()).armorType;
-            //    if (!this.mergeItemStack(itemstack1, j, j + 1, false)) {
-            //        return null;
-            //    }
+            } else if (itemstack.getItem() instanceof ItemArmor
+                    && !((Slot) this.inventorySlots.get(5 + ((ItemArmor) itemstack.getItem()).armorType))
+                            .getHasStack()) {
+                int j = 5 + ((ItemArmor) itemstack.getItem()).armorType;
+                if (!this.mergeItemStack(itemstack1, j, j + 1, false)) {
+                    return null;
+                }
             } else if (i >= 9 && i < 36) {
                 if (!this.mergeItemStack(itemstack1, 36, 45, false)) {
                     return null;
@@ -168,5 +170,9 @@ public final class GuiInventory extends GuiContainer {
         }
 
         return itemstack;
+    }
+
+    public boolean canMergeSlot(ItemStack itemstack, Slot slot) {
+        return slot.inventory != this.iInventory && super.canMergeSlot(itemstack, slot);
     }
 }

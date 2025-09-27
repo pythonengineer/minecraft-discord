@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.container;
 
 import net.minecraft.game.IInventory;
+import net.minecraft.game.item.ItemStack;
 
 final class SlotCrafting extends Slot {
     private final IInventory craftMatrix;
@@ -10,7 +11,7 @@ final class SlotCrafting extends Slot {
         this.craftMatrix = var2;
     }
 
-    public final boolean isItemValid() {
+    public final boolean isItemValid(ItemStack var1) {
         return false;
     }
 

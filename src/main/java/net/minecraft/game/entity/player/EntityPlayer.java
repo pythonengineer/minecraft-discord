@@ -10,18 +10,20 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.projectile.EntityArrow;
-import net.minecraft.game.item.Item;
+import net.minecraft.game.item.ItemArmor;
 import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.material.Material;
 
 public class EntityPlayer extends EntityLiving {
-    public InventoryPlayer inventory = new InventoryPlayer();
+    public InventoryPlayer inventory = new InventoryPlayer(this);
     public byte unusedByte = 0;
     public int getScore = 0;
     public float prevCameraYaw;
     public float cameraYaw;
+    private int damageRemainder = 0;
 
     public EntityPlayer(World var1) {
         super(var1);
@@ -118,8 +120,8 @@ public class EntityPlayer extends EntityLiving {
         if(var1 != null) {
             EntityItem var4 = new EntityItem(this.worldObj, this.posX, this.posY - 0.3F, this.posZ, var1);
             var4.delayBeforeCanPickup = 40;
-            var4.motionX = MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F;
-            var4.motionZ = -MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F;
+            var4.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F;
+            var4.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F;
             var4.motionY = -MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F + 0.1F;
             float var3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
             float var5 = 0.02F * this.rand.nextFloat();
@@ -162,7 +164,12 @@ public class EntityPlayer extends EntityLiving {
         }
     }
 
+    protected void readEntityFromNBT(NBTTagCompound var1) {
+        super.readEntityFromNBT(var1);
+    }
+
     protected void writeEntityToNBT(NBTTagCompound var1) {
+        super.writeEntityToNBT(var1);
     }
 
     protected String getEntityString() {
@@ -183,21 +190,52 @@ public class EntityPlayer extends EntityLiving {
     }
 
     public final boolean attackEntityFrom(Entity var1, int var2) {
-        if(var1 instanceof EntityMob || var1 instanceof EntityArrow) {
-            if(this.worldObj.difficultySetting == 0) {
-                var2 = 0;
-            }
+        if(!this.worldObj.survivalWorld) {
+            return false;
+        } else {
+            this.entityAge = 0;
+            if(this.health <= 0) {
+                return false;
+            } else if((float)this.heartsLife > (float)this.heartsHalvesLife / 2.0F) {
+                return false;
+            } else {
+                if(var1 instanceof EntityMob || var1 instanceof EntityArrow) {
+                    if(this.worldObj.difficultySetting == 0) {
+                        var2 = 0;
+                    }
 
-            if(this.worldObj.difficultySetting == 1) {
-                var2 = var2 / 3 + 1;
-            }
+                    if(this.worldObj.difficultySetting == 1) {
+                        var2 = var2 / 3 + 1;
+                    }
 
-            if(this.worldObj.difficultySetting == 3) {
-                var2 = var2 * 3 / 2;
+                    if(this.worldObj.difficultySetting == 3) {
+                        var2 = var2 * 3 / 2;
+                    }
+                }
+
+                int var3 = 25 - this.inventory.getPlayerArmorValue();
+                var3 = var2 * var3 + this.damageRemainder;
+                int var4 = var2;
+                InventoryPlayer var6 = this.inventory;
+
+                for(int var5 = 0; var5 < var6.armorInventory.length; ++var5) {
+                    if(var6.armorInventory[var5] != null && var6.armorInventory[var5].getItem() instanceof ItemArmor) {
+                        var6.armorInventory[var5].damageItem(var4);
+                        if(var6.armorInventory[var5].stackSize == 0) {
+                            var6.armorInventory[var5] = null;
+                        }
+                    }
+                }
+
+                var2 = var3 / 25;
+                this.damageRemainder = var3 % 25;
+                if(var2 == 0) {
+                    return false;
+                } else {
+                    return super.attackEntityFrom(var1, var2);
+                }
             }
         }
-
-        return super.attackEntityFrom(var1, var2);
     }
 
     public final void dropOneItem(boolean flag) {

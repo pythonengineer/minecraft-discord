@@ -10,7 +10,7 @@ import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.StepSound;
 
 public class EntityLiving extends Entity {
-	private int heartsHalvesLife = 20;
+	public int heartsHalvesLife = 20;
 	public float renderYawOffset = 0.0F;
 	public float prevRenderYawOffset = 0.0F;
 	private float rotationYawHead;
@@ -331,6 +331,10 @@ public class EntityLiving extends Entity {
 
 	protected void readEntityFromNBT(NBTTagCompound var1) {
 		this.health = var1.getShort("Health");
+        if(!var1.hasKey("Health")) {
+            this.health = 10;
+        }
+
 		this.hurtTime = var1.getShort("HurtTime");
 		this.deathTime = var1.getShort("DeathTime");
 		this.attackTime = var1.getShort("AttackTime");

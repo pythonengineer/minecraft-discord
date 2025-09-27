@@ -416,7 +416,7 @@ public final class LevelGenerator {
         this.guiLoading.displayLoadingString("Assembling..");
         this.loadingBar();
         this.setNextPhase(0.0F);
-        var6.generate(var2, var4, var3, this.blocksByteArray);
+        var6.generate(var2, var4, var3, this.blocksByteArray, (byte[])null);
         this.guiLoading.displayLoadingString("Building..");
         this.loadingBar();
         this.setNextPhase(0.0F);

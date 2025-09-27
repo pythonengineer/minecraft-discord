@@ -10,6 +10,7 @@ import net.minecraft.game.physics.Vec3D;
 public final class BlockTorch extends Block {
     protected BlockTorch(int var1, int var2) {
         super(50, 80, Material.circuits);
+        this.setTickOnLoad(true);
     }
 
     public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
@@ -57,6 +58,14 @@ public final class BlockTorch extends Block {
         var1.setBlockMetadata(var2, var3, var4, var6);
     }
 
+    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        super.updateTick(var1, var2, var3, var4, var5);
+        if(var1.getBlockMetadata(var2, var3, var4) == 0) {
+            this.onBlockAdded(var1, var2, var3, var4);
+        }
+
+    }
+
     public final void onBlockAdded(World var1, int var2, int var3, int var4) {
         if(var1.isBlockNormalCube(var2 - 1, var3, var4)) {
             var1.setBlockMetadata(var2, var3, var4, 1);
@@ -93,7 +102,7 @@ public final class BlockTorch extends Block {
                 var6 = true;
             }
 
-            if(!var1.isBlockNormalCube(var2, var3 - 1, var4 + 1) && var7 == 5) {
+            if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && var7 == 5) {
                 var6 = true;
             }
 

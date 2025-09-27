@@ -121,22 +121,32 @@ public final class Pathfinder {
         }
 
         if(var8 != null) {
-            for(var6 = 0; var3 > 0; var8 = this.openPoint(var2, var3, var4)) {
-                int var7 = this.getVerticalOffset(var2, var3 - 1, var4, var5);
-                if(var7 <= 0) {
-                    break;
+            var6 = 0;
+
+            while(true) {
+                if(var3 > 0) {
+                    int var7 = this.getVerticalOffset(var2, var3 - 1, var4, var5);
+                    if(var7 > 0) {
+                        if(var7 < 0) {
+                            return null;
+                        }
+
+                        ++var6;
+                        if(var6 >= 4) {
+                            return null;
+                        }
+
+                        --var3;
+                        var8 = this.openPoint(var2, var3, var4);
+                        continue;
+                    }
                 }
 
-                if(var7 < 0) {
+                Material var9 = this.worldMap.getBlockMaterial(var2, var3 - 1, var4);
+                if(var9 == Material.water || var9 == Material.lava) {
                     return null;
                 }
-
-                ++var6;
-                if(var6 >= 4) {
-                    return null;
-                }
-
-                --var3;
+                break;
             }
         }
 

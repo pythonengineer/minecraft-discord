@@ -73,12 +73,7 @@ public class EntityCreature extends EntityLiving {
 
             boolean var11 = this.handleWaterMovement();
             boolean var12 = this.handleLavaMovement();
-            if(this.pathToEntity == null) {
-                if(var11 || var12) {
-                    this.isJumping = this.rand.nextFloat() < 0.8F;
-                }
-
-            } else {
+            if(this.pathToEntity != null && this.rand.nextInt(100) != 0) {
                 Vec3D var13 = this.pathToEntity.getPosition(this);
                 var4 = this.width * 2.0F;
 
@@ -115,10 +110,13 @@ public class EntityCreature extends EntityLiving {
                     }
                 }
 
-                if(var11 || var12) {
-                    this.isJumping = this.rand.nextFloat() < 0.8F;
+                if(this.rand.nextFloat() < 0.8F && (var11 || var12)) {
+                    this.isJumping = true;
                 }
 
+            } else {
+                super.updatePlayerActionState();
+                this.pathToEntity = null;
             }
         }
     }

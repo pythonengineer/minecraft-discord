@@ -49,19 +49,19 @@ public final class MovementInputFromOptions extends MovementInput {
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;
         if(this.keys[0]) {
-            --this.moveForward;
-        }
-
-        if(this.keys[1]) {
             ++this.moveForward;
         }
 
+        if(this.keys[1]) {
+            --this.moveForward;
+        }
+
         if(this.keys[2]) {
-            --this.moveStrafe;
+            ++this.moveStrafe;
         }
 
         if(this.keys[3]) {
-            ++this.moveStrafe;
+            --this.moveStrafe;
         }
 
         this.jump = this.keys[4];

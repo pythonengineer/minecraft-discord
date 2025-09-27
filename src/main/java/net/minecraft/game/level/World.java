@@ -13,6 +13,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.level.block.Block;
+import net.minecraft.game.level.block.BlockContainer;
 import net.minecraft.game.level.block.tileentity.TileEntity;
 import net.minecraft.game.level.material.Material;
 import net.minecraft.game.level.path.Pathfinder;
@@ -84,90 +85,21 @@ public final class World {
         }
     }
 
-    public final void generate(int var1, int var2, int var3, byte[] var4) {
+    public final void generate(int var1, int var2, int var3, byte[] var4, byte[] var5) {
+        if(var5 != null && var5.length == 0) {
+            var5 = null;
+        }
+
         this.width = var1;
         this.length = var3;
         this.height = var2;
         this.blocks = var4;
 
-        int var5;
         int var6;
         int var7;
         for(var2 = 0; var2 < this.width; ++var2) {
-            for(var5 = 0; var5 < this.length; ++var5) {
-                for(var6 = 0; var6 < this.height; ++var6) {
-                    var7 = 0;
-                    if(var6 <= 1 && var6 < this.groundLevel - 1 && var4[((var6 + 1) * this.length + var5) * this.width + var2] == 0) {
-                        var7 = Block.lavaStill.blockID;
-                    } else if(var6 < this.groundLevel - 1) {
-                        var7 = Block.bedrock.blockID;
-                    } else if(var6 < this.groundLevel) {
-                        if(this.groundLevel > this.waterLevel && this.defaultFluid == Block.waterMoving.blockID) {
-                            var7 = Block.grass.blockID;
-                        } else {
-                            var7 = Block.dirt.blockID;
-                        }
-                    } else if(var6 < this.waterLevel) {
-                        var7 = this.defaultFluid;
-                    }
-
-                    var4[(var6 * this.length + var5) * this.width + var2] = (byte)var7;
-                    if(var6 == 1 && var2 != 0 && var5 != 0 && var2 != this.width - 1 && var5 != this.length - 1) {
-                        var6 = this.height - 2;
-                    }
-                }
-            }
-        }
-
-        this.data = new byte[var4.length];
-        this.heightMap = new int[var1 * var3];
-        Arrays.fill(this.heightMap, this.height);
-        this.lightUpdates = new Light(this);
-        World var9 = this;
-        var2 = this.skylightSubtracted;
-
-        for(var3 = 0; var3 < var9.width; ++var3) {
-            for(int var10 = 0; var10 < var9.length; ++var10) {
-                for(var5 = var9.height - 1; var5 > 0 && Block.lightOpacity[var9.getBlockId(var3, var5, var10)] == 0; --var5) {
-                }
-
-                var9.heightMap[var3 + var10 * var9.width] = var5 + 1;
-
-                for(var5 = 0; var5 < var9.height; ++var5) {
-                    var6 = (var5 * var9.length + var10) * var9.width + var3;
-                    var7 = var9.heightMap[var3 + var10 * var9.width];
-                    var7 = var5 >= var7 ? var2 : 0;
-                    byte var8 = var9.blocks[var6];
-                    if(var7 < Block.lightValue[var8]) {
-                        var7 = Block.lightValue[var8];
-                    }
-
-                    var9.data[var6] = (byte)((var9.data[var6] & 240) + var7);
-                }
-            }
-        }
-
-        var9.lightUpdates.updateBlockLight(0, 0, 0, var9.width, var9.height, var9.length);
-
-        for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
-            ((IWorldAccess)this.worldAccesses.get(var2)).loadRenderers();
-        }
-
-        this.tickList.clear();
-        this.findSpawn();
-        this.load();
-        System.gc();
-    }
-
-    public final void generate(int var1, int var2, int var3, byte[] var4, byte[] var5) {
-        this.width = var1;
-        this.length = var3;
-        this.height = var2;
-        this.blocks = var4;
-
-        for(var2 = 0; var2 < this.width; ++var2) {
-            for(int var6 = 0; var6 < this.length; ++var6) {
-                for(int var7 = 0; var7 < this.height; ++var7) {
+            for(var6 = 0; var6 < this.length; ++var6) {
+                for(var7 = 0; var7 < this.height; ++var7) {
                     int var8 = 0;
                     if(var7 <= 1 && var7 < this.groundLevel - 1 && var4[((var7 + 1) * this.length + var6) * this.width + var2] == 0) {
                         var8 = Block.lavaStill.blockID;
@@ -191,10 +123,42 @@ public final class World {
             }
         }
 
-        this.data = var5;
         this.heightMap = new int[var1 * var3];
         Arrays.fill(this.heightMap, this.height);
-        this.lightUpdates = new Light(this);
+        if(var5 == null) {
+            this.data = new byte[var4.length];
+            this.lightUpdates = new Light(this);
+            boolean var10 = true;
+            World var11 = this;
+            var2 = this.skylightSubtracted;
+
+            for(var3 = 0; var3 < var11.width; ++var3) {
+                for(int var12 = 0; var12 < var11.length; ++var12) {
+                    int var13;
+                    for(var13 = var11.height - 1; var13 > 0 && Block.lightOpacity[var11.getBlockId(var3, var13, var12)] == 0; --var13) {
+                    }
+
+                    var11.heightMap[var3 + var12 * var11.width] = var13 + 1;
+
+                    for(var13 = 0; var13 < var11.height; ++var13) {
+                        var6 = (var13 * var11.length + var12) * var11.width + var3;
+                        var7 = var11.heightMap[var3 + var12 * var11.width];
+                        var7 = var13 >= var7 ? var2 : 0;
+                        byte var14 = var11.blocks[var6];
+                        if(var7 < Block.lightValue[var14]) {
+                            var7 = Block.lightValue[var14];
+                        }
+
+                        var11.data[var6] = (byte)((var11.data[var6] & 240) + var7);
+                    }
+                }
+            }
+
+            var11.lightUpdates.updateBlockLight(0, 0, 0, var11.width, var11.height, var11.length);
+        } else {
+            this.data = var5;
+            this.lightUpdates = new Light(this);
+        }
 
         for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
             ((IWorldAccess)this.worldAccesses.get(var2)).loadRenderers();
@@ -226,6 +190,7 @@ public final class World {
                             this.xSpawn = var3;
                             this.ySpawn = this.height + 100;
                             this.zSpawn = var4;
+                            this.rotSpawn = 180.0F;
                             return;
                         }
                     } while(var5 < 4);
@@ -257,6 +222,7 @@ public final class World {
                 this.xSpawn = var3;
                 this.ySpawn = var5;
                 this.zSpawn = var4;
+                this.rotSpawn = 180.0F;
                 return;
             }
         }
@@ -1280,10 +1246,6 @@ public final class World {
         return null;
     }
 
-    public final int getMapHeight(int var1, int var2) {
-        return this.heightMap[var1 + var2 * this.width];
-    }
-
     public final int fluidFlowCheck(int var1, int var2, int var3, int var4, int var5) {
         if(var1 >= 0 && var2 >= 0 && var3 >= 0 && var1 < this.width && var2 < this.height && var3 < this.length) {
             int var6 = var1;
@@ -1584,7 +1546,16 @@ public final class World {
     }
 
     public final TileEntity getBlockTileEntity(int var1, int var2, int var3) {
-        return (TileEntity)this.map.get(Integer.valueOf(var1 + (var2 << 10) + (var3 << 10 << 10)));
+        int var4 = var1 + (var2 << 10) + (var3 << 10 << 10);
+        TileEntity var5 = (TileEntity)this.map.get(Integer.valueOf(var4));
+        if(var5 == null) {
+            int var6 = this.getBlockId(var1, var2, var3);
+            BlockContainer var7 = (BlockContainer)Block.blocksList[var6];
+            var7.onBlockAdded(this, var1, var2, var3);
+            var5 = (TileEntity)this.map.get(Integer.valueOf(var4));
+        }
+
+        return var5;
     }
 
     public final void spawnParticle(String var1, float var2, float var3, float var4, float var5, float var6, float var7) {

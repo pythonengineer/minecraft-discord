@@ -22,7 +22,7 @@ public class Block {
     private static StepSound soundMetalFootstep = new StepSound("stone", 1.0F, 1.5F);
     private static StepSound soundGlassFootstep = new StepSoundGlass("stone", 1.0F, 1.0F);
     private static StepSound soundClothFootstep = new StepSound("cloth", 1.0F, 1.0F);
-    private static StepSound soundSandFootstep = new StepSoundGravel("sand", 1.0F, 1.0F);
+    private static StepSound soundSandFootstep = new StepSoundSand("sand", 1.0F, 1.0F);
     public static final Block[] blocksList = new Block[256];
     public static final boolean[] tickOnLoad = new boolean[256];
     public static final boolean[] opaqueCubeLookup = new boolean[256];
@@ -431,8 +431,8 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         bedrock = var0;
-        waterMoving = (new BlockFlowing(8, Material.water)).setHardness(100.0F).setLightOpacity(4);
-        waterStill = (new BlockStationary(9, Material.water)).setHardness(100.0F).setLightOpacity(2);
+        waterMoving = (new BlockFlowing(8, Material.water)).setHardness(100.0F).setLightOpacity(3);
+        waterStill = (new BlockStationary(9, Material.water)).setHardness(100.0F).setLightOpacity(3);
         lavaMoving = (new BlockFlowing(10, Material.lava)).setHardness(0.0F).setLightValue(1.0F).setLightOpacity(255);
         lavaStill = (new BlockStationary(11, Material.lava)).setHardness(100.0F).setLightValue(1.0F).setLightOpacity(255);
         var10000 = (new BlockSand(12, 18)).setHardness(0.5F);

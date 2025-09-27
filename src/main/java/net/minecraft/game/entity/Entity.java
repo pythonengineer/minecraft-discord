@@ -338,7 +338,10 @@ public abstract class Entity {
                 if(this.distanceWalkedModified > (float)this.nextStepDistance && var16 > 0) {
                     ++this.nextStepDistance;
                     StepSound var15 = Block.blocksList[var16].stepSound;
-                    this.worldObj.playSoundAtEntity(this, var15.stepSoundDir2(), var15.soundVolume * 0.15F, var15.soundPitch);
+                    if(!Block.blocksList[var16].material.getIsLiquid()) {
+                        this.worldObj.playSoundAtEntity(this, var15.stepSoundDir2(), var15.soundVolume * 0.15F, var15.soundPitch);
+                    }
+
                     Block.blocksList[var16].onEntityWalking(this.worldObj, var21, var23, var17);
                 }
             }

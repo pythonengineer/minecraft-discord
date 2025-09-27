@@ -19,7 +19,7 @@ public final class ModelRenderer {
     private boolean compiled = false;
     private int displayList = 0;
     public boolean mirror = false;
-    private boolean showModel = true;
+    public boolean showModel = true;
     private boolean isHidden = false;
 
     public ModelRenderer(int var1, int var2) {

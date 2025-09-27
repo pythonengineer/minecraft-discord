@@ -30,16 +30,16 @@ public class EntityArrow extends Entity {
 		this.owner = var2;
 		this.setSize(0.5F, 0.5F);
 		this.setPositionAndRotation(var2.posX, var2.posY, var2.posZ, var2.rotationYaw, var2.rotationPitch);
-		this.posX += MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
-		this.posY -= 0.1F;
-		this.posZ += MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
-		this.setPosition(this.posX, this.posY, this.posZ);
-		this.yOffset = 0.0F;
-		this.motionX = MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI);
-		this.motionZ = -MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI);
-		this.motionY = -MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI);
-		this.setArrowHeading(this.motionX, this.motionY, this.motionZ, 1.5F, 1.0F);
-	}
+        this.posX -= MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
+        this.posY -= 0.1F;
+        this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F;
+        this.setPosition(this.posX, this.posY, this.posZ);
+        this.yOffset = 0.0F;
+        this.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI);
+        this.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI);
+        this.motionY = -MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI);
+        this.setArrowHeading(this.motionX, this.motionY, this.motionZ, 1.5F, 1.0F);
+    }
 
 	public final void setArrowHeading(float var1, float var2, float var3, float var4, float var5) {
 		float var6 = MathHelper.sqrt_float(var1 * var1 + var2 * var2 + var3 * var3);

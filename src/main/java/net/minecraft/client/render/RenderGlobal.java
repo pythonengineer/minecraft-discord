@@ -217,7 +217,7 @@ public final class RenderGlobal implements IWorldAccess {
                                 var12 = var18.maxZ - var18.minZ;
                                 var12 = (var13 + var14 + var12) / 3.0F;
                                 var12 *= 64.0F;
-                                if(var16 < var12 * var12 && var2.isBoundingBoxInFrustrum(var15.boundingBox) && var15 != this.worldObj.playerEntity) {
+                                if(var16 < var12 * var12 && var2.isBoundingBoxInFrustrum(var15.boundingBox) && (var15 != this.worldObj.playerEntity || this.mc.options.thirdPersonView)) {
                                     ++this.countEntitiesRendered;
                                     RenderManager.instance.renderEntity(var15, var3);
                                 }

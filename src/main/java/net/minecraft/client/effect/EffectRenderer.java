@@ -51,8 +51,8 @@ public final class EffectRenderer {
     }
 
     public final void renderParticles(Entity var1, float var2) {
-        float var3 = -MathHelper.cos(var1.rotationYaw * (float)Math.PI / 180.0F);
-        float var4 = -MathHelper.sin(var1.rotationYaw * (float)Math.PI / 180.0F);
+        float var3 = MathHelper.cos(var1.rotationYaw * (float)Math.PI / 180.0F);
+        float var4 = MathHelper.sin(var1.rotationYaw * (float)Math.PI / 180.0F);
         float var5 = -var4 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
         float var6 = var3 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
         float var11 = MathHelper.cos(var1.rotationPitch * (float)Math.PI / 180.0F);

@@ -227,7 +227,7 @@ public final class Minecraft implements Runnable {
 
 			if(this.serverIp != null && this.session != null) {
 				World var43 = new World();
-				var43.generate(8, 8, 8, new byte[512]);
+				var43.generate(8, 8, 8, new byte[512], new byte[512]);
 				this.setLevel(var43);
 			} else {
                 this.displayGuiScreen(new GuiMainMenu());
@@ -783,7 +783,7 @@ public final class Minecraft implements Runnable {
                             }
 
                             if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
-                                this.renderRain = !this.renderRain;
+                                this.options.thirdPersonView = !this.options.thirdPersonView;
                             }
 
                             if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {

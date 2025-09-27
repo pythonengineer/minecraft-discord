@@ -545,11 +545,11 @@ public class PlatformAudio {
         float upX = MathHelper.sin(-yawDegrees * ((float)Math.PI / 180.0f) - (float)Math.PI);
         float upY = MathHelper.cos(-pitchDegrees * ((float)Math.PI / 180.0f));
         float upZ = MathHelper.cos(-yawDegrees * ((float)Math.PI / 180.0f) - (float)Math.PI);
-        float lookX = upX * upY;
+        float lookX = -upX * upY;
         float lookY = MathHelper.sin(-pitchDegrees * ((float)Math.PI / 180.0f));
-        float lookZ = upZ * upY;
-        upX *= lookY;
-        upZ *= lookY;
+        float lookZ = -upZ * upY;
+        upX = -upX * lookY;
+        upZ = -upZ * lookY;
         AudioListener l = audioctx.getListener();
         l.setPosition(x, y, z);
         // WebAudio is very, very broken

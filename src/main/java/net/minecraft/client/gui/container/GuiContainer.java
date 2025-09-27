@@ -14,6 +14,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
@@ -113,6 +114,18 @@ public abstract class GuiContainer extends GuiScreen {
                     flag1 = true;
                 }
             }
+
+            if (itemstack == null) {
+                int var8 = var6.getBackgroundIconIndex();
+                if(var8 >= 0) {
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    RenderEngine.bindTexture(this.mc.renderEngine.getTexture("/gui/items.png"));
+                    this.drawTexturedModalRect(var10, var11, var8 % 16 << 4, var8 / 16 << 4, 16, 16);
+                    GL11.glEnable(GL11.GL_LIGHTING);
+                    flag1 = true;
+                }
+            }
+
             if (!flag1) {
                 if (flag) {
                     drawRect(var10, var11, var10 + 16, var11 + 16, -2130706433);
@@ -232,7 +245,7 @@ public abstract class GuiContainer extends GuiScreen {
             } else if (this.dragEvent == 1) {
                 Slot slot = (Slot) this.inventorySlots.get(slotId);
                 if (slot != null && canAddItemToSlot(slot, this.itemStack, true)
-                        && slot.isItemValid()
+                        && slot.isItemValid(this.itemStack)
                         && this.itemStack.stackSize > this.dragSlots.size()) {
                     this.dragSlots.add(slot);
                 }
@@ -243,7 +256,7 @@ public abstract class GuiContainer extends GuiScreen {
 
                     for (Slot slot1 : this.dragSlots) {
                         if (slot1 != null && canAddItemToSlot(slot1, this.itemStack, true)
-                                && slot1.isItemValid()
+                                && slot1.isItemValid(this.itemStack)
                                 && this.itemStack.stackSize >= this.dragSlots.size()) {
                             ItemStack itemstack1 = itemstack3.copy();
                             int k = slot1.getHasStack() ? slot1.getStack().stackSize : 0;
@@ -320,7 +333,7 @@ public abstract class GuiContainer extends GuiScreen {
                     }
 
                     if (itemstack9 == null) {
-                        if (itemstack10 != null && slot7.isItemValid()) {
+                        if (itemstack10 != null && slot7.isItemValid(itemstack10)) {
                             int k2 = clickedButton == 0 ? itemstack10.stackSize : 1;
                             if (k2 > slot7.inventory.getInventoryStackLimit()) {
                                 k2 = slot7.inventory.getInventoryStackLimit();
@@ -344,7 +357,7 @@ public abstract class GuiContainer extends GuiScreen {
                             }
 
                             slot7.onPickupFromSlot();
-                        } else if (slot7.isItemValid()) {
+                        } else if (slot7.isItemValid(itemstack10)) {
                             if (itemstack9.getItem() == itemstack10.getItem()) {
                                 int i2 = clickedButton == 0 ? itemstack10.stackSize : 1;
                                 if (i2 > slot7.inventory.getInventoryStackLimit() - itemstack9.stackSize) {
@@ -384,7 +397,7 @@ public abstract class GuiContainer extends GuiScreen {
             Slot slot5 = (Slot) this.inventorySlots.get(slotId);
             ItemStack itemstack7 = inventoryplayer.getStackInSlot(clickedButton);
             boolean flag = itemstack7 == null
-                    || slot5.inventory == inventoryplayer && slot5.isItemValid();
+                    || slot5.inventory == inventoryplayer && slot5.isItemValid(itemstack7);
             int k1 = -1;
             if (!flag) {
                 k1 = inventoryplayer.getFirstEmptyStack();
@@ -394,7 +407,7 @@ public abstract class GuiContainer extends GuiScreen {
             if (slot5.getHasStack() && flag) {
                 ItemStack itemstack11 = slot5.getStack();
                 inventoryplayer.setInventorySlotContents(clickedButton, itemstack11.copy());
-                if ((slot5.inventory != inventoryplayer || !slot5.isItemValid()) && itemstack7 != null) {
+                if ((slot5.inventory != inventoryplayer || !slot5.isItemValid(itemstack7)) && itemstack7 != null) {
                     if (k1 > -1) {
                         inventoryplayer.addItemStackToInventory(itemstack7);
                         slot5.decrStackSize(itemstack11.stackSize);
@@ -406,7 +419,7 @@ public abstract class GuiContainer extends GuiScreen {
                     slot5.putStack(itemstack7);
                     slot5.onPickupFromSlot();
                 }
-            } else if (!slot5.getHasStack() && itemstack7 != null && slot5.isItemValid()) {
+            } else if (!slot5.getHasStack() && itemstack7 != null && slot5.isItemValid(itemstack7)) {
                 inventoryplayer.setInventorySlotContents(clickedButton, (ItemStack) null);
                 slot5.putStack(itemstack7);
             }
@@ -437,7 +450,7 @@ public abstract class GuiContainer extends GuiScreen {
                             && itemstack4.stackSize < itemstack4.getItem().getItemStackLimit(); i3 += j1) {
                         Slot slot8 = (Slot) this.inventorySlots.get(i3);
                         if (slot8.getHasStack() && canAddItemToSlot(slot8, itemstack4, true)
-                                && slot8.isItemValid()
+                                && this.canMergeSlot(itemstack4, slot8)
                                 && (l2 != 0 || slot8.getStack().stackSize != slot8.getStack().getItem().getItemStackLimit())) {
                             int l = Math.min(itemstack4.getItem().getItemStackLimit() - itemstack4.stackSize,
                                     slot8.getStack().stackSize);
@@ -453,6 +466,10 @@ public abstract class GuiContainer extends GuiScreen {
                 }
             }
         }
+    }
+
+    public boolean canMergeSlot(ItemStack var1, Slot var2) {
+        return true;
     }
 
     public static int extractDragMode(int parInt1) {
@@ -583,7 +600,7 @@ public abstract class GuiContainer extends GuiScreen {
             }
         } else if (this.dragSplitting && slot != null && this.itemStack != null
                 && this.itemStack.stackSize > this.dragSplittingSlots.size()
-                && canAddItemToSlot(slot, this.itemStack, true) && slot.isItemValid()) {
+                && canAddItemToSlot(slot, this.itemStack, true) && slot.isItemValid(this.itemStack)) {
             this.dragSplittingSlots.add(slot);
             this.updateDragSplitting();
         }
@@ -695,7 +712,7 @@ public abstract class GuiContainer extends GuiScreen {
             j1 = -999;
         }
 
-        if (this.doubleClick && slot != null && k == 0 && slot.isItemValid()) {
+        if (this.doubleClick && slot != null && k == 0 && this.canMergeSlot((ItemStack) null, slot)) {
             if (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)) {
                 if (slot != null && slot.inventory != null && this.shiftClickedSlot != null) {
                     List<Slot> lst = this.inventorySlots;

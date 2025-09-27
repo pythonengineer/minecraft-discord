@@ -40,6 +40,7 @@ public final class GameSettings {
     private Minecraft mc;
     public int numberOfOptions = 10;
     public int difficulty = 2;
+    public boolean thirdPersonView = false;
 
     public GameSettings(Minecraft var1) {
         this.mc = var1;

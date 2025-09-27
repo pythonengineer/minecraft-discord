@@ -235,11 +235,11 @@ public class PlatformAudio {
         float upX = MathHelper.sin((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
         float upY = MathHelper.cos(-pitchDegrees * (float)(Math.PI / 180.0F));
         float upZ = MathHelper.cos((float)(-yawDegrees * (Math.PI / 180.0F) - Math.PI));
-        float lookX = upX * upY;
+        float lookX = -upX * upY;
         float lookY = MathHelper.sin(-pitchDegrees * (float)(Math.PI / 180.0F));
-        float lookZ = upZ * upY;
-        upX *= lookY;
-        upZ *= lookY;
+        float lookZ = -upZ * upY;
+        upX = -upX * lookY;
+        upZ = -upZ * lookY;
         sndSystem.setListenerPosition(x, y, z);
         sndSystem.setListenerOrientation(lookX, lookY, lookZ, upX, upY, upZ);
     }

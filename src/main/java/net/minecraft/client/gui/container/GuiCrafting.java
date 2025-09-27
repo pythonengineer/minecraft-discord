@@ -114,4 +114,8 @@ public final class GuiCrafting extends GuiContainer {
 
         return itemstack;
     }
+
+    public boolean canMergeSlot(ItemStack itemstack, Slot slot) {
+        return slot.inventory != this.iInventory && super.canMergeSlot(itemstack, slot);
+    }
 }
