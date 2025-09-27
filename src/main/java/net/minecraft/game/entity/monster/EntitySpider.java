@@ -4,6 +4,7 @@ import com.mojang.nbt.NBTTagCompound;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 
 public class EntitySpider extends EntityMob {
@@ -59,4 +60,8 @@ public class EntitySpider extends EntityMob {
 	protected final String getEntityString() {
 		return "Spider";
 	}
+
+    protected final int scoreValue() {
+        return Item.silk.shiftedIndex;
+    }
 }

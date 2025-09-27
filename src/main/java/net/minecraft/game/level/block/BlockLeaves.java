@@ -31,7 +31,7 @@ public final class BlockLeaves extends BlockLeavesBase {
 		return var1.nextInt(10) == 0 ? 1 : 0;
 	}
 
-    public final int idDropped(int var1) {
+    public final int idDropped(int var1, EaglercraftRandom var2) {
         return Block.sapling.blockID;
     }
 }

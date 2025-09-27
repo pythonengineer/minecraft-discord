@@ -25,6 +25,7 @@ import net.minecraft.game.entity.monster.EntityZombie;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.tileentity.TileEntity;
 import net.minecraft.game.level.block.tileentity.TileEntityChest;
+import net.minecraft.game.level.block.tileentity.TileEntityFurnace;
 
 public abstract class LevelLoader {
 	private IProgressUpdate guiLoading;
@@ -107,15 +108,15 @@ public abstract class LevelLoader {
         for(int var18 = 0; var18 < var17.tagCount(); ++var18) {
             try {
                 var4 = (NBTTagCompound)var17.tagAt(var18);
-                int var23 = var4.getInteger("Pos");
+                int var22 = var4.getInteger("Pos");
                 String var14 = var4.getString("id");
-                TileEntityChest var21 = var14.equals("Chest") ? new TileEntityChest() : null;
-                if(var21 != null) {
-                    var21.readFromNBT(var4);
-                    int var15 = var23 % 1024;
-                    int var20 = (var23 >> 10) % 1024;
-                    var23 = (var23 >> 20) % 1024;
-                    var9.setBlockTileEntity(var15, var20, var23, var21);
+                Object var20 = var14.equals("Chest") ? new TileEntityChest() : (var14.equals("Furnace") ? new TileEntityFurnace() : null);
+                if(var20 != null) {
+                    int var15 = var22 % 1024;
+                    int var23 = (var22 >> 10) % 1024;
+                    var22 = (var22 >> 20) % 1024;
+                    ((TileEntity)var20).readFromNBT(var4);
+                    var9.setBlockTileEntity(var15, var23, var22, (TileEntity)var20);
                 } else {
                     System.out.println("Skipping unknown tile entity id \"" + var14 + "\"");
                 }

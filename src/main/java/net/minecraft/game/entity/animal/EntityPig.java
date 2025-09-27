@@ -1,6 +1,7 @@
 package net.minecraft.game.entity.animal;
 
 import com.mojang.nbt.NBTTagCompound;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 
 public class EntityPig extends EntityAnimal {
@@ -32,5 +33,9 @@ public class EntityPig extends EntityAnimal {
 
     protected final String getDeathSound() {
         return "mob.pigdeath";
+    }
+
+    protected final int scoreValue() {
+        return Item.porkRaw.shiftedIndex;
     }
 }

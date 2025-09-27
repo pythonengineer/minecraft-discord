@@ -69,6 +69,9 @@ public class Item {
     public static Item plateGold;
     public static Item legsGold;
     public static Item bootsGold;
+    public static Item flint;
+    public static Item porkRaw;
+    public static Item porkCooked;
     public final int shiftedIndex;
     protected int maxStackSize = 64;
     protected int maxDamage = 32;
@@ -76,6 +79,10 @@ public class Item {
 
     protected Item(int var1) {
         this.shiftedIndex = var1 + 256;
+        if(itemsList[var1 + 256] != null) {
+            System.out.println("CONFLICT @ " + var1);
+        }
+
         itemsList[var1 + 256] = this;
     }
 
@@ -102,10 +109,6 @@ public class Item {
 
     public final int getItemStackLimit() {
         return this.maxStackSize;
-    }
-
-    public boolean onPlaced(World var1, float var2, float var3, float var4) {
-        return false;
     }
 
     public final int getMaxDamage() {
@@ -440,5 +443,20 @@ public class Item {
         var13 = var24;
         var13.iconIndex = var1;
         bootsGold = var13;
+        var19 = new Item(62);
+        var1 = 6;
+        var7 = var19;
+        var7.iconIndex = var1;
+        flint = var7;
+        var17 = new ItemFood(63, 3);
+        var1 = 87;
+        var5 = var17;
+        var5.iconIndex = var1;
+        porkRaw = var5;
+        var17 = new ItemFood(64, 8);
+        var1 = 88;
+        var5 = var17;
+        var5.iconIndex = var1;
+        porkCooked = var5;
     }
 }

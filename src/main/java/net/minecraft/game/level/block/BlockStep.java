@@ -1,5 +1,6 @@
 package net.minecraft.game.level.block;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.material.Material;
 
@@ -42,7 +43,7 @@ public final class BlockStep extends Block {
 
     }
 
-    public final int idDropped(int var1) {
+    public final int idDropped(int var1, EaglercraftRandom var2) {
         return Block.stairSingle.blockID;
     }
 

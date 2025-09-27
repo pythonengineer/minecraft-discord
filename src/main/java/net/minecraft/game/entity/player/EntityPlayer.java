@@ -10,11 +10,12 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.projectile.EntityArrow;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemArmor;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
+import net.minecraft.game.level.block.tileentity.TileEntityFurnace;
 import net.minecraft.game.level.material.Material;
 
 public class EntityPlayer extends EntityLiving {
@@ -132,27 +133,6 @@ public class EntityPlayer extends EntityLiving {
         }
     }
 
-    public final float getStrVsBlock(Block var1) {
-        Block var2 = var1;
-        InventoryPlayer var4 = this.inventory;
-        float var3 = 1.0F;
-        if(var4.mainInventory[var4.currentItem] != null) {
-            ItemStack var5 = var4.mainInventory[var4.currentItem];
-            var3 = 1.0F * var5.getItem().getStrVsBlock(var2);
-        }
-
-        float var6 = var3;
-        if(this.isInsideOfMaterial()) {
-            var6 = var3 / 5.0F;
-        }
-
-        if(!this.onGround) {
-            var6 /= 5.0F;
-        }
-
-        return var6;
-    }
-
     public final boolean canHarvestBlock(Block var1) {
         Block var2 = var1;
         InventoryPlayer var3 = this.inventory;
@@ -236,6 +216,9 @@ public class EntityPlayer extends EntityLiving {
                 }
             }
         }
+    }
+
+    public void displayGUIFurnace(TileEntityFurnace var1) {
     }
 
     public final void dropOneItem(boolean flag) {

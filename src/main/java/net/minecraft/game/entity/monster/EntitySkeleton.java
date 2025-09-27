@@ -5,6 +5,7 @@ import com.mojang.nbt.NBTTagCompound;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.projectile.EntityArrow;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 
 public class EntitySkeleton extends EntityMob {
@@ -56,4 +57,8 @@ public class EntitySkeleton extends EntityMob {
 	protected final String getEntityString() {
 		return "Skeleton";
 	}
+
+    protected final int scoreValue() {
+        return Item.arrow.shiftedIndex;
+    }
 }

@@ -13,7 +13,7 @@ public final class BlockLog extends Block {
 		return var1.nextInt(3) + 3;
 	}
 
-    public final int idDropped(int var1) {
+    public final int idDropped(int var1, EaglercraftRandom var2) {
         return Block.planks.blockID;
     }
 

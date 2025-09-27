@@ -1,5 +1,6 @@
 package net.minecraft.game.entity.monster;
 
+import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 
 public class EntityZombie extends EntityMob {
@@ -24,4 +25,8 @@ public class EntityZombie extends EntityMob {
 	protected final String getEntityString() {
 		return "Zombie";
 	}
+
+    protected final int scoreValue() {
+        return Item.feather.shiftedIndex;
+    }
 }

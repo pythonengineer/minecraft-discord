@@ -7,12 +7,14 @@ import net.minecraft.client.Session;
 import net.minecraft.client.effect.EntityPickupFX;
 import net.minecraft.client.gui.container.GuiChest;
 import net.minecraft.client.gui.container.GuiCrafting;
+import net.minecraft.client.gui.container.GuiFurnace;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
+import net.minecraft.game.level.block.tileentity.TileEntityFurnace;
 
 public class EntityPlayerSP extends EntityPlayer {
 	public MovementInput movementInput;
@@ -101,6 +103,10 @@ public class EntityPlayerSP extends EntityPlayer {
 
     public final void displayWorkbenchGUI() {
         this.mc.displayGuiScreen(new GuiCrafting(this.inventory));
+    }
+
+    public final void displayGUIFurnace(TileEntityFurnace var1) {
+        this.mc.displayGuiScreen(new GuiFurnace(this.inventory, var1));
     }
 
     public final void displayGUIInventory() {

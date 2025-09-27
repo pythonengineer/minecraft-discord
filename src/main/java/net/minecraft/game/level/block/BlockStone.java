@@ -1,5 +1,6 @@
 package net.minecraft.game.level.block;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.level.material.Material;
 
 public final class BlockStone extends Block {
@@ -7,7 +8,7 @@ public final class BlockStone extends Block {
         super(var1, var2, Material.rock);
 	}
 
-    public final int idDropped(int var1) {
+    public final int idDropped(int var1, EaglercraftRandom var2) {
         return Block.cobblestone.blockID;
     }
 }

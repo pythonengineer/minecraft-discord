@@ -2,6 +2,7 @@ package net.minecraft.game.entity.monster;
 
 import com.mojang.nbt.NBTTagCompound;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.level.World;
 
 public class EntityCreeper extends EntityMob {
@@ -65,4 +66,8 @@ public class EntityCreeper extends EntityMob {
 	public final float getCreeperState(float var1) {
 		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * var1) / (float)(this.fuseTime - 2);
 	}
+
+    protected final int scoreValue() {
+        return Item.gunpowder.shiftedIndex;
+    }
 }

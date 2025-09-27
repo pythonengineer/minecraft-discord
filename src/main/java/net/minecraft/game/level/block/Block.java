@@ -90,6 +90,8 @@ public class Block {
     public static final Block workbench;
     public static final Block crops;
     public static final Block tilledField;
+    public static final Block stoneOvenIdle;
+    public static final Block stoneOvenActive;
     public int blockIndexInTexture;
     public final int blockID;
     private float hardness;
@@ -233,12 +235,34 @@ public class Block {
         return 1;
     }
 
-    public int idDropped(int var1) {
+    public int idDropped(int var1, EaglercraftRandom var2) {
         return this.blockID;
     }
 
     public final float blockStrength(EntityPlayer var1) {
-        return this.hardness < 0.0F ? 0.0F : (!var1.canHarvestBlock(this) ? 1.0F / this.hardness / 100.0F : var1.getStrVsBlock(this) / this.hardness / 30.0F);
+        if(this.hardness < 0.0F) {
+            return 0.0F;
+        } else if(!var1.canHarvestBlock(this)) {
+            return 1.0F / this.hardness / 100.0F;
+        } else {
+            InventoryPlayer var2 = var1.inventory;
+            float var4 = 1.0F;
+            if(var2.mainInventory[var2.currentItem] != null) {
+                ItemStack var5 = var2.mainInventory[var2.currentItem];
+                var4 = 1.0F * var5.getItem().getStrVsBlock(this);
+            }
+
+            float var6 = var4;
+            if(var1.isInsideOfMaterial()) {
+                var6 = var4 / 5.0F;
+            }
+
+            if(!var1.onGround) {
+                var6 /= 5.0F;
+            }
+
+            return var6 / this.hardness / 30.0F;
+        }
     }
 
     public final void dropBlockAsItem(World var1, int var2, int var3, int var4, int var5) {
@@ -250,7 +274,7 @@ public class Block {
 
         for(int var8 = 0; var8 < var7; ++var8) {
             if(var1.random.nextFloat() <= var6) {
-                int var9 = this.idDropped(var5);
+                int var9 = this.idDropped(var5, var1.random);
                 if(var9 > 0) {
                     float var10 = var1.random.nextFloat() * 0.7F + 0.15F;
                     float var11 = var1.random.nextFloat() * 0.7F + 0.15F;
@@ -385,10 +409,6 @@ public class Block {
         return false;
     }
 
-    public boolean onBlockPlaced(World var1, float var2, float var3, float var4) {
-        return false;
-    }
-
     public void onEntityWalking(World var1, int var2, int var3, int var4) {
     }
 
@@ -416,7 +436,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         cobblestone = var0;
-        var10000 = (new Block(5, 4, Material.wood)).setHardness(1.5F).setResistance(5.0F);
+        var10000 = (new Block(5, 4, Material.wood)).setHardness(2.0F).setResistance(5.0F);
         var1 = soundWoodFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -440,7 +460,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         sand = var0;
-        var10000 = (new BlockSand(13, 19)).setHardness(0.6F);
+        var10000 = (new BlockGravel(13, 19)).setHardness(0.6F);
         var1 = soundGravelFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -460,7 +480,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         oreCoal = var0;
-        var10000 = (new BlockLog(17)).setHardness(1.0F);
+        var10000 = (new BlockLog(17)).setHardness(2.0F);
         var1 = soundWoodFootstep;
         var0 = var10000;
         var0.stepSound = var1;
@@ -680,6 +700,16 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         tilledField = var0;
+        var10000 = (new BlockFurnace(61, false)).setHardness(3.5F);
+        var1 = soundStoneFootstep;
+        var0 = var10000;
+        var0.stepSound = var1;
+        stoneOvenIdle = var0;
+        var10000 = (new BlockFurnace(62, true)).setHardness(3.5F);
+        var1 = soundStoneFootstep;
+        var0 = var10000;
+        var0.stepSound = var1;
+        stoneOvenActive = var0.setLightValue(14.0F / 16.0F);
 
         for(int var2 = 0; var2 < 256; ++var2) {
             if(blocksList[var2] != null) {

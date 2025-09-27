@@ -37,7 +37,7 @@ public final class PlayerControllerSP extends PlayerController {
             }
         }
 
-        if(var6) {
+        if(var6 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[var4])) {
             Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3, var5);
         }
 

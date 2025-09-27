@@ -49,6 +49,11 @@ public final class EntitySmokeFX extends EntityFX {
         this.particleTextureIndex = 7 - (this.particleAge << 3) / this.particleMaxAge;
         this.motionY1 = (float)((double)this.motionY1 + 0.004D);
         this.moveEntity(this.motionX1, this.motionY1, this.motionZ1);
+        if(this.posY == this.prevPosY) {
+            this.motionX1 = (float)((double)this.motionX1 * 1.1D);
+            this.motionZ1 = (float)((double)this.motionZ1 * 1.1D);
+        }
+
         this.motionX1 *= 0.96F;
         this.motionY1 *= 0.96F;
         this.motionZ1 *= 0.96F;

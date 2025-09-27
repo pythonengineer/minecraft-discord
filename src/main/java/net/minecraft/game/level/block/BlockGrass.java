@@ -33,7 +33,7 @@ public final class BlockGrass extends Block {
         }
     }
 
-    public final int idDropped(int var1) {
-        return Block.dirt.idDropped(0);
+    public final int idDropped(int var1, EaglercraftRandom var2) {
+        return Block.dirt.idDropped(0, var2);
 	}
 }
