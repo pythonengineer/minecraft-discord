@@ -2,7 +2,7 @@ package net.minecraft.game.item.recipe;
 
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class RecipesWeapons {
 	private String[][] recipePatterns = new String[][]{{"X", "X", "#"}};

@@ -5,7 +5,7 @@ import net.minecraft.client.render.RenderEngine;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.block.tileentity.TileEntityFurnace;
+import net.minecraft.game.world.block.tileentity.TileEntityFurnace;
 
 public final class GuiFurnace extends GuiContainer {
     private TileEntityFurnace furnaceInventory;
@@ -42,14 +42,11 @@ public final class GuiFurnace extends GuiContainer {
         var1 = (this.width - this.xSize) / 2;
         int var2 = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(var1, var2, 0, 0, this.xSize, this.ySize);
-        int var3;
-        if(this.furnaceInventory.isBurning()) {
-            var3 = this.furnaceInventory.getBurnTimeRemainingScaled(12);
-            this.drawTexturedModalRect(var1 + 56, var2 + 36 + 12 - var3, 176, 12 - var3, 14, var3 + 2);
-        }
-
-        var3 = this.furnaceInventory.getCookProgressScaled(24);
-        this.drawTexturedModalRect(var1 + 79, var2 + 34, 176, 14, var3 + 1, 16);
+        TileEntityFurnace var3 = this.furnaceInventory;
+        boolean var4 = true;
+        var3 = this.furnaceInventory;
+        byte var5 = 0;
+        this.drawTexturedModalRect(var1 + 79, var2 + 34, 176, 14, var5 + 1, 16);
     }
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
@@ -63,21 +60,21 @@ public final class GuiFurnace extends GuiContainer {
                     return null;
                 }
             } else if (i != 1 && i != 0) {
-                if (TileEntityFurnace.smeltItem(itemstack1.itemID) != -1) {
-                    if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
-                        return null;
-                    }
-                } else if (TileEntityFurnace.isItemFuel(itemstack1)) {
-                    if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
-                        return null;
-                    }
-                } else if (i >= 3 && i < 30) {
-                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
-                        return null;
-                    }
-                } else if (i >= 30 && i < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
-                    return null;
-                }
+                //if (TileEntityFurnace.smeltItem(itemstack1.itemID) != -1) {
+                //    if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
+                //        return null;
+                //    }
+                //} else if (TileEntityFurnace.isItemFuel(itemstack1)) {
+                //    if (!this.mergeItemStack(itemstack1, 1, 2, false)) {
+                //        return null;
+                //    }
+                //} else if (i >= 3 && i < 30) {
+                //    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
+                //        return null;
+                //    }
+                //} else if (i >= 30 && i < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
+                //    return null;
+                //}
             } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
                 return null;
             }

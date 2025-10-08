@@ -1,6 +1,6 @@
 package net.minecraft.client.render.texture;
 
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class TextureWaterFlowFX extends TextureFX {
 	private float[] red = new float[256];

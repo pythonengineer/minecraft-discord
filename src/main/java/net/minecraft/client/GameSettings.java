@@ -47,7 +47,7 @@ public final class GameSettings {
         this.loadOptions();
     }
 
-    public final String setKeyBindingString(int var1) {
+    public final String getOptionDisplayString(int var1) {
         return this.keyBindings[var1].keyDescription + ": " + Keyboard.getKeyName(this.keyBindings[var1].keyCode);
     }
 
@@ -103,7 +103,7 @@ public final class GameSettings {
         this.saveOptions();
     }
 
-    public final String setOptionString(int var1) {
+    public final String getOptionString(int var1) {
         return var1 == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (var1 == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (var1 == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (var1 == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (var1 == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (var1 == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (var1 == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (var1 == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (var1 == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (var1 == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : "")))))))));
     }
 

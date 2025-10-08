@@ -6,8 +6,8 @@ import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.player.EntityPlayerSP;
+import net.minecraft.game.world.World;
 import net.minecraft.client.PlayerLoader;
-import net.minecraft.game.level.World;
 
 public final class GuiGameOver extends GuiScreen {
 	public final void initGui() {
@@ -38,9 +38,9 @@ public final class GuiGameOver extends GuiScreen {
                 byte[] level = EagRuntime.getStorage("level.mclevel");
                 if(level != null) {
                     EaglerInputStream var4 = new EaglerInputStream(level);
-                    World var2 = (new PlayerLoader(this.mc, this.mc.loadingScreen)).load(var4);
+                    new PlayerLoader(this.mc, this.mc.loadingScreen);
                     var4.close();
-                    this.mc.setLevel(var2);
+                    this.mc.setLevel((World)null);
                     this.mc.displayGuiScreen((GuiScreen)null);
                     this.mc.setIngameFocus();
                 }
@@ -60,7 +60,7 @@ public final class GuiGameOver extends GuiScreen {
         FontRenderer var10000 = this.fontRenderer;
         StringBuilder var10001 = (new StringBuilder()).append("Score: &e");
         EntityPlayerSP var4 = this.mc.thePlayer;
-        drawCenteredString(var10000, var10001.append(var4.getScore).toString(), this.width / 2, 100, 16777215);
+        drawCenteredString(var10000, var10001.append(var4.score).toString(), this.width / 2, 100, 16777215);
         super.drawScreen(var1, var2, var3);
     }
 

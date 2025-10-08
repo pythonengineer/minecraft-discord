@@ -1,7 +1,7 @@
 package net.minecraft.client.render.texture;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class TextureLavaFX extends TextureFX {
 	private float[] red = new float[256];

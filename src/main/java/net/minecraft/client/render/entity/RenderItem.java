@@ -11,10 +11,10 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class RenderItem extends Render {
-	private RenderBlocks renderBlocks = new RenderBlocks();
+	private RenderBlocks itemRenderBlocks = new RenderBlocks();
 	private EaglercraftRandom random = new EaglercraftRandom();
 
     public RenderItem() {
@@ -22,7 +22,7 @@ public final class RenderItem extends Render {
         this.shadowOpaque = 12.0F / 16.0F;
     }
 
-    public final void renderItemIntoGUI(RenderEngine var2, ItemStack var3, int var4, int var5) {
+    public final void doRender(RenderEngine var2, ItemStack var3, int var4, int var5) {
         if(var3 != null) {
             int var7;
             if(var3.itemID < 256 && Block.blocksList[var3.itemID].getRenderType() == 0) {
@@ -36,7 +36,7 @@ public final class RenderItem extends Render {
                 GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.renderBlocks.renderBlockOnInventory(var11);
+                this.itemRenderBlocks.renderBlockOnInventory(var11);
                 GL11.glPopMatrix();
             } else if(var3.getItem().getIconIndex() >= 0) {
                 GL11.glDisable(GL11.GL_LIGHTING);
@@ -113,88 +113,90 @@ public final class RenderItem extends Render {
         var0.draw();
     }
 
-	public final void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6) {
-		EntityItem var13 = (EntityItem)var1;
-		RenderItem var12 = this;
-		this.random.setSeed(187L);
-		ItemStack var7 = var13.item;
-		GL11.glPushMatrix();
-		float var8 = MathHelper.sin(((float)var13.age + var6) / 10.0F + var13.hoverStart) * 0.1F + 0.1F;
-		var6 = (((float)var13.age + var6) / 20.0F + var13.hoverStart) * (180.0F / (float)Math.PI);
-		byte var9 = 1;
-		if(var13.item.stackSize > 1) {
-			var9 = 2;
-		}
+    public final void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
+        EntityItem var19 = (EntityItem)var1;
+        RenderItem var18 = this;
+        this.random.setSeed(187L);
+        ItemStack var24 = var19.item;
+        GL11.glPushMatrix();
+        float var5 = MathHelper.sin(((float)var19.age + var9) / 10.0F + var19.hoverStart) * 0.1F + 0.1F;
+        float var3 = (((float)var19.age + var9) / 20.0F + var19.hoverStart) * (180.0F / (float)Math.PI);
+        byte var26 = 1;
+        if(var19.item.stackSize > 1) {
+            var26 = 2;
+        }
 
-		if(var13.item.stackSize > 5) {
-			var9 = 3;
-		}
+        if(var19.item.stackSize > 5) {
+            var26 = 3;
+        }
 
-		if(var13.item.stackSize > 20) {
-			var9 = 4;
-		}
+        if(var19.item.stackSize > 20) {
+            var26 = 4;
+        }
 
-		GL11.glTranslatef(var2, var3 + var8, var4);
-		GL11.glEnable(GL11.GL_NORMALIZE);
-        if(var7.itemID < 256 && Block.blocksList[var7.itemID].getRenderType() == 0) {
-            GL11.glRotatef(var6, 0.0F, 1.0F, 0.0F);
-			this.loadTexture("/terrain.png");
-			var2 = 0.25F;
-			if(!Block.blocksList[var7.itemID].renderAsNormalBlock() && var7.itemID != Block.stairSingle.blockID) {
-				var2 = 0.5F;
-			}
+        GL11.glTranslatef((float)var2, (float)var4 + var5, (float)var6);
+        GL11.glEnable(GL11.GL_NORMALIZE);
+        float var7;
+        float var21;
+        if(var24.itemID < 256 && Block.blocksList[var24.itemID].getRenderType() == 0) {
+            GL11.glRotatef(var3, 0.0F, 1.0F, 0.0F);
+            this.loadTexture("/terrain.png");
+            var21 = 0.25F;
+            if(!Block.blocksList[var24.itemID].renderAsNormalBlock() && var24.itemID != Block.stairSingle.blockID) {
+                var21 = 0.5F;
+            }
 
-			GL11.glScalef(var2, var2, var2);
+            GL11.glScalef(var21, var21, var21);
 
-            for(int var16 = 0; var16 < var9; ++var16) {
+            for(int var23 = 0; var23 < var26; ++var23) {
                 GL11.glPushMatrix();
-                if(var16 > 0) {
-					var4 = (var12.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var2;
-					var5 = (var12.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var2;
-					var6 = (var12.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var2;
-					GL11.glTranslatef(var4, var5, var6);
-				}
+                if(var23 > 0) {
+                    var5 = (var18.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var21;
+                    var7 = (var18.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var21;
+                    var8 = (var18.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var21;
+                    GL11.glTranslatef(var5, var7, var8);
+                }
 
-				var12.renderBlocks.renderBlockOnInventory(Block.blocksList[var7.itemID]);
-				GL11.glPopMatrix();
-			}
-		} else {
-			GL11.glScalef(0.5F, 0.5F, 0.5F);
-            int var14 = var7.getItem().getIconIndex();
-            if(var7.itemID < 256) {
+                var18.itemRenderBlocks.renderBlockOnInventory(Block.blocksList[var24.itemID]);
+                GL11.glPopMatrix();
+            }
+        } else {
+            GL11.glScalef(0.5F, 0.5F, 0.5F);
+            int var20 = var24.getItem().getIconIndex();
+            if(var24.itemID < 256) {
                 this.loadTexture("/terrain.png");
             } else {
                 this.loadTexture("/gui/items.png");
             }
 
-            Tessellator var15 = Tessellator.instance;
-            var4 = (float)(var14 % 16 << 4) / 256.0F;
-            var5 = (float)((var14 % 16 << 4) + 16) / 256.0F;
-            var6 = (float)(var14 / 16 << 4) / 256.0F;
-            var2 = (float)((var14 / 16 << 4) + 16) / 256.0F;
+            Tessellator var22 = Tessellator.instance;
+            var5 = (float)(var20 % 16 << 4) / 256.0F;
+            var7 = (float)((var20 % 16 << 4) + 16) / 256.0F;
+            var8 = (float)(var20 / 16 << 4) / 256.0F;
+            var21 = (float)((var20 / 16 << 4) + 16) / 256.0F;
 
-            for(int var17 = 0; var17 < var9; ++var17) {
+            for(int var25 = 0; var25 < var26; ++var25) {
                 GL11.glPushMatrix();
-                if(var17 > 0) {
-                    var8 = (var12.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
-                    float var10 = (var12.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
-                    float var11 = (var12.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
-                    GL11.glTranslatef(var8, var10, var11);
+                if(var25 > 0) {
+                    var9 = (var18.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+                    float var10 = (var18.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+                    float var11 = (var18.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+                    GL11.glTranslatef(var9, var10, var11);
                 }
 
-                GL11.glRotatef(180.0F - var12.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-                var15.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                var15.normal(0.0F, 1.0F, 0.0F);
-                var15.addVertexWithUV(-0.5F, -0.25F, 0.0F, var4, var2);
-                var15.addVertexWithUV(0.5F, -0.25F, 0.0F, var5, var2);
-                var15.addVertexWithUV(0.5F, 12.0F / 16.0F, 0.0F, var5, var6);
-                var15.addVertexWithUV(-0.5F, 12.0F / 16.0F, 0.0F, var4, var6);
-                var15.draw();
+                GL11.glRotatef(180.0F - var18.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+                var22.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                var22.normal(0.0F, 1.0F, 0.0F);
+                var22.addVertexWithUV(-0.5F, -0.25F, 0.0F, var5, var21);
+                var22.addVertexWithUV(0.5F, -0.25F, 0.0F, var7, var21);
+                var22.addVertexWithUV(0.5F, 12.0F / 16.0F, 0.0F, var7, var8);
+                var22.addVertexWithUV(-0.5F, 12.0F / 16.0F, 0.0F, var5, var8);
+                var22.draw();
                 GL11.glPopMatrix();
             }
-		}
+        }
 
-		GL11.glDisable(GL11.GL_NORMALIZE);
-		GL11.glPopMatrix();
-	}
+        GL11.glDisable(GL11.GL_NORMALIZE);
+        GL11.glPopMatrix();
+    }
 }

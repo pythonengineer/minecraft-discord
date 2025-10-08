@@ -1,16 +1,16 @@
 package net.minecraft.client.effect;
 
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.game.level.World;
+import net.minecraft.game.world.World;
 
 public final class EntityFlameFX extends EntityFX {
     private float flameScale;
 
-    public EntityFlameFX(World var1, float var2, float var3, float var4) {
-        super(var1, var2, var3, var4, 0.0F, 0.0F, 0.0F);
-        this.motionX1 *= 0.01F;
-        this.motionY1 *= 0.01F;
-        this.motionZ1 *= 0.01F;
+    public EntityFlameFX(World var1, double var2, double var4, double var6) {
+        super(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D);
+        this.motionX *= (double)0.01F;
+        this.motionY *= (double)0.01F;
+        this.motionZ *= (double)0.01F;
         this.rand.nextFloat();
         this.rand.nextFloat();
         this.rand.nextFloat();
@@ -44,7 +44,7 @@ public final class EntityFlameFX extends EntityFX {
         return var1 * var2 + (1.0F - var2);
     }
 
-    public final void onEntityUpdate() {
+    public final void onUpdate() {
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
@@ -52,13 +52,13 @@ public final class EntityFlameFX extends EntityFX {
             this.setEntityDead();
         }
 
-        this.moveEntity(this.motionX1, this.motionY1, this.motionZ1);
-        this.motionX1 *= 0.96F;
-        this.motionY1 *= 0.96F;
-        this.motionZ1 *= 0.96F;
+        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.motionX *= (double)0.96F;
+        this.motionY *= (double)0.96F;
+        this.motionZ *= (double)0.96F;
         if(this.onGround) {
-            this.motionX1 *= 0.7F;
-            this.motionZ1 *= 0.7F;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
 
     }

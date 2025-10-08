@@ -31,6 +31,8 @@ public class DisplayList {
         boolean hasRotate = false;
         boolean hasCount = false;
         boolean hasSetting = false;
+        boolean hasPush = false;
+        boolean hasPop = false;
         boolean doBlend = false;
         boolean enabled;
         IntBuffer indices = null;
@@ -97,6 +99,14 @@ public class DisplayList {
             this.rx = x;
             this.ry = y;
             this.rz = z;
+        }
+
+        public ListOperation(boolean push) {
+            if (push) {
+                this.hasPush = true;
+            } else {
+                this.hasPop = true;
+            }
         }
     }
 

@@ -66,17 +66,6 @@ public final class SoundManager {
         this.soundPoolMusic.addSound(this.sndManager, var1, var2);
     }
 
-    public final void playRandomMusicIfReady(float var1, float var2, float var3) {
-        if(this.options.music) {
-            if (this.currentMusic == null || (!this.sndManager.isSoundPlaying(this.currentMusic) && !this.currentMusic.queued)) {
-                this.currentMusic = this.soundPoolMusic.getRandomSoundFromSoundPool("calm");
-                this.currentMusic.playStatic = true;
-                this.play(this.currentMusic);
-            }
-        }
-
-    }
-
     public final SoundPoolEntry play(SoundPoolEntry sound) {
         this.sndManager.playSound(sound);
         return sound;

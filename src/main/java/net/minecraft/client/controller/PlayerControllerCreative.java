@@ -4,13 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.MobSpawner;
-import net.minecraft.game.level.World;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class PlayerControllerCreative extends PlayerController {
-	private MobSpawner mobSpawner;
-
 	private PlayerControllerCreative(Minecraft var1) {
 		super(var1);
 	}
@@ -30,13 +26,6 @@ public final class PlayerControllerCreative extends PlayerController {
 		return false;
 	}
 
-	public final void onWorldChange(World var1) {
-		super.onWorldChange(var1);
-		var1.survivalWorld = false;
-		this.mobSpawner = new MobSpawner(var1);
-    }
-
-    public final void onUpdate() {
-        this.mobSpawner.performSpawning();
-    }
+	public final void onUpdate() {
+	}
 }

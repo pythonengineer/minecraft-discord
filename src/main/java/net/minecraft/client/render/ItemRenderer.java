@@ -10,7 +10,7 @@ import net.minecraft.client.render.entity.Render;
 import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.client.render.entity.RenderPlayer;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class ItemRenderer {
 	private Minecraft mc;
@@ -33,7 +33,7 @@ public final class ItemRenderer {
         GL11.glRotatef(var3.prevRotationYaw + (var3.rotationYaw - var3.prevRotationYaw) * var1, 0.0F, 1.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
-        float var9 = this.mc.theWorld.getBrightness((int)var3.posX, (int)var3.posY, (int)var3.posZ);
+        float var9 = this.mc.theWorld.getBrightness(MathHelper.floor_double(var3.posX), MathHelper.floor_double(var3.posY), MathHelper.floor_double(var3.posZ));
         GL11.glColor4f(var9, var9, var9, 1.0F);
         float var4;
         float var5;
@@ -294,7 +294,7 @@ public final class ItemRenderer {
 		this.equippedProgress = 0.0F;
 	}
 
-	public final void swingItem() {
+	public final void swing() {
 		this.swingProgress = -1;
 		this.itemSwingState = true;
 	}

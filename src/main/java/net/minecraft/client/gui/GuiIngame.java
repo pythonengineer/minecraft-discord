@@ -10,14 +10,15 @@ import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
-import net.minecraft.client.ChatLine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.gui.container.GuiInventory;
+import net.minecraft.client.render.ThreadDownloadImageData;
 import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.world.World;
 
 public final class GuiIngame extends Gui {
     private static RenderItem itemRenderer = new RenderItem();
@@ -149,25 +150,26 @@ public final class GuiIngame extends Gui {
 		GL11.glPopMatrix();
 
         for(var10 = 0; var10 < 9; ++var10) {
-            int var25 = scaledWidth / 2 - 90 + var10 * 20 + 2;
-            int var21 = scaledHeight - 16 - 3;
+            float var25 = (float)(scaledWidth / 2 - 90 + var10 * 20 + 2);
+            var12 = scaledHeight - 16 - 3;
+            float var21 = var25;
             ItemStack var22 = this.mc.thePlayer.inventory.mainInventory[var10];
             if(var22 != null) {
                 float var9 = (float)var22.animationsToGo - var1;
                 if(var9 > 0.0F) {
                     GL11.glPushMatrix();
-                    float var26 = 1.0F + var9 / 5.0F;
-                    GL11.glTranslatef((float)(var25 + 8), (float)(var21 + 12), 0.0F);
-                    GL11.glScalef(1.0F / var26, (var26 + 1.0F) / 2.0F, 1.0F);
-                    GL11.glTranslatef((float)(-(var25 + 8)), (float)(-(var21 + 12)), 0.0F);
+                    var25 = 1.0F + var9 / 5.0F;
+                    GL11.glTranslatef((float)(var21 + 8), (float)(var12 + 12), 0.0F);
+                    GL11.glScalef(1.0F / var25, (var25 + 1.0F) / 2.0F, 1.0F);
+                    GL11.glTranslatef((float)(-(var21 + 8)), (float)(-(var12 + 12)), 0.0F);
                 }
 
-                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, var22, var25, var21);
+                itemRenderer.doRender(this.mc.renderEngine, var22, (int)var25, var12);
                 if(var9 > 0.0F) {
                     GL11.glPopMatrix();
                 }
 
-                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var22, var25, var21);
+                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var22, (int)var25, var12);
             }
         }
 
@@ -186,21 +188,21 @@ public final class GuiIngame extends Gui {
         onBeginTouchGUI();
 
         if(this.mc.options.showFPS) {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Indev (" + this.mc.debug + ")", 2, 2, 16777215);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev (" + this.mc.debug + ")", 2, 2, 16777215);
             Minecraft var15 = this.mc;
             this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoRenders(), 2, 12, 16777215);
             var15 = this.mc;
             this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoEntities(), 2, 22, 16777215);
             var15 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow("P: " + var15.effectRenderer.getStatistics() + ". T: " + var15.theWorld.debugSkylightUpdates(), 2, 32, 16777215);
+            this.mc.fontRenderer.drawStringWithShadow("P: " + var15.effectRenderer.getStatistics() + ". T: " + World.debugSkylightUpdates(), 2, 32, 16777215);
         } else {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Indev", 2, 2, 16777215);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev", 2, 2, 16777215);
         }
 
         onEndTouchGUI();
 
         for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
-            if(((ChatLine)this.chatMessageList.get(var7)).updateCounter < 200) {
+            if(((ThreadDownloadImageData)this.chatMessageList.get(var7)).updateCounter < 200) {
                 this.chatMessageList.get(var7);
                 this.mc.fontRenderer.drawStringWithShadow((String)null, 2, scaledHeight - 8 - var7 * 9 - 20, 16777215);
             }
@@ -212,7 +214,7 @@ public final class GuiIngame extends Gui {
         ++this.updateCounter;
 
         for(int var1 = 0; var1 < this.chatMessageList.size(); ++var1) {
-            ++((ChatLine)this.chatMessageList.get(var1)).updateCounter;
+            ++((ThreadDownloadImageData)this.chatMessageList.get(var1)).updateCounter;
         }
 
     }

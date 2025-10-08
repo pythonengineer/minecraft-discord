@@ -2,8 +2,8 @@ package net.minecraft.game.item;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.player.EntityPlayer;
-import net.minecraft.game.level.World;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.World;
+import net.minecraft.game.world.block.Block;
 
 public class Item {
     protected static EaglercraftRandom rand = new EaglercraftRandom();
@@ -12,6 +12,7 @@ public class Item {
     public static Item pickaxeSteel;
     public static Item axeSteel;
     public static Item striker;
+    public static Item appleRed;
     public static Item bow;
     public static Item arrow;
     public static Item coal;
@@ -71,8 +72,8 @@ public class Item {
     public static Item bootsGold;
     public static Item flint;
     public static Item porkRaw;
-    public static Item porkCooked;
     public static Item painting;
+    public static Item appleGold;
     public final int shiftedIndex;
     protected int maxStackSize = 64;
     protected int maxDamage = 32;
@@ -156,9 +157,10 @@ public class Item {
         var4.iconIndex = var1;
         striker = var4;
         ItemFood var18 = new ItemFood(4, 4);
-        var1 = 4;
+        var1 = 10;
         ItemFood var5 = var18;
         var5.iconIndex = var1;
+        appleRed = var5;
         ItemBow var19 = new ItemBow(5);
         var1 = 21;
         ItemBow var6 = var19;
@@ -458,11 +460,15 @@ public class Item {
         var1 = 88;
         var5 = var18;
         var5.iconIndex = var1;
-        porkCooked = var5;
         ItemPainting var26 = new ItemPainting(65);
         var1 = 26;
         ItemPainting var14 = var26;
         var14.iconIndex = var1;
         painting = var14;
+        var18 = new ItemFood(66, 42);
+        var1 = 11;
+        var5 = var18;
+        var5.iconIndex = var1;
+        appleGold = var5;
     }
 }

@@ -1,6 +1,6 @@
 package net.minecraft.game.item;
 
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public class ItemTool extends Item {
     private Block[] blocksEffectiveAgainst;

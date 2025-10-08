@@ -21,14 +21,12 @@ public enum EnumArt {
     Fighters("Fighters", 64, 32, 0, 96),
     Pointer("Pointer", 64, 64, 0, 192);
 
-    public final String title;
     public final int sizeX;
     public final int sizeY;
     public final int offsetX;
     public final int offsetY;
 
     private EnumArt(String var3, int var4, int var5, int var6, int var7) {
-        this.title = var3;
         this.sizeX = var4;
         this.sizeY = var5;
         this.offsetX = var6;

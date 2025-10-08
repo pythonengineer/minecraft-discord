@@ -1,27 +1,12 @@
 package net.minecraft.game.entity.animal;
 
-import com.mojang.nbt.NBTTagCompound;
 import net.minecraft.game.item.Item;
-import net.minecraft.game.level.World;
+import net.minecraft.game.world.World;
 
 public class EntityPig extends EntityAnimal {
-	public EntityPig(World var1) {
-		super(var1);
-		this.texture = "/mob/pig.png";
-		this.setSize(0.9F, 0.9F);
-	}
-
-	protected final void writeEntityToNBT(NBTTagCompound var1) {
-		super.writeEntityToNBT(var1);
-	}
-
-	protected final void readEntityFromNBT(NBTTagCompound var1) {
-		super.readEntityFromNBT(var1);
-	}
-
-	protected final String getEntityString() {
-		return "Pig";
-	}
+    private EntityPig(World var1) {
+        super(var1);
+    }
 
     protected final String getLivingSound() {
         return "mob.pig";
@@ -35,7 +20,7 @@ public class EntityPig extends EntityAnimal {
         return "mob.pigdeath";
     }
 
-    protected final int scoreValue() {
+    protected final int getDropItemId() {
         return Item.porkRaw.shiftedIndex;
     }
 }

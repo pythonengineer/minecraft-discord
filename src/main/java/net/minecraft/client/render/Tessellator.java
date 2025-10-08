@@ -52,14 +52,14 @@ public final class Tessellator {
 	}
 
     public final void setColorRGBA_F(float var1, float var2, float var3, float var4) {
-        this.setColorRGBA((int)(var1 * 255.0F), (int)(var2 * 255.0F), (int)(var3 * 255.0F), (int)(var4 * 255.0F));
+        this.setAreaTransparent((int)(var1 * 255.0F), (int)(var2 * 255.0F), (int)(var3 * 255.0F), (int)(var4 * 255.0F));
     }
 
     private void setColorOpaque(int var1, int var2, int var3) {
-        this.setColorRGBA(var1, var2, var3, 255);
+        this.setAreaTransparent(var1, var2, var3, 255);
     }
 
-    private void setColorRGBA(int var1, int var2, int var3, int var4) {
+    private void setAreaTransparent(int var1, int var2, int var3, int var4) {
         if(!this.isColorDisabled) {
             if(var1 > 255) {
                 var1 = 255;
@@ -145,4 +145,8 @@ public final class Tessellator {
 	public static void setNormal(float x, float y, float z) {
 		GL11.glNormal3f(x, y, z);
 	}
+
+    public final void addVertex(double var1, double var3, double var5) {
+        this.addVertex((float)var1, (float)var3, (float)var5);
+    }
 }

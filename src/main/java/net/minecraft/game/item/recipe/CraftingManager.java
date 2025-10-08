@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class CraftingManager {
 	private static final CraftingManager instance = new CraftingManager();
@@ -37,7 +37,8 @@ public final class CraftingManager {
 		this.addRecipe(new ItemStack(Item.bowlEmpty, 4), new Object[]{"# #", " # ", Character.valueOf('#'), Block.planks});
         this.addRecipe(new ItemStack(Item.striker, 1), new Object[]{"A ", " B", Character.valueOf('A'), Item.ingotIron, Character.valueOf('B'), Item.flint});
         this.addRecipe(new ItemStack(Item.bread, 1), new Object[]{"###", Character.valueOf('#'), Item.wheat});
-        this.addRecipe(new ItemStack(Item.painting, 1), new Object[]{"###", "#X#", "###", Character.valueOf('#'), Block.planks, Character.valueOf('X'), Block.clothGray});
+        this.addRecipe(new ItemStack(Item.painting, 1), new Object[]{"###", "#X#", "###", Character.valueOf('#'), Item.stick, Character.valueOf('X'), Block.clothGray});
+        this.addRecipe(new ItemStack(Item.appleGold, 1), new Object[]{"###", "#X#", "###", Character.valueOf('#'), Block.blockGold, Character.valueOf('X'), Item.appleRed});
 		Collections.sort(this.recipes, new RecipeSorter(this));
         System.out.println(this.recipes.size() + " recipes");
 	}

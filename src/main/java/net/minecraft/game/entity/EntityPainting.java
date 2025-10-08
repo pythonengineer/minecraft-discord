@@ -1,26 +1,25 @@
 package net.minecraft.game.entity;
 
-import com.mojang.nbt.NBTTagCompound;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.level.World;
-import net.minecraft.game.level.material.Material;
 import net.minecraft.game.physics.AxisAlignedBB;
+import net.minecraft.game.world.World;
+import net.minecraft.game.world.material.Material;
 
 public class EntityPainting extends Entity {
-    private int tickCounter1;
+    private int tickCounter;
     public int direction;
     private int xPosition;
     private int yPosition;
     private int zPosition;
     public EnumArt art;
 
-    public EntityPainting(World var1) {
+    private EntityPainting(World var1) {
         super(var1);
-        this.tickCounter1 = 0;
+        this.tickCounter = 0;
         this.direction = 0;
         this.yOffset = 0.0F;
         this.setSize(0.5F, 0.5F);
@@ -102,31 +101,31 @@ public class EntityPainting extends Entity {
         }
 
         var6 += getArtSize(this.art.sizeY);
-        this.setPosition(var5, var6, var7);
-        this.boundingBox = new AxisAlignedBB(var5 - var2, var6 - var3, var7 - var4, var5 + var2, var6 + var3, var7 + var4);
-        float var8 = 0.1F / 16.0F;
-        AxisAlignedBB var9 = this.boundingBox;
-        var2 = var9.minX;
-        var3 = var9.minY;
-        var4 = var9.minZ;
-        var5 = var9.maxX;
-        var6 = var9.maxY;
-        var8 = var9.maxZ;
-        var5 -= 0.1F / 16.0F;
-        var6 -= 0.1F / 16.0F;
-        var8 -= 0.1F / 16.0F;
-        this.boundingBox = new AxisAlignedBB(var2, var3, var4, var5, var6, var8);
+        this.setPosition((double)var5, (double)var6, (double)var7);
+        this.boundingBox = new AxisAlignedBB((double)(var5 - var2), (double)(var6 - var3), (double)(var7 - var4), (double)(var5 + var2), (double)(var6 + var3), (double)(var7 + var4));
+        double var13 = (double)0.00625F;
+        AxisAlignedBB var27 = this.boundingBox;
+        double var15 = var27.minX;
+        double var17 = var27.minY;
+        double var19 = var27.minZ;
+        double var21 = var27.maxX;
+        double var23 = var27.maxY;
+        double var25 = var27.maxZ;
+        var21 -= (double)0.00625F;
+        var23 -= (double)0.00625F;
+        var25 -= (double)0.00625F;
+        this.boundingBox = new AxisAlignedBB(var15, var17, var19, var21, var23, var25);
     }
 
     private static float getArtSize(int var0) {
         return var0 == 32 ? 0.5F : (var0 == 64 ? 0.5F : 0.0F);
     }
 
-    public final void onEntityUpdate() {
-        if(this.tickCounter1++ == 100 && !this.onValidSurface()) {
-            this.tickCounter1 = 0;
+    public final void onUpdate() {
+        if(this.tickCounter++ == 100 && !this.onValidSurface()) {
+            this.tickCounter = 0;
             this.setEntityDead();
-            this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+            new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting));
         }
 
     }
@@ -140,22 +139,22 @@ public class EntityPainting extends Entity {
             int var3 = this.xPosition;
             int var5 = this.zPosition;
             if(this.direction == 0) {
-                var3 = (int)(this.posX - (float)this.art.sizeX / 32.0F);
+                var3 = (int)(this.posX - (double)((float)this.art.sizeX / 32.0F));
             }
 
             if(this.direction == 1) {
-                var5 = (int)(this.posZ - (float)this.art.sizeX / 32.0F);
+                var5 = (int)(this.posZ - (double)((float)this.art.sizeX / 32.0F));
             }
 
             if(this.direction == 2) {
-                var3 = (int)(this.posX - (float)this.art.sizeX / 32.0F);
+                var3 = (int)(this.posX - (double)((float)this.art.sizeX / 32.0F));
             }
 
             if(this.direction == 3) {
-                var5 = (int)(this.posZ - (float)this.art.sizeX / 32.0F);
+                var5 = (int)(this.posZ - (double)((float)this.art.sizeX / 32.0F));
             }
 
-            int var4 = (int)(this.posY - (float)this.art.sizeY / 32.0F);
+            int var4 = (int)(this.posY - (double)((float)this.art.sizeY / 32.0F));
 
             int var7;
             for(int var6 = 0; var6 < var1; ++var6) {
@@ -173,7 +172,7 @@ public class EntityPainting extends Entity {
                 }
             }
 
-            List var9 = this.worldObj.entityMap.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox);
+            List var9 = this.worldObj.entityMap.getEntitiesWithinAABB(this, this.boundingBox);
 
             for(var7 = 0; var7 < var9.size(); ++var7) {
                 if(var9.get(var7) instanceof EntityPainting) {
@@ -191,42 +190,7 @@ public class EntityPainting extends Entity {
 
     public final boolean attackEntityFrom(Entity var1, int var2) {
         this.setEntityDead();
-        this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+        new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting));
         return true;
-    }
-
-    protected final void writeEntityToNBT(NBTTagCompound var1) {
-        var1.setByte("Dir", (byte)this.direction);
-        var1.setString("Motive", this.art.title);
-        var1.setInteger("TileX", this.xPosition);
-        var1.setInteger("TileY", this.yPosition);
-        var1.setInteger("TileZ", this.zPosition);
-    }
-
-    protected final String getEntityString() {
-        return "Painting";
-    }
-
-    protected final void readEntityFromNBT(NBTTagCompound var1) {
-        this.direction = var1.getByte("Dir");
-        this.xPosition = var1.getInteger("TileX");
-        this.yPosition = var1.getInteger("TileY");
-        this.zPosition = var1.getInteger("TileZ");
-        String var6 = var1.getString("Motive");
-        EnumArt[] var2 = EnumArt.values();
-        int var3 = var2.length;
-
-        for(int var4 = 0; var4 < var3; ++var4) {
-            EnumArt var5 = var2[var4];
-            if(var5.title.equals(var6)) {
-                this.art = var5;
-            }
-        }
-
-        if(this.art == null) {
-            this.art = EnumArt.Kebab;
-        }
-
-        this.setDirection(this.direction);
     }
 }

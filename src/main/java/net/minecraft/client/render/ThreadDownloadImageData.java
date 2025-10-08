@@ -1,14 +1,7 @@
 package net.minecraft.client.render;
 
-import net.lax1dude.eaglercraft.opengl.ImageData;
-
-public final class ThreadDownloadImageData {
-    public ImageData image;
-    public int referenceCount = 1;
-    public int textureName = -1;
-    public boolean textureSetupComplete = false;
-
-    public ThreadDownloadImageData(String var1, ImageBufferDownload var2) {
-        (new ThreadDownloadImage(this, var1, var2)).start();
-    }
+public class ThreadDownloadImageData {
+    public int chunksUpdated;
+    public boolean textureSetupComplete;
+    public int updateCounter;
 }

@@ -2,25 +2,25 @@ package net.minecraft.client.render.camera;
 
 import net.minecraft.game.physics.AxisAlignedBB;
 
-public final class Frustrum implements ICamera {
-	private ClippingHelper clippingHelper = ClippingHelperImpl.init();
+public class Frustrum {
+    private ClippingHelper clippingHelper = ClippingHelperImpl.init();
 
-	public final boolean isBoundingBoxInFrustrum(AxisAlignedBB var1) {
-		ClippingHelper var9 = this.clippingHelper;
-		float var7 = var1.maxZ;
-		float var6 = var1.maxY;
-		float var5 = var1.maxX;
-		float var4 = var1.minZ;
-		float var3 = var1.minY;
-		float var10 = var1.minX;
-		var9 = var9;
+    public boolean isBoundingBoxInFrustrum(AxisAlignedBB var1) {
+        ClippingHelper var17 = this.clippingHelper;
+        double var15 = var1.maxZ;
+        double var13 = var1.maxY;
+        double var11 = var1.maxX;
+        double var9 = var1.minZ;
+        double var7 = var1.minY;
+        double var5 = var1.minX;
+        var17 = var17;
 
-		for(int var8 = 0; var8 < 6; ++var8) {
-			if(var9.frustrum[var8][0] * var10 + var9.frustrum[var8][1] * var3 + var9.frustrum[var8][2] * var4 + var9.frustrum[var8][3] <= 0.0F && var9.frustrum[var8][0] * var5 + var9.frustrum[var8][1] * var3 + var9.frustrum[var8][2] * var4 + var9.frustrum[var8][3] <= 0.0F && var9.frustrum[var8][0] * var10 + var9.frustrum[var8][1] * var6 + var9.frustrum[var8][2] * var4 + var9.frustrum[var8][3] <= 0.0F && var9.frustrum[var8][0] * var5 + var9.frustrum[var8][1] * var6 + var9.frustrum[var8][2] * var4 + var9.frustrum[var8][3] <= 0.0F && var9.frustrum[var8][0] * var10 + var9.frustrum[var8][1] * var3 + var9.frustrum[var8][2] * var7 + var9.frustrum[var8][3] <= 0.0F && var9.frustrum[var8][0] * var5 + var9.frustrum[var8][1] * var3 + var9.frustrum[var8][2] * var7 + var9.frustrum[var8][3] <= 0.0F && var9.frustrum[var8][0] * var10 + var9.frustrum[var8][1] * var6 + var9.frustrum[var8][2] * var7 + var9.frustrum[var8][3] <= 0.0F && var9.frustrum[var8][0] * var5 + var9.frustrum[var8][1] * var6 + var9.frustrum[var8][2] * var7 + var9.frustrum[var8][3] <= 0.0F) {
-				return false;
-			}
-		}
+        for(int var18 = 0; var18 < 6; ++var18) {
+            if((double)var17.frustrum[var18][0] * var5 + (double)var17.frustrum[var18][1] * var7 + (double)var17.frustrum[var18][2] * var9 + (double)var17.frustrum[var18][3] <= 0.0D && (double)var17.frustrum[var18][0] * var11 + (double)var17.frustrum[var18][1] * var7 + (double)var17.frustrum[var18][2] * var9 + (double)var17.frustrum[var18][3] <= 0.0D && (double)var17.frustrum[var18][0] * var5 + (double)var17.frustrum[var18][1] * var13 + (double)var17.frustrum[var18][2] * var9 + (double)var17.frustrum[var18][3] <= 0.0D && (double)var17.frustrum[var18][0] * var11 + (double)var17.frustrum[var18][1] * var13 + (double)var17.frustrum[var18][2] * var9 + (double)var17.frustrum[var18][3] <= 0.0D && (double)var17.frustrum[var18][0] * var5 + (double)var17.frustrum[var18][1] * var7 + (double)var17.frustrum[var18][2] * var15 + (double)var17.frustrum[var18][3] <= 0.0D && (double)var17.frustrum[var18][0] * var11 + (double)var17.frustrum[var18][1] * var7 + (double)var17.frustrum[var18][2] * var15 + (double)var17.frustrum[var18][3] <= 0.0D && (double)var17.frustrum[var18][0] * var5 + (double)var17.frustrum[var18][1] * var13 + (double)var17.frustrum[var18][2] * var15 + (double)var17.frustrum[var18][3] <= 0.0D && (double)var17.frustrum[var18][0] * var11 + (double)var17.frustrum[var18][1] * var13 + (double)var17.frustrum[var18][2] * var15 + (double)var17.frustrum[var18][3] <= 0.0D) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 }

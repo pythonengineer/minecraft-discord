@@ -12,7 +12,7 @@ import net.minecraft.client.gui.GuiNewLevel;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.game.level.World;
+import net.minecraft.game.world.World;
 
 public final class GuiMainMenu extends GuiScreen {
 	private float updateCounter = 0.0F;
@@ -54,9 +54,9 @@ public final class GuiMainMenu extends GuiScreen {
                 byte[] level = EagRuntime.getStorage("level.mclevel");
                 if(level != null) {
                     EaglerInputStream var4 = new EaglerInputStream(level);
-                    World var2 = (new PlayerLoader(this.mc, this.mc.loadingScreen)).load(var4);
+                    new PlayerLoader(this.mc, this.mc.loadingScreen);
                     var4.close();
-                    this.mc.setLevel(var2);
+                    this.mc.setLevel((World)null);
                     this.mc.displayGuiScreen((GuiScreen)null);
                     this.mc.setIngameFocus();
                 }

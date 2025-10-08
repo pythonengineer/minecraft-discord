@@ -1,7 +1,7 @@
 package net.minecraft.game.item;
 
 import net.minecraft.game.entity.EntityPainting;
-import net.minecraft.game.level.World;
+import net.minecraft.game.world.World;
 
 public final class ItemPainting extends Item {
     public ItemPainting(int var1) {
@@ -14,7 +14,7 @@ public final class ItemPainting extends Item {
             return false;
         } else if(var6 == 1) {
             return false;
-        } else if(var3 > 0 && var4 > 0 && var5 > 0 && var3 < var2.width - 1 && var4 < var2.height - 1 && var5 < var2.length - 1) {
+        } else {
             byte var7 = 0;
             if(var6 == 4) {
                 var7 = 1;
@@ -30,13 +30,10 @@ public final class ItemPainting extends Item {
 
             EntityPainting var8 = new EntityPainting(var2, var3, var4, var5, var7);
             if(var8.onValidSurface()) {
-                var2.spawnEntityInWorld(var8);
                 --var1.stackSize;
             }
 
             return true;
-        } else {
-            return false;
         }
     }
 }

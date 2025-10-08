@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class RenderTNTPrimed extends Render {
 	private RenderBlocks blockRenderer = new RenderBlocks();
@@ -13,39 +13,38 @@ public final class RenderTNTPrimed extends Render {
         this.shadowSize = 0.5F;
     }
 
-	public final void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6) {
+    public final void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
         EntityTNTPrimed var10001 = (EntityTNTPrimed)var1;
-        var5 = var4;
-        var4 = var3;
-        var3 = var2;
-        EntityTNTPrimed var7 = var10001;
+        double var12 = var2;
+        EntityTNTPrimed var18 = var10001;
         GL11.glPushMatrix();
-        GL11.glTranslatef(var3, var4, var5);
-        if((float)var7.fuse - var6 + 1.0F < 10.0F) {
-            var3 = 1.0F - ((float)var7.fuse - var6 + 1.0F) / 10.0F;
-            if(var3 < 0.0F) {
-                var3 = 0.0F;
+        GL11.glTranslatef((float)var12, (float)var4, (float)var6);
+        float var19;
+        if((float)var18.fuse - var9 + 1.0F < 10.0F) {
+            var19 = 1.0F - ((float)var18.fuse - var9 + 1.0F) / 10.0F;
+            if(var19 < 0.0F) {
+                var19 = 0.0F;
             }
 
-            if(var3 > 1.0F) {
-                var3 = 1.0F;
+            if(var19 > 1.0F) {
+                var19 = 1.0F;
             }
 
-            var3 *= var3;
-            var3 *= var3;
-            var3 = 1.0F + var3 * 0.3F;
-            GL11.glScalef(var3, var3, var3);
+            var19 *= var19;
+            var19 *= var19;
+            var19 = 1.0F + var19 * 0.3F;
+            GL11.glScalef(var19, var19, var19);
         }
 
-        var3 = (1.0F - ((float)var7.fuse - var6 + 1.0F) / 100.0F) * 0.8F;
+        var19 = (1.0F - ((float)var18.fuse - var9 + 1.0F) / 100.0F) * 0.8F;
         this.loadTexture("/terrain.png");
         this.blockRenderer.renderBlockOnInventory(Block.tnt);
-        if(var7.fuse / 5 % 2 == 0) {
+        if(var18.fuse / 5 % 2 == 0) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, var3);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, var19);
             this.blockRenderer.renderBlockOnInventory(Block.tnt);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glDisable(GL11.GL_BLEND);
@@ -54,5 +53,5 @@ public final class RenderTNTPrimed extends Render {
         }
 
         GL11.glPopMatrix();
-	}
+    }
 }

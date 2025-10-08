@@ -56,7 +56,7 @@ public final class GuiInventory extends GuiContainer {
 
 	}
 
-	public final void guiCraftingItemsCheck() {
+	public final void onCraftMatrixChanged() {
 		int[] var1 = new int[9];
 
 		for(int var2 = 0; var2 < 3; ++var2) {
@@ -112,7 +112,7 @@ public final class GuiInventory extends GuiContainer {
         this.mc.thePlayer.rotationYaw = (float)Math.atan((double)(var6 / 40.0F)) * 40.0F;
         this.mc.thePlayer.rotationPitch = -((float)Math.atan((double)(var7 / 40.0F))) * 20.0F;
         GL11.glTranslatef(0.0F, this.mc.thePlayer.yOffset, 0.0F);
-        RenderManager.instance.renderEntityWithPosYaw(this.mc.thePlayer, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F);
+        RenderManager.instance.renderEntityWithPosYaw(this.mc.thePlayer, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
         this.mc.thePlayer.renderYawOffset = var3;
         this.mc.thePlayer.rotationYaw = var4;
         this.mc.thePlayer.rotationPitch = var5;

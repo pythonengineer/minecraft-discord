@@ -131,7 +131,7 @@ public abstract class GuiContainer extends GuiScreen {
                     drawRect(var10, var11, var10 + 16, var11 + 16, -2130706433);
                 }
 
-                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemstack, var10, var11);
+                itemRenderer.doRender(this.mc.renderEngine, itemstack, var10, var11);
                 itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemstack, var10, var11, s);
             }
 
@@ -163,7 +163,7 @@ public abstract class GuiContainer extends GuiScreen {
             }
 
             GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-            itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2);
+            itemRenderer.doRender(this.mc.renderEngine, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2);
             itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2, s);
         }
 
@@ -178,7 +178,7 @@ public abstract class GuiContainer extends GuiScreen {
             int l2 = this.returningStackDestSlot.yPos - this.touchUpY;
             int l1 = this.touchUpX + (int) ((float) k2 * f1);
             int i2 = this.touchUpY + (int) ((float) l2 * f1);
-            itemRenderer.renderItemIntoGUI(this.mc.renderEngine, this.returningStack, l1, i2);
+            itemRenderer.doRender(this.mc.renderEngine, this.returningStack, l1, i2);
             itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.returningStack, l1, i2);
         }
 
@@ -211,7 +211,7 @@ public abstract class GuiContainer extends GuiScreen {
 
     }
 
-    public void guiCraftingItemsCheck() {
+    public void onCraftMatrixChanged() {
     }
 
     public final boolean doesGuiPauseGame() {
@@ -409,7 +409,7 @@ public abstract class GuiContainer extends GuiScreen {
                 inventoryplayer.setInventorySlotContents(clickedButton, itemstack11.copy());
                 if ((slot5.inventory != inventoryplayer || !slot5.isItemValid(itemstack7)) && itemstack7 != null) {
                     if (k1 > -1) {
-                        inventoryplayer.addItemStackToInventory(itemstack7);
+                        //inventoryplayer.addItemStackToInventory(itemstack7);
                         slot5.decrStackSize(itemstack11.stackSize);
                         slot5.putStack((ItemStack) null);
                         slot5.onPickupFromSlot();

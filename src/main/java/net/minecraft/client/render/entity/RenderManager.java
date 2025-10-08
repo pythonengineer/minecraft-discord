@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPig;
 import net.minecraft.client.model.ModelSheep;
@@ -26,16 +27,17 @@ import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.projectile.EntityArrow;
-import net.minecraft.game.level.World;
+import net.minecraft.game.world.World;
 
 public final class RenderManager {
 	private Map entityRenderMap = new HashMap();
     public static RenderManager instance = new RenderManager();
 	public RenderEngine renderEngine;
 	public World worldObj;
-	public float playerViewY;  private float viewerPosX;
-    private float viewerPosY;
-    private float viewerPosZ;
+	public float playerViewY;
+    private double viewerPosX;
+    private double viewerPosY;
+    private double viewerPosZ;
 
     private RenderManager() {
         this.entityRenderMap.put(EntitySpider.class, new RenderSpider());
@@ -76,26 +78,26 @@ public final class RenderManager {
         this.worldObj = var1;
         this.renderEngine = var2;
         this.playerViewY = var3.prevRotationYaw + (var3.rotationYaw - var3.prevRotationYaw) * var4;
-        this.viewerPosX = var3.lastTickPosX + (var3.posX - var3.lastTickPosX) * var4;
-        this.viewerPosY = var3.lastTickPosY + (var3.posY - var3.lastTickPosY) * var4;
-        this.viewerPosZ = var3.lastTickPosZ + (var3.posZ - var3.lastTickPosZ) * var4;
+        this.viewerPosX = var3.lastTickPosX + (var3.posX - var3.lastTickPosX) * (double)var4;
+        this.viewerPosY = var3.lastTickPosY + (var3.posY - var3.lastTickPosY) * (double)var4;
+        this.viewerPosZ = var3.lastTickPosZ + (var3.posZ - var3.lastTickPosZ) * (double)var4;
     }
 
     public final void renderEntity(Entity var1, float var2) {
-        float var3 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * var2;
-        float var4 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * var2;
-        float var5 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * var2;
-        float var6 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
-        float var7 = this.worldObj.getBrightness((int)var3, (int)(var4 + var1.getShadowSize()), (int)var5);
-        GL11.glColor3f(var7, var7, var7);
-        this.renderEntityWithPosYaw(var1, var3, var4, var5, var6, var2);
+        double var3 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
+        double var5 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
+        double var7 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
+        float var9 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
+        float var10 = this.worldObj.getBrightness(MathHelper.floor_double(var3), MathHelper.floor_double(var5 + (double)var1.getShadowSize()), MathHelper.floor_double(var7));
+        GL11.glColor3f(var10, var10, var10);
+        this.renderEntityWithPosYaw(var1, var3, var5, var7, var9, var2);
     }
 
-    public final void renderEntityWithPosYaw(Entity var1, float var2, float var3, float var4, float var5, float var6) {
-        Render var7 = this.getEntityRenderObject(var1);
-        if(var7 != null) {
-            var7.doRender(var1, var2, var3, var4, var5, var6);
-            var7.renderShadow(var1, var2, var3, var4, var6);
+    public final void renderEntityWithPosYaw(Entity var1, double var2, double var4, double var6, float var8, float var9) {
+        Render var10 = this.getEntityRenderObject(var1);
+        if(var10 != null) {
+            var10.doRender(var1, var2, var4, var6, var8, var9);
+            var10.doRenderShadowAndFire(var1, var2, var4, var6, var9);
         }
 
     }
@@ -104,10 +106,10 @@ public final class RenderManager {
         this.worldObj = var1;
     }
 
-    public final float getDistanceToCamera(float var1, float var2, float var3) {
-        var1 -= this.viewerPosX;
-        var2 -= this.viewerPosY;
-        var3 -= this.viewerPosZ;
-        return var1 * var1 + var2 * var2 + var3 * var3;
+    public final double getDistanceToCamera(double var1, double var3, double var5) {
+        double var7 = var1 - this.viewerPosX;
+        double var9 = var3 - this.viewerPosY;
+        double var11 = var5 - this.viewerPosZ;
+        return var7 * var7 + var9 * var9 + var11 * var11;
     }
 }

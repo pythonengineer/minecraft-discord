@@ -19,8 +19,8 @@ public final class RenderPlayer extends RenderLiving {
 		super(new ModelBiped(0.0F), 0.5F);
 	}
 
-	private void renderPlayer(EntityPlayer var1, float var2, float var3, float var4, float var5, float var6) {
-		super.renderLiving(var1, var2, var3 - var1.yOffset, var4, var5, var6);
+    private void renderPlayer(EntityPlayer var1, double var2, double var4, double var6, float var8, float var9) {
+        super.renderLiving(var1, var2, var4 - (double)var1.yOffset, var6, var8, var9);
 	}
 
 	public final void drawFirstPersonHand() {
@@ -55,11 +55,11 @@ public final class RenderPlayer extends RenderLiving {
 		return false;
 	}
 
-	public final void renderLiving(EntityLiving var1, float var2, float var3, float var4, float var5, float var6) {
-		this.renderPlayer((EntityPlayer)var1, var2, var3, var4, var5, var6);
-	}
+    public final void renderLiving(EntityLiving var1, double var2, double var4, double var6, float var8, float var9) {
+        this.renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
+    }
 
-	public final void doRender(Entity var1, float var2, float var3, float var4, float var5, float var6) {
-		this.renderPlayer((EntityPlayer)var1, var2, var3, var4, var5, var6);
-	}
+    public final void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
+        this.renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
+    }
 }

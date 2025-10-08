@@ -3,80 +3,80 @@ package net.minecraft.game.physics;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public final class Vec3D {
-	public float xCoord;
-	public float yCoord;
-	public float zCoord;
+    public double xCoord;
+    public double yCoord;
+    public double zCoord;
 
-	public Vec3D(float var1, float var2, float var3) {
-		this.xCoord = var1;
-		this.yCoord = var2;
-		this.zCoord = var3;
-	}
+    public Vec3D(double var1, double var3, double var5) {
+        this.xCoord = var1;
+        this.yCoord = var3;
+        this.zCoord = var5;
+    }
 
     public final Vec3D subtract(Vec3D var1) {
         return new Vec3D(this.xCoord - var1.xCoord, this.yCoord - var1.yCoord, this.zCoord - var1.zCoord);
     }
 
     public final Vec3D normalize() {
-        float var1 = MathHelper.sqrt_float(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
+        double var1 = (double)MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
         return new Vec3D(this.xCoord / var1, this.yCoord / var1, this.zCoord / var1);
     }
 
-	public final Vec3D addVector(float var1, float var2, float var3) {
-		return new Vec3D(this.xCoord + var1, this.yCoord + var2, this.zCoord + var3);
-	}
+    public final Vec3D addVector(double var1, double var3, double var5) {
+        return new Vec3D(this.xCoord + var1, this.yCoord + var3, this.zCoord + var5);
+    }
 
-	public final float distanceTo(Vec3D var1) {
-		float var2 = var1.xCoord - this.xCoord;
-		float var3 = var1.yCoord - this.yCoord;
-		float var4 = var1.zCoord - this.zCoord;
-		return MathHelper.sqrt_float(var2 * var2 + var3 * var3 + var4 * var4);
-	}
+    public final double distanceTo(Vec3D var1) {
+        double var2 = var1.xCoord - this.xCoord;
+        double var4 = var1.yCoord - this.yCoord;
+        double var6 = var1.zCoord - this.zCoord;
+        return (double)MathHelper.sqrt_double(var2 * var2 + var4 * var4 + var6 * var6);
+    }
 
-	public final float squaredDistanceTo(Vec3D var1) {
-		float var2 = var1.xCoord - this.xCoord;
-		float var3 = var1.yCoord - this.yCoord;
-		float var4 = var1.zCoord - this.zCoord;
-		return var2 * var2 + var3 * var3 + var4 * var4;
-	}
+    public final double squaredDistanceTo(Vec3D var1) {
+        double var2 = var1.xCoord - this.xCoord;
+        double var4 = var1.yCoord - this.yCoord;
+        double var6 = var1.zCoord - this.zCoord;
+        return var2 * var2 + var4 * var4 + var6 * var6;
+    }
 
-	public final Vec3D getIntermediateWithXValue(Vec3D var1, float var2) {
-		float var3 = var1.xCoord - this.xCoord;
-		float var4 = var1.yCoord - this.yCoord;
-		float var5 = var1.zCoord - this.zCoord;
-		if(var3 * var3 < 1.0E-7F) {
-			return null;
-		} else {
-			var2 = (var2 - this.xCoord) / var3;
-			return var2 >= 0.0F && var2 <= 1.0F ? new Vec3D(this.xCoord + var3 * var2, this.yCoord + var4 * var2, this.zCoord + var5 * var2) : null;
-		}
-	}
-
-	public final Vec3D getIntermediateWithYValue(Vec3D var1, float var2) {
-		float var3 = var1.xCoord - this.xCoord;
-		float var4 = var1.yCoord - this.yCoord;
-		float var5 = var1.zCoord - this.zCoord;
-		if(var4 * var4 < 1.0E-7F) {
-			return null;
-		} else {
-			var2 = (var2 - this.yCoord) / var4;
-			return var2 >= 0.0F && var2 <= 1.0F ? new Vec3D(this.xCoord + var3 * var2, this.yCoord + var4 * var2, this.zCoord + var5 * var2) : null;
-		}
-	}
-
-    public final Vec3D getIntermediateWithZValue(Vec3D var1, float var2) {
-        float var3 = var1.xCoord - this.xCoord;
-        float var4 = var1.yCoord - this.yCoord;
-        float var5 = var1.zCoord - this.zCoord;
-        if(var5 * var5 < 1.0E-7F) {
+    public final Vec3D getIntermediateWithXValue(Vec3D var1, double var2) {
+        double var4 = var1.xCoord - this.xCoord;
+        double var6 = var1.yCoord - this.yCoord;
+        double var8 = var1.zCoord - this.zCoord;
+        if(var4 * var4 < (double)1.0E-7F) {
             return null;
         } else {
-            var2 = (var2 - this.zCoord) / var5;
-            return var2 >= 0.0F && var2 <= 1.0F ? new Vec3D(this.xCoord + var3 * var2, this.yCoord + var4 * var2, this.zCoord + var5 * var2) : null;
+            double var10 = (var2 - this.xCoord) / var4;
+            return var10 >= 0.0D && var10 <= 1.0D ? new Vec3D(this.xCoord + var4 * var10, this.yCoord + var6 * var10, this.zCoord + var8 * var10) : null;
         }
     }
 
-	public final String toString() {
-		return "(" + this.xCoord + ", " + this.yCoord + ", " + this.zCoord + ")";
-	}
+    public final Vec3D getIntermediateWithYValue(Vec3D var1, double var2) {
+        double var4 = var1.xCoord - this.xCoord;
+        double var6 = var1.yCoord - this.yCoord;
+        double var8 = var1.zCoord - this.zCoord;
+        if(var6 * var6 < (double)1.0E-7F) {
+            return null;
+        } else {
+            double var10 = (var2 - this.yCoord) / var6;
+            return var10 >= 0.0D && var10 <= 1.0D ? new Vec3D(this.xCoord + var4 * var10, this.yCoord + var6 * var10, this.zCoord + var8 * var10) : null;
+        }
+    }
+
+    public final Vec3D getIntermediateWithZValue(Vec3D var1, double var2) {
+        double var4 = var1.xCoord - this.xCoord;
+        double var6 = var1.yCoord - this.yCoord;
+        double var8 = var1.zCoord - this.zCoord;
+        if(var8 * var8 < (double)1.0E-7F) {
+            return null;
+        } else {
+            double var10 = (var2 - this.zCoord) / var8;
+            return var10 >= 0.0D && var10 <= 1.0D ? new Vec3D(this.xCoord + var4 * var10, this.yCoord + var6 * var10, this.zCoord + var8 * var10) : null;
+        }
+    }
+
+    public final String toString() {
+        return "(" + this.xCoord + ", " + this.yCoord + ", " + this.zCoord + ")";
+    }
 }

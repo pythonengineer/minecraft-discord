@@ -1847,6 +1847,10 @@ public class GL11 {
     }
 
     public static void glPushMatrix() {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(true));
+            return;
+        }
         int push;
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
@@ -1892,6 +1896,10 @@ public class GL11 {
     }
 
     public static void glPopMatrix() {
+        if (currentList != null) {
+            currentList.ops.add(currentList.new ListOperation(false));
+            return;
+        }
         switch (stateMatrixMode) {
             case GL_MODELVIEW:
             default:
@@ -2545,6 +2553,9 @@ public class GL11 {
         }
         for (int i = 0; i < dp.ops.size(); ++i) {
             ListOperation op = dp.ops.get(i);
+            if (op.hasPush) {
+                glPushMatrix();
+            }
             if (op.hasSetting) {
                 if (op.enabled) {
                     glEnable(op.setting);
@@ -2594,6 +2605,9 @@ public class GL11 {
             }
             if (op.hasTranslate) {
                 glTranslatef(op.x, op.y, op.z);
+            }
+            if (op.hasPop) {
+                glPopMatrix();
             }
         }
     }

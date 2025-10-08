@@ -1,6 +1,6 @@
 package net.minecraft.client.render.texture;
 
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class TextureFlamesFX extends TextureFX {
     private float[] currentFireFrame = new float[320];

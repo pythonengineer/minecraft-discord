@@ -1,11 +1,5 @@
 package net.minecraft.client;
 
-import com.mojang.nbt.NBTBase;
-import com.mojang.nbt.NBTTagCompound;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.GZIPInputStream;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
@@ -13,15 +7,12 @@ import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.Tessellator;
 
 public final class LoadingScreenRenderer implements IProgressUpdate {
-    private String text;
+    private String text = "";
     private Minecraft mc;
-    private String title;
-    private long start;
+    private String title = "";
+    private long start = EagRuntime.currentTimeMillis();
 
 	public LoadingScreenRenderer(Minecraft var1) {
-        this.text = "";
-        this.title = "";
-        this.start = EagRuntime.currentTimeMillis();
 		this.mc = var1;
 	}
 
@@ -41,89 +32,45 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
 	}
 
 	public final void displayLoadingString(String var1) {
-		if(this.mc.running) {
+        if(this.mc.running) {
 			this.start = 0L;
 			this.text = var1;
-			this.setLoadingProgress(-1);
-			this.start = 0L;
-		}
-	}
+            if(this.mc.running) {
+                long var4 = EagRuntime.currentTimeMillis();
+                if(var4 - this.start >= 20L) {
+                    this.start = var4;
+                    int var3 = this.mc.scaledResolution.getScaledWidth();
+                    int var8 = this.mc.scaledResolution.getScaledHeight();
+                    GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+                    GL11.glMatrixMode(GL11.GL_PROJECTION);
+                    GL11.glLoadIdentity();
+                    GL11.glOrtho(0.0D, (double)var3, (double)var8, 0.0D, 100.0D, 300.0D);
+                    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+                    GL11.glLoadIdentity();
+                    GL11.glTranslatef(0.0F, 0.0F, -200.0F);
+                    GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+                    Tessellator var9 = Tessellator.instance;
+                    int var5 = this.mc.renderEngine.getTexture("/dirt.png");
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
+                    var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+                    var9.setColorOpaque_I(4210752);
+                    var9.addVertexWithUV(0.0F, (float)var8, 0.0F, 0.0F, (float)var8 / 32.0F);
+                    var9.addVertexWithUV((float)var3, (float)var8, 0.0F, (float)var3 / 32.0F, (float)var8 / 32.0F);
+                    var9.addVertexWithUV((float)var3, 0.0F, 0.0F, (float)var3 / 32.0F, 0.0F);
+                    var9.addVertexWithUV(0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+                    var9.draw();
+                    this.mc.fontRenderer.drawStringWithShadow(this.title, (var3 - this.mc.fontRenderer.getStringWidth(this.title)) / 2, var8 / 2 - 4 - 16, 16777215);
+                    this.mc.fontRenderer.drawStringWithShadow(this.text, (var3 - this.mc.fontRenderer.getStringWidth(this.text)) / 2, var8 / 2 - 4 + 8, 16777215);
+                    Display.update();
 
-	public final void setLoadingProgress(int var1) {
-		if(this.mc.running) {
-			long var2 = EagRuntime.currentTimeMillis();
-			if(var2 - this.start >= 20L) {
-				this.start = var2;
-				int var8 = this.mc.scaledResolution.getScaledWidth();
-				int var3 = this.mc.scaledResolution.getScaledHeight();
-				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-				GL11.glMatrixMode(GL11.GL_PROJECTION);
-				GL11.glLoadIdentity();
-				GL11.glOrtho(0.0D, (double)var8, (double)var3, 0.0D, 100.0D, 300.0D);
-				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				GL11.glLoadIdentity();
-				GL11.glTranslatef(0.0F, 0.0F, -200.0F);
-				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-				Tessellator var4 = Tessellator.instance;
-				int var5 = this.mc.renderEngine.getTexture("/dirt.png");
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
-				float var9 = 32.0F;
-				var4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-				var4.setColorOpaque_I(4210752);
-				var4.addVertexWithUV(0.0F, (float)var3, 0.0F, 0.0F, (float)var3 / var9);
-				var4.addVertexWithUV((float)var8, (float)var3, 0.0F, (float)var8 / var9, (float)var3 / var9);
-				var4.addVertexWithUV((float)var8, 0.0F, 0.0F, (float)var8 / var9, 0.0F);
-				var4.addVertexWithUV(0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-				var4.draw();
-				if(var1 >= 0) {
-					var5 = var8 / 2 - 50;
-					int var6 = var3 / 2 + 16;
-					GL11.glDisable(GL11.GL_TEXTURE_2D);
-					var4.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
-					var4.setColorOpaque_I(8421504);
-					var4.addVertex((float)var5, (float)var6, 0.0F);
-					var4.addVertex((float)var5, (float)(var6 + 2), 0.0F);
-					var4.addVertex((float)(var5 + 100), (float)(var6 + 2), 0.0F);
-					var4.addVertex((float)(var5 + 100), (float)var6, 0.0F);
-					var4.setColorOpaque_I(8454016);
-					var4.addVertex((float)var5, (float)var6, 0.0F);
-					var4.addVertex((float)var5, (float)(var6 + 2), 0.0F);
-					var4.addVertex((float)(var5 + var1), (float)(var6 + 2), 0.0F);
-					var4.addVertex((float)(var5 + var1), (float)var6, 0.0F);
-					var4.draw();
-					GL11.glEnable(GL11.GL_TEXTURE_2D);
-				}
+                    try {
+                        Thread.yield();
+                    } catch (Exception var6) {
+                    }
+                }
 
-				this.mc.fontRenderer.drawStringWithShadow(this.title, (var8 - this.mc.fontRenderer.getStringWidth(this.title)) / 2, var3 / 2 - 4 - 16, 16777215);
-				this.mc.fontRenderer.drawStringWithShadow(this.text, (var8 - this.mc.fontRenderer.getStringWidth(this.text)) / 2, var3 / 2 - 4 + 8, 16777215);
-				Display.update();
-
-				try {
-					Thread.yield();
-				} catch (Exception var7) {
-				}
-			}
-		}
-	}
-
-    public LoadingScreenRenderer() {
-    }
-
-    public static NBTTagCompound writeLevelTags(InputStream var0) throws IOException {
-        DataInputStream var4 = new DataInputStream(new GZIPInputStream(var0));
-
-        NBTTagCompound var5;
-        try {
-            NBTBase var1 = NBTBase.readTag(var4);
-            if(!(var1 instanceof NBTTagCompound)) {
-                throw new IOException("Root tag must be a named compound tag");
+                this.start = 0L;
             }
-
-            var5 = (NBTTagCompound)var1;
-        } finally {
-            var4.close();
-        }
-
-        return var5;
-    }
+		}
+	}
 }

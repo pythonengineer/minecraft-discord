@@ -10,8 +10,8 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.entity.Entity;
-import net.minecraft.game.level.World;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.World;
+import net.minecraft.game.world.block.Block;
 
 public final class EffectRenderer {
     private World worldObj;
@@ -41,7 +41,7 @@ public final class EffectRenderer {
         for(int var1 = 0; var1 < 3; ++var1) {
             for(int var2 = 0; var2 < this.fxLayers[var1].size(); ++var2) {
                 EntityFX var3 = (EntityFX)this.fxLayers[var1].get(var2);
-                var3.onEntityUpdate();
+                var3.onUpdate();
                 if(var3.isDead) {
                     this.fxLayers[var1].remove(var2--);
                 }

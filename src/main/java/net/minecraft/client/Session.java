@@ -2,7 +2,8 @@ package net.minecraft.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.game.level.block.Block;
+
+import net.minecraft.game.world.block.Block;
 
 public final class Session {
     public static List registeredBlocksList;

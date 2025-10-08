@@ -14,7 +14,7 @@ public final class GuiOptions extends GuiScreen {
 
 	public final void initGui() {
 		for(int var1 = 0; var1 < this.options.numberOfOptions; ++var1) {
-			this.controlList.add(new GuiSmallButton(var1, this.width / 2 - 155 + var1 % 2 * 160, this.height / 6 + 24 * (var1 >> 1), this.options.setOptionString(var1)));
+			this.controlList.add(new GuiSmallButton(var1, this.width / 2 - 155 + var1 % 2 * 160, this.height / 6 + 24 * (var1 >> 1), this.options.getOptionString(var1)));
 		}
 
 		this.controlList.add(new GuiButton(100, this.width / 2 - 100, this.height / 6 + 120 + 12, "Controls..."));
@@ -25,7 +25,7 @@ public final class GuiOptions extends GuiScreen {
 		if(var1.enabled) {
 			if(var1.id < 100) {
 				this.options.setOptionValue(var1.id, 1);
-				var1.displayString = this.options.setOptionString(var1.id);
+				var1.displayString = this.options.getOptionString(var1.id);
 			}
 
 			if(var1.id == 100) {

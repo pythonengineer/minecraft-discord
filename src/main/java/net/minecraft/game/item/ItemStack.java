@@ -1,7 +1,6 @@
 package net.minecraft.game.item;
 
-import com.mojang.nbt.NBTTagCompound;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public final class ItemStack {
     public int stackSize;
@@ -35,18 +34,11 @@ public final class ItemStack {
         this.stackSize = var2;
     }
 
-    public ItemStack(int var1, int var2, int var3) {
+    private ItemStack(int var1, int var2, int var3) {
         this.stackSize = 0;
         this.itemID = var1;
         this.stackSize = var2;
         this.itemDamage = var3;
-    }
-
-    public ItemStack(NBTTagCompound var1) {
-        this.stackSize = 0;
-        this.itemID = var1.getShort("id");
-        this.stackSize = var1.getByte("Count");
-        this.itemDamage = var1.getShort("Damage");
     }
 
     public final ItemStack splitStack(int var1) {
@@ -56,13 +48,6 @@ public final class ItemStack {
 
     public final Item getItem() {
         return Item.itemsList[this.itemID];
-    }
-
-    public final NBTTagCompound writeToNBT(NBTTagCompound var1) {
-        var1.setShort("id", (short)this.itemID);
-        var1.setByte("Count", (byte)this.stackSize);
-        var1.setShort("Damage", (short)this.itemDamage);
-        return var1;
     }
 
     public final int isItemStackDamageable() {

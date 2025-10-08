@@ -6,7 +6,7 @@ import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.EaglerOutputStream;
 import net.minecraft.client.PlayerLoader;
-import net.minecraft.game.level.World;
+import net.minecraft.game.world.World;
 
 public final class GuiIngameMenu extends GuiScreen {
 	public final void initGui() {
@@ -37,7 +37,7 @@ public final class GuiIngameMenu extends GuiScreen {
 			    //this.mc.displayGuiScreen(new GuiSaveLevel(this));
                 try {
                     EaglerOutputStream var3 = new EaglerOutputStream();
-                    (new PlayerLoader(this.mc, this.mc.loadingScreen)).save(this.mc.theWorld, var3);
+                    (new PlayerLoader(this.mc, this.mc.loadingScreen)).load();
                     var3.close();
                     byte[] level = var3.toByteArray();
                     if(level != null) {
@@ -54,9 +54,9 @@ public final class GuiIngameMenu extends GuiScreen {
                     byte[] level = EagRuntime.getStorage("level.mclevel");
                     if(level != null) {
                         EaglerInputStream var4 = new EaglerInputStream(level);
-                        World var2 = (new PlayerLoader(this.mc, this.mc.loadingScreen)).load(var4);
+                        new PlayerLoader(this.mc, this.mc.loadingScreen);
                         var4.close();
-                        this.mc.setLevel(var2);
+                        this.mc.setLevel((World)null);
                     }
                 } catch (IOException var3) {
                     var3.printStackTrace();

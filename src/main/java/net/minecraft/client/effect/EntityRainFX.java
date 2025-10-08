@@ -1,15 +1,16 @@
 package net.minecraft.client.effect;
 
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.game.level.World;
-import net.minecraft.game.level.material.Material;
+import net.minecraft.game.world.World;
+import net.minecraft.game.world.material.Material;
 
 public class EntityRainFX extends EntityFX {
-	public EntityRainFX(World var1, float var2, float var3, float var4) {
-		super(var1, var2, var3, var4, 0.0F, 0.0F, 0.0F);
-		this.motionX1 *= 0.3F;
-		this.motionY1 = (float)Math.random() * 0.2F + 0.1F;
-		this.motionZ1 *= 0.3F;
+    public EntityRainFX(World var1, double var2, double var4, double var6) {
+        super(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D);
+        this.motionX *= (double)0.3F;
+        this.motionY = (double)((float)Math.random() * 0.2F + 0.1F);
+        this.motionZ *= (double)0.3F;
 		this.particleRed = 1.0F;
 		this.particleGreen = 1.0F;
 		this.particleBlue = 1.0F;
@@ -23,15 +24,15 @@ public class EntityRainFX extends EntityFX {
 		super.renderParticle(var1, var2, var3, var4, var5, var6, var7);
 	}
 
-	public final void onEntityUpdate() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
-        this.motionY1 -= this.particleGravity;
-		this.moveEntity(this.motionX1, this.motionY1, this.motionZ1);
-		this.motionX1 *= 0.98F;
-		this.motionY1 *= 0.98F;
-		this.motionZ1 *= 0.98F;
+    public final void onUpdate() {
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+        this.motionY -= (double)this.particleGravity;
+        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.motionX *= (double)0.98F;
+        this.motionY *= (double)0.98F;
+        this.motionZ *= (double)0.98F;
         if(this.particleMaxAge-- <= 0) {
             this.setEntityDead();
         }
@@ -41,11 +42,11 @@ public class EntityRainFX extends EntityFX {
                 this.setEntityDead();
             }
 
-            this.motionX1 *= 0.7F;
-            this.motionZ1 *= 0.7F;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
 
-        Material var1 = this.worldObj.getBlockMaterial((int)this.posX, (int)this.posY, (int)this.posZ);
+        Material var1 = this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ));
         if(var1.getIsLiquid() || var1.isSolid()) {
             this.setEntityDead();
         }

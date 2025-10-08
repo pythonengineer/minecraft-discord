@@ -2,7 +2,7 @@ package net.minecraft.client.render.texture;
 
 import net.lax1dude.eaglercraft.opengl.ImageData;
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.game.level.block.Block;
+import net.minecraft.game.world.block.Block;
 
 public class TextureGearsFX extends TextureFX {
     private int gearRotation = 0;
