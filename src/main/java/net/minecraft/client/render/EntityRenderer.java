@@ -17,7 +17,7 @@ import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.player.EntityPlayerSP;
-import net.minecraft.client.render.camera.ClippingHelperImpl;
+import net.minecraft.client.render.camera.ClippingHelperImplementation;
 import net.minecraft.client.render.camera.Frustrum;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
@@ -36,10 +36,10 @@ public final class EntityRenderer {
     private Entity pointedEntity = null;
     private int entityRendererInt1;
     private int entityRendererInt2;
-    private EaglercraftRandom random;
-    private volatile int unusedInt1;
-    private volatile int unusedInt2;
-    private FloatBuffer fogColorBuffer;
+    private EaglercraftRandom random = new EaglercraftRandom();
+    private volatile int unusedInt1 = 0;
+    private volatile int unusedInt2 = 0;
+    private FloatBuffer fogColorBuffer = BufferUtils.createFloatBuffer(16);
     private float fogColorRed;
     private float fogColorGreen;
     private float fogColorBlue;
@@ -47,10 +47,6 @@ public final class EntityRenderer {
     private float fogColor;
 
     public EntityRenderer(Minecraft var1) {
-        this.random = new EaglercraftRandom();
-        this.unusedInt1 = 0;
-        this.unusedInt2 = 0;
-        this.fogColorBuffer = BufferUtils.createFloatBuffer(16);
         this.mc = var1;
         this.itemRenderer = new ItemRenderer(var1);
     }
@@ -258,6 +254,10 @@ public final class EntityRenderer {
             var7.mc.objectMouseOver = new MovingObjectPosition(var7.pointedEntity);
         }
 
+        double var16 = this.mc.thePlayer.lastTickPosX + (this.mc.thePlayer.posX - this.mc.thePlayer.lastTickPosX) * (double)var1;
+        double var17 = this.mc.thePlayer.lastTickPosY + (this.mc.thePlayer.posY - this.mc.thePlayer.lastTickPosY) * (double)var1;
+        double var18 = this.mc.thePlayer.lastTickPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.lastTickPosZ) * (double)var1;
+
         for(int var2 = 0; var2 < 2; ++var2) {
             if(this.mc.options.anaglyph) {
                 if(var2 == 0) {
@@ -276,11 +276,11 @@ public final class EntityRenderer {
             EntityPlayerSP var53 = this.mc.thePlayer;
             var11 = 1.0F / (float)(4 - this.mc.options.renderDistance);
             var11 = 1.0F - (float)Math.pow((double)var11, 0.25D);
-            var12 = World.getSkyColor();
+            var12 = var4.getSkyColor(var1);
             var13 = (float)var12.xCoord;
             var23 = (float)var12.yCoord;
             var24 = (float)var12.zCoord;
-            Vec3D var61 = World.getFogColor();
+            Vec3D var61 = var4.getFogColor(var1);
             this.fogColorRed = (float)var61.xCoord;
             this.fogColorGreen = (float)var61.yCoord;
             this.fogColorBlue = (float)var61.zCoord;
@@ -318,7 +318,7 @@ public final class EntityRenderer {
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
             GL11.glEnable(GL11.GL_CULL_FACE);
             float var46 = var1;
-            this.farPlaneDistance = (float)(512 >> (this.mc.options.renderDistance << 1));
+            this.farPlaneDistance = (float)(256 >> this.mc.options.renderDistance);
             GL11.glMatrixMode(GL11.GL_PROJECTION);
             GL11.glLoadIdentity();
             if(this.mc.options.anaglyph) {
@@ -382,24 +382,24 @@ public final class EntityRenderer {
 
             GL11.glRotatef(var59.prevRotationPitch + (var59.rotationPitch - var59.prevRotationPitch) * var46, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(var59.prevRotationYaw + (var59.rotationYaw - var59.prevRotationYaw) * var46 + 180.0F, 0.0F, 1.0F, 0.0F);
-            GL11.glTranslatef((float)(-var62), (float)(-var63), (float)(-var66));
-            ClippingHelperImpl.init();
+            ClippingHelperImplementation.init();
             this.updateFogColor();
             GL11.glEnable(GL11.GL_FOG);
             var5.renderSky(var1);
             this.updateFogColor();
             Frustrum var45 = new Frustrum();
+            var45.setPosition(var16, var17, var18);
             this.mc.renderGlobal.clipRenderersByFrustum(var45);
             this.mc.renderGlobal.updateRenderers(var3);
             this.updateFogColor();
             GL11.glEnable(GL11.GL_FOG);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             RenderHelper.disableStandardItemLighting();
-            var5.sortAndRender(var3, 0);
+            var5.sortAndRender(this.mc.thePlayer, 0, (double)var1);
             var8 = MathHelper.floor_double(var3.posX);
             int var52 = MathHelper.floor_double(var3.posY);
             int var55 = MathHelper.floor_double(var3.posZ);
-            if(var4.isSolid(var8, var52, var55)) {
+            if(var4.isBlockNormalCube(var8, var52, var55)) {
                 RenderBlocks var56 = new RenderBlocks(var4);
                 Tessellator t = Tessellator.instance;
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -426,8 +426,8 @@ public final class EntityRenderer {
             var6.renderParticles(var3, var1);
             if(this.mc.objectMouseOver != null && var3.isInsideOfMaterial()) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
-                var5.drawBlockBreaking(this.mc.objectMouseOver, 0, var3.inventory.getCurrentItem());
-                var5.drawSelectionBox(this.mc.objectMouseOver, 0);
+                var5.drawBlockBreaking(var3, this.mc.objectMouseOver, 0, var3.inventory.getCurrentItem(), var1);
+                var5.drawSelectionBox(var3, this.mc.objectMouseOver, 0, var1);
                 GL11.glEnable(GL11.GL_ALPHA_TEST);
             }
 
@@ -436,7 +436,8 @@ public final class EntityRenderer {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glColorMask(false, false, false, false);
-            int var57 = var5.sortAndRender(var3, 1);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+            int var57 = var5.sortAndRender(var3, 1, (double)var1);
             GL11.glColorMask(true, true, true, true);
             if(this.mc.options.anaglyph) {
                 if(var2 == 0) {
@@ -447,7 +448,8 @@ public final class EntityRenderer {
             }
 
             if(var57 > 0) {
-                var5.bindTerrainTexture();
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+                var5.renderAllRenderLists(1, (double)var1);
             }
 
             GL11.glDepthMask(true);
@@ -455,8 +457,8 @@ public final class EntityRenderer {
             GL11.glDisable(GL11.GL_BLEND);
             if(this.mc.objectMouseOver != null && !var3.isInsideOfMaterial()) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
-                var5.drawBlockBreaking(this.mc.objectMouseOver, 0, var3.inventory.getCurrentItem());
-                var5.drawSelectionBox(this.mc.objectMouseOver, 0);
+                var5.drawBlockBreaking(var3, this.mc.objectMouseOver, 0, var3.inventory.getCurrentItem(), var1);
+                var5.drawSelectionBox(var3, this.mc.objectMouseOver, 0, var1);
                 GL11.glEnable(GL11.GL_ALPHA_TEST);
             }
 
@@ -531,7 +533,7 @@ public final class EntityRenderer {
             }
         } else {
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-            GL11.glFogf(GL11.GL_FOG_START, this.farPlaneDistance * 0.5F);
+            GL11.glFogf(GL11.GL_FOG_START, this.farPlaneDistance * 0.25F);
             GL11.glFogf(GL11.GL_FOG_END, this.farPlaneDistance);
         }
 

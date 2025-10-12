@@ -22,44 +22,51 @@ public final class RenderItem extends Render {
         this.shadowOpaque = 12.0F / 16.0F;
     }
 
-    public final void doRender(RenderEngine var2, ItemStack var3, int var4, int var5) {
-        if(var3 != null) {
-            int var7;
-            if(var3.itemID < 256 && Block.blocksList[var3.itemID].getRenderType() == 0) {
-                int var6 = var3.itemID;
-                RenderEngine.bindTexture(var2.getTexture("/terrain.png"));
-                Block var11 = Block.blocksList[var6];
+    public final void doRender(RenderEngine var1, ItemStack var2, int var3, int var4) {
+        if(var2 != null) {
+            int var9;
+            if(var2.itemID < 256 && Block.blocksList[var2.itemID].getRenderType() == 0) {
+                var9 = var2.itemID;
+                RenderEngine.bindTexture(var1.getTexture("/terrain.png"));
+                Block var8 = Block.blocksList[var9];
                 GL11.glPushMatrix();
-                GL11.glTranslatef((float)(var4 - 2), (float)(var5 + 3), 0.0F);
+                GL11.glTranslatef((float)(var3 - 2), (float)(var4 + 3), 0.0F);
                 GL11.glScalef(10.0F, 10.0F, 10.0F);
                 GL11.glTranslatef(1.0F, 0.5F, 8.0F);
                 GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.itemRenderBlocks.renderBlockOnInventory(var11);
+                this.itemRenderBlocks.renderBlockOnInventory(var8);
                 GL11.glPopMatrix();
-            } else if(var3.getItem().getIconIndex() >= 0) {
-                GL11.glDisable(GL11.GL_LIGHTING);
-                if(var3.itemID < 256) {
-                    RenderEngine.bindTexture(var2.getTexture("/terrain.png"));
-                } else {
-                    RenderEngine.bindTexture(var2.getTexture("/gui/items.png"));
+            } else {
+                if(var2.getItem().getIconIndex() >= 0) {
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    if(var2.itemID < 256) {
+                        RenderEngine.bindTexture(var1.getTexture("/terrain.png"));
+                    } else {
+                        RenderEngine.bindTexture(var1.getTexture("/gui/items.png"));
+                    }
+
+                    int var10000 = var3;
+                    int var10001 = var4;
+                    int var10002 = var2.getItem().getIconIndex() % 16 << 4;
+                    int var10003 = var2.getItem().getIconIndex() / 16 << 4;
+                    boolean var6 = true;
+                    var6 = true;
+                    var4 = var10003;
+                    var3 = var10002;
+                    var9 = var10001;
+                    int var7 = var10000;
+                    Tessellator var5 = Tessellator.instance;
+                    var5.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                    var5.addVertexWithUV((double)var7, (double)(var9 + 16), 0.0D, (double)((float)var3 * 0.00390625F), (double)((float)(var4 + 16) * 0.00390625F));
+                    var5.addVertexWithUV((double)(var7 + 16), (double)(var9 + 16), 0.0D, (double)((float)(var3 + 16) * 0.00390625F), (double)((float)(var4 + 16) * 0.00390625F));
+                    var5.addVertexWithUV((double)(var7 + 16), (double)var9, 0.0D, (double)((float)(var3 + 16) * 0.00390625F), (double)((float)var4 * 0.00390625F));
+                    var5.addVertexWithUV((double)var7, (double)var9, 0.0D, (double)((float)var3 * 0.00390625F), (double)((float)var4 * 0.00390625F));
+                    var5.draw();
+                    GL11.glEnable(GL11.GL_LIGHTING);
                 }
 
-                int var10002 = var3.getItem().getIconIndex() % 16 << 4;
-                int var10003 = var3.getItem().getIconIndex() / 16 << 4;
-                boolean var10 = true;
-                var10 = true;
-                int var8 = var10003;
-                var7 = var10002;
-                Tessellator var9 = Tessellator.instance;
-                var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                var9.addVertexWithUV((float)var4, (float)(var5 + 16), 0.0F, (float)var7 * 0.00390625F, (float)(var8 + 16) * 0.00390625F);
-                var9.addVertexWithUV((float)(var4 + 16), (float)(var5 + 16), 0.0F, (float)(var7 + 16) * 0.00390625F, (float)(var8 + 16) * 0.00390625F);
-                var9.addVertexWithUV((float)(var4 + 16), (float)var5, 0.0F, (float)(var7 + 16) * 0.00390625F, (float)var8 * 0.00390625F);
-                var9.addVertexWithUV((float)var4, (float)var5, 0.0F, (float)var7 * 0.00390625F, (float)var8 * 0.00390625F);
-                var9.draw();
-                GL11.glEnable(GL11.GL_LIGHTING);
             }
         }
     }
@@ -106,10 +113,10 @@ public final class RenderItem extends Render {
     private static void renderQuad(Tessellator var0, int var1, int var2, int var3, int var4, int var5) {
         var0.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
         var0.setColorOpaque_I(var5);
-        var0.addVertex((float)var1, (float)var2, 0.0F);
-        var0.addVertex((float)var1, (float)(var2 + var4), 0.0F);
-        var0.addVertex((float)(var1 + var3), (float)(var2 + var4), 0.0F);
-        var0.addVertex((float)(var1 + var3), (float)var2, 0.0F);
+        var0.addVertex((double)var1, (double)var2, 0.0D);
+        var0.addVertex((double)var1, (double)(var2 + var4), 0.0D);
+        var0.addVertex((double)(var1 + var3), (double)(var2 + var4), 0.0D);
+        var0.addVertex((double)(var1 + var3), (double)var2, 0.0D);
         var0.draw();
     }
 
@@ -187,10 +194,10 @@ public final class RenderItem extends Render {
                 GL11.glRotatef(180.0F - var18.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
                 var22.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
                 var22.normal(0.0F, 1.0F, 0.0F);
-                var22.addVertexWithUV(-0.5F, -0.25F, 0.0F, var5, var21);
-                var22.addVertexWithUV(0.5F, -0.25F, 0.0F, var7, var21);
-                var22.addVertexWithUV(0.5F, 12.0F / 16.0F, 0.0F, var7, var8);
-                var22.addVertexWithUV(-0.5F, 12.0F / 16.0F, 0.0F, var5, var8);
+                var22.addVertexWithUV(-0.5D, -0.25D, 0.0D, (double)var5, (double)var21);
+                var22.addVertexWithUV(0.5D, -0.25D, 0.0D, (double)var7, (double)var21);
+                var22.addVertexWithUV(0.5D, 0.75D, 0.0D, (double)var7, (double)var8);
+                var22.addVertexWithUV(-0.5D, 0.75D, 0.0D, (double)var5, (double)var8);
                 var22.draw();
                 GL11.glPopMatrix();
             }

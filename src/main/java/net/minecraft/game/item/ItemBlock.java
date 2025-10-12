@@ -46,7 +46,7 @@ public final class ItemBlock extends Item {
             if(this.blockID > 0 && var9 == null || var9 == Block.waterMoving || var9 == Block.waterStill || var9 == Block.lavaMoving || var9 == Block.lavaStill || var9 == Block.fire) {
                 var9 = Block.blocksList[this.blockID];
                 var9.getCollisionBoundingBoxFromPool(var3, var4, var5);
-                if(var9.canPlaceBlockAt(var2, var3, var4, var5) && var2.setBlockWithNotify(var3, var4, var5, this.blockID)) {
+                if(var9.canPlaceBlockAt(var2, var3, var4, var5) && var2.setBlockMetadata(var3, var4, var5, this.blockID)) {
                     Block.blocksList[this.blockID].onBlockPlaced(var2, var3, var4, var5, var6);
                     double var10001 = (double)((float)var3 + 0.5F);
                     double var10002 = (double)((float)var4 + 0.5F);
@@ -55,7 +55,7 @@ public final class ItemBlock extends Item {
                     StepSound var8 = var9.stepSound;
                     float var10005 = (var8.stepSoundVolume + 1.0F) / 2.0F;
                     var8 = var9.stepSound;
-                    var2.playSoundAtPlayer(var10001, var10002, var10003, var10004, var10005, var8.stepSoundPitch * 0.8F);
+                    var2.playSoundEffect(var10001, var10002, var10003, var10004, var10005, var8.stepSoundPitch * 0.8F);
                     --var1.stackSize;
                 }
             }

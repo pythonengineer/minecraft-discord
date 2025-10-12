@@ -110,7 +110,7 @@ public final class ModelRenderer {
 
                     for(int var11 = 0; var11 < 4; ++var11) {
                         PositionTextureVertex var12 = var6.vertexPositions[var11];
-                        var7.addVertexWithUV((float)var12.vector3D.xCoord * var8, (float)var12.vector3D.yCoord * var8, (float)var12.vector3D.zCoord * var8, var12.texturePositionX, var12.texturePositionY);
+                        var7.addVertexWithUV((double)((float)var12.vector3D.xCoord * var8), (double)((float)var12.vector3D.yCoord * var8), (double)((float)var12.vector3D.zCoord * var8), (double)var12.texturePositionX, (double)var12.texturePositionY);
                     }
 
                     var4.draw();

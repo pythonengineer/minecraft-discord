@@ -22,27 +22,34 @@ public final class PlayerControllerSP extends PlayerController {
 	}
 
 	public final void onRespawn() {
-		this.mc.thePlayer.inventory.mainInventory[0] = new ItemStack(Block.glass, 999);
-		this.mc.thePlayer.inventory.mainInventory[1] = new ItemStack(Block.planks, 990);
-	}
+        this.mc.thePlayer.inventory.mainInventory[0] = new ItemStack(Block.glass, 999);
+        this.mc.thePlayer.inventory.mainInventory[1] = new ItemStack(Block.planks, 999);
+        this.mc.thePlayer.inventory.mainInventory[2] = new ItemStack(Block.torch, 999);
+        this.mc.thePlayer.inventory.mainInventory[3] = new ItemStack(Item.striker, 999);
+        this.mc.thePlayer.inventory.mainInventory[4] = new ItemStack(Item.shovelDiamond, 999);
+        this.mc.thePlayer.inventory.mainInventory[5] = new ItemStack(Item.pickaxeDiamond, 999);
+        this.mc.thePlayer.inventory.mainInventory[7] = new ItemStack(Block.lavaStill, 999);
+        this.mc.thePlayer.inventory.mainInventory[8] = new ItemStack(Block.waterStill, 999);
+    }
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {
 		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		boolean var5 = super.sendBlockRemoved(var1, var2, var3);
-		EntityPlayerSP var6 = this.mc.thePlayer;
-		ItemStack var8 = var6.inventory.getCurrentItem();
-		if(var8 != null) {
-			Item.itemsList[var8.itemID].onBlockDestroyed(var8);
-			if(var8.stackSize == 0) {
-				this.mc.thePlayer.destroyCurrentEquippedItem();
-			}
-		}
+        int var5 = this.mc.theWorld.getBlockMetadata(var1, var2, var3);
+        boolean var6 = super.sendBlockRemoved(var1, var2, var3);
+        EntityPlayerSP var7 = this.mc.thePlayer;
+        ItemStack var9 = var7.inventory.getCurrentItem();
+        if(var9 != null) {
+            Item.itemsList[var9.itemID].onBlockDestroyed(var9);
+            if(var9.stackSize == 0) {
+                this.mc.thePlayer.destroyCurrentEquippedItem();
+            }
+        }
 
-		if(var5 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[var4])) {
-			Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3, 0);
-		}
+        if(var6 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[var4])) {
+            Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3, var5);
+        }
 
-		return var5;
+        return var6;
 	}
 
 	public final void clickBlock(int var1, int var2, int var3) {

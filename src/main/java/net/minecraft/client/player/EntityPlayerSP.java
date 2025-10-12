@@ -21,6 +21,8 @@ public class EntityPlayerSP extends EntityPlayer {
         if(var3 != null) {
             this.skinUrl = var3.username;
             this.username = var3.username;
+        } else {
+            this.username = "";
         }
     }
 

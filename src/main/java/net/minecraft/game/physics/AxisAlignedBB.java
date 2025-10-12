@@ -1,7 +1,6 @@
 package net.minecraft.game.physics;
 
 public final class AxisAlignedBB {
-    private double epsilon = 0.0D;
     public double minX;
     public double minY;
     public double minZ;
@@ -64,6 +63,10 @@ public final class AxisAlignedBB {
             double var17 = this.maxZ + var5;
             return new AxisAlignedBB(var7, var9, var11, var13, var15, var17);
         }
+    }
+
+    public final AxisAlignedBB offsetCopy(double var1, double var3, double var5) {
+        return new AxisAlignedBB(this.minX + var1, this.minY + var3, this.minZ + var5, this.maxX + var1, this.maxY + var3, this.maxZ + var5);
     }
 
     public final double calculateXOffset(AxisAlignedBB var1, double var2) {

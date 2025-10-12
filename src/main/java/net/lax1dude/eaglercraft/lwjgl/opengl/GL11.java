@@ -1208,6 +1208,9 @@ public class GL11 {
                 break;
             case GL_NORMALIZE:
                 break;
+            case GL_POLYGON_OFFSET_FILL:
+                enablePolygonOffset();
+                break;
             default:
                 _wglEnable(var);
         }
@@ -1249,6 +1252,9 @@ public class GL11 {
                 disableColorMaterial();
                 break;
             case GL_NORMALIZE:
+                break;
+            case GL_POLYGON_OFFSET_FILL:
+                disablePolygonOffset();
                 break;
             default:
                 _wglDisable(var);
@@ -1617,7 +1623,7 @@ public class GL11 {
         }
     }
 
-    public static void doPolygonOffset(float factor, float units) {
+    public static void glPolygonOffset(float factor, float units) {
         if (factor != statePolygonOffsetFactor || units != statePolygonOffsetUnits) {
             _wglPolygonOffset(-factor, units);
             statePolygonOffsetFactor = factor;

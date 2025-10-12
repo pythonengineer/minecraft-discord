@@ -66,7 +66,7 @@ public class CrashReport {
     private void populateEnvironment() {
         this.theReportCategory.addCrashSectionCallable("Minecraft Version", new Callable<String>() {
             public String call() {
-                return "Infdev 20100227-2";
+                return "Infdev 20100313";
             }
         });
         this.theReportCategory.addCrashSectionCallable("Operating System", new Callable<String>() {

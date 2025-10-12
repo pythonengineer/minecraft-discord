@@ -4,8 +4,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.camera.Frustrum;
-import net.minecraft.client.render.entity.RenderItem;
-import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -21,6 +20,12 @@ public final class WorldRenderer {
 	private int sizeWidth;
 	private int sizeHeight;
 	private int sizeDepth;
+    public int posXMinus;
+    public int posYMinus;
+    public int posZMinus;
+    private int t;
+    private int u;
+    private int v;
     public boolean isInFrustrum = false;
 	private boolean[] skipRenderPass = new boolean[2];
     private int posXPlus;
@@ -53,9 +58,42 @@ public final class WorldRenderer {
             this.posXPlus = var1 + this.sizeWidth / 2;
             this.posYPlus = var2 + this.sizeHeight / 2;
             this.posZPlus = var3 + this.sizeDepth / 2;
+            this.t = var1 & 511;
+            this.u = var2 & 511;
+            this.v = var3 & 511;
+            this.posXMinus = var1 - this.t;
+            this.posYMinus = var2 - this.u;
+            this.posZMinus = var3 - this.v;
             this.rendererBoundingBox = (new AxisAlignedBB((double)var1, (double)var2, (double)var3, (double)(var1 + this.sizeWidth), (double)(var2 + this.sizeHeight), (double)(var3 + this.sizeDepth))).expand(2.0D, 2.0D, 2.0D);
             GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
-            RenderItem.renderOffsetAABB(this.rendererBoundingBox);
+            AxisAlignedBB var4 = new AxisAlignedBB((double)((float)this.t - 2.0F), (double)((float)this.u - 2.0F), (double)((float)this.v - 2.0F), (double)((float)(this.t + this.sizeWidth) + 2.0F), (double)((float)(this.u + this.sizeHeight) + 2.0F), (double)((float)(this.v + this.sizeDepth) + 2.0F));
+            Tessellator var5 = Tessellator.instance;
+            var5.startDrawingQuads(DefaultVertexFormats.POSITION);
+            var5.addVertex(var4.minX, var4.maxY, var4.minZ);
+            var5.addVertex(var4.maxX, var4.maxY, var4.minZ);
+            var5.addVertex(var4.maxX, var4.minY, var4.minZ);
+            var5.addVertex(var4.minX, var4.minY, var4.minZ);
+            var5.addVertex(var4.minX, var4.minY, var4.maxZ);
+            var5.addVertex(var4.maxX, var4.minY, var4.maxZ);
+            var5.addVertex(var4.maxX, var4.maxY, var4.maxZ);
+            var5.addVertex(var4.minX, var4.maxY, var4.maxZ);
+            var5.addVertex(var4.minX, var4.minY, var4.minZ);
+            var5.addVertex(var4.maxX, var4.minY, var4.minZ);
+            var5.addVertex(var4.maxX, var4.minY, var4.maxZ);
+            var5.addVertex(var4.minX, var4.minY, var4.maxZ);
+            var5.addVertex(var4.minX, var4.maxY, var4.maxZ);
+            var5.addVertex(var4.maxX, var4.maxY, var4.maxZ);
+            var5.addVertex(var4.maxX, var4.maxY, var4.minZ);
+            var5.addVertex(var4.minX, var4.maxY, var4.minZ);
+            var5.addVertex(var4.minX, var4.minY, var4.maxZ);
+            var5.addVertex(var4.minX, var4.maxY, var4.maxZ);
+            var5.addVertex(var4.minX, var4.maxY, var4.minZ);
+            var5.addVertex(var4.minX, var4.minY, var4.minZ);
+            var5.addVertex(var4.maxX, var4.minY, var4.minZ);
+            var5.addVertex(var4.maxX, var4.maxY, var4.minZ);
+            var5.addVertex(var4.maxX, var4.maxY, var4.maxZ);
+            var5.addVertex(var4.maxX, var4.minY, var4.maxZ);
+            var5.draw();
             GL11.glEndList();
             this.needsUpdate = true;
         }
@@ -81,11 +119,9 @@ public final class WorldRenderer {
 				boolean var9 = false;
 				GL11.glNewList(this.glRenderList + var7, GL11.GL_COMPILE);
                 GL11.glPushMatrix();
+                GL11.glTranslatef((float)this.t, (float)this.u, (float)this.v);
                 tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-                GL11.glTranslatef((float)this.posX, (float)this.posY, (float)this.posZ);
-                this.renderBlocks.posX = this.posX;
-                this.renderBlocks.posY = this.posY;
-                this.renderBlocks.posZ = this.posZ;
+                tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
 
                 for(int var10 = var2; var10 < var5; ++var10) {
                     for(int var11 = var3; var11 < var6; ++var11) {
@@ -106,9 +142,7 @@ public final class WorldRenderer {
 				tessellator.draw();
                 GL11.glPopMatrix();
                 GL11.glEndList();
-                this.renderBlocks.posX = 0;
-                this.renderBlocks.posY = 0;
-                this.renderBlocks.posZ = 0;
+                tessellator.setTranslationD(0.0D, 0.0D, 0.0D);
 				if(var9) {
 					this.skipRenderPass[var7] = false;
 				}
@@ -121,7 +155,7 @@ public final class WorldRenderer {
 		}
 	}
 
-	public final float distanceToEntitySquared(EntityLiving var1) {
+	public final float distanceToEntitySquared(Entity var1) {
         float var2 = (float)(var1.posX - (double)this.posXPlus);
         float var3 = (float)(var1.posY - (double)this.posYPlus);
         float var4 = (float)(var1.posZ - (double)this.posZPlus);
@@ -140,17 +174,9 @@ public final class WorldRenderer {
 		this.worldObj = null;
 	}
 
-	public final int getGLCallListForPass(int[] var1, int var2, int var3) {
-        if(!this.isInFrustrum) {
-			return var2;
-		} else {
-			if(!this.skipRenderPass[var3]) {
-				var1[var2++] = this.glRenderList + var3;
-			}
-
-			return var2;
-		}
-	}
+    public final int getGLCallListForPass(int var1) {
+        return !this.isInFrustrum ? -1 : (!this.skipRenderPass[var1] ? this.glRenderList + var1 : -1);
+    }
 
     public final void updateInFrustrum(Frustrum var1) {
         this.isInFrustrum = var1.isBoundingBoxInFrustrum(this.rendererBoundingBox);

@@ -18,6 +18,9 @@ public class EntityFX extends Entity {
 	protected float particleRed;
 	protected float particleGreen;
 	protected float particleBlue;
+    public static double V;
+    public static double W;
+    public static double X;
 
     public EntityFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) {
         super(var1);
@@ -80,15 +83,15 @@ public class EntityFX extends Entity {
 		float var10 = (float)(this.particleTextureIndex / 16) / 16.0F;
 		float var11 = var10 + 0.999F / 16.0F;
 		float var12 = 0.1F * this.particleScale;
-        float var13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)var2);
-        float var14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)var2);
-        float var15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)var2);
+        float var13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)var2 - V);
+        float var14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)var2 - W);
+        float var15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)var2 - X);
         var2 = this.getBrightness(var2);
         var1.setColorOpaque_F(this.particleRed * var2, this.particleGreen * var2, this.particleBlue * var2);
-        var1.addVertexWithUV(var13 - var3 * var12 - var6 * var12, var14 - var4 * var12, var15 - var5 * var12 - var7 * var12, var8, var11);
-        var1.addVertexWithUV(var13 - var3 * var12 + var6 * var12, var14 + var4 * var12, var15 - var5 * var12 + var7 * var12, var8, var10);
-        var1.addVertexWithUV(var13 + var3 * var12 + var6 * var12, var14 + var4 * var12, var15 + var5 * var12 + var7 * var12, var9, var10);
-        var1.addVertexWithUV(var13 + var3 * var12 - var6 * var12, var14 - var4 * var12, var15 + var5 * var12 - var7 * var12, var9, var11);
+        var1.addVertexWithUV((double)(var13 - var3 * var12 - var6 * var12), (double)(var14 - var4 * var12), (double)(var15 - var5 * var12 - var7 * var12), (double)var8, (double)var11);
+        var1.addVertexWithUV((double)(var13 - var3 * var12 + var6 * var12), (double)(var14 + var4 * var12), (double)(var15 - var5 * var12 + var7 * var12), (double)var8, (double)var10);
+        var1.addVertexWithUV((double)(var13 + var3 * var12 + var6 * var12), (double)(var14 + var4 * var12), (double)(var15 + var5 * var12 + var7 * var12), (double)var9, (double)var10);
+        var1.addVertexWithUV((double)(var13 + var3 * var12 - var6 * var12), (double)(var14 - var4 * var12), (double)(var15 + var5 * var12 - var7 * var12), (double)var9, (double)var11);
 	}
 
 	public int getFXLayer() {

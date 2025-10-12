@@ -246,6 +246,10 @@ public final class Minecraft implements Runnable {
 
 		try {
 			while(this.running) {
+                if(this.theWorld != null) {
+                    this.theWorld.updatingLighting();
+                }
+
 				if(Display.isCloseRequested()) {
 					this.running = false;
 				}
@@ -860,7 +864,7 @@ public final class Minecraft implements Runnable {
             }
 
             if(!this.isGamePaused) {
-                this.theWorld.updateEntities();
+                this.theWorld.restartTimeOfDay();
             }
 
             if(!this.isGamePaused) {

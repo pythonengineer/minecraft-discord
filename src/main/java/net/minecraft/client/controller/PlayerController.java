@@ -23,21 +23,22 @@ public class PlayerController {
 		this.mc.effectRenderer.addBlockDestroyEffects(var1, var2, var3);
 		World var4 = this.mc.theWorld;
 		Block var5 = Block.blocksList[var4.getBlockId(var1, var2, var3)];
-        boolean var6 = var4.setBlockWithNotify(var1, var2, var3, 0);
-        if(var5 != null && var6) {
+        int var6 = var4.getBlockMetadata(var1, var2, var3);
+        boolean var7 = var4.setBlockMetadata(var1, var2, var3, 0);
+        if(var5 != null && var7) {
             SoundManager var10000 = this.mc.sndManager;
             String var10001 = var5.stepSound.getBreakSound();
             float var10002 = (float)var1 + 0.5F;
             float var10003 = (float)var2 + 0.5F;
             float var10004 = (float)var3 + 0.5F;
-            StepSound var7 = var5.stepSound;
-            float var10005 = (var7.stepSoundVolume + 1.0F) / 2.0F;
-            var7 = var5.stepSound;
-            var10000.playSound(var10001, var10002, var10003, var10004, var10005, var7.stepSoundPitch * 0.8F);
-            var5.onBlockDestroyedByPlayer(var4, var1, var2, var3, 0);
+            StepSound var8 = var5.stepSound;
+            float var10005 = (var8.stepSoundVolume + 1.0F) / 2.0F;
+            var8 = var5.stepSound;
+            var10000.playSound(var10001, var10002, var10003, var10004, var10005, var8.stepSoundPitch * 0.8F);
+            var5.onBlockDestroyedByPlayer(var4, var1, var2, var3, var6);
         }
 
-        return var6;
+        return var7;
 	}
 
 	public void sendBlockRemoving(int var1, int var2, int var3, int var4) {

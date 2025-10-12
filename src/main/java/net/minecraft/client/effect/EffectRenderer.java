@@ -55,16 +55,19 @@ public final class EffectRenderer {
         float var4 = MathHelper.sin(var1.rotationYaw * (float)Math.PI / 180.0F);
         float var5 = -var4 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
         float var6 = var3 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
-        float var11 = MathHelper.cos(var1.rotationPitch * (float)Math.PI / 180.0F);
+        float var7 = MathHelper.cos(var1.rotationPitch * (float)Math.PI / 180.0F);
+        EntityFX.V = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
+        EntityFX.W = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
+        EntityFX.X = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
 
-        for(int var7 = 0; var7 < 2; ++var7) {
-            if(this.fxLayers[var7].size() != 0) {
+        for(int var11 = 0; var11 < 2; ++var11) {
+            if(this.fxLayers[var11].size() != 0) {
                 int var8 = 0;
-                if(var7 == 0) {
+                if(var11 == 0) {
                     var8 = this.renderEngine.getTexture("/particles.png");
                 }
 
-                if(var7 == 1) {
+                if(var11 == 1) {
                     var8 = this.renderEngine.getTexture("/terrain.png");
                 }
 
@@ -72,9 +75,9 @@ public final class EffectRenderer {
                 Tessellator var12 = Tessellator.instance;
                 var12.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
 
-                for(int var9 = 0; var9 < this.fxLayers[var7].size(); ++var9) {
-                    EntityFX var10 = (EntityFX)this.fxLayers[var7].get(var9);
-                    var10.renderParticle(var12, var2, var3, var11, var4, var5, var6);
+                for(int var9 = 0; var9 < this.fxLayers[var11].size(); ++var9) {
+                    EntityFX var10 = (EntityFX)this.fxLayers[var11].get(var9);
+                    var10.renderParticle(var12, var2, var3, var7, var4, var5, var6);
                 }
 
                 var12.draw();
@@ -107,15 +110,15 @@ public final class EffectRenderer {
     public final void addBlockDestroyEffects(int var1, int var2, int var3) {
         int var4 = this.worldObj.getBlockId(var1, var2, var3);
         if(var4 != 0) {
-            Block var11 = Block.blocksList[var4];
+            Block var15 = Block.blocksList[var4];
 
             for(int var5 = 0; var5 < 4; ++var5) {
                 for(int var6 = 0; var6 < 4; ++var6) {
                     for(int var7 = 0; var7 < 4; ++var7) {
-                        float var8 = (float)var1 + ((float)var5 + 0.5F) / 4.0F;
-                        float var9 = (float)var2 + ((float)var6 + 0.5F) / 4.0F;
-                        float var10 = (float)var3 + ((float)var7 + 0.5F) / 4.0F;
-                        this.addEffect(new EntityDiggingFX(this.worldObj, var8, var9, var10, var8 - (float)var1 - 0.5F, var9 - (float)var2 - 0.5F, var10 - (float)var3 - 0.5F, var11));
+                        double var9 = (double)var1 + ((double)var5 + 0.5D) / 4.0D;
+                        double var11 = (double)var2 + ((double)var6 + 0.5D) / 4.0D;
+                        double var13 = (double)var3 + ((double)var7 + 0.5D) / 4.0D;
+                        this.addEffect(new EntityDiggingFX(this.worldObj, var9, var11, var13, var9 - (double)var1 - 0.5D, var11 - (double)var2 - 0.5D, var13 - (double)var3 - 0.5D, var15));
                     }
                 }
             }
@@ -127,34 +130,34 @@ public final class EffectRenderer {
         int var5 = this.worldObj.getBlockId(var1, var2, var3);
         if(var5 != 0) {
             Block var9 = Block.blocksList[var5];
-            float var6 = (float)var1 + this.rand.nextFloat() * (var9.maxX - var9.minX - 0.2F) + 0.1F + var9.minX;
-            float var7 = (float)var2 + this.rand.nextFloat() * (var9.maxY - var9.minY - 0.2F) + 0.1F + var9.minY;
-            float var8 = (float)var3 + this.rand.nextFloat() * (var9.maxZ - var9.minZ - 0.2F) + 0.1F + var9.minZ;
+            double var6 = (double)var1 + this.rand.nextDouble() * (var9.maxX - var9.minX - (double)0.2F) + (double)0.1F + var9.minX;
+            double var7 = (double)var2 + this.rand.nextDouble() * (var9.maxY - var9.minY - (double)0.2F) + (double)0.1F + var9.minY;
+            double var8 = (double)var3 + this.rand.nextDouble() * (var9.maxZ - var9.minZ - (double)0.2F) + (double)0.1F + var9.minZ;
             if(var4 == 0) {
-                var7 = (float)var2 + var9.minY - 0.1F;
+                var7 = (double)var2 + var9.minY - (double)0.1F;
             }
 
             if(var4 == 1) {
-                var7 = (float)var2 + var9.maxY + 0.1F;
+                var7 = (double)var2 + var9.maxY + (double)0.1F;
             }
 
             if(var4 == 2) {
-                var8 = (float)var3 + var9.minZ - 0.1F;
+                var8 = (double)var3 + var9.minZ - (double)0.1F;
             }
 
             if(var4 == 3) {
-                var8 = (float)var3 + var9.maxZ + 0.1F;
+                var8 = (double)var3 + var9.maxZ + (double)0.1F;
             }
 
             if(var4 == 4) {
-                var6 = (float)var1 + var9.minX - 0.1F;
+                var6 = (double)var1 + var9.minX - (double)0.1F;
             }
 
             if(var4 == 5) {
-                var6 = (float)var1 + var9.maxX + 0.1F;
+                var6 = (double)var1 + var9.maxX + (double)0.1F;
             }
 
-            this.addEffect((new EntityDiggingFX(this.worldObj, var6, var7, var8, 0.0F, 0.0F, 0.0F, var9)).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
+            this.addEffect((new EntityDiggingFX(this.worldObj, var6, var7, var8, 0.0D, 0.0D, 0.0D, var9)).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
         }
     }
 

@@ -67,10 +67,10 @@ public final class FontRenderer {
 			var18.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
 			var8 = var6 % 16 << 3;
 			var9 = var6 / 16 << 3;
-			var18.addVertexWithUV(0.0F, 7.99F, 0.0F, (float)var8 / 128.0F, ((float)var9 + 7.99F) / 128.0F);
-			var18.addVertexWithUV(7.99F, 7.99F, 0.0F, ((float)var8 + 7.99F) / 128.0F, ((float)var9 + 7.99F) / 128.0F);
-			var18.addVertexWithUV(7.99F, 0.0F, 0.0F, ((float)var8 + 7.99F) / 128.0F, (float)var9 / 128.0F);
-			var18.addVertexWithUV(0.0F, 0.0F, 0.0F, (float)var8 / 128.0F, (float)var9 / 128.0F);
+            var18.addVertexWithUV(0.0D, (double)7.99F, 0.0D, (double)((float)var8 / 128.0F), (double)(((float)var9 + 7.99F) / 128.0F));
+            var18.addVertexWithUV((double)7.99F, (double)7.99F, 0.0D, (double)(((float)var8 + 7.99F) / 128.0F), (double)(((float)var9 + 7.99F) / 128.0F));
+            var18.addVertexWithUV((double)7.99F, 0.0D, 0.0D, (double)(((float)var8 + 7.99F) / 128.0F), (double)((float)var9 / 128.0F));
+            var18.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)((float)var8 / 128.0F), (double)((float)var9 / 128.0F));
 			var18.draw();
 			GL11.glTranslatef((float)this.charWidth[var6], 0.0F, 0.0F);
 			GL11.glEndList();

@@ -28,35 +28,49 @@ public final class BlockTorch extends Block {
 		return 2;
 	}
 
-	public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return var1.isSolid(var2 - 1, var3, var4) ? true : (var1.isSolid(var2 + 1, var3, var4) ? true : (var1.isSolid(var2, var3, var4 - 1) ? true : (var1.isSolid(var2, var3, var4 + 1) ? true : var1.isSolid(var2, var3 - 1, var4))));
-	}
+    public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
+        return var1.isBlockNormalCube(var2 - 1, var3, var4) ? true : (var1.isBlockNormalCube(var2 + 1, var3, var4) ? true : (var1.isBlockNormalCube(var2, var3, var4 - 1) ? true : (var1.isBlockNormalCube(var2, var3, var4 + 1) ? true : var1.isBlockNormalCube(var2, var3 - 1, var4))));
+    }
 
-	public final void onBlockPlaced(World var1, int var2, int var3, int var4, int var5) {
-		if(var5 == 1) {
-			var1.isSolid(var2, var3 - 1, var4);
-		}
+    public final void onBlockPlaced(World var1, int var2, int var3, int var4, int var5) {
+        int var6 = var1.getBlockMetadata(var2, var3, var4);
+        if(var5 == 1 && var1.isBlockNormalCube(var2, var3 - 1, var4)) {
+            var6 = 5;
+        }
 
-		if(var5 == 2) {
-			var1.isSolid(var2, var3, var4 + 1);
-		}
+        if(var5 == 2 && var1.isBlockNormalCube(var2, var3, var4 + 1)) {
+            var6 = 4;
+        }
 
-		if(var5 == 3) {
-			var1.isSolid(var2, var3, var4 - 1);
-		}
+        if(var5 == 3 && var1.isBlockNormalCube(var2, var3, var4 - 1)) {
+            var6 = 3;
+        }
 
-		if(var5 == 4) {
-			var1.isSolid(var2 + 1, var3, var4);
-		}
+        if(var5 == 4 && var1.isBlockNormalCube(var2 + 1, var3, var4)) {
+            var6 = 2;
+        }
 
-		if(var5 == 5) {
-			var1.isSolid(var2 - 1, var3, var4);
-		}
+        if(var5 == 5 && var1.isBlockNormalCube(var2 - 1, var3, var4)) {
+            var6 = 1;
+        }
 
-	}
+        var1.setBlockMetadataWithNotify(var2, var3, var4, var6);
+    }
 
-	public final MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
-		this.setBlockBounds(0.4F, 0.0F, 0.4F, 0.6F, 0.6F, 0.6F);
-		return super.collisionRayTrace(var1, var2, var3, var4, var5, var6);
-	}
+    public final MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
+        int var7 = var1.getBlockMetadata(var2, var3, var4);
+        if(var7 == 1) {
+            this.setBlockBounds(0.0F, 0.2F, 0.35F, 0.3F, 0.8F, 0.65F);
+        } else if(var7 == 2) {
+            this.setBlockBounds(0.7F, 0.2F, 0.35F, 1.0F, 0.8F, 0.65F);
+        } else if(var7 == 3) {
+            this.setBlockBounds(0.35F, 0.2F, 0.0F, 0.65F, 0.8F, 0.3F);
+        } else if(var7 == 4) {
+            this.setBlockBounds(0.35F, 0.2F, 0.7F, 0.65F, 0.8F, 1.0F);
+        } else {
+            this.setBlockBounds(0.4F, 0.0F, 0.4F, 0.6F, 0.6F, 0.6F);
+        }
+
+        return super.collisionRayTrace(var1, var2, var3, var4, var5, var6);
+    }
 }

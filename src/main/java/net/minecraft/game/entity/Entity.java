@@ -155,11 +155,9 @@ public abstract class Entity {
 	}
 
     public final boolean isOffsetPositionInLiquid(double var1, double var3, double var5) {
-        double var10 = var1;
-        AxisAlignedBB var16 = this.boundingBox;
-        var16 = new AxisAlignedBB(var16.minX + var5, var16.minY + var3, var16.minZ + var5, var16.maxX + var10, var16.maxY + var3, var16.maxZ + var5);
-        List var2 = this.worldObj.getCollidingBoundingBoxes(var16);
-        return var2.size() > 0 ? false : !this.worldObj.getIsAnyLiquid(var16);
+        AxisAlignedBB var7 = this.boundingBox.offsetCopy(var1, var3, var5);
+        List var2 = this.worldObj.getCollidingBoundingBoxes(var7);
+        return var2.size() > 0 ? false : !this.worldObj.getIsAnyLiquid(var7);
     }
 
     public final void moveEntity(double var1, double var3, double var5) {

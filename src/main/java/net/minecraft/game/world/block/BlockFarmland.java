@@ -32,7 +32,7 @@ public final class BlockFarmland extends Block {
 
 	public final void onEntityWalking(World var1, int var2, int var3, int var4) {
 		if(var1.rand.nextInt(4) == 0) {
-			var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
+            var1.setBlockMetadata(var2, var3, var4, Block.dirt.blockID);
 		}
 
 	}

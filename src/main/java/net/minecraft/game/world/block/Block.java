@@ -26,7 +26,7 @@ public class Block {
     public static final Block[] blocksList = new Block[256];
     private static boolean[] tickOnLoad = new boolean[256];
     public static final boolean[] opaqueCubeLookup = new boolean[256];
-    private static int[] lightOpacity = new int[256];
+    public static final int[] lightOpacity = new int[256];
     private static boolean[] canBlockGrass = new boolean[256];
     public static final boolean[] isBlockContainer = new boolean[256];
     public static final int[] lightValue = new int[256];
@@ -93,12 +93,12 @@ public class Block {
     public final int blockID;
     private float hardness;
     private float resistance;
-    public float minX;
-    public float minY;
-    public float minZ;
-    public float maxX;
-    public float maxY;
-    public float maxZ;
+    public double minX;
+    public double minY;
+    public double minZ;
+    public double maxX;
+    public double maxY;
+    public double maxZ;
     public StepSound stepSound;
     public float blockParticleGravity;
     public final Material material;
@@ -162,12 +162,12 @@ public class Block {
     }
 
     protected final void setBlockBounds(float var1, float var2, float var3, float var4, float var5, float var6) {
-        this.minX = var1;
-        this.minY = var2;
-        this.minZ = var3;
-        this.maxX = var4;
-        this.maxY = var5;
-        this.maxZ = var6;
+        this.minX = (double)var1;
+        this.minY = (double)var2;
+        this.minZ = (double)var3;
+        this.maxX = (double)var4;
+        this.maxY = (double)var5;
+        this.maxZ = (double)var6;
     }
 
     public float getBlockBrightness(World var1, int var2, int var3, int var4) {
@@ -175,11 +175,11 @@ public class Block {
     }
 
     public boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
-        return !var1.isSolid(var2, var3, var4);
+        return !var1.isBlockNormalCube(var2, var3, var4);
     }
 
     public int getBlockTexture(World var1, int var2, int var3, int var4, int var5) {
-        return this.getBlockTextureFromSideAndMetadata(var5, 0);
+        return this.getBlockTextureFromSideAndMetadata(var5, var1.getBlockMetadata(var2, var3, var4));
     }
 
     public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
@@ -191,11 +191,11 @@ public class Block {
     }
 
     public final AxisAlignedBB getSelectedBoundingBoxFromPool(int var1, int var2, int var3) {
-        return new AxisAlignedBB((double)((float)var1 + this.minX), (double)((float)var2 + this.minY), (double)((float)var3 + this.minZ), (double)((float)var1 + this.maxX), (double)((float)var2 + this.maxY), (double)((float)var3 + this.maxZ));
+        return new AxisAlignedBB((double)var1 + this.minX, (double)var2 + this.minY, (double)var3 + this.minZ, (double)var1 + this.maxX, (double)var2 + this.maxY, (double)var3 + this.maxZ);
     }
 
     public AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
-        return new AxisAlignedBB((double)((float)var1 + this.minX), (double)((float)var2 + this.minY), (double)((float)var3 + this.minZ), (double)((float)var1 + this.maxX), (double)((float)var2 + this.maxY), (double)((float)var3 + this.maxZ));
+        return new AxisAlignedBB((double)var1 + this.minX, (double)var2 + this.minY, (double)var3 + this.minZ, (double)var1 + this.maxX, (double)var2 + this.maxY, (double)var3 + this.maxZ);
     }
 
     public boolean isOpaqueCube() {
@@ -271,12 +271,12 @@ public class Block {
     public MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
         var5 = var5.addVector((double)(-var2), (double)(-var3), (double)(-var4));
         var6 = var6.addVector((double)(-var2), (double)(-var3), (double)(-var4));
-        Vec3D var12 = var5.getIntermediateWithXValue(var6, (double)this.minX);
-        Vec3D var7 = var5.getIntermediateWithXValue(var6, (double)this.maxX);
-        Vec3D var8 = var5.getIntermediateWithYValue(var6, (double)this.minY);
-        Vec3D var9 = var5.getIntermediateWithYValue(var6, (double)this.maxY);
-        Vec3D var10 = var5.getIntermediateWithZValue(var6, (double)this.minZ);
-        var6 = var5.getIntermediateWithZValue(var6, (double)this.maxZ);
+        Vec3D var12 = var5.getIntermediateWithXValue(var6, this.minX);
+        Vec3D var7 = var5.getIntermediateWithXValue(var6, this.maxX);
+        Vec3D var8 = var5.getIntermediateWithYValue(var6, this.minY);
+        Vec3D var9 = var5.getIntermediateWithYValue(var6, this.maxY);
+        Vec3D var10 = var5.getIntermediateWithZValue(var6, this.minZ);
+        var6 = var5.getIntermediateWithZValue(var6, this.maxZ);
         if(!this.isVecInsideYZBounds(var12)) {
             var12 = null;
         }
@@ -359,15 +359,15 @@ public class Block {
     }
 
     private boolean isVecInsideYZBounds(Vec3D var1) {
-        return var1 == null ? false : var1.yCoord >= (double)this.minY && var1.yCoord <= (double)this.maxY && var1.zCoord >= (double)this.minZ && var1.zCoord <= (double)this.maxZ;
+        return var1 == null ? false : var1.yCoord >= this.minY && var1.yCoord <= this.maxY && var1.zCoord >= this.minZ && var1.zCoord <= this.maxZ;
     }
 
     private boolean isVecInsideXZBounds(Vec3D var1) {
-        return var1 == null ? false : var1.xCoord >= (double)this.minX && var1.xCoord <= (double)this.maxX && var1.zCoord >= (double)this.minZ && var1.zCoord <= (double)this.maxZ;
+        return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.zCoord >= this.minZ && var1.zCoord <= this.maxZ;
     }
 
     private boolean isVecInsideXYBounds(Vec3D var1) {
-        return var1 == null ? false : var1.xCoord >= (double)this.minX && var1.xCoord <= (double)this.maxX && var1.yCoord >= (double)this.minY && var1.yCoord <= (double)this.maxY;
+        return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.yCoord >= this.minY && var1.yCoord <= this.maxY;
     }
 
     public int getRenderBlockPass() {
@@ -618,7 +618,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         obsidian = var0;
-        var10000 = (new BlockTorch(50, 80)).setHardness(0.0F).setLightValue(14.0F / 16.0F);
+        var10000 = (new BlockTorch(50, 80)).setHardness(0.0F).setLightValue(15.0F / 16.0F);
         var1 = soundWoodFootstep;
         var0 = var10000;
         var0.stepSound = var1;

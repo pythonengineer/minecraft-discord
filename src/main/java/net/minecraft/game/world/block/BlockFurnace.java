@@ -20,13 +20,36 @@ public final class BlockFurnace extends BlockContainer {
 		} else if(var5 == 0) {
 			return Block.stone.blockIndexInTexture;
 		} else {
-			var1.getBlockId(var2, var3, var4 - 1);
-			var1.getBlockId(var2, var3, var4 + 1);
-			var1.getBlockId(var2 - 1, var3, var4);
-			var1.getBlockId(var2 + 1, var3, var4);
-			return var5 != 0 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
-		}
-	}
+            int var6 = var1.getBlockMetadata(var2, var3, var4);
+            if(var6 == 0) {
+                int var10 = var1.getBlockId(var2, var3, var4 - 1);
+                int var11 = var1.getBlockId(var2, var3, var4 + 1);
+                int var12 = var1.getBlockId(var2 - 1, var3, var4);
+                int var13 = var1.getBlockId(var2 + 1, var3, var4);
+                byte var14 = 3;
+                if(Block.opaqueCubeLookup[var10] && !Block.opaqueCubeLookup[var11]) {
+                    var14 = 3;
+                }
+
+                if(Block.opaqueCubeLookup[var11] && !Block.opaqueCubeLookup[var10]) {
+                    var14 = 2;
+                }
+
+                if(Block.opaqueCubeLookup[var12] && !Block.opaqueCubeLookup[var13]) {
+                    var14 = 5;
+                }
+
+                if(Block.opaqueCubeLookup[var13] && !Block.opaqueCubeLookup[var12]) {
+                    var14 = 4;
+                }
+
+                var1.setBlockMetadataWithNotify(var2, var3, var4, var14);
+                var6 = var1.getBlockMetadata(var2, var3, var4);
+            }
+
+            return var5 != var6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
+        }
+    }
 
 	public final int getBlockTextureFromSide(int var1) {
 		return var1 == 1 ? Block.stone.blockID : (var1 == 0 ? Block.stone.blockID : (var1 == 3 ? this.blockIndexInTexture - 1 : this.blockIndexInTexture));

@@ -13,6 +13,9 @@ public final class Tessellator {
 	private float nx;
 	private float ny;
 	private float nz;
+    private double xOffset;
+    private double yOffset;
+    private double zOffset;
 	private boolean hasColor = false;
     private boolean hasNormal = false;
     private boolean isColorDisabled = false;
@@ -101,21 +104,21 @@ public final class Tessellator {
         }
     }
 
-    public final void addUV(float u, float v) {
+    public final void addUV(double u, double v) {
         worldRenderer.tex(u, v);
     }
 
-	public final void addVertexWithUV(float x, float y, float z, float u, float v) {
+	public final void addVertexWithUV(double x, double y, double z, double u, double v) {
 	    this.addUV(u, v);
 		this.addVertex(x, y, z);
 	}
 
-	public final void addVertex(float x, float y, float z) {
+	public final void addVertex(double x, double y, double z) {
         if (this.hasColor) {
             worldRenderer.color(this.r, this.g, this.b, this.a);
         }
 
-        worldRenderer.pos(x, y, z);
+        worldRenderer.pos(x + this.xOffset, y + this.yOffset, z + this.zOffset);
         if (this.hasNormal) {
             worldRenderer.normal(this.nx, this.ny, this.nz);
         }
@@ -146,7 +149,9 @@ public final class Tessellator {
 		GL11.glNormal3f(x, y, z);
 	}
 
-    public final void addVertex(double var1, double var3, double var5) {
-        this.addVertex((float)var1, (float)var3, (float)var5);
+    public final void setTranslationD(double var1, double var3, double var5) {
+        this.xOffset = var1;
+        this.yOffset = var3;
+        this.zOffset = var5;
     }
 }

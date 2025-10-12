@@ -17,7 +17,7 @@ public final class ItemSeeds extends Item {
         } else {
             var6 = var2.getBlockId(var3, var4, var5);
             if(var6 == Block.tilledField.blockID) {
-                var2.setBlockWithNotify(var3, var4 + 1, var5, this.blockType);
+                var2.setBlockMetadata(var3, var4 + 1, var5, this.blockType);
                 --var1.stackSize;
                 return true;
             } else {

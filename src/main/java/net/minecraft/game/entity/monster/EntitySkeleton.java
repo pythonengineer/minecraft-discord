@@ -12,6 +12,7 @@ public class EntitySkeleton extends EntityMob {
 	}
 
 	public final void updatePlayerActionState() {
+        this.getBrightness(1.0F);
 		super.updatePlayerActionState();
 	}
 

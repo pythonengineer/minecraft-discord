@@ -1,6 +1,6 @@
 package net.minecraft.game.world;
 
-final class EntityMapSlot {
+class EntityMapSlot {
     private int xSlot;
     private int ySlot;
     private int zSlot;

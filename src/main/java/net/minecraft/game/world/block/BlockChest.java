@@ -132,16 +132,16 @@ public final class BlockChest extends BlockContainer {
 
 	public final boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
 		InventoryLargeChest var6 = null;
-		if(var1.isSolid(var2, var3 + 1, var4)) {
-			return true;
-		} else if(var1.getBlockId(var2 - 1, var3, var4) == this.blockID && var1.isSolid(var2 - 1, var3 + 1, var4)) {
-			return true;
-		} else if(var1.getBlockId(var2 + 1, var3, var4) == this.blockID && var1.isSolid(var2 + 1, var3 + 1, var4)) {
-			return true;
-		} else if(var1.getBlockId(var2, var3, var4 - 1) == this.blockID && var1.isSolid(var2, var3 + 1, var4 - 1)) {
-			return true;
-		} else if(var1.getBlockId(var2, var3, var4 + 1) == this.blockID && var1.isSolid(var2, var3 + 1, var4 + 1)) {
-			return true;
+        if(var1.isBlockNormalCube(var2, var3 + 1, var4)) {
+            return true;
+        } else if(var1.getBlockId(var2 - 1, var3, var4) == this.blockID && var1.isBlockNormalCube(var2 - 1, var3 + 1, var4)) {
+            return true;
+        } else if(var1.getBlockId(var2 + 1, var3, var4) == this.blockID && var1.isBlockNormalCube(var2 + 1, var3 + 1, var4)) {
+            return true;
+        } else if(var1.getBlockId(var2, var3, var4 - 1) == this.blockID && var1.isBlockNormalCube(var2, var3 + 1, var4 - 1)) {
+            return true;
+        } else if(var1.getBlockId(var2, var3, var4 + 1) == this.blockID && var1.isBlockNormalCube(var2, var3 + 1, var4 + 1)) {
+            return true;
 		} else {
 			if(var1.getBlockId(var2 - 1, var3, var4) == this.blockID) {
 				var6 = new InventoryLargeChest("Large chest", (IInventory)null, (IInventory)null);

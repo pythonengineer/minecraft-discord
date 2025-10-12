@@ -28,27 +28,27 @@ public final class RenderArrow extends Render {
         GL11.glTranslatef(-4.0F, 0.0F, 0.0F);
         GL11.glNormal3f(0.05625F, 0.0F, 0.0F);
         var18.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-        var18.addVertexWithUV(-7.0F, -2.0F, -2.0F, 0.0F, 0.15625F);
-        var18.addVertexWithUV(-7.0F, -2.0F, 2.0F, 0.15625F, 0.15625F);
-        var18.addVertexWithUV(-7.0F, 2.0F, 2.0F, 0.15625F, 5.0F / 16.0F);
-        var18.addVertexWithUV(-7.0F, 2.0F, -2.0F, 0.0F, 5.0F / 16.0F);
+        var18.addVertexWithUV(-7.0D, -2.0D, -2.0D, 0.0D, 0.15625D);
+        var18.addVertexWithUV(-7.0D, -2.0D, 2.0D, 0.15625D, 0.15625D);
+        var18.addVertexWithUV(-7.0D, 2.0D, 2.0D, 0.15625D, 0.3125D);
+        var18.addVertexWithUV(-7.0D, 2.0D, -2.0D, 0.0D, 0.3125D);
         var18.draw();
         GL11.glNormal3f(-0.05625F, 0.0F, 0.0F);
         var18.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-        var18.addVertexWithUV(-7.0F, 2.0F, -2.0F, 0.0F, 0.15625F);
-        var18.addVertexWithUV(-7.0F, 2.0F, 2.0F, 0.15625F, 0.15625F);
-        var18.addVertexWithUV(-7.0F, -2.0F, 2.0F, 0.15625F, 5.0F / 16.0F);
-        var18.addVertexWithUV(-7.0F, -2.0F, -2.0F, 0.0F, 5.0F / 16.0F);
+        var18.addVertexWithUV(-7.0D, 2.0D, -2.0D, 0.0D, 0.15625D);
+        var18.addVertexWithUV(-7.0D, 2.0D, 2.0D, 0.15625D, 0.15625D);
+        var18.addVertexWithUV(-7.0D, -2.0D, 2.0D, 0.15625D, 0.3125D);
+        var18.addVertexWithUV(-7.0D, -2.0D, -2.0D, 0.0D, 0.3125D);
         var18.draw();
 
         for(int var21 = 0; var21 < 4; ++var21) {
             GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
             GL11.glNormal3f(0.0F, 0.0F, 0.05625F);
             var18.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-            var18.addVertexWithUV(-8.0F, -2.0F, 0.0F, 0.0F, 0.0F);
-            var18.addVertexWithUV(8.0F, -2.0F, 0.0F, 0.5F, 0.0F);
-            var18.addVertexWithUV(8.0F, 2.0F, 0.0F, 0.5F, 0.15625F);
-            var18.addVertexWithUV(-8.0F, 2.0F, 0.0F, 0.0F, 0.15625F);
+            var18.addVertexWithUV(-8.0D, -2.0D, 0.0D, 0.0D, 0.0D);
+            var18.addVertexWithUV(8.0D, -2.0D, 0.0D, 0.5D, 0.0D);
+            var18.addVertexWithUV(8.0D, 2.0D, 0.0D, 0.5D, 0.15625D);
+            var18.addVertexWithUV(-8.0D, 2.0D, 0.0D, 0.0D, 0.15625D);
             var18.draw();
         }
 

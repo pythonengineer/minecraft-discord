@@ -5,14 +5,14 @@ import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public final class ClippingHelperImpl extends ClippingHelper {
-    private static ClippingHelperImpl instance = new ClippingHelperImpl();
+public final class ClippingHelperImplementation extends ClippingHelper {
+    private static ClippingHelperImplementation instance = new ClippingHelperImplementation();
     private FloatBuffer projectionMatrixBuffer = BufferUtils.createFloatBuffer(16);
     private FloatBuffer modelviewMatrixBuffer = BufferUtils.createFloatBuffer(16);
     private FloatBuffer floatBuffer16 = BufferUtils.createFloatBuffer(16);
 
     public static ClippingHelper init() {
-        ClippingHelperImpl var0 = instance;
+        ClippingHelperImplementation var0 = instance;
         var0.projectionMatrixBuffer.clear();
         var0.modelviewMatrixBuffer.clear();
         var0.floatBuffer16.clear();

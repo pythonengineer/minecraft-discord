@@ -37,8 +37,8 @@ public final class ItemFlintAndSteel extends Item {
 
         var6 = var2.getBlockId(var3, var4, var5);
         if(var6 == 0) {
-            var2.playSoundAtPlayer((double)((float)var3 + 0.5F), (double)((float)var4 + 0.5F), (double)((float)var5 + 0.5F), "fire.ignite", 1.0F, rand.nextFloat() * 0.4F + 0.8F);
-            var2.setBlockWithNotify(var3, var4, var5, Block.fire.blockID);
+            var2.playSoundEffect((double)((float)var3 + 0.5F), (double)((float)var4 + 0.5F), (double)((float)var5 + 0.5F), "fire.ignite", 1.0F, rand.nextFloat() * 0.4F + 0.8F);
+            var2.setBlockMetadata(var3, var4, var5, Block.fire.blockID);
         }
 
         var1.damageItem(1);

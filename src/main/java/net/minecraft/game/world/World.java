@@ -14,6 +14,12 @@ import net.minecraft.game.world.material.Material;
 import net.minecraft.game.world.path.Pathfinder;
 
 public final class World {
+    private List lightingToUpdate = new ArrayList();
+    private int worldTime = 0;
+    private long skyColor = 10079487L;
+    private long fogColor = 11587839L;
+    private long cloudColor = 16777215L;
+    private int skylightSubtracted = 0;
 	private static float[] lightBrightnessTable = new float[16];
 	public EntityMap entityMap = new EntityMap(256, 256, 256);
 	public Entity playerEntity;
@@ -24,37 +30,186 @@ public final class World {
 	public float spawnY = 64.0F;
 	public float spawnZ = 0.0F;
 	private List worldAccesses = new ArrayList();
-	private ChunkProviderGenerate chunkProvider = new ChunkProviderGenerate();
+    private IChunkProvider chunkProvider = new ChunkProviderLoadOrGenerate(new ChunkProviderGenerate(this));
 
-	public final int getBlockId(int var1, int var2, int var3) {
-		return this.chunkProvider.getBlockAt(var1, var2, var3);
-	}
+    public final int getBlockId(int var1, int var2, int var3) {
+        return var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000 ? (var2 <= 0 ? Block.lavaStill.blockID : (var2 >= 128 ? 0 : this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4).getBlockID(var1 & 15, var2, var3 & 15))) : 0;
+    }
+
+    public final boolean blockExists(int var1, int var2) {
+        return this.chunkExists(var1 >>> 4, var2 >>> 4);
+    }
+
+    private boolean chunkExists(int var1, int var2) {
+        return this.chunkProvider.chunkExists(var1, var2);
+    }
+
+    private Chunk getChunkFromChunkCoords(int var1, int var2) {
+        return this.chunkProvider.provideChunk(var1, var2);
+    }
 
 	public final Material getBlockMaterial(int var1, int var2, int var3) {
 		var1 = this.getBlockId(var1, var2, var3);
 		return var1 == 0 ? Material.air : Block.blocksList[var1].material;
 	}
 
-	public final boolean setBlockWithNotify(int var1, int var2, int var3, int var4) {
-		if(!this.chunkProvider.setBlockAt(var1, var2, var3, var4)) {
-			return false;
-		} else {
-			int var8 = var3;
-			int var7 = var2;
-			int var6 = var1;
-			World var5 = this;
+    public final int getBlockMetadata(int var1, int var2, int var3) {
+        if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
+            if(var2 < 0) {
+                return 0;
+            } else if(var2 >= 128) {
+                return 0;
+            } else {
+                Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                var1 &= 15;
+                var3 &= 15;
+                return var4.getBlockMetadata(var1, var2, var3);
+            }
+        } else {
+            return 0;
+        }
+    }
 
-			for(var1 = 0; var1 < var5.worldAccesses.size(); ++var1) {
-				((IWorldAccess)var5.worldAccesses.get(var1)).markBlockAndNeighborsNeedsUpdate(var6, var7, var8);
-			}
+    public final void setBlockMetadataWithNotify(int var1, int var2, int var3, int var4) {
+        int var5 = var4;
+        var4 = var3;
+        var3 = var2;
+        var2 = var1;
+        boolean var10000;
+        if(var1 >= -32000000 && var4 >= -32000000 && var1 < 32000000 && var4 <= 32000000) {
+            if(var3 < 0) {
+                var10000 = false;
+            } else if(var3 >= 128) {
+                var10000 = false;
+            } else {
+                Chunk var6 = this.getChunkFromChunkCoords(var1 >>> 4, var4 >>> 4);
+                var2 &= 15;
+                var4 &= 15;
+                var6.setBlockMetadata(var2, var3, var4, var5);
+                var10000 = true;
+            }
+        } else {
+            var10000 = false;
+        }
 
-			return true;
-		}
-	}
+    }
 
-	public final float getBrightness(int var1, int var2, int var3) {
-		return lightBrightnessTable[15];
-	}
+    public final boolean setBlockMetadata(int var1, int var2, int var3, int var4) {
+        boolean var10000;
+        int var6;
+        int var8;
+        if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
+            if(var2 < 0) {
+                var10000 = false;
+            } else if(var2 >= 128) {
+                var10000 = false;
+            } else {
+                Chunk var10 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                var6 = var1 & 15;
+                var8 = var3 & 15;
+                if((var10.getBlockID(var6, var2, var8) & 255) == var4) {
+                    var10000 = false;
+                } else {
+                    var10.setBlockID(var6, var2, var8, var4);
+                    var10000 = true;
+                }
+            }
+        } else {
+            var10000 = false;
+        }
+
+        if(!var10000) {
+            return false;
+        } else {
+            var8 = var3;
+            int var7 = var2;
+            var6 = var1;
+            World var5 = this;
+
+            for(int var11 = 0; var11 < var5.worldAccesses.size(); ++var11) {
+                ((IWorldAccess)var5.worldAccesses.get(var11)).markBlockAndNeighborsNeedsUpdate(var6, var7, var8);
+            }
+
+            return true;
+        }
+    }
+
+    public final void markBlocksDirtyVertical(int var1, int var2, int var3, int var4) {
+        if(var3 > var4) {
+            int var5 = var4;
+            var4 = var3;
+            var3 = var5;
+        }
+
+        this.setBlockWithNotify(var1, var3, var2, var1, var4, var2);
+    }
+
+    public final void setBlockWithNotify(int var1, int var2, int var3, int var4, int var5, int var6) {
+        for(int var7 = 0; var7 < this.worldAccesses.size(); ++var7) {
+            ((IWorldAccess)this.worldAccesses.get(var7)).markBlockRangeNeedsUpdate(var1, var2, var3, var4, var5, var6);
+        }
+
+    }
+
+    public final int canExistingBlockSeeTheSky(int var1, int var2, int var3) {
+        if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
+            if(var2 < 0) {
+                return 15;
+            } else if(var2 >= 128) {
+                return 15;
+            } else {
+                Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                var1 &= 15;
+                var3 &= 15;
+                return var4.getBlockLightValue(var1, var2, var3, this.skylightSubtracted);
+            }
+        } else {
+            return 15;
+        }
+    }
+
+    public final int getHeightValue(int var1, int var2) {
+        if(var1 >= -32000000 && var2 >= -32000000 && var1 < 32000000 && var2 <= 32000000) {
+            if(!this.chunkExists(var1 >>> 4, var2 >>> 4)) {
+                return 0;
+            } else {
+                Chunk var3 = this.getChunkFromChunkCoords(var1 >>> 4, var2 >>> 4);
+                return var3.getHeightValue(var1 & 15, var2 & 15);
+            }
+        } else {
+            return 0;
+        }
+    }
+
+    public final void neighborLightPropagationChanged(EnumSkyBlock var1, int var2, int var3, int var4, int var5) {
+        if(this.blockExists(var2, var4) && this.getSavedLightValue(var1, var2, var3, var4) != var5) {
+            this.scheduleLightingUpdate(var1, var2, var3, var4, var2, var3, var4);
+        }
+
+    }
+
+    public final int getSavedLightValue(EnumSkyBlock var1, int var2, int var3, int var4) {
+        if(var2 >= -32000000 && var4 >= -32000000 && var2 < 32000000 && var4 <= 32000000) {
+            if(var3 < 0) {
+                return 15;
+            } else if(var3 >= 128) {
+                return 15;
+            } else if(!this.chunkExists(var2 >>> 4, var4 >>> 4)) {
+                return 0;
+            } else {
+                Chunk var5 = this.getChunkFromChunkCoords(var2 >>> 4, var4 >>> 4);
+                var2 &= 15;
+                var4 &= 15;
+                return var5.getSavedLightValue(var1, var2, var3, var4);
+            }
+        } else {
+            return 15;
+        }
+    }
+
+    public final float getBrightness(int var1, int var2, int var3) {
+        return lightBrightnessTable[this.canExistingBlockSeeTheSky(var1, var2, var3)];
+    }
 
 	public final MovingObjectPosition rayTraceBlocks(Vec3D var1, Vec3D var2) {
 		if(!Double.isNaN(var1.xCoord) && !Double.isNaN(var1.yCoord) && !Double.isNaN(var1.zCoord)) {
@@ -76,109 +231,109 @@ public final class World {
 						return null;
 					}
 
-					float var10 = 999.0F;
-					float var11 = 999.0F;
-					float var12 = 999.0F;
-					if(var3 > var6) {
-						var10 = (float)var6 + 1.0F;
-					}
+                    double var10 = 999.0D;
+                    double var12 = 999.0D;
+                    double var14 = 999.0D;
+                    if(var3 > var6) {
+                        var10 = (double)var6 + 1.0D;
+                    }
 
-					if(var3 < var6) {
-						var10 = (float)var6;
-					}
+                    if(var3 < var6) {
+                        var10 = (double)var6;
+                    }
 
-					if(var4 > var7) {
-						var11 = (float)var7 + 1.0F;
-					}
+                    if(var4 > var7) {
+                        var12 = (double)var7 + 1.0D;
+                    }
 
-					if(var4 < var7) {
-						var11 = (float)var7;
-					}
+                    if(var4 < var7) {
+                        var12 = (double)var7;
+                    }
 
-					if(var5 > var8) {
-						var12 = (float)var8 + 1.0F;
-					}
+                    if(var5 > var8) {
+                        var14 = (double)var8 + 1.0D;
+                    }
 
-					if(var5 < var8) {
-						var12 = (float)var8;
-					}
+                    if(var5 < var8) {
+                        var14 = (double)var8;
+                    }
 
-					double var13 = 999.0D;
-					double var15 = 999.0D;
-					double var17 = 999.0D;
-					double var19 = var2.xCoord - var1.xCoord;
-					double var21 = var2.yCoord - var1.yCoord;
-					double var23 = var2.zCoord - var1.zCoord;
-					if(var10 != 999.0F) {
-						var13 = ((double)var10 - var1.xCoord) / var19;
-					}
+                    double var16 = 999.0D;
+                    double var18 = 999.0D;
+                    double var20 = 999.0D;
+                    double var22 = var2.xCoord - var1.xCoord;
+                    double var24 = var2.yCoord - var1.yCoord;
+                    double var26 = var2.zCoord - var1.zCoord;
+                    if(var10 != 999.0D) {
+                        var16 = (var10 - var1.xCoord) / var22;
+                    }
 
-					if(var11 != 999.0F) {
-						var15 = ((double)var11 - var1.yCoord) / var21;
-					}
+                    if(var12 != 999.0D) {
+                        var18 = (var12 - var1.yCoord) / var24;
+                    }
 
-					if(var12 != 999.0F) {
-						var17 = ((double)var12 - var1.zCoord) / var23;
-					}
+                    if(var14 != 999.0D) {
+                        var20 = (var14 - var1.zCoord) / var26;
+                    }
 
-					byte var25;
-					if(var13 < var15 && var13 < var17) {
-						if(var3 > var6) {
-							var25 = 4;
-						} else {
-							var25 = 5;
-						}
+                    byte var28;
+                    if(var16 < var18 && var16 < var20) {
+                        if(var3 > var6) {
+                            var28 = 4;
+                        } else {
+                            var28 = 5;
+                        }
 
-						var1.xCoord = (double)var10;
-						var1.yCoord += var21 * var13;
-						var1.zCoord += var23 * var13;
-					} else if(var15 < var17) {
-						if(var4 > var7) {
-							var25 = 0;
-						} else {
-							var25 = 1;
-						}
+                        var1.xCoord = var10;
+                        var1.yCoord += var24 * var16;
+                        var1.zCoord += var26 * var16;
+                    } else if(var18 < var20) {
+                        if(var4 > var7) {
+                            var28 = 0;
+                        } else {
+                            var28 = 1;
+                        }
 
-						var1.xCoord += var19 * var15;
-						var1.yCoord = (double)var11;
-						var1.zCoord += var23 * var15;
-					} else {
-						if(var5 > var8) {
-							var25 = 2;
-						} else {
-							var25 = 3;
-						}
+                        var1.xCoord += var22 * var18;
+                        var1.yCoord = var12;
+                        var1.zCoord += var26 * var18;
+                    } else {
+                        if(var5 > var8) {
+                            var28 = 2;
+                        } else {
+                            var28 = 3;
+                        }
 
-						var1.xCoord += var19 * var17;
-						var1.yCoord += var21 * var17;
-						var1.zCoord = (double)var12;
-					}
+                        var1.xCoord += var22 * var20;
+                        var1.yCoord += var24 * var20;
+                        var1.zCoord = var14;
+                    }
 
-					Vec3D var26 = new Vec3D(var1.xCoord, var1.yCoord, var1.zCoord);
-					var6 = (int)(var26.xCoord = (double)MathHelper.floor_double(var1.xCoord));
-					if(var25 == 5) {
-						--var6;
-						++var26.xCoord;
-					}
+                    Vec3D var29 = new Vec3D(var1.xCoord, var1.yCoord, var1.zCoord);
+                    var6 = (int)(var29.xCoord = (double)MathHelper.floor_double(var1.xCoord));
+                    if(var28 == 5) {
+                        --var6;
+                        ++var29.xCoord;
+                    }
 
-					var7 = (int)(var26.yCoord = (double)MathHelper.floor_double(var1.yCoord));
-					if(var25 == 1) {
-						--var7;
-						++var26.yCoord;
-					}
+                    var7 = (int)(var29.yCoord = (double)MathHelper.floor_double(var1.yCoord));
+                    if(var28 == 1) {
+                        --var7;
+                        ++var29.yCoord;
+                    }
 
-					var8 = (int)(var26.zCoord = (double)MathHelper.floor_double(var1.zCoord));
-					if(var25 == 3) {
-						--var8;
-						++var26.zCoord;
-					}
+                    var8 = (int)(var29.zCoord = (double)MathHelper.floor_double(var1.zCoord));
+                    if(var28 == 3) {
+                        --var8;
+                        ++var29.zCoord;
+                    }
 
-					int var27 = this.getBlockId(var6, var7, var8);
-					Block var29 = Block.blocksList[var27];
-					if(var27 > 0 && var29.isCollidable()) {
-						MovingObjectPosition var28 = var29.collisionRayTrace(this, var6, var7, var8, var1, var2);
-						if(var28 != null) {
-							return var28;
+                    int var30 = this.getBlockId(var6, var7, var8);
+                    Block var11 = Block.blocksList[var30];
+                    if(var30 > 0 && var11.isCollidable()) {
+                        MovingObjectPosition var31 = var11.collisionRayTrace(this, var6, var7, var8, var1, var2);
+                        if(var31 != null) {
+                            return var31;
 						}
 					}
 				}
@@ -206,7 +361,7 @@ public final class World {
 
 	}
 
-	public final void playSoundAtPlayer(double var1, double var3, double var5, String var7, float var8, float var9) {
+	public final void playSoundEffect(double var1, double var3, double var5, String var7, float var8, float var9) {
 		try {
 			for(int var10 = 0; var10 < this.worldAccesses.size(); ++var10) {
 				float var11 = 16.0F;
@@ -268,24 +423,84 @@ public final class World {
 		return var2;
 	}
 
-	public static Vec3D getSkyColor() {
-		return new Vec3D(0.0D, 0.0D, 1.0D);
-	}
+    public final Vec3D getSkyColor(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
 
-	public static Vec3D getCloudColor() {
-		return new Vec3D(1.0D, 1.0D, 1.0D);
-	}
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
 
-	public static Vec3D getFogColor() {
-		return new Vec3D(1.0D, 1.0D, 1.0D);
-	}
+        float var2 = (float)(this.skyColor >> 16 & 255L) / 255.0F;
+        float var3 = (float)(this.skyColor >> 8 & 255L) / 255.0F;
+        float var4 = (float)(this.skyColor & 255L) / 255.0F;
+        var2 *= var1;
+        var3 *= var1;
+        var4 *= var1;
+        return new Vec3D((double)var2, (double)var3, (double)var4);
+    }
 
-	public final void updateEntities() {
-		this.playerEntity.lastTickPosX = this.playerEntity.posX;
-		this.playerEntity.lastTickPosY = this.playerEntity.posY;
-		this.playerEntity.lastTickPosZ = this.playerEntity.posZ;
-		this.playerEntity.onUpdate();
-	}
+    public final float getCelestialAngle(float var1) {
+        var1 = ((float)this.worldTime + var1) / 12000.0F - 0.15F;
+        return var1;
+    }
+
+    public final Vec3D getCloudColor(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        float var2 = (float)(this.cloudColor >> 16 & 255L) / 255.0F;
+        float var3 = (float)(this.cloudColor >> 8 & 255L) / 255.0F;
+        float var4 = (float)(this.cloudColor & 255L) / 255.0F;
+        var2 *= var1 * 0.9F + 0.1F;
+        var3 *= var1 * 0.9F + 0.1F;
+        var4 *= var1 * 0.85F + 0.15F;
+        return new Vec3D((double)var2, (double)var3, (double)var4);
+    }
+
+    public final Vec3D getFogColor(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F;
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        float var2 = (float)(this.fogColor >> 16 & 255L) / 255.0F;
+        float var3 = (float)(this.fogColor >> 8 & 255L) / 255.0F;
+        float var4 = (float)(this.fogColor & 255L) / 255.0F;
+        var2 *= var1 * 0.94F + 0.06F;
+        var3 *= var1 * 0.94F + 0.06F;
+        var4 *= var1 * 0.91F + 0.09F;
+        return new Vec3D((double)var2, (double)var3, (double)var4);
+    }
+
+    public final float getStarBrightness(float var1) {
+        var1 = this.getCelestialAngle(var1);
+        var1 = 1.0F - (MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 12.0F / 16.0F);
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        return var1 * var1 * 0.5F;
+    }
 
 	public final boolean getIsAnyLiquid(AxisAlignedBB var1) {
 		int var2 = MathHelper.floor_double(var1.minX);
@@ -372,10 +587,164 @@ public final class World {
 		return this.playerEntity;
 	}
 
-	public final boolean isSolid(int var1, int var2, int var3) {
+	public final boolean isBlockNormalCube(int var1, int var2, int var3) {
 		Block var4 = Block.blocksList[this.getBlockId(var1, var2, var3)];
 		return var4 == null ? false : var4.isOpaqueCube();
 	}
+
+    public final void updatingLighting() {
+        while(this.lightingToUpdate.size() > 0) {
+            MetadataChunkBlock var10000 = (MetadataChunkBlock)this.lightingToUpdate.remove(this.lightingToUpdate.size() - 1);
+            World var2 = this;
+            MetadataChunkBlock var1 = var10000;
+
+            for(int var3 = var1.x; var3 <= var1.maxX; ++var3) {
+                for(int var4 = var1.z; var4 <= var1.maxZ; ++var4) {
+                    if(var2.blockExists(var3, var4)) {
+                        for(int var5 = var1.y; var5 <= var1.maxY; ++var5) {
+                            int var6 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4);
+                            int var7 = var2.getBlockId(var3, var5, var4);
+                            int var8 = Block.lightOpacity[var7];
+                            if(var8 == 0) {
+                                var8 = 1;
+                            }
+
+                            int var9 = 0;
+                            int var11;
+                            int var13;
+                            if(var1.skyBlock != EnumSkyBlock.Sky) {
+                                if(var1.skyBlock == EnumSkyBlock.Block) {
+                                    var9 = Block.lightValue[var7];
+                                }
+                            } else {
+                                boolean var19;
+                                if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000) {
+                                    if(var5 < 0) {
+                                        var19 = false;
+                                    } else if(var5 >= 128) {
+                                        var19 = true;
+                                    } else if(!var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
+                                        var19 = false;
+                                    } else {
+                                        Chunk var14 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
+                                        var11 = var3 & 15;
+                                        var13 = var4 & 15;
+                                        var19 = var14.canBlockSeeTheSky(var11, var5, var13);
+                                    }
+                                } else {
+                                    var19 = false;
+                                }
+
+                                if(var19) {
+                                    var9 = 15;
+                                }
+                            }
+
+                            int var12;
+                            int var18;
+                            if(var8 >= 15 && var9 == 0) {
+                                var7 = 0;
+                            } else {
+                                var7 = var2.getSavedLightValue(var1.skyBlock, var3 - 1, var5, var4);
+                                int var10 = var2.getSavedLightValue(var1.skyBlock, var3 + 1, var5, var4);
+                                var11 = var2.getSavedLightValue(var1.skyBlock, var3, var5 - 1, var4);
+                                var12 = var2.getSavedLightValue(var1.skyBlock, var3, var5 + 1, var4);
+                                var13 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 - 1);
+                                var18 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 + 1);
+                                var7 = var7;
+                                if(var10 > var7) {
+                                    var7 = var10;
+                                }
+
+                                if(var11 > var7) {
+                                    var7 = var11;
+                                }
+
+                                if(var12 > var7) {
+                                    var7 = var12;
+                                }
+
+                                if(var13 > var7) {
+                                    var7 = var13;
+                                }
+
+                                if(var18 > var7) {
+                                    var7 = var18;
+                                }
+
+                                var7 -= var8;
+                                if(var7 < 0) {
+                                    var7 = 0;
+                                }
+
+                                if(var9 > var7) {
+                                    var7 = var9;
+                                }
+                            }
+
+                            if(var6 != var7) {
+                                var18 = var4;
+                                var13 = var5;
+                                var12 = var3;
+                                EnumSkyBlock var17 = var1.skyBlock;
+                                World var16 = var2;
+                                if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000 && var5 >= 0 && var5 < 128 && var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
+                                    Chunk var15 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
+                                    var15.getBlockLightValue(var17, var3 & 15, var5, var4 & 15, var7);
+
+                                    for(var6 = 0; var6 < var16.worldAccesses.size(); ++var6) {
+                                        ((IWorldAccess)var16.worldAccesses.get(var6)).markBlockAndNeighborsNeedsUpdate(var12, var13, var18);
+                                    }
+                                }
+
+                                --var7;
+                                if(var7 < 0) {
+                                    var7 = 0;
+                                }
+
+                                var2.neighborLightPropagationChanged(var1.skyBlock, var3 - 1, var5, var4, var7);
+                                var2.neighborLightPropagationChanged(var1.skyBlock, var3 + 1, var5, var4, var7);
+                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 - 1, var4, var7);
+                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 + 1, var4, var7);
+                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 - 1, var7);
+                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 + 1, var7);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    public final void scheduleLightingUpdate(EnumSkyBlock var1, int var2, int var3, int var4, int var5, int var6, int var7) {
+        this.lightingToUpdate.add(new MetadataChunkBlock(var1, var2, var3, var4, var5, var6, var7));
+    }
+
+    public final void restartTimeOfDay() {
+        float var1 = 1.0F;
+        var1 = this.getCelestialAngle(1.0F);
+        var1 = 1.0F - (MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F);
+        if(var1 < 0.0F) {
+            var1 = 0.0F;
+        }
+
+        if(var1 > 1.0F) {
+            var1 = 1.0F;
+        }
+
+        int var2 = (int)(var1 * 13.0F);
+        if(var2 != this.skylightSubtracted) {
+            this.skylightSubtracted = var2;
+            this.chunkProvider.populate();
+        }
+
+        this.playerEntity.lastTickPosX = this.playerEntity.posX;
+        this.playerEntity.lastTickPosY = this.playerEntity.posY;
+        this.playerEntity.lastTickPosZ = this.playerEntity.posZ;
+        this.playerEntity.onUpdate();
+        this.worldTime = (this.worldTime + 1) % 12000;
+    }
 
 	static {
 		for(int var0 = 0; var0 <= 15; ++var0) {

@@ -54,10 +54,10 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
                     GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
                     var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
                     var9.setColorOpaque_I(4210752);
-                    var9.addVertexWithUV(0.0F, (float)var8, 0.0F, 0.0F, (float)var8 / 32.0F);
-                    var9.addVertexWithUV((float)var3, (float)var8, 0.0F, (float)var3 / 32.0F, (float)var8 / 32.0F);
-                    var9.addVertexWithUV((float)var3, 0.0F, 0.0F, (float)var3 / 32.0F, 0.0F);
-                    var9.addVertexWithUV(0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+                    var9.addVertexWithUV(0.0D, (double)var8, 0.0D, 0.0D, (double)((float)var8 / 32.0F));
+                    var9.addVertexWithUV((double)var3, (double)var8, 0.0D, (double)((float)var3 / 32.0F), (double)((float)var8 / 32.0F));
+                    var9.addVertexWithUV((double)var3, 0.0D, 0.0D, (double)((float)var3 / 32.0F), 0.0D);
+                    var9.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
                     var9.draw();
                     this.mc.fontRenderer.drawStringWithShadow(this.title, (var3 - this.mc.fontRenderer.getStringWidth(this.title)) / 2, var8 / 2 - 4 - 16, 16777215);
                     this.mc.fontRenderer.drawStringWithShadow(this.text, (var3 - this.mc.fontRenderer.getStringWidth(this.text)) / 2, var8 / 2 - 4 + 8, 16777215);

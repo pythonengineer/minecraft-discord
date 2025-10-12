@@ -158,10 +158,10 @@ public class GuiScreen extends Gui {
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
             var2.setColorOpaque_I(4210752);
-            var2.addVertexWithUV(0.0F, (float)this.height, 0.0F, 0.0F, (float)this.height / 32.0F);
-            var2.addVertexWithUV((float)this.width, (float)this.height, 0.0F, (float)this.width / 32.0F, (float)this.height / 32.0F);
-            var2.addVertexWithUV((float)this.width, 0.0F, 0.0F, (float)this.width / 32.0F, 0.0F);
-            var2.addVertexWithUV(0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+            var2.addVertexWithUV(0.0D, (double)this.height, 0.0D, 0.0D, (double)((float)this.height / 32.0F));
+            var2.addVertexWithUV((double)this.width, (double)this.height, 0.0D, (double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F));
+            var2.addVertexWithUV((double)this.width, 0.0D, 0.0D, (double)((float)this.width / 32.0F), 0.0D);
+            var2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
             var2.draw();
         }
     }

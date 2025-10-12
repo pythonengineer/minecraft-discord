@@ -9,6 +9,7 @@ public class EntityZombie extends EntityMob {
 	}
 
 	public final void updatePlayerActionState() {
+        this.getBrightness(1.0F);
 		super.updatePlayerActionState();
 	}
 

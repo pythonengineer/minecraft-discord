@@ -86,17 +86,17 @@ public final class ItemRenderer {
                 GL11.glTranslatef(-(15.0F / 16.0F), -(1.0F / 16.0F), 0.0F);
                 Tessellator.setNormal(0.0F, 0.0F, 1.0F);
                 var11.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                var11.addVertexWithUV(0.0F, 0.0F, 0.0F, var1, var9);
-                var11.addVertexWithUV(1.0F, 0.0F, 0.0F, var5, var9);
-                var11.addVertexWithUV(1.0F, 1.0F, 0.0F, var5, var2);
-                var11.addVertexWithUV(0.0F, 1.0F, 0.0F, var1, var2);
+                var11.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)var1, (double)var9);
+                var11.addVertexWithUV(1.0D, 0.0D, 0.0D, (double)var5, (double)var9);
+                var11.addVertexWithUV(1.0D, 1.0D, 0.0D, (double)var5, (double)var2);
+                var11.addVertexWithUV(0.0D, 1.0D, 0.0D, (double)var1, (double)var2);
                 var11.draw();
                 Tessellator.setNormal(0.0F, 0.0F, -1.0F);
                 var11.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                var11.addVertexWithUV(0.0F, 1.0F, -(1.0F / 16.0F), var1, var2);
-                var11.addVertexWithUV(1.0F, 1.0F, -(1.0F / 16.0F), var5, var2);
-                var11.addVertexWithUV(1.0F, 0.0F, -(1.0F / 16.0F), var5, var9);
-                var11.addVertexWithUV(0.0F, 0.0F, -(1.0F / 16.0F), var1, var9);
+                var11.addVertexWithUV(0.0D, 1.0D, -0.0625D, (double)var1, (double)var2);
+                var11.addVertexWithUV(1.0D, 1.0D, -0.0625D, (double)var5, (double)var2);
+                var11.addVertexWithUV(1.0D, 0.0D, -0.0625D, (double)var5, (double)var9);
+                var11.addVertexWithUV(0.0D, 0.0D, -0.0625D, (double)var1, (double)var9);
                 var11.draw();
                 Tessellator.setNormal(-1.0F, 0.0F, 0.0F);
                 var11.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
@@ -108,10 +108,10 @@ public final class ItemRenderer {
                     var7 = (float)var6 / 16.0F;
                     var8 = var1 + (var5 - var1) * var7 - 0.001953125F;
                     var7 *= 1.0F;
-                    var11.addVertexWithUV(var7, 0.0F, -(1.0F / 16.0F), var8, var9);
-                    var11.addVertexWithUV(var7, 0.0F, 0.0F, var8, var9);
-                    var11.addVertexWithUV(var7, 1.0F, 0.0F, var8, var2);
-                    var11.addVertexWithUV(var7, 1.0F, -(1.0F / 16.0F), var8, var2);
+                    var11.addVertexWithUV((double)var7, 0.0D, -0.0625D, (double)var8, (double)var9);
+                    var11.addVertexWithUV((double)var7, 0.0D, 0.0D, (double)var8, (double)var9);
+                    var11.addVertexWithUV((double)var7, 1.0D, 0.0D, (double)var8, (double)var2);
+                    var11.addVertexWithUV((double)var7, 1.0D, -0.0625D, (double)var8, (double)var2);
                 }
 
                 var11.draw();
@@ -122,10 +122,10 @@ public final class ItemRenderer {
                     var7 = (float)var6 / 16.0F;
                     var8 = var1 + (var5 - var1) * var7 - 0.001953125F;
                     var7 = var7 * 1.0F + 1.0F / 16.0F;
-                    var11.addVertexWithUV(var7, 1.0F, -(1.0F / 16.0F), var8, var2);
-                    var11.addVertexWithUV(var7, 1.0F, 0.0F, var8, var2);
-                    var11.addVertexWithUV(var7, 0.0F, 0.0F, var8, var9);
-                    var11.addVertexWithUV(var7, 0.0F, -(1.0F / 16.0F), var8, var9);
+                    var11.addVertexWithUV((double)var7, 1.0D, -0.0625D, (double)var8, (double)var2);
+                    var11.addVertexWithUV((double)var7, 1.0D, 0.0D, (double)var8, (double)var2);
+                    var11.addVertexWithUV((double)var7, 0.0D, 0.0D, (double)var8, (double)var9);
+                    var11.addVertexWithUV((double)var7, 0.0D, -0.0625D, (double)var8, (double)var9);
                 }
 
                 var11.draw();
@@ -136,10 +136,10 @@ public final class ItemRenderer {
                     var7 = (float)var6 / 16.0F;
                     var8 = var9 + (var2 - var9) * var7 - 0.001953125F;
                     var7 = var7 * 1.0F + 1.0F / 16.0F;
-                    var11.addVertexWithUV(0.0F, var7, 0.0F, var1, var8);
-                    var11.addVertexWithUV(1.0F, var7, 0.0F, var5, var8);
-                    var11.addVertexWithUV(1.0F, var7, -(1.0F / 16.0F), var5, var8);
-                    var11.addVertexWithUV(0.0F, var7, -(1.0F / 16.0F), var1, var8);
+                    var11.addVertexWithUV(0.0D, (double)var7, 0.0D, (double)var1, (double)var8);
+                    var11.addVertexWithUV(1.0D, (double)var7, 0.0D, (double)var5, (double)var8);
+                    var11.addVertexWithUV(1.0D, (double)var7, -0.0625D, (double)var5, (double)var8);
+                    var11.addVertexWithUV(0.0D, (double)var7, -0.0625D, (double)var1, (double)var8);
                 }
 
                 var11.draw();
@@ -150,10 +150,10 @@ public final class ItemRenderer {
                     var7 = (float)var6 / 16.0F;
                     var8 = var9 + (var2 - var9) * var7 - 0.001953125F;
                     var7 *= 1.0F;
-                    var11.addVertexWithUV(1.0F, var7, 0.0F, var5, var8);
-                    var11.addVertexWithUV(0.0F, var7, 0.0F, var1, var8);
-                    var11.addVertexWithUV(0.0F, var7, -(1.0F / 16.0F), var1, var8);
-                    var11.addVertexWithUV(1.0F, var7, -(1.0F / 16.0F), var5, var8);
+                    var11.addVertexWithUV(1.0D, (double)var7, 0.0D, (double)var5, (double)var8);
+                    var11.addVertexWithUV(0.0D, (double)var7, 0.0D, (double)var1, (double)var8);
+                    var11.addVertexWithUV(0.0D, (double)var7, -0.0625D, (double)var1, (double)var8);
+                    var11.addVertexWithUV(1.0D, (double)var7, -0.0625D, (double)var5, (double)var8);
                 }
 
                 var11.draw();
@@ -212,22 +212,22 @@ public final class ItemRenderer {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-            for(int var10 = 0; var10 < 2; ++var10) {
+            for(var2 = 0; var2 < 2; ++var2) {
                 GL11.glPushMatrix();
-                int var12 = Block.fire.blockIndexInTexture + (var10 << 4);
-                int var16 = (var12 & 15) << 4;
-                var12 &= 240;
-                float var5 = (float)var16 / 256.0F;
-                float var4 = ((float)var16 + 15.99F) / 256.0F;
-                float var6 = (float)var12 / 256.0F;
-                float var11 = ((float)var12 + 15.99F) / 256.0F;
-                GL11.glTranslatef((float)(-((var10 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
-                GL11.glRotatef((float)((var10 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
+                int var4 = Block.fire.blockIndexInTexture + (var2 << 4);
+                int var5 = (var4 & 15) << 4;
+                var4 &= 240;
+                float var6 = (float)var5 / 256.0F;
+                float var10 = ((float)var5 + 15.99F) / 256.0F;
+                var7 = (float)var4 / 256.0F;
+                var9 = ((float)var4 + 15.99F) / 256.0F;
+                GL11.glTranslatef((float)(-((var2 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
+                GL11.glRotatef((float)((var2 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
                 var3.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                var3.addVertexWithUV(-0.5F, -0.5F, -0.5F, var4, var11);
-                var3.addVertexWithUV(0.5F, -0.5F, -0.5F, var5, var11);
-                var3.addVertexWithUV(0.5F, 0.5F, -0.5F, var5, var6);
-                var3.addVertexWithUV(-0.5F, 0.5F, -0.5F, var4, var6);
+                var3.addVertexWithUV(-0.5D, -0.5D, -0.5D, (double)var10, (double)var9);
+                var3.addVertexWithUV(0.5D, -0.5D, -0.5D, (double)var6, (double)var9);
+                var3.addVertexWithUV(0.5D, 0.5D, -0.5D, (double)var6, (double)var7);
+                var3.addVertexWithUV(-0.5D, 0.5D, -0.5D, (double)var10, (double)var7);
                 var3.draw();
                 GL11.glPopMatrix();
             }
@@ -240,18 +240,18 @@ public final class ItemRenderer {
             var2 = this.mc.renderEngine.getTexture("/water.png");
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2);
             var3 = Tessellator.instance;
-            var1 = this.mc.thePlayer.getBrightness(var1);
-            GL11.glColor4f(var1, var1, var1, 0.5F);
+            float var8 = this.mc.thePlayer.getBrightness(var1);
+            GL11.glColor4f(var8, var8, var8, 0.5F);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GL11.glPushMatrix();
             var7 = -this.mc.thePlayer.rotationYaw / 64.0F;
             var9 = this.mc.thePlayer.rotationPitch / 64.0F;
             var3.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-            var3.addVertexWithUV(-1.0F, -1.0F, -0.5F, var7 + 4.0F, var9 + 4.0F);
-            var3.addVertexWithUV(1.0F, -1.0F, -0.5F, var7 + 0.0F, var9 + 4.0F);
-            var3.addVertexWithUV(1.0F, 1.0F, -0.5F, var7 + 0.0F, var9 + 0.0F);
-            var3.addVertexWithUV(-1.0F, 1.0F, -0.5F, var7 + 4.0F, var9 + 0.0F);
+            var3.addVertexWithUV(-1.0D, -1.0D, -0.5D, (double)(var7 + 4.0F), (double)(var9 + 4.0F));
+            var3.addVertexWithUV(1.0D, -1.0D, -0.5D, (double)(var7 + 0.0F), (double)(var9 + 4.0F));
+            var3.addVertexWithUV(1.0D, 1.0D, -0.5D, (double)(var7 + 0.0F), (double)(var9 + 0.0F));
+            var3.addVertexWithUV(-1.0D, 1.0D, -0.5D, (double)(var7 + 4.0F), (double)(var9 + 0.0F));
             var3.draw();
             GL11.glPopMatrix();
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
