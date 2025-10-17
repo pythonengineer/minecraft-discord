@@ -7,9 +7,10 @@ import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
 
 public class EntitySkeleton extends EntityMob {
-	private EntitySkeleton(World var1) {
-		super(var1);
-	}
+    public EntitySkeleton(World var1) {
+        super(var1);
+        this.texture = "/mob/skeleton.png";
+    }
 
 	public final void updatePlayerActionState() {
         this.getBrightness(1.0F);
@@ -26,6 +27,7 @@ public class EntitySkeleton extends EntityMob {
 				double var8 = var1.posY - (double)0.2F - var11.posY;
 				float var10 = MathHelper.sqrt_double(var3 * var3 + var5 * var5) * 0.2F;
 				this.worldObj.playSoundAtEntity(this, "random.bow", 1.0F, 1.0F / (this.rand.nextFloat() * 0.4F + 0.8F));
+				this.worldObj.spawnEntityInWorld(var11);
 				var11.setArrowHeading(var3, var8 + (double)var10, var5, 0.6F, 12.0F);
 				this.attackTime = 30;
 			}

@@ -5,6 +5,15 @@ import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.animal.EntityPig;
+import net.minecraft.game.entity.animal.EntitySheep;
+import net.minecraft.game.entity.monster.EntityCreeper;
+import net.minecraft.game.entity.monster.EntitySkeleton;
+import net.minecraft.game.entity.monster.EntitySpider;
+import net.minecraft.game.entity.monster.EntityZombie;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.Item;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
@@ -63,8 +72,9 @@ public class EntityArrow extends Entity {
 			--this.arrowShake;
 		}
 
-		if(this.inData) {
-			int var1 = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile);
+        int var1;
+        if(this.inData) {
+            var1 = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile);
 			if(var1 == this.inTile) {
 				++this.ticksInGround;
 				if(this.ticksInGround == 1200) {
@@ -94,7 +104,7 @@ public class EntityArrow extends Entity {
 		}
 
 		Entity var4 = null;
-		List var5 = this.worldObj.entityMap.getEntitiesWithinAABB(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
+		List var5 = this.worldObj.getEntitiesWithinAABB(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
 		double var6 = 0.0D;
 
 		for(int var8 = 0; var8 < var5.size(); ++var8) {
@@ -145,6 +155,36 @@ public class EntityArrow extends Entity {
 				this.worldObj.playSoundAtEntity(this, "random.drr", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 				this.inData = true;
 				this.arrowShake = 7;
+                Object var17 = null;
+                var1 = this.rand.nextInt(6);
+                if(var1 == 0) {
+                    var17 = new EntityZombie(this.worldObj);
+                }
+
+                if(var1 == 1) {
+                    var17 = new EntitySkeleton(this.worldObj);
+                }
+
+                if(var1 == 2) {
+                    var17 = new EntityCreeper(this.worldObj);
+                }
+
+                if(var1 == 3) {
+                    var17 = new EntitySpider(this.worldObj);
+                }
+
+                if(var1 == 4) {
+                    var17 = new EntityPig(this.worldObj);
+                }
+
+                if(var1 == 5) {
+                    var17 = new EntitySheep(this.worldObj);
+                }
+
+                if(var17 != null) {
+                    ((Entity)var17).setLocationAndAngles(this.posX, this.posY + 0.5D, this.posZ, 0.0F, 0.0F);
+                    this.worldObj.spawnEntityInWorld((Entity)var17);
+                }
 			}
 		}
 
@@ -187,7 +227,12 @@ public class EntityArrow extends Entity {
 		this.setPosition(this.posX, this.posY, this.posZ);
 	}
 
-	public final float getShadowSize() {
-		return 0.0F;
-	}
+    public final void onCollideWithPlayer(EntityPlayer var1) {
+        if(this.inData && this.shootingEntity == var1 && this.arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+            this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            var1.onItemPickup(this);
+            this.setEntityDead();
+        }
+
+    }
 }

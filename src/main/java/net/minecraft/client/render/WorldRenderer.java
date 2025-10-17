@@ -7,6 +7,7 @@ import net.minecraft.client.render.camera.Frustrum;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.Chunk;
 import net.minecraft.game.world.block.Block;
 
 public final class WorldRenderer {
@@ -37,6 +38,7 @@ public final class WorldRenderer {
     public boolean isVisible = true;
     public boolean isWaitingOnOcclusionQuery;
     public int glOcclusionQuery;
+    public boolean isLit;
 
     public WorldRenderer(World var1, int var2, int var3, int var4, int var5, int var6) {
         this.renderBlocks = new RenderBlocks(var1);
@@ -114,6 +116,8 @@ public final class WorldRenderer {
 				this.skipRenderPass[var7] = true;
 			}
 
+            Chunk.isLit = false;
+
 			for(var7 = 0; var7 < 2; ++var7) {
 				boolean var8 = false;
 				boolean var9 = false;
@@ -152,6 +156,7 @@ public final class WorldRenderer {
 				}
 			}
 
+            this.isLit = Chunk.isLit;
 		}
 	}
 

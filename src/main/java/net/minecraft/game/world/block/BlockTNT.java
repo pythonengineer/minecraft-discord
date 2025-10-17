@@ -20,6 +20,7 @@ public final class BlockTNT extends Block {
 
     public final void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4, int var5) {
         EntityTNTPrimed var6 = new EntityTNTPrimed(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F);
+        var1.spawnEntityInWorld(var6);
         var1.playSoundAtEntity(var6, "random.fuse", 1.0F, 1.0F);
     }
 }

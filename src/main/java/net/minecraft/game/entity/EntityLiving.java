@@ -1,5 +1,6 @@
 package net.minecraft.game.entity;
 
+import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -391,7 +392,16 @@ public class EntityLiving extends Entity {
 
         this.limbYaw += (var19 - this.limbYaw) * 0.4F;
         this.limbSwing += this.limbYaw;
-        this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F);
+        List var20 = this.worldObj.getEntitiesWithinAABB(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+        if(var20 != null && var20.size() > 0) {
+            for(int var21 = 0; var21 < var20.size(); ++var21) {
+                Entity var5 = (Entity)var20.get(var21);
+                if(var5.canBeCollidedWith()) {
+                    var5.capplyEntityCollision(this);
+                }
+            }
+        }
+
     }
 
     protected void updateEntityActionState() {

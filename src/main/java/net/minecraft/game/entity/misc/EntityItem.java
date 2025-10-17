@@ -1,6 +1,8 @@
 package net.minecraft.game.entity.misc;
 
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -37,7 +39,8 @@ public class EntityItem extends Entity {
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         this.motionY -= (double)0.04F;
-        if(this.worldObj.getBlockMaterial((int)this.posX, (int)this.posY, (int)this.posZ) == Material.lava) {
+        if(this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) == Material.lava) {
+            this.motionY = (double)0.2F;
             this.motionY = (double)0.2F;
             this.motionX = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
             this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
@@ -47,9 +50,9 @@ public class EntityItem extends Entity {
         double var6 = this.posZ;
         double var4 = this.posY;
         double var2 = this.posX;
-        int var8 = (int)var2;
-        int var9 = (int)var4;
-        int var10 = (int)var6;
+        int var8 = MathHelper.floor_double(var2);
+        int var9 = MathHelper.floor_double(var4);
+        int var10 = MathHelper.floor_double(var6);
         double var11 = var2 - (double)var8;
         double var13 = var4 - (double)var9;
         double var15 = var6 - (double)var10;
@@ -147,5 +150,14 @@ public class EntityItem extends Entity {
         }
 
         return false;
+    }
+
+    public final void onCollideWithPlayer(EntityPlayer var1) {
+        if(this.delayBeforeCanPickup == 0 && var1.inventory.addItemStackToInventory(this.item)) {
+            this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            var1.onItemPickup(this);
+            this.setEntityDead();
+        }
+
     }
 }

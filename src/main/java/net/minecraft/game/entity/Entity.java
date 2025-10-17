@@ -5,6 +5,7 @@ import java.util.List;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
@@ -404,6 +405,33 @@ public abstract class Entity {
         return var2 * var2 + var4 * var4 + var6 * var6;
     }
 
+    public void onCollideWithPlayer(EntityPlayer var1) {
+    }
+
+    public final void capplyEntityCollision(Entity var1) {
+        double var2 = var1.posX - this.posX;
+        double var4 = var1.posZ - this.posZ;
+        double var6 = var2 * var2 + var4 * var4;
+        if(var6 >= (double)0.01F) {
+            var6 = (double)MathHelper.sqrt_double(var6);
+            var2 /= var6;
+            var4 /= var6;
+            var2 /= var6;
+            var4 /= var6;
+            var2 *= (double)0.05F;
+            var4 *= (double)0.05F;
+            this.addVelocity(-var2, 0.0D, -var4);
+            var1.addVelocity(var2, 0.0D, var4);
+        }
+
+    }
+
+    private void addVelocity(double var1, double var3, double var5) {
+        this.motionX += var1;
+        this.motionY = this.motionY;
+        this.motionZ += var5;
+    }
+
     public boolean attackEntityFrom(Entity var1, int var2) {
         return false;
     }
@@ -416,10 +444,6 @@ public abstract class Entity {
         return null;
     }
 
-    public float getShadowSize() {
-        return this.height / 2.0F;
-    }
-
     public final EntityItem dropItemWithOffset(int var1, int var2) {
         return this.entityDropItem(var1, 1, 0.0F);
     }
@@ -427,6 +451,7 @@ public abstract class Entity {
     public final EntityItem entityDropItem(int var1, int var2, float var3) {
         EntityItem var4 = new EntityItem(this.worldObj, this.posX, this.posY + (double)var3, this.posZ, new ItemStack(var1, var2));
         var4.delayBeforeCanPickup = 10;
+        this.worldObj.spawnEntityInWorld(var4);
         return var4;
     }
 

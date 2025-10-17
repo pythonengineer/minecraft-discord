@@ -1,5 +1,6 @@
 package net.minecraft.game.entity.player;
 
+import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
@@ -28,6 +29,7 @@ public class EntityPlayer extends EntityLiving {
         super(var1);
         if(var1 != null) {
             var1.playerEntity = this;
+            World.setEntityDead(this);
         }
 
         this.setLocationAndAngles(0.0D, (double)var1.spawnY, 0.0D, 0.0F, 0.0F);
@@ -81,7 +83,13 @@ public class EntityPlayer extends EntityLiving {
         this.cameraYaw += (var3 - this.cameraYaw) * 0.4F;
         this.cameraPitch += (var4 - this.cameraPitch) * 0.8F;
         if(this.health > 0) {
-            this.boundingBox.expand(1.0D, 0.0D, 1.0D);
+            List var5 = this.worldObj.getEntitiesWithinAABB(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
+            if(var5 != null) {
+                for(int var6 = 0; var6 < var5.size(); ++var6) {
+                    Entity var7 = (Entity)var5.get(var6);
+                    var7.onCollideWithPlayer(this);
+                }
+            }
         }
 
     }
@@ -124,6 +132,7 @@ public class EntityPlayer extends EntityLiving {
             var4.motionX += Math.cos((double)var3) * (double)var5;
             var4.motionY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
             var4.motionZ += Math.sin((double)var3) * (double)var5;
+            this.worldObj.spawnEntityInWorld(var4);
         }
     }
 
@@ -142,6 +151,9 @@ public class EntityPlayer extends EntityLiving {
     }
 
     public void displayWorkbenchGUI() {
+    }
+
+    public void onItemPickup(Entity var1) {
     }
 
     protected final float getEyeHeight() {

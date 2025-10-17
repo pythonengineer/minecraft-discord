@@ -15,13 +15,13 @@ import net.minecraft.game.world.path.Pathfinder;
 
 public final class World {
     private List lightingToUpdate = new ArrayList();
+    private List loadedEntityList = new ArrayList();
     private int worldTime = 0;
     private long skyColor = 10079487L;
     private long fogColor = 11587839L;
     private long cloudColor = 16777215L;
     private int skylightSubtracted = 0;
 	private static float[] lightBrightnessTable = new float[16];
-	public EntityMap entityMap = new EntityMap(256, 256, 256);
 	public Entity playerEntity;
 	public int difficultySetting;
 	public final Pathfinder pathFinder = new Pathfinder(this);
@@ -135,18 +135,23 @@ public final class World {
     }
 
     public final void markBlocksDirtyVertical(int var1, int var2, int var3, int var4) {
+        int var5;
         if(var3 > var4) {
-            int var5 = var4;
+            var5 = var4;
             var4 = var3;
             var3 = var5;
         }
 
-        this.setBlockWithNotify(var1, var3, var2, var1, var4, var2);
-    }
+        int var7 = var2;
+        int var6 = var4;
+        var5 = var1;
+        var4 = var2;
+        var3 = var3;
+        var2 = var1;
+        World var9 = this;
 
-    public final void setBlockWithNotify(int var1, int var2, int var3, int var4, int var5, int var6) {
-        for(int var7 = 0; var7 < this.worldAccesses.size(); ++var7) {
-            ((IWorldAccess)this.worldAccesses.get(var7)).markBlockRangeNeedsUpdate(var1, var2, var3, var4, var5, var6);
+        for(int var8 = 0; var8 < var9.worldAccesses.size(); ++var8) {
+            ((IWorldAccess)var9.worldAccesses.get(var8)).markBlockRangeNeedsUpdate(var2, var3, var4, var5, var6, var7);
         }
 
     }
@@ -389,6 +394,14 @@ public final class World {
 
 	}
 
+    public final void spawnEntityInWorld(Entity var1) {
+        this.loadedEntityList.add(var1);
+    }
+
+    public static void setEntityDead(Entity var0) {
+        var0.setEntityDead();
+    }
+
 	public final void addWorldAccess(IWorldAccess var1) {
 		this.worldAccesses.add(var1);
 	}
@@ -444,7 +457,7 @@ public final class World {
     }
 
     public final float getCelestialAngle(float var1) {
-        var1 = ((float)this.worldTime + var1) / 12000.0F - 0.15F;
+        var1 = ((float)this.worldTime + var1) / 24000.0F - 0.15F;
         return var1;
     }
 
@@ -500,6 +513,25 @@ public final class World {
         }
 
         return var1 * var1 * 0.5F;
+    }
+
+    public final void scheduleBlockUpdate() {
+        for(int var1 = 0; var1 < this.loadedEntityList.size(); ++var1) {
+            Entity var2 = (Entity)this.loadedEntityList.get(var1);
+            if(!var2.isDead) {
+                var2.lastTickPosX = var2.posX;
+                var2.lastTickPosY = var2.posY;
+                var2.lastTickPosZ = var2.posZ;
+                var2.prevRotationYaw = var2.rotationYaw;
+                var2.prevRotationPitch = var2.rotationPitch;
+                var2.onUpdate();
+            }
+
+            if(var2.isDead) {
+                this.loadedEntityList.remove(var1--);
+            }
+        }
+
     }
 
 	public final boolean getIsAnyLiquid(AxisAlignedBB var1) {
@@ -736,14 +768,33 @@ public final class World {
         int var2 = (int)(var1 * 13.0F);
         if(var2 != this.skylightSubtracted) {
             this.skylightSubtracted = var2;
-            this.chunkProvider.populate();
+
+            for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
+                ((IWorldAccess)this.worldAccesses.get(var2)).updateAllRenderers();
+            }
         }
 
-        this.playerEntity.lastTickPosX = this.playerEntity.posX;
-        this.playerEntity.lastTickPosY = this.playerEntity.posY;
-        this.playerEntity.lastTickPosZ = this.playerEntity.posZ;
-        this.playerEntity.onUpdate();
-        this.worldTime = (this.worldTime + 1) % 12000;
+        this.worldTime = (this.worldTime + 1) % 24000;
+    }
+
+    public final List getEntitiesWithinAABB(Entity var1, AxisAlignedBB var2) {
+        ArrayList var3 = new ArrayList();
+
+        for(int var4 = 0; var4 < this.loadedEntityList.size(); ++var4) {
+            Entity var5 = (Entity)this.loadedEntityList.get(var4);
+            if(var5 != var1) {
+                AxisAlignedBB var6 = var5.boundingBox;
+                if(var2.maxX > var6.minX && var2.minX < var6.maxX ? (var2.maxY > var6.minY && var2.minY < var6.maxY ? var2.maxZ > var6.minZ && var2.minZ < var6.maxZ : false) : false) {
+                    var3.add(var5);
+                }
+            }
+        }
+
+        return var3;
+    }
+
+    public final List getLoadedEntityList() {
+        return this.loadedEntityList;
     }
 
 	static {

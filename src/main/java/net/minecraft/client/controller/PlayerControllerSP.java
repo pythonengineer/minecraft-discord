@@ -22,14 +22,15 @@ public final class PlayerControllerSP extends PlayerController {
 	}
 
 	public final void onRespawn() {
-        this.mc.thePlayer.inventory.mainInventory[0] = new ItemStack(Block.glass, 999);
-        this.mc.thePlayer.inventory.mainInventory[1] = new ItemStack(Block.planks, 999);
-        this.mc.thePlayer.inventory.mainInventory[2] = new ItemStack(Block.torch, 999);
-        this.mc.thePlayer.inventory.mainInventory[3] = new ItemStack(Item.striker, 999);
-        this.mc.thePlayer.inventory.mainInventory[4] = new ItemStack(Item.shovelDiamond, 999);
-        this.mc.thePlayer.inventory.mainInventory[5] = new ItemStack(Item.pickaxeDiamond, 999);
-        this.mc.thePlayer.inventory.mainInventory[7] = new ItemStack(Block.lavaStill, 999);
-        this.mc.thePlayer.inventory.mainInventory[8] = new ItemStack(Block.waterStill, 999);
+        this.mc.thePlayer.inventory.mainInventory[0] = new ItemStack(Item.axeDiamond, 999);
+        this.mc.thePlayer.inventory.mainInventory[1] = new ItemStack(Item.shovelDiamond, 999);
+        this.mc.thePlayer.inventory.mainInventory[2] = new ItemStack(Item.pickaxeDiamond, 999);
+        this.mc.thePlayer.inventory.mainInventory[3] = new ItemStack(Block.torch, 999);
+        this.mc.thePlayer.inventory.mainInventory[4] = new ItemStack(Item.striker, 999);
+        this.mc.thePlayer.inventory.mainInventory[5] = new ItemStack(Block.planks, 999);
+        this.mc.thePlayer.inventory.mainInventory[6] = new ItemStack(Block.glass, 999);
+        this.mc.thePlayer.inventory.mainInventory[7] = new ItemStack(Item.bow, 999);
+        this.mc.thePlayer.inventory.mainInventory[8] = new ItemStack(Item.arrow, 999);
     }
 
 	public final boolean sendBlockRemoved(int var1, int var2, int var3) {

@@ -7,12 +7,13 @@ import net.minecraft.game.world.World;
 public class EntityCreeper extends EntityMob {
 	private int timeSinceIgnited;
 	private int lastActiveTime;
-	private int fuseDuration;
-	private int creeperState;
+	private int fuseDuration = 30;
+	private int creeperState = -1;
 
-	private EntityCreeper(World var1) {
-		super(var1);
-	}
+    public EntityCreeper(World var1) {
+        super(var1);
+        this.texture = "/mob/creeper.png";
+    }
 
 	protected final void updateEntityActionState() {
 		this.lastActiveTime = this.timeSinceIgnited;

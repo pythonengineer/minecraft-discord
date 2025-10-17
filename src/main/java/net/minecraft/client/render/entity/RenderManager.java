@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPig;
 import net.minecraft.client.model.ModelSheep;
@@ -32,6 +31,9 @@ import net.minecraft.game.world.World;
 public final class RenderManager {
 	private Map entityRenderMap = new HashMap();
     public static RenderManager instance = new RenderManager();
+    public static double renderPosX;
+    public static double renderPosY;
+    public static double renderPosZ;
 	public RenderEngine renderEngine;
 	public World worldObj;
 	public float playerViewY;
@@ -88,9 +90,9 @@ public final class RenderManager {
         double var5 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
         double var7 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
         float var9 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
-        float var10 = this.worldObj.getBrightness(MathHelper.floor_double(var3), MathHelper.floor_double(var5 + (double)var1.getShadowSize()), MathHelper.floor_double(var7));
+        float var10 = var1.getBrightness(var2);
         GL11.glColor3f(var10, var10, var10);
-        this.renderEntityWithPosYaw(var1, var3, var5, var7, var9, var2);
+        this.renderEntityWithPosYaw(var1, var3 - renderPosX, var5 - renderPosY, var7 - renderPosZ, var9, var2);
     }
 
     public final void renderEntityWithPosYaw(Entity var1, double var2, double var4, double var6, float var8, float var9) {

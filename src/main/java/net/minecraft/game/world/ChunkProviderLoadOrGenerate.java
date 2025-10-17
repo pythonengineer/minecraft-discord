@@ -21,13 +21,4 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
         return this.chunks[var3];
     }
-
-    public final void populate() {
-        for(int var1 = 0; var1 < this.chunks.length; ++var1) {
-            if(this.chunks[var1] != null) {
-                this.chunks[var1].b();
-            }
-        }
-
-    }
 }

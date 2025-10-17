@@ -125,7 +125,7 @@ public class EntityPainting extends Entity {
         if(this.tickCounter++ == 100 && !this.onValidSurface()) {
             this.tickCounter = 0;
             this.setEntityDead();
-            new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting));
+            this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
         }
 
     }
@@ -172,7 +172,7 @@ public class EntityPainting extends Entity {
                 }
             }
 
-            List var9 = this.worldObj.entityMap.getEntitiesWithinAABB(this, this.boundingBox);
+            List var9 = this.worldObj.getEntitiesWithinAABB(this, this.boundingBox);
 
             for(var7 = 0; var7 < var9.size(); ++var7) {
                 if(var9.get(var7) instanceof EntityPainting) {
@@ -190,7 +190,7 @@ public class EntityPainting extends Entity {
 
     public final boolean attackEntityFrom(Entity var1, int var2) {
         this.setEntityDead();
-        new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting));
+        this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
         return true;
     }
 }

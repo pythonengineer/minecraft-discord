@@ -229,7 +229,7 @@ public final class EntityRenderer {
 
         var31 = var12.addVector((double)var26 * var29, (double)var25 * var29, (double)var28 * var29);
         this.pointedEntity = null;
-        List var34 = this.mc.theWorld.entityMap.getEntitiesWithinAABB(var9, var9.boundingBox.addCoord((double)var26 * var29, (double)var25 * var29, (double)var28 * var29));
+        List var34 = this.mc.theWorld.getEntitiesWithinAABB(var9, var9.boundingBox.addCoord((double)var26 * var29, (double)var25 * var29, (double)var28 * var29));
         double var35 = 0.0D;
 
         int var8;
@@ -419,8 +419,10 @@ public final class EntityRenderer {
             }
 
             RenderHelper.enableStandardItemLighting();
+            GL11.glPushMatrix();
             var5.renderEntities(this.getPlayerPosition(var1), var45, var1);
             var6.renderLitParticles(var1);
+            GL11.glPopMatrix();
             RenderHelper.disableStandardItemLighting();
             this.updateFogColor();
             var6.renderParticles(var3, var1);

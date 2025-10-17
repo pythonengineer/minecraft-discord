@@ -4,8 +4,10 @@ import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
 
 public class EntityPig extends EntityAnimal {
-    private EntityPig(World var1) {
+    public EntityPig(World var1) {
         super(var1);
+        this.texture = "/mob/pig.png";
+        this.setSize(0.9F, 0.9F);
     }
 
     protected final String getLivingSound() {

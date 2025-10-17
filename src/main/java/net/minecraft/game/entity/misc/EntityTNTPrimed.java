@@ -48,8 +48,4 @@ public class EntityTNTPrimed extends Entity {
 			this.worldObj.spawnParticle("smoke", this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
 		}
 	}
-
-	public final float getShadowSize() {
-		return 0.0F;
-	}
 }

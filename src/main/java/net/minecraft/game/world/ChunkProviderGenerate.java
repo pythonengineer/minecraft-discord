@@ -101,7 +101,4 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 	public final boolean chunkExists(int var1, int var2) {
 		return true;
 	}
-
-	public final void populate() {
-	}
 }

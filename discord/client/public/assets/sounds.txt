@@ -18,6 +18,9 @@ random/explode3.ogg
 random/explode4.ogg
 random/fizz.ogg
 random/fuse.ogg
+random/glass1.ogg
+random/glass2.ogg
+random/glass3.ogg
 random/hurt.ogg
 random/pop.ogg
 random/splash.ogg

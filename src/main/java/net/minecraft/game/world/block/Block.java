@@ -244,24 +244,25 @@ public class Block {
     }
 
     public final void dropBlockAsItem(World var1, int var2, int var3, int var4, int var5) {
-        float var13 = 1.0F;
+        float var22 = 1.0F;
         int var6 = var5;
         var5 = var4;
         var4 = var3;
         var3 = var2;
-        World var15 = var1;
-        Block var14 = this;
+        World var24 = var1;
+        Block var23 = this;
         int var7 = this.quantityDropped(var1.rand);
 
         for(int var8 = 0; var8 < var7; ++var8) {
-            if(var15.rand.nextFloat() <= 1.0F) {
-                int var9 = var14.idDropped(var6, var15.rand);
+            if(var24.rand.nextFloat() <= 1.0F) {
+                int var9 = var23.idDropped(var6, var24.rand);
                 if(var9 > 0) {
-                    float var10 = var15.rand.nextFloat() * 0.7F + 0.15F;
-                    float var11 = var15.rand.nextFloat() * 0.7F + 0.15F;
-                    float var12 = var15.rand.nextFloat() * 0.7F + 0.15F;
-                    EntityItem var16 = new EntityItem(var15, (double)((float)var3 + var10), (double)((float)var4 + var11), (double)((float)var5 + var12), new ItemStack(var9));
-                    var16.delayBeforeCanPickup = 10;
+                    double var16 = (double)(var24.rand.nextFloat() * 0.7F) + (double)0.15F;
+                    double var18 = (double)(var24.rand.nextFloat() * 0.7F) + (double)0.15F;
+                    double var20 = (double)(var24.rand.nextFloat() * 0.7F) + (double)0.15F;
+                    EntityItem var25 = new EntityItem(var24, (double)var3 + var16, (double)var4 + var18, (double)var5 + var20, new ItemStack(var9));
+                    var25.delayBeforeCanPickup = 10;
+                    var24.spawnEntityInWorld(var25);
                 }
             }
         }

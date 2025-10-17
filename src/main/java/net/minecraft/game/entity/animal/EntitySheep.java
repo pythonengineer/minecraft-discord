@@ -7,10 +7,12 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public class EntitySheep extends EntityAnimal {
-    public boolean sheared;
+    public boolean sheared = false;
 
-    private EntitySheep(World var1) {
+    public EntitySheep(World var1) {
         super(var1);
+        this.texture = "/mob/sheep.png";
+        this.setSize(0.9F, 1.3F);
     }
 
     public final boolean attackEntityFrom(Entity var1, int var2) {

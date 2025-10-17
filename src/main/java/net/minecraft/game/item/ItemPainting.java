@@ -30,6 +30,7 @@ public final class ItemPainting extends Item {
 
             EntityPainting var8 = new EntityPainting(var2, var3, var4, var5, var7);
             if(var8.onValidSurface()) {
+                var2.spawnEntityInWorld(var8);
                 --var1.stackSize;
             }
 

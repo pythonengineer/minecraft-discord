@@ -8,8 +8,6 @@ import java.util.List;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
-import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
@@ -29,7 +27,6 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
-import net.minecraft.game.world.EntityMap;
 import net.minecraft.game.world.IWorldAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -208,57 +205,35 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final void renderEntities(Vec3D var1, Frustrum var2, float var3) {
-        if(this.worldObj.entityMap == null && this.worldObj.entityMap != null) {
-            EntityMap var4 = this.worldObj.entityMap;
-            RenderManager.instance.cacheActiveRenderInfo(this.worldObj, this.renderEngine, this.mc.thePlayer, var3);
-            this.countEntitiesTotal = 0;
-            this.countEntitiesRendered = 0;
-            this.countEntitiesHidden = 0;
-    
-            for(int var5 = 0; var5 < var4.width; ++var5) {
-                for(int var6 = 0; var6 < var4.depth; ++var6) {
-                    for(int var7 = 0; var7 < var4.height; ++var7) {
-                        List var8 = var4.entityGrid[(var7 * var4.depth + var6) * var4.width + var5];
-                        if(var8.size() != 0) {
-                            int var9 = (var5 << 3) + 4;
-                            int var10 = (var6 << 3) + 4;
-                            int var11 = (var7 << 3) + 4;
-                            this.countEntitiesTotal += var8.size();
-                            float var10001 = (float)var9;
-                            float var10002 = (float)var10;
-                            float var17 = (float)var11;
-                            float var16 = var10002;
-                            float var12 = var10001;
-                            int var18 = MathHelper.floor_float(var12) >> 4;
-                            int var19 = MathHelper.floor_float(var16) >> 4;
-                            int var20 = MathHelper.floor_float(var17) >> 4;
-                            if(!this.worldRenderers[(var20 * this.renderChunksTall + var19) * this.renderChunksWide + var18].isInFrustrum || !this.worldRenderers[(var20 * this.renderChunksTall + var19) * this.renderChunksWide + var18].isVisible) {
-                                this.countEntitiesHidden += var8.size();
-                            } else {
-                                for(var9 = 0; var9 < var8.size(); ++var9) {
-                                    Entity var36 = (Entity)var8.get(var9);
-                                    double var38 = var36.posX - var1.xCoord;
-                                    double var39 = var36.posY - var1.yCoord;
-                                    double var40 = var36.posZ - var1.zCoord;
-                                    double var22 = var38 * var38 + var39 * var39 + var40 * var40;
-                                    AxisAlignedBB var37 = var36.boundingBox;
-                                    double var30 = var37.maxX - var37.minX;
-                                    double var32 = var37.maxY - var37.minY;
-                                    double var34 = var37.maxZ - var37.minZ;
-                                    double var27 = (var30 + var32 + var34) / 3.0D;
-                                    var27 *= 64.0D;
-                                    if(var22 < var27 * var27 && var2.isBoundingBoxInFrustrum(var36.boundingBox) && (var36 != this.worldObj.playerEntity || this.mc.options.thirdPersonView)) {
-                                        ++this.countEntitiesRendered;
-                                        RenderManager.instance.renderEntity(var36, var3);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        RenderManager.instance.cacheActiveRenderInfo(this.worldObj, this.renderEngine, this.mc.thePlayer, var3);
+        this.countEntitiesTotal = 0;
+        this.countEntitiesRendered = 0;
+        this.countEntitiesHidden = 0;
+        Entity var4 = this.worldObj.playerEntity;
+        RenderManager.renderPosX = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var3;
+        RenderManager.renderPosY = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var3;
+        RenderManager.renderPosZ = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var3;
+        List var30 = this.worldObj.getLoadedEntityList();
+        this.countEntitiesTotal = var30.size();
 
+        for(int var5 = 0; var5 < var30.size(); ++var5) {
+            Entity var6 = (Entity)var30.get(var5);
+            double var10 = var6.posX - var1.xCoord;
+            double var12 = var6.posY - var1.yCoord;
+            double var14 = var6.posZ - var1.zCoord;
+            double var16 = var10 * var10 + var12 * var12 + var14 * var14;
+            AxisAlignedBB var7 = var6.boundingBox;
+            double var24 = var7.maxX - var7.minX;
+            double var26 = var7.maxY - var7.minY;
+            double var28 = var7.maxZ - var7.minZ;
+            double var21 = (var24 + var26 + var28) / 3.0D;
+            var21 *= 64.0D;
+            if(var16 < var21 * var21 && var2.isBoundingBoxInFrustrum(var6.boundingBox) && (var6 != this.worldObj.playerEntity || this.mc.options.thirdPersonView)) {
+                ++this.countEntitiesRendered;
+                RenderManager.instance.renderEntity(var6, var3);
+            }
         }
+
     }
 
     public final String getDebugInfoRenders() {
@@ -814,5 +789,15 @@ public final class RenderGlobal implements IWorldAccess {
 
             }
         }
+    }
+
+    public final void updateAllRenderers() {
+        for(int var1 = 0; var1 < this.worldRenderers.length; ++var1) {
+            if(!this.worldRenderers[var1].needsUpdate && this.worldRenderers[var1].isLit) {
+                this.worldRenderers[var1].needsUpdate = true;
+                this.worldRenderersToUpdate.add(this.worldRenderers[var1]);
+            }
+        }
+
     }
 }

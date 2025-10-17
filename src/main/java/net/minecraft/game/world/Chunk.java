@@ -12,6 +12,7 @@ public final class Chunk {
     private int lowestBlockHeight;
     private final int xPosition;
     private final int zPosition;
+    public static boolean isLit;
 
     private Chunk(World var1, int var2, int var3) {
         this.worldObj = var1;
@@ -65,13 +66,16 @@ public final class Chunk {
         int var3 = this.getHeightValue(var1, var2);
         var1 += this.xPosition << 4;
         var2 += this.zPosition << 4;
-        int var10001 = var1 - 1;
-        int var4 = var3;
-        var3 = var2;
-        var2 = var10001;
-        int var5 = this.worldObj.getHeightValue(var2, var3);
-        if(var5 > var4) {
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, var2, var4, var3, var2, var5, var3);
+        this.checkSkylightNeighborHeight(var1 - 1, var2, var3);
+        this.checkSkylightNeighborHeight(var1 + 1, var2, var3);
+        this.checkSkylightNeighborHeight(var1, var2 - 1, var3);
+        this.checkSkylightNeighborHeight(var1, var2 + 1, var3);
+    }
+
+    private void checkSkylightNeighborHeight(int var1, int var2, int var3) {
+        int var4 = this.worldObj.getHeightValue(var1, var2);
+        if(var4 > var3) {
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, var1, var3, var2, var1, var4, var2);
         }
 
     }
@@ -186,25 +190,21 @@ public final class Chunk {
     }
 
     public final int getBlockLightValue(int var1, int var2, int var3, int var4) {
-        var4 = this.skyLightMap.getNibble(var1, var2, var3) - var4;
-        var1 = this.blockLightMap.getNibble(var1, var2, var3);
-        if(var1 > var4) {
-            var4 = var1;
+        int var5 = this.skyLightMap.getNibble(var1, var2, var3);
+        if(var5 > 0) {
+            isLit = true;
         }
 
-        return var4;
+        var5 -= var4;
+        var1 = this.blockLightMap.getNibble(var1, var2, var3);
+        if(var1 > var5) {
+            var5 = var1;
+        }
+
+        return var5;
     }
 
     public final boolean canBlockSeeTheSky(int var1, int var2, int var3) {
         return var2 >= (this.heightMap[var3 << 4 | var1] & 255);
-    }
-
-    public final void b() {
-        int var1 = this.xPosition << 4;
-        int var2 = this.lowestBlockHeight - 16;
-        int var3 = this.zPosition << 4;
-        int var4 = (this.xPosition << 4) + 16;
-        int var5 = (this.zPosition << 4) + 16;
-        this.worldObj.setBlockWithNotify(var1, var2, var3, var4, 127, var5);
     }
 }

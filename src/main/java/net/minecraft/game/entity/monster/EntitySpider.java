@@ -6,9 +6,12 @@ import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
 
 public class EntitySpider extends EntityMob {
-	private EntitySpider(World var1) {
-		super(var1);
-	}
+    public EntitySpider(World var1) {
+        super(var1);
+        this.texture = "/mob/spider.png";
+        this.setSize(1.4F, 0.9F);
+        this.moveSpeed = 0.8F;
+    }
 
 	protected final Entity findPlayerToAttack() {
 		float var1 = this.getBrightness(1.0F);

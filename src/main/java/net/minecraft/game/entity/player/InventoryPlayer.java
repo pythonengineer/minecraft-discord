@@ -56,6 +56,82 @@ public final class InventoryPlayer implements IInventory {
         }
     }
 
+    public final boolean addItemStackToInventory(ItemStack var1) {
+        if(var1.itemDamage == 0) {
+            int var4 = var1.stackSize;
+            int var3 = var1.itemID;
+            int var6 = var3;
+            InventoryPlayer var5 = this;
+            int var7 = 0;
+
+            int var10001;
+            ItemStack var8;
+            while(true) {
+                if(var7 >= var5.mainInventory.length) {
+                    var10001 = -1;
+                    break;
+                }
+
+                if(var5.mainInventory[var7] != null && var5.mainInventory[var7].itemID == var6) {
+                    var8 = var5.mainInventory[var7];
+                    if(var5.mainInventory[var7].stackSize < var8.getItem().getItemStackLimit() && var5.mainInventory[var7].stackSize < 64) {
+                        var10001 = var7;
+                        break;
+                    }
+                }
+
+                ++var7;
+            }
+
+            int var9 = var10001;
+            if(var9 < 0) {
+                var9 = this.getFirstEmptyStack();
+            }
+
+            if(var9 < 0) {
+                var10001 = var4;
+            } else {
+                if(this.mainInventory[var9] == null) {
+                    this.mainInventory[var9] = new ItemStack(var3, 0);
+                }
+
+                var3 = var4;
+                var8 = this.mainInventory[var9];
+                if(var4 > var8.getItem().getItemStackLimit() - this.mainInventory[var9].stackSize) {
+                    var8 = this.mainInventory[var9];
+                    var3 = var8.getItem().getItemStackLimit() - this.mainInventory[var9].stackSize;
+                }
+
+                if(var3 > 64 - this.mainInventory[var9].stackSize) {
+                    var3 = 64 - this.mainInventory[var9].stackSize;
+                }
+
+                if(var3 == 0) {
+                    var10001 = var4;
+                } else {
+                    var4 -= var3;
+                    this.mainInventory[var9].stackSize += var3;
+                    this.mainInventory[var9].animationsToGo = 5;
+                    var10001 = var4;
+                }
+            }
+
+            var1.stackSize = var10001;
+            if(var1.stackSize == 0) {
+                return true;
+            }
+        }
+
+        int var2 = this.getFirstEmptyStack();
+        if(var2 >= 0) {
+            this.mainInventory[var2] = var1;
+            this.mainInventory[var2].animationsToGo = 5;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public final ItemStack decrStackSize(int var1, int var2) {
         ItemStack[] var3 = this.mainInventory;
         if(var1 >= this.mainInventory.length) {

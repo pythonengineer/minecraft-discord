@@ -6,8 +6,10 @@ import net.minecraft.client.gui.container.GuiChest;
 import net.minecraft.client.gui.container.GuiCrafting;
 import net.minecraft.client.gui.container.GuiFurnace;
 import net.minecraft.game.IInventory;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.world.EntityMap;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntityFurnace;
 
@@ -51,5 +53,9 @@ public class EntityPlayerSP extends EntityPlayer {
 
     public final void destroyCurrentEquippedItem() {
         this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
+    }
+
+    public final void onItemPickup(Entity var1) {
+        this.mc.effectRenderer.addEffect(new EntityMap(this.mc.theWorld, var1, this, -0.5F));
     }
 }

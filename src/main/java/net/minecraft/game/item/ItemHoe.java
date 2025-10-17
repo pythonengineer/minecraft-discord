@@ -36,6 +36,7 @@ public final class ItemHoe extends Item {
                     float var13 = var2.rand.nextFloat() * 0.7F + 0.15F;
                     EntityItem var11 = new EntityItem(var2, (double)((float)var3 + var10), (double)((float)var4 + 1.2F), (double)((float)var5 + var13), new ItemStack(Item.seeds));
                     var11.delayBeforeCanPickup = 10;
+                    var2.spawnEntityInWorld(var11);
                 }
             }
 
