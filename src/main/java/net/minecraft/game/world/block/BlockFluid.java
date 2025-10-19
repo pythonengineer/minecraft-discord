@@ -32,6 +32,9 @@ public class BlockFluid extends Block {
 		return false;
 	}
 
+    public void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+    }
+
 	public final float getBlockBrightness(World var1, int var2, int var3, int var4) {
 		return this.material == Material.lava ? 100.0F : super.getBlockBrightness(var1, var2, var3, var4);
 	}

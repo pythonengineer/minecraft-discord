@@ -54,6 +54,8 @@ import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.terrain.LevelGenerator;
 
 public final class Minecraft implements Runnable {
+    private static long E;
+    private boolean F = true;
 	public PlayerController playerController = new PlayerControllerSP(this);
 	private boolean fullscreen = false;
 	public int displayWidth;
@@ -259,6 +261,15 @@ public final class Minecraft implements Runnable {
                         this.timer.updateTimer();
                     }
 
+                    if(this.theWorld != null && (this.currentScreen == null || !this.currentScreen.doesGuiPauseGame())) {
+                        long var31 = (long)this.ticksRan - E;
+                        if(var31 > 6000L || var31 < 0L) {
+                            this.displayGuiScreen(new s());
+                            this.isGamePaused = true;
+                            this.F = false;
+                        }
+                    }
+
                     Display.checkContextLost();
 
                     PointerInputAbstraction.runGameLoop();
@@ -271,6 +282,10 @@ public final class Minecraft implements Runnable {
                             PointerInputAbstraction.runGameLoop();
                         }
 					}
+
+                    if(this.isGamePaused) {
+                        this.timer.renderPartialTicks = 1.0F;
+                    }
 
                     GL11.optimize();
                     this.sndManager.setListener(this.thePlayer, this.timer.renderPartialTicks);
@@ -344,6 +359,11 @@ public final class Minecraft implements Runnable {
             System.err.println(
                     "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
         }
+    }
+
+    public final void b() {
+        this.running = false;
+        this.F = false;
     }
 
     public int getLimitFramerate() {
@@ -525,6 +545,7 @@ public final class Minecraft implements Runnable {
                     int var15 = this.objectMouseOver.sideHit;
                     Block var6 = Block.blocksList[this.theWorld.getBlockId(var10, var3, var13)];
                     if(var1 == 0) {
+                        this.theWorld.extinguishFire(var10, var3, var13, this.objectMouseOver.sideHit);
                         if(var6 != Block.bedrock) {
                             this.playerController.clickBlock(var10, var3, var13);
                             return;
@@ -855,24 +876,26 @@ public final class Minecraft implements Runnable {
 
         if(this.theWorld != null) {
             this.theWorld.difficultySetting = this.options.difficulty;
-            if(!this.isGamePaused) {
-                this.entityRenderer.updateRenderer();
-            }
+            if((long)this.ticksRan - E <= 6000L && (long)this.ticksRan - E >= 0L) {
+                if(!this.isGamePaused) {
+                    this.entityRenderer.updateRenderer();
+                }
 
-            if(!this.isGamePaused) {
-                this.renderGlobal.renderAllRenderLists();
-            }
+                if(!this.isGamePaused) {
+                    this.renderGlobal.renderAllRenderLists();
+                }
 
-            if(!this.isGamePaused) {
-                this.theWorld.scheduleBlockUpdate();
-            }
+                if(!this.isGamePaused) {
+                    this.theWorld.scheduleBlockUpdate();
+                }
 
-            if(!this.isGamePaused) {
-                this.theWorld.restartTimeOfDay();
-            }
+                if(!this.isGamePaused) {
+                    this.theWorld.restartTimeOfDay();
+                }
 
-            if(!this.isGamePaused) {
-                this.effectRenderer.updateEffects();
+                if(!this.isGamePaused) {
+                    this.effectRenderer.updateEffects();
+                }
             }
         }
 
@@ -887,6 +910,7 @@ public final class Minecraft implements Runnable {
     }
 
     public final void setLevel(World var1) {
+        E = (long)this.ticksRan;
 		this.theWorld = var1;
 		if(var1 != null) {
             this.thePlayer = null;

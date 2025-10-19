@@ -1,8 +1,15 @@
 package net.minecraft.game.world;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.BlockContainer;
+import net.minecraft.game.world.block.tileentity.TileEntity;
 
 public final class Chunk {
+    public static boolean isLit;
     private byte[] blocks;
     private World worldObj;
     private NibbleArray data;
@@ -12,9 +19,12 @@ public final class Chunk {
     private int lowestBlockHeight;
     private final int xPosition;
     private final int zPosition;
-    public static boolean isLit;
+    private Map chunkTileEntityMap;
+    private List entities;
 
     private Chunk(World var1, int var2, int var3) {
+        this.chunkTileEntityMap = new HashMap();
+        this.entities = new ArrayList();
         this.worldObj = var1;
         this.xPosition = var2;
         this.zPosition = var3;
@@ -44,7 +54,7 @@ public final class Chunk {
         int var3;
         for(var2 = 0; var2 < 16; ++var2) {
             for(var3 = 0; var3 < 16; ++var3) {
-                this.heightMap[var3 << 4 | var2] = 127;
+                this.heightMap[var3 << 4 | var2] = -128;
                 this.relightBlock(var2, 127, var3);
                 if((this.heightMap[var3 << 4 | var2] & 255) < var1) {
                     var1 = this.heightMap[var3 << 4 | var2] & 255;
@@ -151,22 +161,28 @@ public final class Chunk {
         return this.blocks[var1 << 11 | var3 << 7 | var2];
     }
 
-    public final void setBlockID(int var1, int var2, int var3, int var4) {
+    public final boolean setBlockID(int var1, int var2, int var3, int var4) {
+        byte var6 = (byte)var4;
         int var5 = this.heightMap[var3 << 4 | var1] & 255;
-        this.blocks[var1 << 11 | var3 << 7 | var2] = (byte)var4;
-        if(Block.lightOpacity[var4] != 0) {
-            if(var2 >= var5) {
-                this.relightBlock(var1, var2 + 1, var3);
+        if(this.blocks[var1 << 11 | var3 << 7 | var2] == var6) {
+            return false;
+        } else {
+            this.blocks[var1 << 11 | var3 << 7 | var2] = var6;
+            if(Block.lightOpacity[var6] != 0) {
+                if(var2 >= var5) {
+                    this.relightBlock(var1, var2 + 1, var3);
+                }
+            } else if(var2 == var5 - 1) {
+                this.relightBlock(var1, var2, var3);
             }
-        } else if(var2 == var5 - 1) {
-            this.relightBlock(var1, var2, var3);
-        }
 
-        var4 = (this.xPosition << 4) + var1;
-        var5 = (this.zPosition << 4) + var3;
-        this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, var4, var2, var5, var4, var2, var5);
-        this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, var4, var2, var5, var4, var2, var5);
-        this.updateSkylight_do(var1, var3);
+            var4 = (this.xPosition << 4) + var1;
+            var5 = (this.zPosition << 4) + var3;
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, var4, var2, var5, var4, var2, var5);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, var4, var2, var5, var4, var2, var5);
+            this.updateSkylight_do(var1, var3);
+            return true;
+        }
     }
 
     public final int getBlockMetadata(int var1, int var2, int var3) {
@@ -206,5 +222,24 @@ public final class Chunk {
 
     public final boolean canBlockSeeTheSky(int var1, int var2, int var3) {
         return var2 >= (this.heightMap[var3 << 4 | var1] & 255);
+    }
+
+    public final TileEntity getChunkBlockTileEntity(int var1, int var2, int var3) {
+        int var4 = var1 + (var2 << 10) + (var3 << 10 << 10);
+        TileEntity var5 = (TileEntity)this.chunkTileEntityMap.get(Integer.valueOf(var4));
+        if(var5 == null) {
+            int var6 = this.getBlockID(var1, var2, var3);
+            BlockContainer var7 = (BlockContainer)Block.blocksList[var6];
+            var7.onNeighborBlockChange(this.worldObj, (this.xPosition << 4) + var1, var2, (this.zPosition << 4) + var3);
+            var5 = (TileEntity)this.chunkTileEntityMap.get(Integer.valueOf(var4));
+        }
+
+        return var5;
+    }
+
+    public final void setChunkBlockTileEntity(int var1, int var2, int var3, TileEntity var4) {
+        var1 = var1 + (var2 << 10) + (var3 << 10 << 10);
+        this.chunkTileEntityMap.put(Integer.valueOf(var1), var4);
+        this.entities.add(var4);
     }
 }

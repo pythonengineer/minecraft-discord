@@ -57,6 +57,30 @@ public final class BlockTorch extends Block {
         var1.setBlockMetadataWithNotify(var2, var3, var4, var6);
     }
 
+    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+        if(var1.isBlockNormalCube(var2 - 1, var3, var4)) {
+            var1.setBlockMetadataWithNotify(var2, var3, var4, 1);
+        } else if(var1.isBlockNormalCube(var2 + 1, var3, var4)) {
+            var1.setBlockMetadataWithNotify(var2, var3, var4, 2);
+        } else if(var1.isBlockNormalCube(var2, var3, var4 - 1)) {
+            var1.setBlockMetadataWithNotify(var2, var3, var4, 3);
+        } else if(var1.isBlockNormalCube(var2, var3, var4 + 1)) {
+            var1.setBlockMetadataWithNotify(var2, var3, var4, 4);
+        } else if(var1.isBlockNormalCube(var2, var3 - 1, var4)) {
+            var1.setBlockMetadataWithNotify(var2, var3, var4, 5);
+        }
+
+        boolean var10000;
+        if(!this.canPlaceBlockAt(var1, var2, var3, var4)) {
+            this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
+            var1.setBlockWithNotify(var2, var3, var4, 0);
+            var10000 = false;
+        } else {
+            var10000 = true;
+        }
+
+    }
+
     public final MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
         int var7 = var1.getBlockMetadata(var2, var3, var4);
         if(var7 == 1) {

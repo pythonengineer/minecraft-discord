@@ -41,6 +41,7 @@ public class EntityCreeper extends EntityMob {
 			this.creeperState = 1;
 			++this.timeSinceIgnited;
 			if(this.timeSinceIgnited == this.fuseDuration) {
+                this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
 				this.setEntityDead();
 			}
 

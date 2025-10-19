@@ -25,6 +25,9 @@ public final class BlockFlowing extends BlockFluid {
 		this.setTickOnLoad(true);
 	}
 
+    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+    }
+
 	public final boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
 		int var6 = var1.getBlockId(var2, var3, var4);
 		return var6 != this.movingId1 && var6 != this.stillId1 ? (var5 != 1 || var1.getBlockId(var2 - 1, var3, var4) != 0 && var1.getBlockId(var2 + 1, var3, var4) != 0 && var1.getBlockId(var2, var3, var4 - 1) != 0 && var1.getBlockId(var2, var3, var4 + 1) != 0 ? super.shouldSideBeRendered(var1, var2, var3, var4, var5) : true) : false;

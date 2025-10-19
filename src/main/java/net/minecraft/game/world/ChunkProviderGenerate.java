@@ -6,6 +6,7 @@ import net.minecraft.game.world.terrain.noise.NoiseGeneratorOctaves;
 
 public final class ChunkProviderGenerate implements IChunkProvider {
 	private EaglercraftRandom rand = new EaglercraftRandom();
+	private EaglercraftRandom rand2 = new EaglercraftRandom();
 	private World worldObj;
 	private NoiseGeneratorOctaves noiseGen1 = new NoiseGeneratorOctaves(16);
 	private NoiseGeneratorOctaves noiseGen2 = new NoiseGeneratorOctaves(16);
@@ -13,12 +14,14 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 	private NoiseGeneratorOctaves noiseGen4 = new NoiseGeneratorOctaves(4);
 	private NoiseGeneratorOctaves noiseGen5 = new NoiseGeneratorOctaves(4);
 	private NoiseGeneratorOctaves noiseGen6 = new NoiseGeneratorOctaves(5);
+	private NoiseGeneratorOctaves j = new NoiseGeneratorOctaves(5);
 
 	public ChunkProviderGenerate(World var1) {
 		this.worldObj = var1;
 	}
 
 	public final Chunk provideChunk(int var1, int var2) {
+		this.rand.setSeed((long)var1 * 341873128712L + (long)var2 * 132897987541L);
 		byte[] var3 = new byte[-Short.MIN_VALUE];
 		Chunk var4 = new Chunk(this.worldObj, var3, var1, var2);
 		var1 <<= 4;
@@ -49,15 +52,30 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 						var17 = Block.grass.blockID;
 					} else if(var16 <= var15 - 2) {
 						var17 = Block.stone.blockID;
+						if(this.rand.nextInt(1000) < var16) {
+							var17 = Block.oreCoal.blockID;
+						}
+
+						if(this.rand.nextInt(1000) < var16 - 64) {
+							var17 = Block.oreIron.blockID;
+						}
+
+						if(this.rand.nextInt(1000) < var16 - 72) {
+							var17 = Block.oreGold.blockID;
+						}
+
+						if(this.rand.nextInt(1000) < var16 - 80) {
+							var17 = Block.oreDiamond.blockID;
+						}
 					} else if(var16 <= var15) {
 						var17 = Block.dirt.blockID;
 					} else if(var16 <= 64) {
 						var17 = Block.waterStill.blockID;
 					}
 
-					this.rand.setSeed((long)(var8 + var9 * 13871));
-					int var13 = (var8 << 10) + 128 + this.rand.nextInt(512);
-					int var14 = (var9 << 10) + 128 + this.rand.nextInt(512);
+					this.rand2.setSeed((long)(var8 + var9 * 13871));
+					int var13 = (var8 << 10) + 128 + this.rand2.nextInt(512);
+					int var14 = (var9 << 10) + 128 + this.rand2.nextInt(512);
 					var13 = var6 - var13;
 					var14 = var7 - var14;
 					if(var13 < 0) {
@@ -100,5 +118,19 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 
 	public final boolean chunkExists(int var1, int var2) {
 		return true;
+	}
+
+	public final void populate(IChunkProvider var1, int var2, int var3) {
+		int var6 = (var2 << 4) + 4;
+		var2 = (var3 << 4) + 4;
+
+		for(var3 = 0; var3 < 32; ++var3) {
+			int var4 = var6 + this.rand.nextInt(16);
+			int var5 = var2 + this.rand.nextInt(16);
+			if(this.j.generateNoise((double)var4 * 0.25D, (double)var5 * 0.25D) > this.rand.nextDouble() * 32.0D) {
+				this.worldObj.generateTrees(var4, this.worldObj.getHeightValue(var4, var5), var5);
+			}
+		}
+
 	}
 }

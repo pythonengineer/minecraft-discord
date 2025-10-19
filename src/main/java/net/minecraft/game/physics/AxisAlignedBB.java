@@ -150,6 +150,10 @@ public final class AxisAlignedBB {
         }
     }
 
+    public final boolean intersectsWith(AxisAlignedBB var1) {
+        return var1.maxX > this.minX && var1.minX < this.maxX ? (var1.maxY > this.minY && var1.minY < this.maxY ? var1.maxZ > this.minZ && var1.minZ < this.maxZ : false) : false;
+    }
+
     public final void offset(double var1, double var3, double var5) {
         this.minX += var1;
         this.minY += var3;

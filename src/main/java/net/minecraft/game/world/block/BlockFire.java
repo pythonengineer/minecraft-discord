@@ -49,6 +49,10 @@ public final class BlockFire extends Block {
 		return 0;
 	}
 
+    private boolean g(World var1, int var2, int var3, int var4) {
+        return this.canBlockCatchFire(var1, var2 + 1, var3, var4) ? true : (this.canBlockCatchFire(var1, var2 - 1, var3, var4) ? true : (this.canBlockCatchFire(var1, var2, var3 - 1, var4) ? true : (this.canBlockCatchFire(var1, var2, var3 + 1, var4) ? true : (this.canBlockCatchFire(var1, var2, var3, var4 - 1) ? true : this.canBlockCatchFire(var1, var2, var3, var4 + 1)))));
+    }
+
 	public final boolean isCollidable() {
 		return false;
 	}
@@ -57,7 +61,13 @@ public final class BlockFire extends Block {
 		return this.chanceToEncourageFire[var1.getBlockId(var2, var3, var4)] > 0;
 	}
 
-	public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-        return var1.isBlockNormalCube(var2, var3 - 1, var4) || (this.canBlockCatchFire(var1, var2 + 1, var3, var4) ? true : (this.canBlockCatchFire(var1, var2 - 1, var3, var4) ? true : (this.canBlockCatchFire(var1, var2, var3 - 1, var4) ? true : (this.canBlockCatchFire(var1, var2, var3 + 1, var4) ? true : (this.canBlockCatchFire(var1, var2, var3, var4 - 1) ? true : this.canBlockCatchFire(var1, var2, var3, var4 + 1))))));
+    public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
+        return var1.isBlockNormalCube(var2, var3 - 1, var4) || this.g(var1, var2, var3, var4);
+    }
+
+    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+        if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !this.g(var1, var2, var3, var4)) {
+            var1.setBlockWithNotify(var2, var3, var4, 0);
+        }
     }
 }

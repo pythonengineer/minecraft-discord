@@ -28,7 +28,7 @@ public final class ItemHoe extends Item {
             float var10005 = (var8.stepSoundVolume + 1.0F) / 2.0F;
             var8 = var12.stepSound;
             var2.playSoundEffect(var10001, var10002, var10003, var10004, var10005, var8.stepSoundPitch * 0.8F);
-            var2.setBlockMetadata(var3, var4, var5, var12.blockID);
+            var2.setBlockWithNotify(var3, var4, var5, var12.blockID);
             var1.damageItem(1);
             if(var2.rand.nextInt(8) == 0 && var6 == Block.grass.blockID) {
                 for(int var9 = 0; var9 <= 0; ++var9) {

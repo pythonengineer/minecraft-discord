@@ -1,6 +1,7 @@
 package net.minecraft.game.world;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
@@ -10,6 +11,7 @@ import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.material.Material;
 import net.minecraft.game.world.path.Pathfinder;
 
@@ -36,8 +38,8 @@ public final class World {
         return var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000 ? (var2 <= 0 ? Block.lavaStill.blockID : (var2 >= 128 ? 0 : this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4).getBlockID(var1 & 15, var2, var3 & 15))) : 0;
     }
 
-    public final boolean blockExists(int var1, int var2) {
-        return this.chunkExists(var1 >>> 4, var2 >>> 4);
+    public final boolean blockExists(int var1, int var2, int var3) {
+        return var2 >= 0 && var2 < 128 ? this.chunkExists(var1 >>> 4, var3 >>> 4) : false;
     }
 
     private boolean chunkExists(int var1, int var2) {
@@ -46,6 +48,21 @@ public final class World {
 
     private Chunk getChunkFromChunkCoords(int var1, int var2) {
         return this.chunkProvider.provideChunk(var1, var2);
+    }
+
+    public final boolean setTileNoUpdate(int var1, int var2, int var3, int var4) {
+        if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
+            if(var2 < 0) {
+                return false;
+            } else if(var2 > 128) {
+                return false;
+            } else {
+                Chunk var5 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                return var5.setBlockID(var1 & 15, var2, var3 & 15, var4);
+            }
+        } else {
+            return false;
+        }
     }
 
 	public final Material getBlockMaterial(int var1, int var2, int var3) {
@@ -71,63 +88,38 @@ public final class World {
     }
 
     public final void setBlockMetadataWithNotify(int var1, int var2, int var3, int var4) {
-        int var5 = var4;
-        var4 = var3;
-        var3 = var2;
-        var2 = var1;
-        boolean var10000;
-        if(var1 >= -32000000 && var4 >= -32000000 && var1 < 32000000 && var4 <= 32000000) {
-            if(var3 < 0) {
-                var10000 = false;
-            } else if(var3 >= 128) {
-                var10000 = false;
-            } else {
-                Chunk var6 = this.getChunkFromChunkCoords(var1 >>> 4, var4 >>> 4);
-                var2 &= 15;
-                var4 &= 15;
-                var6.setBlockMetadata(var2, var3, var4, var5);
-                var10000 = true;
-            }
-        } else {
-            var10000 = false;
-        }
-
+        this.setBlockMetadata(var1, var2, var3, var4);
     }
 
-    public final boolean setBlockMetadata(int var1, int var2, int var3, int var4) {
-        boolean var10000;
-        int var6;
-        int var8;
+    private boolean setBlockMetadata(int var1, int var2, int var3, int var4) {
         if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
             if(var2 < 0) {
-                var10000 = false;
+                return false;
             } else if(var2 >= 128) {
-                var10000 = false;
+                return false;
             } else {
-                Chunk var10 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
-                var6 = var1 & 15;
-                var8 = var3 & 15;
-                if((var10.getBlockID(var6, var2, var8) & 255) == var4) {
-                    var10000 = false;
-                } else {
-                    var10.setBlockID(var6, var2, var8, var4);
-                    var10000 = true;
-                }
+                Chunk var5 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                var1 &= 15;
+                var3 &= 15;
+                var5.setBlockMetadata(var1, var2, var3, var4);
+                return true;
             }
         } else {
-            var10000 = false;
+            return false;
         }
+    }
 
-        if(!var10000) {
+    public final boolean setBlockWithNotify(int var1, int var2, int var3, int var4) {
+        if(!this.setTileNoUpdate(var1, var2, var3, var4)) {
             return false;
         } else {
-            var8 = var3;
-            int var7 = var2;
-            var6 = var1;
-            World var5 = this;
+            var4 = var3;
+            var3 = var2;
+            var2 = var1;
+            World var6 = this;
 
-            for(int var11 = 0; var11 < var5.worldAccesses.size(); ++var11) {
-                ((IWorldAccess)var5.worldAccesses.get(var11)).markBlockAndNeighborsNeedsUpdate(var6, var7, var8);
+            for(int var5 = 0; var5 < var6.worldAccesses.size(); ++var5) {
+                ((IWorldAccess)var6.worldAccesses.get(var5)).markBlockAndNeighborsNeedsUpdate(var2, var3, var4);
             }
 
             return true;
@@ -154,6 +146,17 @@ public final class World {
             ((IWorldAccess)var9.worldAccesses.get(var8)).markBlockRangeNeedsUpdate(var2, var3, var4, var5, var6, var7);
         }
 
+    }
+
+    public final void swap(int var1, int var2, int var3, int var4, int var5, int var6) {
+        int var7 = this.getBlockId(var1, var2, var3);
+        int var8 = this.getBlockMetadata(var1, var2, var3);
+        int var9 = this.getBlockId(var4, var5, var6);
+        int var10 = this.getBlockMetadata(var4, var5, var6);
+        this.setTileNoUpdate(var1, var2, var3, var9);
+        this.setBlockMetadata(var1, var2, var3, var10);
+        this.setTileNoUpdate(var4, var5, var6, var7);
+        this.setBlockMetadata(var4, var5, var6, var8);
     }
 
     public final int canExistingBlockSeeTheSky(int var1, int var2, int var3) {
@@ -187,7 +190,7 @@ public final class World {
     }
 
     public final void neighborLightPropagationChanged(EnumSkyBlock var1, int var2, int var3, int var4, int var5) {
-        if(this.blockExists(var2, var4) && this.getSavedLightValue(var1, var2, var3, var4) != var5) {
+        if(this.blockExists(var2, var3, var4) && this.getSavedLightValue(var1, var2, var3, var4) != var5) {
             this.scheduleLightingUpdate(var1, var2, var3, var4, var2, var3, var4);
         }
 
@@ -424,10 +427,10 @@ public final class World {
 				for(int var10 = var7; var10 < var8; ++var10) {
 					Block var11 = Block.blocksList[this.getBlockId(var3, var9, var10)];
 					if(var11 != null) {
-						AxisAlignedBB var14 = var11.getCollisionBoundingBoxFromPool(var3, var9, var10);
-						if(var14 != null && (var14.maxX >= var1.minX && var14.minX <= var1.maxX ? (var14.maxY >= var1.minY && var14.minY <= var1.maxY ? var14.maxZ >= var1.minZ && var14.minZ <= var1.maxZ : false) : false)) {
-							var2.add(var14);
-						}
+                        AxisAlignedBB var12 = var11.getCollisionBoundingBoxFromPool(var3, var9, var10);
+                        if(var12 != null && var1.intersectsWith(var12)) {
+                            var2.add(var12);
+                        }
 					}
 				}
 			}
@@ -611,6 +614,193 @@ public final class World {
 		return false;
 	}
 
+    public final void createExplosion(Entity var1, double var2, double var4, double var6, float var8) {
+        new Explosion();
+        float var3 = var8;
+        double var15 = var6;
+        double var13 = var4;
+        double var11 = var2;
+        Entity var67 = var1;
+        World var66 = this;
+        this.playSoundEffect(var2, var4, var6, "random.explode", 4.0F, (1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F) * 0.7F);
+        HashSet var68 = new HashSet();
+
+        int var7;
+        double var32;
+        double var34;
+        double var36;
+        int var69;
+        int var70;
+        for(var69 = 0; var69 < 16; ++var69) {
+            for(var7 = 0; var7 < 16; ++var7) {
+                for(var70 = 0; var70 < 16; ++var70) {
+                    if(var69 == 0 || var69 == 15 || var7 == 0 || var7 == 15 || var70 == 0 || var70 == 15) {
+                        double var23 = (double)((float)var69 / 15.0F * 2.0F - 1.0F);
+                        double var25 = (double)((float)var7 / 15.0F * 2.0F - 1.0F);
+                        double var27 = (double)((float)var70 / 15.0F * 2.0F - 1.0F);
+                        double var29 = (double)((float)Math.sqrt(var23 * var23 + var25 * var25 + var27 * var27));
+                        var23 /= var29;
+                        var25 /= var29;
+                        var27 /= var29;
+                        float var31 = var3 * (0.7F + var66.rand.nextFloat() * 0.6F);
+                        var32 = var11;
+                        var34 = var13;
+
+                        for(var36 = var15; var31 > 0.0F; var31 -= 0.22500001F) {
+                            int var39 = (int)var32;
+                            int var40 = (int)var34;
+                            int var41 = (int)var36;
+                            int var42 = var66.getBlockId(var39, var40, var41);
+                            if(var42 > 0) {
+                                var31 -= (Block.blocksList[var42].getExplosionResistance() + 0.3F) * 0.3F;
+                            }
+
+                            if(var31 > 0.0F) {
+                                var68.add(new ChunkPosition(var39, var40, var41));
+                            }
+
+                            var32 += var23 * (double)0.3F;
+                            var34 += var25 * (double)0.3F;
+                            var36 += var27 * (double)0.3F;
+                        }
+                    }
+                }
+            }
+        }
+
+        var3 *= 2.0F;
+        var69 = (int)(var11 - (double)var3 - 1.0D);
+        var7 = (int)(var11 + (double)var3 + 1.0D);
+        var70 = (int)(var13 - (double)var3 - 1.0D);
+        int var71 = (int)(var13 + (double)var3 + 1.0D);
+        int var24 = (int)(var15 - (double)var3 - 1.0D);
+        int var72 = (int)(var15 + (double)var3 + 1.0D);
+        List var26 = var66.getEntitiesWithinAABB(var1, new AxisAlignedBB((double)var69, (double)var70, (double)var24, (double)var7, (double)var71, (double)var72));
+        Vec3D var73 = new Vec3D(var11, var13, var15);
+
+        double var38;
+        double var65;
+        double var81;
+        for(int var28 = 0; var28 < var26.size(); ++var28) {
+            Entity var75 = (Entity)var26.get(var28);
+            double var59 = var75.posX - var11;
+            double var61 = var75.posY - var13;
+            double var63 = var75.posZ - var15;
+            double var30 = (double)MathHelper.sqrt_double(var59 * var59 + var61 * var61 + var63 * var63) / (double)var3;
+            if(var30 <= 1.0D) {
+                var32 = var75.posX - var11;
+                var34 = var75.posY - var13;
+                var36 = var75.posZ - var15;
+                var38 = (double)MathHelper.sqrt_double(var32 * var32 + var34 * var34 + var36 * var36);
+                var32 /= var38;
+                var34 /= var38;
+                var36 /= var38;
+                var81 = (double)var66.getBlockDensity(var73, var75.boundingBox);
+                var65 = (1.0D - var30) * var81;
+                var75.attackEntityFrom(var67, (int)((var65 * var65 + var65) / 2.0D * 8.0D * (double)var3 + 1.0D));
+                var75.motionX += var32 * var65;
+                var75.motionY += var34 * var65;
+                var75.motionZ += var36 * var65;
+            }
+        }
+
+        var3 = var8;
+        ArrayList var74 = new ArrayList();
+        var74.addAll(var68);
+
+        for(int var76 = var74.size() - 1; var76 >= 0; --var76) {
+            ChunkPosition var77 = (ChunkPosition)var74.get(var76);
+            int var78 = var77.x;
+            int var79 = var77.y;
+            int var33 = var77.z;
+            int var80 = var66.getBlockId(var78, var79, var33);
+
+            for(int var35 = 0; var35 <= 0; ++var35) {
+                var36 = (double)((float)var78 + var66.rand.nextFloat());
+                var38 = (double)((float)var79 + var66.rand.nextFloat());
+                var81 = (double)((float)var33 + var66.rand.nextFloat());
+                var65 = var36 - var11;
+                double var44 = var38 - var13;
+                double var46 = var81 - var15;
+                double var48 = (double)MathHelper.sqrt_double(var65 * var65 + var44 * var44 + var46 * var46);
+                var65 /= var48;
+                var44 /= var48;
+                var46 /= var48;
+                double var50 = 0.5D / (var48 / (double)var3 + 0.1D);
+                var50 *= (double)(var66.rand.nextFloat() * var66.rand.nextFloat() + 0.3F);
+                var65 *= var50;
+                var44 *= var50;
+                var46 *= var50;
+                var66.spawnParticle("explode", (var36 + var11) / 2.0D, (var38 + var13) / 2.0D, (var81 + var15) / 2.0D, var65, var44, var46);
+                var66.spawnParticle("smoke", var36, var38, var81, var65, var44, var46);
+            }
+
+            if(var80 > 0) {
+                Block.blocksList[var80].dropBlockAsItemWithChance(var66, var78, var79, var33, var66.getBlockMetadata(var78, var79, var33), 0.3F);
+                var66.setBlockWithNotify(var78, var79, var33, 0);
+                Block.blocksList[var80].onBlockDestroyedByExplosion(var66, var78, var79, var33);
+            }
+        }
+
+    }
+
+    public final float getBlockDensity(Vec3D var1, AxisAlignedBB var2) {
+        double var3 = 1.0D / ((var2.maxX - var2.minX) * 2.0D + 1.0D);
+        double var5 = 1.0D / ((var2.maxY - var2.minY) * 2.0D + 1.0D);
+        double var7 = 1.0D / ((var2.maxZ - var2.minZ) * 2.0D + 1.0D);
+        int var9 = 0;
+        int var10 = 0;
+
+        for(float var11 = 0.0F; var11 <= 1.0F; var11 = (float)((double)var11 + var3)) {
+            for(float var12 = 0.0F; var12 <= 1.0F; var12 = (float)((double)var12 + var5)) {
+                for(float var13 = 0.0F; var13 <= 1.0F; var13 = (float)((double)var13 + var7)) {
+                    double var14 = var2.minX + (var2.maxX - var2.minX) * (double)var11;
+                    double var16 = var2.minY + (var2.maxY - var2.minY) * (double)var12;
+                    double var18 = var2.minZ + (var2.maxZ - var2.minZ) * (double)var13;
+                    if(this.rayTraceBlocks(new Vec3D(var14, var16, var18), var1) == null) {
+                        ++var9;
+                    }
+
+                    ++var10;
+                }
+            }
+        }
+
+        return (float)var9 / (float)var10;
+    }
+
+    public final void extinguishFire(int var1, int var2, int var3, int var4) {
+        if(var4 == 0) {
+            --var2;
+        }
+
+        if(var4 == 1) {
+            ++var2;
+        }
+
+        if(var4 == 2) {
+            --var3;
+        }
+
+        if(var4 == 3) {
+            ++var3;
+        }
+
+        if(var4 == 4) {
+            --var1;
+        }
+
+        if(var4 == 5) {
+            ++var1;
+        }
+
+        if(this.getBlockId(var1, var2, var3) == Block.fire.blockID) {
+            this.playSoundEffect((double)((float)var1 + 0.5F), (double)((float)var2 + 0.5F), (double)((float)var3 + 0.5F), "random.fizz", 0.5F, 2.6F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.8F);
+            this.setBlockWithNotify(var1, var2, var3, 0);
+        }
+
+    }
+
 	public static String debugSkylightUpdates() {
 		return "";
 	}
@@ -618,6 +808,19 @@ public final class World {
 	public final Entity getPlayerEntity() {
 		return this.playerEntity;
 	}
+
+    public final TileEntity getBlockTileEntity(int var1, int var2, int var3) {
+        Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+        return var4 != null ? var4.getChunkBlockTileEntity(var1 & 15, var2, var3 & 15) : null;
+    }
+
+    public final void setBlockTileEntity(int var1, int var2, int var3, TileEntity var4) {
+        Chunk var5 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+        if(var5 != null) {
+            var5.setChunkBlockTileEntity(var1 & 15, var2, var3 & 15, var4);
+        }
+
+    }
 
 	public final boolean isBlockNormalCube(int var1, int var2, int var3) {
 		Block var4 = Block.blocksList[this.getBlockId(var1, var2, var3)];
@@ -632,114 +835,114 @@ public final class World {
 
             for(int var3 = var1.x; var3 <= var1.maxX; ++var3) {
                 for(int var4 = var1.z; var4 <= var1.maxZ; ++var4) {
-                    if(var2.blockExists(var3, var4)) {
+                    if(var2.blockExists(var3, 0, var4)) {
                         for(int var5 = var1.y; var5 <= var1.maxY; ++var5) {
-                            int var6 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4);
-                            int var7 = var2.getBlockId(var3, var5, var4);
-                            int var8 = Block.lightOpacity[var7];
-                            if(var8 == 0) {
-                                var8 = 1;
-                            }
+                            if(var5 >= 0 && var5 < 128) {
+                                int var6 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4);
+                                int var7 = var2.getBlockId(var3, var5, var4);
+                                int var8 = Block.lightOpacity[var7];
+                                if(var8 == 0) {
+                                    var8 = 1;
+                                }
 
-                            int var9 = 0;
-                            int var11;
-                            int var13;
-                            if(var1.skyBlock != EnumSkyBlock.Sky) {
-                                if(var1.skyBlock == EnumSkyBlock.Block) {
+                                int var9 = 0;
+                                int var11;
+                                int var13;
+                                if(var1.skyBlock == EnumSkyBlock.Sky) {
+                                    boolean var19;
+                                    if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000) {
+                                        if(var5 < 0) {
+                                            var19 = false;
+                                        } else if(var5 >= 128) {
+                                            var19 = true;
+                                        } else if(!var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
+                                            var19 = false;
+                                        } else {
+                                            Chunk var14 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
+                                            var11 = var3 & 15;
+                                            var13 = var4 & 15;
+                                            var19 = var14.canBlockSeeTheSky(var11, var5, var13);
+                                        }
+                                    } else {
+                                        var19 = false;
+                                    }
+
+                                    if(var19) {
+                                        var9 = 15;
+                                    }
+                                } else if(var1.skyBlock == EnumSkyBlock.Block) {
                                     var9 = Block.lightValue[var7];
                                 }
-                            } else {
-                                boolean var19;
-                                if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000) {
-                                    if(var5 < 0) {
-                                        var19 = false;
-                                    } else if(var5 >= 128) {
-                                        var19 = true;
-                                    } else if(!var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
-                                        var19 = false;
-                                    } else {
-                                        Chunk var14 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
-                                        var11 = var3 & 15;
-                                        var13 = var4 & 15;
-                                        var19 = var14.canBlockSeeTheSky(var11, var5, var13);
-                                    }
+
+                                int var12;
+                                int var18;
+                                if(var8 >= 15 && var9 == 0) {
+                                    var7 = 0;
                                 } else {
-                                    var19 = false;
-                                }
+                                    var7 = var2.getSavedLightValue(var1.skyBlock, var3 - 1, var5, var4);
+                                    int var10 = var2.getSavedLightValue(var1.skyBlock, var3 + 1, var5, var4);
+                                    var11 = var2.getSavedLightValue(var1.skyBlock, var3, var5 - 1, var4);
+                                    var12 = var2.getSavedLightValue(var1.skyBlock, var3, var5 + 1, var4);
+                                    var13 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 - 1);
+                                    var18 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 + 1);
+                                    var7 = var7;
+                                    if(var10 > var7) {
+                                        var7 = var10;
+                                    }
 
-                                if(var19) {
-                                    var9 = 15;
-                                }
-                            }
+                                    if(var11 > var7) {
+                                        var7 = var11;
+                                    }
 
-                            int var12;
-                            int var18;
-                            if(var8 >= 15 && var9 == 0) {
-                                var7 = 0;
-                            } else {
-                                var7 = var2.getSavedLightValue(var1.skyBlock, var3 - 1, var5, var4);
-                                int var10 = var2.getSavedLightValue(var1.skyBlock, var3 + 1, var5, var4);
-                                var11 = var2.getSavedLightValue(var1.skyBlock, var3, var5 - 1, var4);
-                                var12 = var2.getSavedLightValue(var1.skyBlock, var3, var5 + 1, var4);
-                                var13 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 - 1);
-                                var18 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 + 1);
-                                var7 = var7;
-                                if(var10 > var7) {
-                                    var7 = var10;
-                                }
+                                    if(var12 > var7) {
+                                        var7 = var12;
+                                    }
 
-                                if(var11 > var7) {
-                                    var7 = var11;
-                                }
+                                    if(var13 > var7) {
+                                        var7 = var13;
+                                    }
 
-                                if(var12 > var7) {
-                                    var7 = var12;
-                                }
+                                    if(var18 > var7) {
+                                        var7 = var18;
+                                    }
 
-                                if(var13 > var7) {
-                                    var7 = var13;
-                                }
+                                    var7 -= var8;
+                                    if(var7 < 0) {
+                                        var7 = 0;
+                                    }
 
-                                if(var18 > var7) {
-                                    var7 = var18;
-                                }
-
-                                var7 -= var8;
-                                if(var7 < 0) {
-                                    var7 = 0;
-                                }
-
-                                if(var9 > var7) {
-                                    var7 = var9;
-                                }
-                            }
-
-                            if(var6 != var7) {
-                                var18 = var4;
-                                var13 = var5;
-                                var12 = var3;
-                                EnumSkyBlock var17 = var1.skyBlock;
-                                World var16 = var2;
-                                if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000 && var5 >= 0 && var5 < 128 && var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
-                                    Chunk var15 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
-                                    var15.getBlockLightValue(var17, var3 & 15, var5, var4 & 15, var7);
-
-                                    for(var6 = 0; var6 < var16.worldAccesses.size(); ++var6) {
-                                        ((IWorldAccess)var16.worldAccesses.get(var6)).markBlockAndNeighborsNeedsUpdate(var12, var13, var18);
+                                    if(var9 > var7) {
+                                        var7 = var9;
                                     }
                                 }
 
-                                --var7;
-                                if(var7 < 0) {
-                                    var7 = 0;
-                                }
+                                if(var6 != var7) {
+                                    var18 = var4;
+                                    var13 = var5;
+                                    var12 = var3;
+                                    EnumSkyBlock var17 = var1.skyBlock;
+                                    World var16 = var2;
+                                    if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000 && var5 >= 0 && var5 < 128 && var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
+                                        Chunk var15 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
+                                        var15.getBlockLightValue(var17, var3 & 15, var5, var4 & 15, var7);
 
-                                var2.neighborLightPropagationChanged(var1.skyBlock, var3 - 1, var5, var4, var7);
-                                var2.neighborLightPropagationChanged(var1.skyBlock, var3 + 1, var5, var4, var7);
-                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 - 1, var4, var7);
-                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 + 1, var4, var7);
-                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 - 1, var7);
-                                var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 + 1, var7);
+                                        for(var6 = 0; var6 < var16.worldAccesses.size(); ++var6) {
+                                            ((IWorldAccess)var16.worldAccesses.get(var6)).markBlockAndNeighborsNeedsUpdate(var12, var13, var18);
+                                        }
+                                    }
+
+                                    --var7;
+                                    if(var7 < 0) {
+                                        var7 = 0;
+                                    }
+
+                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3 - 1, var5, var4, var7);
+                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3 + 1, var5, var4, var7);
+                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 - 1, var4, var7);
+                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 + 1, var4, var7);
+                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 - 1, var7);
+                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 + 1, var7);
+                                }
                             }
                         }
                     }
@@ -782,11 +985,8 @@ public final class World {
 
         for(int var4 = 0; var4 < this.loadedEntityList.size(); ++var4) {
             Entity var5 = (Entity)this.loadedEntityList.get(var4);
-            if(var5 != var1) {
-                AxisAlignedBB var6 = var5.boundingBox;
-                if(var2.maxX > var6.minX && var2.minX < var6.maxX ? (var2.maxY > var6.minY && var2.minY < var6.maxY ? var2.maxZ > var6.minZ && var2.minZ < var6.maxZ : false) : false) {
-                    var3.add(var5);
-                }
+            if(var5 != var1 && var5.boundingBox.intersectsWith(var2)) {
+                var3.add(var5);
             }
         }
 
@@ -795,6 +995,82 @@ public final class World {
 
     public final List getLoadedEntityList() {
         return this.loadedEntityList;
+    }
+
+    public final boolean generateTrees(int var1, int var2, int var3) {
+        int var4 = this.rand.nextInt(3) + 4;
+        boolean var5 = true;
+        if(var2 > 0 && var2 + var4 + 1 <= 128) {
+            int var6;
+            int var8;
+            int var9;
+            int var10;
+            for(var6 = var2; var6 <= var2 + 1 + var4; ++var6) {
+                byte var7 = 1;
+                if(var6 == var2) {
+                    var7 = 0;
+                }
+
+                if(var6 >= var2 + 1 + var4 - 2) {
+                    var7 = 2;
+                }
+
+                for(var8 = var1 - var7; var8 <= var1 + var7 && var5; ++var8) {
+                    for(var9 = var3 - var7; var9 <= var3 + var7 && var5; ++var9) {
+                        if(!this.blockExists(var8, var6, var9)) {
+                            return false;
+                        }
+
+                        if(var6 >= 0 && var6 < 128) {
+                            var10 = this.getBlockId(var8, var6, var9);
+                            if(var10 != 0) {
+                                var5 = false;
+                            }
+                        } else {
+                            var5 = false;
+                        }
+                    }
+                }
+            }
+
+            if(!var5) {
+                return false;
+            } else {
+                var6 = this.getBlockId(var1, var2 - 1, var3);
+                if((var6 == Block.grass.blockID || var6 == Block.dirt.blockID) && var2 < 128 - var4 - 1) {
+                    this.setBlockWithNotify(var1, var2 - 1, var3, Block.dirt.blockID);
+
+                    int var13;
+                    for(var13 = var2 - 3 + var4; var13 <= var2 + var4; ++var13) {
+                        var8 = var13 - (var2 + var4);
+                        var9 = 1 - var8 / 2;
+
+                        for(var10 = var1 - var9; var10 <= var1 + var9; ++var10) {
+                            int var12 = var10 - var1;
+
+                            for(var6 = var3 - var9; var6 <= var3 + var9; ++var6) {
+                                int var11 = var6 - var3;
+                                if((Math.abs(var12) != var9 || Math.abs(var11) != var9 || this.rand.nextInt(2) != 0 && var8 != 0) && !Block.opaqueCubeLookup[this.getBlockId(var10, var13, var6)]) {
+                                    this.setBlockWithNotify(var10, var13, var6, Block.leaves.blockID);
+                                }
+                            }
+                        }
+                    }
+
+                    for(var13 = 0; var13 < var4; ++var13) {
+                        if(!Block.opaqueCubeLookup[this.getBlockId(var1, var2 + var13, var3)]) {
+                            this.setBlockWithNotify(var1, var2 + var13, var3, Block.wood.blockID);
+                        }
+                    }
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
     }
 
 	static {

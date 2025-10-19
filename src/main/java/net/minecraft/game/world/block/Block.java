@@ -209,6 +209,9 @@ public class Block {
     public void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4, int var5) {
     }
 
+    public void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+    }
+
     public int quantityDropped(EaglercraftRandom var1) {
         return 1;
     }
@@ -244,29 +247,30 @@ public class Block {
     }
 
     public final void dropBlockAsItem(World var1, int var2, int var3, int var4, int var5) {
-        float var22 = 1.0F;
-        int var6 = var5;
-        var5 = var4;
-        var4 = var3;
-        var3 = var2;
-        World var24 = var1;
-        Block var23 = this;
+        this.dropBlockAsItemWithChance(var1, var2, var3, var4, var5, 1.0F);
+    }
+
+    public final void dropBlockAsItemWithChance(World var1, int var2, int var3, int var4, int var5, float var6) {
         int var7 = this.quantityDropped(var1.rand);
 
         for(int var8 = 0; var8 < var7; ++var8) {
-            if(var24.rand.nextFloat() <= 1.0F) {
-                int var9 = var23.idDropped(var6, var24.rand);
+            if(var1.rand.nextFloat() <= var6) {
+                int var9 = this.idDropped(var5, var1.rand);
                 if(var9 > 0) {
-                    double var16 = (double)(var24.rand.nextFloat() * 0.7F) + (double)0.15F;
-                    double var18 = (double)(var24.rand.nextFloat() * 0.7F) + (double)0.15F;
-                    double var20 = (double)(var24.rand.nextFloat() * 0.7F) + (double)0.15F;
-                    EntityItem var25 = new EntityItem(var24, (double)var3 + var16, (double)var4 + var18, (double)var5 + var20, new ItemStack(var9));
-                    var25.delayBeforeCanPickup = 10;
-                    var24.spawnEntityInWorld(var25);
+                    double var10 = (double)(var1.rand.nextFloat() * 0.7F) + (double)0.15F;
+                    double var12 = (double)(var1.rand.nextFloat() * 0.7F) + (double)0.15F;
+                    double var14 = (double)(var1.rand.nextFloat() * 0.7F) + (double)0.15F;
+                    EntityItem var16 = new EntityItem(var1, (double)var2 + var10, (double)var3 + var12, (double)var4 + var14, new ItemStack(var9));
+                    var16.delayBeforeCanPickup = 10;
+                    var1.spawnEntityInWorld(var16);
                 }
             }
         }
 
+    }
+
+    public final float getExplosionResistance() {
+        return this.resistance / 5.0F;
     }
 
     public MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
@@ -371,6 +375,9 @@ public class Block {
         return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.yCoord >= this.minY && var1.yCoord <= this.maxY;
     }
 
+    public void onBlockDestroyedByExplosion(World var1, int var2, int var3, int var4) {
+    }
+
     public int getRenderBlockPass() {
         return 0;
     }
@@ -464,7 +471,7 @@ public class Block {
         var0 = var10000;
         var0.stepSound = var1;
         leaves = var0;
-        var10000 = (new BlockDirt(19)).setHardness(0.6F);
+        var10000 = (new BlockSponge(19)).setHardness(0.6F);
         var1 = soundGrassFootstep;
         var0 = var10000;
         var0.stepSound = var1;
