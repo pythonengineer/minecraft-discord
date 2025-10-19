@@ -26,6 +26,16 @@ public final class BlockFlowing extends BlockFluid {
 	}
 
     public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+        var1.scheduleBlockUpdate(var2, var3, var4, this.movingId1);
+    }
+
+    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        boolean var6 = false;
+        boolean var10000 = false;
+    }
+
+    public final boolean e(World var1, int var2, int var3, int var4, int var5) {
+        return false;
     }
 
 	public final boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
@@ -44,6 +54,13 @@ public final class BlockFlowing extends BlockFluid {
 	public final boolean isOpaqueCube() {
 		return false;
 	}
+
+    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
+    }
+
+    public final int tickRate() {
+        return this.material == Material.lava ? 25 : 5;
+    }
 
 	public final int quantityDropped(EaglercraftRandom var1) {
 		return 0;

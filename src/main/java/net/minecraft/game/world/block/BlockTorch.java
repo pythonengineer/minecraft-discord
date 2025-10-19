@@ -1,5 +1,6 @@
 package net.minecraft.game.world.block;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
@@ -57,6 +58,14 @@ public final class BlockTorch extends Block {
         var1.setBlockMetadataWithNotify(var2, var3, var4, var6);
     }
 
+    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        super.updateTick(var1, var2, var3, var4, var5);
+        if(var1.getBlockMetadata(var2, var3, var4) == 0) {
+            this.onNeighborBlockChange(var1, var2, var3, var4);
+        }
+
+    }
+
     public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
         if(var1.isBlockNormalCube(var2 - 1, var3, var4)) {
             var1.setBlockMetadataWithNotify(var2, var3, var4, 1);
@@ -70,15 +79,50 @@ public final class BlockTorch extends Block {
             var1.setBlockMetadataWithNotify(var2, var3, var4, 5);
         }
 
-        boolean var10000;
+
+        this.e(var1, var2, var3, var4);
+    }
+
+    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
+        if(this.e(var1, var2, var3, var4)) {
+            var5 = var1.getBlockMetadata(var2, var3, var4);
+            boolean var6 = false;
+            if(!var1.isBlockNormalCube(var2 - 1, var3, var4) && var5 == 1) {
+                var6 = true;
+            }
+
+            if(!var1.isBlockNormalCube(var2 + 1, var3, var4) && var5 == 2) {
+                var6 = true;
+            }
+
+            if(!var1.isBlockNormalCube(var2, var3, var4 - 1) && var5 == 3) {
+                var6 = true;
+            }
+
+            if(!var1.isBlockNormalCube(var2, var3, var4 + 1) && var5 == 4) {
+                var6 = true;
+            }
+
+            if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && var5 == 5) {
+                var6 = true;
+            }
+
+            if(var6) {
+                this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
+                var1.setBlockWithNotify(var2, var3, var4, 0);
+            }
+        }
+
+    }
+
+    private boolean e(World var1, int var2, int var3, int var4) {
         if(!this.canPlaceBlockAt(var1, var2, var3, var4)) {
             this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
             var1.setBlockWithNotify(var2, var3, var4, 0);
-            var10000 = false;
+            return false;
         } else {
-            var10000 = true;
+            return true;
         }
-
     }
 
     public final MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
@@ -96,5 +140,28 @@ public final class BlockTorch extends Block {
         }
 
         return super.collisionRayTrace(var1, var2, var3, var4, var5, var6);
+    }
+
+    public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        int var9 = var1.getBlockMetadata(var2, var3, var4);
+        float var6 = (float)var2 + 0.5F;
+        float var7 = (float)var3 + 0.7F;
+        float var8 = (float)var4 + 0.5F;
+        if(var9 == 1) {
+            var1.spawnParticle("smoke", (double)(var6 - 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
+            var1.spawnParticle("flame", (double)(var6 - 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
+        } else if(var9 == 2) {
+            var1.spawnParticle("smoke", (double)(var6 + 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
+            var1.spawnParticle("flame", (double)(var6 + 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
+        } else if(var9 == 3) {
+            var1.spawnParticle("smoke", (double)var6, (double)(var7 + 0.22F), (double)(var8 - 0.27F), 0.0D, 0.0D, 0.0D);
+            var1.spawnParticle("flame", (double)var6, (double)(var7 + 0.22F), (double)(var8 - 0.27F), 0.0D, 0.0D, 0.0D);
+        } else if(var9 == 4) {
+            var1.spawnParticle("smoke", (double)var6, (double)(var7 + 0.22F), (double)(var8 + 0.27F), 0.0D, 0.0D, 0.0D);
+            var1.spawnParticle("flame", (double)var6, (double)(var7 + 0.22F), (double)(var8 + 0.27F), 0.0D, 0.0D, 0.0D);
+        } else {
+            var1.spawnParticle("smoke", (double)var6, (double)var7, (double)var8, 0.0D, 0.0D, 0.0D);
+            var1.spawnParticle("flame", (double)var6, (double)var7, (double)var8, 0.0D, 0.0D, 0.0D);
+        }
     }
 }

@@ -18,6 +18,60 @@ public final class BlockCrops extends BlockFlower {
 		return var1 == Block.tilledField.blockID;
 	}
 
+    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        super.updateTick(var1, var2, var3, var4, var5);
+        if(var1.canExistingBlockSeeTheSky(var2, var3 + 1, var4) >= 9) {
+            int var6 = var1.getBlockMetadata(var2, var3, var4);
+            if(var6 < 7) {
+                int var11 = var4;
+                int var10 = var3;
+                int var9 = var2;
+                World var8 = var1;
+                float var12 = 1.0F;
+                int var13 = var1.getBlockId(var2, var3, var4 - 1);
+                int var14 = var1.getBlockId(var2, var3, var4 + 1);
+                int var15 = var1.getBlockId(var2 - 1, var3, var4);
+                int var16 = var1.getBlockId(var2 + 1, var3, var4);
+                int var17 = var1.getBlockId(var2 - 1, var3, var4 - 1);
+                int var18 = var1.getBlockId(var2 + 1, var3, var4 - 1);
+                int var19 = var1.getBlockId(var2 + 1, var3, var4 + 1);
+                int var20 = var1.getBlockId(var2 - 1, var3, var4 + 1);
+                boolean var22 = var15 == this.blockID || var16 == this.blockID;
+                boolean var21 = var13 == this.blockID || var14 == this.blockID;
+                boolean var7 = var17 == this.blockID || var18 == this.blockID || var19 == this.blockID || var20 == this.blockID;
+
+                for(var14 = var2 - 1; var14 <= var9 + 1; ++var14) {
+                    for(var16 = var11 - 1; var16 <= var11 + 1; ++var16) {
+                        var17 = var8.getBlockId(var14, var10 - 1, var16);
+                        float var23 = 0.0F;
+                        if(var17 == Block.workbench.blockID) {
+                            var23 = 1.0F;
+                            if(var8.getBlockMetadata(var14, var10 - 1, var16) > 0) {
+                                var23 = 3.0F;
+                            }
+                        }
+
+                        if(var14 != var9 || var16 != var11) {
+                            var23 /= 4.0F;
+                        }
+
+                        var12 += var23;
+                    }
+                }
+
+                if(var7 || var22 && var21) {
+                    var12 /= 2.0F;
+                }
+
+                if(var5.nextInt((int)(100.0F / var12)) == 0) {
+                    ++var6;
+                    var1.setBlockMetadataWithNotify(var2, var3, var4, var6);
+                }
+            }
+        }
+
+    }
+
 	public final int getBlockTextureFromSideAndMetadata(int var1, int var2) {
 		if(var2 < 0) {
 			var2 = 7;

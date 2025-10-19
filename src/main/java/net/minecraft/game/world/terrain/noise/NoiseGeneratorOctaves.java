@@ -37,7 +37,7 @@ public final class NoiseGeneratorOctaves extends NoiseGenerator {
         double var9 = 1.0D;
 
         for(int var11 = 0; var11 < this.octaves; ++var11) {
-            var7 += this.generatorCollection[var11].generateNoiseD(var1 / var9, 0.0D / var9, var5 / var9) * var9;
+            var7 += this.generatorCollection[var11].generateNoiseD(var1 / var9, var3 / var9, var5 / var9) * var9;
             var9 *= 2.0D;
         }
 

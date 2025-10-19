@@ -1,5 +1,9 @@
 package net.minecraft.client.gui;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.game.world.World;
+import net.minecraft.game.world.terrain.LevelGenerator;
+
 public final class GuiNewLevel extends GuiScreen {
     private GuiScreen prevGui;
     private String[] worldType = new String[]{"Inland", "Island", "Floating", "Flat"};
@@ -37,7 +41,16 @@ public final class GuiNewLevel extends GuiScreen {
         if(var1.id == 5) {
             this.mc.displayGuiScreen(this.prevGui);
         } else if(var1.id == 4) {
-            this.mc.generateLevel(this.selectedWorldSize, this.selectedWorldShape, this.selectedWorldType, this.selectedWorldTheme);
+            int var3 = this.selectedWorldTheme;
+            var3 = this.selectedWorldType;
+            var3 = this.selectedWorldShape;
+            var3 = this.selectedWorldSize;
+            Minecraft var4 = this.mc;
+            var4.setLevel((World)null);
+            System.gc();
+            new LevelGenerator();
+            World var2 = new World();
+            var4.setLevel(var2);
             this.mc.displayGuiScreen((GuiScreen)null);
         } else if(var1.id == 0) {
             this.selectedWorldType = (this.selectedWorldType + 1) % this.worldType.length;

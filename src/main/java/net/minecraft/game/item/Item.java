@@ -72,6 +72,7 @@ public class Item {
     public static Item bootsGold;
     public static Item flint;
     public static Item porkRaw;
+    public static Item porkCooked;
     public static Item painting;
     public static Item appleGold;
     public final int shiftedIndex;
@@ -460,6 +461,7 @@ public class Item {
         var1 = 88;
         var5 = var18;
         var5.iconIndex = var1;
+        porkCooked = var5;
         ItemPainting var26 = new ItemPainting(65);
         var1 = 26;
         ItemPainting var14 = var26;

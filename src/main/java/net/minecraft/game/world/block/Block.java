@@ -24,7 +24,7 @@ public class Block {
     private static StepSound soundClothFootstep = new StepSound("cloth", 1.0F, 1.0F);
     private static StepSound soundSandFootstep = new StepSoundSand("sand", 1.0F, 1.0F);
     public static final Block[] blocksList = new Block[256];
-    private static boolean[] tickOnLoad = new boolean[256];
+    public static final boolean[] tickOnLoad = new boolean[256];
     public static final boolean[] opaqueCubeLookup = new boolean[256];
     public static final int[] lightOpacity = new int[256];
     private static boolean[] canBlockGrass = new boolean[256];
@@ -89,6 +89,7 @@ public class Block {
     public static final Block crops;
     public static final Block tilledField;
     public static final Block stoneOvenIdle;
+    public static final Block stoneOvenActive;
     public int blockIndexInTexture;
     public final int blockID;
     private float hardness;
@@ -206,10 +207,26 @@ public class Block {
         return true;
     }
 
+    public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+    }
+
+    public void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+    }
+
     public void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4, int var5) {
     }
 
+    public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
+    }
+
+    public int tickRate() {
+        return 5;
+    }
+
     public void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+    }
+
+    public void onBlockAdded(World var1, int var2, int var3, int var4) {
     }
 
     public int quantityDropped(EaglercraftRandom var1) {
@@ -688,7 +705,7 @@ public class Block {
         var1 = soundStoneFootstep;
         var0 = var10000;
         var0.stepSound = var1;
-        var0.setLightValue(14.0F / 16.0F);
+        stoneOvenActive = var0.setLightValue(14.0F / 16.0F);
 
         for(int var2 = 0; var2 < 256; ++var2) {
             if(blocksList[var2] != null) {

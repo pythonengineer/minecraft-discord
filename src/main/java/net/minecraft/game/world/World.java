@@ -2,10 +2,12 @@ package net.minecraft.game.world;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.NextTickListEntry;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
@@ -18,11 +20,15 @@ import net.minecraft.game.world.path.Pathfinder;
 public final class World {
     private List lightingToUpdate = new ArrayList();
     private List loadedEntityList = new ArrayList();
+    private List unloadedEntityList = new LinkedList();
+    public List loadedTileEntityList = new ArrayList();
     private int worldTime = 0;
     private long skyColor = 10079487L;
     private long fogColor = 11587839L;
     private long cloudColor = 16777215L;
     private int skylightSubtracted = 0;
+    private int updateLCG = (new EaglercraftRandom()).nextInt();
+    private int DIST_HASH_MAGIC = 1013904223;
 	private static float[] lightBrightnessTable = new float[16];
 	public Entity playerEntity;
 	public int difficultySetting;
@@ -113,15 +119,17 @@ public final class World {
         if(!this.setTileNoUpdate(var1, var2, var3, var4)) {
             return false;
         } else {
+            int var5 = var4;
             var4 = var3;
             var3 = var2;
             var2 = var1;
-            World var6 = this;
+            World var7 = this;
 
-            for(int var5 = 0; var5 < var6.worldAccesses.size(); ++var5) {
-                ((IWorldAccess)var6.worldAccesses.get(var5)).markBlockAndNeighborsNeedsUpdate(var2, var3, var4);
+            for(int var6 = 0; var6 < var7.worldAccesses.size(); ++var6) {
+                ((IWorldAccess)var7.worldAccesses.get(var6)).markBlockAndNeighborsNeedsUpdate(var2, var3, var4);
             }
 
+            var7.notifyBlocksOfNeighborChange(var2, var3, var4, var5);
             return true;
         }
     }
@@ -157,6 +165,29 @@ public final class World {
         this.setBlockMetadata(var1, var2, var3, var10);
         this.setTileNoUpdate(var4, var5, var6, var7);
         this.setBlockMetadata(var4, var5, var6, var8);
+        this.notifyBlocksOfNeighborChange(var1, var2, var3, var9);
+        this.notifyBlocksOfNeighborChange(var4, var5, var6, var7);
+    }
+
+    public final void notifyBlocksOfNeighborChange(int var1, int var2, int var3, int var4) {
+        this.notifyBlockOfNeighborChange(var1 - 1, var2, var3, var4);
+        this.notifyBlockOfNeighborChange(var1 + 1, var2, var3, var4);
+        this.notifyBlockOfNeighborChange(var1, var2 - 1, var3, var4);
+        this.notifyBlockOfNeighborChange(var1, var2 + 1, var3, var4);
+        this.notifyBlockOfNeighborChange(var1, var2, var3 - 1, var4);
+        this.notifyBlockOfNeighborChange(var1, var2, var3 + 1, var4);
+    }
+
+    private void notifyBlockOfNeighborChange(int var1, int var2, int var3, int var4) {
+        Block var5 = Block.blocksList[this.getBlockId(var1, var2, var3)];
+        if(var5 != null) {
+            var5.onNeighborBlockChange(this, var1, var2, var3, var4);
+        }
+
+    }
+
+    public final boolean canBlockSeeTheSky(int var1, int var2, int var3) {
+        return this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4).canBlockSeeTheSky(var1 & 15, var2, var3 & 15);
     }
 
     public final int canExistingBlockSeeTheSky(int var1, int var2, int var3) {
@@ -217,6 +248,10 @@ public final class World {
 
     public final float getBrightness(int var1, int var2, int var3) {
         return lightBrightnessTable[this.canExistingBlockSeeTheSky(var1, var2, var3)];
+    }
+
+    public final boolean isDaytime() {
+        return this.skylightSubtracted < 8;
     }
 
 	public final MovingObjectPosition rayTraceBlocks(Vec3D var1, Vec3D var2) {
@@ -518,8 +553,19 @@ public final class World {
         return var1 * var1 * 0.5F;
     }
 
-    public final void scheduleBlockUpdate() {
-        for(int var1 = 0; var1 < this.loadedEntityList.size(); ++var1) {
+    public final void scheduleBlockUpdate(int var1, int var2, int var3, int var4) {
+        NextTickListEntry var5 = new NextTickListEntry(var1, var2, var3, var4);
+        if(var4 > 0) {
+            var3 = Block.blocksList[var4].tickRate();
+            var5.scheduledTime = var3;
+        }
+
+        this.unloadedEntityList.add(var5);
+    }
+
+    public final void levelEntities() {
+        int var1;
+        for(var1 = 0; var1 < this.loadedEntityList.size(); ++var1) {
             Entity var2 = (Entity)this.loadedEntityList.get(var1);
             if(!var2.isDead) {
                 var2.lastTickPosX = var2.posX;
@@ -533,6 +579,11 @@ public final class World {
             if(var2.isDead) {
                 this.loadedEntityList.remove(var1--);
             }
+        }
+
+        for(var1 = 0; var1 < this.loadedTileEntityList.size(); ++var1) {
+            TileEntity var3 = (TileEntity)this.loadedTileEntityList.get(var1);
+            var3.updateEntity();
         }
 
     }
@@ -638,7 +689,7 @@ public final class World {
                         double var23 = (double)((float)var69 / 15.0F * 2.0F - 1.0F);
                         double var25 = (double)((float)var7 / 15.0F * 2.0F - 1.0F);
                         double var27 = (double)((float)var70 / 15.0F * 2.0F - 1.0F);
-                        double var29 = (double)((float)Math.sqrt(var23 * var23 + var25 * var25 + var27 * var27));
+                        double var29 = Math.sqrt(var23 * var23 + var25 * var25 + var27 * var27);
                         var23 /= var29;
                         var25 /= var29;
                         var27 /= var29;
@@ -647,9 +698,9 @@ public final class World {
                         var34 = var13;
 
                         for(var36 = var15; var31 > 0.0F; var31 -= 0.22500001F) {
-                            int var39 = (int)var32;
-                            int var40 = (int)var34;
-                            int var41 = (int)var36;
+                            int var39 = MathHelper.floor_double(var32);
+                            int var40 = MathHelper.floor_double(var34);
+                            int var41 = MathHelper.floor_double(var36);
                             int var42 = var66.getBlockId(var39, var40, var41);
                             if(var42 > 0) {
                                 var31 -= (Block.blocksList[var42].getExplosionResistance() + 0.3F) * 0.3F;
@@ -669,12 +720,12 @@ public final class World {
         }
 
         var3 *= 2.0F;
-        var69 = (int)(var11 - (double)var3 - 1.0D);
-        var7 = (int)(var11 + (double)var3 + 1.0D);
-        var70 = (int)(var13 - (double)var3 - 1.0D);
-        int var71 = (int)(var13 + (double)var3 + 1.0D);
-        int var24 = (int)(var15 - (double)var3 - 1.0D);
-        int var72 = (int)(var15 + (double)var3 + 1.0D);
+        var69 = MathHelper.floor_double(var11 - (double)var3 - 1.0D);
+        var7 = MathHelper.floor_double(var11 + (double)var3 + 1.0D);
+        var70 = MathHelper.floor_double(var13 - (double)var3 - 1.0D);
+        int var71 = MathHelper.floor_double(var13 + (double)var3 + 1.0D);
+        int var24 = MathHelper.floor_double(var15 - (double)var3 - 1.0D);
+        int var72 = MathHelper.floor_double(var15 + (double)var3 + 1.0D);
         List var26 = var66.getEntitiesWithinAABB(var1, new AxisAlignedBB((double)var69, (double)var70, (double)var24, (double)var7, (double)var71, (double)var72));
         Vec3D var73 = new Vec3D(var11, var13, var15);
 
@@ -818,6 +869,14 @@ public final class World {
         Chunk var5 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
         if(var5 != null) {
             var5.setChunkBlockTileEntity(var1 & 15, var2, var3 & 15, var4);
+        }
+
+    }
+
+    public final void i(int var1, int var2, int var3) {
+        Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+        if(var4 != null) {
+            var4.removeChunkBlockTileEntity(var1 & 15, var2, var3 & 15);
         }
 
     }
@@ -968,16 +1027,66 @@ public final class World {
             var1 = 1.0F;
         }
 
-        int var2 = (int)(var1 * 13.0F);
-        if(var2 != this.skylightSubtracted) {
-            this.skylightSubtracted = var2;
+        int var8 = (int)(var1 * 13.0F);
+        if(var8 != this.skylightSubtracted) {
+            this.skylightSubtracted = var8;
 
-            for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
-                ((IWorldAccess)this.worldAccesses.get(var2)).updateAllRenderers();
+            for(var8 = 0; var8 < this.worldAccesses.size(); ++var8) {
+                ((IWorldAccess)this.worldAccesses.get(var8)).updateAllRenderers();
             }
         }
 
         this.worldTime = (this.worldTime + 1) % 24000;
+        var8 = this.unloadedEntityList.size();
+        if(var8 > 200) {
+            var8 = 200;
+        }
+
+        int var2;
+        int var4;
+        for(var2 = 0; var2 < var8; ++var2) {
+            NextTickListEntry var3 = (NextTickListEntry)this.unloadedEntityList.remove(0);
+            if(var3.scheduledTime > 0) {
+                --var3.scheduledTime;
+                this.unloadedEntityList.add(var3);
+            } else if(this.blockExists(var3.xCoord, var3.yCoord, var3.zCoord)) {
+                var4 = this.getBlockId(var3.xCoord, var3.yCoord, var3.zCoord);
+                if(var4 == var3.blockID && var4 > 0) {
+                    Block.blocksList[var4].updateTick(this, var3.xCoord, var3.yCoord, var3.zCoord, this.rand);
+                }
+            }
+        }
+
+        var8 = MathHelper.floor_double(this.playerEntity.posX);
+        var2 = MathHelper.floor_double(this.playerEntity.posZ);
+
+        for(int var9 = 0; var9 < 32000; ++var9) {
+            this.updateLCG = this.updateLCG * 3 + this.DIST_HASH_MAGIC;
+            var4 = this.updateLCG >> 2;
+            int var5 = (var4 & 255) - 128 + var8;
+            int var6 = (var4 >> 8 & 255) - 128 + var2;
+            var4 = var4 >> 16 & 127;
+            int var7 = this.getBlockId(var5, var4, var6);
+            if(Block.tickOnLoad[var7]) {
+                Block.blocksList[var7].updateTick(this, var5, var4, var6, this.rand);
+            }
+        }
+
+    }
+
+    public final void randomDisplayUpdates(int var1, int var2, int var3) {
+        EaglercraftRandom var4 = new EaglercraftRandom();
+
+        for(int var5 = 0; var5 < 1000; ++var5) {
+            int var6 = var1 + this.rand.nextInt(16) - this.rand.nextInt(16);
+            int var7 = var2 + this.rand.nextInt(16) - this.rand.nextInt(16);
+            int var8 = var3 + this.rand.nextInt(16) - this.rand.nextInt(16);
+            int var9 = this.getBlockId(var6, var7, var8);
+            if(var9 > 0) {
+                Block.blocksList[var9].randomDisplayTick(this, var6, var7, var8, var4);
+            }
+        }
+
     }
 
     public final List getEntitiesWithinAABB(Entity var1, AxisAlignedBB var2) {
@@ -995,82 +1104,6 @@ public final class World {
 
     public final List getLoadedEntityList() {
         return this.loadedEntityList;
-    }
-
-    public final boolean generateTrees(int var1, int var2, int var3) {
-        int var4 = this.rand.nextInt(3) + 4;
-        boolean var5 = true;
-        if(var2 > 0 && var2 + var4 + 1 <= 128) {
-            int var6;
-            int var8;
-            int var9;
-            int var10;
-            for(var6 = var2; var6 <= var2 + 1 + var4; ++var6) {
-                byte var7 = 1;
-                if(var6 == var2) {
-                    var7 = 0;
-                }
-
-                if(var6 >= var2 + 1 + var4 - 2) {
-                    var7 = 2;
-                }
-
-                for(var8 = var1 - var7; var8 <= var1 + var7 && var5; ++var8) {
-                    for(var9 = var3 - var7; var9 <= var3 + var7 && var5; ++var9) {
-                        if(!this.blockExists(var8, var6, var9)) {
-                            return false;
-                        }
-
-                        if(var6 >= 0 && var6 < 128) {
-                            var10 = this.getBlockId(var8, var6, var9);
-                            if(var10 != 0) {
-                                var5 = false;
-                            }
-                        } else {
-                            var5 = false;
-                        }
-                    }
-                }
-            }
-
-            if(!var5) {
-                return false;
-            } else {
-                var6 = this.getBlockId(var1, var2 - 1, var3);
-                if((var6 == Block.grass.blockID || var6 == Block.dirt.blockID) && var2 < 128 - var4 - 1) {
-                    this.setBlockWithNotify(var1, var2 - 1, var3, Block.dirt.blockID);
-
-                    int var13;
-                    for(var13 = var2 - 3 + var4; var13 <= var2 + var4; ++var13) {
-                        var8 = var13 - (var2 + var4);
-                        var9 = 1 - var8 / 2;
-
-                        for(var10 = var1 - var9; var10 <= var1 + var9; ++var10) {
-                            int var12 = var10 - var1;
-
-                            for(var6 = var3 - var9; var6 <= var3 + var9; ++var6) {
-                                int var11 = var6 - var3;
-                                if((Math.abs(var12) != var9 || Math.abs(var11) != var9 || this.rand.nextInt(2) != 0 && var8 != 0) && !Block.opaqueCubeLookup[this.getBlockId(var10, var13, var6)]) {
-                                    this.setBlockWithNotify(var10, var13, var6, Block.leaves.blockID);
-                                }
-                            }
-                        }
-                    }
-
-                    for(var13 = 0; var13 < var4; ++var13) {
-                        if(!Block.opaqueCubeLookup[this.getBlockId(var1, var2 + var13, var3)]) {
-                            this.setBlockWithNotify(var1, var2 + var13, var3, Block.wood.blockID);
-                        }
-                    }
-
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        } else {
-            return false;
-        }
     }
 
 	static {

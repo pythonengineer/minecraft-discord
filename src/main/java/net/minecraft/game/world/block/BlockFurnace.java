@@ -1,5 +1,6 @@
 package net.minecraft.game.world.block;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntity;
@@ -60,6 +61,32 @@ public final class BlockFurnace extends BlockContainer {
 			return var5 != var6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
 		}
 	}
+
+    public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        if(this.isActive) {
+            int var6 = var1.getBlockMetadata(var2, var3, var4);
+            float var7 = (float)var2 + 0.5F;
+            float var8 = (float)var3 + var5.nextFloat() * 6.0F / 16.0F;
+            float var9 = (float)var4 + 0.5F;
+            float var10 = var5.nextFloat() * 0.6F - 0.3F;
+            if(var6 == 4) {
+                var1.spawnParticle("smoke", (double)(var7 - 0.52F), (double)var8, (double)(var9 + var10), 0.0D, 0.0D, 0.0D);
+                var1.spawnParticle("flame", (double)(var7 - 0.52F), (double)var8, (double)(var9 + var10), 0.0D, 0.0D, 0.0D);
+            } else if(var6 == 5) {
+                var1.spawnParticle("smoke", (double)(var7 + 0.52F), (double)var8, (double)(var9 + var10), 0.0D, 0.0D, 0.0D);
+                var1.spawnParticle("flame", (double)(var7 + 0.52F), (double)var8, (double)(var9 + var10), 0.0D, 0.0D, 0.0D);
+            } else if(var6 == 2) {
+                var1.spawnParticle("smoke", (double)(var7 + var10), (double)var8, (double)(var9 - 0.52F), 0.0D, 0.0D, 0.0D);
+                var1.spawnParticle("flame", (double)(var7 + var10), (double)var8, (double)(var9 - 0.52F), 0.0D, 0.0D, 0.0D);
+            } else {
+                if(var6 == 3) {
+                    var1.spawnParticle("smoke", (double)(var7 + var10), (double)var8, (double)(var9 + 0.52F), 0.0D, 0.0D, 0.0D);
+                    var1.spawnParticle("flame", (double)(var7 + var10), (double)var8, (double)(var9 + 0.52F), 0.0D, 0.0D, 0.0D);
+                }
+
+            }
+        }
+    }
 
 	public final int getBlockTextureFromSide(int var1) {
 		return var1 == 1 ? Block.stone.blockID : (var1 == 0 ? Block.stone.blockID : (var1 == 3 ? this.blockIndexInTexture - 1 : this.blockIndexInTexture));

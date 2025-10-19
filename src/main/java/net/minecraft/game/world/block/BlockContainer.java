@@ -14,5 +14,10 @@ public abstract class BlockContainer extends Block {
         var1.setBlockTileEntity(var2, var3, var4, this.a_());
     }
 
+    public void onBlockAdded(World var1, int var2, int var3, int var4) {
+        super.onBlockAdded(var1, var2, var3, var4);
+        var1.i(var2, var3, var4);
+    }
+
     protected abstract TileEntity a_();
 }

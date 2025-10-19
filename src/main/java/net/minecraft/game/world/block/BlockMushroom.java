@@ -1,5 +1,7 @@
 package net.minecraft.game.world.block;
 
+import net.minecraft.game.world.World;
+
 public final class BlockMushroom extends BlockFlower {
     protected BlockMushroom(int var1, int var2) {
         super(var1, var2);
@@ -8,5 +10,16 @@ public final class BlockMushroom extends BlockFlower {
 
     protected final boolean canThisPlantGrowOnThisBlockID(int var1) {
         return Block.opaqueCubeLookup[var1];
+    }
+
+    public final boolean e(World var1, int var2, int var3, int var4) {
+        if(var1.canExistingBlockSeeTheSky(var2, var3, var4) <= 13) {
+            var2 = var1.getBlockId(var2, var3 - 1, var4);
+            if(Block.opaqueCubeLookup[var2]) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

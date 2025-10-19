@@ -3,16 +3,19 @@ package net.minecraft.game.world.block;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.InventoryLargeChest;
+import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.block.tileentity.TileEntityChest;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockChest extends BlockContainer {
+    private EaglercraftRandom a = new EaglercraftRandom();
+
 	protected BlockChest(int var1) {
 		super(54, Material.wood);
-		new EaglercraftRandom();
 		this.blockIndexInTexture = 26;
 	}
 
@@ -131,6 +134,35 @@ public final class BlockChest extends BlockContainer {
 	private boolean isThereANeighborChest(World var1, int var2, int var3, int var4) {
 		return var1.getBlockId(var2, var3, var4) != this.blockID ? false : (var1.getBlockId(var2 - 1, var3, var4) == this.blockID ? true : (var1.getBlockId(var2 + 1, var3, var4) == this.blockID ? true : (var1.getBlockId(var2, var3, var4 - 1) == this.blockID ? true : var1.getBlockId(var2, var3, var4 + 1) == this.blockID)));
 	}
+
+    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
+        TileEntityChest var5 = (TileEntityChest)var1.getBlockTileEntity(var2, var3, var4);
+
+        for(int var6 = 0; var6 < var5.getSizeInventory(); ++var6) {
+            ItemStack var7 = var5.getStackInSlot(var6);
+            if(var7 != null) {
+                float var8 = this.a.nextFloat() * 0.8F + 0.1F;
+                float var9 = this.a.nextFloat() * 0.8F + 0.1F;
+                float var10 = this.a.nextFloat() * 0.8F + 0.1F;
+
+                while(var7.stackSize > 0) {
+                    int var11 = this.a.nextInt(21) + 10;
+                    if(var11 > var7.stackSize) {
+                        var11 = var7.stackSize;
+                    }
+
+                    var7.stackSize -= var11;
+                    EntityItem var12 = new EntityItem(var1, (double)((float)var2 + var8), (double)((float)var3 + var9), (double)((float)var4 + var10), new ItemStack(var7.itemID, var11, var7.itemDamage));
+                    var12.motionX = (double)((float)this.a.nextGaussian() * 0.05F);
+                    var12.motionY = (double)((float)this.a.nextGaussian() * 0.05F + 0.2F);
+                    var12.motionZ = (double)((float)this.a.nextGaussian() * 0.05F);
+                    var1.spawnEntityInWorld(var12);
+                }
+            }
+        }
+
+        super.onBlockAdded(var1, var2, var3, var4);
+    }
 
     public final boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
         Object var6 = (TileEntityChest)var1.getBlockTileEntity(var2, var3, var4);

@@ -5,6 +5,10 @@ public final class MaterialLogic extends Material {
         return false;
     }
 
+    public final boolean b() {
+        return false;
+    }
+
     public final boolean getCanBlockGrass() {
         return false;
     }

@@ -1,8 +1,6 @@
 package net.minecraft.game.world;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockContainer;
@@ -20,11 +18,9 @@ public final class Chunk {
     private final int xPosition;
     private final int zPosition;
     private Map chunkTileEntityMap;
-    private List entities;
 
     private Chunk(World var1, int var2, int var3) {
         this.chunkTileEntityMap = new HashMap();
-        this.entities = new ArrayList();
         this.worldObj = var1;
         this.xPosition = var2;
         this.zPosition = var3;
@@ -162,25 +158,34 @@ public final class Chunk {
     }
 
     public final boolean setBlockID(int var1, int var2, int var3, int var4) {
-        byte var6 = (byte)var4;
-        int var5 = this.heightMap[var3 << 4 | var1] & 255;
-        if(this.blocks[var1 << 11 | var3 << 7 | var2] == var6) {
+        byte var5 = (byte)var4;
+        int var6 = this.heightMap[var3 << 4 | var1] & 255;
+        int var7 = this.blocks[var1 << 11 | var3 << 7 | var2] & 255;
+        if(var7 == var4) {
             return false;
         } else {
-            this.blocks[var1 << 11 | var3 << 7 | var2] = var6;
-            if(Block.lightOpacity[var6] != 0) {
-                if(var2 >= var5) {
+            this.blocks[var1 << 11 | var3 << 7 | var2] = var5;
+            if(Block.lightOpacity[var5] != 0) {
+                if(var2 >= var6) {
                     this.relightBlock(var1, var2 + 1, var3);
                 }
-            } else if(var2 == var5 - 1) {
+            } else if(var2 == var6 - 1) {
                 this.relightBlock(var1, var2, var3);
             }
 
-            var4 = (this.xPosition << 4) + var1;
-            var5 = (this.zPosition << 4) + var3;
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, var4, var2, var5, var4, var2, var5);
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, var4, var2, var5, var4, var2, var5);
+            int var8 = (this.xPosition << 4) + var1;
+            var6 = (this.zPosition << 4) + var3;
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, var8, var2, var6, var8, var2, var6);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, var8, var2, var6, var8, var2, var6);
             this.updateSkylight_do(var1, var3);
+            if(var7 != 0) {
+                Block.blocksList[var7].onBlockAdded(this.worldObj, var8, var2, var6);
+            }
+
+            if(var4 != 0) {
+                Block.blocksList[var4].onNeighborBlockChange(this.worldObj, var8, var2, var6);
+            }
+
             return true;
         }
     }
@@ -238,8 +243,25 @@ public final class Chunk {
     }
 
     public final void setChunkBlockTileEntity(int var1, int var2, int var3, TileEntity var4) {
+        int var5 = var1 + (var2 << 10) + (var3 << 10 << 10);
+        var4.worldObj = this.worldObj;
+        var4.yCoord = (this.xPosition << 4) + var1;
+        var4.xCoord = var2;
+        var4.zCoord = (this.zPosition << 4) + var3;
+        this.chunkTileEntityMap.put(Integer.valueOf(var5), var4);
+        this.worldObj.loadedTileEntityList.add(var4);
+    }
+
+    public final void removeChunkBlockTileEntity(int var1, int var2, int var3) {
         var1 = var1 + (var2 << 10) + (var3 << 10 << 10);
-        this.chunkTileEntityMap.put(Integer.valueOf(var1), var4);
-        this.entities.add(var4);
+        this.worldObj.loadedTileEntityList.remove(this.chunkTileEntityMap.remove(Integer.valueOf(var1)));
+    }
+
+    public final void loadEntities() {
+        this.worldObj.loadedTileEntityList.addAll(this.chunkTileEntityMap.values());
+    }
+
+    public final void unloadEntities() {
+        this.worldObj.loadedTileEntityList.removeAll(this.chunkTileEntityMap.values());
     }
 }

@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockGrass extends Block {
@@ -13,6 +14,24 @@ public final class BlockGrass extends Block {
 	public final int getBlockTextureFromSide(int var1) {
 		return var1 == 1 ? 0 : (var1 == 0 ? 2 : 3);
 	}
+
+    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+        if(var1.canExistingBlockSeeTheSky(var2, var3 + 1, var4) < 4 && var1.getBlockMaterial(var2, var3 + 1, var4).b()) {
+            if(var5.nextInt(4) == 0) {
+                var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
+            }
+        } else {
+            if(var1.canExistingBlockSeeTheSky(var2, var3 + 1, var4) >= 9) {
+                var2 = var2 + var5.nextInt(3) - 1;
+                var3 = var3 + var5.nextInt(5) - 3;
+                var4 = var4 + var5.nextInt(3) - 1;
+                if(var1.getBlockId(var2, var3, var4) == Block.dirt.blockID && var1.canExistingBlockSeeTheSky(var2, var3 + 1, var4) >= 4 && !var1.getBlockMaterial(var2, var3 + 1, var4).b()) {
+                    var1.setBlockWithNotify(var2, var3, var4, Block.grass.blockID);
+                }
+            }
+
+        }
+    }
 
 	public final int idDropped(int var1, EaglercraftRandom var2) {
 		return Block.dirt.idDropped(0, var2);

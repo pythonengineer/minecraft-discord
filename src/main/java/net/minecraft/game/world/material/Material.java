@@ -22,7 +22,15 @@ public class Material {
         return false;
     }
 
+    public final boolean e() {
+        return !this.getIsLiquid() && !this.isSolid();
+    }
+
     public boolean isSolid() {
+        return true;
+    }
+
+    public boolean b() {
         return true;
     }
 

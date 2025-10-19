@@ -34,7 +34,7 @@ public final class ItemStack {
         this.stackSize = var2;
     }
 
-    private ItemStack(int var1, int var2, int var3) {
+    public ItemStack(int var1, int var2, int var3) {
         this.stackSize = 0;
         this.itemID = var1;
         this.stackSize = var2;

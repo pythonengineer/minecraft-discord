@@ -17,6 +17,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayMode;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.util.ReportedException;
 import net.minecraft.client.controller.PlayerController;
 import net.minecraft.client.controller.PlayerControllerCreative;
@@ -51,11 +52,8 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
-import net.minecraft.game.world.terrain.LevelGenerator;
 
 public final class Minecraft implements Runnable {
-    private static long E;
-    private boolean F = true;
 	public PlayerController playerController = new PlayerControllerSP(this);
 	private boolean fullscreen = false;
 	public int displayWidth;
@@ -261,15 +259,6 @@ public final class Minecraft implements Runnable {
                         this.timer.updateTimer();
                     }
 
-                    if(this.theWorld != null && (this.currentScreen == null || !this.currentScreen.doesGuiPauseGame())) {
-                        long var31 = (long)this.ticksRan - E;
-                        if(var31 > 6000L || var31 < 0L) {
-                            this.displayGuiScreen(new s());
-                            this.isGamePaused = true;
-                            this.F = false;
-                        }
-                    }
-
                     Display.checkContextLost();
 
                     PointerInputAbstraction.runGameLoop();
@@ -359,11 +348,6 @@ public final class Minecraft implements Runnable {
             System.err.println(
                     "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
         }
-    }
-
-    public final void b() {
-        this.running = false;
-        this.F = false;
     }
 
     public int getLimitFramerate() {
@@ -876,41 +860,34 @@ public final class Minecraft implements Runnable {
 
         if(this.theWorld != null) {
             this.theWorld.difficultySetting = this.options.difficulty;
-            if((long)this.ticksRan - E <= 6000L && (long)this.ticksRan - E >= 0L) {
-                if(!this.isGamePaused) {
-                    this.entityRenderer.updateRenderer();
-                }
+            if(!this.isGamePaused) {
+                this.entityRenderer.updateRenderer();
+            }
 
-                if(!this.isGamePaused) {
-                    this.renderGlobal.renderAllRenderLists();
-                }
+            if(!this.isGamePaused) {
+                this.renderGlobal.renderAllRenderLists();
+            }
 
-                if(!this.isGamePaused) {
-                    this.theWorld.scheduleBlockUpdate();
-                }
+            if(!this.isGamePaused) {
+                this.theWorld.levelEntities();
+            }
 
-                if(!this.isGamePaused) {
-                    this.theWorld.restartTimeOfDay();
-                }
+            if(!this.isGamePaused) {
+                this.theWorld.restartTimeOfDay();
+            }
 
-                if(!this.isGamePaused) {
-                    this.effectRenderer.updateEffects();
-                }
+            if(!this.isGamePaused) {
+                this.theWorld.randomDisplayUpdates(MathHelper.floor_double(this.thePlayer.posX), MathHelper.floor_double(this.thePlayer.posY), MathHelper.floor_double(this.thePlayer.posZ));
+            }
+
+            if(!this.isGamePaused) {
+                this.effectRenderer.updateEffects();
             }
         }
 
-	}
-
-    public final void generateLevel(int var1, int var2, int var3, int var4) {
-        this.setLevel((World)null);
-        System.gc();
-        new LevelGenerator();
-        World var5 = new World();
-        this.setLevel(var5);
     }
 
     public final void setLevel(World var1) {
-        E = (long)this.ticksRan;
 		this.theWorld = var1;
 		if(var1 != null) {
             this.thePlayer = null;
