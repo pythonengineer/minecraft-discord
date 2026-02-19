@@ -23,10 +23,12 @@ public final class Chunk {
     public final int xPosition;
     public final int zPosition;
     private Map chunkTileEntityMap;
+    public boolean isTerrainPopulated;
     public boolean isModified;
 
     private Chunk(World var1, int var2, int var3) {
         this.chunkTileEntityMap = new HashMap();
+        this.isTerrainPopulated = false;
         this.isModified = false;
         this.worldObj = var1;
         this.xPosition = var2;
@@ -179,6 +181,7 @@ public final class Chunk {
             }
 
             this.blocks[var1 << 11 | var3 << 7 | var2] = var5;
+            this.data.set(var1, var2, var3, 0);
             if(Block.lightOpacity[var5] != 0) {
                 if(var2 >= var6) {
                     this.relightBlock(var1, var2 + 1, var3);
@@ -245,6 +248,7 @@ public final class Chunk {
         var1.setByteArray("SkyLight", this.skyLightMap.data);
         var1.setByteArray("BlockLight", this.blockLightMap.data);
         var1.setByteArray("HeightMap", this.heightMap);
+        var1.setBoolean("TerrainPopulated", this.isTerrainPopulated);
         NBTTagList var2 = new NBTTagList();
         Iterator var3 = this.chunkTileEntityMap.values().iterator();
 
@@ -267,6 +271,7 @@ public final class Chunk {
         var8.skyLightMap = new NibbleArray(var1.getByteArray("SkyLight"));
         var8.blockLightMap = new NibbleArray(var1.getByteArray("BlockLight"));
         var8.heightMap = var1.getByteArray("HeightMap");
+        var8.isTerrainPopulated = var1.getBoolean("TerrainPopulated");
         if(!var8.data.isValid()) {
             var8.data = new NibbleArray(var8.blocks.length);
         }

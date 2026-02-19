@@ -391,6 +391,7 @@ public abstract class GuiContainer extends GuiScreen {
                             }
                         }
                     }
+                    slot7.onSlotChanged();
                 }
             }
         } else if (mode == 2 && clickedButton >= 0 && clickedButton < 9) {
@@ -511,10 +512,12 @@ public abstract class GuiContainer extends GuiScreen {
                     if (j <= stack.getItem().getItemStackLimit()) {
                         stack.stackSize = 0;
                         itemstack.stackSize = j;
+                        slot.onSlotChanged();
                         flag = true;
                     } else if (itemstack.stackSize < stack.getItem().getItemStackLimit()) {
                         stack.stackSize -= stack.getItem().getItemStackLimit() - itemstack.stackSize;
                         itemstack.stackSize = stack.getItem().getItemStackLimit();
+                        slot.onSlotChanged();
                         flag = true;
                     }
                 }
@@ -539,6 +542,7 @@ public abstract class GuiContainer extends GuiScreen {
                 ItemStack itemstack1 = slot1.getStack();
                 if (itemstack1 == null) {
                     slot1.putStack(stack.copy());
+                    slot1.onSlotChanged();
                     stack.stackSize = 0;
                     flag = true;
                     break;

@@ -14,4 +14,6 @@ public interface IInventory {
     String getInvName();
 
     int getInventoryStackLimit();
+
+    void onInventoryChanged();
 }

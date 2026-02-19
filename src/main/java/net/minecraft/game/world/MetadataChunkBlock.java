@@ -2,12 +2,12 @@ package net.minecraft.game.world;
 
 public final class MetadataChunkBlock {
     public final EnumSkyBlock skyBlock;
-    public final int x;
-    public final int y;
-    public final int z;
-    public final int maxX;
-    public final int maxY;
-    public final int maxZ;
+    public int x;
+    public int y;
+    public int z;
+    public int maxX;
+    public int maxY;
+    public int maxZ;
 
     public MetadataChunkBlock(EnumSkyBlock var1, int var2, int var3, int var4, int var5, int var6, int var7) {
         this.skyBlock = var1;

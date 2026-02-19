@@ -27,6 +27,7 @@ public class Slot {
 	}
 
 	public void onPickupFromSlot() {
+        this.onSlotChanged();
 	}
 
     public boolean isItemValid(ItemStack var1) {
@@ -47,9 +48,14 @@ public class Slot {
 
 	public final void putStack(ItemStack var1) {
 		this.inventory.setInventorySlotContents(this.slotIndex, var1);
+        this.onSlotChanged();
 	}
 
     public int getBackgroundIconIndex() {
         return -1;
+    }
+
+    public final void onSlotChanged() {
+        this.inventory.onInventoryChanged();
     }
 }

@@ -82,4 +82,8 @@ public class TileEntityChest extends TileEntity implements IInventory {
     public final int getInventoryStackLimit() {
         return 64;
     }
+
+    public final void onInventoryChanged() {
+        this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
+    }
 }

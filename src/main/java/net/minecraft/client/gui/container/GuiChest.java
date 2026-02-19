@@ -70,6 +70,8 @@ public final class GuiChest extends GuiContainer {
 
             if (itemstack1.stackSize == 0) {
                 slot.putStack((ItemStack) null);
+            } else {
+                slot.onSlotChanged();
             }
         }
 

@@ -118,7 +118,12 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
     }
 
     public final void populate(IChunkProvider var1, int var2, int var3) {
-        this.chunkProvider.populate(var1, var2, var3);
+        Chunk var4 = this.provideChunk(var2, var3);
+        if(!var4.isTerrainPopulated) {
+            var4.isTerrainPopulated = true;
+            this.chunkProvider.populate(var1, var2, var3);
+        }
+
     }
 
     public final void saveChunks(boolean var1) {

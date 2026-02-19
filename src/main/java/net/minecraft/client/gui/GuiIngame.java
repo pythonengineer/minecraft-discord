@@ -150,26 +150,25 @@ public final class GuiIngame extends Gui {
 		GL11.glPopMatrix();
 
         for(var10 = 0; var10 < 9; ++var10) {
-            float var25 = (float)(scaledWidth / 2 - 90 + var10 * 20 + 2);
-            var12 = scaledHeight - 16 - 3;
-            float var21 = var25;
+            int i25 = scaledWidth / 2 - 90 + var10 * 20 + 2;
+            int i21 = scaledHeight - 16 - 3;
             ItemStack var22 = this.mc.thePlayer.inventory.mainInventory[var10];
             if(var22 != null) {
                 float var9 = (float)var22.animationsToGo - var1;
                 if(var9 > 0.0F) {
                     GL11.glPushMatrix();
-                    var25 = 1.0F + var9 / 5.0F;
-                    GL11.glTranslatef((float)(var21 + 8), (float)(var12 + 12), 0.0F);
+                    float var25 = 1.0F + var9 / 5.0F;
+                    GL11.glTranslatef((float)(i25 + 8), (float)(i21 + 12), 0.0F);
                     GL11.glScalef(1.0F / var25, (var25 + 1.0F) / 2.0F, 1.0F);
-                    GL11.glTranslatef((float)(-(var21 + 8)), (float)(-(var12 + 12)), 0.0F);
+                    GL11.glTranslatef((float)(-(i25 + 8)), (float)(-(i21 + 12)), 0.0F);
                 }
 
-                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, var22, (int)var21, var12);
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, var22, i25, i21);
                 if(var9 > 0.0F) {
                     GL11.glPopMatrix();
                 }
 
-                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var22, (int)var21, var12);
+                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var22, i25, i21);
             }
         }
 

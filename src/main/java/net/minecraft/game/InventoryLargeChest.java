@@ -40,4 +40,9 @@ public final class InventoryLargeChest implements IInventory {
     public final int getInventoryStackLimit() {
         return this.upperChest.getInventoryStackLimit();
     }
+
+    public final void onInventoryChanged() {
+        this.upperChest.onInventoryChanged();
+        this.lowerChest.onInventoryChanged();
+    }
 }

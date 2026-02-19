@@ -231,4 +231,7 @@ public final class InventoryPlayer implements IInventory {
         }
 
     }
+
+    public final void onInventoryChanged() {
+    }
 }

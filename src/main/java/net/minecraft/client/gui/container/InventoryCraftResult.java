@@ -35,4 +35,7 @@ public final class InventoryCraftResult implements IInventory {
 	public final int getInventoryStackLimit() {
 		return 64;
 	}
+
+    public final void onInventoryChanged() {
+    }
 }

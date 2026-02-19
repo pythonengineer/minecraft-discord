@@ -189,123 +189,47 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 
     public final void populate(IChunkProvider var1, int var2, int var3) {
         this.rand.setSeed((long)var2 * 318279123L + (long)var3 * 919871212L);
-        int var18 = var2 << 4;
+        int var8 = var2 << 4;
         var2 = var3 << 4;
 
         int var4;
         int var5;
         int var6;
         for(var3 = 0; var3 < 20; ++var3) {
-            var4 = var18 + this.rand.nextInt(16);
+            var4 = var8 + this.rand.nextInt(16);
             var5 = this.rand.nextInt(128);
             var6 = var2 + this.rand.nextInt(16);
             (new WorldGenMinable(Block.oreCoal.blockID)).generate(this.worldObj, this.rand, var4, var5, var6);
         }
 
         for(var3 = 0; var3 < 10; ++var3) {
-            var4 = var18 + this.rand.nextInt(16);
+            var4 = var8 + this.rand.nextInt(16);
             var5 = this.rand.nextInt(64);
             var6 = var2 + this.rand.nextInt(16);
             (new WorldGenMinable(Block.oreIron.blockID)).generate(this.worldObj, this.rand, var4, var5, var6);
         }
 
         if(this.rand.nextInt(2) == 0) {
-            var3 = var18 + this.rand.nextInt(16);
+            var3 = var8 + this.rand.nextInt(16);
             var4 = this.rand.nextInt(32);
             var5 = var2 + this.rand.nextInt(16);
             (new WorldGenMinable(Block.oreGold.blockID)).generate(this.worldObj, this.rand, var3, var4, var5);
         }
 
         if(this.rand.nextInt(8) == 0) {
-            var3 = var18 + this.rand.nextInt(16);
+            var3 = var8 + this.rand.nextInt(16);
             var4 = this.rand.nextInt(16);
             var5 = var2 + this.rand.nextInt(16);
             (new WorldGenMinable(Block.oreDiamond.blockID)).generate(this.worldObj, this.rand, var3, var4, var5);
         }
 
-        var3 = (int)this.mobSpawnerNoise.noiseGenerator((double)var18 * 0.25D, (double)var2 * 0.25D) << 3;
+        var3 = (int)this.mobSpawnerNoise.noiseGenerator((double)var8 * 0.25D, (double)var2 * 0.25D) << 3;
+        WorldGenTrees var9 = new WorldGenTrees();
 
-        for(var4 = 0; var4 < var3; ++var4) {
-            var5 = var18 + this.rand.nextInt(16);
-            var6 = var2 + this.rand.nextInt(16);
-            new WorldGenTrees();
-            World var10000 = this.worldObj;
-            EaglercraftRandom var10001 = this.rand;
-            int var8 = this.worldObj.getHeightValue(var5, var6);
-            EaglercraftRandom var20 = var10001;
-            World var19 = var10000;
-            int var7 = var5 + 2;
-            int var9 = var6 + 2;
-            int var10 = var20.nextInt(3) + 4;
-            boolean var11 = true;
-            boolean var23;
-            if(var8 > 0 && var8 + var10 + 1 <= 128) {
-                int var12;
-                int var14;
-                int var15;
-                int var16;
-                for(var12 = var8; var12 <= var8 + 1 + var10; ++var12) {
-                    byte var13 = 1;
-                    if(var12 == var8) {
-                        var13 = 0;
-                    }
-
-                    if(var12 >= var8 + 1 + var10 - 2) {
-                        var13 = 2;
-                    }
-
-                    for(var14 = var7 - var13; var14 <= var7 + var13 && var11; ++var14) {
-                        for(var15 = var9 - var13; var15 <= var9 + var13 && var11; ++var15) {
-                            if(var12 >= 0 && var12 < 128) {
-                                var16 = var19.getBlockId(var14, var12, var15);
-                                if(var16 != 0) {
-                                    var11 = false;
-                                }
-                            } else {
-                                var11 = false;
-                            }
-                        }
-                    }
-                }
-
-                if(!var11) {
-                    var23 = false;
-                } else {
-                    var12 = var19.getBlockId(var7, var8 - 1, var9);
-                    if((var12 == Block.grass.blockID || var12 == Block.dirt.blockID) && var8 < 128 - var10 - 1) {
-                        var19.setTileNoUpdate(var7, var8 - 1, var9, Block.dirt.blockID);
-
-                        int var22;
-                        for(var22 = var8 - 3 + var10; var22 <= var8 + var10; ++var22) {
-                            var14 = var22 - (var8 + var10);
-                            var15 = 1 - var14 / 2;
-
-                            for(var16 = var7 - var15; var16 <= var7 + var15; ++var16) {
-                                int var21 = var16 - var7;
-
-                                for(var12 = var9 - var15; var12 <= var9 + var15; ++var12) {
-                                    int var17 = var12 - var9;
-                                    if((Math.abs(var21) != var15 || Math.abs(var17) != var15 || var20.nextInt(2) != 0 && var14 != 0) && !Block.opaqueCubeLookup[var19.getBlockId(var16, var22, var12)]) {
-                                        var19.setTileNoUpdate(var16, var22, var12, Block.leaves.blockID);
-                                    }
-                                }
-                            }
-                        }
-
-                        for(var22 = 0; var22 < var10; ++var22) {
-                            if(!Block.opaqueCubeLookup[var19.getBlockId(var7, var8 + var22, var9)]) {
-                                var19.setTileNoUpdate(var7, var8 + var22, var9, Block.wood.blockID);
-                            }
-                        }
-
-                        var23 = true;
-                    } else {
-                        var23 = false;
-                    }
-                }
-            } else {
-                var23 = false;
-            }
+        for(var5 = 0; var5 < var3; ++var5) {
+            var6 = var8 + this.rand.nextInt(16);
+            int var7 = var2 + this.rand.nextInt(16);
+            var9.generate(this.worldObj, this.rand, var6, this.worldObj.getHeightValue(var6, var7), var7);
         }
 
     }

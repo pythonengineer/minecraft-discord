@@ -511,19 +511,19 @@ public final class RenderGlobal implements IWorldAccess {
         Vec3D var3 = this.worldObj.getSkyColor(var1);
         float var4 = (float)var3.xCoord;
         float var5 = (float)var3.yCoord;
-        float var12 = (float)var3.zCoord;
+        float var20 = (float)var3.zCoord;
         float var6;
         if(this.mc.gameSettings.anaglyph) {
-            var6 = (var4 * 30.0F + var5 * 59.0F + var12 * 11.0F) / 100.0F;
+            var6 = (var4 * 30.0F + var5 * 59.0F + var20 * 11.0F) / 100.0F;
             var5 = (var4 * 30.0F + var5 * 70.0F) / 100.0F;
-            var12 = (var4 * 30.0F + var12 * 70.0F) / 100.0F;
+            var20 = (var4 * 30.0F + var20 * 70.0F) / 100.0F;
             var4 = var6;
             var5 = var5;
-            var12 = var12;
+            var20 = var20;
         }
 
-        GL11.glColor3f(var4, var5, var12);
-        Tessellator var13 = Tessellator.instance;
+        GL11.glColor3f(var4, var5, var20);
+        Tessellator var21 = Tessellator.instance;
         GL11.glDepthMask(false);
         GL11.glCallList(this.glSkyList2);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -537,19 +537,19 @@ public final class RenderGlobal implements IWorldAccess {
         GL11.glRotatef(0.0F, 0.0F, 0.0F, 1.0F);
         GL11.glRotatef(this.worldObj.getCelestialAngle(var1) * 360.0F, 1.0F, 0.0F, 0.0F);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain/sun.png"));
-        var13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-        var13.addVertexWithUV(-30.0D, 100.0D, -30.0D, 0.0D, 0.0D);
-        var13.addVertexWithUV(30.0D, 100.0D, -30.0D, 1.0D, 0.0D);
-        var13.addVertexWithUV(30.0D, 100.0D, 30.0D, 1.0D, 1.0D);
-        var13.addVertexWithUV(-30.0D, 100.0D, 30.0D, 0.0D, 1.0D);
-        var13.draw();
+        var21.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        var21.addVertexWithUV(-30.0D, 100.0D, -30.0D, 0.0D, 0.0D);
+        var21.addVertexWithUV(30.0D, 100.0D, -30.0D, 1.0D, 0.0D);
+        var21.addVertexWithUV(30.0D, 100.0D, 30.0D, 1.0D, 1.0D);
+        var21.addVertexWithUV(-30.0D, 100.0D, 30.0D, 0.0D, 1.0D);
+        var21.draw();
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain/moon.png"));
-        var13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-        var13.addVertexWithUV(-20.0D, -100.0D, 20.0D, 1.0D, 1.0D);
-        var13.addVertexWithUV(20.0D, -100.0D, 20.0D, 0.0D, 1.0D);
-        var13.addVertexWithUV(20.0D, -100.0D, -20.0D, 0.0D, 0.0D);
-        var13.addVertexWithUV(-20.0D, -100.0D, -20.0D, 1.0D, 0.0D);
-        var13.draw();
+        var21.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        var21.addVertexWithUV(-20.0D, -100.0D, 20.0D, 1.0D, 1.0D);
+        var21.addVertexWithUV(20.0D, -100.0D, 20.0D, 0.0D, 1.0D);
+        var21.addVertexWithUV(20.0D, -100.0D, -20.0D, 0.0D, 0.0D);
+        var21.addVertexWithUV(-20.0D, -100.0D, -20.0D, 1.0D, 0.0D);
+        var21.draw();
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         float var7 = this.worldObj.getStarBrightness(var1);
         GL11.glColor4f(var7, var7, var7, var7);
@@ -563,40 +563,45 @@ public final class RenderGlobal implements IWorldAccess {
         GL11.glDepthMask(true);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/clouds.png"));
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        Vec3D var14 = this.worldObj.getCloudColor(var1);
-        var5 = (float)var14.xCoord;
-        var6 = (float)var14.yCoord;
-        var4 = (float)var14.zCoord;
-        float var8;
-        float var9;
+        Vec3D var22 = this.worldObj.getCloudColor(var1);
+        var5 = (float)var22.xCoord;
+        var6 = (float)var22.yCoord;
+        var4 = (float)var22.zCoord;
         if(this.mc.gameSettings.anaglyph) {
             var7 = (var5 * 30.0F + var6 * 59.0F + var4 * 11.0F) / 100.0F;
-            var8 = (var5 * 30.0F + var6 * 70.0F) / 100.0F;
-            var9 = (var5 * 30.0F + var4 * 70.0F) / 100.0F;
+            float var15 = (var5 * 30.0F + var6 * 70.0F) / 100.0F;
+            float var16 = (var5 * 30.0F + var4 * 70.0F) / 100.0F;
             var5 = var7;
-            var6 = var8;
-            var4 = var9;
+            var6 = var15;
+            var4 = var16;
         }
 
-        var8 = 120.0F - var2;
-        var9 = ((float)this.cloudOffsetX + var1) * (0.5F / 1024.0F) * 0.03F;
-        var13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-        var13.setColorOpaque_F(var5, var6, var4);
+        double var26 = this.worldObj.playerEntity.prevPosX + (this.worldObj.playerEntity.posX - this.worldObj.playerEntity.prevPosX) * (double)var1 + (double)(((float)this.cloudOffsetX + var1) * 0.03F);
+        double var17 = this.worldObj.playerEntity.prevPosZ + (this.worldObj.playerEntity.posZ - this.worldObj.playerEntity.prevPosZ) * (double)var1;
+        int var19 = MathHelper.floor_double(var26 / 2048.0D);
+        int var25 = MathHelper.floor_double(var17 / 2048.0D);
+        var26 -= (double)(var19 << 11);
+        var17 -= (double)(var25 << 11);
+        var1 = 120.0F - var2 + 0.33F;
+        var2 = (float)(var26 * 4.8828125E-4D);
+        var7 = (float)(var17 * 4.8828125E-4D);
+        var21.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+        var21.setColorOpaque_F(var5, var6, var4);
 
-        for(int var10 = -256; var10 < 256; var10 += 32) {
-            for(int var11 = -256; var11 < 256; var11 += 32) {
-                var13.addVertexWithUV((double)var10, (double)var8, (double)(var11 + 32), (double)((float)var10 * (0.5F / 1024.0F) + var9), (double)((float)(var11 + 32) * (0.5F / 1024.0F)));
-                var13.addVertexWithUV((double)(var10 + 32), (double)var8, (double)(var11 + 32), (double)((float)(var10 + 32) * (0.5F / 1024.0F) + var9), (double)((float)(var11 + 32) * (0.5F / 1024.0F)));
-                var13.addVertexWithUV((double)(var10 + 32), (double)var8, (double)var11, (double)((float)(var10 + 32) * (0.5F / 1024.0F) + var9), (double)((float)var11 * (0.5F / 1024.0F)));
-                var13.addVertexWithUV((double)var10, (double)var8, (double)var11, (double)((float)var10 * (0.5F / 1024.0F) + var9), (double)((float)var11 * (0.5F / 1024.0F)));
-                var13.addVertexWithUV((double)var10, (double)var8, (double)var11, (double)((float)var10 * (0.5F / 1024.0F) + var9), (double)((float)var11 * (0.5F / 1024.0F)));
-                var13.addVertexWithUV((double)(var10 + 32), (double)var8, (double)var11, (double)((float)(var10 + 32) * (0.5F / 1024.0F) + var9), (double)((float)var11 * (0.5F / 1024.0F)));
-                var13.addVertexWithUV((double)(var10 + 32), (double)var8, (double)(var11 + 32), (double)((float)(var10 + 32) * (0.5F / 1024.0F) + var9), (double)((float)(var11 + 32) * (0.5F / 1024.0F)));
-                var13.addVertexWithUV((double)var10, (double)var8, (double)(var11 + 32), (double)((float)var10 * (0.5F / 1024.0F) + var9), (double)((float)(var11 + 32) * (0.5F / 1024.0F)));
+        for(int var23 = -256; var23 < 256; var23 += 32) {
+            for(int var24 = -256; var24 < 256; var24 += 32) {
+                var21.addVertexWithUV((double)var23, (double)var1, (double)(var24 + 32), (double)((float)var23 * (0.5F / 1024.0F) + var2), (double)((float)(var24 + 32) * (0.5F / 1024.0F) + var7));
+                var21.addVertexWithUV((double)(var23 + 32), (double)var1, (double)(var24 + 32), (double)((float)(var23 + 32) * (0.5F / 1024.0F) + var2), (double)((float)(var24 + 32) * (0.5F / 1024.0F) + var7));
+                var21.addVertexWithUV((double)(var23 + 32), (double)var1, (double)var24, (double)((float)(var23 + 32) * (0.5F / 1024.0F) + var2), (double)((float)var24 * (0.5F / 1024.0F) + var7));
+                var21.addVertexWithUV((double)var23, (double)var1, (double)var24, (double)((float)var23 * (0.5F / 1024.0F) + var2), (double)((float)var24 * (0.5F / 1024.0F) + var7));
+                var21.addVertexWithUV((double)var23, (double)var1, (double)var24, (double)((float)var23 * (0.5F / 1024.0F) + var2), (double)((float)var24 * (0.5F / 1024.0F) + var7));
+                var21.addVertexWithUV((double)(var23 + 32), (double)var1, (double)var24, (double)((float)(var23 + 32) * (0.5F / 1024.0F) + var2), (double)((float)var24 * (0.5F / 1024.0F) + var7));
+                var21.addVertexWithUV((double)(var23 + 32), (double)var1, (double)(var24 + 32), (double)((float)(var23 + 32) * (0.5F / 1024.0F) + var2), (double)((float)(var24 + 32) * (0.5F / 1024.0F) + var7));
+                var21.addVertexWithUV((double)var23, (double)var1, (double)(var24 + 32), (double)((float)var23 * (0.5F / 1024.0F) + var2), (double)((float)(var24 + 32) * (0.5F / 1024.0F) + var7));
             }
         }
 
-        var13.draw();
+        var21.draw();
     }
 
     public final void updateRenderers(EntityPlayer var1) {

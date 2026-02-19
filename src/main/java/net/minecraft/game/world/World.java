@@ -172,7 +172,7 @@ public final class World {
         if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
             if(var2 < 0) {
                 return false;
-            } else if(var2 > 128) {
+            } else if(var2 >= 128) {
                 return false;
             } else {
                 Chunk var5 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
@@ -304,15 +304,25 @@ public final class World {
 
     public final int canExistingBlockSeeTheSky(int var1, int var2, int var3) {
         if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
+            int var4 = this.getBlockId(var1, var2, var3);
+            if(var4 == Block.stairSingle.blockID || var4 == Block.tilledField.blockID) {
+                ++var2;
+            }
+
             if(var2 < 0) {
-                return 15;
+                return 0;
             } else if(var2 >= 128) {
-                return 15;
+                var4 = 15 - this.skylightSubtracted;
+                if(var4 < 0) {
+                    var4 = 0;
+                }
+
+                return var4;
             } else {
-                Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
+                Chunk var5 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
                 var1 &= 15;
                 var3 &= 15;
-                return var4.getBlockLightValue(var1, var2, var3, this.skylightSubtracted);
+                return var5.getBlockLightValue(var1, var2, var3, this.skylightSubtracted);
             }
         } else {
             return 15;
@@ -340,21 +350,39 @@ public final class World {
     }
 
     public final int getSavedLightValue(EnumSkyBlock var1, int var2, int var3, int var4) {
-        if(var2 >= -32000000 && var4 >= -32000000 && var2 < 32000000 && var4 <= 32000000) {
+        if(var1 == EnumSkyBlock.Sky) {
+            if(var2 < -32000000 || var4 < -32000000 || var2 >= 32000000 || var4 > 32000000) {
+                return 15;
+            }
+
             if(var3 < 0) {
                 return 15;
-            } else if(var3 >= 128) {
+            }
+
+            if(var3 >= 128) {
                 return 15;
-            } else if(!this.chunkExists(var2 >> 4, var4 >> 4)) {
-                return 0;
-            } else {
-                Chunk var5 = this.getChunkFromChunkCoords(var2 >> 4, var4 >> 4);
-                var2 &= 15;
-                var4 &= 15;
-                return var5.getSavedLightValue(var1, var2, var3, var4);
             }
         } else {
-            return 15;
+            if(var2 < -32000000 || var4 < -32000000 || var2 >= 32000000 || var4 > 32000000) {
+                return 0;
+            }
+
+            if(var3 < 0) {
+                return 0;
+            }
+
+            if(var3 >= 128) {
+                return 0;
+            }
+        }
+
+        if(!this.chunkExists(var2 >> 4, var4 >> 4)) {
+            return 0;
+        } else {
+            Chunk var5 = this.getChunkFromChunkCoords(var2 >> 4, var4 >> 4);
+            var2 &= 15;
+            var4 &= 15;
+            return var5.getSavedLightValue(var1, var2, var3, var4);
         }
     }
 
@@ -1129,6 +1157,19 @@ public final class World {
     }
 
     public final void scheduleLightingUpdate(EnumSkyBlock var1, int var2, int var3, int var4, int var5, int var6, int var7) {
+        int var8 = this.lightingToUpdate.size();
+        int var9 = 4;
+        if(4 > var8) {
+            var9 = var8;
+        }
+
+        for(var8 = 0; var8 < var9; ++var8) {
+            MetadataChunkBlock var10 = (MetadataChunkBlock)this.lightingToUpdate.get(this.lightingToUpdate.size() - var8 - 1);
+            if(var10.skyBlock == var1 && var2 >= var10.x && var3 >= var10.y && var4 >= var10.z && var5 <= var10.maxX && var6 <= var10.maxY && var7 <= var10.maxZ) {
+                return;
+            }
+        }
+
         this.lightingToUpdate.add(new MetadataChunkBlock(var1, var2, var3, var4, var5, var6, var7));
     }
 
@@ -1225,6 +1266,14 @@ public final class World {
 
     public final List getLoadedEntityList() {
         return this.loadedEntityList;
+    }
+
+    public final void updateTileEntityChunkAndDoNothing(int var1, int var2, int var3) {
+        if(this.blockExists(var1, var2, var3)) {
+            Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
+            var4.isModified = true;
+        }
+
     }
 
 	static {

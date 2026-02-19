@@ -165,6 +165,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
             var9.setBlockTileEntity(var8, var4, var5, var7);
         }
 
+        this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
     }
 
     private boolean canSmelt() {
@@ -202,6 +203,10 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
             int var1 = var0.getItem().shiftedIndex;
             return var1 < 256 && Block.blocksList[var1].blockMaterial == Material.wood ? 300 : (var1 == Item.stick.shiftedIndex ? 100 : (var1 == Item.coal.shiftedIndex ? 1600 : 0));
         }
+    }
+
+    public final void onInventoryChanged() {
+        this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
     }
 
     public static boolean isItemFuel(ItemStack parItemStack) {

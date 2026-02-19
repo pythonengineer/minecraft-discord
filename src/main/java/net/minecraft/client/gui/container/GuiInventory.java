@@ -160,6 +160,8 @@ public final class GuiInventory extends GuiContainer {
 
             if (itemstack1.stackSize == 0) {
                 slot.putStack((ItemStack) null);
+            } else {
+                slot.onSlotChanged();
             }
 
             if (itemstack1.stackSize == itemstack.stackSize) {

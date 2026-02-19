@@ -33,7 +33,7 @@ public class EntityPlayer extends EntityLiving {
             World.setEntityDead(this);
         }
 
-        this.setLocationAndAngles((double)var1.spawnX, (double)var1.spawnY, (double)var1.spawnZ, 0.0F, 0.0F);
+        this.setLocationAndAngles((double)var1.spawnX + 0.5D, (double)var1.spawnY, (double)var1.spawnZ + 0.5D, 0.0F, 0.0F);
         this.yOffset = 1.62F;
         this.health = 20;
         this.fireResistance = 20;
