@@ -131,11 +131,11 @@ public abstract class GuiContainer extends GuiScreen {
                     drawRect(var10, var11, var10 + 16, var11 + 16, -2130706433);
                 }
 
-                itemRenderer.doRender(this.mc.renderEngine, itemstack, var10, var11);
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemstack, var10, var11);
                 itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemstack, var10, var11, s);
             }
 
-            if(!this.mc.options.touchscreen && var6.isAtCursorPos(var1, var2)) {
+            if(!this.mc.gameSettings.touchscreen && var6.isAtCursorPos(var1, var2)) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
                 int var7 = var6.xPos;
@@ -163,7 +163,7 @@ public abstract class GuiContainer extends GuiScreen {
             }
 
             GL11.glTranslatef(0.0F, 0.0F, 32.0F);
-            itemRenderer.doRender(this.mc.renderEngine, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2);
+            itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2);
             itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemstack, var1 - this.guiLeft - b0, var2 - this.guiTop - j2, s);
         }
 
@@ -178,7 +178,7 @@ public abstract class GuiContainer extends GuiScreen {
             int l2 = this.returningStackDestSlot.yPos - this.touchUpY;
             int l1 = this.touchUpX + (int) ((float) k2 * f1);
             int i2 = this.touchUpY + (int) ((float) l2 * f1);
-            itemRenderer.doRender(this.mc.renderEngine, this.returningStack, l1, i2);
+            itemRenderer.renderItemIntoGUI(this.mc.renderEngine, this.returningStack, l1, i2);
             itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.returningStack, l1, i2);
         }
 
@@ -198,7 +198,7 @@ public abstract class GuiContainer extends GuiScreen {
     protected abstract void drawGuiContainerBackgroundLayer();
 
     protected final void keyTyped(char var1, int var2) {
-        if(var2 == 1 || var2 == this.mc.options.keyBindInventory.keyCode) {
+        if(var2 == 1 || var2 == this.mc.gameSettings.keyBindInventory.keyCode) {
             this.mc.displayGuiScreen((GuiScreen)null);
         }
 
@@ -211,7 +211,7 @@ public abstract class GuiContainer extends GuiScreen {
 
     }
 
-    public void onCraftMatrixChanged() {
+    public void guiCraftingItemsCheck() {
     }
 
     public final boolean doesGuiPauseGame() {
@@ -651,7 +651,7 @@ public abstract class GuiContainer extends GuiScreen {
             }
 
             if (l != -1) {
-                if (this.mc.options.touchscreen) {
+                if (this.mc.gameSettings.touchscreen) {
                     if (slot != null && slot.getHasStack()) {
                         this.clickedSlot = slot;
                         this.draggedStack = null;
@@ -744,7 +744,7 @@ public abstract class GuiContainer extends GuiScreen {
                 return;
             }
 
-            if (this.clickedSlot != null && this.mc.options.touchscreen) {
+            if (this.clickedSlot != null && this.mc.gameSettings.touchscreen) {
                 if (k == 0 || k == 1) {
                     if (this.draggedStack == null && slot != this.clickedSlot) {
                         this.draggedStack = this.clickedSlot.getStack();

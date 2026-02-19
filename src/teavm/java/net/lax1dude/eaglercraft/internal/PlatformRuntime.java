@@ -38,9 +38,11 @@ import org.teavm.platform.Platform;
 import org.teavm.platform.PlatformRunnable;
 
 import com.google.common.collect.Collections2;
+import com.jcraft.jzlib.Deflater;
 import com.jcraft.jzlib.DeflaterOutputStream;
 import com.jcraft.jzlib.GZIPInputStream;
 import com.jcraft.jzlib.GZIPOutputStream;
+import com.jcraft.jzlib.Inflater;
 import com.jcraft.jzlib.InflaterInputStream;
 
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
@@ -990,12 +992,45 @@ public class PlatformRuntime {
         return new DeflaterOutputStream(os);
     }
 
+    @SuppressWarnings("deprecation")
+    public static int deflateFull(byte[] input, int inputOff, int inputLen, byte[] output, int outputOff,
+            int outputLen) throws IOException {
+        Deflater df = new Deflater();
+        df.setInput(input, inputOff, inputLen, false);
+        df.setOutput(output, outputOff, outputLen);
+        df.init(5);
+        int c;
+        do {
+            c = df.deflate(4);
+            if (c != 0 && c != 1) {
+                throw new IOException("Deflater failed! Code " + c);
+            }
+        } while(c != 1);
+        return (int)df.getTotalOut();
+    }
+
     public static OutputStream newGZIPOutputStream(OutputStream os) throws IOException {
         return new GZIPOutputStream(os);
     }
 
     public static InputStream newInflaterInputStream(InputStream is) throws IOException {
         return new InflaterInputStream(is);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static int inflateFull(byte[] input, int inputOff, int inputLen, byte[] output, int outputOff,
+            int outputLen) throws IOException {
+        Inflater df = new Inflater();
+        df.setInput(input, inputOff, inputLen, false);
+        df.setOutput(output, outputOff, outputLen);
+        int c;
+        do {
+            c = df.inflate(0);
+            if (c != 0 && c != 1) {
+                throw new IOException("Inflater failed! Code " + c);
+            }
+        } while(c != 1);
+        return (int)df.getTotalOut();
     }
 
     public static InputStream newGZIPInputStream(InputStream is) throws IOException {

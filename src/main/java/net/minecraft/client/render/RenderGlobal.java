@@ -142,7 +142,7 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     private void loadRenderers() {
-        this.renderDistance = this.mc.options.renderDistance;
+        this.renderDistance = this.mc.gameSettings.renderDistance;
         int var1;
         if(this.worldRenderers != null) {
             for(var1 = 0; var1 < this.worldRenderers.length; ++var1) {
@@ -186,7 +186,7 @@ public final class RenderGlobal implements IWorldAccess {
 
                     this.worldRenderers[(var5 * this.renderChunksTall + var4) * this.renderChunksWide + var3].isWaitingOnOcclusionQuery = false;
                     this.worldRenderers[(var5 * this.renderChunksTall + var4) * this.renderChunksWide + var3].isVisible = true;
-                    this.worldRenderers[(var5 * this.renderChunksTall + var4) * this.renderChunksWide + var3].isInFrustrum = true;
+                    this.worldRenderers[(var5 * this.renderChunksTall + var4) * this.renderChunksWide + var3].isInFrustum = true;
                     ++var2;
                     this.worldRenderers[(var5 * this.renderChunksTall + var4) * this.renderChunksWide + var3].needsUpdate = true;
                     this.sortedWorldRenderers[(var5 * this.renderChunksTall + var4) * this.renderChunksWide + var3] = this.worldRenderers[(var5 * this.renderChunksTall + var4) * this.renderChunksWide + var3];
@@ -228,7 +228,7 @@ public final class RenderGlobal implements IWorldAccess {
             double var28 = var7.maxZ - var7.minZ;
             double var21 = (var24 + var26 + var28) / 3.0D;
             var21 *= 64.0D;
-            if(var16 < var21 * var21 && var2.isBoundingBoxInFrustrum(var6.boundingBox) && (var6 != this.worldObj.playerEntity || this.mc.options.thirdPersonView)) {
+            if(var16 < var21 * var21 && var2.isBoundingBoxInFrustrum(var6.boundingBox) && (var6 != this.worldObj.playerEntity || this.mc.gameSettings.thirdPersonView)) {
                 ++this.countEntitiesRendered;
                 RenderManager.instance.renderEntity(var6, var3);
             }
@@ -313,7 +313,7 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final int sortAndRender(EntityPlayer var1, int var2, double var3) {
-        if(this.mc.options.renderDistance != this.renderDistance) {
+        if(this.mc.gameSettings.renderDistance != this.renderDistance) {
             this.loadRenderers();
         }
 
@@ -342,7 +342,7 @@ public final class RenderGlobal implements IWorldAccess {
         }
 
         int var21;
-        if(this.occlusionEnabled && !this.mc.options.anaglyph && var2 == 0) {
+        if(this.occlusionEnabled && !this.mc.gameSettings.anaglyph && var2 == 0) {
             int var22 = 16;
             this.checkOcclusionQueryResult(0, 16);
 
@@ -373,13 +373,13 @@ public final class RenderGlobal implements IWorldAccess {
 
                 for(int var17 = var12; var17 < var22; ++var17) {
                     if(this.sortedWorldRenderers[var17].skipAllRenderPasses()) {
-                        this.sortedWorldRenderers[var17].isInFrustrum = false;
+                        this.sortedWorldRenderers[var17].isInFrustum = false;
                     } else {
-                        if(!this.sortedWorldRenderers[var17].isInFrustrum) {
+                        if(!this.sortedWorldRenderers[var17].isInFrustum) {
                             this.sortedWorldRenderers[var17].isVisible = true;
                         }
 
-                        if(this.sortedWorldRenderers[var17].isInFrustrum && !this.sortedWorldRenderers[var17].isWaitingOnOcclusionQuery) {
+                        if(this.sortedWorldRenderers[var17].isInFrustum && !this.sortedWorldRenderers[var17].isWaitingOnOcclusionQuery) {
                             float var18 = MathHelper.sqrt_float(this.sortedWorldRenderers[var17].distanceToEntitySquared(var1));
                             int var25 = (int)(1.0F + var18 / 64.0F);
                             if(this.cloudOffsetX % var25 == var17 % var25) {
@@ -444,20 +444,20 @@ public final class RenderGlobal implements IWorldAccess {
         for(var1 = var1; var1 < var2; ++var1) {
             if(var3 == 0) {
                 ++this.renderersLoaded;
-                if(!this.sortedWorldRenderers[var1].isInFrustrum) {
+                if(!this.sortedWorldRenderers[var1].isInFrustum) {
                     ++this.renderersBeingClipped;
                 }
 
-                if(this.sortedWorldRenderers[var1].isInFrustrum && !this.sortedWorldRenderers[var1].isVisible) {
+                if(this.sortedWorldRenderers[var1].isInFrustum && !this.sortedWorldRenderers[var1].isVisible) {
                     ++this.renderersBeingOccluded;
                 }
 
-                if(this.sortedWorldRenderers[var1].isInFrustrum && this.sortedWorldRenderers[var1].isVisible) {
+                if(this.sortedWorldRenderers[var1].isInFrustum && this.sortedWorldRenderers[var1].isVisible) {
                     ++this.renderersBeingRendered;
                 }
             }
 
-            if(this.sortedWorldRenderers[var1].isInFrustrum && this.sortedWorldRenderers[var1].isVisible) {
+            if(this.sortedWorldRenderers[var1].isInFrustum && this.sortedWorldRenderers[var1].isVisible) {
                 int var7 = this.sortedWorldRenderers[var1].getGLCallListForPass(var3);
                 if(var7 >= 0) {
                     this.glRenderLists.add(this.sortedWorldRenderers[var1]);
@@ -501,7 +501,7 @@ public final class RenderGlobal implements IWorldAccess {
         GL11.glPopMatrix();
     }
 
-    public final void renderAllRenderLists() {
+    public final void updateClouds() {
         ++this.cloudOffsetX;
     }
 
@@ -513,7 +513,7 @@ public final class RenderGlobal implements IWorldAccess {
         float var5 = (float)var3.yCoord;
         float var12 = (float)var3.zCoord;
         float var6;
-        if(this.mc.options.anaglyph) {
+        if(this.mc.gameSettings.anaglyph) {
             var6 = (var4 * 30.0F + var5 * 59.0F + var12 * 11.0F) / 100.0F;
             var5 = (var4 * 30.0F + var5 * 70.0F) / 100.0F;
             var12 = (var4 * 30.0F + var12 * 70.0F) / 100.0F;
@@ -569,7 +569,7 @@ public final class RenderGlobal implements IWorldAccess {
         var4 = (float)var14.zCoord;
         float var8;
         float var9;
-        if(this.mc.options.anaglyph) {
+        if(this.mc.gameSettings.anaglyph) {
             var7 = (var5 * 30.0F + var6 * 59.0F + var4 * 11.0F) / 100.0F;
             var8 = (var5 * 30.0F + var6 * 70.0F) / 100.0F;
             var9 = (var5 * 30.0F + var4 * 70.0F) / 100.0F;
@@ -793,7 +793,7 @@ public final class RenderGlobal implements IWorldAccess {
 
     public final void updateAllRenderers() {
         for(int var1 = 0; var1 < this.worldRenderers.length; ++var1) {
-            if(!this.worldRenderers[var1].needsUpdate && this.worldRenderers[var1].isLit) {
+            if(!this.worldRenderers[var1].needsUpdate && this.worldRenderers[var1].isChunkLit) {
                 this.worldRenderers[var1].needsUpdate = true;
                 this.worldRenderersToUpdate.add(this.worldRenderers[var1]);
             }

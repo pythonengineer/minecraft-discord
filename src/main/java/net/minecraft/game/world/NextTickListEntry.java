@@ -1,4 +1,4 @@
-package net.minecraft.client;
+package net.minecraft.game.world;
 
 public final class NextTickListEntry {
     public int xCoord;

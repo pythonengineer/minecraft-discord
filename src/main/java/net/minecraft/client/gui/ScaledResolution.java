@@ -14,7 +14,7 @@ public class ScaledResolution {
         this.scaledWidth = parMinecraft.displayWidth;
         this.scaledHeight = parMinecraft.displayHeight;
         this.scaleFactor = 1;
-        int i = parMinecraft.options.guiScale;
+        int i = parMinecraft.gameSettings.guiScale;
         if (i == 0) {
             i = 1000;
         }

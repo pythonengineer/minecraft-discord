@@ -1,12 +1,13 @@
 package net.minecraft.game.entity.player;
 
+import com.mojang.nbt.NBTTagCompound;
 import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityItem;
-import net.minecraft.game.entity.monster.EntityMob;
+import net.minecraft.game.entity.monster.EntityMonster;
 import net.minecraft.game.entity.projectile.EntityArrow;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemArmor;
@@ -32,7 +33,7 @@ public class EntityPlayer extends EntityLiving {
             World.setEntityDead(this);
         }
 
-        this.setLocationAndAngles(0.0D, (double)var1.spawnY, 0.0D, 0.0F, 0.0F);
+        this.setLocationAndAngles((double)var1.spawnX, (double)var1.spawnY, (double)var1.spawnZ, 0.0F, 0.0F);
         this.yOffset = 1.62F;
         this.health = 20;
         this.fireResistance = 20;
@@ -51,7 +52,7 @@ public class EntityPlayer extends EntityLiving {
         this.deathTime = 0;
     }
 
-    public void updatePlayerActionState() {
+    public void onLivingUpdate() {
         if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 << 2 == 0) {
             this.heal(1);
         }
@@ -65,7 +66,7 @@ public class EntityPlayer extends EntityLiving {
         }
 
         this.prevCameraYaw = this.cameraYaw;
-        super.updatePlayerActionState();
+        super.onLivingUpdate();
         float var3 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
         float var4 = (float)Math.atan(-this.motionY * (double)0.2F) * 15.0F;
         if(var3 > 0.1F) {
@@ -99,10 +100,10 @@ public class EntityPlayer extends EntityLiving {
         this.setPosition(this.posX, this.posY, this.posZ);
         this.motionY = (double)0.1F;
         if(this.username.equals("Notch")) {
-            ItemStack var3 = new ItemStack(Item.appleRed, 1);
-            this.dropPlayerItemWithRandomChoice(var3, false);
+            this.dropPlayerItemWithRandomChoice(new ItemStack(Item.apple, 1), true);
         }
 
+        this.inventory.dropAllItems();
         if(var1 != null) {
             this.motionX = (double)(-MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
             this.motionZ = (double)(-MathHelper.sin((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
@@ -124,14 +125,25 @@ public class EntityPlayer extends EntityLiving {
         if(var1 != null) {
             EntityItem var4 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F, this.posZ, var1);
             var4.delayBeforeCanPickup = 40;
-            var4.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
-            var4.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
-            var4.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F + 0.1F);
-            float var3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-            float var5 = 0.02F * this.rand.nextFloat();
-            var4.motionX += Math.cos((double)var3) * (double)var5;
-            var4.motionY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-            var4.motionZ += Math.sin((double)var3) * (double)var5;
+            float var3;
+            float var5;
+            if(var2) {
+                var3 = this.rand.nextFloat() * 0.5F;
+                var5 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+                var4.motionX = (double)(-MathHelper.sin(var5) * var3);
+                var4.motionZ = (double)(MathHelper.cos(var5) * var3);
+                var4.motionY = (double)0.2F;
+            } else {
+                var4.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
+                var4.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
+                var4.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F + 0.1F);
+                var3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+                var5 = 0.02F * this.rand.nextFloat();
+                var4.motionX += Math.cos((double)var3) * (double)var5;
+                var4.motionY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
+                var4.motionZ += Math.sin((double)var3) * (double)var5;
+            }
+
             this.worldObj.spawnEntityInWorld(var4);
         }
     }
@@ -139,7 +151,7 @@ public class EntityPlayer extends EntityLiving {
     public final boolean canHarvestBlock(Block var1) {
         Block var2 = var1;
         InventoryPlayer var3 = this.inventory;
-        if(var2.material != Material.rock && var2.material != Material.iron) {
+        if(var2.blockMaterial != Material.rock && var2.blockMaterial != Material.iron) {
             return true;
         } else {
             ItemStack var4 = var3.getStackInSlot(var3.currentItem);
@@ -147,7 +159,19 @@ public class EntityPlayer extends EntityLiving {
         }
     }
 
-    public void displayGUIChest(IInventory var1) {
+    public void readEntityFromNBT(NBTTagCompound var1) {
+        super.readEntityFromNBT(var1);
+    }
+
+    public void writeEntityToNBT(NBTTagCompound var1) {
+        super.writeEntityToNBT(var1);
+    }
+
+    public String getEntityType() {
+        return null;
+    }
+
+    public void displayChestGUI(IInventory var1) {
     }
 
     public void displayWorkbenchGUI() {
@@ -167,7 +191,7 @@ public class EntityPlayer extends EntityLiving {
         } else if((float)this.heartsLife > (float)this.heartsHalvesLife / 2.0F) {
             return false;
         } else {
-            if(var1 instanceof EntityMob || var1 instanceof EntityArrow) {
+            if(var1 instanceof EntityMonster || var1 instanceof EntityArrow) {
                 if(this.worldObj.difficultySetting == 0) {
                     var2 = 0;
                 }
@@ -205,7 +229,7 @@ public class EntityPlayer extends EntityLiving {
         }
     }
 
-    public void displayGUIFurnace(TileEntityFurnace var1) {
+    public void displayFurnaceGUI(TileEntityFurnace var1) {
     }
 
     public final void dropOneItem(boolean flag) {

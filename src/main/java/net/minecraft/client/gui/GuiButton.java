@@ -11,7 +11,7 @@ public class GuiButton extends Gui {
     public String displayString;
     public int id;
     public boolean enabled;
-    public boolean visible;
+    private boolean visible;
 
     public GuiButton(int var1, int var2, int var3, String var4) {
         this(var1, var2, var3, 200, 20, var4);

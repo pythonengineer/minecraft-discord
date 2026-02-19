@@ -22,7 +22,7 @@ public class Material {
         return false;
     }
 
-    public final boolean e() {
+    public final boolean liquidSolidCheck() {
         return !this.getIsLiquid() && !this.isSolid();
     }
 
@@ -30,11 +30,11 @@ public class Material {
         return true;
     }
 
-    public boolean b() {
+    public boolean getCanBlockGrass() {
         return true;
     }
 
-    public boolean getCanBlockGrass() {
+    public boolean getIsSolid() {
         return true;
     }
 }

@@ -1,5 +1,6 @@
 package net.minecraft.game.entity.misc;
 
+import com.mojang.nbt.NBTTagCompound;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -26,7 +27,7 @@ public class EntityItem extends Entity {
         this.motionX = (double)((float)(Math.random() * (double)0.2F - (double)0.1F));
         this.motionY = (double)0.2F;
         this.motionZ = (double)((float)(Math.random() * (double)0.2F - (double)0.1F));
-        this.canTriggerWalking = false;
+        this.entityWalks = false;
     }
 
     public final void onUpdate() {
@@ -150,6 +151,23 @@ public class EntityItem extends Entity {
         }
 
         return false;
+    }
+
+    public final void writeEntityToNBT(NBTTagCompound var1) {
+        var1.setShort("Health", (byte)this.health);
+        var1.setShort("Age", (short)this.age);
+        var1.setCompoundTag("Item", this.item.writeToNBT(new NBTTagCompound()));
+    }
+
+    public final void readEntityFromNBT(NBTTagCompound var1) {
+        this.health = var1.getShort("Health") & 255;
+        this.age = var1.getShort("Age");
+        var1 = var1.getCompoundTag("Item");
+        this.item = new ItemStack(var1);
+    }
+
+    public final String getEntityType() {
+        return "Item";
     }
 
     public final void onCollideWithPlayer(EntityPlayer var1) {

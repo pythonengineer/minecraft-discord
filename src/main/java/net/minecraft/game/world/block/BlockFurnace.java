@@ -16,12 +16,12 @@ public final class BlockFurnace extends BlockContainer {
 		this.blockIndexInTexture = 45;
 	}
 
-	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
-		super.onNeighborBlockChange(var1, var2, var3, var4);
-		f(var1, var2, var3, var4);
-	}
+    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
+        super.onBlockAdded(var1, var2, var3, var4);
+        setDefaultDirection(var1, var2, var3, var4);
+    }
 
-	private static void f(World var0, int var1, int var2, int var3) {
+    private static void setDefaultDirection(World var0, int var1, int var2, int var3) {
 		int var4 = var0.getBlockId(var1, var2, var3 - 1);
 		int var5 = var0.getBlockId(var1, var2, var3 + 1);
 		int var6 = var0.getBlockId(var1 - 1, var2, var3);
@@ -54,13 +54,13 @@ public final class BlockFurnace extends BlockContainer {
 		} else {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			if(var6 == 0) {
-				f(var1, var2, var3, var4);
-				var6 = var1.getBlockMetadata(var2, var3, var4);
-			}
+                setDefaultDirection(var1, var2, var3, var4);
+                var6 = var1.getBlockMetadata(var2, var3, var4);
+            }
 
-			return var5 != var6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
-		}
-	}
+            return var5 != var6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
+        }
+    }
 
     public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
         if(this.isActive) {
@@ -94,11 +94,11 @@ public final class BlockFurnace extends BlockContainer {
 
 	public final boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
 		TileEntityFurnace var6 = (TileEntityFurnace)var1.getBlockTileEntity(var2, var3, var4);
-		var5.displayGUIFurnace(var6);
-		return true;
-	}
+        var5.displayFurnaceGUI(var6);
+        return true;
+    }
 
-	protected final TileEntity a_() {
+    protected final TileEntity getBlockEntity() {
 		return new TileEntityFurnace();
 	}
 }

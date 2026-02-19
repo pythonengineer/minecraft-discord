@@ -7,7 +7,7 @@ import net.minecraft.game.world.block.Block;
 public final class RecipesIngots {
     private Object[][] recipeItems = new Object[][]{{Block.blockGold, Item.ingotGold}, {Block.blockSteel, Item.ingotIron}, {Block.blockDiamond, Item.diamond}};
 
-    public final void addRecipes(CraftingManager var1) {
+    public final void addRecipe(CraftingManager var1) {
         for(int var2 = 0; var2 < this.recipeItems.length; ++var2) {
             Block var3 = (Block)this.recipeItems[var2][0];
             Item var4 = (Item)this.recipeItems[var2][1];

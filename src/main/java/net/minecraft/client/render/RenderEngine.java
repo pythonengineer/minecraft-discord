@@ -16,7 +16,7 @@ import net.minecraft.client.render.texture.TextureFX;
 
 public class RenderEngine {
     private HashMap textureMap = new HashMap();
-    private HashMap textureContentsMap = new HashMap();
+    private HashMap textureNameToImageMap = new HashMap();
     private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
     private ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
     private List textureList = new ArrayList();
@@ -99,7 +99,7 @@ public class RenderEngine {
 
     public final int getTextureForDownloadableImage(String var1, String var2) {
         ThreadDownloadImageData var3 = (ThreadDownloadImageData)this.urlToImageDataMap.get(var1);
-        return var3 != null && var3.chunksUpdated >= 0 ? var3.chunksUpdated : this.getTexture(var2);
+        return var3 != null && var3.updateCounter >= 0 ? var3.updateCounter : this.getTexture(var2);
     }
 
 	public final void registerTextureFX(TextureFX var1) {
@@ -127,18 +127,18 @@ public class RenderEngine {
     }
 
     public final void refreshTextures() {
-        Iterator var1 = this.textureContentsMap.keySet().iterator();
+        Iterator var1 = this.textureNameToImageMap.keySet().iterator();
 
         int var2;
         ImageData var3;
         while(var1.hasNext()) {
             var2 = ((Integer)var1.next()).intValue();
-            var3 = (ImageData)this.textureContentsMap.get(Integer.valueOf(var2));
+            var3 = (ImageData)this.textureNameToImageMap.get(Integer.valueOf(var2));
             this.setupTexture(var3, var2);
         }
 
         ThreadDownloadImageData var5;
-        for(var1 = this.urlToImageDataMap.values().iterator(); var1.hasNext(); var5.textureSetupComplete = false) {
+        for(var1 = this.urlToImageDataMap.values().iterator(); var1.hasNext(); var5.texturesSetupComplete = false) {
             var5 = (ThreadDownloadImageData)var1.next();
         }
 

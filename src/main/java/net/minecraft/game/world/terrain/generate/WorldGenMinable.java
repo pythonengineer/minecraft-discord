@@ -36,7 +36,7 @@ public final class WorldGenMinable extends WorldGenerator {
                         double var37 = ((double)var5 + 0.5D - var22) / (var30 / 2.0D);
                         double var39 = ((double)var41 + 0.5D - var24) / (var28 / 2.0D);
                         if(var35 * var35 + var37 * var37 + var39 * var39 < 1.0D && var1.getBlockId(var4, var5, var41) == Block.stone.blockID) {
-                            var1.setBlockWithNotify(var4, var5, var41, this.minableBlockId);
+                            var1.setTileNoUpdate(var4, var5, var41, this.minableBlockId);
                         }
                     }
                 }

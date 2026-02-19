@@ -20,7 +20,7 @@ public final class Pathfinder {
 		return this.addToPath(var1, var2.posX, var2.boundingBox.minY, var2.posZ, 16.0F);
 	}
 
-	public final PathEntity createEntityPathTo(Entity var1, int var2, int var3, int var4, float var5) {
+	public final PathEntity createEntityPathToXYZ(Entity var1, int var2, int var3, int var4, float var5) {
 		return this.addToPath(var1, (double)((float)var2 + 0.5F), (double)((float)var3 + 0.5F), (double)((float)var4 + 0.5F), 16.0F);
 	}
 
@@ -167,7 +167,7 @@ public final class Pathfinder {
 			for(int var6 = var2; var6 < var2 + var4.yCoord; ++var6) {
 				for(int var7 = var3; var7 < var3 + var4.zCoord; ++var7) {
 					Material var8 = this.worldMap.getBlockMaterial(var1, var2, var3);
-					if(var8.getCanBlockGrass()) {
+					if(var8.getIsSolid()) {
 						return 0;
 					}
 

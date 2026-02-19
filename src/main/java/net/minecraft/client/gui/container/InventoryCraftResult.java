@@ -6,7 +6,7 @@ import net.minecraft.game.item.ItemStack;
 public final class InventoryCraftResult implements IInventory {
 	private ItemStack[] stackResult = new ItemStack[1];
 
-	public final int getSizeInventory() {
+	public final int getInventorySize() {
 		return 1;
 	}
 

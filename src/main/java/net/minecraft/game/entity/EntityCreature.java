@@ -14,7 +14,7 @@ public class EntityCreature extends EntityLiving {
         super(var1);
     }
 
-    protected final boolean updateEntityActionState(Entity var1) {
+    protected final boolean canEntityBeSeen(Entity var1) {
         return this.worldObj.rayTraceBlocks(new Vec3D(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), new Vec3D(var1.posX, var1.posY + (double)var1.getEyeHeight(), var1.posZ)) == null;
     }
 
@@ -25,7 +25,7 @@ public class EntityCreature extends EntityLiving {
             if(this.playerToAttack != null) {
                 this.pathToEntity = this.worldObj.pathFinder.createEntityPathTo(this, this.playerToAttack, 16.0F);
             }
-        } else if(!this.playerToAttack.canBePushed()) {
+        } else if(!this.playerToAttack.isEntityAlive()) {
             this.playerToAttack = null;
         } else {
             Entity var5 = this.playerToAttack;
@@ -33,7 +33,7 @@ public class EntityCreature extends EntityLiving {
             float var14 = (float)(var5.posY - super.posY);
             float var15 = (float)(var5.posZ - super.posZ);
             float var1 = MathHelper.sqrt_float(var13 * var13 + var14 * var14 + var15 * var15);
-            if(this.updateEntityActionState(this.playerToAttack)) {
+            if(this.canEntityBeSeen(this.playerToAttack)) {
                 this.attackEntity(this.playerToAttack, var1);
             }
         }
@@ -65,7 +65,7 @@ public class EntityCreature extends EntityLiving {
                     }
 
                     if(var24 > 0) {
-                        this.pathToEntity = this.worldObj.pathFinder.createEntityPathTo(this, var24, var2, var3, 16.0F);
+                        this.pathToEntity = this.worldObj.pathFinder.createEntityPathToXYZ(this, var24, var2, var3, 16.0F);
                     }
                 }
             } else {

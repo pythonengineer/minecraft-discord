@@ -1,19 +1,32 @@
 package net.minecraft.game.entity.monster;
 
+import com.mojang.nbt.NBTTagCompound;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
 
-public class EntityCreeper extends EntityMob {
+public class EntityCreeper extends EntityMonster {
 	private int timeSinceIgnited;
 	private int lastActiveTime;
-	private int fuseDuration = 30;
+	private int fuseTime = 30;
 	private int creeperState = -1;
 
-    public EntityCreeper(World var1) {
-        super(var1);
-        this.texture = "/mob/creeper.png";
-    }
+	public EntityCreeper(World var1) {
+		super(var1);
+		this.texture = "/mob/creeper.png";
+	}
+
+	public final void writeEntityToNBT(NBTTagCompound var1) {
+		super.writeEntityToNBT(var1);
+	}
+
+	public final void readEntityFromNBT(NBTTagCompound var1) {
+		super.readEntityFromNBT(var1);
+	}
+
+	public final String getEntityType() {
+		return "Creeper";
+	}
 
 	protected final void updateEntityActionState() {
 		this.lastActiveTime = this.timeSinceIgnited;
@@ -40,8 +53,8 @@ public class EntityCreeper extends EntityMob {
 
 			this.creeperState = 1;
 			++this.timeSinceIgnited;
-			if(this.timeSinceIgnited == this.fuseDuration) {
-                this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
+			if(this.timeSinceIgnited == this.fuseTime) {
+				this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
 				this.setEntityDead();
 			}
 
@@ -51,10 +64,10 @@ public class EntityCreeper extends EntityMob {
 	}
 
 	public final float getCreeperState(float var1) {
-		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * var1) / (float)(this.fuseDuration - 2);
+		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * var1) / (float)(this.fuseTime - 2);
 	}
 
-	protected final int getDropItemId() {
+	protected final int getDroppedItem() {
 		return Item.gunpowder.shiftedIndex;
 	}
 }

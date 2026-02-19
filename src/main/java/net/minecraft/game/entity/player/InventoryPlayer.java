@@ -168,7 +168,7 @@ public final class InventoryPlayer implements IInventory {
         var3[var1] = var2;
     }
 
-    public final int getSizeInventory() {
+    public final int getInventorySize() {
         return this.mainInventory.length + 4;
     }
 
@@ -197,7 +197,7 @@ public final class InventoryPlayer implements IInventory {
 
         for(int var4 = 0; var4 < this.armorInventory.length; ++var4) {
             if(this.armorInventory[var4] != null && this.armorInventory[var4].getItem() instanceof ItemArmor) {
-                int var5 = this.armorInventory[var4].isItemStackDamageable();
+                int var5 = this.armorInventory[var4].getMaxDamage();
                 int var6 = this.armorInventory[var4].itemDamage;
                 var6 = var5 - var6;
                 var2 += var6;
@@ -212,5 +212,23 @@ public final class InventoryPlayer implements IInventory {
         } else {
             return (var1 - 1) * var2 / var3 + 1;
         }
+    }
+
+    public final void dropAllItems() {
+        int var1;
+        for(var1 = 0; var1 < this.mainInventory.length; ++var1) {
+            if(this.mainInventory[var1] != null) {
+                this.player.dropPlayerItemWithRandomChoice(this.mainInventory[var1], true);
+                this.mainInventory[var1] = null;
+            }
+        }
+
+        for(var1 = 0; var1 < this.armorInventory.length; ++var1) {
+            if(this.armorInventory[var1] != null) {
+                this.player.dropPlayerItemWithRandomChoice(this.armorInventory[var1], true);
+                this.armorInventory[var1] = null;
+            }
+        }
+
     }
 }

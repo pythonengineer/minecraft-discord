@@ -16,7 +16,7 @@ import net.minecraft.game.world.block.Block;
 public final class EffectRenderer {
     private World worldObj;
     private List[] fxLayers = new List[3];
-    private RenderEngine renderEngine;
+    private RenderEngine renderer;
     private EaglercraftRandom rand = new EaglercraftRandom();
 
     public EffectRenderer(World var1, RenderEngine var2) {
@@ -24,7 +24,7 @@ public final class EffectRenderer {
             this.worldObj = var1;
         }
 
-        this.renderEngine = var2;
+        this.renderer = var2;
 
         for(int var3 = 0; var3 < 3; ++var3) {
             this.fxLayers[var3] = new ArrayList();
@@ -56,19 +56,19 @@ public final class EffectRenderer {
         float var5 = -var4 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
         float var6 = var3 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
         float var7 = MathHelper.cos(var1.rotationPitch * (float)Math.PI / 180.0F);
-        EntityFX.V = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
-        EntityFX.W = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
-        EntityFX.X = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
+        EntityFX.interpPosX = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
+        EntityFX.interpPosY = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
+        EntityFX.interpPosZ = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
 
         for(int var11 = 0; var11 < 2; ++var11) {
             if(this.fxLayers[var11].size() != 0) {
                 int var8 = 0;
                 if(var11 == 0) {
-                    var8 = this.renderEngine.getTexture("/particles.png");
+                    var8 = this.renderer.getTexture("/particles.png");
                 }
 
                 if(var11 == 1) {
-                    var8 = this.renderEngine.getTexture("/terrain.png");
+                    var8 = this.renderer.getTexture("/terrain.png");
                 }
 
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
@@ -157,7 +157,7 @@ public final class EffectRenderer {
                 var6 = (double)var1 + var9.maxX + (double)0.1F;
             }
 
-            this.addEffect((new EntityDiggingFX(this.worldObj, var6, var7, var8, 0.0D, 0.0D, 0.0D, var9)).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
+            this.addEffect((new EntityDiggingFX(this.worldObj, var6, var7, var8, 0.0D, 0.0D, 0.0D, var9)).multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F));
         }
     }
 

@@ -23,9 +23,9 @@ public final class EntityDiggingFX extends EntityFX {
 		float var10 = ((float)(this.particleTextureIndex / 16) + this.particleTextureJitterY / 4.0F) / 16.0F;
 		float var11 = var10 + 0.999F / 64.0F;
 		float var12 = 0.1F * this.particleScale;
-        float var13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)var2 - V);
-        float var14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)var2 - W);
-        float var15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)var2 - X);
+        float var13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)var2 - interpPosX);
+        float var14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)var2 - interpPosY);
+        float var15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)var2 - interpPosZ);
         var2 = this.getBrightness(var2);
         var1.setColorOpaque_F(var2 * this.particleRed, var2 * this.particleGreen, var2 * this.particleBlue);
         var1.addVertexWithUV((double)(var13 - var3 * var12 - var6 * var12), (double)(var14 - var4 * var12), (double)(var15 - var5 * var12 - var7 * var12), (double)var8, (double)var11);

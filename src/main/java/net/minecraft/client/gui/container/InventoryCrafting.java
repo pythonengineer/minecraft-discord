@@ -14,7 +14,7 @@ public final class InventoryCrafting implements IInventory {
 		this.eventHandler = var1;
 	}
 
-	public final int getSizeInventory() {
+	public final int getInventorySize() {
 		return this.inventoryWidth;
 	}
 
@@ -32,7 +32,7 @@ public final class InventoryCrafting implements IInventory {
 			if(this.stackList[var1].stackSize <= var2) {
 				var3 = this.stackList[var1];
 				this.stackList[var1] = null;
-				this.eventHandler.onCraftMatrixChanged();
+				this.eventHandler.guiCraftingItemsCheck();
 				return var3;
 			} else {
 				var3 = this.stackList[var1].splitStack(var2);
@@ -40,7 +40,7 @@ public final class InventoryCrafting implements IInventory {
 					this.stackList[var1] = null;
 				}
 
-				this.eventHandler.onCraftMatrixChanged();
+				this.eventHandler.guiCraftingItemsCheck();
 				return var3;
 			}
 		} else {
@@ -50,7 +50,7 @@ public final class InventoryCrafting implements IInventory {
 
 	public final void setInventorySlotContents(int var1, ItemStack var2) {
 		this.stackList[var1] = var2;
-		this.eventHandler.onCraftMatrixChanged();
+		this.eventHandler.guiCraftingItemsCheck();
 	}
 
 	public final int getInventoryStackLimit() {

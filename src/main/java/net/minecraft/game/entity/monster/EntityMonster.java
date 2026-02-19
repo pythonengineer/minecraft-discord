@@ -1,24 +1,25 @@
 package net.minecraft.game.entity.monster;
 
+import com.mojang.nbt.NBTTagCompound;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityCreature;
 import net.minecraft.game.world.World;
 
-public class EntityMob extends EntityCreature {
+public class EntityMonster extends EntityCreature {
 	protected int attackStrength = 2;
 
-	public EntityMob(World var1) {
+	public EntityMonster(World var1) {
 		super(var1);
 		this.health = 20;
 	}
 
-	public void updatePlayerActionState() {
+	public void onLivingUpdate() {
 		float var1 = this.getBrightness(1.0F);
 		if(var1 > 0.5F) {
 			this.entityAge += 2;
 		}
 
-		super.updatePlayerActionState();
+		super.onLivingUpdate();
 	}
 
 	public final void onUpdate() {
@@ -30,8 +31,8 @@ public class EntityMob extends EntityCreature {
 	}
 
 	protected Entity findPlayerToAttack() {
-		double var1 = this.worldObj.playerEntity.getDistanceToEntity(this);
-		return var1 < 256.0D && this.updateEntityActionState(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
+		double var1 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
+		return var1 < 256.0D && this.canEntityBeSeen(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
 	}
 
 	public final boolean attackEntityFrom(Entity var1, int var2) {
@@ -56,5 +57,17 @@ public class EntityMob extends EntityCreature {
 
 	protected float getBlockPathWeight(int var1, int var2, int var3) {
 		return 0.5F - this.worldObj.getBrightness(var1, var2, var3);
+	}
+
+	public void writeEntityToNBT(NBTTagCompound var1) {
+		super.writeEntityToNBT(var1);
+	}
+
+	public void readEntityFromNBT(NBTTagCompound var1) {
+		super.readEntityFromNBT(var1);
+	}
+
+	public String getEntityType() {
+		return "Monster";
 	}
 }

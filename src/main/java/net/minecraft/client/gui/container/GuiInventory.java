@@ -29,7 +29,7 @@ public final class GuiInventory extends GuiContainer {
         }
 
 		for(var2 = 0; var2 < 4; ++var2) {
-            this.inventorySlots.add(new SlotArmor(this, this, var1, var1.getSizeInventory() - 1 - var2, 8, 8 + var2 * 18, var2));
+            this.inventorySlots.add(new SlotArmor(this, this, var1, var1.getInventorySize() - 1 - var2, 8, 8 + var2 * 18, var2));
 		}
 
 		for(var2 = 0; var2 < 3; ++var2) {
@@ -47,7 +47,7 @@ public final class GuiInventory extends GuiContainer {
 	public final void onGuiClosed() {
 		super.onGuiClosed();
 
-        for(int var1 = 0; var1 < this.inventoryCrafting.getSizeInventory(); ++var1) {
+        for(int var1 = 0; var1 < this.inventoryCrafting.getInventorySize(); ++var1) {
             ItemStack var2 = this.inventoryCrafting.getStackInSlot(var1);
             if(var2 != null) {
                 this.mc.thePlayer.dropPlayerItem(var2);
@@ -56,7 +56,7 @@ public final class GuiInventory extends GuiContainer {
 
 	}
 
-	public final void onCraftMatrixChanged() {
+	public final void guiCraftingItemsCheck() {
 		int[] var1 = new int[9];
 
 		for(int var2 = 0; var2 < 3; ++var2) {

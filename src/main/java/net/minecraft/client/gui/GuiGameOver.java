@@ -1,19 +1,15 @@
 package net.minecraft.client.gui;
 
-import java.io.IOException;
-
-import net.lax1dude.eaglercraft.EagRuntime;
-import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.client.GuiMainMenu;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.world.World;
-import net.minecraft.client.PlayerLoader;
 
 public final class GuiGameOver extends GuiScreen {
 	public final void initGui() {
 		this.controlList.clear();
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, "Generate new level..."));
-		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, "Load level.."));
+        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, "Respawn"));
+        this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, "Title menu"));
 		//if(this.mc.session == null) {
 		//	((GuiButton)this.controlList.get(1)).enabled = false;
 		//}
@@ -24,30 +20,15 @@ public final class GuiGameOver extends GuiScreen {
     }
 
 	protected final void actionPerformed(GuiButton var1) {
-        if(var1.id == 0) {
-            this.mc.displayGuiScreen(new GuiOptions(this, this.mc.options));
+        if(var1.id == 1) {
+            this.mc.respawn();
+            this.mc.displayGuiScreen((GuiScreen)null);
         }
 
-		if(var1.id == 1) {
-			this.mc.displayGuiScreen(new GuiNewLevel(this));
-		}
-
-		if(var1.id == 2) {// && this.mc.session != null) {
-		    //this.mc.displayGuiScreen(new GuiLoadLevel(this));
-            try {
-                byte[] level = EagRuntime.getStorage("level.mclevel");
-                if(level != null) {
-                    EaglerInputStream var4 = new EaglerInputStream(level);
-                    new PlayerLoader(this.mc, this.mc.loadingScreen);
-                    var4.close();
-                    this.mc.setLevel((World)null);
-                    this.mc.displayGuiScreen((GuiScreen)null);
-                    this.mc.setIngameFocus();
-                }
-            } catch (IOException var3) {
-                var3.printStackTrace();
-            }
-		}
+        if(var1.id == 2) {
+            this.mc.changeWorld2((World)null);
+            this.mc.displayGuiScreen(new GuiMainMenu());
+        }
 
 	}
 

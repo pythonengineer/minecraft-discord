@@ -7,10 +7,10 @@ import net.minecraft.game.world.block.Block;
 
 public final class Session {
     public static List registeredBlocksList;
-	public String username;
+	public String name;
 
 	public Session(String var1, String var2) {
-		this.username = var1;
+		this.name = var1;
 	}
 
 	static {
@@ -54,7 +54,7 @@ public final class Session {
         registeredBlocksList.add(Block.oreGold);
         registeredBlocksList.add(Block.blockSteel);
         registeredBlocksList.add(Block.blockGold);
-        registeredBlocksList.add(Block.bookShelf);
+        registeredBlocksList.add(Block.bookshelf);
         registeredBlocksList.add(Block.tnt);
         registeredBlocksList.add(Block.obsidian);
         System.out.println(registeredBlocksList.size());

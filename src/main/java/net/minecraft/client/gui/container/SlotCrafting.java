@@ -16,7 +16,7 @@ final class SlotCrafting extends Slot {
     }
 
     public final void onPickupFromSlot() {
-        for(int var1 = 0; var1 < this.craftMatrix.getSizeInventory(); ++var1) {
+        for(int var1 = 0; var1 < this.craftMatrix.getInventorySize(); ++var1) {
             if(this.craftMatrix.getStackInSlot(var1) != null) {
                 this.craftMatrix.decrStackSize(var1, 1);
             }

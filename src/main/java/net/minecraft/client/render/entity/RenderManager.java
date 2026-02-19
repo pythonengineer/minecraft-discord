@@ -37,9 +37,9 @@ public final class RenderManager {
 	public RenderEngine renderEngine;
 	public World worldObj;
 	public float playerViewY;
-    private double viewerPosX;
-    private double viewerPosY;
-    private double viewerPosZ;
+    private double tickPosX;
+    private double tickPosY;
+    private double tickPosZ;
 
     private RenderManager() {
         this.entityRenderMap.put(EntitySpider.class, new RenderSpider());
@@ -80,9 +80,9 @@ public final class RenderManager {
         this.worldObj = var1;
         this.renderEngine = var2;
         this.playerViewY = var3.prevRotationYaw + (var3.rotationYaw - var3.prevRotationYaw) * var4;
-        this.viewerPosX = var3.lastTickPosX + (var3.posX - var3.lastTickPosX) * (double)var4;
-        this.viewerPosY = var3.lastTickPosY + (var3.posY - var3.lastTickPosY) * (double)var4;
-        this.viewerPosZ = var3.lastTickPosZ + (var3.posZ - var3.lastTickPosZ) * (double)var4;
+        this.tickPosX = var3.lastTickPosX + (var3.posX - var3.lastTickPosX) * (double)var4;
+        this.tickPosY = var3.lastTickPosY + (var3.posY - var3.lastTickPosY) * (double)var4;
+        this.tickPosZ = var3.lastTickPosZ + (var3.posZ - var3.lastTickPosZ) * (double)var4;
     }
 
     public final void renderEntity(Entity var1, float var2) {
@@ -99,7 +99,7 @@ public final class RenderManager {
         Render var10 = this.getEntityRenderObject(var1);
         if(var10 != null) {
             var10.doRender(var1, var2, var4, var6, var8, var9);
-            var10.doRenderShadowAndFire(var1, var2, var4, var6, var9);
+            var10.renderShadow(var1, var2, var4, var6, var9);
         }
 
     }
@@ -109,9 +109,9 @@ public final class RenderManager {
     }
 
     public final double getDistanceToCamera(double var1, double var3, double var5) {
-        double var7 = var1 - this.viewerPosX;
-        double var9 = var3 - this.viewerPosY;
-        double var11 = var5 - this.viewerPosZ;
+        double var7 = var1 - this.tickPosX;
+        double var9 = var3 - this.tickPosY;
+        double var11 = var5 - this.tickPosZ;
         return var7 * var7 + var9 * var9 + var11 * var11;
     }
 }

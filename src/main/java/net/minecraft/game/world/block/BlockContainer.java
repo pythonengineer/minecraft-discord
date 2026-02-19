@@ -9,15 +9,15 @@ public abstract class BlockContainer extends Block {
         super(var1, var2);
     }
 
-    public void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
-        super.onNeighborBlockChange(var1, var2, var3, var4);
-        var1.setBlockTileEntity(var2, var3, var4, this.a_());
-    }
-
     public void onBlockAdded(World var1, int var2, int var3, int var4) {
         super.onBlockAdded(var1, var2, var3, var4);
-        var1.i(var2, var3, var4);
+        var1.setBlockTileEntity(var2, var3, var4, this.getBlockEntity());
     }
 
-    protected abstract TileEntity a_();
+    public void onBlockRemoval(World var1, int var2, int var3, int var4) {
+        super.onBlockRemoval(var1, var2, var3, var4);
+        var1.removeBlockTileEntity(var2, var3, var4);
+    }
+
+    protected abstract TileEntity getBlockEntity();
 }

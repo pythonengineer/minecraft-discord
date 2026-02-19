@@ -6,13 +6,13 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public class Item {
-    protected static EaglercraftRandom rand = new EaglercraftRandom();
+    protected static EaglercraftRandom itemRand = new EaglercraftRandom();
     public static Item[] itemsList = new Item[1024];
     public static Item shovel;
     public static Item pickaxeSteel;
     public static Item axeSteel;
-    public static Item striker;
-    public static Item appleRed;
+    public static Item flintAndSteel;
+    public static Item apple;
     public static Item bow;
     public static Item arrow;
     public static Item coal;
@@ -156,12 +156,12 @@ public class Item {
         var1 = 5;
         ItemFlintAndSteel var4 = var17;
         var4.iconIndex = var1;
-        striker = var4;
+        flintAndSteel = var4;
         ItemFood var18 = new ItemFood(4, 4);
         var1 = 10;
         ItemFood var5 = var18;
         var5.iconIndex = var1;
-        appleRed = var5;
+        apple = var5;
         ItemBow var19 = new ItemBow(5);
         var1 = 21;
         ItemBow var6 = var19;

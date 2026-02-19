@@ -25,7 +25,7 @@ public final class BlockFlowing extends BlockFluid {
 		this.setTickOnLoad(true);
 	}
 
-    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
         var1.scheduleBlockUpdate(var2, var3, var4, this.movingId1);
     }
 
@@ -34,7 +34,7 @@ public final class BlockFlowing extends BlockFluid {
         boolean var10000 = false;
     }
 
-    public final boolean e(World var1, int var2, int var3, int var4, int var5) {
+    public final boolean update(World var1, int var2, int var3, int var4, int var5) {
         return false;
     }
 
@@ -59,7 +59,7 @@ public final class BlockFlowing extends BlockFluid {
     }
 
     public final int tickRate() {
-        return this.material == Material.lava ? 25 : 5;
+        return this.blockMaterial == Material.lava ? 25 : 5;
     }
 
 	public final int quantityDropped(EaglercraftRandom var1) {
@@ -67,6 +67,6 @@ public final class BlockFlowing extends BlockFluid {
 	}
 
 	public final int getRenderBlockPass() {
-		return this.material == Material.water ? 1 : 0;
+		return this.blockMaterial == Material.water ? 1 : 0;
 	}
 }

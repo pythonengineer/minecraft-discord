@@ -1,28 +1,39 @@
 package net.minecraft.game.world;
 
+import com.mojang.nbt.NBTTagCompound;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.client.NextTickListEntry;
+import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.tileentity.TileEntity;
+import net.minecraft.game.world.chunk.Chunk;
+import net.minecraft.game.world.chunk.ChunkProviderLoadOrGenerate;
+import net.minecraft.game.world.chunk.IChunkProvider;
 import net.minecraft.game.world.material.Material;
 import net.minecraft.game.world.path.Pathfinder;
+import net.minecraft.game.world.terrain.ChunkProviderGenerate;
 
 public final class World {
     private List lightingToUpdate = new ArrayList();
     private List loadedEntityList = new ArrayList();
     private List unloadedEntityList = new LinkedList();
     public List loadedTileEntityList = new ArrayList();
-    private int worldTime = 0;
+    public long worldTime = 0L;
     private long skyColor = 10079487L;
     private long fogColor = 11587839L;
     private long cloudColor = 16777215L;
@@ -34,18 +45,119 @@ public final class World {
 	public int difficultySetting;
 	public final Pathfinder pathFinder = new Pathfinder(this);
 	public EaglercraftRandom rand = new EaglercraftRandom();
-	public float spawnX = 0.0F;
-	public float spawnY = 64.0F;
-	public float spawnZ = 0.0F;
+    public int spawnX;
+    public int spawnY;
+    public int spawnZ;
 	private List worldAccesses = new ArrayList();
-    private IChunkProvider chunkProvider = new ChunkProviderLoadOrGenerate(new ChunkProviderGenerate(this));
+    private IChunkProvider chunkProvider;
+    private VFile2 saveDirectory;
+    private long randomSeed = 0L;
+    private NBTTagCompound nbtCompoundPlayer;
+    public long sizeOnDisk = 0L;
+
+    public static NBTTagCompound getWorldNBTTag(String var1) {
+        VFile2 var0 = new VFile2("saves");
+        var0 = new VFile2(var0, var1);
+        var0 = new VFile2(var0, "level.dat");
+        if(var0.exists()) {
+            try (InputStream fis = var0.getInputStream()) {
+                NBTTagCompound var3 = LoadingScreenRenderer.read(fis);
+                var3 = var3.getCompoundTag("Data");
+                return var3;
+            } catch (IOException var2) {
+                var2.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    public static void deleteWorld(String var1) {
+        VFile2 var0 = new VFile2("saves");
+        var0 = new VFile2(var0, var1);
+        deleteFiles(var0.listFiles(true));
+        var0.delete();
+    }
+
+    private static void deleteFiles(List<VFile2> var0) {
+        for(int var1 = 0; var1 < var0.size(); ++var1) {
+            var0.get(var1).delete();
+        }
+
+    }
+
+    public World(String var2) {
+        this.saveDirectory = new VFile2("saves", var2);
+        VFile2 var1 = new VFile2(this.saveDirectory, "level.dat");
+        if(var1.exists()) {
+            try (InputStream fis = var1.getInputStream()) {
+                NBTTagCompound var4 = LoadingScreenRenderer.read(fis);
+                var4 = var4.getCompoundTag("Data");
+                this.randomSeed = var4.getLong("RandomSeed");
+                this.spawnX = var4.getInt("SpawnX");
+                this.spawnY = var4.getInt("SpawnY");
+                this.spawnZ = var4.getInt("SpawnZ");
+                this.worldTime = var4.getLong("Time");
+                this.sizeOnDisk = var4.getLong("SizeOnDisk");
+                this.nbtCompoundPlayer = var4.getCompoundTag("Player");
+            } catch (IOException var3) {
+                var3.printStackTrace();
+            }
+        }
+
+        while(this.randomSeed == 0L) {
+            this.randomSeed = this.rand.nextLong();
+            this.spawnX = 0;
+            this.spawnY = 64;
+            this.spawnZ = 0;
+        }
+
+        this.chunkProvider = new ChunkProviderLoadOrGenerate(this, this.saveDirectory, new ChunkProviderGenerate(this, this.randomSeed));
+    }
+
+    public final void spawnPlayer() {
+        if(this.nbtCompoundPlayer != null) {
+            this.playerEntity.readFromNBT(this.nbtCompoundPlayer);
+            this.nbtCompoundPlayer = null;
+        }
+
+    }
+
+    public void saveWorld(boolean var1) {
+        VFile2 var2 = new VFile2(this.saveDirectory, "level.dat");
+        NBTTagCompound var3 = new NBTTagCompound();
+        var3.setLong("RandomSeed", this.randomSeed);
+        var3.setInt("SpawnX", this.spawnX);
+        var3.setInt("SpawnY", this.spawnY);
+        var3.setInt("SpawnZ", this.spawnZ);
+        var3.setLong("Time", this.worldTime);
+        var3.setLong("SizeOnDisk", this.sizeOnDisk);
+        var3.setLong("LastPlayed", EagRuntime.currentTimeMillis());
+        NBTTagCompound var4;
+        if(this.playerEntity != null) {
+            var4 = new NBTTagCompound();
+            this.playerEntity.writeToNBT(var4);
+            var3.setCompoundTag("Player", var4);
+        }
+
+        var4 = new NBTTagCompound();
+        var4.setTag("Data", var3);
+
+        try (OutputStream fos = var2.getOutputStream()) {
+            LoadingScreenRenderer.write(var4, fos);
+        } catch (IOException var5) {
+            var5.printStackTrace();
+        }
+
+        this.chunkProvider.saveChunks(var1);
+    }
 
     public final int getBlockId(int var1, int var2, int var3) {
-        return var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000 ? (var2 <= 0 ? Block.lavaStill.blockID : (var2 >= 128 ? 0 : this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4).getBlockID(var1 & 15, var2, var3 & 15))) : 0;
+        return var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000 ? (var2 <= 0 ? Block.lavaStill.blockID : (var2 >= 128 ? 0 : this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4).getBlockID(var1 & 15, var2, var3 & 15))) : 0;
     }
 
     public final boolean blockExists(int var1, int var2, int var3) {
-        return var2 >= 0 && var2 < 128 ? this.chunkExists(var1 >>> 4, var3 >>> 4) : false;
+        return var2 >= 0 && var2 < 128 ? this.chunkExists(var1 >> 4, var3 >> 4) : false;
     }
 
     private boolean chunkExists(int var1, int var2) {
@@ -63,7 +175,7 @@ public final class World {
             } else if(var2 > 128) {
                 return false;
             } else {
-                Chunk var5 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                Chunk var5 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
                 return var5.setBlockID(var1 & 15, var2, var3 & 15, var4);
             }
         } else {
@@ -73,7 +185,7 @@ public final class World {
 
 	public final Material getBlockMaterial(int var1, int var2, int var3) {
 		var1 = this.getBlockId(var1, var2, var3);
-		return var1 == 0 ? Material.air : Block.blocksList[var1].material;
+		return var1 == 0 ? Material.air : Block.blocksList[var1].blockMaterial;
 	}
 
     public final int getBlockMetadata(int var1, int var2, int var3) {
@@ -83,7 +195,7 @@ public final class World {
             } else if(var2 >= 128) {
                 return 0;
             } else {
-                Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
                 var1 &= 15;
                 var3 &= 15;
                 return var4.getBlockMetadata(var1, var2, var3);
@@ -104,7 +216,7 @@ public final class World {
             } else if(var2 >= 128) {
                 return false;
             } else {
-                Chunk var5 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                Chunk var5 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
                 var1 &= 15;
                 var3 &= 15;
                 var5.setBlockMetadata(var1, var2, var3, var4);
@@ -187,7 +299,7 @@ public final class World {
     }
 
     public final boolean canBlockSeeTheSky(int var1, int var2, int var3) {
-        return this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4).canBlockSeeTheSky(var1 & 15, var2, var3 & 15);
+        return this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4).canBlockSeeTheSky(var1 & 15, var2, var3 & 15);
     }
 
     public final int canExistingBlockSeeTheSky(int var1, int var2, int var3) {
@@ -197,7 +309,7 @@ public final class World {
             } else if(var2 >= 128) {
                 return 15;
             } else {
-                Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+                Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
                 var1 &= 15;
                 var3 &= 15;
                 return var4.getBlockLightValue(var1, var2, var3, this.skylightSubtracted);
@@ -209,10 +321,10 @@ public final class World {
 
     public final int getHeightValue(int var1, int var2) {
         if(var1 >= -32000000 && var2 >= -32000000 && var1 < 32000000 && var2 <= 32000000) {
-            if(!this.chunkExists(var1 >>> 4, var2 >>> 4)) {
+            if(!this.chunkExists(var1 >> 4, var2 >> 4)) {
                 return 0;
             } else {
-                Chunk var3 = this.getChunkFromChunkCoords(var1 >>> 4, var2 >>> 4);
+                Chunk var3 = this.getChunkFromChunkCoords(var1 >> 4, var2 >> 4);
                 return var3.getHeightValue(var1 & 15, var2 & 15);
             }
         } else {
@@ -233,10 +345,10 @@ public final class World {
                 return 15;
             } else if(var3 >= 128) {
                 return 15;
-            } else if(!this.chunkExists(var2 >>> 4, var4 >>> 4)) {
+            } else if(!this.chunkExists(var2 >> 4, var4 >> 4)) {
                 return 0;
             } else {
-                Chunk var5 = this.getChunkFromChunkCoords(var2 >>> 4, var4 >>> 4);
+                Chunk var5 = this.getChunkFromChunkCoords(var2 >> 4, var4 >> 4);
                 var2 &= 15;
                 var4 &= 15;
                 return var5.getSavedLightValue(var1, var2, var3, var4);
@@ -397,7 +509,7 @@ public final class World {
 				var6 = 16.0F * var3;
 			}
 
-			if(this.playerEntity.getDistanceToEntity(var1) < (double)(var6 * var6)) {
+			if(this.playerEntity.getDistanceSqToEntity(var1) < (double)(var6 * var6)) {
 				((IWorldAccess)this.worldAccesses.get(var5)).playSound(var2, var1.posX, var1.posY - (double)var1.yOffset, var1.posZ, var3, var4);
 			}
 		}
@@ -495,7 +607,8 @@ public final class World {
     }
 
     public final float getCelestialAngle(float var1) {
-        var1 = ((float)this.worldTime + var1) / 24000.0F - 0.15F;
+        int var2 = (int)(this.worldTime % 24000L);
+        var1 = ((float)var2 + var1) / 24000.0F - 0.15F;
         return var1;
     }
 
@@ -611,7 +724,7 @@ public final class World {
 			for(var2 = var4; var2 < var5; ++var2) {
 				for(int var8 = var6; var8 < var7; ++var8) {
 					Block var9 = Block.blocksList[this.getBlockId(var10, var2, var8)];
-					if(var9 != null && var9.material.getIsLiquid()) {
+					if(var9 != null && var9.blockMaterial.getIsLiquid()) {
 						return true;
 					}
 				}
@@ -655,7 +768,7 @@ public final class World {
 			for(int var8 = var5; var8 < var6; ++var8) {
 				for(int var9 = var7; var9 < var11; ++var9) {
 					Block var10 = Block.blocksList[this.getBlockId(var3, var8, var9)];
-					if(var10 != null && var10.material == var2) {
+					if(var10 != null && var10.blockMaterial == var2) {
 						return true;
 					}
 				}
@@ -861,30 +974,34 @@ public final class World {
 	}
 
     public final TileEntity getBlockTileEntity(int var1, int var2, int var3) {
-        Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+        Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
         return var4 != null ? var4.getChunkBlockTileEntity(var1 & 15, var2, var3 & 15) : null;
     }
 
     public final void setBlockTileEntity(int var1, int var2, int var3, TileEntity var4) {
-        Chunk var5 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+        Chunk var5 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
         if(var5 != null) {
             var5.setChunkBlockTileEntity(var1 & 15, var2, var3 & 15, var4);
         }
 
     }
 
-    public final void i(int var1, int var2, int var3) {
-        Chunk var4 = this.getChunkFromChunkCoords(var1 >>> 4, var3 >>> 4);
+    public final void removeBlockTileEntity(int var1, int var2, int var3) {
+        Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
         if(var4 != null) {
             var4.removeChunkBlockTileEntity(var1 & 15, var2, var3 & 15);
         }
 
     }
 
-	public final boolean isBlockNormalCube(int var1, int var2, int var3) {
-		Block var4 = Block.blocksList[this.getBlockId(var1, var2, var3)];
-		return var4 == null ? false : var4.isOpaqueCube();
-	}
+    public final boolean isSolid(int var1, int var2, int var3) {
+        Block var4 = Block.blocksList[this.getBlockId(var1, var2, var3)];
+        return var4 == null ? false : var4.isOpaqueCube();
+    }
+
+    public final void saveWorldIndirectly() {
+        this.saveWorld(true);
+    }
 
     public final void updatingLighting() {
         while(this.lightingToUpdate.size() > 0) {
@@ -914,10 +1031,10 @@ public final class World {
                                             var19 = false;
                                         } else if(var5 >= 128) {
                                             var19 = true;
-                                        } else if(!var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
+                                        } else if(!var2.chunkExists(var3 >> 4, var4 >> 4)) {
                                             var19 = false;
                                         } else {
-                                            Chunk var14 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
+                                            Chunk var14 = var2.getChunkFromChunkCoords(var3 >> 4, var4 >> 4);
                                             var11 = var3 & 15;
                                             var13 = var4 & 15;
                                             var19 = var14.canBlockSeeTheSky(var11, var5, var13);
@@ -981,9 +1098,9 @@ public final class World {
                                     var12 = var3;
                                     EnumSkyBlock var17 = var1.skyBlock;
                                     World var16 = var2;
-                                    if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000 && var5 >= 0 && var5 < 128 && var2.chunkExists(var3 >>> 4, var4 >>> 4)) {
-                                        Chunk var15 = var2.getChunkFromChunkCoords(var3 >>> 4, var4 >>> 4);
-                                        var15.getBlockLightValue(var17, var3 & 15, var5, var4 & 15, var7);
+                                    if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000 && var5 >= 0 && var5 < 128 && var2.chunkExists(var3 >> 4, var4 >> 4)) {
+                                        Chunk var15 = var2.getChunkFromChunkCoords(var3 >> 4, var4 >> 4);
+                                        var15.setLightValue(var17, var3 & 15, var5, var4 & 15, var7);
 
                                         for(var6 = 0; var6 < var16.worldAccesses.size(); ++var6) {
                                             ((IWorldAccess)var16.worldAccesses.get(var6)).markBlockAndNeighborsNeedsUpdate(var12, var13, var18);
@@ -1036,7 +1153,11 @@ public final class World {
             }
         }
 
-        this.worldTime = (this.worldTime + 1) % 24000;
+        ++this.worldTime;
+        if(this.worldTime % 200L == 0L) {
+            this.saveWorld(false);
+        }
+
         var8 = this.unloadedEntityList.size();
         if(var8 > 200) {
             var8 = 200;

@@ -7,8 +7,8 @@ import net.minecraft.client.render.camera.Frustrum;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
-import net.minecraft.game.world.Chunk;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.chunk.Chunk;
 
 public final class WorldRenderer {
 	private World worldObj;
@@ -24,10 +24,10 @@ public final class WorldRenderer {
     public int posXMinus;
     public int posYMinus;
     public int posZMinus;
-    private int t;
-    private int u;
-    private int v;
-    public boolean isInFrustrum = false;
+    private int posXClip;
+    private int posYClip;
+    private int posZClip;
+    public boolean isInFrustum = false;
 	private boolean[] skipRenderPass = new boolean[2];
     private int posXPlus;
     private int posYPlus;
@@ -38,7 +38,7 @@ public final class WorldRenderer {
     public boolean isVisible = true;
     public boolean isWaitingOnOcclusionQuery;
     public int glOcclusionQuery;
-    public boolean isLit;
+    public boolean isChunkLit;
 
     public WorldRenderer(World var1, int var2, int var3, int var4, int var5, int var6) {
         this.renderBlocks = new RenderBlocks(var1);
@@ -60,15 +60,15 @@ public final class WorldRenderer {
             this.posXPlus = var1 + this.sizeWidth / 2;
             this.posYPlus = var2 + this.sizeHeight / 2;
             this.posZPlus = var3 + this.sizeDepth / 2;
-            this.t = var1 & 511;
-            this.u = var2 & 511;
-            this.v = var3 & 511;
-            this.posXMinus = var1 - this.t;
-            this.posYMinus = var2 - this.u;
-            this.posZMinus = var3 - this.v;
+            this.posXClip = var1 & 511;
+            this.posYClip = var2 & 511;
+            this.posZClip = var3 & 511;
+            this.posXMinus = var1 - this.posXClip;
+            this.posYMinus = var2 - this.posYClip;
+            this.posZMinus = var3 - this.posZClip;
             this.rendererBoundingBox = (new AxisAlignedBB((double)var1, (double)var2, (double)var3, (double)(var1 + this.sizeWidth), (double)(var2 + this.sizeHeight), (double)(var3 + this.sizeDepth))).expand(2.0D, 2.0D, 2.0D);
             GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
-            AxisAlignedBB var4 = new AxisAlignedBB((double)((float)this.t - 2.0F), (double)((float)this.u - 2.0F), (double)((float)this.v - 2.0F), (double)((float)(this.t + this.sizeWidth) + 2.0F), (double)((float)(this.u + this.sizeHeight) + 2.0F), (double)((float)(this.v + this.sizeDepth) + 2.0F));
+            AxisAlignedBB var4 = new AxisAlignedBB((double)((float)this.posXClip - 2.0F), (double)((float)this.posYClip - 2.0F), (double)((float)this.posZClip - 2.0F), (double)((float)(this.posXClip + this.sizeWidth) + 2.0F), (double)((float)(this.posYClip + this.sizeHeight) + 2.0F), (double)((float)(this.posZClip + this.sizeDepth) + 2.0F));
             Tessellator var5 = Tessellator.instance;
             var5.startDrawingQuads(DefaultVertexFormats.POSITION);
             var5.addVertex(var4.minX, var4.maxY, var4.minZ);
@@ -123,7 +123,7 @@ public final class WorldRenderer {
 				boolean var9 = false;
 				GL11.glNewList(this.glRenderList + var7, GL11.GL_COMPILE);
                 GL11.glPushMatrix();
-                GL11.glTranslatef((float)this.t, (float)this.u, (float)this.v);
+                GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
                 tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
                 tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
 
@@ -156,7 +156,7 @@ public final class WorldRenderer {
 				}
 			}
 
-            this.isLit = Chunk.isLit;
+            this.isChunkLit = Chunk.isLit;
 		}
 	}
 
@@ -180,11 +180,11 @@ public final class WorldRenderer {
 	}
 
     public final int getGLCallListForPass(int var1) {
-        return !this.isInFrustrum ? -1 : (!this.skipRenderPass[var1] ? this.glRenderList + var1 : -1);
+        return !this.isInFrustum ? -1 : (!this.skipRenderPass[var1] ? this.glRenderList + var1 : -1);
     }
 
     public final void updateInFrustrum(Frustrum var1) {
-        this.isInFrustrum = var1.isBoundingBoxInFrustrum(this.rendererBoundingBox);
+        this.isInFrustum = var1.isBoundingBoxInFrustrum(this.rendererBoundingBox);
     }
 
     public final void callOcclusionQueryList() {

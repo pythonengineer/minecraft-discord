@@ -1,5 +1,6 @@
 package net.minecraft.game.entity;
 
+import com.mojang.nbt.NBTTagCompound;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.game.entity.misc.EntityItem;
@@ -192,5 +193,40 @@ public class EntityPainting extends Entity {
         this.setEntityDead();
         this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
         return true;
+    }
+
+    public final void writeEntityToNBT(NBTTagCompound var1) {
+        var1.setByte("Dir", (byte)this.direction);
+        var1.setString("Motive", this.art.title);
+        var1.setInt("TileX", this.xPosition);
+        var1.setInt("TileY", this.yPosition);
+        var1.setInt("TileZ", this.zPosition);
+    }
+
+    public final String getEntityType() {
+        return "Painting";
+    }
+
+    public final void readEntityFromNBT(NBTTagCompound var1) {
+        this.direction = var1.getByte("Dir");
+        this.xPosition = var1.getInt("TileX");
+        this.yPosition = var1.getInt("TileY");
+        this.zPosition = var1.getInt("TileZ");
+        String var6 = var1.getString("Motive");
+        EnumArt[] var2 = EnumArt.values();
+        int var3 = var2.length;
+
+        for(int var4 = 0; var4 < var3; ++var4) {
+            EnumArt var5 = var2[var4];
+            if(var5.title.equals(var6)) {
+                this.art = var5;
+            }
+        }
+
+        if(this.art == null) {
+            this.art = EnumArt.Kebab;
+        }
+
+        this.setDirection(this.direction);
     }
 }

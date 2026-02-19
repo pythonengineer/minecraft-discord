@@ -1,5 +1,7 @@
 package net.minecraft.game.entity.projectile;
 
+import com.mojang.nbt.NBTTagCompound;
+
 import java.util.List;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
@@ -24,7 +26,7 @@ public class EntityArrow extends Entity {
 	private int yTile = -1;
 	private int zTile = -1;
 	private int inTile = 0;
-	private boolean inData = false;
+    private boolean inGround = false;
 	public int arrowShake = 0;
 	private EntityLiving shootingEntity;
 	private int ticksInGround;
@@ -73,7 +75,7 @@ public class EntityArrow extends Entity {
 		}
 
         int var1;
-        if(this.inData) {
+        if(this.inGround) {
             var1 = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile);
 			if(var1 == this.inTile) {
 				++this.ticksInGround;
@@ -84,7 +86,7 @@ public class EntityArrow extends Entity {
 				return;
 			}
 
-			this.inData = false;
+			this.inGround = false;
 			this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionY *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
@@ -153,7 +155,7 @@ public class EntityArrow extends Entity {
 				this.posY -= this.motionY / (double)var15 * (double)0.05F;
 				this.posZ -= this.motionZ / (double)var15 * (double)0.05F;
 				this.worldObj.playSoundAtEntity(this, "random.drr", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-				this.inData = true;
+				this.inGround = true;
 				this.arrowShake = 7;
                 Object var17 = null;
                 var1 = this.rand.nextInt(6);
@@ -227,8 +229,30 @@ public class EntityArrow extends Entity {
 		this.setPosition(this.posX, this.posY, this.posZ);
 	}
 
+    public final void writeEntityToNBT(NBTTagCompound var1) {
+        var1.setShort("xTile", (short)this.xTile);
+        var1.setShort("yTile", (short)this.yTile);
+        var1.setShort("zTile", (short)this.zTile);
+        var1.setByte("inTile", (byte)this.inTile);
+        var1.setByte("shake", (byte)this.arrowShake);
+        var1.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+    }
+
+    public final void readEntityFromNBT(NBTTagCompound var1) {
+        this.xTile = var1.getShort("xTile");
+        this.yTile = var1.getShort("yTile");
+        this.zTile = var1.getShort("zTile");
+        this.inTile = var1.getByte("inTile") & 255;
+        this.arrowShake = var1.getByte("shake") & 255;
+        this.inGround = var1.getByte("inGround") == 1;
+    }
+
+    public final String getEntityType() {
+        return "Arrow";
+    }
+
     public final void onCollideWithPlayer(EntityPlayer var1) {
-        if(this.inData && this.shootingEntity == var1 && this.arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+        if(this.inGround && this.shootingEntity == var1 && this.arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
             this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             var1.onItemPickup(this);
             this.setEntityDead();

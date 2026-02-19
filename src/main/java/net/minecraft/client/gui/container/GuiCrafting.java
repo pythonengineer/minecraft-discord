@@ -47,7 +47,7 @@ public final class GuiCrafting extends GuiContainer {
 
 	}
 
-	public final void onCraftMatrixChanged() {
+	public final void guiCraftingItemsCheck() {
 		int[] var1 = new int[9];
 
 		for(int var2 = 0; var2 < 3; ++var2) {

@@ -9,7 +9,7 @@ import net.minecraft.game.world.material.Material;
 public final class RenderBlocks {
 	private World blockAccess;
 	private int overrideBlockTexture = -1;
-	private boolean renderAllFaces = false;
+	private boolean flipTexture = false;
 
 	public RenderBlocks(World var1) {
 		this.blockAccess = var1;
@@ -25,9 +25,9 @@ public final class RenderBlocks {
 	}
 
 	public final void renderBlockAllFaces(Block var1, int var2, int var3, int var4) {
-		this.renderAllFaces = true;
+		this.flipTexture = true;
 		this.renderBlockByRenderType(var1, var2, var3, var4);
-		this.renderAllFaces = false;
+		this.flipTexture = false;
 	}
 
 	public final boolean renderBlockByRenderType(Block var1, int var2, int var3, int var4) {
@@ -38,7 +38,7 @@ public final class RenderBlocks {
 			var6 = Tessellator.instance;
 			var45 = false;
 			float var47;
-			if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
 				var47 = var1.getBlockBrightness(this.blockAccess, var2, var3 - 1, var4);
 				if(Block.lightValue[var1.blockID] > 0) {
 					var47 = 1.0F;
@@ -49,7 +49,7 @@ public final class RenderBlocks {
 				var45 = true;
 			}
 
-			if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
 				var47 = var1.getBlockBrightness(this.blockAccess, var2, var3 + 1, var4);
 				if(Block.lightValue[var1.blockID] > 0) {
 					var47 = 1.0F;
@@ -60,7 +60,7 @@ public final class RenderBlocks {
 				var45 = true;
 			}
 
-			if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
 				var47 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 - 1);
 				if(Block.lightValue[var1.blockID] > 0) {
 					var47 = 1.0F;
@@ -71,7 +71,7 @@ public final class RenderBlocks {
 				var45 = true;
 			}
 
-			if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
 				var47 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 + 1);
 				if(Block.lightValue[var1.blockID] > 0) {
 					var47 = 1.0F;
@@ -82,7 +82,7 @@ public final class RenderBlocks {
 				var45 = true;
 			}
 
-			if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
 				var47 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
 				if(Block.lightValue[var1.blockID] > 0) {
 					var47 = 1.0F;
@@ -93,7 +93,7 @@ public final class RenderBlocks {
 				var45 = true;
 			}
 
-			if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
+			if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
 				var47 = var1.getBlockBrightness(this.blockAccess, var2 + 1, var3, var4);
 				if(Block.lightValue[var1.blockID] > 0) {
 					var47 = 1.0F;
@@ -115,14 +115,14 @@ public final class RenderBlocks {
 				var19 = var1.maxY;
 				var1.maxY = var19 - (double)this.materialNotWater(var2, var3, var4);
 				float var48;
-				if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
+				if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 - 1, var4, 0)) {
 					var48 = var1.getBlockBrightness(this.blockAccess, var2, var3 - 1, var4);
 					var6.setColorOpaque_F(0.5F * var48, 0.5F * var48, 0.5F * var48);
 					this.renderBlockBottom(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTextureFromSide(0));
 					var45 = true;
 				}
 
-				if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
+				if(this.flipTexture || var1.shouldSideBeRendered(this.blockAccess, var2, var3 + 1, var4, 1)) {
 					var48 = var1.getBlockBrightness(this.blockAccess, var2, var3 + 1, var4);
 					var6.setColorOpaque_F(var48 * 1.0F, var48 * 1.0F, var48 * 1.0F);
 					this.renderBlockTop(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTextureFromSide(1));
@@ -130,7 +130,7 @@ public final class RenderBlocks {
 				}
 
 				var1.minY = var19 - (double)this.materialNotWater(var2, var3, var4 - 1);
-				if(this.renderAllFaces || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 - 1, 2)) {
 					var48 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 - 1);
 					var6.setColorOpaque_F(0.8F * var48, 0.8F * var48, 0.8F * var48);
 					this.renderBlockNorth(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTextureFromSide(2));
@@ -138,7 +138,7 @@ public final class RenderBlocks {
 				}
 
 				var1.minY = var19 - (double)this.materialNotWater(var2, var3, var4 + 1);
-				if(this.renderAllFaces || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2, var3, var4 + 1, 3)) {
 					var48 = var1.getBlockBrightness(this.blockAccess, var2, var3, var4 + 1);
 					var6.setColorOpaque_F(0.8F * var48, 0.8F * var48, 0.8F * var48);
 					this.renderBlockSouth(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTextureFromSide(3));
@@ -146,7 +146,7 @@ public final class RenderBlocks {
 				}
 
 				var1.minY = var19 - (double)this.materialNotWater(var2 - 1, var3, var4);
-				if(this.renderAllFaces || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
 					var48 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
 					var6.setColorOpaque_F(0.6F * var48, 0.6F * var48, 0.6F * var48);
 					this.renderBlockWest(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTextureFromSide(4));
@@ -154,7 +154,7 @@ public final class RenderBlocks {
 				}
 
 				var1.minY = var19 - (double)this.materialNotWater(var2 + 1, var3, var4);
-				if(this.renderAllFaces || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
+				if(this.flipTexture || var1.maxY > var1.minY || var1.shouldSideBeRendered(this.blockAccess, var2 + 1, var3, var4, 5)) {
 					var48 = var1.getBlockBrightness(this.blockAccess, var2 + 1, var3, var4);
 					var6.setColorOpaque_F(0.6F * var48, 0.6F * var48, 0.6F * var48);
 					this.renderBlockEast(var1, (double)var2, (double)var3, (double)var4, var1.getBlockTextureFromSide(5));
@@ -228,7 +228,7 @@ public final class RenderBlocks {
 							double var20 = (double)((float)var42 / 256.0F);
 							double var22 = (double)(((float)var42 + 15.99F) / 256.0F);
 							double var33;
-							if(!this.blockAccess.isBlockNormalCube(var3, var4 - 1, var5) && !Block.fire.canBlockCatchFire(this.blockAccess, var3, var4 - 1, var5)) {
+							if(!this.blockAccess.isSolid(var3, var4 - 1, var5) && !Block.fire.canBlockCatchFire(this.blockAccess, var3, var4 - 1, var5)) {
 								if((var3 + var4 + var5 & 1) == 1) {
 									var46 = (double)((float)var2 / 256.0F);
 									var18 = (double)(((float)var2 + 15.99F) / 256.0F);
@@ -412,28 +412,28 @@ public final class RenderBlocks {
 							var27 = (double)(((float)var42 + 15.99F) / 256.0F);
 							var29 = (double)((float)var16 / 256.0F);
 							var31 = (double)(((float)var16 + 15.99F) / 256.0F);
-							if(this.blockAccess.isBlockNormalCube(var3 - 1, var4, var5)) {
+							if(this.blockAccess.isSolid(var3 - 1, var4, var5)) {
 								var6.addVertexWithUV((double)((float)var3 + 0.05F), (double)((float)(var4 + 1) + 2.0F / 16.0F), (double)((float)(var5 + 1) + 2.0F / 16.0F), var17, var21);
 								var6.addVertexWithUV((double)((float)var3 + 0.05F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)(var5 + 1) + 2.0F / 16.0F), var17, var23);
 								var6.addVertexWithUV((double)((float)var3 + 0.05F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)var5 - 2.0F / 16.0F), var19, var23);
 								var6.addVertexWithUV((double)((float)var3 + 0.05F), (double)((float)(var4 + 1) + 2.0F / 16.0F), (double)((float)var5 - 2.0F / 16.0F), var19, var21);
 							}
 
-							if(this.blockAccess.isBlockNormalCube(var3 + 1, var4, var5)) {
+							if(this.blockAccess.isSolid(var3 + 1, var4, var5)) {
 								var6.addVertexWithUV((double)((float)(var3 + 1) - 0.05F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)(var5 + 1) + 2.0F / 16.0F), var19, var23);
 								var6.addVertexWithUV((double)((float)(var3 + 1) - 0.05F), (double)((float)(var4 + 1) + 2.0F / 16.0F), (double)((float)(var5 + 1) + 2.0F / 16.0F), var19, var21);
 								var6.addVertexWithUV((double)((float)(var3 + 1) - 0.05F), (double)((float)(var4 + 1) + 2.0F / 16.0F), (double)((float)var5 - 2.0F / 16.0F), var17, var21);
 								var6.addVertexWithUV((double)((float)(var3 + 1) - 0.05F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)var5 - 2.0F / 16.0F), var17, var23);
 							}
 
-							if(this.blockAccess.isBlockNormalCube(var3, var4, var5 - 1)) {
+							if(this.blockAccess.isSolid(var3, var4, var5 - 1)) {
 								var6.addVertexWithUV((double)((float)(var3 + 1) + 2.0F / 16.0F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)var5 + 0.05F), var27, var31);
 								var6.addVertexWithUV((double)((float)(var3 + 1) + 2.0F / 16.0F), (double)((float)(var4 + 1) + 2.0F / 16.0F), (double)((float)var5 + 0.05F), var27, var29);
 								var6.addVertexWithUV((double)((float)var3 - 2.0F / 16.0F), (double)((float)(var4 + 1) + 2.0F / 16.0F), (double)((float)var5 + 0.05F), var25, var29);
 								var6.addVertexWithUV((double)((float)var3 - 2.0F / 16.0F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)var5 + 0.05F), var25, var31);
 							}
 
-							if(this.blockAccess.isBlockNormalCube(var3, var4, var5 + 1)) {
+							if(this.blockAccess.isSolid(var3, var4, var5 + 1)) {
 								var6.addVertexWithUV((double)((float)(var3 + 1) + 2.0F / 16.0F), (double)((float)(var4 + 1) + 2.0F / 16.0F), (double)((float)(var5 + 1) - 0.05F), var25, var29);
 								var6.addVertexWithUV((double)((float)(var3 + 1) + 2.0F / 16.0F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)(var5 + 1) - 0.05F), var25, var31);
 								var6.addVertexWithUV((double)((float)var3 - 2.0F / 16.0F), (double)((float)var4 - 2.0F / 16.0F), (double)((float)(var5 + 1) - 0.05F), var27, var31);

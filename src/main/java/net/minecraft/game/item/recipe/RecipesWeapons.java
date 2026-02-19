@@ -8,7 +8,7 @@ public final class RecipesWeapons {
 	private String[][] recipePatterns = new String[][]{{"X", "X", "#"}};
 	private Object[][] recipeItems = new Object[][]{{Block.planks, Block.cobblestone, Item.ingotIron, Item.diamond, Item.ingotGold}, {Item.swordWood, Item.swordStone, Item.swordSteel, Item.swordDiamond, Item.swordGold}};
 
-	public final void addRecipes(CraftingManager var1) {
+	public final void addRecipe(CraftingManager var1) {
 		for(int var2 = 0; var2 < this.recipeItems[0].length; ++var2) {
 			Object var3 = this.recipeItems[0][var2];
 

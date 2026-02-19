@@ -1,5 +1,7 @@
 package net.minecraft.game.world.block.tileentity;
 
+import com.mojang.nbt.NBTTagCompound;
+import com.mojang.nbt.NBTTagList;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -7,15 +9,15 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.material.Material;
 
-public final class TileEntityFurnace extends TileEntity implements IInventory {
-	private ItemStack[] furnaceItemStacks = new ItemStack[3];
-	private int furnaceBurnTime = 0;
-	private int currentItemBurnTime = 0;
-	private int furnaceCookTime = 0;
+public class TileEntityFurnace extends TileEntity implements IInventory {
+    private ItemStack[] furnaceItemStacks = new ItemStack[3];
+    private int furnaceBurnTime = 0;
+    private int currentItemBurnTime = 0;
+    private int furnaceCookTime = 0;
 
-	public final int getSizeInventory() {
-		return this.furnaceItemStacks.length;
-	}
+    public final int getInventorySize() {
+        return this.furnaceItemStacks.length;
+    }
 
 	public final ItemStack getStackInSlot(int var1) {
 		return this.furnaceItemStacks[var1];
@@ -53,6 +55,43 @@ public final class TileEntityFurnace extends TileEntity implements IInventory {
 		return "Chest";
 	}
 
+    public final void readFromNBT(NBTTagCompound var1) {
+        super.readFromNBT(var1);
+        NBTTagList var2 = var1.getTagList("Items");
+        this.furnaceItemStacks = new ItemStack[this.furnaceItemStacks.length];
+
+        for(int var3 = 0; var3 < var2.tagCount(); ++var3) {
+            NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
+            byte var5 = var4.getByte("Slot");
+            if(var5 >= 0 && var5 < this.furnaceItemStacks.length) {
+                this.furnaceItemStacks[var5] = new ItemStack(var4);
+            }
+        }
+
+        this.furnaceBurnTime = var1.getShort("BurnTime");
+        this.furnaceCookTime = var1.getShort("CookTime");
+        this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
+        System.out.println("Lit: " + this.furnaceBurnTime + "/" + this.currentItemBurnTime);
+    }
+
+    public final void writeToNBT(NBTTagCompound var1) {
+        super.writeToNBT(var1);
+        var1.setShort("BurnTime", (short)this.furnaceBurnTime);
+        var1.setShort("CookTime", (short)this.furnaceCookTime);
+        NBTTagList var2 = new NBTTagList();
+
+        for(int var3 = 0; var3 < this.furnaceItemStacks.length; ++var3) {
+            if(this.furnaceItemStacks[var3] != null) {
+                NBTTagCompound var4 = new NBTTagCompound();
+                var4.setByte("Slot", (byte)var3);
+                this.furnaceItemStacks[var3].writeToNBT(var4);
+                var2.setTag(var4);
+            }
+        }
+
+        var1.setTag("Items", var2);
+    }
+
 	public final int getInventoryStackLimit() {
 		return 64;
 	}
@@ -75,7 +114,6 @@ public final class TileEntityFurnace extends TileEntity implements IInventory {
             --this.furnaceBurnTime;
         }
 
-        int var4;
         if(this.furnaceBurnTime == 0 && this.canSmelt()) {
             this.currentItemBurnTime = this.furnaceBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
             if(this.furnaceBurnTime > 0 && this.furnaceItemStacks[1] != null) {
@@ -111,20 +149,20 @@ public final class TileEntityFurnace extends TileEntity implements IInventory {
         if(var1 != this.furnaceBurnTime > 0) {
             boolean var10000 = this.furnaceBurnTime > 0;
             int var5 = this.zCoord;
+            int var4 = this.yCoord;
             int var8 = this.xCoord;
-            var4 = this.yCoord;
-            World var10 = this.worldObj;
-            boolean var9 = var10000;
-            int var6 = var10.getBlockMetadata(var4, var8, var5);
-            TileEntity var7 = var10.getBlockTileEntity(var4, var8, var5);
-            if(var9) {
-                var10.setBlockWithNotify(var4, var8, var5, Block.stoneOvenActive.blockID);
+            World var9 = this.worldObj;
+            boolean var2 = var10000;
+            int var6 = var9.getBlockMetadata(var8, var4, var5);
+            TileEntity var7 = var9.getBlockTileEntity(var8, var4, var5);
+            if(var2) {
+                var9.setBlockWithNotify(var8, var4, var5, Block.stoneOvenActive.blockID);
             } else {
-                var10.setBlockWithNotify(var4, var8, var5, Block.stoneOvenIdle.blockID);
+                var9.setBlockWithNotify(var8, var4, var5, Block.stoneOvenIdle.blockID);
             }
 
-            var10.setBlockMetadataWithNotify(var4, var8, var5, var6);
-            var10.setBlockTileEntity(var4, var8, var5, var7);
+            var9.setBlockMetadataWithNotify(var8, var4, var5, var6);
+            var9.setBlockTileEntity(var8, var4, var5, var7);
         }
 
     }
@@ -162,7 +200,7 @@ public final class TileEntityFurnace extends TileEntity implements IInventory {
             return 0;
         } else {
             int var1 = var0.getItem().shiftedIndex;
-            return var1 < 256 && Block.blocksList[var1].material == Material.wood ? 300 : (var1 == Item.stick.shiftedIndex ? 100 : (var1 == Item.coal.shiftedIndex ? 1600 : 0));
+            return var1 < 256 && Block.blocksList[var1].blockMaterial == Material.wood ? 300 : (var1 == Item.stick.shiftedIndex ? 100 : (var1 == Item.coal.shiftedIndex ? 1600 : 0));
         }
     }
 

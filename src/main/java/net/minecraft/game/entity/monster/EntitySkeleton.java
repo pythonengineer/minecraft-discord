@@ -1,18 +1,19 @@
 package net.minecraft.game.entity.monster;
 
+import com.mojang.nbt.NBTTagCompound;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.projectile.EntityArrow;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
 
-public class EntitySkeleton extends EntityMob {
+public class EntitySkeleton extends EntityMonster {
     public EntitySkeleton(World var1) {
         super(var1);
         this.texture = "/mob/skeleton.png";
     }
 
-	public final void updatePlayerActionState() {
+    public final void onLivingUpdate() {
         if(this.worldObj.isDaytime()) {
             float var1 = this.getBrightness(1.0F);
             if(var1 > 0.5F && this.worldObj.canBlockSeeTheSky((int)this.posX, (int)this.posY, (int)this.posZ) && this.rand.nextFloat() * 30.0F < (var1 - 0.4F) * 2.0F) {
@@ -20,7 +21,7 @@ public class EntitySkeleton extends EntityMob {
             }
         }
 
-		super.updatePlayerActionState();
+		super.onLivingUpdate();
 	}
 
 	protected final void attackEntity(Entity var1, float var2) {
@@ -44,7 +45,19 @@ public class EntitySkeleton extends EntityMob {
 
 	}
 
-	protected final int getDropItemId() {
+    public final void writeEntityToNBT(NBTTagCompound var1) {
+        super.writeEntityToNBT(var1);
+    }
+
+    public final void readEntityFromNBT(NBTTagCompound var1) {
+        super.readEntityFromNBT(var1);
+    }
+
+    public final String getEntityType() {
+        return "Skeleton";
+    }
+
+    protected final int getDroppedItem() {
 		return Item.arrow.shiftedIndex;
 	}
 }

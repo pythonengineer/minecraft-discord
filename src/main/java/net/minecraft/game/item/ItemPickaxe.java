@@ -13,6 +13,6 @@ public final class ItemPickaxe extends ItemTool {
     }
 
     public final boolean canHarvestBlock(Block var1) {
-        return var1 == Block.obsidian ? this.harvestLevel == 3 : (var1 != Block.blockDiamond && var1 != Block.oreDiamond ? (var1 != Block.blockGold && var1 != Block.oreGold ? (var1 != Block.blockSteel && var1 != Block.oreIron ? (var1.material == Material.rock ? true : var1.material == Material.iron) : this.harvestLevel > 0) : this.harvestLevel >= 2) : this.harvestLevel >= 2);
+        return var1 == Block.obsidian ? this.harvestLevel == 3 : (var1 != Block.blockDiamond && var1 != Block.oreDiamond ? (var1 != Block.blockGold && var1 != Block.oreGold ? (var1 != Block.blockSteel && var1 != Block.oreIron ? (var1.blockMaterial == Material.rock ? true : var1.blockMaterial == Material.iron) : this.harvestLevel > 0) : this.harvestLevel >= 2) : this.harvestLevel >= 2);
     }
 }

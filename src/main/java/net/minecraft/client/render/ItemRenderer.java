@@ -294,7 +294,7 @@ public final class ItemRenderer {
 		this.equippedProgress = 0.0F;
 	}
 
-	public final void swing() {
+	public final void equippedItemRender() {
 		this.swingProgress = -1;
 		this.itemSwingState = true;
 	}

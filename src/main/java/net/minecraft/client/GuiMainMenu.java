@@ -7,10 +7,9 @@ import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiLoadLevel;
-import net.minecraft.client.gui.GuiNewLevel;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiSelectWorld;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.world.World;
 
@@ -28,41 +27,25 @@ public final class GuiMainMenu extends GuiScreen {
 
 	public final void initGui() {
 		this.controlList.clear();
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Generate new level..."));
-		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, "Load level.."));
-		this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 96, "Play tutorial level"));
-		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, "Options..."));
+        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Single player"));
+        this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, "Multi player"));
+        this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 96, "Play tutorial level"));
+        this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, "Options..."));
+        ((GuiButton)this.controlList.get(1)).enabled = false;
 		((GuiButton)this.controlList.get(2)).enabled = false;
-		//if(this.mc.session == null) {
-		//	((GuiButton)this.controlList.get(1)).enabled = false;
-		//}
+        if(this.mc.session == null) {
+            ((GuiButton)this.controlList.get(1)).enabled = false;
+        }
 
 	}
 
 	protected final void actionPerformed(GuiButton var1) {
-		if(var1.id == 0) {
-			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.options));
-		}
+        if(var1.id == 0) {
+            this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
+        }
 
-		if(var1.id == 1) {
-			this.mc.displayGuiScreen(new GuiNewLevel(this));
-		}
-
-        if(var1.id == 2) {//if(this.mc.session != null && var1.id == 2) {
-            //this.mc.displayGuiScreen(new GuiLoadLevel(this));
-            try {
-                byte[] level = EagRuntime.getStorage("level.mclevel");
-                if(level != null) {
-                    EaglerInputStream var4 = new EaglerInputStream(level);
-                    new PlayerLoader(this.mc, this.mc.loadingScreen);
-                    var4.close();
-                    this.mc.setLevel((World)null);
-                    this.mc.displayGuiScreen((GuiScreen)null);
-                    this.mc.setIngameFocus();
-                }
-            } catch (IOException var3) {
-                var3.printStackTrace();
-            }
+        if(var1.id == 1) {
+            this.mc.displayGuiScreen(new GuiSelectWorld(this));
         }
 
 	}

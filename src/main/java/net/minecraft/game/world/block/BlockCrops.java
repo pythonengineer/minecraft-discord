@@ -44,7 +44,7 @@ public final class BlockCrops extends BlockFlower {
                     for(var16 = var11 - 1; var16 <= var11 + 1; ++var16) {
                         var17 = var8.getBlockId(var14, var10 - 1, var16);
                         float var23 = 0.0F;
-                        if(var17 == Block.workbench.blockID) {
+                        if(var17 == Block.tilledField.blockID) {
                             var23 = 1.0F;
                             if(var8.getBlockMetadata(var14, var10 - 1, var16) > 0) {
                                 var23 = 3.0F;

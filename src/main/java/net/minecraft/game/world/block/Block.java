@@ -76,7 +76,7 @@ public class Block {
     public static final Block stairSingle;
     public static final Block brick;
     public static final Block tnt;
-    public static final Block bookShelf;
+    public static final Block bookshelf;
     public static final Block cobblestoneMossy;
     public static final Block obsidian;
     public static final Block torch;
@@ -92,8 +92,8 @@ public class Block {
     public static final Block stoneOvenActive;
     public int blockIndexInTexture;
     public final int blockID;
-    private float hardness;
-    private float resistance;
+    private float blockHardness;
+    private float blockResistance;
     public double minX;
     public double minY;
     public double minZ;
@@ -102,7 +102,7 @@ public class Block {
     public double maxZ;
     public StepSound stepSound;
     public float blockParticleGravity;
-    public final Material material;
+    public final Material blockMaterial;
 
     protected Block(int var1, Material var2) {
         this.stepSound = soundPowderFootstep;
@@ -110,7 +110,7 @@ public class Block {
         if(blocksList[var1] != null) {
             throw new IllegalArgumentException("Slot " + var1 + " is already occupied by " + blocksList[var1] + " when adding " + this);
         } else {
-            this.material = var2;
+            this.blockMaterial = var2;
             blocksList[var1] = this;
             this.blockID = var1;
             this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -137,7 +137,7 @@ public class Block {
     }
 
     protected final Block setResistance(float var1) {
-        this.resistance = var1 * 3.0F;
+        this.blockResistance = var1 * 3.0F;
         return this;
     }
 
@@ -150,9 +150,9 @@ public class Block {
     }
 
     protected final Block setHardness(float var1) {
-        this.hardness = var1;
-        if(this.resistance < var1 * 5.0F) {
-            this.resistance = var1 * 5.0F;
+        this.blockHardness = var1;
+        if(this.blockResistance < var1 * 5.0F) {
+            this.blockResistance = var1 * 5.0F;
         }
 
         return this;
@@ -176,7 +176,7 @@ public class Block {
     }
 
     public boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
-        return !var1.isBlockNormalCube(var2, var3, var4);
+        return !var1.isSolid(var2, var3, var4);
     }
 
     public int getBlockTexture(World var1, int var2, int var3, int var4, int var5) {
@@ -223,10 +223,10 @@ public class Block {
         return 5;
     }
 
-    public void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
+    public void onBlockAdded(World var1, int var2, int var3, int var4) {
     }
 
-    public void onBlockAdded(World var1, int var2, int var3, int var4) {
+    public void onBlockRemoval(World var1, int var2, int var3, int var4) {
     }
 
     public int quantityDropped(EaglercraftRandom var1) {
@@ -238,10 +238,10 @@ public class Block {
     }
 
     public final float blockStrength(EntityPlayer var1) {
-        if(this.hardness < 0.0F) {
+        if(this.blockHardness < 0.0F) {
             return 0.0F;
         } else if(!var1.canHarvestBlock(this)) {
-            return 1.0F / this.hardness / 100.0F;
+            return 1.0F / this.blockHardness / 100.0F;
         } else {
             InventoryPlayer var2 = var1.inventory;
             float var4 = 1.0F;
@@ -259,7 +259,7 @@ public class Block {
                 var6 /= 5.0F;
             }
 
-            return var6 / this.hardness / 30.0F;
+            return var6 / this.blockHardness / 30.0F;
         }
     }
 
@@ -287,7 +287,7 @@ public class Block {
     }
 
     public final float getExplosionResistance() {
-        return this.resistance / 5.0F;
+        return this.blockResistance / 5.0F;
     }
 
     public MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
@@ -632,7 +632,7 @@ public class Block {
         var1 = soundWoodFootstep;
         var0 = var10000;
         var0.stepSound = var1;
-        bookShelf = var0;
+        bookshelf = var0;
         var10000 = (new Block(48, 36, Material.rock)).setHardness(2.0F).setResistance(10.0F);
         var1 = soundStoneFootstep;
         var0 = var10000;

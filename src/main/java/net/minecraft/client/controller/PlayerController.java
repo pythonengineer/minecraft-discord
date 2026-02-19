@@ -54,9 +54,6 @@ public class PlayerController {
 		return 5.0F;
 	}
 
-    public void onRespawn() {
-    }
-
 	public void onUpdate() {
 	}
 

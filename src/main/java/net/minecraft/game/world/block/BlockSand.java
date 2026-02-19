@@ -8,15 +8,15 @@ public class BlockSand extends Block {
         super(var1, var2, Material.sand);
     }
 
-    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
-        this.e(var1, var2, var3, var4);
+    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
+        this.scheduleBlockUpdate(var1, var2, var3, var4);
     }
 
     public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-        this.e(var1, var2, var3, var4);
+        this.scheduleBlockUpdate(var1, var2, var3, var4);
     }
 
-    private void e(World var1, int var2, int var3, int var4) {
+    private void scheduleBlockUpdate(World var1, int var2, int var3, int var4) {
         int var5 = var3;
 
         while(true) {
@@ -28,7 +28,7 @@ public class BlockSand extends Block {
             } else if(var6 == Block.fire.blockID) {
                 var10000 = true;
             } else {
-                Material var10 = Block.blocksList[var6].material;
+                Material var10 = Block.blocksList[var6].blockMaterial;
                 var10000 = var10 == Material.water ? true : var10 == Material.lava;
             }
 
@@ -39,7 +39,7 @@ public class BlockSand extends Block {
 
                 if(var5 != var3) {
                     var6 = var1.getBlockId(var2, var5, var4);
-                    if(var6 > 0 && Block.blocksList[var6].material != Material.air) {
+                    if(var6 > 0 && Block.blocksList[var6].blockMaterial != Material.air) {
                         var1.setTileNoUpdate(var2, var5, var4, 0);
                     }
 

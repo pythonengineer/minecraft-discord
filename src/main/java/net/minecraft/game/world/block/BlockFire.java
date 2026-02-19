@@ -6,27 +6,27 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockFire extends Block {
-	private int[] a = new int[256];
-	private int[] b = new int[256];
+	private int[] chanceToEncourageFire = new int[256];
+	private int[] abilityToCatchFire = new int[256];
 
 	protected BlockFire(int var1, int var2) {
 		super(51, 31, Material.fire);
-		this.c(Block.planks.blockID, 5, 20);
-		this.c(Block.wood.blockID, 5, 5);
-		this.c(Block.leaves.blockID, 30, 60);
-		this.c(Block.bookShelf.blockID, 30, 20);
-		this.c(Block.tnt.blockID, 15, 100);
+		this.setBurnRate(Block.planks.blockID, 5, 20);
+		this.setBurnRate(Block.wood.blockID, 5, 5);
+		this.setBurnRate(Block.leaves.blockID, 30, 60);
+		this.setBurnRate(Block.bookshelf.blockID, 30, 20);
+		this.setBurnRate(Block.tnt.blockID, 15, 100);
 
 		for(var1 = 0; var1 < 16; ++var1) {
-			this.c(Block.clothRed.blockID + var1, 30, 60);
+			this.setBurnRate(Block.clothRed.blockID + var1, 30, 60);
 		}
 
 		this.setTickOnLoad(true);
 	}
 
-	private void c(int var1, int var2, int var3) {
-		this.a[var1] = var2;
-		this.b[var1] = var3;
+	private void setBurnRate(int var1, int var2, int var3) {
+		this.chanceToEncourageFire[var1] = var2;
+		this.abilityToCatchFire[var1] = var3;
 	}
 
 	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
@@ -60,8 +60,8 @@ public final class BlockFire extends Block {
 			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
 		}
 
-		if(!this.i(var1, var2, var3, var4)) {
-			if(!var1.isBlockNormalCube(var2, var3 - 1, var4) || var6 > 3) {
+		if(!this.canNeighborCatchFire(var1, var2, var3, var4)) {
+			if(!var1.isSolid(var2, var3 - 1, var4) || var6 > 3) {
 				var1.setBlockWithNotify(var2, var3, var4, 0);
 			}
 
@@ -69,12 +69,12 @@ public final class BlockFire extends Block {
 			var1.setBlockWithNotify(var2, var3, var4, 0);
 		} else {
 			if(var6 % 5 == 0 && var6 > 5) {
-				this.a(var1, var2 + 1, var3, var4, 300, var5);
-				this.a(var1, var2 - 1, var3, var4, 300, var5);
-				this.a(var1, var2, var3 - 1, var4, 100, var5);
-				this.a(var1, var2, var3 + 1, var4, 200, var5);
-				this.a(var1, var2, var3, var4 - 1, 300, var5);
-				this.a(var1, var2, var3, var4 + 1, 300, var5);
+				this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 300, var5);
+				this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 300, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 100, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 200, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 300, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 300, var5);
 
 				for(var6 = var2 - 1; var6 <= var2 + 1; ++var6) {
 					for(int var7 = var4 - 1; var7 <= var4 + 1; ++var7) {
@@ -89,12 +89,12 @@ public final class BlockFire extends Block {
 								if(var1.getBlockId(var6, var8, var7) != 0) {
 									var10000 = 0;
 								} else {
-									int var15 = this.e(var1, var6 + 1, var8, var7, 0);
-									var15 = this.e(var1, var6 - 1, var8, var7, var15);
-									var15 = this.e(var1, var6, var8 - 1, var7, var15);
-									var15 = this.e(var1, var6, var8 + 1, var7, var15);
-									var15 = this.e(var1, var6, var8, var7 - 1, var15);
-									var15 = this.e(var1, var6, var8, var7 + 1, var15);
+									int var15 = this.getChanceToEncourageFire(var1, var6 + 1, var8, var7, 0);
+									var15 = this.getChanceToEncourageFire(var1, var6 - 1, var8, var7, var15);
+									var15 = this.getChanceToEncourageFire(var1, var6, var8 - 1, var7, var15);
+									var15 = this.getChanceToEncourageFire(var1, var6, var8 + 1, var7, var15);
+									var15 = this.getChanceToEncourageFire(var1, var6, var8, var7 - 1, var15);
+									var15 = this.getChanceToEncourageFire(var1, var6, var8, var7 + 1, var15);
 									var10000 = var15;
 								}
 
@@ -111,8 +111,8 @@ public final class BlockFire extends Block {
 		}
 	}
 
-	private void a(World var1, int var2, int var3, int var4, int var5, EaglercraftRandom var6) {
-		int var7 = this.b[var1.getBlockId(var2, var3, var4)];
+	private void tryToCatchBlockOnFire(World var1, int var2, int var3, int var4, int var5, EaglercraftRandom var6) {
+		int var7 = this.abilityToCatchFire[var1.getBlockId(var2, var3, var4)];
 		if(var6.nextInt(var5) < var7) {
 			boolean var8 = var1.getBlockId(var2, var3, var4) == Block.tnt.blockID;
 			if(var6.nextInt(2) == 0) {
@@ -128,7 +128,7 @@ public final class BlockFire extends Block {
 
 	}
 
-	private boolean i(World var1, int var2, int var3, int var4) {
+	private boolean canNeighborCatchFire(World var1, int var2, int var3, int var4) {
 		return this.canBlockCatchFire(var1, var2 + 1, var3, var4) ? true : (this.canBlockCatchFire(var1, var2 - 1, var3, var4) ? true : (this.canBlockCatchFire(var1, var2, var3 - 1, var4) ? true : (this.canBlockCatchFire(var1, var2, var3 + 1, var4) ? true : (this.canBlockCatchFire(var1, var2, var3, var4 - 1) ? true : this.canBlockCatchFire(var1, var2, var3, var4 + 1)))));
 	}
 
@@ -137,57 +137,57 @@ public final class BlockFire extends Block {
 	}
 
 	public final boolean canBlockCatchFire(World var1, int var2, int var3, int var4) {
-		return this.a[var1.getBlockId(var2, var3, var4)] > 0;
+		return this.chanceToEncourageFire[var1.getBlockId(var2, var3, var4)] > 0;
 	}
 
-	private int e(World var1, int var2, int var3, int var4, int var5) {
-		int var6 = this.a[var1.getBlockId(var2, var3, var4)];
+	private int getChanceToEncourageFire(World var1, int var2, int var3, int var4, int var5) {
+		int var6 = this.chanceToEncourageFire[var1.getBlockId(var2, var3, var4)];
 		return var6 > var5 ? var6 : var5;
 	}
 
 	public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return var1.isBlockNormalCube(var2, var3 - 1, var4) || this.i(var1, var2, var3, var4);
+		return var1.isSolid(var2, var3 - 1, var4) || this.canNeighborCatchFire(var1, var2, var3, var4);
 	}
 
 	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-		if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !this.i(var1, var2, var3, var4)) {
+		if(!var1.isSolid(var2, var3 - 1, var4) && !this.canNeighborCatchFire(var1, var2, var3, var4)) {
 			var1.setBlockWithNotify(var2, var3, var4, 0);
 		}
 	}
 
-	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4) {
-		if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !this.i(var1, var2, var3, var4)) {
+	public final void onBlockAdded(World var1, int var2, int var3, int var4) {
+		if(!var1.isSolid(var2, var3 - 1, var4) && !this.canNeighborCatchFire(var1, var2, var3, var4)) {
 			var1.setBlockWithNotify(var2, var3, var4, 0);
 		} else {
 			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
 		}
 	}
 
-	public final boolean b(int var1) {
-		return this.a[var1] > 0;
+	public final boolean getChanceOfNeighborsEncouragingFire(int var1) {
+		return this.chanceToEncourageFire[var1] > 0;
 	}
 
-	public final void h(World var1, int var2, int var3, int var4) {
+	public final void fireSpread(World var1, int var2, int var3, int var4) {
 		boolean var5 = false;
-		var5 = j(var1, var2, var3 + 1, var4);
+		var5 = fireCheck(var1, var2, var3 + 1, var4);
 		if(!var5) {
-			var5 = j(var1, var2 - 1, var3, var4);
+			var5 = fireCheck(var1, var2 - 1, var3, var4);
 		}
 
 		if(!var5) {
-			var5 = j(var1, var2 + 1, var3, var4);
+			var5 = fireCheck(var1, var2 + 1, var3, var4);
 		}
 
 		if(!var5) {
-			var5 = j(var1, var2, var3, var4 - 1);
+			var5 = fireCheck(var1, var2, var3, var4 - 1);
 		}
 
 		if(!var5) {
-			var5 = j(var1, var2, var3, var4 + 1);
+			var5 = fireCheck(var1, var2, var3, var4 + 1);
 		}
 
 		if(!var5) {
-			var5 = j(var1, var2, var3 - 1, var4);
+			var5 = fireCheck(var1, var2, var3 - 1, var4);
 		}
 
 		if(!var5) {
@@ -205,7 +205,7 @@ public final class BlockFire extends Block {
 		float var7;
 		float var8;
 		float var9;
-		if(!var1.isBlockNormalCube(var2, var3 - 1, var4) && !Block.fire.canBlockCatchFire(var1, var2, var3 - 1, var4)) {
+		if(!var1.isSolid(var2, var3 - 1, var4) && !Block.fire.canBlockCatchFire(var1, var2, var3 - 1, var4)) {
 			if(Block.fire.canBlockCatchFire(var1, var2 - 1, var3, var4)) {
 				for(var6 = 0; var6 < 2; ++var6) {
 					var7 = (float)var2 + var5.nextFloat() * 0.1F;
@@ -262,7 +262,7 @@ public final class BlockFire extends Block {
 		}
 	}
 
-	private static boolean j(World var0, int var1, int var2, int var3) {
+	private static boolean fireCheck(World var0, int var1, int var2, int var3) {
 		int var4 = var0.getBlockId(var1, var2, var3);
 		if(var4 == Block.fire.blockID) {
 			return true;

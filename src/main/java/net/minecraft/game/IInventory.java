@@ -3,7 +3,7 @@ package net.minecraft.game;
 import net.minecraft.game.item.ItemStack;
 
 public interface IInventory {
-    int getSizeInventory();
+    int getInventorySize();
 
     ItemStack getStackInSlot(int var1);
 

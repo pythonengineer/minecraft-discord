@@ -14,7 +14,7 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 
 public final class RenderItem extends Render {
-	private RenderBlocks itemRenderBlocks = new RenderBlocks();
+	private RenderBlocks renderBlocks = new RenderBlocks();
 	private EaglercraftRandom random = new EaglercraftRandom();
 
     public RenderItem() {
@@ -22,7 +22,7 @@ public final class RenderItem extends Render {
         this.shadowOpaque = 12.0F / 16.0F;
     }
 
-    public final void doRender(RenderEngine var1, ItemStack var2, int var3, int var4) {
+    public final void renderItemIntoGUI(RenderEngine var1, ItemStack var2, int var3, int var4) {
         if(var2 != null) {
             int var9;
             if(var2.itemID < 256 && Block.blocksList[var2.itemID].getRenderType() == 0) {
@@ -36,7 +36,7 @@ public final class RenderItem extends Render {
                 GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.itemRenderBlocks.renderBlockOnInventory(var8);
+                this.renderBlocks.renderBlockOnInventory(var8);
                 GL11.glPopMatrix();
             } else {
                 if(var2.getItem().getIconIndex() >= 0) {
@@ -90,8 +90,8 @@ public final class RenderItem extends Render {
             }
 
             if(var2.itemDamage > 0) {
-                int var9 = 13 - var2.itemDamage * 13 / var2.isItemStackDamageable();
-                int var7 = 255 - var2.itemDamage * 255 / var2.isItemStackDamageable();
+                int var9 = 13 - var2.itemDamage * 13 / var2.getMaxDamage();
+                int var7 = 255 - var2.itemDamage * 255 / var2.getMaxDamage();
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -164,7 +164,7 @@ public final class RenderItem extends Render {
                     GL11.glTranslatef(var5, var7, var8);
                 }
 
-                var18.itemRenderBlocks.renderBlockOnInventory(Block.blocksList[var24.itemID]);
+                var18.renderBlocks.renderBlockOnInventory(Block.blocksList[var24.itemID]);
                 GL11.glPopMatrix();
             }
         } else {

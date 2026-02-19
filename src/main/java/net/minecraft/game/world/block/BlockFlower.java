@@ -23,22 +23,22 @@ public class BlockFlower extends Block {
 
     public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
         super.onNeighborBlockChange(var1, var2, var3, var4, var5);
-        this.h(var1, var2, var3, var4);
+        this.checkFlowerChange(var1, var2, var3, var4);
     }
 
     public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        this.h(var1, var2, var3, var4);
+        this.checkFlowerChange(var1, var2, var3, var4);
     }
 
-    private void h(World var1, int var2, int var3, int var4) {
-        if(!this.e(var1, var2, var3, var4)) {
+    private void checkFlowerChange(World var1, int var2, int var3, int var4) {
+        if(!this.canBlockStay(var1, var2, var3, var4)) {
             this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
             var1.setBlockWithNotify(var2, var3, var4, 0);
         }
 
     }
 
-    public boolean e(World var1, int var2, int var3, int var4) {
+    public boolean canBlockStay(World var1, int var2, int var3, int var4) {
         return (var1.canExistingBlockSeeTheSky(var2, var3, var4) >= 8 || var1.canBlockSeeTheSky(var2, var3, var4)) && this.canThisPlantGrowOnThisBlockID(var1.getBlockId(var2, var3 - 1, var4));
     }
 

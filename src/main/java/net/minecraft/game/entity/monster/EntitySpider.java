@@ -1,11 +1,12 @@
 package net.minecraft.game.entity.monster;
 
+import com.mojang.nbt.NBTTagCompound;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
 
-public class EntitySpider extends EntityMob {
+public class EntitySpider extends EntityMonster {
     public EntitySpider(World var1) {
         super(var1);
         this.texture = "/mob/spider.png";
@@ -16,7 +17,7 @@ public class EntitySpider extends EntityMob {
 	protected final Entity findPlayerToAttack() {
 		float var1 = this.getBrightness(1.0F);
 		if(var1 < 0.5F) {
-			double var2 = this.worldObj.playerEntity.getDistanceToEntity(this);
+			double var2 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
 			if(var2 < 256.0D) {
 				return this.worldObj.playerEntity;
 			}
@@ -47,7 +48,19 @@ public class EntitySpider extends EntityMob {
 		}
 	}
 
-	protected final int getDropItemId() {
+    public final void writeEntityToNBT(NBTTagCompound var1) {
+        super.writeEntityToNBT(var1);
+    }
+
+    public final void readEntityFromNBT(NBTTagCompound var1) {
+        super.readEntityFromNBT(var1);
+    }
+
+    public final String getEntityType() {
+        return "Spider";
+    }
+
+    protected final int getDroppedItem() {
 		return Item.silk.shiftedIndex;
 	}
 }

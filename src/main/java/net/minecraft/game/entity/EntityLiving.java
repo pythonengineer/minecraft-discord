@@ -1,5 +1,6 @@
 package net.minecraft.game.entity;
 
+import com.mojang.nbt.NBTTagCompound;
 import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.world.World;
@@ -54,9 +55,13 @@ public class EntityLiving extends Entity {
         return this.texture;
     }
 
-	public final boolean canBeCollidedWith() {
-		return !this.isDead;
-	}
+    public final boolean canBeCollidedWith() {
+        return !this.isDead;
+    }
+
+    public final boolean canBePushed() {
+        return !this.isDead;
+    }
 
 	protected float getEyeHeight() {
 		return this.height * 0.85F;
@@ -72,7 +77,7 @@ public class EntityLiving extends Entity {
             }
         }
 
-		if(this.isInsideOfMaterial()) {
+        if(this.isEntityAlive() && this.isInsideOfMaterial()) {
 			--this.air;
 			if(this.air == -20) {
 				this.air = 0;
@@ -115,7 +120,7 @@ public class EntityLiving extends Entity {
 		this.prevRenderYawOffset = this.renderYawOffset;
 		this.prevRotationYaw = this.rotationYaw;
 		this.prevRotationPitch = this.rotationPitch;
-        this.updatePlayerActionState();
+        this.onLivingUpdate();
         double var10 = this.posX - this.prevPosX;
         double var13 = this.posZ - this.prevPosZ;
         float var5 = MathHelper.sqrt_double(var10 * var10 + var13 * var13);
@@ -271,7 +276,7 @@ public class EntityLiving extends Entity {
     }
 
     public void onDeath(Entity var1) {
-        int var4 = this.getDropItemId();
+        int var4 = this.getDroppedItem();
         if(var4 > 0) {
             int var2 = this.rand.nextInt(3);
 
@@ -282,7 +287,7 @@ public class EntityLiving extends Entity {
 
     }
 
-    protected int getDropItemId() {
+    protected int getDroppedItem() {
         return 0;
     }
 
@@ -299,11 +304,33 @@ public class EntityLiving extends Entity {
 
     }
 
-    public final boolean canBePushed() {
+    public void writeEntityToNBT(NBTTagCompound var1) {
+        var1.setShort("Health", (short)this.health);
+        var1.setShort("HurtTime", (short)this.hurtTime);
+        var1.setShort("DeathTime", (short)this.deathTime);
+        var1.setShort("AttackTime", (short)this.attackTime);
+    }
+
+    public void readEntityFromNBT(NBTTagCompound var1) {
+        this.health = var1.getShort("Health");
+        if(!var1.hasKey("Health")) {
+            this.health = 10;
+        }
+
+        this.hurtTime = var1.getShort("HurtTime");
+        this.deathTime = var1.getShort("DeathTime");
+        this.attackTime = var1.getShort("AttackTime");
+    }
+
+    public String getEntityType() {
+        return "Mob";
+    }
+
+    public final boolean isEntityAlive() {
 		return !this.isDead && this.health > 0;
 	}
 
-    public void updatePlayerActionState() {
+    public void onLivingUpdate() {
 		++this.entityAge;
 		if(this.entityAge > 600 && this.rand.nextInt(800) == 0) {
 			Entity var1 = this.worldObj.getPlayerEntity();
@@ -349,28 +376,28 @@ public class EntityLiving extends Entity {
         double var13;
         if(this.handleWaterMovement()) {
             var13 = this.posY;
-            this.addVelocity(var19, var3, 0.02F);
+            this.moveFlying(var19, var3, 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= (double)0.8F;
             this.motionY *= (double)0.8F;
             this.motionZ *= (double)0.8F;
             this.motionY -= 0.02D;
-            if(this.isCollided && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + var13, this.motionZ)) {
+            if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + var13, this.motionZ)) {
                 this.motionY = (double)0.3F;
             }
         } else if(this.handleLavaMovement()) {
             var13 = this.posY;
-            this.addVelocity(var19, var3, 0.02F);
+            this.moveFlying(var19, var3, 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.5D;
             this.motionY *= 0.5D;
             this.motionZ *= 0.5D;
             this.motionY -= 0.02D;
-            if(this.isCollided && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + var13, this.motionZ)) {
+            if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + var13, this.motionZ)) {
                 this.motionY = (double)0.3F;
             }
         } else {
-            this.addVelocity(var19, var3, this.onGround ? 0.1F : 0.02F);
+            this.moveFlying(var19, var3, this.onGround ? 0.1F : 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= (double)0.91F;
             this.motionY *= (double)0.98F;
@@ -396,8 +423,8 @@ public class EntityLiving extends Entity {
         if(var20 != null && var20.size() > 0) {
             for(int var21 = 0; var21 < var20.size(); ++var21) {
                 Entity var5 = (Entity)var20.get(var21);
-                if(var5.canBeCollidedWith()) {
-                    var5.capplyEntityCollision(this);
+                if(var5.canBePushed()) {
+                    var5.applyEntityCollision(this);
                 }
             }
         }

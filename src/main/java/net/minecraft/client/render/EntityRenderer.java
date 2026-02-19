@@ -54,14 +54,14 @@ public final class EntityRenderer {
     public final void updateRenderer() {
         this.prevFogColor = this.fogColor;
         float var1 = this.mc.theWorld.getBrightness(MathHelper.floor_double(this.mc.thePlayer.posX), MathHelper.floor_double(this.mc.thePlayer.posY), MathHelper.floor_double(this.mc.thePlayer.posZ));
-        float var2 = (float)(3 - this.mc.options.renderDistance) / 3.0F;
+        float var2 = (float)(3 - this.mc.gameSettings.renderDistance) / 3.0F;
         var1 = var1 * (1.0F - var2) + var2;
         this.fogColor += (var1 - this.fogColor) * 0.1F;
         ++this.rendererUpdateCount;
         this.itemRenderer.updateEquippedItem();
     }
 
-    private Vec3D getPlayerPosition(float var1) {
+    private Vec3D orientCamera(float var1) {
         EntityPlayerSP var2 = this.mc.thePlayer;
         double var3 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double)var1;
         double var5 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double)var1;
@@ -92,7 +92,7 @@ public final class EntityRenderer {
     }
 
     private void setupViewBobbing(float var1) {
-        if(!this.mc.options.thirdPersonView) {
+        if(!this.mc.gameSettings.thirdPersonView) {
             EntityPlayerSP var2 = this.mc.thePlayer;
             float var3 = var2.distanceWalkedModified - var2.prevDistanceWalkedModified;
             var3 = var2.distanceWalkedModified + var3 * var1;
@@ -117,7 +117,7 @@ public final class EntityRenderer {
             int var2 = PointerInputAbstraction.getDX();
             int var3 = PointerInputAbstraction.getDY();
             byte var4 = 1;
-            if(this.mc.options.invertMouse) {
+            if(this.mc.gameSettings.invertMouse) {
                 var4 = -1;
             }
 
@@ -201,7 +201,7 @@ public final class EntityRenderer {
         EntityPlayerSP var9 = this.mc.thePlayer;
         float var10 = var9.prevRotationPitch + (var9.rotationPitch - var9.prevRotationPitch) * var1;
         float var11 = var9.prevRotationYaw + (var9.rotationYaw - var9.prevRotationYaw) * var1;
-        Vec3D var12 = this.getPlayerPosition(var1);
+        Vec3D var12 = this.orientCamera(var1);
         float var13 = MathHelper.cos(-var11 * ((float)Math.PI / 180.0F) - (float)Math.PI);
         float var23 = MathHelper.sin(-var11 * ((float)Math.PI / 180.0F) - (float)Math.PI);
         float var24 = -MathHelper.cos(-var10 * ((float)Math.PI / 180.0F));
@@ -212,7 +212,7 @@ public final class EntityRenderer {
         Vec3D var31 = var12.addVector((double)var26 * var29, (double)var25 * var29, (double)var28 * var29);
         this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(var12, var31);
         double var32 = var29;
-        var12 = this.getPlayerPosition(var1);
+        var12 = this.orientCamera(var1);
         if(this.mc.objectMouseOver != null) {
             var32 = this.mc.objectMouseOver.hitVec.distanceTo(var12);
         }
@@ -259,7 +259,7 @@ public final class EntityRenderer {
         double var18 = this.mc.thePlayer.lastTickPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.lastTickPosZ) * (double)var1;
 
         for(int var2 = 0; var2 < 2; ++var2) {
-            if(this.mc.options.anaglyph) {
+            if(this.mc.gameSettings.anaglyph) {
                 if(var2 == 0) {
                     GL11.glColorMask(false, true, true, false);
                 } else {
@@ -274,7 +274,7 @@ public final class EntityRenderer {
             GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
             World var48 = this.mc.theWorld;
             EntityPlayerSP var53 = this.mc.thePlayer;
-            var11 = 1.0F / (float)(4 - this.mc.options.renderDistance);
+            var11 = 1.0F / (float)(4 - this.mc.gameSettings.renderDistance);
             var11 = 1.0F - (float)Math.pow((double)var11, 0.25D);
             var12 = var4.getSkyColor(var1);
             var13 = (float)var12.xCoord;
@@ -288,8 +288,8 @@ public final class EntityRenderer {
             this.fogColorGreen += (var23 - this.fogColorGreen) * var11;
             this.fogColorBlue += (var24 - this.fogColorBlue) * var11;
             Block var64 = Block.blocksList[var48.getBlockId(MathHelper.floor_double(var53.posX), MathHelper.floor_double(var53.posY + (double)0.12F), MathHelper.floor_double(var53.posZ))];
-            if(var64 != null && var64.material != Material.air) {
-                Material var27 = var64.material;
+            if(var64 != null && var64.blockMaterial != Material.air) {
+                Material var27 = var64.blockMaterial;
                 if(var27 == Material.water) {
                     this.fogColorRed = 0.02F;
                     this.fogColorGreen = 0.02F;
@@ -305,7 +305,7 @@ public final class EntityRenderer {
             this.fogColorRed *= var65;
             this.fogColorGreen *= var65;
             this.fogColorBlue *= var65;
-            if(this.mc.options.anaglyph) {
+            if(this.mc.gameSettings.anaglyph) {
                 var28 = (this.fogColorRed * 30.0F + this.fogColorGreen * 59.0F + this.fogColorBlue * 11.0F) / 100.0F;
                 float var67 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
                 float var30 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;
@@ -318,10 +318,10 @@ public final class EntityRenderer {
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
             GL11.glEnable(GL11.GL_CULL_FACE);
             float var46 = var1;
-            this.farPlaneDistance = (float)(256 >> this.mc.options.renderDistance);
+            this.farPlaneDistance = (float)(256 >> this.mc.gameSettings.renderDistance);
             GL11.glMatrixMode(GL11.GL_PROJECTION);
             GL11.glLoadIdentity();
-            if(this.mc.options.anaglyph) {
+            if(this.mc.gameSettings.anaglyph) {
                 GL11.glTranslatef((float)(-((var2 << 1) - 1)) * 0.07F, 0.0F, 0.0F);
             }
 
@@ -339,12 +339,12 @@ public final class EntityRenderer {
             GLU.gluPerspective(var23, (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance);
             GL11.glMatrixMode(GL11.GL_MODELVIEW);
             GL11.glLoadIdentity();
-            if(this.mc.options.anaglyph) {
+            if(this.mc.gameSettings.anaglyph) {
                 GL11.glTranslatef((float)((var2 << 1) - 1) * 0.1F, 0.0F, 0.0F);
             }
 
             this.hurtCameraEffect(var1);
-            if(this.mc.options.viewBobbing) {
+            if(this.mc.gameSettings.viewBobbing) {
                 this.setupViewBobbing(var1);
             }
 
@@ -353,7 +353,7 @@ public final class EntityRenderer {
             double var62 = var59.prevPosX + (var59.posX - var59.prevPosX) * (double)var1;
             double var63 = var59.prevPosY + (var59.posY - var59.prevPosY) * (double)var1;
             double var66 = var59.prevPosZ + (var59.posZ - var59.prevPosZ) * (double)var1;
-            if(!this.mc.options.thirdPersonView) {
+            if(!this.mc.gameSettings.thirdPersonView) {
                 GL11.glTranslatef(0.0F, 0.0F, -0.1F);
             } else {
                 var29 = 4.0D;
@@ -383,15 +383,15 @@ public final class EntityRenderer {
             GL11.glRotatef(var59.prevRotationPitch + (var59.rotationPitch - var59.prevRotationPitch) * var46, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(var59.prevRotationYaw + (var59.rotationYaw - var59.prevRotationYaw) * var46 + 180.0F, 0.0F, 1.0F, 0.0F);
             ClippingHelperImplementation.init();
-            this.updateFogColor();
+            this.setupFog();
             GL11.glEnable(GL11.GL_FOG);
             var5.renderSky(var1);
-            this.updateFogColor();
+            this.setupFog();
             Frustrum var45 = new Frustrum();
             var45.setPosition(var16, var17, var18);
             this.mc.renderGlobal.clipRenderersByFrustum(var45);
             this.mc.renderGlobal.updateRenderers(var3);
-            this.updateFogColor();
+            this.setupFog();
             GL11.glEnable(GL11.GL_FOG);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             RenderHelper.disableStandardItemLighting();
@@ -399,7 +399,7 @@ public final class EntityRenderer {
             var8 = MathHelper.floor_double(var3.posX);
             int var52 = MathHelper.floor_double(var3.posY);
             int var55 = MathHelper.floor_double(var3.posZ);
-            if(var4.isBlockNormalCube(var8, var52, var55)) {
+            if(var4.isSolid(var8, var52, var55)) {
                 RenderBlocks var56 = new RenderBlocks(var4);
                 Tessellator t = Tessellator.instance;
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -420,11 +420,11 @@ public final class EntityRenderer {
 
             RenderHelper.enableStandardItemLighting();
             GL11.glPushMatrix();
-            var5.renderEntities(this.getPlayerPosition(var1), var45, var1);
+            var5.renderEntities(this.orientCamera(var1), var45, var1);
             var6.renderLitParticles(var1);
             GL11.glPopMatrix();
             RenderHelper.disableStandardItemLighting();
-            this.updateFogColor();
+            this.setupFog();
             var6.renderParticles(var3, var1);
             if(this.mc.objectMouseOver != null && var3.isInsideOfMaterial()) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -434,14 +434,14 @@ public final class EntityRenderer {
             }
 
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            this.updateFogColor();
+            this.setupFog();
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glColorMask(false, false, false, false);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             int var57 = var5.sortAndRender(var3, 1, (double)var1);
             GL11.glColorMask(true, true, true, true);
-            if(this.mc.options.anaglyph) {
+            if(this.mc.gameSettings.anaglyph) {
                 if(var2 == 0) {
                     GL11.glColorMask(false, true, true, false);
                 } else {
@@ -467,31 +467,31 @@ public final class EntityRenderer {
             GL11.glDisable(GL11.GL_FOG);
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glLoadIdentity();
-            if(this.mc.options.anaglyph) {
+            if(this.mc.gameSettings.anaglyph) {
                 GL11.glTranslatef((float)((var2 << 1) - 1) * 0.1F, 0.0F, 0.0F);
             }
 
             GL11.glPushMatrix();
             this.hurtCameraEffect(var1);
-            if(this.mc.options.viewBobbing) {
+            if(this.mc.gameSettings.viewBobbing) {
                 this.setupViewBobbing(var1);
             }
 
-            if(!this.mc.options.thirdPersonView) {
+            if(!this.mc.gameSettings.thirdPersonView) {
                 this.itemRenderer.renderItemInFirstPerson(var1);
             }
 
             GL11.glPopMatrix();
-            if(!this.mc.options.thirdPersonView) {
+            if(!this.mc.gameSettings.thirdPersonView) {
                 this.itemRenderer.renderOverlays(var1);
                 this.hurtCameraEffect(var1);
             }
 
-            if(this.mc.options.viewBobbing) {
+            if(this.mc.gameSettings.viewBobbing) {
                 this.setupViewBobbing(var1);
             }
 
-            if(!this.mc.options.anaglyph) {
+            if(!this.mc.gameSettings.anaglyph) {
                 return;
             }
         }
@@ -510,7 +510,7 @@ public final class EntityRenderer {
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
     }
 
-    private void updateFogColor() {
+    private void setupFog() {
         World var1 = this.mc.theWorld;
         EntityPlayerSP var2 = this.mc.thePlayer;
         int var10000 = GL11.GL_FOG_COLOR;
@@ -525,8 +525,8 @@ public final class EntityRenderer {
         GL11.glNormal3f(0.0F, -1.0F, 0.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         Block var7 = Block.blocksList[var1.getBlockId(MathHelper.floor_double(var2.posX), MathHelper.floor_double(var2.posY + (double)0.12F), MathHelper.floor_double(var2.posZ))];
-        if(var7 != null && var7.material.getIsLiquid()) {
-            Material var8 = var7.material;
+        if(var7 != null && var7.blockMaterial.getIsLiquid()) {
+            Material var8 = var7.blockMaterial;
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
             if(var8 == Material.water) {
                 GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F);

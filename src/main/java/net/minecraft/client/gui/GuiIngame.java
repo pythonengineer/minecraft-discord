@@ -164,12 +164,12 @@ public final class GuiIngame extends Gui {
                     GL11.glTranslatef((float)(-(var21 + 8)), (float)(-(var12 + 12)), 0.0F);
                 }
 
-                itemRenderer.doRender(this.mc.renderEngine, var22, (int)var25, var12);
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, var22, (int)var21, var12);
                 if(var9 > 0.0F) {
                     GL11.glPopMatrix();
                 }
 
-                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var22, (int)var25, var12);
+                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var22, (int)var21, var12);
             }
         }
 
@@ -187,7 +187,7 @@ public final class GuiIngame extends Gui {
 
         onBeginTouchGUI();
 
-        if(this.mc.options.showFPS) {
+        if(this.mc.gameSettings.showFPS) {
             this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev (" + this.mc.debug + ")", 2, 2, 16777215);
             Minecraft var15 = this.mc;
             this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoRenders(), 2, 12, 16777215);
@@ -202,7 +202,7 @@ public final class GuiIngame extends Gui {
         onEndTouchGUI();
 
         for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
-            if(((ThreadDownloadImageData)this.chatMessageList.get(var7)).updateCounter < 200) {
+            if(((ThreadDownloadImageData)this.chatMessageList.get(var7)).textureName < 200) {
                 this.chatMessageList.get(var7);
                 this.mc.fontRenderer.drawStringWithShadow((String)null, 2, scaledHeight - 8 - var7 * 9 - 20, 16777215);
             }
@@ -210,11 +210,11 @@ public final class GuiIngame extends Gui {
 
 	}
 
-    public final void addChatMessage() {
+    public final void updateTick() {
         ++this.updateCounter;
 
         for(int var1 = 0; var1 < this.chatMessageList.size(); ++var1) {
-            ++((ThreadDownloadImageData)this.chatMessageList.get(var1)).updateCounter;
+            ++((ThreadDownloadImageData)this.chatMessageList.get(var1)).textureName;
         }
 
     }

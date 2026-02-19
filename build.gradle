@@ -49,21 +49,21 @@ teavm.js {
 
 tasks.named("generateJavaScript") {
     doLast {
-        // NOTE: This step may break at any time, and is not required for 99% of browsers
-        def phile = file(folder + "/" + name)
+        def phile = file("discord/client/index.html")
         def dest = phile.getText("UTF-8")
-        def i = dest.substring(0, dest.indexOf("=\$rt_globals.Symbol('jsoClass');")).lastIndexOf("let ")
-        dest = dest.substring(0, i) + "var" + dest.substring(i + 3)
-        def j = dest.indexOf("function(\$rt_globals,\$rt_exports){")
-        dest = dest.substring(0, j + 34) + "\n" + file(folder + "/ES6ShimScript.js").getText("UTF-8") + "\n" + dest.substring(j + 34)
+        def date = (new Date()).format('yyyyMMddHHmmss')
+        def i = dest.lastIndexOf("?v=0")
+        def j = dest.indexOf('"></script> <!')
+        dest = dest.substring(0, i + 4) + date + dest.substring(j)
         phile.write(dest, "UTF-8")
 
-        phile = file("discord/client/index.html")
+        // NOTE: This step may break at any time, and is not required for 99% of browsers
+        phile = file(folder + "/" + name)
         dest = phile.getText("UTF-8")
-        def date = (new Date()).format('yyyyMMddHHmmss')
-        i = dest.lastIndexOf("?v=0")
-        j = dest.indexOf('"></script> <!')
-        dest = dest.substring(0, i + 4) + date + dest.substring(j)
+        i = dest.substring(0, dest.indexOf("=\$rt_globals.Symbol('jsoClass');")).lastIndexOf("let ")
+        dest = dest.substring(0, i) + "var" + dest.substring(i + 3)
+        j = dest.indexOf("function(\$rt_globals,\$rt_exports){")
+        dest = dest.substring(0, j + 34) + "\n" + file(folder + "/ES6ShimScript.js").getText("UTF-8") + "\n" + dest.substring(j + 34)
         phile.write(dest, "UTF-8")
     }
 }

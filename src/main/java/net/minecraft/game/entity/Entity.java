@@ -1,5 +1,10 @@
 package net.minecraft.game.entity;
 
+import com.mojang.nbt.NBTTagCompound;
+import com.mojang.nbt.NBTTagDouble;
+import com.mojang.nbt.NBTTagFloat;
+import com.mojang.nbt.NBTTagList;
+
 import java.util.List;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
@@ -30,7 +35,7 @@ public abstract class Entity {
 	public float prevRotationPitch;
 	public AxisAlignedBB boundingBox;
 	public boolean onGround = false;
-    public boolean isCollided = false;
+    public boolean isCollidedHorizontally = false;
     private boolean surfaceCollision = true;
 	public boolean isDead = false;
 	public float yOffset = 0.0F;
@@ -38,7 +43,7 @@ public abstract class Entity {
     public float height = 1.8F;
 	public float prevDistanceWalkedModified = 0.0F;
 	public float distanceWalkedModified = 0.0F;
-    protected boolean canTriggerWalking = true;
+    protected boolean entityWalks = true;
     private float fallDistance = 0.0F;
     private int nextStepDistance = 1;
     public double lastTickPosX;
@@ -273,7 +278,7 @@ public abstract class Entity {
             this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
             this.posY = this.boundingBox.minY + (double)this.yOffset - (double)this.ySize;
             this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
-            this.isCollided = var11 != var1 || var15 != var5;
+            this.isCollidedHorizontally = var11 != var1 || var15 != var5;
             this.onGround = var13 != var3 && var13 < 0.0D;
             if(this.onGround) {
                 if(this.fallDistance > 0.0F) {
@@ -299,7 +304,7 @@ public abstract class Entity {
             var30 = this.posX - var7;
             var22 = this.posZ - var9;
             this.distanceWalkedModified = (float)((double)this.distanceWalkedModified + (double)MathHelper.sqrt_double(var30 * var30 + var22 * var22) * 0.6D);
-            if(this.canTriggerWalking) {
+            if(this.entityWalks) {
                 int var31 = MathHelper.floor_double(this.posX);
                 int var25 = MathHelper.floor_double(this.posY - (double)0.2F - (double)this.yOffset);
                 var19 = MathHelper.floor_double(this.posZ);
@@ -307,7 +312,7 @@ public abstract class Entity {
                 if(this.distanceWalkedModified > (float)this.nextStepDistance && var27 > 0) {
                     ++this.nextStepDistance;
                     StepSound var26 = Block.blocksList[var27].stepSound;
-                    if(!Block.blocksList[var27].material.getIsLiquid()) {
+                    if(!Block.blocksList[var27].blockMaterial.getIsLiquid()) {
                         this.worldObj.playSoundAtEntity(this, var26.getStepSound(), var26.stepSoundVolume * 0.15F, var26.stepSoundPitch);
                     }
 
@@ -350,7 +355,7 @@ public abstract class Entity {
 
     public final boolean isInsideOfMaterial() {
         int var1 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY + (double)this.getEyeHeight()), MathHelper.floor_double(this.posZ));
-        return var1 != 0 ? Block.blocksList[var1].material == Material.water : false;
+        return var1 != 0 ? Block.blocksList[var1].blockMaterial == Material.water : false;
     }
 
     protected float getEyeHeight() {
@@ -361,7 +366,7 @@ public abstract class Entity {
         return this.worldObj.isMaterialInBB(this.boundingBox.expand(0.0D, (double)-0.4F, 0.0D), Material.lava);
     }
 
-    public final void addVelocity(float var1, float var2, float var3) {
+    public final void moveFlying(float var1, float var2, float var3) {
         float var4 = MathHelper.sqrt_float(var1 * var1 + var2 * var2);
         if(var4 >= 0.01F) {
             if(var4 < 1.0F) {
@@ -398,7 +403,7 @@ public abstract class Entity {
         this.setPosition(this.posX, this.posY, this.posZ);
     }
 
-    public final double getDistanceToEntity(Entity var1) {
+    public final double getDistanceSqToEntity(Entity var1) {
         double var2 = this.posX - var1.posX;
         double var4 = this.posY - var1.posY;
         double var6 = this.posZ - var1.posZ;
@@ -408,7 +413,7 @@ public abstract class Entity {
     public void onCollideWithPlayer(EntityPlayer var1) {
     }
 
-    public final void capplyEntityCollision(Entity var1) {
+    public final void applyEntityCollision(Entity var1) {
         double var2 = var1.posX - this.posX;
         double var4 = var1.posZ - this.posZ;
         double var6 = var2 * var2 + var4 * var4;
@@ -436,12 +441,78 @@ public abstract class Entity {
         return false;
     }
 
-	public boolean canBeCollidedWith() {
+    public boolean canBeCollidedWith() {
+        return false;
+    }
+
+	public boolean canBePushed() {
 		return false;
 	}
 
     public String getTexture() {
         return null;
+    }
+
+    public final void writeToNBT(NBTTagCompound var1) {
+        String var2 = this.getEntityType();
+        if(!this.isDead && var2 != null) {
+            var1.setString("id", var2);
+            var1.setTag("Pos", newDoubleNBTList(new double[]{this.posX, this.posY, this.posZ}));
+            var1.setTag("Motion", newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
+            float[] var7 = new float[]{this.rotationYaw, this.rotationPitch};
+            NBTTagList var3 = new NBTTagList();
+            var7 = var7;
+            int var4 = var7.length;
+
+            for(int var5 = 0; var5 < var4; ++var5) {
+                float var6 = var7[var5];
+                var3.setTag(new NBTTagFloat(var6));
+            }
+
+            var1.setTag("Rotation", var3);
+            var1.setFloat("FallDistance", this.fallDistance);
+            var1.setShort("Fire", (short)this.fire);
+            var1.setShort("Air", (short)this.air);
+            this.writeEntityToNBT(var1);
+        }
+    }
+
+    public final void readFromNBT(NBTTagCompound var1) {
+        NBTTagList var2 = var1.getTagList("Pos");
+        NBTTagList var3 = var1.getTagList("Motion");
+        NBTTagList var4 = var1.getTagList("Rotation");
+        this.posX = ((NBTTagDouble)var2.tagAt(0)).doubleValue;
+        this.posY = ((NBTTagDouble)var2.tagAt(1)).doubleValue;
+        this.posZ = ((NBTTagDouble)var2.tagAt(2)).doubleValue;
+        this.motionX = ((NBTTagDouble)var3.tagAt(0)).doubleValue;
+        this.motionY = ((NBTTagDouble)var3.tagAt(1)).doubleValue;
+        this.motionZ = ((NBTTagDouble)var3.tagAt(2)).doubleValue;
+        this.rotationYaw = ((NBTTagFloat)var4.tagAt(0)).floatValue;
+        this.rotationPitch = ((NBTTagFloat)var4.tagAt(1)).floatValue;
+        this.fallDistance = var1.getFloat("FallDistance");
+        this.fire = var1.getShort("Fire");
+        this.air = var1.getShort("Air");
+        this.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+        this.readEntityFromNBT(var1);
+    }
+
+    protected abstract String getEntityType();
+
+    protected abstract void readEntityFromNBT(NBTTagCompound var1);
+
+    protected abstract void writeEntityToNBT(NBTTagCompound var1);
+
+    private static NBTTagList newDoubleNBTList(double... var0) {
+        NBTTagList var1 = new NBTTagList();
+        var0 = var0;
+        int var2 = var0.length;
+
+        for(int var3 = 0; var3 < var2; ++var3) {
+            double var5 = var0[var3];
+            var1.setTag(new NBTTagDouble(var5));
+        }
+
+        return var1;
     }
 
     public final EntityItem dropItemWithOffset(int var1, int var2) {
@@ -455,7 +526,7 @@ public abstract class Entity {
         return var4;
     }
 
-    public boolean canBePushed() {
+    public boolean isEntityAlive() {
         return !this.isDead;
     }
 }
