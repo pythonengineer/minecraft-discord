@@ -10,6 +10,7 @@ public class EntityTNTPrimed extends Entity {
 
 	public EntityTNTPrimed(World var1, float var2, float var3, float var4) {
 		super(var1);
+        this.preventEntitySpawning = true;
 		this.setSize(0.98F, 0.98F);
 		this.yOffset = this.height / 2.0F;
 		this.setPosition((double)var2, (double)var3, (double)var4);
@@ -44,7 +45,7 @@ public class EntityTNTPrimed extends Entity {
 		}
 
 		if(this.fuse-- <= 0) {
-			this.setEntityDead();
+            super.isDead = true;
             this.worldObj.createExplosion((Entity)null, this.posX, this.posY, this.posZ, 4.0F);
 		} else {
 			this.worldObj.spawnParticle("smoke", this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
@@ -57,9 +58,5 @@ public class EntityTNTPrimed extends Entity {
 
     protected final void readEntityFromNBT(NBTTagCompound var1) {
         this.fuse = var1.getByte("Fuse");
-    }
-
-    protected final String getEntityType() {
-        return "PrimedTnt";
     }
 }

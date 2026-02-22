@@ -2,6 +2,7 @@ package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.terrain.generate.WorldGenTrees;
 
 public final class BlockSapling extends BlockFlower {
 	protected BlockSapling(int var1, int var2) {
@@ -9,18 +10,21 @@ public final class BlockSapling extends BlockFlower {
 		this.setBlockBounds(10.0F * 0.01F, 0.0F, 10.0F * 0.01F, 0.9F, 0.8F, 0.9F);
 	}
 
-    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        super.updateTick(var1, var2, var3, var4, var5);
-        if(var1.canExistingBlockSeeTheSky(var2, var3 + 1, var4) >= 9 && var5.nextInt(5) == 0) {
-            int var6 = var1.getBlockMetadata(var2, var3, var4);
-            if(var6 < 15) {
-                var1.setBlockMetadataWithNotify(var2, var3, var4, var6 + 1);
-                return;
-            }
+	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+		super.updateTick(var1, var2, var3, var4, var5);
+		if(var1.getBlockLightValue(var2, var3 + 1, var4) >= 9 && var5.nextInt(5) == 0) {
+			int var6 = var1.getBlockMetadata(var2, var3, var4);
+			if(var6 < 15) {
+				var1.setBlockMetadataWithNotify(var2, var3, var4, var6 + 1);
+				return;
+			}
 
-            var1.setTileNoUpdate(var2, var3, var4, 0);
-            var1.setTileNoUpdate(var2, var3, var4, this.blockID);
-        }
+			var1.setTileNoUpdate(var2, var3, var4, 0);
+			WorldGenTrees var7 = new WorldGenTrees();
+			if(!var7.generate(var1, var5, var2, var3, var4)) {
+				var1.setTileNoUpdate(var2, var3, var4, this.blockID);
+			}
+		}
 
-    }
+	}
 }

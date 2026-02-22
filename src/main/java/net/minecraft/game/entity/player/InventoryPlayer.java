@@ -56,7 +56,7 @@ public final class InventoryPlayer implements IInventory {
         }
     }
 
-    public final boolean addItemStackToInventory(ItemStack var1) {
+    public final boolean storePartialItemStack(ItemStack var1) {
         if(var1.itemDamage == 0) {
             int var4 = var1.stackSize;
             int var3 = var1.itemID;

@@ -24,10 +24,6 @@ public class EntityCreeper extends EntityMonster {
 		super.readEntityFromNBT(var1);
 	}
 
-	public final String getEntityType() {
-		return "Creeper";
-	}
-
 	protected final void updateEntityActionState() {
 		this.lastActiveTime = this.timeSinceIgnited;
 		if(this.timeSinceIgnited > 0 && this.creeperState < 0) {
@@ -55,7 +51,7 @@ public class EntityCreeper extends EntityMonster {
 			++this.timeSinceIgnited;
 			if(this.timeSinceIgnited == this.fuseTime) {
 				this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
-				this.setEntityDead();
+				super.isDead = true;
 			}
 
 			this.hasAttacked = true;

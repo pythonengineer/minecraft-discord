@@ -49,7 +49,7 @@ public final class EntityFlameFX extends EntityFX {
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         if(this.particleAge++ >= this.particleMaxAge) {
-            this.setEntityDead();
+            super.isDead = true;
         }
 
         this.moveEntity(this.motionX, this.motionY, this.motionZ);

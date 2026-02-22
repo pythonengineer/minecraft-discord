@@ -10,15 +10,14 @@ import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
+import net.minecraft.client.ChatLine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.gui.container.GuiInventory;
-import net.minecraft.client.render.ThreadDownloadImageData;
 import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.world.World;
 
 public final class GuiIngame extends Gui {
     private static RenderItem itemRenderer = new RenderItem();
@@ -193,7 +192,7 @@ public final class GuiIngame extends Gui {
             var15 = this.mc;
             this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoEntities(), 2, 22, 16777215);
             var15 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow("P: " + var15.effectRenderer.getStatistics() + ". T: " + World.debugSkylightUpdates(), 2, 32, 16777215);
+            this.mc.fontRenderer.drawStringWithShadow("P: " + var15.effectRenderer.getStatistics() + ". T: " + var15.theWorld.getDebugLoadedEntities(), 2, 32, 16777215);
         } else {
             this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev", 2, 2, 16777215);
         }
@@ -201,9 +200,8 @@ public final class GuiIngame extends Gui {
         onEndTouchGUI();
 
         for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
-            if(((ThreadDownloadImageData)this.chatMessageList.get(var7)).textureName < 200) {
-                this.chatMessageList.get(var7);
-                this.mc.fontRenderer.drawStringWithShadow((String)null, 2, scaledHeight - 8 - var7 * 9 - 20, 16777215);
+            if(((ChatLine)this.chatMessageList.get(var7)).updateCounter < 200) {
+                this.mc.fontRenderer.drawStringWithShadow(((ChatLine)this.chatMessageList.get(var7)).message, 2, scaledHeight - 8 - var7 * 9 - 20, 16777215);
             }
         }
 
@@ -213,7 +211,7 @@ public final class GuiIngame extends Gui {
         ++this.updateCounter;
 
         for(int var1 = 0; var1 < this.chatMessageList.size(); ++var1) {
-            ++((ThreadDownloadImageData)this.chatMessageList.get(var1)).textureName;
+            ++((ChatLine)this.chatMessageList.get(var1)).updateCounter;
         }
 
     }

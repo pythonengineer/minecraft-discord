@@ -796,6 +796,20 @@ public final class RenderGlobal implements IWorldAccess {
         }
     }
 
+    public final void obtainEntitySkin(Entity var1) {
+        if(var1.skinUrl != null) {
+            this.renderEngine.obtainImageData(var1.skinUrl, new ImageBufferDownload());
+        }
+
+    }
+
+    public final void releaseEntitySkin(Entity var1) {
+        if(var1.skinUrl != null) {
+            this.renderEngine.releaseImageData(var1.skinUrl);
+        }
+
+    }
+
     public final void updateAllRenderers() {
         for(int var1 = 0; var1 < this.worldRenderers.length; ++var1) {
             if(!this.worldRenderers[var1].needsUpdate && this.worldRenderers[var1].isChunkLit) {

@@ -19,6 +19,7 @@ import net.minecraft.game.world.block.StepSound;
 import net.minecraft.game.world.material.Material;
 
 public abstract class Entity {
+    public boolean preventEntitySpawning = false;
 	protected World worldObj;
     public double prevPosX;
     public double prevPosY;
@@ -33,7 +34,7 @@ public abstract class Entity {
 	public float rotationPitch;
 	public float prevRotationYaw;
 	public float prevRotationPitch;
-	public AxisAlignedBB boundingBox;
+    public AxisAlignedBB boundingBox = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
 	public boolean onGround = false;
     public boolean isCollidedHorizontally = false;
     private boolean surfaceCollision = true;
@@ -85,10 +86,6 @@ public abstract class Entity {
         }
     }
 
-    public void setEntityDead() {
-		this.isDead = true;
-	}
-
     protected void setSize(float var1, float var2) {
         this.width = var1;
         this.height = var2;
@@ -100,7 +97,24 @@ public abstract class Entity {
         this.posZ = var5;
         float var7 = this.width / 2.0F;
         float var8 = this.height / 2.0F;
-        this.boundingBox = new AxisAlignedBB(var1 - (double)var7, var3 - (double)var8, var5 - (double)var7, var1 + (double)var7, var3 + (double)var8, var5 + (double)var7);
+        double var10001 = var1 - (double)var7;
+        double var10002 = var3 - (double)var8;
+        double var10003 = var5 - (double)var7;
+        double var10004 = var1 + (double)var7;
+        double var10005 = var3 + (double)var8;
+        double var20 = var5 + (double)var7;
+        double var18 = var10005;
+        double var16 = var10004;
+        double var14 = var10003;
+        double var12 = var10002;
+        double var10 = var10001;
+        AxisAlignedBB var22 = this.boundingBox;
+        var22.minX = var10;
+        var22.minY = var12;
+        var22.minZ = var14;
+        var22.maxX = var16;
+        var22.maxY = var18;
+        var22.maxZ = var20;
     }
 
     public void onUpdate() {
@@ -453,50 +467,55 @@ public abstract class Entity {
         return null;
     }
 
-    public final void writeToNBT(NBTTagCompound var1) {
-        String var2 = this.getEntityType();
+    public final boolean addEntityID(NBTTagCompound var1) {
+        String var2 = EntityList.getEntityString(this);
         if(!this.isDead && var2 != null) {
             var1.setString("id", var2);
-            var1.setTag("Pos", newDoubleNBTList(new double[]{this.posX, this.posY, this.posZ}));
-            var1.setTag("Motion", newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
-            float[] var7 = new float[]{this.rotationYaw, this.rotationPitch};
-            NBTTagList var3 = new NBTTagList();
-            var7 = var7;
-            int var4 = var7.length;
-
-            for(int var5 = 0; var5 < var4; ++var5) {
-                float var6 = var7[var5];
-                var3.setTag(new NBTTagFloat(var6));
-            }
-
-            var1.setTag("Rotation", var3);
-            var1.setFloat("FallDistance", this.fallDistance);
-            var1.setShort("Fire", (short)this.fire);
-            var1.setShort("Air", (short)this.air);
-            this.writeEntityToNBT(var1);
+            this.writeToNBT(var1);
+            return true;
+        } else {
+            return false;
         }
+    }
+
+    public final void writeToNBT(NBTTagCompound var1) {
+        var1.setTag("Pos", newDoubleNBTList(new double[]{this.posX, this.posY, this.posZ}));
+        var1.setTag("Motion", newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
+        float[] var2 = new float[]{this.rotationYaw, this.rotationPitch};
+        NBTTagList var3 = new NBTTagList();
+        var2 = var2;
+        int var4 = var2.length;
+
+        for(int var5 = 0; var5 < var4; ++var5) {
+            float var6 = var2[var5];
+            var3.setTag(new NBTTagFloat(var6));
+        }
+
+        var1.setTag("Rotation", var3);
+        var1.setFloat("FallDistance", this.fallDistance);
+        var1.setShort("Fire", (short)this.fire);
+        var1.setShort("Air", (short)this.air);
+        this.writeEntityToNBT(var1);
     }
 
     public final void readFromNBT(NBTTagCompound var1) {
         NBTTagList var2 = var1.getTagList("Pos");
         NBTTagList var3 = var1.getTagList("Motion");
         NBTTagList var4 = var1.getTagList("Rotation");
-        this.posX = ((NBTTagDouble)var2.tagAt(0)).doubleValue;
-        this.posY = ((NBTTagDouble)var2.tagAt(1)).doubleValue;
-        this.posZ = ((NBTTagDouble)var2.tagAt(2)).doubleValue;
+        this.prevPosX = this.lastTickPosX = this.posX = ((NBTTagDouble)var2.tagAt(0)).doubleValue;
+        this.prevPosY = this.lastTickPosY = this.posY = ((NBTTagDouble)var2.tagAt(1)).doubleValue;
+        this.prevPosZ = this.lastTickPosZ = this.posZ = ((NBTTagDouble)var2.tagAt(2)).doubleValue;
         this.motionX = ((NBTTagDouble)var3.tagAt(0)).doubleValue;
         this.motionY = ((NBTTagDouble)var3.tagAt(1)).doubleValue;
         this.motionZ = ((NBTTagDouble)var3.tagAt(2)).doubleValue;
-        this.rotationYaw = ((NBTTagFloat)var4.tagAt(0)).floatValue;
-        this.rotationPitch = ((NBTTagFloat)var4.tagAt(1)).floatValue;
+        this.prevRotationYaw = this.rotationYaw = ((NBTTagFloat)var4.tagAt(0)).floatValue;
+        this.prevRotationPitch = this.rotationPitch = ((NBTTagFloat)var4.tagAt(1)).floatValue;
         this.fallDistance = var1.getFloat("FallDistance");
         this.fire = var1.getShort("Fire");
         this.air = var1.getShort("Air");
         this.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
         this.readEntityFromNBT(var1);
     }
-
-    protected abstract String getEntityType();
 
     protected abstract void readEntityFromNBT(NBTTagCompound var1);
 

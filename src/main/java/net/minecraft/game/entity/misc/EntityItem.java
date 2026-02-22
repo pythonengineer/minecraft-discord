@@ -30,6 +30,10 @@ public class EntityItem extends Entity {
         this.entityWalks = false;
     }
 
+    public EntityItem(World var1) {
+        super(var1);
+    }
+
     public final void onUpdate() {
         super.onUpdate();
         if(this.delayBeforeCanPickup > 0) {
@@ -135,7 +139,7 @@ public class EntityItem extends Entity {
         ++this.age2;
         ++this.age;
         if(this.age >= 6000) {
-            this.setEntityDead();
+            super.isDead = true;
         }
 
     }
@@ -147,7 +151,7 @@ public class EntityItem extends Entity {
     public final boolean attackEntityFrom(Entity var1, int var2) {
         this.health -= var2;
         if(this.health <= 0) {
-            this.setEntityDead();
+            super.isDead = true;
         }
 
         return false;
@@ -166,15 +170,11 @@ public class EntityItem extends Entity {
         this.item = new ItemStack(var1);
     }
 
-    public final String getEntityType() {
-        return "Item";
-    }
-
     public final void onCollideWithPlayer(EntityPlayer var1) {
-        if(this.delayBeforeCanPickup == 0 && var1.inventory.addItemStackToInventory(this.item)) {
+        if(this.delayBeforeCanPickup == 0 && var1.inventory.storePartialItemStack(this.item)) {
             this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
             var1.onItemPickup(this);
-            this.setEntityDead();
+            super.isDead = true;
         }
 
     }

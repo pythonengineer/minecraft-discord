@@ -7,21 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class NBTTagList extends NBTBase {
-	private List listValue = new ArrayList();
+	private List tagList = new ArrayList();
 	private byte tagType;
 
 	final void writeTagContents(DataOutput var1) throws IOException {
-		if(this.listValue.size() > 0) {
-			this.tagType = ((NBTBase)this.listValue.get(0)).getType();
+		if(this.tagList.size() > 0) {
+			this.tagType = ((NBTBase)this.tagList.get(0)).getType();
 		} else {
 			this.tagType = 1;
 		}
 
 		var1.writeByte(this.tagType);
-		var1.writeInt(this.listValue.size());
+		var1.writeInt(this.tagList.size());
 
-		for(int var2 = 0; var2 < this.listValue.size(); ++var2) {
-			((NBTBase)this.listValue.get(var2)).writeTagContents(var1);
+		for(int var2 = 0; var2 < this.tagList.size(); ++var2) {
+			((NBTBase)this.tagList.get(var2)).writeTagContents(var1);
 		}
 
 	}
@@ -29,12 +29,12 @@ public final class NBTTagList extends NBTBase {
 	final void readTagContents(DataInput var1) throws IOException {
 		this.tagType = var1.readByte();
 		int var2 = var1.readInt();
-		this.listValue = new ArrayList();
+		this.tagList = new ArrayList();
 
 		for(int var3 = 0; var3 < var2; ++var3) {
 			NBTBase var4 = NBTBase.createTagOfType(this.tagType);
 			var4.readTagContents(var1);
-			this.listValue.add(var4);
+			this.tagList.add(var4);
 		}
 
 	}
@@ -44,7 +44,7 @@ public final class NBTTagList extends NBTBase {
 	}
 
 	public final String toString() {
-		StringBuilder var10000 = (new StringBuilder()).append("").append(this.listValue.size()).append(" entries of type ");
+		StringBuilder var10000 = (new StringBuilder()).append("").append(this.tagList.size()).append(" entries of type ");
 		byte var1 = this.tagType;
 		String var10001;
 		switch(var1) {
@@ -90,14 +90,14 @@ public final class NBTTagList extends NBTBase {
 
 	public final void setTag(NBTBase var1) {
 		this.tagType = var1.getType();
-		this.listValue.add(var1);
+		this.tagList.add(var1);
 	}
 
 	public final NBTBase tagAt(int var1) {
-		return (NBTBase)this.listValue.get(var1);
+		return (NBTBase)this.tagList.get(var1);
 	}
 
 	public final int tagCount() {
-		return this.listValue.size();
+		return this.tagList.size();
 	}
 }

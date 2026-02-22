@@ -130,7 +130,7 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
         int var2 = 0;
 
         for(int var3 = 0; var3 < this.chunks.length; ++var3) {
-            if(this.chunks[var3] != null && this.chunks[var3].isModified) {
+            if(this.chunks[var3] != null && this.chunks[var3].needsSaving(var1)) {
                 this.saveChunk(this.chunks[var3]);
                 this.chunks[var3].isModified = false;
                 ++var2;

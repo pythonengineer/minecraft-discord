@@ -22,10 +22,6 @@ public class EntityZombie extends EntityMonster {
         super.onLivingUpdate();
     }
 
-    public final String getEntityType() {
-        return "Zombie";
-    }
-
     protected final int getDroppedItem() {
 		return Item.feather.shiftedIndex;
 	}

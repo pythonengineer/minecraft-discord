@@ -49,7 +49,7 @@ public final class EntityPickupFX extends EntityFX {
     public final void onUpdate() {
         ++this.age;
         if(this.age == this.maxAge) {
-            this.setEntityDead();
+            super.isDead = true;
         }
 
     }

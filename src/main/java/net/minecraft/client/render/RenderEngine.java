@@ -98,8 +98,55 @@ public class RenderEngine {
 	}
 
     public final int getTextureForDownloadableImage(String var1, String var2) {
+        ThreadDownloadImageData var6 = (ThreadDownloadImageData)this.urlToImageDataMap.get(var1);
+        if(var6 != null && var6.image != null && !var6.textureSetupComplete) {
+            if(var6.textureIntDownload < 0) {
+                ImageData var4 = var6.image;
+                this.singleIntBuffer.clear();
+                GL11.glGenTextures(this.singleIntBuffer);
+                int var5 = this.singleIntBuffer.get(0);
+                this.setupTexture(var4, var5);
+                this.textureNameToImageMap.put(Integer.valueOf(var5), var4);
+                var6.textureIntDownload = var5;
+            } else {
+                this.setupTexture(var6.image, var6.textureIntDownload);
+            }
+
+            var6.textureSetupComplete = true;
+        }
+
+        return var6 != null && var6.textureIntDownload >= 0 ? var6.textureIntDownload : this.getTexture(var2);
+    }
+
+    public final ThreadDownloadImageData obtainImageData(String var1, ImageBufferDownload var2) {
         ThreadDownloadImageData var3 = (ThreadDownloadImageData)this.urlToImageDataMap.get(var1);
-        return var3 != null && var3.updateCounter >= 0 ? var3.updateCounter : this.getTexture(var2);
+        if(var3 == null) {
+            this.urlToImageDataMap.put(var1, new ThreadDownloadImageData(var1, var2));
+        } else {
+            ++var3.referenceCount;
+        }
+
+        return var3;
+    }
+
+    public final void releaseImageData(String var1) {
+        ThreadDownloadImageData var2 = (ThreadDownloadImageData)this.urlToImageDataMap.get(var1);
+        if(var2 != null) {
+            --var2.referenceCount;
+            if(var2.referenceCount == 0) {
+                if(var2.textureIntDownload >= 0) {
+                    int var3 = var2.textureIntDownload;
+                    this.textureNameToImageMap.remove(Integer.valueOf(var3));
+                    this.singleIntBuffer.clear();
+                    this.singleIntBuffer.put(var3);
+                    this.singleIntBuffer.flip();
+                    GL11.glDeleteTextures(this.singleIntBuffer);
+                }
+
+                this.urlToImageDataMap.remove(var1);
+            }
+        }
+
     }
 
 	public final void registerTextureFX(TextureFX var1) {
@@ -138,7 +185,7 @@ public class RenderEngine {
         }
 
         ThreadDownloadImageData var5;
-        for(var1 = this.urlToImageDataMap.values().iterator(); var1.hasNext(); var5.texturesSetupComplete = false) {
+        for(var1 = this.urlToImageDataMap.values().iterator(); var1.hasNext(); var5.textureSetupComplete = false) {
             var5 = (ThreadDownloadImageData)var1.next();
         }
 

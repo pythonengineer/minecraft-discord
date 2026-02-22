@@ -56,10 +56,6 @@ public class EntitySpider extends EntityMonster {
         super.readEntityFromNBT(var1);
     }
 
-    public final String getEntityType() {
-        return "Spider";
-    }
-
     protected final int getDroppedItem() {
 		return Item.silk.shiftedIndex;
 	}

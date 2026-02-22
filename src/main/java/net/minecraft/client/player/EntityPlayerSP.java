@@ -23,6 +23,14 @@ public class EntityPlayerSP extends EntityPlayer {
 	public EntityPlayerSP(Minecraft var1, World var2, Session var3) {
 		super(var2);
 		this.mc = var1;
+        if(var2 != null) {
+            if(var2.playerEntity != null) {
+                World.setEntityDead(var2.playerEntity);
+            }
+
+            var2.playerEntity = this;
+        }
+
         if(var3 != null) {
             this.skinUrl = var3.name;
             this.username = var3.name;
@@ -44,7 +52,7 @@ public class EntityPlayerSP extends EntityPlayer {
 
     public final void writeEntityToNBT(NBTTagCompound var1) {
         super.writeEntityToNBT(var1);
-        var1.setInt("Score", this.score);
+        var1.setInteger("Score", this.score);
         InventoryPlayer var10002 = this.inventory;
         NBTTagList var2 = new NBTTagList();
         InventoryPlayer var5 = var10002;
@@ -74,7 +82,7 @@ public class EntityPlayerSP extends EntityPlayer {
 
     public final void readEntityFromNBT(NBTTagCompound var1) {
         super.readEntityFromNBT(var1);
-        this.score = var1.getInt("Score");
+        this.score = var1.getInteger("Score");
         NBTTagList var6 = var1.getTagList("Inventory");
         NBTTagList var2 = var6;
         InventoryPlayer var7 = this.inventory;
@@ -93,10 +101,6 @@ public class EntityPlayerSP extends EntityPlayer {
             }
         }
 
-    }
-
-    public final String getEntityType() {
-        return "LocalPlayer";
     }
 
     public final void displayChestGUI(IInventory var1) {

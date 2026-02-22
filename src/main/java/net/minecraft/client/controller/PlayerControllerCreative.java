@@ -7,9 +7,10 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 
 public final class PlayerControllerCreative extends PlayerController {
-	private PlayerControllerCreative(Minecraft var1) {
-		super(var1);
-	}
+    public PlayerControllerCreative(Minecraft var1) {
+        super(var1);
+        this.isInTestMode = true;
+    }
 
 	public final void onRespawn(EntityPlayer var1) {
 		for(int var2 = 0; var2 < 9; ++var2) {

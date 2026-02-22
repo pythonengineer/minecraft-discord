@@ -21,4 +21,8 @@ public abstract class EntityAnimal extends EntityCreature {
 	public void readEntityFromNBT(NBTTagCompound var1) {
 		super.readEntityFromNBT(var1);
 	}
+
+    public final boolean getCanSpawnHere(float var1, float var2, float var3) {
+        return this.worldObj.getBlockLightValue((int)var1, (int)var2, (int)var3) > 8 && super.getCanSpawnHere(var1, var2, var3);
+    }
 }

@@ -62,7 +62,7 @@ public class EntityFX extends Entity {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		if(this.particleAge++ >= this.particleMaxAge) {
-			this.setEntityDead();
+            super.isDead = true;
 		}
 
         this.motionY -= 0.04D * (double)this.particleGravity;
@@ -99,10 +99,6 @@ public class EntityFX extends Entity {
 	}
 
     public final void writeEntityToNBT(NBTTagCompound var1) {
-    }
-
-    public final String getEntityType() {
-        return null;
     }
 
     public final void readEntityFromNBT(NBTTagCompound var1) {

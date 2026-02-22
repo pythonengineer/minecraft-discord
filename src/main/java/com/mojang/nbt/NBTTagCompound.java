@@ -50,7 +50,7 @@ public final class NBTTagCompound extends NBTBase {
 		this.tagMap.put(var1, (new NBTTagShort(var2)).setKey(var1));
 	}
 
-	public final void setInt(String var1, int var2) {
+    public final void setInteger(String var1, int var2) {
 		this.tagMap.put(var1, (new NBTTagInt(var2)).setKey(var1));
 	}
 
@@ -90,7 +90,7 @@ public final class NBTTagCompound extends NBTBase {
 		return !this.tagMap.containsKey(var1) ? 0 : ((NBTTagShort)this.tagMap.get(var1)).shortValue;
 	}
 
-	public final int getInt(String var1) {
+    public final int getInteger(String var1) {
 		return !this.tagMap.containsKey(var1) ? 0 : ((NBTTagInt)this.tagMap.get(var1)).intValue;
 	}
 

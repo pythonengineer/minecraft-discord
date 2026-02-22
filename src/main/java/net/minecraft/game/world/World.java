@@ -28,7 +28,7 @@ import net.minecraft.game.world.material.Material;
 import net.minecraft.game.world.path.Pathfinder;
 import net.minecraft.game.world.terrain.ChunkProviderGenerate;
 
-public final class World {
+public class World {
     private List lightingToUpdate = new ArrayList();
     private List loadedEntityList = new ArrayList();
     private List unloadedEntityList = new LinkedList();
@@ -48,6 +48,7 @@ public final class World {
     public int spawnX;
     public int spawnY;
     public int spawnZ;
+    public boolean isNewWorld = false;
 	private List worldAccesses = new ArrayList();
     private IChunkProvider chunkProvider;
     private VFile2 saveDirectory;
@@ -89,14 +90,15 @@ public final class World {
     public World(String var2) {
         this.saveDirectory = new VFile2("saves", var2);
         VFile2 var1 = new VFile2(this.saveDirectory, "level.dat");
+        this.isNewWorld = !var1.exists();
         if(var1.exists()) {
             try (InputStream fis = var1.getInputStream()) {
                 NBTTagCompound var4 = LoadingScreenRenderer.read(fis);
                 var4 = var4.getCompoundTag("Data");
                 this.randomSeed = var4.getLong("RandomSeed");
-                this.spawnX = var4.getInt("SpawnX");
-                this.spawnY = var4.getInt("SpawnY");
-                this.spawnZ = var4.getInt("SpawnZ");
+                this.spawnX = var4.getInteger("SpawnX");
+                this.spawnY = var4.getInteger("SpawnY");
+                this.spawnZ = var4.getInteger("SpawnZ");
                 this.worldTime = var4.getLong("Time");
                 this.sizeOnDisk = var4.getLong("SizeOnDisk");
                 this.nbtCompoundPlayer = var4.getCompoundTag("Player");
@@ -116,20 +118,25 @@ public final class World {
     }
 
     public final void spawnPlayer() {
-        if(this.nbtCompoundPlayer != null) {
-            this.playerEntity.readFromNBT(this.nbtCompoundPlayer);
-            this.nbtCompoundPlayer = null;
-        }
+        try {
+            if(this.nbtCompoundPlayer != null) {
+                this.playerEntity.readFromNBT(this.nbtCompoundPlayer);
+                this.nbtCompoundPlayer = null;
+            }
 
+            this.spawnEntityInWorld(this.playerEntity);
+        } catch (Exception var2) {
+            var2.printStackTrace();
+        }
     }
 
     public void saveWorld(boolean var1) {
         VFile2 var2 = new VFile2(this.saveDirectory, "level.dat");
         NBTTagCompound var3 = new NBTTagCompound();
         var3.setLong("RandomSeed", this.randomSeed);
-        var3.setInt("SpawnX", this.spawnX);
-        var3.setInt("SpawnY", this.spawnY);
-        var3.setInt("SpawnZ", this.spawnZ);
+        var3.setInteger("SpawnX", this.spawnX);
+        var3.setInteger("SpawnY", this.spawnY);
+        var3.setInteger("SpawnZ", this.spawnZ);
         var3.setLong("Time", this.worldTime);
         var3.setLong("SizeOnDisk", this.sizeOnDisk);
         var3.setLong("LastPlayed", EagRuntime.currentTimeMillis());
@@ -302,30 +309,77 @@ public final class World {
         return this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4).canBlockSeeTheSky(var1 & 15, var2, var3 & 15);
     }
 
-    public final int canExistingBlockSeeTheSky(int var1, int var2, int var3) {
+    public final int getBlockLightValue(int var1, int var2, int var3) {
+        return this.getBlockLightValue_do(var1, var2, var3, true);
+    }
+
+    private int getBlockLightValue_do(int var1, int var2, int var3, boolean var4) {
         if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
-            int var4 = this.getBlockId(var1, var2, var3);
-            if(var4 == Block.stairSingle.blockID || var4 == Block.tilledField.blockID) {
-                ++var2;
+            int var8;
+            if(var4) {
+                var8 = this.getBlockId(var1, var2, var3);
+                if(var8 == Block.stairSingle.blockID || var8 == Block.tilledField.blockID) {
+                    var8 = this.getBlockLightValue_do(var1, var2 + 1, var3, false);
+                    int var5 = this.getBlockLightValue_do(var1 + 1, var2, var3, false);
+                    int var6 = this.getBlockLightValue_do(var1 - 1, var2, var3, false);
+                    int var7 = this.getBlockLightValue_do(var1, var2, var3 + 1, false);
+                    var1 = this.getBlockLightValue_do(var1, var2, var3 - 1, false);
+                    if(var5 > var8) {
+                        var8 = var5;
+                    }
+
+                    if(var6 > var8) {
+                        var8 = var6;
+                    }
+
+                    if(var7 > var8) {
+                        var8 = var7;
+                    }
+
+                    if(var1 > var8) {
+                        var8 = var1;
+                    }
+
+                    return var8;
+                }
             }
 
             if(var2 < 0) {
                 return 0;
             } else if(var2 >= 128) {
-                var4 = 15 - this.skylightSubtracted;
-                if(var4 < 0) {
-                    var4 = 0;
+                var8 = 15 - this.skylightSubtracted;
+                if(var8 < 0) {
+                    var8 = 0;
                 }
 
-                return var4;
+                return var8;
             } else {
-                Chunk var5 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
+                Chunk var9 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
                 var1 &= 15;
                 var3 &= 15;
-                return var5.getBlockLightValue(var1, var2, var3, this.skylightSubtracted);
+                return var9.getBlockLightValue(var1, var2, var3, this.skylightSubtracted);
             }
         } else {
             return 15;
+        }
+    }
+
+    public final boolean canExistingBlockSeeTheSky(int var1, int var2, int var3) {
+        if(var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000) {
+            if(var2 < 0) {
+                return false;
+            } else if(var2 >= 128) {
+                return true;
+            } else if(!this.chunkExists(var1 >> 4, var3 >> 4)) {
+                return false;
+            } else {
+                Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
+                var1 &= 15;
+                var3 &= 15;
+                return var4.canBlockSeeTheSky(var1, var2, var3);
+            }
+        } else {
+            return false;
         }
     }
 
@@ -343,10 +397,23 @@ public final class World {
     }
 
     public final void neighborLightPropagationChanged(EnumSkyBlock var1, int var2, int var3, int var4, int var5) {
-        if(this.blockExists(var2, var3, var4) && this.getSavedLightValue(var1, var2, var3, var4) != var5) {
-            this.scheduleLightingUpdate(var1, var2, var3, var4, var2, var3, var4);
-        }
+        if(this.blockExists(var2, var3, var4)) {
+            if(var1 == EnumSkyBlock.Sky) {
+                if(this.canExistingBlockSeeTheSky(var2, var3, var4)) {
+                    var5 = 15;
+                }
+            } else if(var1 == EnumSkyBlock.Block) {
+                int var6 = this.getBlockId(var2, var3, var4);
+                if(Block.lightValue[var6] > var5) {
+                    var5 = Block.lightValue[var6];
+                }
+            }
 
+            if(this.getSavedLightValue(var1, var2, var3, var4) != var5) {
+                this.scheduleLightingUpdate(var1, var2, var3, var4, var2, var3, var4);
+            }
+
+        }
     }
 
     public final int getSavedLightValue(EnumSkyBlock var1, int var2, int var3, int var4) {
@@ -387,7 +454,7 @@ public final class World {
     }
 
     public final float getBrightness(int var1, int var2, int var3) {
-        return lightBrightnessTable[this.canExistingBlockSeeTheSky(var1, var2, var3)];
+        return lightBrightnessTable[this.getBlockLightValue(var1, var2, var3)];
     }
 
     public final boolean isDaytime() {
@@ -573,11 +640,23 @@ public final class World {
 	}
 
     public final void spawnEntityInWorld(Entity var1) {
-        this.loadedEntityList.add(var1);
+        int var2 = MathHelper.floor_double(var1.posX / 16.0D);
+        int var3 = MathHelper.floor_double(var1.posZ / 16.0D);
+        if(!this.chunkExists(var2, var3)) {
+            System.out.println("Failed to add entity " + var1);
+        } else {
+            this.getChunkFromChunkCoords(var2, var3).addEntity(var1);
+            this.loadedEntityList.add(var1);
+
+            for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
+                ((IWorldAccess)this.worldAccesses.get(var2)).obtainEntitySkin(var1);
+            }
+
+        }
     }
 
     public static void setEntityDead(Entity var0) {
-        var0.setEntityDead();
+        var0.isDead = true;
     }
 
 	public final void addWorldAccess(IWorldAccess var1) {
@@ -708,25 +787,68 @@ public final class World {
         int var1;
         for(var1 = 0; var1 < this.loadedEntityList.size(); ++var1) {
             Entity var2 = (Entity)this.loadedEntityList.get(var1);
+            int var3;
+            int var4;
+            int var5;
             if(!var2.isDead) {
+                var3 = MathHelper.floor_double(var2.posX / 16.0D);
+                var4 = MathHelper.floor_double(var2.posY / 16.0D);
+                var5 = MathHelper.floor_double(var2.posZ / 16.0D);
                 var2.lastTickPosX = var2.posX;
                 var2.lastTickPosY = var2.posY;
                 var2.lastTickPosZ = var2.posZ;
                 var2.prevRotationYaw = var2.rotationYaw;
                 var2.prevRotationPitch = var2.rotationPitch;
                 var2.onUpdate();
+                int var6 = MathHelper.floor_double(var2.posX / 16.0D);
+                int var7 = MathHelper.floor_double(var2.posY / 16.0D);
+                int var8 = MathHelper.floor_double(var2.posZ / 16.0D);
+                if(var3 != var6 || var4 != var7 || var5 != var8) {
+                    if(this.chunkExists(var3, var5)) {
+                        this.getChunkFromChunkCoords(var3, var5).removeEntityAtIndex(var2, var4);
+                    }
+
+                    if(this.chunkExists(var6, var8)) {
+                        this.getChunkFromChunkCoords(var6, var8).addEntity(var2);
+                    } else {
+                        var2.isDead = true;
+                    }
+                }
             }
 
             if(var2.isDead) {
+                var3 = MathHelper.floor_double(var2.posX / 16.0D);
+                var4 = MathHelper.floor_double(var2.posZ / 16.0D);
+                if(this.chunkExists(var3, var4)) {
+                    Chunk var10 = this.getChunkFromChunkCoords(var3, var4);
+                    var10.removeEntityAtIndex(var2, MathHelper.floor_double(var2.posY / 16.0D));
+                }
+
                 this.loadedEntityList.remove(var1--);
+
+                for(var5 = 0; var5 < this.worldAccesses.size(); ++var5) {
+                    ((IWorldAccess)this.worldAccesses.get(var5)).releaseEntitySkin(var2);
+                }
             }
         }
 
         for(var1 = 0; var1 < this.loadedTileEntityList.size(); ++var1) {
-            TileEntity var3 = (TileEntity)this.loadedTileEntityList.get(var1);
-            var3.updateEntity();
+            TileEntity var9 = (TileEntity)this.loadedTileEntityList.get(var1);
+            var9.updateEntity();
         }
 
+    }
+
+    public final boolean checkIfAABBIsClear1(AxisAlignedBB var1) {
+        List var3 = this.getEntitiesWithinAABBExcludingEntity((Entity)null, var1);
+
+        for(int var2 = 0; var2 < var3.size(); ++var2) {
+            if(((Entity)var3.get(var2)).preventEntitySpawning) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 	public final boolean getIsAnyLiquid(AxisAlignedBB var1) {
@@ -867,7 +989,7 @@ public final class World {
         int var71 = MathHelper.floor_double(var13 + (double)var3 + 1.0D);
         int var24 = MathHelper.floor_double(var15 - (double)var3 - 1.0D);
         int var72 = MathHelper.floor_double(var15 + (double)var3 + 1.0D);
-        List var26 = var66.getEntitiesWithinAABB(var1, new AxisAlignedBB((double)var69, (double)var70, (double)var24, (double)var7, (double)var71, (double)var72));
+        List var26 = var66.getEntitiesWithinAABBExcludingEntity(var1, new AxisAlignedBB((double)var69, (double)var70, (double)var24, (double)var7, (double)var71, (double)var72));
         Vec3D var73 = new Vec3D(var11, var13, var15);
 
         double var38;
@@ -993,9 +1115,25 @@ public final class World {
 
     }
 
-	public static String debugSkylightUpdates() {
-		return "";
-	}
+    public final String getDebugLoadedEntities() {
+        return "All: " + this.loadedEntityList.size() + "/ Counted: " + this.getDebugCountedEntities();
+    }
+
+    private int getDebugCountedEntities() {
+        int var1 = MathHelper.floor_double(this.playerEntity.posX / 16.0D);
+        int var2 = MathHelper.floor_double(this.playerEntity.posZ / 16.0D);
+        int var3 = 0;
+
+        for(int var4 = var1 - 32; var4 <= var1 + 32; ++var4) {
+            for(int var5 = var2 - 32; var5 <= var2 + 32; ++var5) {
+                if(this.chunkExists(var4, var5)) {
+                    var3 += this.getChunkFromChunkCoords(var4, var5).getDebugCountedEntities();
+                }
+            }
+        }
+
+        return var3;
+    }
 
 	public final Entity getPlayerEntity() {
 		return this.playerEntity;
@@ -1031,121 +1169,120 @@ public final class World {
         this.saveWorld(true);
     }
 
-    public final void updatingLighting() {
+    public final int lightUpdatesNeeded() {
+        return this.lightingToUpdate.size();
+    }
+
+    public final boolean updatingLighting() {
+        int var1 = 100000;
+
         while(this.lightingToUpdate.size() > 0) {
+            --var1;
+            if(var1 <= 0) {
+                return true;
+            }
+
             MetadataChunkBlock var10000 = (MetadataChunkBlock)this.lightingToUpdate.remove(this.lightingToUpdate.size() - 1);
-            World var2 = this;
-            MetadataChunkBlock var1 = var10000;
+            World var3 = this;
+            MetadataChunkBlock var2 = var10000;
 
-            for(int var3 = var1.x; var3 <= var1.maxX; ++var3) {
-                for(int var4 = var1.z; var4 <= var1.maxZ; ++var4) {
-                    if(var2.blockExists(var3, 0, var4)) {
-                        for(int var5 = var1.y; var5 <= var1.maxY; ++var5) {
-                            if(var5 >= 0 && var5 < 128) {
-                                int var6 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4);
-                                int var7 = var2.getBlockId(var3, var5, var4);
-                                int var8 = Block.lightOpacity[var7];
-                                if(var8 == 0) {
-                                    var8 = 1;
+            for(int var4 = var2.x; var4 <= var2.maxX; ++var4) {
+                for(int var5 = var2.z; var5 <= var2.maxZ; ++var5) {
+                    if(var3.blockExists(var4, 0, var5)) {
+                        for(int var6 = var2.y; var6 <= var2.maxY; ++var6) {
+                            if(var6 >= 0 && var6 < 128) {
+                                int var7 = var3.getSavedLightValue(var2.skyBlock, var4, var6, var5);
+                                int var8 = var3.getBlockId(var4, var6, var5);
+                                int var9 = Block.lightOpacity[var8];
+                                if(var9 == 0) {
+                                    var9 = 1;
                                 }
 
-                                int var9 = 0;
+                                int var10 = 0;
+                                if(var2.skyBlock == EnumSkyBlock.Sky) {
+                                    if(var3.canExistingBlockSeeTheSky(var4, var6, var5)) {
+                                        var10 = 15;
+                                    }
+                                } else if(var2.skyBlock == EnumSkyBlock.Block) {
+                                    var10 = Block.lightValue[var8];
+                                }
+
                                 int var11;
-                                int var13;
-                                if(var1.skyBlock == EnumSkyBlock.Sky) {
-                                    boolean var19;
-                                    if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000) {
-                                        if(var5 < 0) {
-                                            var19 = false;
-                                        } else if(var5 >= 128) {
-                                            var19 = true;
-                                        } else if(!var2.chunkExists(var3 >> 4, var4 >> 4)) {
-                                            var19 = false;
-                                        } else {
-                                            Chunk var14 = var2.getChunkFromChunkCoords(var3 >> 4, var4 >> 4);
-                                            var11 = var3 & 15;
-                                            var13 = var4 & 15;
-                                            var19 = var14.canBlockSeeTheSky(var11, var5, var13);
-                                        }
-                                    } else {
-                                        var19 = false;
-                                    }
-
-                                    if(var19) {
-                                        var9 = 15;
-                                    }
-                                } else if(var1.skyBlock == EnumSkyBlock.Block) {
-                                    var9 = Block.lightValue[var7];
-                                }
-
                                 int var12;
-                                int var18;
-                                if(var8 >= 15 && var9 == 0) {
-                                    var7 = 0;
+                                if(var9 >= 15 && var10 == 0) {
+                                    var8 = 0;
                                 } else {
-                                    var7 = var2.getSavedLightValue(var1.skyBlock, var3 - 1, var5, var4);
-                                    int var10 = var2.getSavedLightValue(var1.skyBlock, var3 + 1, var5, var4);
-                                    var11 = var2.getSavedLightValue(var1.skyBlock, var3, var5 - 1, var4);
-                                    var12 = var2.getSavedLightValue(var1.skyBlock, var3, var5 + 1, var4);
-                                    var13 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 - 1);
-                                    var18 = var2.getSavedLightValue(var1.skyBlock, var3, var5, var4 + 1);
-                                    var7 = var7;
-                                    if(var10 > var7) {
-                                        var7 = var10;
+                                    var8 = var3.getSavedLightValue(var2.skyBlock, var4 - 1, var6, var5);
+                                    var11 = var3.getSavedLightValue(var2.skyBlock, var4 + 1, var6, var5);
+                                    var12 = var3.getSavedLightValue(var2.skyBlock, var4, var6 - 1, var5);
+                                    int var13 = var3.getSavedLightValue(var2.skyBlock, var4, var6 + 1, var5);
+                                    int var14 = var3.getSavedLightValue(var2.skyBlock, var4, var6, var5 - 1);
+                                    int var15 = var3.getSavedLightValue(var2.skyBlock, var4, var6, var5 + 1);
+                                    var8 = var8;
+                                    if(var11 > var8) {
+                                        var8 = var11;
                                     }
 
-                                    if(var11 > var7) {
-                                        var7 = var11;
+                                    if(var12 > var8) {
+                                        var8 = var12;
                                     }
 
-                                    if(var12 > var7) {
-                                        var7 = var12;
+                                    if(var13 > var8) {
+                                        var8 = var13;
                                     }
 
-                                    if(var13 > var7) {
-                                        var7 = var13;
+                                    if(var14 > var8) {
+                                        var8 = var14;
                                     }
 
-                                    if(var18 > var7) {
-                                        var7 = var18;
+                                    if(var15 > var8) {
+                                        var8 = var15;
                                     }
 
-                                    var7 -= var8;
-                                    if(var7 < 0) {
-                                        var7 = 0;
+                                    var8 -= var9;
+                                    if(var8 < 0) {
+                                        var8 = 0;
                                     }
 
-                                    if(var9 > var7) {
-                                        var7 = var9;
+                                    if(var10 > var8) {
+                                        var8 = var10;
                                     }
                                 }
 
-                                if(var6 != var7) {
-                                    var18 = var4;
-                                    var13 = var5;
-                                    var12 = var3;
-                                    EnumSkyBlock var17 = var1.skyBlock;
-                                    World var16 = var2;
-                                    if(var3 >= -32000000 && var4 >= -32000000 && var3 < 32000000 && var4 <= 32000000 && var5 >= 0 && var5 < 128 && var2.chunkExists(var3 >> 4, var4 >> 4)) {
-                                        Chunk var15 = var2.getChunkFromChunkCoords(var3 >> 4, var4 >> 4);
-                                        var15.setLightValue(var17, var3 & 15, var5, var4 & 15, var7);
+                                if(var7 != var8) {
+                                    var12 = var5;
+                                    var11 = var6;
+                                    var10 = var4;
+                                    EnumSkyBlock var17 = var2.skyBlock;
+                                    World var16 = var3;
+                                    if(var4 >= -32000000 && var5 >= -32000000 && var4 < 32000000 && var5 <= 32000000 && var6 >= 0 && var6 < 128 && var3.chunkExists(var4 >> 4, var5 >> 4)) {
+                                        Chunk var18 = var3.getChunkFromChunkCoords(var4 >> 4, var5 >> 4);
+                                        var18.setLightValue(var17, var4 & 15, var6, var5 & 15, var8);
 
-                                        for(var6 = 0; var6 < var16.worldAccesses.size(); ++var6) {
-                                            ((IWorldAccess)var16.worldAccesses.get(var6)).markBlockAndNeighborsNeedsUpdate(var12, var13, var18);
+                                        for(var9 = 0; var9 < var16.worldAccesses.size(); ++var9) {
+                                            ((IWorldAccess)var16.worldAccesses.get(var9)).markBlockAndNeighborsNeedsUpdate(var10, var11, var12);
                                         }
                                     }
 
-                                    --var7;
-                                    if(var7 < 0) {
-                                        var7 = 0;
+                                    --var8;
+                                    if(var8 < 0) {
+                                        var8 = 0;
                                     }
 
-                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3 - 1, var5, var4, var7);
-                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3 + 1, var5, var4, var7);
-                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 - 1, var4, var7);
-                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5 + 1, var4, var7);
-                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 - 1, var7);
-                                    var2.neighborLightPropagationChanged(var1.skyBlock, var3, var5, var4 + 1, var7);
+                                    var3.neighborLightPropagationChanged(var2.skyBlock, var4 - 1, var6, var5, var8);
+                                    var3.neighborLightPropagationChanged(var2.skyBlock, var4, var6 - 1, var5, var8);
+                                    var3.neighborLightPropagationChanged(var2.skyBlock, var4, var6, var5 - 1, var8);
+                                    if(var4 + 1 >= var2.maxX) {
+                                        var3.neighborLightPropagationChanged(var2.skyBlock, var4 + 1, var6, var5, var8);
+                                    }
+
+                                    if(var6 + 1 >= var2.maxY) {
+                                        var3.neighborLightPropagationChanged(var2.skyBlock, var4, var6 + 1, var5, var8);
+                                    }
+
+                                    if(var5 + 1 >= var2.maxZ) {
+                                        var3.neighborLightPropagationChanged(var2.skyBlock, var4, var6, var5 + 1, var8);
+                                    }
                                 }
                             }
                         }
@@ -1154,6 +1291,7 @@ public final class World {
             }
         }
 
+        return false;
     }
 
     public final void scheduleLightingUpdate(EnumSkyBlock var1, int var2, int var3, int var4, int var5, int var6, int var7) {
@@ -1165,15 +1303,60 @@ public final class World {
 
         for(var8 = 0; var8 < var9; ++var8) {
             MetadataChunkBlock var10 = (MetadataChunkBlock)this.lightingToUpdate.get(this.lightingToUpdate.size() - var8 - 1);
-            if(var10.skyBlock == var1 && var2 >= var10.x && var3 >= var10.y && var4 >= var10.z && var5 <= var10.maxX && var6 <= var10.maxY && var7 <= var10.maxZ) {
-                return;
+            if(var10.skyBlock == var1) {
+                boolean var10000;
+                if(var2 >= var10.x && var3 >= var10.y && var4 >= var10.z && var5 <= var10.maxX && var6 <= var10.maxY && var7 <= var10.maxZ) {
+                    var10000 = true;
+                } else if(var2 >= var10.x - 1 && var3 >= var10.y - 1 && var4 >= var10.z - 1 && var5 <= var10.maxX + 1 && var6 <= var10.maxY + 1 && var7 <= var10.maxZ + 1) {
+                    if(var2 < var10.x) {
+                        var10.x = var2;
+                    }
+
+                    if(var3 < var10.y) {
+                        var10.y = var3;
+                    }
+
+                    if(var4 < var10.z) {
+                        var10.z = var4;
+                    }
+
+                    if(var5 > var10.maxX) {
+                        var10.maxX = var5;
+                    }
+
+                    if(var6 > var10.maxY) {
+                        var10.maxY = var6;
+                    }
+
+                    if(var7 > var10.maxZ) {
+                        var10.maxZ = var7;
+                    }
+
+                    var10000 = true;
+                } else {
+                    var10000 = false;
+                }
+
+                if(var10000) {
+                    return;
+                }
             }
         }
 
         this.lightingToUpdate.add(new MetadataChunkBlock(var1, var2, var3, var4, var5, var6, var7));
+        if(this.lightingToUpdate.size() > 1000000) {
+            while(this.lightingToUpdate.size() > 500000) {
+                this.updatingLighting();
+            }
+        }
+
     }
 
     public final void restartTimeOfDay() {
+        if(!this.loadedEntityList.contains(this.playerEntity)) {
+            this.spawnEntityInWorld(this.playerEntity);
+        }
+
         float var1 = 1.0F;
         var1 = this.getCelestialAngle(1.0F);
         var1 = 1.0F - (MathHelper.cos(var1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F);
@@ -1251,17 +1434,22 @@ public final class World {
 
     }
 
-    public final List getEntitiesWithinAABB(Entity var1, AxisAlignedBB var2) {
-        ArrayList var3 = new ArrayList();
+    public final List getEntitiesWithinAABBExcludingEntity(Entity var1, AxisAlignedBB var2) {
+        int var3 = MathHelper.floor_double((var2.minX - 2.0D) / 16.0D);
+        int var4 = MathHelper.floor_double((var2.maxX + 2.0D) / 16.0D);
+        int var5 = MathHelper.floor_double((var2.minZ - 2.0D) / 16.0D);
+        int var6 = MathHelper.floor_double((var2.maxZ + 2.0D) / 16.0D);
+        ArrayList var7 = new ArrayList();
 
-        for(int var4 = 0; var4 < this.loadedEntityList.size(); ++var4) {
-            Entity var5 = (Entity)this.loadedEntityList.get(var4);
-            if(var5 != var1 && var5.boundingBox.intersectsWith(var2)) {
-                var3.add(var5);
+        for(var3 = var3; var3 <= var4; ++var3) {
+            for(int var8 = var5; var8 <= var6; ++var8) {
+                if(this.chunkExists(var3, var8)) {
+                    this.getChunkFromChunkCoords(var3, var8).getEntitiesWithinAABBForEntity(var1, var2, var7);
+                }
             }
         }
 
-        return var3;
+        return var7;
     }
 
     public final List getLoadedEntityList() {
@@ -1272,6 +1460,45 @@ public final class World {
         if(this.blockExists(var1, var2, var3)) {
             Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
             var4.isModified = true;
+        }
+
+    }
+
+    public final int countEntities(Class var1) {
+        int var2 = 0;
+
+        for(int var3 = 0; var3 < this.loadedEntityList.size(); ++var3) {
+            Entity var4 = (Entity)this.loadedEntityList.get(var3);
+            if(var1.isAssignableFrom(var4.getClass())) {
+                ++var2;
+            }
+        }
+
+        return var2;
+    }
+
+    public final void addLoadedEntities(List var1) {
+        this.loadedEntityList.addAll(var1);
+
+        for(int var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
+            IWorldAccess var3 = (IWorldAccess)this.worldAccesses.get(var2);
+
+            for(int var4 = 0; var4 < var1.size(); ++var4) {
+                var3.obtainEntitySkin((Entity)var1.get(var4));
+            }
+        }
+
+    }
+
+    public final void unloadEntities(List var1) {
+        this.loadedEntityList.removeAll(var1);
+
+        for(int var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
+            IWorldAccess var3 = (IWorldAccess)this.worldAccesses.get(var2);
+
+            for(int var4 = 0; var4 < var1.size(); ++var4) {
+                var3.releaseEntitySkin((Entity)var1.get(var4));
+            }
         }
 
     }

@@ -1,5 +1,6 @@
 package net.minecraft.game.item;
 
+import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.StepSound;
@@ -42,20 +43,20 @@ public final class ItemBlock extends Item {
             return false;
         } else {
             int var7 = var2.getBlockId(var3, var4, var5);
-            Block var9 = Block.blocksList[var7];
-            if(this.blockID > 0 && var9 == null || var9 == Block.waterMoving || var9 == Block.waterStill || var9 == Block.lavaMoving || var9 == Block.lavaStill || var9 == Block.fire) {
-                var9 = Block.blocksList[this.blockID];
-                var9.getCollisionBoundingBoxFromPool(var3, var4, var5);
-                if(var9.canPlaceBlockAt(var2, var3, var4, var5) && var2.setBlockWithNotify(var3, var4, var5, this.blockID)) {
+            Block var10 = Block.blocksList[var7];
+            AxisAlignedBB var8 = Block.blocksList[this.blockID].getCollisionBoundingBoxFromPool(var3, var4, var5);
+            if(this.blockID > 0 && var10 == null || var10 == Block.waterMoving || var10 == Block.waterStill || var10 == Block.lavaMoving || var10 == Block.lavaStill || var10 == Block.fire) {
+                var10 = Block.blocksList[this.blockID];
+                if((var8 == null || var2.checkIfAABBIsClear1(var8)) && var10.canPlaceBlockAt(var2, var3, var4, var5) && var2.setBlockWithNotify(var3, var4, var5, this.blockID)) {
                     Block.blocksList[this.blockID].onBlockPlaced(var2, var3, var4, var5, var6);
                     double var10001 = (double)((float)var3 + 0.5F);
                     double var10002 = (double)((float)var4 + 0.5F);
                     double var10003 = (double)((float)var5 + 0.5F);
-                    String var10004 = var9.stepSound.getStepSound();
-                    StepSound var8 = var9.stepSound;
-                    float var10005 = (var8.stepSoundVolume + 1.0F) / 2.0F;
-                    var8 = var9.stepSound;
-                    var2.playSoundEffect(var10001, var10002, var10003, var10004, var10005, var8.stepSoundPitch * 0.8F);
+                    String var10004 = var10.stepSound.getStepSound();
+                    StepSound var9 = var10.stepSound;
+                    float var10005 = (var9.stepSoundVolume + 1.0F) / 2.0F;
+                    var9 = var10.stepSound;
+                    var2.playSoundEffect(var10001, var10002, var10003, var10004, var10005, var9.stepSoundPitch * 0.8F);
                     --var1.stackSize;
                 }
             }

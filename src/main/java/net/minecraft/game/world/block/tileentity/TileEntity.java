@@ -19,16 +19,16 @@ public class TileEntity {
     }
 
     public void readFromNBT(NBTTagCompound var1) {
-        this.xCoord = var1.getInt("x");
-        this.yCoord = var1.getInt("y");
-        this.zCoord = var1.getInt("z");
+        this.xCoord = var1.getInteger("x");
+        this.yCoord = var1.getInteger("y");
+        this.zCoord = var1.getInteger("z");
     }
 
     public void writeToNBT(NBTTagCompound var1) {
         var1.setString("id", (String)classToNameMap.get(this.getClass()));
-        var1.setInt("x", this.xCoord);
-        var1.setInt("y", this.yCoord);
-        var1.setInt("z", this.zCoord);
+        var1.setInteger("x", this.xCoord);
+        var1.setInteger("y", this.yCoord);
+        var1.setInteger("z", this.zCoord);
     }
 
     public void updateEntity() {

@@ -131,4 +131,8 @@ public class EntityCreature extends EntityLiving {
     protected Entity findPlayerToAttack() {
         return null;
     }
+
+    public boolean getCanSpawnHere(float var1, float var2, float var3) {
+        return super.getCanSpawnHere(var1, var2, var3) && this.getBlockPathWeight((int)var1, (int)var2, (int)var3) >= 0.0F;
+    }
 }

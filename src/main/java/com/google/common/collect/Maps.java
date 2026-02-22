@@ -18,6 +18,7 @@ package com.google.common.collect;
 
 import static com.google.common.collect.CollectPreconditions.checkNonnegative;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -57,5 +58,22 @@ public final class Maps {
             return expectedSize + expectedSize / 3;
         }
         return Integer.MAX_VALUE; // any large value
+    }
+
+    /**
+     * Creates a <i>mutable</i>, empty {@code HashMap} instance.
+     *
+     * <p>
+     * <b>Note:</b> if mutability is not required, use {@link ImmutableMap#of()}
+     * instead.
+     *
+     * <p>
+     * <b>Note:</b> if {@code K} is an {@code enum} type, use {@link #newEnumMap}
+     * instead.
+     *
+     * @return a new, empty {@code HashMap}
+     */
+    public static <K, V> HashMap<K, V> newHashMap() {
+        return new HashMap<K, V>();
     }
 }

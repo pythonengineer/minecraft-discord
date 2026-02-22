@@ -20,7 +20,7 @@ public final class BlockCrops extends BlockFlower {
 
     public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
         super.updateTick(var1, var2, var3, var4, var5);
-        if(var1.canExistingBlockSeeTheSky(var2, var3 + 1, var4) >= 9) {
+        if(var1.getBlockLightValue(var2, var3 + 1, var4) >= 9) {
             int var6 = var1.getBlockMetadata(var2, var3, var4);
             if(var6 < 7) {
                 int var11 = var4;

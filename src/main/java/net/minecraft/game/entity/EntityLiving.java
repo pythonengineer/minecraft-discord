@@ -44,6 +44,7 @@ public class EntityLiving extends Entity {
 		this.defaultPitch = 0.0F;
 		this.moveSpeed = 0.7F;
 		this.health = 10;
+        this.preventEntitySpawning = true;
 		Math.random();
 		this.setPosition(this.posX, this.posY, this.posZ);
 		Math.random();
@@ -113,7 +114,7 @@ public class EntityLiving extends Entity {
 		if(this.health <= 0) {
 			++this.deathTime;
 			if(this.deathTime > 20) {
-				this.setEntityDead();
+                super.isDead = true;
 			}
 		}
 
@@ -322,30 +323,30 @@ public class EntityLiving extends Entity {
         this.attackTime = var1.getShort("AttackTime");
     }
 
-    public String getEntityType() {
-        return "Mob";
-    }
-
     public final boolean isEntityAlive() {
 		return !this.isDead && this.health > 0;
 	}
 
     public void onLivingUpdate() {
 		++this.entityAge;
-		if(this.entityAge > 600 && this.rand.nextInt(800) == 0) {
-			Entity var1 = this.worldObj.getPlayerEntity();
-			if(var1 != null) {
-                double var2 = var1.posX - this.posX;
-                double var4 = var1.posY - this.posY;
-                double var6 = var1.posZ - this.posZ;
-                double var8 = var2 * var2 + var4 * var4 + var6 * var6;
+        Entity var1 = this.worldObj.getPlayerEntity();
+        if(var1 != null) {
+            double var2 = var1.posX - this.posX;
+            double var4 = var1.posY - this.posY;
+            double var6 = var1.posZ - this.posZ;
+            double var8 = var2 * var2 + var4 * var4 + var6 * var6;
+            if(var8 > 16384.0D) {
+                super.isDead = true;
+            }
+
+            if(this.entityAge > 600 && this.rand.nextInt(800) == 0) {
                 if(var8 < 1024.0D) {
-					this.entityAge = 0;
-				} else {
-					this.setEntityDead();
-				}
-			}
-		}
+                    this.entityAge = 0;
+                } else {
+                    super.isDead = true;
+                }
+            }
+        }
 
 		if(this.health <= 0) {
 			this.isJumping = false;
@@ -357,11 +358,11 @@ public class EntityLiving extends Entity {
         }
 
         boolean var17 = this.handleWaterMovement();
-        boolean var18 = this.handleLavaMovement();
+        boolean var3 = this.handleLavaMovement();
         if(this.isJumping) {
             if(var17) {
                 this.motionY += (double)0.04F;
-            } else if(var18) {
+            } else if(var3) {
                 this.motionY += (double)0.04F;
             } else if(this.onGround) {
                 this.motionY = (double)0.42F;
@@ -371,12 +372,12 @@ public class EntityLiving extends Entity {
         this.moveStrafing *= 0.98F;
         this.moveForward *= 0.98F;
         this.randomYawVelocity *= 0.9F;
-        float var3 = this.moveForward;
-        float var19 = this.moveStrafing;
+        float var19 = this.moveForward;
+        float var18 = this.moveStrafing;
         double var13;
         if(this.handleWaterMovement()) {
             var13 = this.posY;
-            this.moveFlying(var19, var3, 0.02F);
+            this.moveFlying(var18, var19, 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= (double)0.8F;
             this.motionY *= (double)0.8F;
@@ -387,7 +388,7 @@ public class EntityLiving extends Entity {
             }
         } else if(this.handleLavaMovement()) {
             var13 = this.posY;
-            this.moveFlying(var19, var3, 0.02F);
+            this.moveFlying(var18, var19, 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.5D;
             this.motionY *= 0.5D;
@@ -397,7 +398,7 @@ public class EntityLiving extends Entity {
                 this.motionY = (double)0.3F;
             }
         } else {
-            this.moveFlying(var19, var3, this.onGround ? 0.1F : 0.02F);
+            this.moveFlying(var18, var19, this.onGround ? 0.1F : 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= (double)0.91F;
             this.motionY *= (double)0.98F;
@@ -412,19 +413,19 @@ public class EntityLiving extends Entity {
         this.prevLimbYaw = this.limbYaw;
         var13 = this.posX - this.prevPosX;
         double var15 = this.posZ - this.prevPosZ;
-        var19 = MathHelper.sqrt_double(var13 * var13 + var15 * var15) * 4.0F;
-        if(var19 > 1.0F) {
-            var19 = 1.0F;
+        var18 = MathHelper.sqrt_double(var13 * var13 + var15 * var15) * 4.0F;
+        if(var18 > 1.0F) {
+            var18 = 1.0F;
         }
 
-        this.limbYaw += (var19 - this.limbYaw) * 0.4F;
+        this.limbYaw += (var18 - this.limbYaw) * 0.4F;
         this.limbSwing += this.limbYaw;
-        List var20 = this.worldObj.getEntitiesWithinAABB(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+        List var20 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
         if(var20 != null && var20.size() > 0) {
-            for(int var21 = 0; var21 < var20.size(); ++var21) {
-                Entity var5 = (Entity)var20.get(var21);
-                if(var5.canBePushed()) {
-                    var5.applyEntityCollision(this);
+            for(int var5 = 0; var5 < var20.size(); ++var5) {
+                Entity var21 = (Entity)var20.get(var5);
+                if(var21.canBePushed()) {
+                    var21.applyEntityCollision(this);
                 }
             }
         }
@@ -451,4 +452,9 @@ public class EntityLiving extends Entity {
 		}
 
 	}
+
+    public boolean getCanSpawnHere(float var1, float var2, float var3) {
+        this.setPosition((double)var1, (double)(var2 + this.height / 2.0F), (double)var3);
+        return this.worldObj.checkIfAABBIsClear1(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
+    }
 }

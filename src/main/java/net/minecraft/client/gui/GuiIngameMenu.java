@@ -22,7 +22,7 @@ public final class GuiIngameMenu extends GuiScreen {
 		}
 
 		if(var1.id == 2) {
-			this.mc.changeWorld2((World)null);
+            this.mc.closeWorld((World)null);
 			this.mc.displayGuiScreen(new GuiMainMenu());
 		}
 

@@ -39,7 +39,7 @@ public class BlockFlower extends Block {
     }
 
     public boolean canBlockStay(World var1, int var2, int var3, int var4) {
-        return (var1.canExistingBlockSeeTheSky(var2, var3, var4) >= 8 || var1.canBlockSeeTheSky(var2, var3, var4)) && this.canThisPlantGrowOnThisBlockID(var1.getBlockId(var2, var3 - 1, var4));
+        return (var1.getBlockLightValue(var2, var3, var4) >= 8 || var1.canBlockSeeTheSky(var2, var3, var4)) && this.canThisPlantGrowOnThisBlockID(var1.getBlockId(var2, var3 - 1, var4));
     }
 
 	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {

@@ -410,7 +410,7 @@ public abstract class GuiContainer extends GuiScreen {
                 inventoryplayer.setInventorySlotContents(clickedButton, itemstack11.copy());
                 if ((slot5.inventory != inventoryplayer || !slot5.isItemValid(itemstack7)) && itemstack7 != null) {
                     if (k1 > -1) {
-                        inventoryplayer.addItemStackToInventory(itemstack7);
+                        inventoryplayer.storePartialItemStack(itemstack7);
                         slot5.decrStackSize(itemstack11.stackSize);
                         slot5.putStack((ItemStack) null);
                         slot5.onPickupFromSlot();

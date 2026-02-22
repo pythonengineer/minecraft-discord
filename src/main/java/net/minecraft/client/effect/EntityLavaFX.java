@@ -35,7 +35,7 @@ public final class EntityLavaFX extends EntityFX {
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         if(this.particleAge++ >= this.particleMaxAge) {
-            this.setEntityDead();
+            super.isDead = true;
         }
 
         float var1 = (float)this.particleAge / (float)this.particleMaxAge;

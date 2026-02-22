@@ -3,15 +3,17 @@ package net.minecraft.game.entity.monster;
 import net.minecraft.game.world.World;
 
 public class EntityGiantZombie extends EntityMonster {
-    private EntityGiantZombie(World var1) {
+    public EntityGiantZombie(World var1) {
         super(var1);
+        this.texture = "/mob/zombie.png";
+        this.moveSpeed = 0.5F;
+        this.attackStrength = 50;
+        this.health *= 10;
+        this.yOffset *= 6.0F;
+        this.setSize(this.width * 6.0F, this.height * 6.0F);
     }
 
     protected final float getBlockPathWeight(int var1, int var2, int var3) {
         return this.worldObj.getBrightness(var1, var2, var3) - 0.5F;
-    }
-
-    public final String getEntityType() {
-        return "Giant";
     }
 }

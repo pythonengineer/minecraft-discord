@@ -19,10 +19,6 @@ public class EntityPig extends EntityAnimal {
 		super.readEntityFromNBT(var1);
 	}
 
-	public final String getEntityType() {
-		return "Pig";
-	}
-
 	protected final String getLivingSound() {
 		return "mob.pig";
 	}

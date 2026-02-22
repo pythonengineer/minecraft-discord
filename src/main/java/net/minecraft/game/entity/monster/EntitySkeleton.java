@@ -53,10 +53,6 @@ public class EntitySkeleton extends EntityMonster {
         super.readEntityFromNBT(var1);
     }
 
-    public final String getEntityType() {
-        return "Skeleton";
-    }
-
     protected final int getDroppedItem() {
 		return Item.arrow.shiftedIndex;
 	}

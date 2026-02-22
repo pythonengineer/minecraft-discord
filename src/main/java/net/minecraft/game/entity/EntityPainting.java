@@ -18,7 +18,7 @@ public class EntityPainting extends Entity {
     private int zPosition;
     public EnumArt art;
 
-    private EntityPainting(World var1) {
+    public EntityPainting(World var1) {
         super(var1);
         this.tickCounter = 0;
         this.direction = 0;
@@ -125,7 +125,7 @@ public class EntityPainting extends Entity {
     public final void onUpdate() {
         if(this.tickCounter++ == 100 && !this.onValidSurface()) {
             this.tickCounter = 0;
-            this.setEntityDead();
+            super.isDead = true;
             this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
         }
 
@@ -173,7 +173,7 @@ public class EntityPainting extends Entity {
                 }
             }
 
-            List var9 = this.worldObj.getEntitiesWithinAABB(this, this.boundingBox);
+            List var9 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox);
 
             for(var7 = 0; var7 < var9.size(); ++var7) {
                 if(var9.get(var7) instanceof EntityPainting) {
@@ -190,7 +190,7 @@ public class EntityPainting extends Entity {
     }
 
     public final boolean attackEntityFrom(Entity var1, int var2) {
-        this.setEntityDead();
+        super.isDead = true;
         this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
         return true;
     }
@@ -198,20 +198,16 @@ public class EntityPainting extends Entity {
     public final void writeEntityToNBT(NBTTagCompound var1) {
         var1.setByte("Dir", (byte)this.direction);
         var1.setString("Motive", this.art.title);
-        var1.setInt("TileX", this.xPosition);
-        var1.setInt("TileY", this.yPosition);
-        var1.setInt("TileZ", this.zPosition);
-    }
-
-    public final String getEntityType() {
-        return "Painting";
+        var1.setInteger("TileX", this.xPosition);
+        var1.setInteger("TileY", this.yPosition);
+        var1.setInteger("TileZ", this.zPosition);
     }
 
     public final void readEntityFromNBT(NBTTagCompound var1) {
         this.direction = var1.getByte("Dir");
-        this.xPosition = var1.getInt("TileX");
-        this.yPosition = var1.getInt("TileY");
-        this.zPosition = var1.getInt("TileZ");
+        this.xPosition = var1.getInteger("TileX");
+        this.yPosition = var1.getInteger("TileY");
+        this.zPosition = var1.getInteger("TileZ");
         String var6 = var1.getString("Motive");
         EnumArt[] var2 = EnumArt.values();
         int var3 = var2.length;

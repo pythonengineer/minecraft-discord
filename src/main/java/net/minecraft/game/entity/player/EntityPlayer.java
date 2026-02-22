@@ -28,11 +28,6 @@ public class EntityPlayer extends EntityLiving {
 
     public EntityPlayer(World var1) {
         super(var1);
-        if(var1 != null) {
-            var1.playerEntity = this;
-            World.setEntityDead(this);
-        }
-
         this.setLocationAndAngles((double)var1.spawnX + 0.5D, (double)var1.spawnY, (double)var1.spawnZ + 0.5D, 0.0F, 0.0F);
         this.yOffset = 1.62F;
         this.health = 20;
@@ -84,7 +79,7 @@ public class EntityPlayer extends EntityLiving {
         this.cameraYaw += (var3 - this.cameraYaw) * 0.4F;
         this.cameraPitch += (var4 - this.cameraPitch) * 0.8F;
         if(this.health > 0) {
-            List var5 = this.worldObj.getEntitiesWithinAABB(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
+            List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
             if(var5 != null) {
                 for(int var6 = 0; var6 < var5.size(); ++var6) {
                     Entity var7 = (Entity)var5.get(var6);
@@ -112,9 +107,6 @@ public class EntityPlayer extends EntityLiving {
         }
 
         this.yOffset = 0.1F;
-    }
-
-    public final void setEntityDead() {
     }
 
     public final void dropPlayerItem(ItemStack var1) {
@@ -165,10 +157,6 @@ public class EntityPlayer extends EntityLiving {
 
     public void writeEntityToNBT(NBTTagCompound var1) {
         super.writeEntityToNBT(var1);
-    }
-
-    public String getEntityType() {
-        return null;
     }
 
     public void displayChestGUI(IInventory var1) {

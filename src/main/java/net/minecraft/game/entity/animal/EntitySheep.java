@@ -42,10 +42,6 @@ public class EntitySheep extends EntityAnimal {
 		this.sheared = var1.getBoolean("Sheared");
 	}
 
-	public final String getEntityType() {
-		return "Sheep";
-	}
-
 	protected final String getLivingSound() {
 		return "mob.sheep";
 	}

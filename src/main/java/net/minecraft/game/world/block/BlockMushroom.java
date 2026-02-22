@@ -13,7 +13,7 @@ public final class BlockMushroom extends BlockFlower {
     }
 
     public final boolean canBlockStay(World var1, int var2, int var3, int var4) {
-        if(var1.canExistingBlockSeeTheSky(var2, var3, var4) <= 13) {
+        if(var1.getBlockLightValue(var2, var3, var4) <= 13) {
             var2 = var1.getBlockId(var2, var3 - 1, var4);
             if(Block.opaqueCubeLookup[var2]) {
                 return true;

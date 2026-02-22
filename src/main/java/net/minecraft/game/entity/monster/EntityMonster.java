@@ -25,7 +25,7 @@ public class EntityMonster extends EntityCreature {
 	public final void onUpdate() {
 		super.onUpdate();
 		if(this.worldObj.difficultySetting == 0) {
-			this.setEntityDead();
+            super.isDead = true;
 		}
 
 	}
@@ -67,7 +67,8 @@ public class EntityMonster extends EntityCreature {
 		super.readEntityFromNBT(var1);
 	}
 
-	public String getEntityType() {
-		return "Monster";
-	}
+    public final boolean getCanSpawnHere(float var1, float var2, float var3) {
+        int var4 = this.worldObj.getBlockLightValue((int)var1, (int)var2, (int)var3);
+        return var4 <= this.rand.nextInt(8) && super.getCanSpawnHere(var1, var2, var3);
+    }
 }

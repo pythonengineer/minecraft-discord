@@ -6,6 +6,7 @@ import net.minecraft.game.world.World;
 public class GuiSelectWorld extends GuiScreen {
     protected GuiScreen parentScreen;
     protected String screenTitle = "Select world";
+    private boolean selected = false;
 
     public GuiSelectWorld(GuiScreen var1) {
         this.parentScreen = var1;
@@ -52,8 +53,12 @@ public class GuiSelectWorld extends GuiScreen {
     }
 
     public void selectWorld(int var1) {
-        this.mc.changeWorld("World" + var1);
         this.mc.displayGuiScreen((GuiScreen)null);
+        if(!this.selected) {
+            this.selected = true;
+            this.mc.startWorld("World" + var1);
+            this.mc.displayGuiScreen((GuiScreen)null);
+        }
     }
 
     public final void drawScreen(int var1, int var2, float var3) {

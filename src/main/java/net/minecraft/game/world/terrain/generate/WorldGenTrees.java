@@ -6,8 +6,6 @@ import net.minecraft.game.world.block.Block;
 
 public final class WorldGenTrees extends WorldGenerator {
     public final boolean generate(World var1, EaglercraftRandom var2, int var3, int var4, int var5) {
-        var3 += 2;
-        var5 += 2;
         int var6 = var2.nextInt(3) + 4;
         boolean var7 = true;
         if(var4 > 0 && var4 + var6 + 1 <= 128) {
@@ -29,7 +27,7 @@ public final class WorldGenTrees extends WorldGenerator {
                     for(var11 = var5 - var9; var11 <= var5 + var9 && var7; ++var11) {
                         if(var8 >= 0 && var8 < 128) {
                             var12 = var1.getBlockId(var10, var8, var11);
-                            if(var12 != 0) {
+                            if(var12 != 0 && var12 != Block.leaves.blockID) {
                                 var7 = false;
                             }
                         } else {

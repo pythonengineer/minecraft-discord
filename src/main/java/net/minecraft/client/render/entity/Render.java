@@ -68,7 +68,7 @@ public abstract class Render {
                     for(int var24 = var20; var24 <= var21; ++var24) {
                         for(int var25 = var22; var25 <= var23; ++var25) {
                             int var26 = var10.getBlockId(var68, var24 - 1, var25);
-                            if(var26 > 0 && var10.canExistingBlockSeeTheSky(var68, var24, var25) > 3) {
+                            if(var26 > 0 && var10.getBlockLightValue(var68, var24, var25) > 3) {
                                 Block var27 = Block.blocksList[var26];
                                 Tessellator var33 = Tessellator.instance;
                                 double var48 = ((double)var19 - (var15 - (double)var24) / 2.0D) * 0.5D * (double)var66.renderManager.worldObj.getBrightness(var68, var24, var25);
