@@ -1,6 +1,8 @@
 package net.minecraft.game.entity.monster;
 
 import com.mojang.nbt.NBTTagCompound;
+
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityCreature;
 import net.minecraft.game.world.World;
@@ -68,7 +70,7 @@ public class EntityMonster extends EntityCreature {
 	}
 
     public final boolean getCanSpawnHere(float var1, float var2, float var3) {
-        int var4 = this.worldObj.getBlockLightValue((int)var1, (int)var2, (int)var3);
+        int var4 = this.worldObj.getBlockLightValue(MathHelper.floor_float(var1), MathHelper.floor_float(var2), MathHelper.floor_float(var3));
         return var4 <= this.rand.nextInt(8) && super.getCanSpawnHere(var1, var2, var3);
     }
 }

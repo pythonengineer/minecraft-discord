@@ -1,6 +1,8 @@
 package net.minecraft.game.entity.animal;
 
 import com.mojang.nbt.NBTTagCompound;
+
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.EntityCreature;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -23,6 +25,6 @@ public abstract class EntityAnimal extends EntityCreature {
 	}
 
     public final boolean getCanSpawnHere(float var1, float var2, float var3) {
-        return this.worldObj.getBlockLightValue((int)var1, (int)var2, (int)var3) > 8 && super.getCanSpawnHere(var1, var2, var3);
+        return this.worldObj.getBlockLightValue(MathHelper.floor_float(var1), MathHelper.floor_float(var2), MathHelper.floor_float(var3)) > 8 && super.getCanSpawnHere(var1, var2, var3);
     }
 }

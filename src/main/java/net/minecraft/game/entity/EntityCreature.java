@@ -52,9 +52,9 @@ public class EntityCreature extends EntityLiving {
                     var4 = -99999.0F;
 
                     for(int var28 = 0; var28 < 200; ++var28) {
-                        int var6 = (int)(this.posX + (double)this.rand.nextInt(21) - 10.0D);
-                        int var7 = (int)(this.posY + (double)this.rand.nextInt(9) - 4.0D);
-                        int var8 = (int)(this.posZ + (double)this.rand.nextInt(21) - 10.0D);
+                        int var6 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(21) - 10.0D);
+                        int var7 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(9) - 4.0D);
+                        int var8 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(21) - 10.0D);
                         float var9 = this.getBlockPathWeight(var6, var7, var8);
                         if(var9 > var4) {
                             var4 = var9;

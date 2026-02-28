@@ -1,6 +1,12 @@
 package net.minecraft.game.world;
 
 public enum EnumSkyBlock {
-    Sky,
-    Block;
+    Sky(15),
+    Block(0);
+
+    public final int defaultLightValue;
+
+    private EnumSkyBlock(int var3) {
+        this.defaultLightValue = var3;
+    }
 }

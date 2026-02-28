@@ -933,14 +933,13 @@ public final class Minecraft implements Runnable {
 		if(var1 != null) {
             this.thePlayer = null;
             var1.playerEntity = this.thePlayer;
-
+            this.changeWorld1(var2);
             if(this.thePlayer == null) {
                 this.thePlayer = new EntityPlayerSP(this, var1, this.session);
                 this.thePlayer.preparePlayerToSpawn();
             }
 
             this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
-            this.playerController.onRespawn(this.thePlayer);
             if(this.renderGlobal != null) {
                 this.renderGlobal.changeWorld(var1);
             }
@@ -949,7 +948,7 @@ public final class Minecraft implements Runnable {
                 this.effectRenderer.clearEffects(var1);
             }
 
-            this.changeWorld1(var2);
+            this.playerController.onRespawn(this.thePlayer);
             var1.playerEntity = this.thePlayer;
             var1.spawnPlayer();
         }
@@ -964,14 +963,19 @@ public final class Minecraft implements Runnable {
 
         for(int var5 = -196; var5 <= 196; var5 += 16) {
             this.loadingScreen.setProgress((var5 + 196) * 100 / 392);
-            int var2 = MathHelper.floor_double(this.thePlayer.posX);
-            int var3 = MathHelper.floor_double(this.thePlayer.posZ);
+            int var2 = this.theWorld.spawnX;
+            int var3 = this.theWorld.spawnZ;
+            if(this.theWorld.playerEntity != null) {
+                var2 = (int)this.theWorld.playerEntity.posX;
+                var3 = (int)this.theWorld.playerEntity.posZ;
+            }
 
             for(int var4 = -196; var4 <= 196; var4 += 16) {
                 this.theWorld.getBlockId(var2 + var5, 64, var3 + var4);
             }
         }
 
+        this.theWorld.dropOldChunks();
     }
 
     public final void respawn() {

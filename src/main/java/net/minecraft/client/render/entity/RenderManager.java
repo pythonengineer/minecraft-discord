@@ -8,7 +8,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPig;
 import net.minecraft.client.model.ModelSheep;
-import net.minecraft.client.model.ModelSheepFur;
+import net.minecraft.client.model.ModelSheepWool;
 import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.render.RenderEngine;
@@ -44,7 +44,7 @@ public final class RenderManager {
     private RenderManager() {
         this.entityRenderMap.put(EntitySpider.class, new RenderSpider());
         this.entityRenderMap.put(EntityPig.class, new RenderLiving(new ModelPig(), 0.7F));
-        this.entityRenderMap.put(EntitySheep.class, new RenderSheep(new ModelSheep(), new ModelSheepFur(), 0.7F));
+        this.entityRenderMap.put(EntitySheep.class, new RenderSheep(new ModelSheep(), new ModelSheepWool(), 0.7F));
         this.entityRenderMap.put(EntityCreeper.class, new RenderCreeper());
         this.entityRenderMap.put(EntitySkeleton.class, new RenderLiving(new ModelSkeleton(), 0.5F));
         this.entityRenderMap.put(EntityZombie.class, new RenderLiving(new ModelZombie(), 0.5F));

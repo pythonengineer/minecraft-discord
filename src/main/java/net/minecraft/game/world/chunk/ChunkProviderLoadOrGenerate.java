@@ -2,6 +2,8 @@ package net.minecraft.game.world.chunk;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mojang.nbt.NBTTagCompound;
 
@@ -14,6 +16,7 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
     private Chunk[] chunks = new Chunk[1024];
     private VFile2 saveDirectory;
     private World worldObj;
+    private List emptyList = new ArrayList();
 
     public ChunkProviderLoadOrGenerate(World var1, VFile2 var2, IChunkProvider var3) {
         this.worldObj = var1;
@@ -47,7 +50,6 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
             Chunk var4 = this.loadChunk(var1, var2);
             if(var4 == null) {
                 var4 = this.chunkProvider.provideChunk(var1, var2);
-                this.saveChunk(var4);
             }
 
             this.chunks[var3] = var4;
@@ -55,19 +57,19 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
                 this.chunks[var3].loadEntities();
             }
 
-            if(this.chunkExists(var1 + 1, var2 + 1) && this.chunkExists(var1, var2 + 1) && this.chunkExists(var1 + 1, var2)) {
+            if(!this.chunks[var3].isTerrainPopulated && this.chunkExists(var1 + 1, var2 + 1) && this.chunkExists(var1, var2 + 1) && this.chunkExists(var1 + 1, var2)) {
                 this.populate(this, var1, var2);
             }
 
-            if(this.chunkExists(var1 - 1, var2 + 1) && this.chunkExists(var1, var2 + 1) && this.chunkExists(var1 - 1, var2)) {
+            if(this.chunkExists(var1 - 1, var2) && !this.provideChunk(var1 - 1, var2).isTerrainPopulated && this.chunkExists(var1 - 1, var2 + 1) && this.chunkExists(var1, var2 + 1) && this.chunkExists(var1 - 1, var2)) {
                 this.populate(this, var1 - 1, var2);
             }
 
-            if(this.chunkExists(var1 + 1, var2 - 1) && this.chunkExists(var1, var2 - 1) && this.chunkExists(var1 + 1, var2)) {
+            if(this.chunkExists(var1, var2 - 1) && !this.provideChunk(var1, var2 - 1).isTerrainPopulated && this.chunkExists(var1 + 1, var2 - 1) && this.chunkExists(var1, var2 - 1) && this.chunkExists(var1 + 1, var2)) {
                 this.populate(this, var1, var2 - 1);
             }
 
-            if(this.chunkExists(var1 - 1, var2 - 1) && this.chunkExists(var1, var2 - 1) && this.chunkExists(var1 - 1, var2)) {
+            if(this.chunkExists(var1 - 1, var2 - 1) && !this.provideChunk(var1 - 1, var2 - 1).isTerrainPopulated && this.chunkExists(var1 - 1, var2 - 1) && this.chunkExists(var1, var2 - 1) && this.chunkExists(var1 - 1, var2)) {
                 this.populate(this, var1 - 1, var2 - 1);
             }
         }
@@ -134,11 +136,22 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
                 this.saveChunk(this.chunks[var3]);
                 this.chunks[var3].isModified = false;
                 ++var2;
-                if(var2 == 10 && !var1) {
+                if(var2 == 2 && !var1) {
                     return;
                 }
             }
         }
 
+    }
+
+    public final boolean unload100OldestChunks() {
+        this.chunkProvider.unload100OldestChunks();
+        int var1 = 0;
+
+        while(var1++ <= 0 && !this.emptyList.isEmpty()) {
+            this.emptyList.remove(0);
+        }
+
+        return !this.emptyList.isEmpty();
     }
 }

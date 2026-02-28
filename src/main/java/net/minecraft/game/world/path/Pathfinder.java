@@ -2,6 +2,8 @@ package net.minecraft.game.world.path;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
@@ -27,19 +29,19 @@ public final class Pathfinder {
 	private PathEntity addToPath(Entity var1, double var2, double var4, double var6, float var8) {
 		this.path.clearPath();
 		this.pointMap.clear();
-		PathPoint var9 = this.openPoint((int)var1.boundingBox.minX, (int)var1.boundingBox.minY, (int)var1.boundingBox.minZ);
-		PathPoint var22 = this.openPoint((int)(var2 - (double)(var1.width / 2.0F)), (int)var4, (int)(var6 - (double)(var1.width / 2.0F)));
-		PathPoint var3 = new PathPoint((int)(var1.width + 1.0F), (int)(var1.height + 1.0F), (int)(var1.width + 1.0F));
-		float var25 = var8;
+        PathPoint var9 = this.openPoint(MathHelper.floor_double(var1.boundingBox.minX), MathHelper.floor_double(var1.boundingBox.minY), MathHelper.floor_double(var1.boundingBox.minZ));
+        PathPoint var22 = this.openPoint(MathHelper.floor_double(var2 - (double)(var1.width / 2.0F)), MathHelper.floor_double(var4), MathHelper.floor_double(var6 - (double)(var1.width / 2.0F)));
+        PathPoint var3 = new PathPoint(MathHelper.floor_float(var1.width + 1.0F), MathHelper.floor_float(var1.height + 1.0F), MathHelper.floor_float(var1.width + 1.0F));
+        float var25 = var8;
 		PathPoint var5 = var3;
 		PathPoint var24 = var22;
 		Entity var23 = var1;
 		Pathfinder var20 = this;
-		((PathPoint)var9).totalPathDistance = 0.0F;
-		((PathPoint)var9).distanceToNext = ((PathPoint)var9).distanceTo(var22);
-		((PathPoint)var9).distanceToTarget = ((PathPoint)var9).distanceToNext;
-		this.path.clearPath();
-		this.path.addPoint((PathPoint)var9);
+        var9.totalPathDistance = 0.0F;
+        var9.distanceToNext = var9.distanceTo(var22);
+        var9.distanceToTarget = var9.distanceToNext;
+        this.path.clearPath();
+        this.path.addPoint(var9);
 		Object var7 = var9;
 
 		PathEntity var10000;

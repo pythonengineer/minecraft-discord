@@ -473,16 +473,6 @@ public final class Chunk {
 
 	}
 
-	public final int getDebugCountedEntities() {
-		int var1 = 0;
-
-		for(int var2 = 0; var2 < this.entities.length; ++var2) {
-			var1 += this.entities[var2].size();
-		}
-
-		return var1;
-	}
-
 	public final boolean needsSaving(boolean var1) {
 		if(this.isModified) {
 			return true;

@@ -296,7 +296,7 @@ public class EntityLiving extends Entity {
 		int var3 = (int)Math.ceil((double)(var1 - 3.0F));
 		if(var3 > 0) {
 			this.attackEntityFrom((Entity)null, var3);
-            var3 = this.worldObj.getBlockId((int)this.posX, (int)(this.posY - (double)0.2F - (double)this.yOffset), (int)this.posZ);
+			var3 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY - (double)0.2F - (double)this.yOffset), MathHelper.floor_double(this.posZ));
             if(var3 > 0) {
                 StepSound var4 = Block.blocksList[var3].stepSound;
                 this.worldObj.playSoundAtEntity(this, var4.getStepSound(), var4.stepSoundVolume * 0.5F, var4.stepSoundPitch * (12.0F / 16.0F));

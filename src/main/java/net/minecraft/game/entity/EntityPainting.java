@@ -3,6 +3,8 @@ package net.minecraft.game.entity;
 import com.mojang.nbt.NBTTagCompound;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -140,22 +142,22 @@ public class EntityPainting extends Entity {
             int var3 = this.xPosition;
             int var5 = this.zPosition;
             if(this.direction == 0) {
-                var3 = (int)(this.posX - (double)((float)this.art.sizeX / 32.0F));
+                var3 = MathHelper.floor_double(this.posX - (double)((float)this.art.sizeX / 32.0F));
             }
 
             if(this.direction == 1) {
-                var5 = (int)(this.posZ - (double)((float)this.art.sizeX / 32.0F));
+                var5 = MathHelper.floor_double(this.posZ - (double)((float)this.art.sizeX / 32.0F));
             }
 
             if(this.direction == 2) {
-                var3 = (int)(this.posX - (double)((float)this.art.sizeX / 32.0F));
+                var3 = MathHelper.floor_double(this.posX - (double)((float)this.art.sizeX / 32.0F));
             }
 
             if(this.direction == 3) {
-                var5 = (int)(this.posZ - (double)((float)this.art.sizeX / 32.0F));
+                var5 = MathHelper.floor_double(this.posZ - (double)((float)this.art.sizeX / 32.0F));
             }
 
-            int var4 = (int)(this.posY - (double)((float)this.art.sizeY / 32.0F));
+            int var4 = MathHelper.floor_double(this.posY - (double)((float)this.art.sizeY / 32.0F));
 
             int var7;
             for(int var6 = 0; var6 < var1; ++var6) {

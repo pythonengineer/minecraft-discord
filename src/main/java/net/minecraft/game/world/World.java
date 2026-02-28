@@ -29,32 +29,32 @@ import net.minecraft.game.world.path.Pathfinder;
 import net.minecraft.game.world.terrain.ChunkProviderGenerate;
 
 public class World {
-    private List lightingToUpdate = new ArrayList();
-    private List loadedEntityList = new ArrayList();
-    private List unloadedEntityList = new LinkedList();
-    public List loadedTileEntityList = new ArrayList();
-    public long worldTime = 0L;
-    private long skyColor = 10079487L;
-    private long fogColor = 11587839L;
-    private long cloudColor = 16777215L;
-    private int skylightSubtracted = 0;
-    private int updateLCG = (new EaglercraftRandom()).nextInt();
-    private int DIST_HASH_MAGIC = 1013904223;
+    private List lightingToUpdate;
+    private List loadedEntityList;
+    private List unloadedEntityList;
+    public List loadedTileEntityList;
+    public long worldTime;
+    private long skyColor;
+    private long fogColor;
+    private long cloudColor;
+    private int skylightSubtracted;
+    private int updateLCG;
+    private int DIST_HASH_MAGIC;
 	private static float[] lightBrightnessTable = new float[16];
 	public Entity playerEntity;
 	public int difficultySetting;
-	public final Pathfinder pathFinder = new Pathfinder(this);
-	public EaglercraftRandom rand = new EaglercraftRandom();
+    public final Pathfinder pathFinder;
+    public EaglercraftRandom rand;
     public int spawnX;
     public int spawnY;
     public int spawnZ;
-    public boolean isNewWorld = false;
-	private List worldAccesses = new ArrayList();
+    public boolean isNewWorld;
+    private List worldAccesses;
     private IChunkProvider chunkProvider;
     private VFile2 saveDirectory;
-    private long randomSeed = 0L;
+    private long randomSeed;
     private NBTTagCompound nbtCompoundPlayer;
-    public long sizeOnDisk = 0L;
+    public long sizeOnDisk;
 
     public static NBTTagCompound getWorldNBTTag(String var1) {
         VFile2 var0 = new VFile2("saves");
@@ -88,27 +88,48 @@ public class World {
     }
 
     public World(String var2) {
+        this(var2, (new EaglercraftRandom()).nextLong());
+    }
+
+    private World(String var2, long var3) {
+        this.lightingToUpdate = new ArrayList();
+        this.loadedEntityList = new ArrayList();
+        this.unloadedEntityList = new LinkedList();
+        this.loadedTileEntityList = new ArrayList();
+        this.worldTime = 0L;
+        this.skyColor = 10079487L;
+        this.fogColor = 11587839L;
+        this.cloudColor = 16777215L;
+        this.skylightSubtracted = 0;
+        this.updateLCG = (new EaglercraftRandom()).nextInt();
+        this.DIST_HASH_MAGIC = 1013904223;
+        this.pathFinder = new Pathfinder(this);
+        this.rand = new EaglercraftRandom();
+        this.isNewWorld = false;
+        this.worldAccesses = new ArrayList();
+        this.randomSeed = 0L;
+        this.sizeOnDisk = 0L;
         this.saveDirectory = new VFile2("saves", var2);
         VFile2 var1 = new VFile2(this.saveDirectory, "level.dat");
         this.isNewWorld = !var1.exists();
         if(var1.exists()) {
             try (InputStream fis = var1.getInputStream()) {
-                NBTTagCompound var4 = LoadingScreenRenderer.read(fis);
-                var4 = var4.getCompoundTag("Data");
-                this.randomSeed = var4.getLong("RandomSeed");
-                this.spawnX = var4.getInteger("SpawnX");
-                this.spawnY = var4.getInteger("SpawnY");
-                this.spawnZ = var4.getInteger("SpawnZ");
-                this.worldTime = var4.getLong("Time");
-                this.sizeOnDisk = var4.getLong("SizeOnDisk");
-                this.nbtCompoundPlayer = var4.getCompoundTag("Player");
-            } catch (IOException var3) {
-                var3.printStackTrace();
+                NBTTagCompound var6 = LoadingScreenRenderer.read(fis);
+                var6 = var6.getCompoundTag("Data");
+                this.randomSeed = var6.getLong("RandomSeed");
+                this.spawnX = var6.getInteger("SpawnX");
+                this.spawnY = var6.getInteger("SpawnY");
+                this.spawnZ = var6.getInteger("SpawnZ");
+                this.worldTime = var6.getLong("Time");
+                this.sizeOnDisk = var6.getLong("SizeOnDisk");
+                this.nbtCompoundPlayer = var6.getCompoundTag("Player");
+            } catch (IOException var5) {
+                var5.printStackTrace();
             }
         }
 
-        while(this.randomSeed == 0L) {
-            this.randomSeed = this.rand.nextLong();
+        if(this.randomSeed == 0L) {
+            this.randomSeed = var3;
             this.spawnX = 0;
             this.spawnY = 64;
             this.spawnZ = 0;
@@ -417,39 +438,17 @@ public class World {
     }
 
     public final int getSavedLightValue(EnumSkyBlock var1, int var2, int var3, int var4) {
-        if(var1 == EnumSkyBlock.Sky) {
-            if(var2 < -32000000 || var4 < -32000000 || var2 >= 32000000 || var4 > 32000000) {
-                return 15;
-            }
-
-            if(var3 < 0) {
-                return 15;
-            }
-
-            if(var3 >= 128) {
-                return 15;
+        if(var3 >= 0 && var3 < 128 && var2 >= -32000000 && var4 >= -32000000 && var2 < 32000000 && var4 <= 32000000) {
+            int var5 = var2 >> 4;
+            int var6 = var4 >> 4;
+            if(!this.chunkExists(var5, var6)) {
+                return 0;
+            } else {
+                Chunk var7 = this.getChunkFromChunkCoords(var5, var6);
+                return var7.getSavedLightValue(var1, var2 & 15, var3, var4 & 15);
             }
         } else {
-            if(var2 < -32000000 || var4 < -32000000 || var2 >= 32000000 || var4 > 32000000) {
-                return 0;
-            }
-
-            if(var3 < 0) {
-                return 0;
-            }
-
-            if(var3 >= 128) {
-                return 0;
-            }
-        }
-
-        if(!this.chunkExists(var2 >> 4, var4 >> 4)) {
-            return 0;
-        } else {
-            Chunk var5 = this.getChunkFromChunkCoords(var2 >> 4, var4 >> 4);
-            var2 &= 15;
-            var4 &= 15;
-            return var5.getSavedLightValue(var1, var2, var3, var4);
+            return var1.defaultLightValue;
         }
     }
 
@@ -1116,23 +1115,7 @@ public class World {
     }
 
     public final String getDebugLoadedEntities() {
-        return "All: " + this.loadedEntityList.size() + "/ Counted: " + this.getDebugCountedEntities();
-    }
-
-    private int getDebugCountedEntities() {
-        int var1 = MathHelper.floor_double(this.playerEntity.posX / 16.0D);
-        int var2 = MathHelper.floor_double(this.playerEntity.posZ / 16.0D);
-        int var3 = 0;
-
-        for(int var4 = var1 - 32; var4 <= var1 + 32; ++var4) {
-            for(int var5 = var2 - 32; var5 <= var2 + 32; ++var5) {
-                if(this.chunkExists(var4, var5)) {
-                    var3 += this.getChunkFromChunkCoords(var4, var5).getDebugCountedEntities();
-                }
-            }
-        }
-
-        return var3;
+        return "All: " + this.loadedEntityList.size();
     }
 
 	public final Entity getPlayerEntity() {
@@ -1353,6 +1336,7 @@ public class World {
     }
 
     public final void restartTimeOfDay() {
+        this.chunkProvider.unload100OldestChunks();
         if(!this.loadedEntityList.contains(this.playerEntity)) {
             this.spawnEntityInWorld(this.playerEntity);
         }
@@ -1378,7 +1362,7 @@ public class World {
         }
 
         ++this.worldTime;
-        if(this.worldTime % 200L == 0L) {
+        if(this.worldTime % 100L == 0L) {
             this.saveWorld(false);
         }
 
@@ -1499,6 +1483,12 @@ public class World {
             for(int var4 = 0; var4 < var1.size(); ++var4) {
                 var3.releaseEntitySkin((Entity)var1.get(var4));
             }
+        }
+
+    }
+
+    public final void dropOldChunks() {
+        while(this.chunkProvider.unload100OldestChunks()) {
         }
 
     }

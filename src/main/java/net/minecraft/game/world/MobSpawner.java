@@ -21,7 +21,7 @@ public final class MobSpawner {
     public final void onUpdate(World var1) {
         int var2 = var1.countEntities(this.entityType);
         if(var2 < this.maxSpawns) {
-            this.performSpawning(var1, 10, var1.playerEntity, (IProgressUpdate)null);
+            this.performSpawning(var1, 1, var1.playerEntity, (IProgressUpdate)null);
         }
 
     }
@@ -31,7 +31,7 @@ public final class MobSpawner {
         int var30 = MathHelper.floor_double(var3.posX);
         int var5 = MathHelper.floor_double(var3.posZ);
 
-        for(int var6 = 0; var6 < 10; ++var6) {
+        for(int var6 = 0; var6 <= 0; ++var6) {
             int var7 = var1.rand.nextInt(this.entities.length);
             int var8 = var30 + var1.rand.nextInt(256) - 128;
             int var9 = var1.rand.nextInt(128);

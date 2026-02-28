@@ -73,7 +73,7 @@ public final class RenderGlobal implements IWorldAccess {
 		this.mc = var1;
 		this.renderEngine = var2;
         this.glRenderListBase = GL11.glGenLists(786432);
-        this.occlusionEnabled = GL11.checkOcclusionQuerySupport();
+        this.occlusionEnabled = false;
         if(this.occlusionEnabled) {
             this.occlusionResult.clear();
             this.glOcclusionQueryBase = java.nio.ByteBuffer.allocateDirect(262144 << 2).order(ByteOrder.nativeOrder()).asIntBuffer();

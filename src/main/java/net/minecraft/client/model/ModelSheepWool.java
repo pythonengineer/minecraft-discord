@@ -1,7 +1,7 @@
 package net.minecraft.client.model;
 
-public final class ModelSheepFur extends ModelQuadruped {
-    public ModelSheepFur() {
+public final class ModelSheepWool extends ModelQuadruped {
+    public ModelSheepWool() {
         super(12, 0.0F);
         this.head = new ModelRenderer(0, 0);
         this.head.addBox(-3.0F, -4.0F, -4.0F, 6, 6, 6, 0.6F);

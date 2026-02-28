@@ -21,8 +21,8 @@ public final class NoiseGeneratorOctaves extends NoiseGenerator {
         double var7 = 1.0D;
 
         for(int var9 = 0; var9 < this.octaves; ++var9) {
-            var5 += this.generatorCollection[var9].generateNoise(var1 / var7, var3 / var7) * var7;
-            var7 *= 2.0D;
+            var5 += this.generatorCollection[var9].generateNoise(var1 * var7, var3 * var7) / var7;
+            var7 /= 2.0D;
         }
 
         return var5;
@@ -33,10 +33,29 @@ public final class NoiseGeneratorOctaves extends NoiseGenerator {
         double var9 = 1.0D;
 
         for(int var11 = 0; var11 < this.octaves; ++var11) {
-            var7 += this.generatorCollection[var11].generateNoiseD(var1 / var9, var3 / var9, var5 / var9) * var9;
-            var9 *= 2.0D;
+            var7 += this.generatorCollection[var11].generateNoiseD(var1 * var9, var3 * var9, var5 * var9) / var9;
+            var9 /= 2.0D;
         }
 
         return var7;
+    }
+
+    public final double[] generateNoiseOctaves(double[] var1, int var2, int var3, int var4, int var5, int var6, int var7, double var8, double var10, double var12) {
+        if(var1 == null) {
+            var1 = new double[var5 * var6 * var7];
+        } else {
+            for(int var14 = 0; var14 < var1.length; ++var14) {
+                var1[var14] = 0.0D;
+            }
+        }
+
+        double var17 = 1.0D;
+
+        for(int var16 = 0; var16 < this.octaves; ++var16) {
+            this.generatorCollection[var16].populateNoiseArray(var1, var2, var3, var4, var5, var6, var7, var8 * var17, var10 * var17, var12 * var17, var17);
+            var17 /= 2.0D;
+        }
+
+        return var1;
     }
 }

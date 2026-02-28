@@ -18,6 +18,10 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 	private NoiseGeneratorOctaves noiseGen5;
 	private NoiseGeneratorOctaves mobSpawnerNoise;
 	private World worldObj;
+	private double[] noiseArray;
+	private double[] noise3;
+	private double[] noise1;
+	private double[] noise2;
 
 	public ChunkProviderGenerate(World var1, long var2) {
 		this.worldObj = var1;
@@ -36,60 +40,95 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 		this.rand.setSeed((long)var1 * 341873128712L + (long)var2 * 132897987541L);
 		byte[] var3 = new byte[-Short.MIN_VALUE];
 		Chunk var4 = new Chunk(this.worldObj, var3, var1, var2);
+		int var10003 = var1 << 2;
+		int var10005 = var2 << 2;
+		boolean var5 = true;
+		var5 = true;
+		var5 = true;
+		int var8 = var10005;
+		var5 = false;
+		int var7 = var10003;
+		double[] var6 = this.noiseArray;
+		ChunkProviderGenerate var71 = this;
+		if(var6 == null) {
+			var6 = new double[425];
+		}
 
-		int var5;
-		int var6;
-		double var50;
-		for(var5 = 0; var5 < 4; ++var5) {
-			for(var6 = 0; var6 < 4; ++var6) {
-				double[][] var7 = new double[33][4];
-				int var8 = (var1 << 2) + var5;
-				int var9 = (var2 << 2) + var6;
+		this.noise3 = this.noiseGen3.generateNoiseOctaves(this.noise3, var7, 0, var8, 5, 17, 5, 8.555150000000001D, 4.277575000000001D, 8.555150000000001D);
+		this.noise1 = this.noiseGen1.generateNoiseOctaves(this.noise1, var7, 0, var8, 5, 17, 5, 684.412D, 684.412D, 684.412D);
+		this.noise2 = this.noiseGen2.generateNoiseOctaves(this.noise2, var7, 0, var8, 5, 17, 5, 684.412D, 684.412D, 684.412D);
+		var7 = 0;
 
-				for(int var10 = 0; var10 < var7.length; ++var10) {
-					var7[var10][0] = this.initializeNoiseField((double)var8, (double)var10, (double)var9);
-					var7[var10][1] = this.initializeNoiseField((double)var8, (double)var10, (double)(var9 + 1));
-					var7[var10][2] = this.initializeNoiseField((double)(var8 + 1), (double)var10, (double)var9);
-					var7[var10][3] = this.initializeNoiseField((double)(var8 + 1), (double)var10, (double)(var9 + 1));
+		for(var8 = 0; var8 < 5; ++var8) {
+			for(int var9 = 0; var9 < 5; ++var9) {
+				for(int var10 = 0; var10 < 17; ++var10) {
+					double var63 = ((double)var10 - 8.5D) * 12.0D;
+					if(var63 < 0.0D) {
+						var63 *= 2.0D;
+					}
+
+					double var65 = var71.noise1[var7] / 512.0D;
+					double var67 = var71.noise2[var7] / 512.0D;
+					double var69 = (var71.noise3[var7] / 10.0D + 1.0D) / 2.0D;
+					double var61;
+					if(var69 < 0.0D) {
+						var61 = var65;
+					} else if(var69 > 1.0D) {
+						var61 = var67;
+					} else {
+						var61 = var65 + (var67 - var65) * var69;
+					}
+
+					var61 -= var63;
+					var6[var7] = var61;
+					++var7;
 				}
+			}
+		}
 
-				for(var8 = 0; var8 < 32; ++var8) {
-					var50 = var7[var8][0];
-					double var11 = var7[var8][1];
-					double var13 = var7[var8][2];
-					double var15 = var7[var8][3];
-					double var17 = var7[var8 + 1][0];
-					double var19 = var7[var8 + 1][1];
-					double var21 = var7[var8 + 1][2];
-					double var23 = var7[var8 + 1][3];
+		this.noiseArray = var6;
 
-					for(int var25 = 0; var25 < 4; ++var25) {
-						double var26 = (double)var25 / 4.0D;
-						double var28 = var50 + (var17 - var50) * var26;
-						double var30 = var11 + (var19 - var11) * var26;
-						double var32 = var13 + (var21 - var13) * var26;
-						double var34 = var15 + (var23 - var15) * var26;
+		int var72;
+		int var73;
+		for(var72 = 0; var72 < 4; ++var72) {
+			for(var73 = 0; var73 < 4; ++var73) {
+				for(var7 = 0; var7 < 16; ++var7) {
+					double var75 = this.noiseArray[(var72 * 5 + var73) * 17 + var7];
+					double var77 = this.noiseArray[(var72 * 5 + var73 + 1) * 17 + var7];
+					double var12 = this.noiseArray[((var72 + 1) * 5 + var73) * 17 + var7];
+					double var14 = this.noiseArray[((var72 + 1) * 5 + var73 + 1) * 17 + var7];
+					double var16 = this.noiseArray[(var72 * 5 + var73) * 17 + var7 + 1];
+					double var18 = this.noiseArray[(var72 * 5 + var73 + 1) * 17 + var7 + 1];
+					double var20 = this.noiseArray[((var72 + 1) * 5 + var73) * 17 + var7 + 1];
+					double var22 = this.noiseArray[((var72 + 1) * 5 + var73 + 1) * 17 + var7 + 1];
 
-						for(int var55 = 0; var55 < 4; ++var55) {
-							double var37 = (double)var55 / 4.0D;
-							double var39 = var28 + (var32 - var28) * var37;
-							double var41 = var30 + (var34 - var30) * var37;
-							int var27 = var55 + (var5 << 2) << 11 | 0 + (var6 << 2) << 7 | (var8 << 2) + var25;
+					for(int var24 = 0; var24 < 8; ++var24) {
+						double var25 = (double)var24 / 8.0D;
+						double var27 = var75 + (var16 - var75) * var25;
+						double var29 = var77 + (var18 - var77) * var25;
+						double var31 = var12 + (var20 - var12) * var25;
+						double var33 = var14 + (var22 - var14) * var25;
 
-							for(int var36 = 0; var36 < 4; ++var36) {
-								double var45 = (double)var36 / 4.0D;
-								double var47 = var39 + (var41 - var39) * var45;
-								int var56 = 0;
-								if((var8 << 2) + var25 < 64) {
-									var56 = Block.waterStill.blockID;
+						for(int var82 = 0; var82 < 4; ++var82) {
+							double var36 = (double)var82 / 4.0D;
+							double var38 = var27 + (var31 - var27) * var36;
+							double var40 = var29 + (var33 - var29) * var36;
+							int var26 = var82 + (var72 << 2) << 11 | 0 + (var73 << 2) << 7 | (var7 << 3) + var24;
+
+							for(int var35 = 0; var35 < 4; ++var35) {
+								double var44 = (double)var35 / 4.0D;
+								double var46 = var38 + (var40 - var38) * var44;
+								int var83 = 0;
+								if((var7 << 3) + var24 < 64) {
+									var83 = Block.waterStill.blockID;
 								}
 
-								if(var47 > 0.0D) {
-									var56 = Block.stone.blockID;
+								if(var46 > 0.0D) {
+									var83 = Block.stone.blockID;
 								}
 
-								var3[var27] = (byte)var56;
-								var27 += 128;
+								var3[var26] = (byte)var83;
+								var26 += 128;
 							}
 						}
 					}
@@ -97,125 +136,69 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 			}
 		}
 
-		for(var5 = 0; var5 < 16; ++var5) {
-			for(var6 = 0; var6 < 16; ++var6) {
-				double var49 = (double)((var1 << 4) + var5);
-				var50 = (double)((var2 << 4) + var6);
-				boolean var51 = this.noiseGen4.generateNoiseOctaves(var49 * (1.0D / 32.0D), var50 * (1.0D / 32.0D), 0.0D) + this.rand.nextDouble() * 0.2D > 0.0D;
-				boolean var14 = this.noiseGen4.generateNoiseOctaves(var50 * (1.0D / 32.0D), 109.0134D, var49 * (1.0D / 32.0D)) + this.rand.nextDouble() * 0.2D > 3.0D;
-				int var52 = (int)(this.noiseGen5.noiseGenerator(var49 * (1.0D / 32.0D) * 2.0D, var50 * (1.0D / 32.0D) * 2.0D) / 3.0D + 3.0D + this.rand.nextDouble() * 0.25D);
-				int var16 = var5 << 11 | var6 << 7 | 127;
-				int var53 = -1;
-				int var18 = Block.grass.blockID;
-				int var54 = Block.dirt.blockID;
+		for(var72 = 0; var72 < 16; ++var72) {
+			for(var73 = 0; var73 < 16; ++var73) {
+				double var74 = (double)((var1 << 4) + var72);
+				double var76 = (double)((var2 << 4) + var73);
+				boolean var13 = this.noiseGen4.generateNoiseOctaves(var74 * (1.0D / 32.0D), var76 * (1.0D / 32.0D), 0.0D) + this.rand.nextDouble() * 0.2D > 0.0D;
+				boolean var78 = this.noiseGen4.generateNoiseOctaves(var76 * (1.0D / 32.0D), 109.0134D, var74 * (1.0D / 32.0D)) + this.rand.nextDouble() * 0.2D > 3.0D;
+				int var15 = (int)(this.noiseGen5.noiseGenerator(var74 * (1.0D / 32.0D) * 2.0D, var76 * (1.0D / 32.0D) * 2.0D) / 3.0D + 3.0D + this.rand.nextDouble() * 0.25D);
+				int var79 = var72 << 11 | var73 << 7 | 127;
+				int var17 = -1;
+				int var80 = Block.grass.blockID;
+				int var19 = Block.dirt.blockID;
 
-				for(int var20 = 127; var20 >= 0; --var20) {
-					if(var3[var16] == 0) {
-						var53 = -1;
-					} else if(var3[var16] == Block.stone.blockID) {
-						if(var53 == -1) {
-							if(var52 <= 0) {
-								var18 = 0;
-								var54 = (byte)Block.stone.blockID;
-							} else if(var20 >= 60 && var20 <= 65) {
-								var18 = Block.grass.blockID;
-								var54 = Block.dirt.blockID;
-								if(var14) {
-									var18 = 0;
+				for(int var81 = 127; var81 >= 0; --var81) {
+					if(var3[var79] == 0) {
+						var17 = -1;
+					} else if(var3[var79] == Block.stone.blockID) {
+						if(var17 == -1) {
+							if(var15 <= 0) {
+								var80 = 0;
+								var19 = (byte)Block.stone.blockID;
+							} else if(var81 >= 60 && var81 <= 65) {
+								var80 = Block.grass.blockID;
+								var19 = Block.dirt.blockID;
+								if(var78) {
+									var80 = 0;
 								}
 
-								if(var14) {
-									var54 = Block.gravel.blockID;
+								if(var78) {
+									var19 = Block.gravel.blockID;
 								}
 
-								if(var51) {
-									var18 = Block.sand.blockID;
+								if(var13) {
+									var80 = Block.sand.blockID;
 								}
 
-								if(var51) {
-									var54 = Block.sand.blockID;
+								if(var13) {
+									var19 = Block.sand.blockID;
 								}
 							}
 
-							if(var20 < 64 && var18 == 0) {
-								var18 = Block.waterStill.blockID;
+							if(var81 < 64 && var80 == 0) {
+								var80 = Block.waterStill.blockID;
 							}
 
-							var53 = var52;
-							if(var20 >= 63) {
-								var3[var16] = (byte)var18;
+							var17 = var15;
+							if(var81 >= 63) {
+								var3[var79] = (byte)var80;
 							} else {
-								var3[var16] = (byte)var54;
+								var3[var79] = (byte)var19;
 							}
-						} else if(var53 > 0) {
-							--var53;
-							var3[var16] = (byte)var54;
+						} else if(var17 > 0) {
+							--var17;
+							var3[var79] = (byte)var19;
 						}
 					}
 
-					--var16;
+					--var79;
 				}
 			}
 		}
 
 		var4.generateHeightMap();
 		return var4;
-	}
-
-	private double initializeNoiseField(double var1, double var3, double var5) {
-		double var7 = var3 * 4.0D - 64.0D;
-		if(var7 < 0.0D) {
-			var7 *= 3.0D;
-		}
-
-		double var9 = this.noiseGen3.generateNoiseOctaves(var1 * 684.412D / 80.0D, var3 * 684.412D / 400.0D, var5 * 684.412D / 80.0D) / 2.0D;
-		double var11;
-		double var13;
-		if(var9 < -1.0D) {
-			var11 = this.noiseGen1.generateNoiseOctaves(var1 * 684.412D, var3 * 984.412D, var5 * 684.412D) / 512.0D;
-			var13 = var11 - var7;
-			if(var13 < -10.0D) {
-				var13 = -10.0D;
-			}
-
-			if(var13 > 10.0D) {
-				var13 = 10.0D;
-			}
-		} else if(var9 > 1.0D) {
-			var11 = this.noiseGen2.generateNoiseOctaves(var1 * 684.412D, var3 * 984.412D, var5 * 684.412D) / 512.0D;
-			var13 = var11 - var7;
-			if(var13 < -10.0D) {
-				var13 = -10.0D;
-			}
-
-			if(var13 > 10.0D) {
-				var13 = 10.0D;
-			}
-		} else {
-			double var15 = this.noiseGen1.generateNoiseOctaves(var1 * 684.412D, var3 * 984.412D, var5 * 684.412D) / 512.0D - var7;
-			double var17 = this.noiseGen2.generateNoiseOctaves(var1 * 684.412D, var3 * 984.412D, var5 * 684.412D) / 512.0D - var7;
-			if(var15 < -10.0D) {
-				var15 = -10.0D;
-			}
-
-			if(var15 > 10.0D) {
-				var15 = 10.0D;
-			}
-
-			if(var17 < -10.0D) {
-				var17 = -10.0D;
-			}
-
-			if(var17 > 10.0D) {
-				var17 = 10.0D;
-			}
-
-			double var19 = (var9 + 1.0D) / 2.0D;
-			var11 = var15 + (var17 - var15) * var19;
-			var13 = var11;
-		}
-
-		return var13;
 	}
 
 	public final boolean chunkExists(int var1, int var2) {
@@ -258,8 +241,15 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 			(new WorldGenMinable(Block.oreDiamond.blockID)).generate(this.worldObj, this.rand, var3, var4, var5);
 		}
 
-		var3 = (int)this.mobSpawnerNoise.noiseGenerator((double)var8 * 0.25D, (double)var2 * 0.25D) << 3;
+		var3 = (int)(this.mobSpawnerNoise.noiseGenerator((double)var8 * 0.05D, (double)var2 * 0.05D) - this.rand.nextDouble());
+		if(var3 < 0) {
+			var3 = 0;
+		}
+
 		WorldGenBigTree var9 = new WorldGenBigTree();
+		if(this.rand.nextInt(100) == 0) {
+			++var3;
+		}
 
 		for(var5 = 0; var5 < var3; ++var5) {
 			var6 = var8 + this.rand.nextInt(16) + 8;
@@ -271,5 +261,9 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 	}
 
 	public final void saveChunks(boolean var1) {
+	}
+
+	public final boolean unload100OldestChunks() {
+		return false;
 	}
 }

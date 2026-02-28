@@ -2,7 +2,7 @@ package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.world.World;
-import net.minecraft.game.world.terrain.generate.WorldGenTrees;
+import net.minecraft.game.world.terrain.generate.WorldGenBigTree;
 
 public final class BlockSapling extends BlockFlower {
 	protected BlockSapling(int var1, int var2) {
@@ -20,7 +20,7 @@ public final class BlockSapling extends BlockFlower {
 			}
 
 			var1.setTileNoUpdate(var2, var3, var4, 0);
-			WorldGenTrees var7 = new WorldGenTrees();
+			WorldGenBigTree var7 = new WorldGenBigTree();
 			if(!var7.generate(var1, var5, var2, var3, var4)) {
 				var1.setTileNoUpdate(var2, var3, var4, this.blockID);
 			}

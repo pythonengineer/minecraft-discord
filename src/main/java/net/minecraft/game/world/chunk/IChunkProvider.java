@@ -8,4 +8,6 @@ public interface IChunkProvider {
     void populate(IChunkProvider var1, int var2, int var3);
 
     void saveChunks(boolean var1);
+
+    boolean unload100OldestChunks();
 }
