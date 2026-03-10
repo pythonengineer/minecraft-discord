@@ -7,17 +7,17 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 
 public final class PlayerControllerCreative extends PlayerController {
-    public PlayerControllerCreative(Minecraft var1) {
-        super(var1);
-        this.isInTestMode = true;
-    }
+	public PlayerControllerCreative(Minecraft minecraft1) {
+		super(minecraft1);
+		this.isInTestMode = true;
+	}
 
-	public final void onRespawn(EntityPlayer var1) {
-		for(int var2 = 0; var2 < 9; ++var2) {
-			if(var1.inventory.mainInventory[var2] == null) {
-				this.mc.thePlayer.inventory.mainInventory[var2] = new ItemStack(((Block)Session.registeredBlocksList.get(var2)).blockID);
+	public final void onRespawn(EntityPlayer playerEntity) {
+		for(int i2 = 0; i2 < 9; ++i2) {
+			if(playerEntity.inventory.mainInventory[i2] == null) {
+				this.mc.thePlayer.inventory.mainInventory[i2] = new ItemStack(((Block)Session.registeredBlocksList.get(i2)).blockID);
 			} else {
-				this.mc.thePlayer.inventory.mainInventory[var2].stackSize = 1;
+				this.mc.thePlayer.inventory.mainInventory[i2].stackSize = 1;
 			}
 		}
 
@@ -27,6 +27,6 @@ public final class PlayerControllerCreative extends PlayerController {
 		return false;
 	}
 
-	public final void onUpdate() {
+	public final void updateController() {
 	}
 }

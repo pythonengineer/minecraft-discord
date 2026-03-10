@@ -1,69 +1,70 @@
 package net.minecraft.client.gui;
 
 import com.mojang.nbt.NBTTagCompound;
+
 import net.minecraft.game.world.World;
 
 public class GuiSelectWorld extends GuiScreen {
-    protected GuiScreen parentScreen;
-    protected String screenTitle = "Select world";
-    private boolean selected = false;
+	protected GuiScreen currentScreen;
+	protected String screenTitle = "Select world";
+	private boolean selected = false;
 
-    public GuiSelectWorld(GuiScreen var1) {
-        this.parentScreen = var1;
-    }
+	public GuiSelectWorld(GuiScreen screen) {
+		this.currentScreen = screen;
+	}
 
-    public final void initGui() {
-        for(int var2 = 0; var2 < 5; ++var2) {
-            NBTTagCompound var3 = World.getWorldNBTTag("World" + (var2 + 1));
-            if(var3 == null) {
-                this.controlList.add(new GuiButton(var2, this.width / 2 - 100, this.height / 6 + var2 * 24, "- empty -"));
-            } else {
-                String var4 = "World " + (var2 + 1);
-                long var5 = var3.getLong("SizeOnDisk");
-                var4 = var4 + " (" + (float)(var5 / 1024L * 100L / 1024L) / 100.0F + " MB)";
-                this.controlList.add(new GuiButton(var2, this.width / 2 - 100, this.height / 6 + var2 * 24, var4));
-            }
-        }
+	public final void initGui() {
+		for(int i2 = 0; i2 < 5; ++i2) {
+			NBTTagCompound nBTTagCompound3;
+			if((nBTTagCompound3 = World.saveWorldFile("World" + (i2 + 1))) == null) {
+				this.controlList.add(new GuiButton(i2, this.width / 2 - 100, this.height / 6 + i2 * 24, "- empty -"));
+			} else {
+				String string4 = "World " + (i2 + 1);
+				long j5 = nBTTagCompound3.getLong("SizeOnDisk");
+				string4 = string4 + " (" + (float)(j5 / 1024L * 100L / 1024L) / 100.0F + " MB)";
+				this.controlList.add(new GuiButton(i2, this.width / 2 - 100, this.height / 6 + i2 * 24, string4));
+			}
+		}
 
-        this.initGui2();
-    }
+		this.addButtons();
+	}
 
-    protected final String getWorldName(int var1) {
-        return World.getWorldNBTTag("World" + var1) != null ? "World" + var1 : null;
-    }
+	protected final String getWorldName(int worldIndex) {
+		return World.saveWorldFile("World" + worldIndex) != null ? "World" + worldIndex : null;
+	}
 
-    public void initGui2() {
-        this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, "Delete world..."));
-        this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
-    }
+	public void addButtons() {
+		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, "Delete world..."));
+		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
+	}
 
-    protected final void actionPerformed(GuiButton var1) {
-        if(var1.enabled) {
-            if(var1.id < 5) {
-                this.selectWorld(var1.id + 1);
-            } else if(var1.id == 5) {
-                this.mc.displayGuiScreen(new GuiDeleteWorld(this));
-            } else {
-                if(var1.id == 6) {
-                    this.mc.displayGuiScreen(this.parentScreen);
-                }
+	protected final void actionPerformed(GuiButton button) {
+		if(button.enabled) {
+			if(button.id < 5) {
+				this.actionWorld(button.id + 1);
+			} else if(button.id == 5) {
+				this.mc.setGuiScreen(new GuiDeleteWorld(this));
+			} else {
+				if(button.id == 6) {
+					this.mc.setGuiScreen(this.currentScreen);
+				}
 
-            }
-        }
-    }
+			}
+		}
+	}
 
-    public void selectWorld(int var1) {
-        this.mc.displayGuiScreen((GuiScreen)null);
-        if(!this.selected) {
-            this.selected = true;
-            this.mc.startWorld("World" + var1);
-            this.mc.displayGuiScreen((GuiScreen)null);
-        }
-    }
+	public void actionWorld(int worldIndex) {
+		this.mc.setGuiScreen((GuiScreen)null);
+		if(!this.selected) {
+			this.selected = true;
+			this.mc.startWorld("World" + worldIndex);
+			this.mc.setGuiScreen((GuiScreen)null);
+		}
+	}
 
-    public final void drawScreen(int var1, int var2, float var3) {
-        this.drawDefaultBackground();
-        drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
-        super.drawScreen(var1, var2, var3);
-    }
+	public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		this.drawDefaultBackground();
+		drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 0xFFFFFF);
+		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
 }

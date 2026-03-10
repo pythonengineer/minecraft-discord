@@ -2,8 +2,8 @@ package net.minecraft.game.world.material;
 
 public class Material {
     public static final Material air = new MaterialTransparent();
+    public static final Material grassMaterial = new Material();
     public static final Material ground = new Material();
-    public static final Material wood = new Material();
     public static final Material rock = new Material();
     public static final Material iron = new Material();
     public static final Material water = new MaterialLiquid();

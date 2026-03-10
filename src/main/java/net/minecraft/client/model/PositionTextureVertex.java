@@ -7,23 +7,23 @@ public final class PositionTextureVertex {
     public float texturePositionX;
     public float texturePositionY;
 
-    public PositionTextureVertex(float var1, float var2, float var3, float var4, float var5) {
-        this(new Vec3D((double)var1, (double)var2, (double)var3), var4, var5);
+    public PositionTextureVertex(float posX, float posY, float posZ, float u, float v) {
+        this(new Vec3D((double)posX, (double)posY, (double)posZ), u, v);
     }
 
-    public final PositionTextureVertex setTexturePosition(float var1, float var2) {
-        return new PositionTextureVertex(this, var1, var2);
+    public final PositionTextureVertex setTexturePosition(float u, float v) {
+        return new PositionTextureVertex(this, u, v);
     }
 
-    private PositionTextureVertex(PositionTextureVertex var1, float var2, float var3) {
-        this.vector3D = var1.vector3D;
-        this.texturePositionX = var2;
-        this.texturePositionY = var3;
+    private PositionTextureVertex(PositionTextureVertex positionTextureVertex, float u, float v) {
+        this.vector3D = positionTextureVertex.vector3D;
+        this.texturePositionX = u;
+        this.texturePositionY = v;
     }
 
-    private PositionTextureVertex(Vec3D var1, float var2, float var3) {
-        this.vector3D = var1;
-        this.texturePositionX = var2;
-        this.texturePositionY = var3;
+    private PositionTextureVertex(Vec3D positionVector, float u, float v) {
+        this.vector3D = positionVector;
+        this.texturePositionX = u;
+        this.texturePositionY = v;
     }
 }

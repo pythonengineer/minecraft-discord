@@ -15,43 +15,36 @@ public class EntityFX extends Entity {
 	protected int particleMaxAge = 0;
 	protected float particleScale;
 	protected float particleGravity;
-	protected float particleRed;
-	protected float particleGreen;
 	protected float particleBlue;
-    public static double interpPosX;
-    public static double interpPosY;
-    public static double interpPosZ;
+	protected float particleGreen;
+	protected float particleRed;
+	public static double interpPosX;
+	public static double interpPosY;
+	public static double interpPosZ;
 
-    public EntityFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) {
-        super(var1);
-        this.setSize(0.2F, 0.2F);
-        this.yOffset = this.height / 2.0F;
-        this.setPosition(var2, var4, var6);
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
-        this.motionX = var8 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
-        this.motionY = var10 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
-        this.motionZ = var12 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
-        float var14 = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
-        float var15 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-        this.motionX = this.motionX / (double)var15 * (double)var14 * (double)0.4F;
-        this.motionY = this.motionY / (double)var15 * (double)var14 * (double)0.4F + (double)0.1F;
-        this.motionZ = this.motionZ / (double)var15 * (double)var14 * (double)0.4F;
-        this.particleTextureJitterX = this.rand.nextFloat() * 3.0F;
-        this.particleTextureJitterY = this.rand.nextFloat() * 3.0F;
-        this.particleScale = (this.rand.nextFloat() * 0.5F + 0.5F) * 2.0F;
-        this.particleMaxAge = (int)(4.0F / (this.rand.nextFloat() * 0.9F + 0.1F));
-        this.particleAge = 0;
-        this.entityWalks = false;
-    }
-
-	public final EntityFX multiplyVelocity(float var1) {
-		this.motionX *= 0.2F;
-		this.motionY = (this.motionY - 0.1F) * 0.2F + 0.1F;
-		this.motionZ *= 0.2F;
-		return this;
+	public EntityFX(World world1, double d2, double d4, double d6, double d8, double d10, double d12) {
+		super(world1);
+		this.setSize(0.2F, 0.2F);
+		this.yOffset = this.height / 2.0F;
+		this.setPosition(d2, d4, d6);
+		this.particleBlue = this.particleGreen = this.particleRed = 1.0F;
+		this.motionX = d8 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		this.motionY = d10 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		this.motionZ = d12 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		float f14 = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
+		float f15 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+		this.motionX = this.motionX / (double)f15 * (double)f14 * (double)0.4F;
+		this.motionY = this.motionY / (double)f15 * (double)f14 * (double)0.4F + (double)0.1F;
+		this.motionZ = this.motionZ / (double)f15 * (double)f14 * (double)0.4F;
+		this.particleTextureJitterX = this.rand.nextFloat() * 3.0F;
+		this.particleTextureJitterY = this.rand.nextFloat() * 3.0F;
+		this.particleScale = (this.rand.nextFloat() * 0.5F + 0.5F) * 2.0F;
+		this.particleMaxAge = (int)(4.0F / (this.rand.nextFloat() * 0.9F + 0.1F));
+		this.particleAge = 0;
+		this.canTriggerWalking = false;
 	}
 
-    public final EntityFX multiplyParticleScaleBy(float var1) {
+	public final EntityFX multiplyParticleScaleBy(float scale) {
 		this.setSize(0.120000005F, 0.120000005F);
 		this.particleScale *= 0.6F;
 		return this;
@@ -62,45 +55,45 @@ public class EntityFX extends Entity {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		if(this.particleAge++ >= this.particleMaxAge) {
-            super.isDead = true;
+			super.isDead = true;
 		}
 
-        this.motionY -= 0.04D * (double)this.particleGravity;
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= (double)0.98F;
-        this.motionY *= (double)0.98F;
-        this.motionZ *= (double)0.98F;
-        if(this.onGround) {
-            this.motionX *= (double)0.7F;
-            this.motionZ *= (double)0.7F;
-        }
+		this.motionY -= 0.04D * (double)this.particleGravity;
+		this.moveEntity(this.motionX, this.motionY, this.motionZ);
+		this.motionX *= (double)0.98F;
+		this.motionY *= (double)0.98F;
+		this.motionZ *= (double)0.98F;
+		if(this.onGround) {
+			this.motionX *= (double)0.7F;
+			this.motionZ *= (double)0.7F;
+		}
 
 	}
 
-	public void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7) {
-		float var8 = (float)(this.particleTextureIndex % 16) / 16.0F;
-		float var9 = var8 + 0.999F / 16.0F;
-		float var10 = (float)(this.particleTextureIndex / 16) / 16.0F;
-		float var11 = var10 + 0.999F / 16.0F;
-		float var12 = 0.1F * this.particleScale;
-        float var13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)var2 - interpPosX);
-        float var14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)var2 - interpPosY);
-        float var15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)var2 - interpPosZ);
-        var2 = this.getBrightness(var2);
-        var1.setColorOpaque_F(this.particleRed * var2, this.particleGreen * var2, this.particleBlue * var2);
-        var1.addVertexWithUV((double)(var13 - var3 * var12 - var6 * var12), (double)(var14 - var4 * var12), (double)(var15 - var5 * var12 - var7 * var12), (double)var8, (double)var11);
-        var1.addVertexWithUV((double)(var13 - var3 * var12 + var6 * var12), (double)(var14 + var4 * var12), (double)(var15 - var5 * var12 + var7 * var12), (double)var8, (double)var10);
-        var1.addVertexWithUV((double)(var13 + var3 * var12 + var6 * var12), (double)(var14 + var4 * var12), (double)(var15 + var5 * var12 + var7 * var12), (double)var9, (double)var10);
-        var1.addVertexWithUV((double)(var13 + var3 * var12 - var6 * var12), (double)(var14 - var4 * var12), (double)(var15 + var5 * var12 - var7 * var12), (double)var9, (double)var11);
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+		float f8;
+		float f9 = (f8 = (float)(this.particleTextureIndex % 16) / 16.0F) + 0.0624375F;
+		float f10;
+		float f11 = (f10 = (float)(this.particleTextureIndex / 16) / 16.0F) + 0.0624375F;
+		float f12 = 0.1F * this.particleScale;
+		float f13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - interpPosX);
+		float f14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
+		float f15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - interpPosZ);
+		partialTicks = this.getBrightness(partialTicks);
+		tessellator.setColorOpaque_F(this.particleBlue * partialTicks, this.particleGreen * partialTicks, this.particleRed * partialTicks);
+		tessellator.addVertexWithUV((double)(f13 - rotationX * f12 - rotationXY * f12), (double)(f14 - rotationZ * f12), (double)(f15 - rotationYZ * f12 - rotationXZ * f12), (double)f8, (double)f11);
+		tessellator.addVertexWithUV((double)(f13 - rotationX * f12 + rotationXY * f12), (double)(f14 + rotationZ * f12), (double)(f15 - rotationYZ * f12 + rotationXZ * f12), (double)f8, (double)f10);
+		tessellator.addVertexWithUV((double)(f13 + rotationX * f12 + rotationXY * f12), (double)(f14 + rotationZ * f12), (double)(f15 + rotationYZ * f12 + rotationXZ * f12), (double)f9, (double)f10);
+		tessellator.addVertexWithUV((double)(f13 + rotationX * f12 - rotationXY * f12), (double)(f14 - rotationZ * f12), (double)(f15 + rotationYZ * f12 - rotationXZ * f12), (double)f9, (double)f11);
 	}
 
 	public int getFXLayer() {
 		return 0;
 	}
 
-    public final void writeEntityToNBT(NBTTagCompound var1) {
-    }
+	public final void writeEntityToNBT(NBTTagCompound compoundTag) {
+	}
 
-    public final void readEntityFromNBT(NBTTagCompound var1) {
-    }
+	public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+	}
 }

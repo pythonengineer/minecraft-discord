@@ -1,51 +1,47 @@
 package net.minecraft.game.item;
 
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public final class ItemFlintAndSteel extends Item {
-    public ItemFlintAndSteel(int var1) {
-        super(3);
-        this.maxStackSize = 1;
-        this.maxDamage = 64;
-    }
+	public ItemFlintAndSteel(int i1) {
+		super(3);
+		this.maxStackSize = 1;
+		this.maxDamage = 64;
+	}
 
-    public final boolean onItemUse(ItemStack var1, World var2, int var3, int var4, int var5, int var6) {
-        if(var6 == 0) {
-            --var4;
-        }
+	public final boolean onItemUse(ItemStack stack, EntityPlayer playerEntity, World world, int x, int y, int z, int side) {
+		if(side == 0) {
+			--y;
+		}
 
-        if(var6 == 1) {
-            ++var4;
-        }
+		if(side == 1) {
+			++y;
+		}
 
-        if(var6 == 2) {
-            --var5;
-        }
+		if(side == 2) {
+			--z;
+		}
 
-        if(var6 == 3) {
-            ++var5;
-        }
+		if(side == 3) {
+			++z;
+		}
 
-        if(var6 == 4) {
-            --var3;
-        }
+		if(side == 4) {
+			--x;
+		}
 
-        if(var6 == 5) {
-            ++var3;
-        }
+		if(side == 5) {
+			++x;
+		}
 
-        var6 = var2.getBlockId(var3, var4, var5);
-        if(var6 == 0) {
-            var2.playSoundEffect((double)var3 + 0.5D, (double)var4 + 0.5D, (double)var5 + 0.5D, "fire.ignite", 1.0F, itemRand.nextFloat() * 0.4F + 0.8F);
-            var2.setBlockWithNotify(var3, var4, var5, Block.fire.blockID);
-        }
+		if(world.getBlockId(x, y, z) == 0) {
+			world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "fire.ignite", 1.0F, rand.nextFloat() * 0.4F + 0.8F);
+			world.notifyBlockChange(x, y, z, Block.fire.blockID);
+		}
 
-        var1.damageItem(1);
-        return true;
-    }
-
-    public boolean shouldUseOnTouchEagler(ItemStack itemStack) {
-        return true;
-    }
+		stack.damageItem(1);
+		return true;
+	}
 }

@@ -15,10 +15,10 @@ final class ThreadDownloadImage extends Thread {
     private ImageBufferDownload buffer;
     private ThreadDownloadImageData imageData;
 
-    ThreadDownloadImage(ThreadDownloadImageData var1, String var2, ImageBufferDownload var3) {
-        this.imageData = var1;
-        this.username = var2;
-        this.buffer = var3;
+    ThreadDownloadImage(ThreadDownloadImageData downloadImageDataThread, String username, ImageBufferDownload imageBufferDownloader) {
+        this.imageData = downloadImageDataThread;
+        this.username = username;
+        this.buffer = imageBufferDownloader;
     }
 
     public final void run() {

@@ -6,43 +6,43 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public class BlockFlower extends Block {
-	protected BlockFlower(int var1, int var2) {
-		super(var1, Material.plants);
-		this.blockIndexInTexture = var2;
+	protected BlockFlower(int blockID, int textureIndex) {
+		super(blockID, Material.plants);
+		this.blockIndexInTexture = textureIndex;
 		this.setTickOnLoad(true);
 		this.setBlockBounds(0.3F, 0.0F, 0.3F, 0.7F, 0.6F, 0.7F);
 	}
 
-	public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return this.canThisPlantGrowOnThisBlockID(var1.getBlockId(var2, var3 - 1, var4));
+	public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
+		return this.canThisPlantGrowOnThisBlockID(world.getBlockId(x, y - 1, z));
 	}
 
-	protected boolean canThisPlantGrowOnThisBlockID(int var1) {
-		return var1 == Block.grass.blockID || var1 == Block.dirt.blockID || var1 == Block.tilledField.blockID;
+	protected boolean canThisPlantGrowOnThisBlockID(int blockID) {
+		return blockID == Block.grass.blockID || blockID == Block.dirt.blockID || blockID == Block.farmland.blockID;
 	}
 
-    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-        super.onNeighborBlockChange(var1, var2, var3, var4, var5);
-        this.checkFlowerChange(var1, var2, var3, var4);
-    }
+	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		super.onNeighborBlockChange(world, x, y, z, blockID);
+		this.checkFlowerChange(world, x, y, z);
+	}
 
-    public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        this.checkFlowerChange(var1, var2, var3, var4);
-    }
+	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		this.checkFlowerChange(world, x, y, z);
+	}
 
-    private void checkFlowerChange(World var1, int var2, int var3, int var4) {
-        if(!this.canBlockStay(var1, var2, var3, var4)) {
-            this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
-            var1.setBlockWithNotify(var2, var3, var4, 0);
-        }
+	private void checkFlowerChange(World world, int x, int y, int z) {
+		if(!this.canBlockStay(world, x, y, z)) {
+			this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+			world.notifyBlockChange(x, y, z, 0);
+		}
 
-    }
+	}
 
-    public boolean canBlockStay(World var1, int var2, int var3, int var4) {
-        return (var1.getBlockLightValue(var2, var3, var4) >= 8 || var1.canBlockSeeTheSky(var2, var3, var4)) && this.canThisPlantGrowOnThisBlockID(var1.getBlockId(var2, var3 - 1, var4));
-    }
+	public boolean canBlockStay(World world, int x, int y, int z) {
+		return (world.getBlockLightValue(x, y, z) >= 8 || world.canBlockSeeTheSky(x, y, z)) && this.canThisPlantGrowOnThisBlockID(world.getBlockId(x, y - 1, z));
+	}
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
+	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 

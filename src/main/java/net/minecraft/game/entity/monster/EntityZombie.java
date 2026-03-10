@@ -4,26 +4,24 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
 
-public class EntityZombie extends EntityMonster {
-    public EntityZombie(World var1) {
-        super(var1);
-        this.texture = "/mob/zombie.png";
-        this.moveSpeed = 0.5F;
-        this.attackStrength = 5;
-    }
+public class EntityZombie extends EntityMob {
+	public EntityZombie(World world1) {
+		super(world1);
+		this.texture = "/mob/zombie.png";
+		this.moveSpeed = 0.5F;
+		this.attackStrength = 5;
+	}
 
-    public final void onLivingUpdate() {
-        if(this.worldObj.isDaytime()) {
-            float var1 = this.getBrightness(1.0F);
-            if(var1 > 0.5F && this.worldObj.canBlockSeeTheSky(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) && this.rand.nextFloat() * 30.0F < (var1 - 0.4F) * 2.0F) {
-                this.fire = 300;
-            }
-        }
+	public final void onLivingUpdate() {
+		float f1;
+		if(this.worldObj.isDaytime() && (f1 = this.getBrightness(1.0F)) > 0.5F && this.worldObj.canBlockSeeTheSky(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) && this.rand.nextFloat() * 30.0F < (f1 - 0.4F) * 2.0F) {
+			this.fire = 300;
+		}
 
-        super.onLivingUpdate();
-    }
+		super.onLivingUpdate();
+	}
 
-    protected final int getDroppedItem() {
+	protected final int getDropItemId() {
 		return Item.feather.shiftedIndex;
 	}
 }

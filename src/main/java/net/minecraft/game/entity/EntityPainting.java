@@ -1,6 +1,7 @@
 package net.minecraft.game.entity;
 
 import com.mojang.nbt.NBTTagCompound;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,218 +14,220 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public class EntityPainting extends Entity {
-    private int tickCounter;
-    public int direction;
-    private int xPosition;
-    private int yPosition;
-    private int zPosition;
-    public EnumArt art;
+	private int tickCounter;
+	public int direction;
+	private int xPosition;
+	private int yPosition;
+	private int zPosition;
+	public EnumArt art;
 
-    public EntityPainting(World var1) {
-        super(var1);
-        this.tickCounter = 0;
-        this.direction = 0;
-        this.yOffset = 0.0F;
-        this.setSize(0.5F, 0.5F);
-    }
+	public EntityPainting(World world1) {
+		super(world1);
+		this.tickCounter = 0;
+		this.direction = 0;
+		this.yOffset = 0.0F;
+		this.setSize(0.5F, 0.5F);
+	}
 
-    public EntityPainting(World var1, int var2, int var3, int var4, int var5) {
-        this(var1);
-        this.xPosition = var2;
-        this.yPosition = var3;
-        this.zPosition = var4;
-        ArrayList var7 = new ArrayList();
-        EnumArt[] var8 = EnumArt.values();
-        var3 = var8.length;
+	public EntityPainting(World world, int x, int y, int z, int direction) {
+		this(world);
+		this.xPosition = x;
+		this.yPosition = y;
+		this.zPosition = z;
+		ArrayList arrayList7 = new ArrayList();
+		EnumArt[] enumArt8;
+		y = (enumArt8 = EnumArt.values()).length;
 
-        for(var4 = 0; var4 < var3; ++var4) {
-            EnumArt var6 = var8[var4];
-            this.art = var6;
-            this.setDirection(var5);
-            if(this.onValidSurface()) {
-                var7.add(var6);
-            }
-        }
+		for(z = 0; z < y; ++z) {
+			EnumArt enumArt6 = enumArt8[z];
+			this.art = enumArt6;
+			this.setDirection(direction);
+			if(this.onValidSurface()) {
+				arrayList7.add(enumArt6);
+			}
+		}
 
-        if(var7.size() > 0) {
-            this.art = (EnumArt)var7.get(this.rand.nextInt(var7.size()));
-        }
+		if(arrayList7.size() > 0) {
+			this.art = (EnumArt)arrayList7.get(this.rand.nextInt(arrayList7.size()));
+		}
 
-        this.setDirection(var5);
-    }
+		this.setDirection(direction);
+	}
 
-    private void setDirection(int var1) {
-        this.direction = var1;
-        this.prevRotationYaw = this.rotationYaw = (float)(var1 * 90);
-        float var2 = (float)this.art.sizeX;
-        float var3 = (float)this.art.sizeY;
-        float var4 = (float)this.art.sizeX;
-        if(var1 != 0 && var1 != 2) {
-            var2 = 0.5F;
-        } else {
-            var4 = 0.5F;
-        }
+	private void setDirection(int direction) {
+		this.direction = direction;
+		this.prevRotationYaw = this.rotationYaw = (float)(direction * 90);
+		float f2 = (float)this.art.sizeX;
+		float f3 = (float)this.art.sizeY;
+		float f4 = (float)this.art.sizeX;
+		if(direction != 0 && direction != 2) {
+			f2 = 0.5F;
+		} else {
+			f4 = 0.5F;
+		}
 
-        var2 /= 32.0F;
-        var3 /= 32.0F;
-        var4 /= 32.0F;
-        float var5 = (float)this.xPosition + 0.5F;
-        float var6 = (float)this.yPosition + 0.5F;
-        float var7 = (float)this.zPosition + 0.5F;
-        if(var1 == 0) {
-            var7 -= 9.0F / 16.0F;
-        }
+		f2 /= 32.0F;
+		f3 /= 32.0F;
+		f4 /= 32.0F;
+		float f5 = (float)this.xPosition + 0.5F;
+		float f6 = (float)this.yPosition + 0.5F;
+		float f7 = (float)this.zPosition + 0.5F;
+		if(direction == 0) {
+			f7 -= 0.5625F;
+		}
 
-        if(var1 == 1) {
-            var5 -= 9.0F / 16.0F;
-        }
+		if(direction == 1) {
+			f5 -= 0.5625F;
+		}
 
-        if(var1 == 2) {
-            var7 += 9.0F / 16.0F;
-        }
+		if(direction == 2) {
+			f7 += 0.5625F;
+		}
 
-        if(var1 == 3) {
-            var5 += 9.0F / 16.0F;
-        }
+		if(direction == 3) {
+			f5 += 0.5625F;
+		}
 
-        if(var1 == 0) {
-            var5 -= getArtSize(this.art.sizeX);
-        }
+		if(direction == 0) {
+			f5 -= getPaintingOffset(this.art.sizeX);
+		}
 
-        if(var1 == 1) {
-            var7 += getArtSize(this.art.sizeX);
-        }
+		if(direction == 1) {
+			f7 += getPaintingOffset(this.art.sizeX);
+		}
 
-        if(var1 == 2) {
-            var5 += getArtSize(this.art.sizeX);
-        }
+		if(direction == 2) {
+			f5 += getPaintingOffset(this.art.sizeX);
+		}
 
-        if(var1 == 3) {
-            var7 -= getArtSize(this.art.sizeX);
-        }
+		if(direction == 3) {
+			f7 -= getPaintingOffset(this.art.sizeX);
+		}
 
-        var6 += getArtSize(this.art.sizeY);
-        this.setPosition((double)var5, (double)var6, (double)var7);
-        this.boundingBox = new AxisAlignedBB((double)(var5 - var2), (double)(var6 - var3), (double)(var7 - var4), (double)(var5 + var2), (double)(var6 + var3), (double)(var7 + var4));
-        double var13 = (double)0.00625F;
-        AxisAlignedBB var27 = this.boundingBox;
-        double var15 = var27.minX;
-        double var17 = var27.minY;
-        double var19 = var27.minZ;
-        double var21 = var27.maxX;
-        double var23 = var27.maxY;
-        double var25 = var27.maxZ;
-        var21 -= (double)0.00625F;
-        var23 -= (double)0.00625F;
-        var25 -= (double)0.00625F;
-        this.boundingBox = new AxisAlignedBB(var15, var17, var19, var21, var23, var25);
-    }
+		f6 += getPaintingOffset(this.art.sizeY);
+		this.setPosition((double)f5, (double)f6, (double)f7);
+		this.boundingBox = new AxisAlignedBB((double)(f5 - f2), (double)(f6 - f3), (double)(f7 - f4), (double)(f5 + f2), (double)(f6 + f3), (double)(f7 + f4));
+		double d13 = 0.0062500000931322575D;
+		double d11 = 0.0062500000931322575D;
+		double d9 = 0.0062500000931322575D;
+		AxisAlignedBB direction1 = this.boundingBox;
+		double d15 = this.boundingBox.minX;
+		double d17 = direction1.minY;
+		double d19 = direction1.minZ;
+		double d21 = direction1.maxX;
+		double d23 = direction1.maxY;
+		double d25 = direction1.maxZ;
+		d21 -= 0.0062500000931322575D;
+		d23 -= 0.0062500000931322575D;
+		d25 -= 0.0062500000931322575D;
+		this.boundingBox = new AxisAlignedBB(d15, d17, d19, d21, d23, d25);
+	}
 
-    private static float getArtSize(int var0) {
-        return var0 == 32 ? 0.5F : (var0 == 64 ? 0.5F : 0.0F);
-    }
+	private static float getPaintingOffset(int textureSize) {
+		return textureSize == 32 ? 0.5F : (textureSize == 64 ? 0.5F : 0.0F);
+	}
 
-    public final void onUpdate() {
-        if(this.tickCounter++ == 100 && !this.onValidSurface()) {
-            this.tickCounter = 0;
-            super.isDead = true;
-            this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
-        }
+	public final void onUpdate() {
+		if(this.tickCounter++ == 100 && !this.onValidSurface()) {
+			this.tickCounter = 0;
+			super.isDead = true;
+			this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+		}
 
-    }
+	}
 
-    public final boolean onValidSurface() {
-        if(this.worldObj.getCollidingBoundingBoxes(this.boundingBox).size() > 0) {
-            return false;
-        } else {
-            int var1 = this.art.sizeX / 16;
-            int var2 = this.art.sizeY / 16;
-            int var3 = this.xPosition;
-            int var5 = this.zPosition;
-            if(this.direction == 0) {
-                var3 = MathHelper.floor_double(this.posX - (double)((float)this.art.sizeX / 32.0F));
-            }
+	public final boolean onValidSurface() {
+		if(this.worldObj.getCollidingBoundingBoxes(this.boundingBox).size() > 0) {
+			return false;
+		} else {
+			int i1 = this.art.sizeX / 16;
+			int i2 = this.art.sizeY / 16;
+			int i3 = this.xPosition;
+			int i5 = this.zPosition;
+			if(this.direction == 0) {
+				i3 = MathHelper.floor_double(this.posX - (double)((float)this.art.sizeX / 32.0F));
+			}
 
-            if(this.direction == 1) {
-                var5 = MathHelper.floor_double(this.posZ - (double)((float)this.art.sizeX / 32.0F));
-            }
+			if(this.direction == 1) {
+				i5 = MathHelper.floor_double(this.posZ - (double)((float)this.art.sizeX / 32.0F));
+			}
 
-            if(this.direction == 2) {
-                var3 = MathHelper.floor_double(this.posX - (double)((float)this.art.sizeX / 32.0F));
-            }
+			if(this.direction == 2) {
+				i3 = MathHelper.floor_double(this.posX - (double)((float)this.art.sizeX / 32.0F));
+			}
 
-            if(this.direction == 3) {
-                var5 = MathHelper.floor_double(this.posZ - (double)((float)this.art.sizeX / 32.0F));
-            }
+			if(this.direction == 3) {
+				i5 = MathHelper.floor_double(this.posZ - (double)((float)this.art.sizeX / 32.0F));
+			}
 
-            int var4 = MathHelper.floor_double(this.posY - (double)((float)this.art.sizeY / 32.0F));
+			int i4 = MathHelper.floor_double(this.posY - (double)((float)this.art.sizeY / 32.0F));
 
-            int var7;
-            for(int var6 = 0; var6 < var1; ++var6) {
-                for(var7 = 0; var7 < var2; ++var7) {
-                    Material var8;
-                    if(this.direction != 0 && this.direction != 2) {
-                        var8 = this.worldObj.getBlockMaterial(this.xPosition, var4 + var7, var5 + var6);
-                    } else {
-                        var8 = this.worldObj.getBlockMaterial(var3 + var6, var4 + var7, this.zPosition);
-                    }
+			int i7;
+			for(int i6 = 0; i6 < i1; ++i6) {
+				for(i7 = 0; i7 < i2; ++i7) {
+					Material material8;
+					if(this.direction != 0 && this.direction != 2) {
+						material8 = this.worldObj.getBlockMaterial(this.xPosition, i4 + i7, i5 + i6);
+					} else {
+						material8 = this.worldObj.getBlockMaterial(i3 + i6, i4 + i7, this.zPosition);
+					}
 
-                    if(!var8.isSolid()) {
-                        return false;
-                    }
-                }
-            }
+					if(!material8.isSolid()) {
+						return false;
+					}
+				}
+			}
 
-            List var9 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox);
+			List list9 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox);
 
-            for(var7 = 0; var7 < var9.size(); ++var7) {
-                if(var9.get(var7) instanceof EntityPainting) {
-                    return false;
-                }
-            }
+			for(i7 = 0; i7 < list9.size(); ++i7) {
+				if(list9.get(i7) instanceof EntityPainting) {
+					return false;
+				}
+			}
 
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 
-    public final boolean canBeCollidedWith() {
-        return true;
-    }
+	public final boolean canBeCollidedWith() {
+		return true;
+	}
 
-    public final boolean attackEntityFrom(Entity var1, int var2) {
-        super.isDead = true;
-        this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
-        return true;
-    }
+	public final boolean attackEntityFrom(Entity entity, int damage) {
+		super.isDead = true;
+		this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+		return true;
+	}
 
-    public final void writeEntityToNBT(NBTTagCompound var1) {
-        var1.setByte("Dir", (byte)this.direction);
-        var1.setString("Motive", this.art.title);
-        var1.setInteger("TileX", this.xPosition);
-        var1.setInteger("TileY", this.yPosition);
-        var1.setInteger("TileZ", this.zPosition);
-    }
+	public final void writeEntityToNBT(NBTTagCompound compoundTag) {
+		compoundTag.setByte("Dir", (byte)this.direction);
+		compoundTag.setString("Motive", this.art.title);
+		compoundTag.setInteger("TileX", this.xPosition);
+		compoundTag.setInteger("TileY", this.yPosition);
+		compoundTag.setInteger("TileZ", this.zPosition);
+	}
 
-    public final void readEntityFromNBT(NBTTagCompound var1) {
-        this.direction = var1.getByte("Dir");
-        this.xPosition = var1.getInteger("TileX");
-        this.yPosition = var1.getInteger("TileY");
-        this.zPosition = var1.getInteger("TileZ");
-        String var6 = var1.getString("Motive");
-        EnumArt[] var2 = EnumArt.values();
-        int var3 = var2.length;
+	public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+		this.direction = compoundTag.getByte("Dir");
+		this.xPosition = compoundTag.getInteger("TileX");
+		this.yPosition = compoundTag.getInteger("TileY");
+		this.zPosition = compoundTag.getInteger("TileZ");
+		String string6 = compoundTag.getString("Motive");
+		EnumArt[] enumArt2;
+		int i3 = (enumArt2 = EnumArt.values()).length;
 
-        for(int var4 = 0; var4 < var3; ++var4) {
-            EnumArt var5 = var2[var4];
-            if(var5.title.equals(var6)) {
-                this.art = var5;
-            }
-        }
+		for(int i4 = 0; i4 < i3; ++i4) {
+			EnumArt enumArt5;
+			if((enumArt5 = enumArt2[i4]).title.equals(string6)) {
+				this.art = enumArt5;
+			}
+		}
 
-        if(this.art == null) {
-            this.art = EnumArt.Kebab;
-        }
+		if(this.art == null) {
+			this.art = EnumArt.Kebab;
+		}
 
-        this.setDirection(this.direction);
-    }
+		this.setDirection(this.direction);
+	}
 }

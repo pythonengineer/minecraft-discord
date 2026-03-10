@@ -7,6 +7,7 @@ import net.minecraft.client.Session;
 import net.minecraft.client.effect.EntityPickupFX;
 import net.minecraft.client.gui.container.GuiChest;
 import net.minecraft.client.gui.container.GuiCrafting;
+import net.minecraft.client.gui.container.GuiEditSign;
 import net.minecraft.client.gui.container.GuiFurnace;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
@@ -15,31 +16,32 @@ import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntityFurnace;
+import net.minecraft.game.world.block.tileentity.TileEntitySign;
 
 public class EntityPlayerSP extends EntityPlayer {
 	public MovementInput movementInput;
 	private Minecraft mc;
 
-	public EntityPlayerSP(Minecraft var1, World var2, Session var3) {
-		super(var2);
-		this.mc = var1;
-        if(var2 != null) {
-            if(var2.playerEntity != null) {
-                World.setEntityDead(var2.playerEntity);
+    public EntityPlayerSP(Minecraft mc, World world, Session session3) {
+        super(world);
+        this.mc = mc;
+        if(world != null) {
+            if(world.playerEntity != null) {
+                World.setEntityDead(world.playerEntity);
             }
 
-            var2.playerEntity = this;
+            world.playerEntity = this;
         }
 
-        if(var3 != null) {
-            this.skinUrl = var3.name;
-            this.username = var3.name;
+        if(session3 != null) {
+            this.skinUrl = session3.name;
+            this.username = session3.name;
         } else {
             this.username = "";
         }
     }
 
-    public final void updateEntityActionState() {
+    public final void updatePlayerActionState() {
         this.moveStrafing = this.movementInput.moveStrafe;
         this.moveForward = this.movementInput.moveForward;
         this.isJumping = this.movementInput.jump;
@@ -50,76 +52,78 @@ public class EntityPlayerSP extends EntityPlayer {
         super.onLivingUpdate();
     }
 
-    public final void writeEntityToNBT(NBTTagCompound var1) {
-        super.writeEntityToNBT(var1);
-        var1.setInteger("Score", this.score);
-        InventoryPlayer var10002 = this.inventory;
-        NBTTagList var2 = new NBTTagList();
-        InventoryPlayer var5 = var10002;
+    public final void writeEntityToNBT(NBTTagCompound compoundTag) {
+        super.writeEntityToNBT(compoundTag);
+        compoundTag.setInteger("Score", this.score);
+        InventoryPlayer inventoryPlayer10002 = this.inventory;
+        NBTTagList nBTTagList2 = new NBTTagList();
+        InventoryPlayer inventoryPlayer5 = inventoryPlayer10002;
 
-        int var3;
-        NBTTagCompound var4;
-        for(var3 = 0; var3 < var5.mainInventory.length; ++var3) {
-            if(var5.mainInventory[var3] != null) {
-                var4 = new NBTTagCompound();
-                var4.setByte("Slot", (byte)var3);
-                var5.mainInventory[var3].writeToNBT(var4);
-                var2.setTag(var4);
+        int i3;
+        NBTTagCompound nBTTagCompound4;
+        for(i3 = 0; i3 < inventoryPlayer5.mainInventory.length; ++i3) {
+            if(inventoryPlayer5.mainInventory[i3] != null) {
+                (nBTTagCompound4 = new NBTTagCompound()).setByte("Slot", (byte)i3);
+                inventoryPlayer5.mainInventory[i3].writeToNBT(nBTTagCompound4);
+                nBTTagList2.setTag(nBTTagCompound4);
             }
         }
 
-        for(var3 = 0; var3 < var5.armorInventory.length; ++var3) {
-            if(var5.armorInventory[var3] != null) {
-                var4 = new NBTTagCompound();
-                var4.setByte("Slot", (byte)(var3 + 100));
-                var5.armorInventory[var3].writeToNBT(var4);
-                var2.setTag(var4);
+        for(i3 = 0; i3 < inventoryPlayer5.armorInventory.length; ++i3) {
+            if(inventoryPlayer5.armorInventory[i3] != null) {
+                (nBTTagCompound4 = new NBTTagCompound()).setByte("Slot", (byte)(i3 + 100));
+                inventoryPlayer5.armorInventory[i3].writeToNBT(nBTTagCompound4);
+                nBTTagList2.setTag(nBTTagCompound4);
             }
         }
 
-        var1.setTag("Inventory", var2);
+        compoundTag.setTag("Inventory", nBTTagList2);
     }
 
-    public final void readEntityFromNBT(NBTTagCompound var1) {
-        super.readEntityFromNBT(var1);
-        this.score = var1.getInteger("Score");
-        NBTTagList var6 = var1.getTagList("Inventory");
-        NBTTagList var2 = var6;
-        InventoryPlayer var7 = this.inventory;
-        var7.mainInventory = new ItemStack[36];
-        var7.armorInventory = new ItemStack[4];
+    public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+        super.readEntityFromNBT(compoundTag);
+        this.score = compoundTag.getInteger("Score");
+        NBTTagList nBTTagList6 = compoundTag.getTagList("Inventory");
+        NBTTagList nBTTagList2 = nBTTagList6;
+        InventoryPlayer inventoryPlayer7 = this.inventory;
+        this.inventory.mainInventory = new ItemStack[36];
+        inventoryPlayer7.armorInventory = new ItemStack[4];
 
-        for(int var3 = 0; var3 < var2.tagCount(); ++var3) {
-            NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
-            int var5 = var4.getByte("Slot") & 255;
-            if(var5 >= 0 && var5 < var7.mainInventory.length) {
-                var7.mainInventory[var5] = new ItemStack(var4);
+        for(int i3 = 0; i3 < nBTTagList2.tagCount(); ++i3) {
+            NBTTagCompound nBTTagCompound4;
+            int i5;
+            if((i5 = (nBTTagCompound4 = (NBTTagCompound)nBTTagList2.tagAt(i3)).getByte("Slot") & 255) >= 0 && i5 < inventoryPlayer7.mainInventory.length) {
+                inventoryPlayer7.mainInventory[i5] = new ItemStack(nBTTagCompound4);
             }
 
-            if(var5 >= 100 && var5 < var7.armorInventory.length + 100) {
-                var7.armorInventory[var5 - 100] = new ItemStack(var4);
+            if(i5 >= 100 && i5 < inventoryPlayer7.armorInventory.length + 100) {
+                inventoryPlayer7.armorInventory[i5 - 100] = new ItemStack(nBTTagCompound4);
             }
         }
 
     }
 
-    public final void displayChestGUI(IInventory var1) {
-		this.mc.displayGuiScreen(new GuiChest(this.inventory, var1));
-	}
+    public final void displayGUIChest(IInventory inventory) {
+        this.mc.setGuiScreen(new GuiChest(this.inventory, inventory));
+    }
+
+    public final void displayGUIEditSign(TileEntitySign signTileEntity) {
+        this.mc.setGuiScreen(new GuiEditSign(signTileEntity));
+    }
 
     public final void displayWorkbenchGUI() {
-        this.mc.displayGuiScreen(new GuiCrafting(this.inventory));
+        this.mc.setGuiScreen(new GuiCrafting(this.inventory));
     }
 
-    public final void displayFurnaceGUI(TileEntityFurnace var1) {
-        this.mc.displayGuiScreen(new GuiFurnace(this.inventory, var1));
+    public final void displayGUIFurnace(TileEntityFurnace furnaceTileEntity) {
+        this.mc.setGuiScreen(new GuiFurnace(this.inventory, furnaceTileEntity));
     }
 
     public final void destroyCurrentEquippedItem() {
         this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
     }
 
-    public final void onItemPickup(Entity var1) {
-        this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, var1, this, -0.5F));
+    public final void onItemPickup(Entity entity) {
+        this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, entity, this, -0.5F));
     }
 }

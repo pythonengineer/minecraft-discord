@@ -15,10 +15,10 @@ public final class SoundPoolEntry {
     public float y;
     public float z;
 
-    public SoundPoolEntry(EaglercraftSoundManager mgr, String var1, String var2) {
+    public SoundPoolEntry(EaglercraftSoundManager mgr, String soundName, String soundUrl) {
         this.mgr = mgr;
-        this.soundName = var1;
-        this.soundUrl = var2;
+        this.soundName = soundName;
+        this.soundUrl = soundUrl;
     }
 
     public SoundPoolEntry(SoundPoolEntry sound, float x, float y, float z, float volume, float pitch) {

@@ -6,73 +6,73 @@ public final class TextureFlamesFX extends TextureFX {
     private float[] currentFireFrame = new float[320];
     private float[] lastFireFrame = new float[320];
 
-    public TextureFlamesFX(int var1) {
-        super(Block.fire.blockIndexInTexture + (var1 << 4));
+    public TextureFlamesFX(int i1) {
+        super(Block.fire.blockIndexInTexture + (i1 << 4));
     }
 
     public final void onTick() {
-        int var1;
-        int var2;
-        int var3;
-        int var5;
-        int var6;
-        for(var1 = 0; var1 < 16; ++var1) {
-            for(var2 = 0; var2 < 20; ++var2) {
-                var3 = 18;
-                float var4 = this.currentFireFrame[var1 + ((var2 + 1) % 20 << 4)] * 18.0F;
+        int i1;
+        int i2;
+        int i3;
+        int i5;
+        int i6;
+        for(i1 = 0; i1 < 16; ++i1) {
+            for(i2 = 0; i2 < 20; ++i2) {
+                i3 = 18;
+                float f4 = this.currentFireFrame[i1 + ((i2 + 1) % 20 << 4)] * 18.0F;
 
-                for(var5 = var1 - 1; var5 <= var1 + 1; ++var5) {
-                    for(var6 = var2; var6 <= var2 + 1; ++var6) {
-                        if(var5 >= 0 && var6 >= 0 && var5 < 16 && var6 < 20) {
-                            var4 += this.currentFireFrame[var5 + (var6 << 4)];
+                for(i5 = i1 - 1; i5 <= i1 + 1; ++i5) {
+                    for(i6 = i2; i6 <= i2 + 1; ++i6) {
+                        if(i5 >= 0 && i6 >= 0 && i5 < 16 && i6 < 20) {
+                            f4 += this.currentFireFrame[i5 + (i6 << 4)];
                         }
 
-                        ++var3;
+                        ++i3;
                     }
                 }
 
-                this.lastFireFrame[var1 + (var2 << 4)] = var4 / ((float)var3 * 1.06F);
-                if(var2 >= 19) {
-                    this.lastFireFrame[var1 + (var2 << 4)] = (float)(Math.random() * Math.random() * Math.random() * 4.0D + Math.random() * (double)0.1F + (double)0.2F);
+                this.lastFireFrame[i1 + (i2 << 4)] = f4 / ((float)i3 * 1.06F);
+                if(i2 >= 19) {
+                    this.lastFireFrame[i1 + (i2 << 4)] = (float)(Math.random() * Math.random() * Math.random() * 4.0D + Math.random() * (double)0.1F + (double)0.2F);
                 }
             }
         }
 
-        float[] var9 = this.lastFireFrame;
+        float[] f9 = this.lastFireFrame;
         this.lastFireFrame = this.currentFireFrame;
-        this.currentFireFrame = var9;
+        this.currentFireFrame = f9;
 
-        for(var2 = 0; var2 < 256; ++var2) {
-            float var10 = this.currentFireFrame[var2] * 1.8F;
-            if(var10 > 1.0F) {
-                var10 = 1.0F;
+        for(i2 = 0; i2 < 256; ++i2) {
+            float f10;
+            if((f10 = this.currentFireFrame[i2] * 1.8F) > 1.0F) {
+                f10 = 1.0F;
             }
 
-            if(var10 < 0.0F) {
-                var10 = 0.0F;
+            if(f10 < 0.0F) {
+                f10 = 0.0F;
             }
 
-            var5 = (int)(var10 * 155.0F + 100.0F);
-            var6 = (int)(var10 * var10 * 255.0F);
-            int var7 = (int)(var10 * var10 * var10 * var10 * var10 * var10 * var10 * var10 * var10 * var10 * 255.0F);
-            short var8 = 255;
-            if(var10 < 0.5F) {
-                var8 = 0;
+            i5 = (int)(f10 * 155.0F + 100.0F);
+            i6 = (int)(f10 * f10 * 255.0F);
+            int i7 = (int)(f10 * f10 * f10 * f10 * f10 * f10 * f10 * f10 * f10 * f10 * 255.0F);
+            short s8 = 255;
+            if(f10 < 0.5F) {
+                s8 = 0;
             }
 
             if(this.anaglyphEnabled) {
-                var1 = (var5 * 30 + var6 * 59 + var7 * 11) / 100;
-                var3 = (var5 * 30 + var6 * 70) / 100;
-                int var11 = (var5 * 30 + var7 * 70) / 100;
-                var5 = var1;
-                var6 = var3;
-                var7 = var11;
+                i1 = (i5 * 30 + i6 * 59 + i7 * 11) / 100;
+                i3 = (i5 * 30 + i6 * 70) / 100;
+                int i11 = (i5 * 30 + i7 * 70) / 100;
+                i5 = i1;
+                i6 = i3;
+                i7 = i11;
             }
 
-            this.imageData[var2 << 2] = (byte)var5;
-            this.imageData[(var2 << 2) + 1] = (byte)var6;
-            this.imageData[(var2 << 2) + 2] = (byte)var7;
-            this.imageData[(var2 << 2) + 3] = (byte)var8;
+            this.imageData[i2 << 2] = (byte)i5;
+            this.imageData[(i2 << 2) + 1] = (byte)i6;
+            this.imageData[(i2 << 2) + 2] = (byte)i7;
+            this.imageData[(i2 << 2) + 3] = (byte)s8;
         }
 
     }

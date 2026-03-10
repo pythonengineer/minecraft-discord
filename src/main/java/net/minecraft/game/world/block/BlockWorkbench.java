@@ -5,17 +5,17 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockWorkbench extends Block {
-    protected BlockWorkbench(int var1) {
-        super(58, Material.wood);
-        this.blockIndexInTexture = 59;
-    }
+	protected BlockWorkbench(int blockID) {
+		super(58, Material.ground);
+		this.blockIndexInTexture = 59;
+	}
 
-    public final int getBlockTextureFromSide(int var1) {
-        return var1 == 1 ? this.blockIndexInTexture - 16 : (var1 == 0 ? Block.planks.getBlockTextureFromSide(0) : (var1 != 2 && var1 != 4 ? this.blockIndexInTexture : this.blockIndexInTexture + 1));
-    }
+	public final int getBlockTextureFromSide(int side) {
+		return side == 1 ? this.blockIndexInTexture - 16 : (side == 0 ? Block.planks.getBlockTextureFromSide(0) : (side != 2 && side != 4 ? this.blockIndexInTexture : this.blockIndexInTexture + 1));
+	}
 
-    public final boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
-        var5.displayWorkbenchGUI();
-        return true;
-    }
+	public final boolean blockActivated(World world, int x, int y, int z, EntityPlayer playerEntity) {
+		playerEntity.displayWorkbenchGUI();
+		return true;
+	}
 }

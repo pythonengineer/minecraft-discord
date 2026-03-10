@@ -3,21 +3,21 @@ package net.minecraft.client.model;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class ModelZombie extends ModelBiped {
-    public final void setRotationAngles(float var1, float var2, float var3, float var4, float var5, float var6) {
-        super.setRotationAngles(var1, var2, var3, var4, var5, var6);
-        var1 = MathHelper.sin(0.0F);
-        var2 = MathHelper.sin(0.0F);
+    public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+        super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
+        limbSwing = MathHelper.sin(0.0F);
+        limbSwingAmount = MathHelper.sin(0.0F);
         this.bipedRightArm.rotateAngleZ = 0.0F;
         this.bipedLeftArm.rotateAngleZ = 0.0F;
-        this.bipedRightArm.rotateAngleY = -(0.1F - var1 * 0.6F);
-        this.bipedLeftArm.rotateAngleY = 0.1F - var1 * 0.6F;
-        this.bipedRightArm.rotateAngleX = (float)Math.PI * -0.5F;
-        this.bipedLeftArm.rotateAngleX = (float)Math.PI * -0.5F;
-        this.bipedRightArm.rotateAngleX -= var1 * 1.2F - var2 * 0.4F;
-        this.bipedLeftArm.rotateAngleX -= var1 * 1.2F - var2 * 0.4F;
-        this.bipedRightArm.rotateAngleZ += MathHelper.cos(var3 * 0.09F) * 0.05F + 0.05F;
-        this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(var3 * 0.09F) * 0.05F + 0.05F;
-        this.bipedRightArm.rotateAngleX += MathHelper.sin(var3 * 0.067F) * 0.05F;
-        this.bipedLeftArm.rotateAngleX -= MathHelper.sin(var3 * 0.067F) * 0.05F;
+        this.bipedRightArm.rotateAngleY = -(0.1F - limbSwing * 0.6F);
+        this.bipedLeftArm.rotateAngleY = 0.1F - limbSwing * 0.6F;
+        this.bipedRightArm.rotateAngleX = -1.5707964F;
+        this.bipedLeftArm.rotateAngleX = -1.5707964F;
+        this.bipedRightArm.rotateAngleX -= limbSwing * 1.2F - limbSwingAmount * 0.4F;
+        this.bipedLeftArm.rotateAngleX -= limbSwing * 1.2F - limbSwingAmount * 0.4F;
+        this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+        this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+        this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+        this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
     }
 }

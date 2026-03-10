@@ -8,12 +8,12 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockTorch extends Block {
-	protected BlockTorch(int var1, int var2) {
+	protected BlockTorch(int blockID, int textureIndex) {
 		super(50, 80, Material.circuits);
 		this.setTickOnLoad(true);
 	}
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
+	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 
@@ -29,138 +29,138 @@ public final class BlockTorch extends Block {
 		return 2;
 	}
 
-	public final boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return var1.isSolid(var2 - 1, var3, var4) ? true : (var1.isSolid(var2 + 1, var3, var4) ? true : (var1.isSolid(var2, var3, var4 - 1) ? true : (var1.isSolid(var2, var3, var4 + 1) ? true : var1.isSolid(var2, var3 - 1, var4))));
+	public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
+		return world.isBlockNormalCube(x - 1, y, z) ? true : (world.isBlockNormalCube(x + 1, y, z) ? true : (world.isBlockNormalCube(x, y, z - 1) ? true : (world.isBlockNormalCube(x, y, z + 1) ? true : world.isBlockNormalCube(x, y - 1, z))));
 	}
 
-	public final void onBlockPlaced(World var1, int var2, int var3, int var4, int var5) {
-		int var6 = var1.getBlockMetadata(var2, var3, var4);
-		if(var5 == 1 && var1.isSolid(var2, var3 - 1, var4)) {
-			var6 = 5;
+	public final void onBlockPlaced(World world, int x, int y, int z, int side) {
+		int i6 = world.getBlockMetadata(x, y, z);
+		if(side == 1 && world.isBlockNormalCube(x, y - 1, z)) {
+			i6 = 5;
 		}
 
-		if(var5 == 2 && var1.isSolid(var2, var3, var4 + 1)) {
-			var6 = 4;
+		if(side == 2 && world.isBlockNormalCube(x, y, z + 1)) {
+			i6 = 4;
 		}
 
-		if(var5 == 3 && var1.isSolid(var2, var3, var4 - 1)) {
-			var6 = 3;
+		if(side == 3 && world.isBlockNormalCube(x, y, z - 1)) {
+			i6 = 3;
 		}
 
-		if(var5 == 4 && var1.isSolid(var2 + 1, var3, var4)) {
-			var6 = 2;
+		if(side == 4 && world.isBlockNormalCube(x + 1, y, z)) {
+			i6 = 2;
 		}
 
-		if(var5 == 5 && var1.isSolid(var2 - 1, var3, var4)) {
-			var6 = 1;
+		if(side == 5 && world.isBlockNormalCube(x - 1, y, z)) {
+			i6 = 1;
 		}
 
-		var1.setBlockMetadataWithNotify(var2, var3, var4, var6);
+		world.setBlockMetadata(x, y, z, i6);
 	}
 
-	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		super.updateTick(var1, var2, var3, var4, var5);
-		if(var1.getBlockMetadata(var2, var3, var4) == 0) {
-			this.onBlockAdded(var1, var2, var3, var4);
-		}
-
-	}
-
-	public final void onBlockAdded(World var1, int var2, int var3, int var4) {
-		if(var1.isSolid(var2 - 1, var3, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 1);
-		} else if(var1.isSolid(var2 + 1, var3, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 2);
-		} else if(var1.isSolid(var2, var3, var4 - 1)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 3);
-		} else if(var1.isSolid(var2, var3, var4 + 1)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 4);
-		} else if(var1.isSolid(var2, var3 - 1, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 5);
-		}
-
-		this.dropTorchIfCantStay(var1, var2, var3, var4);
-	}
-
-	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-		if(this.dropTorchIfCantStay(var1, var2, var3, var4)) {
-			var5 = var1.getBlockMetadata(var2, var3, var4);
-			boolean var6 = false;
-			if(!var1.isSolid(var2 - 1, var3, var4) && var5 == 1) {
-				var6 = true;
-			}
-
-			if(!var1.isSolid(var2 + 1, var3, var4) && var5 == 2) {
-				var6 = true;
-			}
-
-			if(!var1.isSolid(var2, var3, var4 - 1) && var5 == 3) {
-				var6 = true;
-			}
-
-			if(!var1.isSolid(var2, var3, var4 + 1) && var5 == 4) {
-				var6 = true;
-			}
-
-			if(!var1.isSolid(var2, var3 - 1, var4) && var5 == 5) {
-				var6 = true;
-			}
-
-			if(var6) {
-				this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
-				var1.setBlockWithNotify(var2, var3, var4, 0);
-			}
+	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		super.updateTick(world, x, y, z, rand);
+		if(world.getBlockMetadata(x, y, z) == 0) {
+			this.onBlockAdded(world, x, y, z);
 		}
 
 	}
 
-	private boolean dropTorchIfCantStay(World var1, int var2, int var3, int var4) {
-		if(!this.canPlaceBlockAt(var1, var2, var3, var4)) {
-			this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
-			var1.setBlockWithNotify(var2, var3, var4, 0);
+	public final void onBlockAdded(World world, int x, int y, int z) {
+		if(world.isBlockNormalCube(x - 1, y, z)) {
+			world.setBlockMetadata(x, y, z, 1);
+		} else if(world.isBlockNormalCube(x + 1, y, z)) {
+			world.setBlockMetadata(x, y, z, 2);
+		} else if(world.isBlockNormalCube(x, y, z - 1)) {
+			world.setBlockMetadata(x, y, z, 3);
+		} else if(world.isBlockNormalCube(x, y, z + 1)) {
+			world.setBlockMetadata(x, y, z, 4);
+		} else if(world.isBlockNormalCube(x, y - 1, z)) {
+			world.setBlockMetadata(x, y, z, 5);
+		}
+
+		this.checkIfAttachedToBlock(world, x, y, z);
+	}
+
+	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		if(this.checkIfAttachedToBlock(world, x, y, z)) {
+			blockID = world.getBlockMetadata(x, y, z);
+			boolean z6 = false;
+			if(!world.isBlockNormalCube(x - 1, y, z) && blockID == 1) {
+				z6 = true;
+			}
+
+			if(!world.isBlockNormalCube(x + 1, y, z) && blockID == 2) {
+				z6 = true;
+			}
+
+			if(!world.isBlockNormalCube(x, y, z - 1) && blockID == 3) {
+				z6 = true;
+			}
+
+			if(!world.isBlockNormalCube(x, y, z + 1) && blockID == 4) {
+				z6 = true;
+			}
+
+			if(!world.isBlockNormalCube(x, y - 1, z) && blockID == 5) {
+				z6 = true;
+			}
+
+			if(z6) {
+				this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+				world.notifyBlockChange(x, y, z, 0);
+			}
+		}
+
+	}
+
+	private boolean checkIfAttachedToBlock(World world, int x, int y, int z) {
+		if(!this.canPlaceBlockAt(world, x, y, z)) {
+			this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+			world.notifyBlockChange(x, y, z, 0);
 			return false;
 		} else {
 			return true;
 		}
 	}
 
-	public final MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
-		int var7 = var1.getBlockMetadata(var2, var3, var4);
-		if(var7 == 1) {
+	public final MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {
+		int i7;
+		if((i7 = world.getBlockMetadata(x, y, z)) == 1) {
 			this.setBlockBounds(0.0F, 0.2F, 0.35F, 0.3F, 0.8F, 0.65F);
-		} else if(var7 == 2) {
+		} else if(i7 == 2) {
 			this.setBlockBounds(0.7F, 0.2F, 0.35F, 1.0F, 0.8F, 0.65F);
-		} else if(var7 == 3) {
+		} else if(i7 == 3) {
 			this.setBlockBounds(0.35F, 0.2F, 0.0F, 0.65F, 0.8F, 0.3F);
-		} else if(var7 == 4) {
+		} else if(i7 == 4) {
 			this.setBlockBounds(0.35F, 0.2F, 0.7F, 0.65F, 0.8F, 1.0F);
 		} else {
 			this.setBlockBounds(0.4F, 0.0F, 0.4F, 0.6F, 0.6F, 0.6F);
 		}
 
-		return super.collisionRayTrace(var1, var2, var3, var4, var5, var6);
+		return super.collisionRayTrace(world, x, y, z, vector1, vector2);
 	}
 
-	public final void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		int var9 = var1.getBlockMetadata(var2, var3, var4);
-		float var6 = (float)var2 + 0.5F;
-		float var7 = (float)var3 + 0.7F;
-		float var8 = (float)var4 + 0.5F;
-		if(var9 == 1) {
-			var1.spawnParticle("smoke", (double)(var6 - 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
-			var1.spawnParticle("flame", (double)(var6 - 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
-		} else if(var9 == 2) {
-			var1.spawnParticle("smoke", (double)(var6 + 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
-			var1.spawnParticle("flame", (double)(var6 + 0.27F), (double)(var7 + 0.22F), (double)var8, 0.0D, 0.0D, 0.0D);
-		} else if(var9 == 3) {
-			var1.spawnParticle("smoke", (double)var6, (double)(var7 + 0.22F), (double)(var8 - 0.27F), 0.0D, 0.0D, 0.0D);
-			var1.spawnParticle("flame", (double)var6, (double)(var7 + 0.22F), (double)(var8 - 0.27F), 0.0D, 0.0D, 0.0D);
-		} else if(var9 == 4) {
-			var1.spawnParticle("smoke", (double)var6, (double)(var7 + 0.22F), (double)(var8 + 0.27F), 0.0D, 0.0D, 0.0D);
-			var1.spawnParticle("flame", (double)var6, (double)(var7 + 0.22F), (double)(var8 + 0.27F), 0.0D, 0.0D, 0.0D);
+	public final void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		int rand1 = world.getBlockMetadata(x, y, z);
+		float x1 = (float)x + 0.5F;
+		float y1 = (float)y + 0.7F;
+		float z1 = (float)z + 0.5F;
+		if(rand1 == 1) {
+			world.spawnParticle("smoke", (double)(x1 - 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)(x1 - 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
+		} else if(rand1 == 2) {
+			world.spawnParticle("smoke", (double)(x1 + 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)(x1 + 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
+		} else if(rand1 == 3) {
+			world.spawnParticle("smoke", (double)x1, (double)(y1 + 0.22F), (double)(z1 - 0.27F), 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)x1, (double)(y1 + 0.22F), (double)(z1 - 0.27F), 0.0D, 0.0D, 0.0D);
+		} else if(rand1 == 4) {
+			world.spawnParticle("smoke", (double)x1, (double)(y1 + 0.22F), (double)(z1 + 0.27F), 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)x1, (double)(y1 + 0.22F), (double)(z1 + 0.27F), 0.0D, 0.0D, 0.0D);
 		} else {
-			var1.spawnParticle("smoke", (double)var6, (double)var7, (double)var8, 0.0D, 0.0D, 0.0D);
-			var1.spawnParticle("flame", (double)var6, (double)var7, (double)var8, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("smoke", (double)x1, (double)y1, (double)z1, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)x1, (double)y1, (double)z1, 0.0D, 0.0D, 0.0D);
 		}
 	}
 }

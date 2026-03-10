@@ -1,19 +1,17 @@
 package net.minecraft.client.model;
 
 public final class TexturedQuad {
-	public PositionTextureVertex[] vertexPositions;
+    public PositionTextureVertex[] vertexPositions;
 
-	private TexturedQuad(PositionTextureVertex[] var1) {
-		this.vertexPositions = var1;
-	}
+    private TexturedQuad(PositionTextureVertex[] vertexPositions) {
+        this.vertexPositions = vertexPositions;
+    }
 
-	public TexturedQuad(PositionTextureVertex[] var1, int var2, int var3, int var4, int var5) {
-		this(var1);
-		float var7 = 0.0015625F;
-		float var6 = 0.003125F;
-		var1[0] = var1[0].setTexturePosition((float)var4 / 64.0F - var7, (float)var3 / 32.0F + var6);
-		var1[1] = var1[1].setTexturePosition((float)var2 / 64.0F + var7, (float)var3 / 32.0F + var6);
-		var1[2] = var1[2].setTexturePosition((float)var2 / 64.0F + var7, (float)var5 / 32.0F - var6);
-		var1[3] = var1[3].setTexturePosition((float)var4 / 64.0F - var7, (float)var5 / 32.0F - var6);
-	}
+    public TexturedQuad(PositionTextureVertex[] vertexPositions, int u1, int v1, int u2, int v2) {
+        this(vertexPositions);
+        vertexPositions[0] = vertexPositions[0].setTexturePosition((float)u2 / 64.0F - 0.0015625F, (float)v1 / 32.0F + 0.003125F);
+        vertexPositions[1] = vertexPositions[1].setTexturePosition((float)u1 / 64.0F + 0.0015625F, (float)v1 / 32.0F + 0.003125F);
+        vertexPositions[2] = vertexPositions[2].setTexturePosition((float)u1 / 64.0F + 0.0015625F, (float)v2 / 32.0F - 0.003125F);
+        vertexPositions[3] = vertexPositions[3].setTexturePosition((float)u2 / 64.0F - 0.0015625F, (float)v2 / 32.0F - 0.003125F);
+    }
 }

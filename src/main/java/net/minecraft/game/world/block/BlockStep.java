@@ -5,57 +5,57 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockStep extends Block {
-    private boolean blockType;
+	private boolean blockType;
 
-    public BlockStep(int var1, boolean var2) {
-        super(var1, 6, Material.rock);
-        this.blockType = var2;
-        if(!var2) {
-            this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
-        }
+	public BlockStep(int blockID, boolean blockType) {
+		super(blockID, 6, Material.rock);
+		this.blockType = blockType;
+		if(!blockType) {
+			this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+		}
 
-        this.setLightOpacity(255);
-    }
+		this.setLightOpacity(255);
+	}
 
-    public final int getBlockTextureFromSide(int var1) {
-        return var1 <= 1 ? 6 : 5;
-    }
+	public final int getBlockTextureFromSide(int side) {
+		return side <= 1 ? 6 : 5;
+	}
 
-    public final boolean isOpaqueCube() {
-        return this.blockType;
-    }
+	public final boolean isOpaqueCube() {
+		return this.blockType;
+	}
 
-    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-        if(this == Block.stairSingle) {
-        }
-    }
+	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		if(this == Block.stairSingle) {
+			;
+		}
+	}
 
-    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
-        if(this != Block.stairSingle) {
-            super.onBlockAdded(var1, var2, var3, var4);
-        }
+	public final void onBlockAdded(World world, int x, int y, int z) {
+		if(this != Block.stairSingle) {
+			super.onBlockAdded(world, x, y, z);
+		}
 
-        int var5 = var1.getBlockId(var2, var3 - 1, var4);
-        if(var5 == stairSingle.blockID) {
-            var1.setBlockWithNotify(var2, var3, var4, 0);
-            var1.setBlockWithNotify(var2, var3 - 1, var4, Block.stairDouble.blockID);
-        }
+		if(world.getBlockId(x, y - 1, z) == stairSingle.blockID) {
+			world.notifyBlockChange(x, y, z, 0);
+			world.notifyBlockChange(x, y - 1, z, Block.stairDouble.blockID);
+		}
 
-    }
+	}
 
-    public final int idDropped(int var1, EaglercraftRandom var2) {
-        return Block.stairSingle.blockID;
-    }
+	public final int idDropped(int metadata, EaglercraftRandom rand) {
+		return Block.stairSingle.blockID;
+	}
 
-    public final boolean renderAsNormalBlock() {
-        return this.blockType;
-    }
+	public final boolean renderAsNormalBlock() {
+		return this.blockType;
+	}
 
-    public final boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
-        if(this != Block.stairSingle) {
-            super.shouldSideBeRendered(var1, var2, var3, var4, var5);
-        }
+	public final boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
+		if(this != Block.stairSingle) {
+			super.getIsBlockSolid(world, x, y, z, metadata);
+		}
 
-        return var5 == 1 ? true : (!super.shouldSideBeRendered(var1, var2, var3, var4, var5) ? false : (var5 == 0 ? true : var1.getBlockId(var2, var3, var4) != this.blockID));
-    }
+		return metadata == 1 ? true : (!super.getIsBlockSolid(world, x, y, z, metadata) ? false : (metadata == 0 ? true : world.getBlockId(x, y, z) != this.blockID));
+	}
 }

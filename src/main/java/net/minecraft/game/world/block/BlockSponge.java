@@ -4,30 +4,30 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockSponge extends Block {
-    protected BlockSponge(int var1) {
-        super(19, Material.sponge);
-        this.blockIndexInTexture = 48;
-    }
+	protected BlockSponge(int blockID) {
+		super(19, Material.sponge);
+		this.blockIndexInTexture = 48;
+	}
 
-    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
-        for(int var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
-            for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
-                for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
-                    var1.getBlockMaterial(var5, var6, var7);
-                }
-            }
-        }
+	public final void onBlockAdded(World world, int x, int y, int z) {
+		for(int i5 = x - 2; i5 <= x + 2; ++i5) {
+			for(int i6 = y - 2; i6 <= y + 2; ++i6) {
+				for(int i7 = z - 2; i7 <= z + 2; ++i7) {
+					world.getBlockMaterial(i5, i6, i7);
+				}
+			}
+		}
 
-    }
+	}
 
-    public final void onBlockRemoved(World var1, int var2, int var3, int var4) {
-        for(int var5 = var2 - 2; var5 <= var2 + 2; ++var5) {
-            for(int var6 = var3 - 2; var6 <= var3 + 2; ++var6) {
-                for(int var7 = var4 - 2; var7 <= var4 + 2; ++var7) {
-                    var1.notifyBlocksOfNeighborChange(var5, var6, var7, var1.getBlockId(var5, var6, var7));
-                }
-            }
-        }
+	public final void onBlockRemoval(World world, int x, int y, int z) {
+		for(int i5 = x - 2; i5 <= x + 2; ++i5) {
+			for(int i6 = y - 2; i6 <= y + 2; ++i6) {
+				for(int i7 = z - 2; i7 <= z + 2; ++i7) {
+					world.notifyBlocksOfNeighborChange(i5, i6, i7, world.getBlockId(i5, i6, i7));
+				}
+			}
+		}
 
-    }
+	}
 }

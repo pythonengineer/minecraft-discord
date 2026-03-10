@@ -26,11 +26,11 @@ public final class GuiIngame extends Gui {
 	private Minecraft mc;
     private int updateCounter = 0;
 
-	public GuiIngame(Minecraft var1) {
-		this.mc = var1;
+	public GuiIngame(Minecraft mc) {
+		this.mc = mc;
 	}
 
-	public final void renderGameOverlay(float var1) {
+	public final void renderGameOverlay(float partialTicks) {
         int scaledWidth = this.mc.scaledResolution.getScaledWidth();
         int scaledHeight = this.mc.scaledResolution.getScaledHeight();
 
@@ -41,7 +41,7 @@ public final class GuiIngame extends Gui {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glEnable(GL11.GL_BLEND);
-        InventoryPlayer var2 = this.mc.thePlayer.inventory;
+        InventoryPlayer inventoryPlayer = this.mc.thePlayer.inventory;
 		this.zLevel = -90.0F;
         int i = scaledWidth / 2;
 		this.drawTexturedModalRect(i - 91, scaledHeight - 22, 0, 0, 182, 22);
@@ -62,80 +62,80 @@ public final class GuiIngame extends Gui {
         }
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
-		this.drawTexturedModalRect(i - 91 - 1 + var2.currentItem * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
+		this.drawTexturedModalRect(i - 91 - 1 + inventoryPlayer.currentItem * 20, scaledHeight - 22 - 1, 0, 22, 24, 22);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
-        boolean var20 = this.mc.thePlayer.heartsLife / 3 % 2 == 1;
+        boolean z20 = this.mc.thePlayer.heartsLife / 3 % 2 == 1;
         if(this.mc.thePlayer.heartsLife < 10) {
-            var20 = false;
+            z20 = false;
 		}
 
-        int var6 = this.mc.thePlayer.health;
-        int var7 = this.mc.thePlayer.prevHealth;
+        int i6 = this.mc.thePlayer.health;
+        int i7 = this.mc.thePlayer.prevHealth;
         this.rand.setSeed((long)(this.updateCounter * 312871));
-        int var10;
-        int var12;
+        int i10;
+        int i12;
         if(this.mc.playerController.shouldDrawHUD()) {
-            EntityPlayerSP var8 = this.mc.thePlayer;
-            var10 = var8.inventory.getPlayerArmorValue();
+            EntityPlayerSP entityPlayerSP = this.mc.thePlayer;
+            i10 = entityPlayerSP.inventory.getPlayerArmorValue();
 
-            int var11;
-            int var13;
-            for(var11 = 0; var11 < 10; ++var11) {
-                var12 = scaledHeight - 32;
-                if(var10 > 0) {
-                    var13 = scaledWidth / 2 + 91 - (var11 << 3) - 9;
-                    if((var11 << 1) + 1 < var10) {
-                        this.drawTexturedModalRect(var13, var12, 34, 9, 9, 9);
+            int i11;
+            int i13;
+            for(i11 = 0; i11 < 10; ++i11) {
+                i12 = scaledHeight - 32;
+                if(i10 > 0) {
+                    i13 = scaledWidth / 2 + 91 - (i11 << 3) - 9;
+                    if((i11 << 1) + 1 < i10) {
+                        this.drawTexturedModalRect(i13, i12, 34, 9, 9, 9);
                     }
 
-                    if((var11 << 1) + 1 == var10) {
-                        this.drawTexturedModalRect(var13, var12, 25, 9, 9, 9);
+                    if((i11 << 1) + 1 == i10) {
+                        this.drawTexturedModalRect(i13, i12, 25, 9, 9, 9);
                     }
 
-                    if((var11 << 1) + 1 > var10) {
-                        this.drawTexturedModalRect(var13, var12, 16, 9, 9, 9);
-                    }
-                }
-
-                byte var26 = 0;
-                if(var20) {
-                    var26 = 1;
-                }
-
-                int var14 = scaledWidth / 2 - 91 + (var11 << 3);
-                if(var6 <= 4) {
-                    var12 += this.rand.nextInt(2);
-                }
-
-                this.drawTexturedModalRect(var14, var12, 16 + var26 * 9, 0, 9, 9);
-                if(var20) {
-                    if((var11 << 1) + 1 < var7) {
-                        this.drawTexturedModalRect(var14, var12, 70, 0, 9, 9);
-                    }
-
-                    if((var11 << 1) + 1 == var7) {
-                        this.drawTexturedModalRect(var14, var12, 79, 0, 9, 9);
+                    if((i11 << 1) + 1 > i10) {
+                        this.drawTexturedModalRect(i13, i12, 16, 9, 9, 9);
                     }
                 }
 
-                if((var11 << 1) + 1 < var6) {
-                    this.drawTexturedModalRect(var14, var12, 52, 0, 9, 9);
+                byte b26 = 0;
+                if(z20) {
+                    b26 = 1;
                 }
 
-                if((var11 << 1) + 1 == var6) {
-                    this.drawTexturedModalRect(var14, var12, 61, 0, 9, 9);
+                int i14 = scaledWidth / 2 - 91 + (i11 << 3);
+                if(i6 <= 4) {
+                    i12 += this.rand.nextInt(2);
+                }
+
+                this.drawTexturedModalRect(i14, i12, 16 + b26 * 9, 0, 9, 9);
+                if(z20) {
+                    if((i11 << 1) + 1 < i7) {
+                        this.drawTexturedModalRect(i14, i12, 70, 0, 9, 9);
+                    }
+
+                    if((i11 << 1) + 1 == i7) {
+                        this.drawTexturedModalRect(i14, i12, 79, 0, 9, 9);
+                    }
+                }
+
+                if((i11 << 1) + 1 < i6) {
+                    this.drawTexturedModalRect(i14, i12, 52, 0, 9, 9);
+                }
+
+                if((i11 << 1) + 1 == i6) {
+                    this.drawTexturedModalRect(i14, i12, 61, 0, 9, 9);
                 }
             }
 
             if(this.mc.thePlayer.isInsideOfMaterial()) {
-                var11 = (int)Math.ceil((double)(this.mc.thePlayer.air - 2) * 10.0D / 300.0D);
-                var12 = (int)Math.ceil((double)this.mc.thePlayer.air * 10.0D / 300.0D) - var11;
+                i11 = (int)Math.ceil((double)(this.mc.thePlayer.air - 2) * 10.0D / 300.0D);
+                i12 = (int)Math.ceil((double)this.mc.thePlayer.air * 10.0D / 300.0D) - i11;
 
-                for(var13 = 0; var13 < var11 + var12; ++var13) {
-                    if(var13 < var11) {
-                        this.drawTexturedModalRect(scaledWidth / 2 - 91 + (var13 << 3), scaledHeight - 32 - 9, 16, 18, 9, 9);
+                for(i13 = 0; i13 < i11 + i12; ++i13) {
+                    if(i13 < i11) {
+                        this.drawTexturedModalRect(scaledWidth / 2 - 91 + (i13 << 3), scaledHeight - 32 - 9, 16, 18, 9, 9);
                     } else {
-                        this.drawTexturedModalRect(scaledWidth / 2 - 91 + (var13 << 3), scaledHeight - 32 - 9, 25, 18, 9, 9);
+                        this.drawTexturedModalRect(scaledWidth / 2 - 91 + (i13 << 3), scaledHeight - 32 - 9, 25, 18, 9, 9);
                     }
                 }
             }
@@ -148,26 +148,27 @@ public final class GuiIngame extends Gui {
 		RenderHelper.enableStandardItemLighting();
 		GL11.glPopMatrix();
 
-        for(var10 = 0; var10 < 9; ++var10) {
-            int i25 = scaledWidth / 2 - 90 + var10 * 20 + 2;
-            int i21 = scaledHeight - 16 - 3;
-            ItemStack var22 = this.mc.thePlayer.inventory.mainInventory[var10];
-            if(var22 != null) {
-                float var9 = (float)var22.animationsToGo - var1;
-                if(var9 > 0.0F) {
+        for(i10 = 0; i10 < 9; ++i10) {
+            float f25 = (float)(scaledWidth / 2 - 90 + i10 * 20 + 2);
+            i12 = scaledHeight - 16 - 3;
+            float f21 = f25;
+            ItemStack itemStack22;
+            if((itemStack22 = this.mc.thePlayer.inventory.mainInventory[i10]) != null) {
+                float f9;
+                if((f9 = (float)itemStack22.animationsToGo - partialTicks) > 0.0F) {
                     GL11.glPushMatrix();
-                    float var25 = 1.0F + var9 / 5.0F;
-                    GL11.glTranslatef((float)(i25 + 8), (float)(i21 + 12), 0.0F);
-                    GL11.glScalef(1.0F / var25, (var25 + 1.0F) / 2.0F, 1.0F);
-                    GL11.glTranslatef((float)(-(i25 + 8)), (float)(-(i21 + 12)), 0.0F);
+                    f25 = 1.0F + f9 / 5.0F;
+                    GL11.glTranslatef((float)(f21 + 8), (float)(i12 + 12), 0.0F);
+                    GL11.glScalef(1.0F / f25, (f25 + 1.0F) / 2.0F, 1.0F);
+                    GL11.glTranslatef((float)(-(f21 + 8)), (float)(-(i12 + 12)), 0.0F);
                 }
 
-                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, var22, i25, i21);
-                if(var9 > 0.0F) {
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemStack22, (int)f21, i12);
+                if(f9 > 0.0F) {
                     GL11.glPopMatrix();
                 }
 
-                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, var22, i25, i21);
+                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, itemStack22, (int)f21, i12);
             }
         }
 
@@ -186,22 +187,22 @@ public final class GuiIngame extends Gui {
         onBeginTouchGUI();
 
         if(this.mc.gameSettings.showFPS) {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev (" + this.mc.debug + ")", 2, 2, 16777215);
-            Minecraft var15 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoRenders(), 2, 12, 16777215);
-            var15 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow(var15.renderGlobal.getDebugInfoEntities(), 2, 22, 16777215);
-            var15 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow("P: " + var15.effectRenderer.getStatistics() + ". T: " + var15.theWorld.getDebugLoadedEntities(), 2, 32, 16777215);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
+            Minecraft minecraft23 = this.mc;
+            this.mc.fontRenderer.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoRenders(), 2, 12, 0xFFFFFF);
+            minecraft23 = this.mc;
+            this.mc.fontRenderer.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoEntities(), 2, 22, 0xFFFFFF);
+            minecraft23 = this.mc;
+            this.mc.fontRenderer.drawStringWithShadow("P: " + minecraft23.effectRenderer.getStatistics() + ". T: " + minecraft23.theWorld.getDebugLoadedEntities(), 2, 32, 0xFFFFFF);
         } else {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev", 2, 2, 16777215);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev", 2, 2, 0xFFFFFF);
         }
 
         onEndTouchGUI();
 
-        for(var7 = 0; var7 < this.chatMessageList.size() && var7 < 10; ++var7) {
-            if(((ChatLine)this.chatMessageList.get(var7)).updateCounter < 200) {
-                this.mc.fontRenderer.drawStringWithShadow(((ChatLine)this.chatMessageList.get(var7)).message, 2, scaledHeight - 8 - var7 * 9 - 20, 16777215);
+        for(i7 = 0; i7 < this.chatMessageList.size() && i7 < 10; ++i7) {
+            if(((ChatLine)this.chatMessageList.get(i7)).updateCounter < 200) {
+                this.mc.fontRenderer.drawStringWithShadow(((ChatLine)this.chatMessageList.get(i7)).message, 2, scaledHeight - 8 - i7 * 9 - 20, 16777215);
             }
         }
 
@@ -210,8 +211,8 @@ public final class GuiIngame extends Gui {
     public final void updateTick() {
         ++this.updateCounter;
 
-        for(int var1 = 0; var1 < this.chatMessageList.size(); ++var1) {
-            ++((ChatLine)this.chatMessageList.get(var1)).updateCounter;
+        for(int i1 = 0; i1 < this.chatMessageList.size(); ++i1) {
+            ++((ChatLine)this.chatMessageList.get(i1)).updateCounter;
         }
 
     }
@@ -299,7 +300,7 @@ public final class GuiIngame extends Gui {
                 } else if (currentHotbarSlotTouch == 9) {
                     hotbarSlotTouchAlreadySelected = false;
                     currentHotbarSlotTouch = 69;
-                    this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
+                    this.mc.setGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
                 }
                 return true;
             }

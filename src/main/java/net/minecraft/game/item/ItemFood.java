@@ -6,17 +6,17 @@ import net.minecraft.game.world.World;
 public class ItemFood extends Item {
     private int healAmount;
 
-    public ItemFood(int var1, int var2) {
-        super(var1);
-        this.healAmount = var2;
+    public ItemFood(int itemID, int healAmount) {
+        super(itemID);
+        this.healAmount = healAmount;
         this.maxStackSize = 1;
     }
 
-	public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3) {
-		--var1.stackSize;
-        var3.heal(this.healAmount);
-		return var1;
-	}
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer playerEntity) {
+        --stack.stackSize;
+        playerEntity.heal(this.healAmount);
+        return stack;
+    }
 
     public boolean shouldUseOnTouchEagler(ItemStack itemStack) {
         return true;

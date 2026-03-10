@@ -1,28 +1,26 @@
 package net.minecraft.game.item;
 
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public final class ItemSeeds extends Item {
-    private int blockType;
+	private int blockType;
 
-    public ItemSeeds(int var1, int var2) {
-        super(39);
-        this.blockType = var2;
-    }
+	public ItemSeeds(int itemID, int blockType) {
+		super(39);
+		this.blockType = blockType;
+	}
 
-    public final boolean onItemUse(ItemStack var1, World var2, int var3, int var4, int var5, int var6) {
-        if(var6 != 1) {
-            return false;
-        } else {
-            var6 = var2.getBlockId(var3, var4, var5);
-            if(var6 == Block.tilledField.blockID) {
-                var2.setBlockWithNotify(var3, var4 + 1, var5, this.blockType);
-                --var1.stackSize;
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
+	public final boolean onItemUse(ItemStack stack, EntityPlayer playerEntity, World world, int x, int y, int z, int side) {
+		if(side != 1) {
+			return false;
+		} else if(world.getBlockId(x, y, z) == Block.farmland.blockID) {
+			world.notifyBlockChange(x, y + 1, z, this.blockType);
+			--stack.stackSize;
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

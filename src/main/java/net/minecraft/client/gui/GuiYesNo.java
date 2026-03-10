@@ -2,15 +2,15 @@ package net.minecraft.client.gui;
 
 public final class GuiYesNo extends GuiScreen {
     private GuiScreen parentScreen;
-    private String message1;
-    private String message2;
+    private String title;
+    private String desc;
     private int worldNumber;
 
-    public GuiYesNo(GuiScreen var1, String var2, String var3, int var4) {
-        this.parentScreen = var1;
-        this.message1 = var2;
-        this.message2 = var3;
-        this.worldNumber = var4;
+    public GuiYesNo(GuiScreen parentScreen, String title, String desc, int worldIndex) {
+        this.parentScreen = parentScreen;
+        this.title = title;
+        this.desc = desc;
+        this.worldNumber = worldIndex;
     }
 
     public final void initGui() {
@@ -18,14 +18,14 @@ public final class GuiYesNo extends GuiScreen {
         this.controlList.add(new GuiSmallButton(1, this.width / 2 - 155 + 160, this.height / 6 + 96, "No"));
     }
 
-    protected final void actionPerformed(GuiButton var1) {
-        this.parentScreen.deleteWorld(var1.id == 0, this.worldNumber);
+    protected final void actionPerformed(GuiButton button) {
+        this.parentScreen.deleteWorld(button.id == 0, this.worldNumber);
     }
 
-    public final void drawScreen(int var1, int var2, float var3) {
+    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        drawCenteredString(this.fontRenderer, this.message1, this.width / 2, 70, 16777215);
-        drawCenteredString(this.fontRenderer, this.message2, this.width / 2, 90, 16777215);
-        super.drawScreen(var1, var2, var3);
+        drawCenteredString(this.fontRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
+        drawCenteredString(this.fontRenderer, this.desc, this.width / 2, 90, 0xFFFFFF);
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

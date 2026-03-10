@@ -7,105 +7,103 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 
 public final class BlockCrops extends BlockFlower {
-	protected BlockCrops(int var1, int var2) {
+	protected BlockCrops(int i1, int i2) {
 		super(59, 88);
 		this.blockIndexInTexture = 88;
 		this.setTickOnLoad(true);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.25F, 1.0F);
 	}
 
-	protected final boolean canThisPlantGrowOnThisBlockID(int var1) {
-		return var1 == Block.tilledField.blockID;
+	protected final boolean canThisPlantGrowOnThisBlockID(int blockID) {
+		return blockID == Block.farmland.blockID;
 	}
 
-    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        super.updateTick(var1, var2, var3, var4, var5);
-        if(var1.getBlockLightValue(var2, var3 + 1, var4) >= 9) {
-            int var6 = var1.getBlockMetadata(var2, var3, var4);
-            if(var6 < 7) {
-                int var11 = var4;
-                int var10 = var3;
-                int var9 = var2;
-                World var8 = var1;
-                float var12 = 1.0F;
-                int var13 = var1.getBlockId(var2, var3, var4 - 1);
-                int var14 = var1.getBlockId(var2, var3, var4 + 1);
-                int var15 = var1.getBlockId(var2 - 1, var3, var4);
-                int var16 = var1.getBlockId(var2 + 1, var3, var4);
-                int var17 = var1.getBlockId(var2 - 1, var3, var4 - 1);
-                int var18 = var1.getBlockId(var2 + 1, var3, var4 - 1);
-                int var19 = var1.getBlockId(var2 + 1, var3, var4 + 1);
-                int var20 = var1.getBlockId(var2 - 1, var3, var4 + 1);
-                boolean var22 = var15 == this.blockID || var16 == this.blockID;
-                boolean var21 = var13 == this.blockID || var14 == this.blockID;
-                boolean var7 = var17 == this.blockID || var18 == this.blockID || var19 == this.blockID || var20 == this.blockID;
+	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		super.updateTick(world, x, y, z, rand);
+		int i6;
+		if(world.getBlockLightValue(x, y + 1, z) >= 9 && (i6 = world.getBlockMetadata(x, y, z)) < 7) {
+			int i11 = z;
+			int i10 = y;
+			int i9 = x;
+			World world8 = world;
+			float f12 = 1.0F;
+			int i13 = world.getBlockId(x, y, z - 1);
+			int i14 = world.getBlockId(x, y, z + 1);
+			int i15 = world.getBlockId(x - 1, y, z);
+			int i16 = world.getBlockId(x + 1, y, z);
+			int i17 = world.getBlockId(x - 1, y, z - 1);
+			int i18 = world.getBlockId(x + 1, y, z - 1);
+			int i19 = world.getBlockId(x + 1, y, z + 1);
+			int i20 = world.getBlockId(x - 1, y, z + 1);
+			boolean z22 = i15 == this.blockID || i16 == this.blockID;
+			boolean z21 = i13 == this.blockID || i14 == this.blockID;
+			boolean z7 = i17 == this.blockID || i18 == this.blockID || i19 == this.blockID || i20 == this.blockID;
 
-                for(var14 = var2 - 1; var14 <= var9 + 1; ++var14) {
-                    for(var16 = var11 - 1; var16 <= var11 + 1; ++var16) {
-                        var17 = var8.getBlockId(var14, var10 - 1, var16);
-                        float var23 = 0.0F;
-                        if(var17 == Block.tilledField.blockID) {
-                            var23 = 1.0F;
-                            if(var8.getBlockMetadata(var14, var10 - 1, var16) > 0) {
-                                var23 = 3.0F;
-                            }
-                        }
+			for(i14 = x - 1; i14 <= i9 + 1; ++i14) {
+				for(i16 = i11 - 1; i16 <= i11 + 1; ++i16) {
+					i17 = world8.getBlockId(i14, i10 - 1, i16);
+					float f23 = 0.0F;
+					if(i17 == Block.farmland.blockID) {
+						f23 = 1.0F;
+						if(world8.getBlockMetadata(i14, i10 - 1, i16) > 0) {
+							f23 = 3.0F;
+						}
+					}
 
-                        if(var14 != var9 || var16 != var11) {
-                            var23 /= 4.0F;
-                        }
+					if(i14 != i9 || i16 != i11) {
+						f23 /= 4.0F;
+					}
 
-                        var12 += var23;
-                    }
-                }
+					f12 += f23;
+				}
+			}
 
-                if(var7 || var22 && var21) {
-                    var12 /= 2.0F;
-                }
+			if(z7 || z22 && z21) {
+				f12 /= 2.0F;
+			}
 
-                if(var5.nextInt((int)(100.0F / var12)) == 0) {
-                    ++var6;
-                    var1.setBlockMetadataWithNotify(var2, var3, var4, var6);
-                }
-            }
-        }
-
-    }
-
-	public final int getBlockTextureFromSideAndMetadata(int var1, int var2) {
-		if(var2 < 0) {
-			var2 = 7;
+			if(rand.nextInt((int)(100.0F / f12)) == 0) {
+				++i6;
+				world.setBlockMetadata(x, y, z, i6);
+			}
 		}
 
-		return this.blockIndexInTexture + var2;
+	}
+
+	public final int getBlockTextureFromSideAndMetadata(int side, int metadata) {
+		if(metadata < 0) {
+			metadata = 7;
+		}
+
+		return this.blockIndexInTexture + metadata;
 	}
 
 	public final int getRenderType() {
 		return 6;
 	}
 
-	public final void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4, int var5) {
-		super.onBlockDestroyedByPlayer(var1, var2, var3, var4, var5);
+	public final void onBlockDestroyedByPlayer(World world, int x, int y, int z, int metadata) {
+		super.onBlockDestroyedByPlayer(world, x, y, z, metadata);
 
-		for(int var6 = 0; var6 < 3; ++var6) {
-			if(var1.rand.nextInt(15) <= var5) {
-				float var7 = var1.rand.nextFloat() * 0.7F + 0.15F;
-				float var8 = var1.rand.nextFloat() * 0.7F + 0.15F;
-				float var9 = var1.rand.nextFloat() * 0.7F + 0.15F;
-				EntityItem var10 = new EntityItem(var1, (double)((float)var2 + var7), (double)((float)var3 + var8), (double)((float)var4 + var9), new ItemStack(Item.seeds));
-				var10.delayBeforeCanPickup = 10;
-                var1.spawnEntityInWorld(var10);
+		for(int i6 = 0; i6 < 3; ++i6) {
+			if(world.rand.nextInt(15) <= metadata) {
+				float f7 = world.rand.nextFloat() * 0.7F + 0.15F;
+				float f8 = world.rand.nextFloat() * 0.7F + 0.15F;
+				float f9 = world.rand.nextFloat() * 0.7F + 0.15F;
+				EntityItem entityItem10;
+				(entityItem10 = new EntityItem(world, (double)((float)x + f7), (double)((float)y + f8), (double)((float)z + f9), new ItemStack(Item.seeds))).delayBeforeCanPickup = 10;
+				world.entityJoinedWorld(entityItem10);
 			}
 		}
 
 	}
 
-	public final int idDropped(int var1, EaglercraftRandom var2) {
-		System.out.println("Get resource: " + var1);
-		return var1 == 7 ? Item.wheat.shiftedIndex : -1;
+	public final int idDropped(int metadata, EaglercraftRandom rand) {
+		System.out.println("Get resource: " + metadata);
+		return metadata == 7 ? Item.wheat.shiftedIndex : -1;
 	}
 
-	public final int quantityDropped(EaglercraftRandom var1) {
+	public final int quantityDropped(EaglercraftRandom rand) {
 		return 1;
 	}
 }

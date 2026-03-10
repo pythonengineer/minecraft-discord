@@ -16,90 +16,93 @@ public final class CraftingManager {
 		return instance;
 	}
 
-	private CraftingManager() {
-		(new RecipesTools()).addRecipes(this);
-        (new RecipesWeapons()).addRecipe(this);
-		(new RecipesIngots()).addRecipe(this);
-		new RecipesCrafting();
-		this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", Character.valueOf('X'), Block.mushroomBrown, Character.valueOf('Y'), Block.mushroomRed, Character.valueOf('#'), Item.bowlEmpty});
-		this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", Character.valueOf('X'), Block.mushroomRed, Character.valueOf('Y'), Block.mushroomBrown, Character.valueOf('#'), Item.bowlEmpty});
-		new RecipesCrafting();
-		this.addRecipe(new ItemStack(Block.chest), new Object[]{"###", "# #", "###", Character.valueOf('#'), Block.planks});
-        this.addRecipe(new ItemStack(Block.stoneOvenIdle), new Object[]{"###", "# #", "###", Character.valueOf('#'), Block.cobblestone});
-		this.addRecipe(new ItemStack(Block.workbench), new Object[]{"##", "##", Character.valueOf('#'), Block.planks});
-		(new RecipesArmor()).addRecipe(this);
-        this.addRecipe(new ItemStack(Block.clothGray, 1), new Object[]{"###", "###", "###", Character.valueOf('#'), Item.silk});
-		this.addRecipe(new ItemStack(Block.tnt, 1), new Object[]{"X#X", "#X#", "X#X", Character.valueOf('X'), Item.gunpowder, Character.valueOf('#'), Block.sand});
-		this.addRecipe(new ItemStack(Block.stairSingle, 3), new Object[]{"###", Character.valueOf('#'), Block.cobblestone});
-        this.addRecipe(new ItemStack(Block.planks, 4), new Object[]{"#", Character.valueOf('#'), Block.wood});
-		this.addRecipe(new ItemStack(Item.stick, 4), new Object[]{"#", "#", Character.valueOf('#'), Block.planks});
-		this.addRecipe(new ItemStack(Block.torch, 4), new Object[]{"X", "#", Character.valueOf('X'), Item.coal, Character.valueOf('#'), Item.stick});
-		this.addRecipe(new ItemStack(Item.bowlEmpty, 4), new Object[]{"# #", " # ", Character.valueOf('#'), Block.planks});
-        this.addRecipe(new ItemStack(Item.flintAndSteel, 1), new Object[]{"A ", " B", Character.valueOf('A'), Item.ingotIron, Character.valueOf('B'), Item.flint});
-        this.addRecipe(new ItemStack(Item.bread, 1), new Object[]{"###", Character.valueOf('#'), Item.wheat});
-        this.addRecipe(new ItemStack(Item.painting, 1), new Object[]{"###", "#X#", "###", Character.valueOf('#'), Item.stick, Character.valueOf('X'), Block.clothGray});
-        this.addRecipe(new ItemStack(Item.appleGold, 1), new Object[]{"###", "#X#", "###", Character.valueOf('#'), Block.blockGold, Character.valueOf('X'), Item.apple});
-		Collections.sort(this.recipes, new RecipeSorter(this));
+    private CraftingManager() {
+        (new RecipesTools()).addRecipes(this);
+        (new RecipesWeapons()).addRecipes(this);
+        (new RecipesIngots()).addRecipes(this);
+        new RecipesFood();
+        this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", 'X', Block.mushroomBrown, 'Y', Block.mushroomRed, '#', Item.bowlEmpty});
+        this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", 'X', Block.mushroomRed, 'Y', Block.mushroomBrown, '#', Item.bowlEmpty});
+        new RecipesCrafting();
+        this.addRecipe(new ItemStack(Block.chest), new Object[]{"###", "# #", "###", '#', Block.planks});
+        this.addRecipe(new ItemStack(Block.stoneOvenIdle), new Object[]{"###", "# #", "###", '#', Block.cobblestone});
+        this.addRecipe(new ItemStack(Block.workbench), new Object[]{"##", "##", '#', Block.planks});
+        (new RecipesArmor()).addRecipes(this);
+        this.addRecipe(new ItemStack(Block.clothGray, 1), new Object[]{"###", "###", "###", '#', Item.silk});
+        this.addRecipe(new ItemStack(Block.tnt, 1), new Object[]{"X#X", "#X#", "X#X", 'X', Item.gunpowder, '#', Block.sand});
+        this.addRecipe(new ItemStack(Block.stairSingle, 3), new Object[]{"###", '#', Block.cobblestone});
+        this.addRecipe(new ItemStack(Block.ladder, 1), new Object[]{"# #", "###", "# #", '#', Item.stick});
+        this.addRecipe(new ItemStack(Item.doorWood, 1), new Object[]{"##", "##", "##", '#', Block.planks});
+        this.addRecipe(new ItemStack(Item.sign, 1), new Object[]{"###", "###", " X ", '#', Block.planks, 'X', Item.stick});
+        this.addRecipe(new ItemStack(Block.planks, 4), new Object[]{"#", '#', Block.wood});
+        this.addRecipe(new ItemStack(Item.stick, 4), new Object[]{"#", "#", '#', Block.planks});
+        this.addRecipe(new ItemStack(Block.torch, 4), new Object[]{"X", "#", 'X', Item.coal, '#', Item.stick});
+        this.addRecipe(new ItemStack(Item.bowlEmpty, 4), new Object[]{"# #", " # ", '#', Block.planks});
+        this.addRecipe(new ItemStack(Item.striker, 1), new Object[]{"A ", " B", 'A', Item.ingotIron, 'B', Item.flint});
+        this.addRecipe(new ItemStack(Item.bread, 1), new Object[]{"###", '#', Item.wheat});
+        this.addRecipe(new ItemStack(Item.painting, 1), new Object[]{"###", "#X#", "###", '#', Item.stick, 'X', Block.clothGray});
+        this.addRecipe(new ItemStack(Item.appleGold, 1), new Object[]{"###", "#X#", "###", '#', Block.blockGold, 'X', Item.appleRed});
+        Collections.sort(this.recipes, new RecipeSorter(this));
         System.out.println(this.recipes.size() + " recipes");
-	}
-
-    final void addRecipe(ItemStack var1, Object... var2) {
-        String var3 = "";
-        int var4 = 0;
-        int var5 = 0;
-        int var6 = 0;
-        if(var2[0] instanceof String[]) {
-            ++var4;
-            String[] var11 = (String[])var2[0];
-
-            for(int var8 = 0; var8 < var11.length; ++var8) {
-                String var9 = var11[var8];
-                ++var6;
-                var5 = var9.length();
-                var3 = var3 + var9;
-            }
-        } else {
-            while(var2[var4] instanceof String) {
-                String var7 = (String)var2[var4++];
-                ++var6;
-                var5 = var7.length();
-                var3 = var3 + var7;
-            }
-        }
-
-        HashMap var12;
-        int var15;
-        for(var12 = new HashMap(); var4 < var2.length; var4 += 2) {
-            Character var13 = (Character)var2[var4];
-            var15 = 0;
-            if(var2[var4 + 1] instanceof Item) {
-                var15 = ((Item)var2[var4 + 1]).shiftedIndex;
-            } else if(var2[var4 + 1] instanceof Block) {
-                var15 = ((Block)var2[var4 + 1]).blockID;
-            }
-
-            var12.put(var13, Integer.valueOf(var15));
-        }
-
-        int[] var14 = new int[var5 * var6];
-
-        for(var15 = 0; var15 < var5 * var6; ++var15) {
-            char var10 = var3.charAt(var15);
-            if(var12.containsKey(Character.valueOf(var10))) {
-                var14[var15] = ((Integer)var12.get(Character.valueOf(var10))).intValue();
-            } else {
-                var14[var15] = -1;
-            }
-        }
-
-        this.recipes.add(new CraftingRecipe(var5, var6, var14, var1));
     }
 
-    public final ItemStack findMatchingRecipe(int[] var1) {
-        for(int var2 = 0; var2 < this.recipes.size(); ++var2) {
-            CraftingRecipe var3 = (CraftingRecipe)this.recipes.get(var2);
-            if(var3.matchRecipe(var1)) {
-                return var3.createResult();
+    final void addRecipe(ItemStack stack, Object... recipeObjects) {
+        String string3 = "";
+        int i4 = 0;
+        int i5 = 0;
+        int i6 = 0;
+        if(recipeObjects[0] instanceof String[]) {
+            ++i4;
+            String[] string11 = (String[])recipeObjects[0];
+
+            for(int i8 = 0; i8 < string11.length; ++i8) {
+                String string9 = string11[i8];
+                ++i6;
+                i5 = string9.length();
+                string3 = string3 + string9;
+            }
+        } else {
+            while(recipeObjects[i4] instanceof String) {
+                String string7 = (String)recipeObjects[i4++];
+                ++i6;
+                i5 = string7.length();
+                string3 = string3 + string7;
+            }
+        }
+
+        HashMap hashMap12;
+        int i15;
+        for(hashMap12 = new HashMap(); i4 < recipeObjects.length; i4 += 2) {
+            Character character13 = (Character)recipeObjects[i4];
+            i15 = 0;
+            if(recipeObjects[i4 + 1] instanceof Item) {
+                i15 = ((Item)recipeObjects[i4 + 1]).shiftedIndex;
+            } else if(recipeObjects[i4 + 1] instanceof Block) {
+                i15 = ((Block)recipeObjects[i4 + 1]).blockID;
+            }
+
+            hashMap12.put(character13, i15);
+        }
+
+        int[] i14 = new int[i5 * i6];
+
+        for(i15 = 0; i15 < i5 * i6; ++i15) {
+            char c10 = string3.charAt(i15);
+            if(hashMap12.containsKey(c10)) {
+                i14[i15] = ((Integer)hashMap12.get(c10)).intValue();
+            } else {
+                i14[i15] = -1;
+            }
+        }
+
+        this.recipes.add(new CraftingRecipe(i5, i6, i14, stack));
+    }
+
+    public final ItemStack findMatchingRecipe(int[] ids) {
+        for(int i2 = 0; i2 < this.recipes.size(); ++i2) {
+            CraftingRecipe craftingRecipe3;
+            if((craftingRecipe3 = (CraftingRecipe)this.recipes.get(i2)).matches(ids)) {
+                return craftingRecipe3.getCraftingResult();
             }
         }
 

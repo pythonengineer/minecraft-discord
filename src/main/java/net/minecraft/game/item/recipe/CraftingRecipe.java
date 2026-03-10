@@ -3,26 +3,26 @@ package net.minecraft.game.item.recipe;
 import net.minecraft.game.item.ItemStack;
 
 public final class CraftingRecipe {
-    private int width;
-    private int height;
-    private int[] ingredientMap;
+    private int recipeWidth;
+    private int recipeHeight;
+    private int[] recipeItems;
     private ItemStack recipeOutput;
 
-    public CraftingRecipe(int var1, int var2, int[] var3, ItemStack var4) {
-        this.width = var1;
-        this.height = var2;
-        this.ingredientMap = var3;
-        this.recipeOutput = var4;
+    public CraftingRecipe(int width, int height, int[] items, ItemStack output) {
+        this.recipeWidth = width;
+        this.recipeHeight = height;
+        this.recipeItems = items;
+        this.recipeOutput = output;
     }
 
-    public final boolean matchRecipe(int[] var1) {
-        for(int var2 = 0; var2 <= 3 - this.width; ++var2) {
-            for(int var3 = 0; var3 <= 3 - this.height; ++var3) {
-                if(this.matches(var1, var2, var3, true)) {
+    public final boolean matches(int[] items) {
+        for(int i2 = 0; i2 <= 3 - this.recipeWidth; ++i2) {
+            for(int i3 = 0; i3 <= 3 - this.recipeHeight; ++i3) {
+                if(this.checkMatch(items, i2, i3, true)) {
                     return true;
                 }
 
-                if(this.matches(var1, var2, var3, false)) {
+                if(this.checkMatch(items, i2, i3, false)) {
                     return true;
                 }
             }
@@ -31,21 +31,21 @@ public final class CraftingRecipe {
         return false;
     }
 
-    private boolean matches(int[] var1, int var2, int var3, boolean var4) {
-        for(int var5 = 0; var5 < 3; ++var5) {
-            for(int var6 = 0; var6 < 3; ++var6) {
-                int var7 = var5 - var2;
-                int var8 = var6 - var3;
-                int var9 = -1;
-                if(var7 >= 0 && var8 >= 0 && var7 < this.width && var8 < this.height) {
-                    if(var4) {
-                        var9 = this.ingredientMap[this.width - var7 - 1 + var8 * this.width];
+    private boolean checkMatch(int[] items, int width, int height, boolean offsetRecipe) {
+        for(int i5 = 0; i5 < 3; ++i5) {
+            for(int i6 = 0; i6 < 3; ++i6) {
+                int i7 = i5 - width;
+                int i8 = i6 - height;
+                int i9 = -1;
+                if(i7 >= 0 && i8 >= 0 && i7 < this.recipeWidth && i8 < this.recipeHeight) {
+                    if(offsetRecipe) {
+                        i9 = this.recipeItems[this.recipeWidth - i7 - 1 + i8 * this.recipeWidth];
                     } else {
-                        var9 = this.ingredientMap[var7 + var8 * this.width];
+                        i9 = this.recipeItems[i7 + i8 * this.recipeWidth];
                     }
                 }
 
-                if(var1[var5 + var6 * 3] != var9) {
+                if(items[i5 + i6 * 3] != i9) {
                     return false;
                 }
             }
@@ -54,11 +54,11 @@ public final class CraftingRecipe {
         return true;
     }
 
-    public final ItemStack createResult() {
+    public final ItemStack getCraftingResult() {
         return new ItemStack(this.recipeOutput.itemID, this.recipeOutput.stackSize);
     }
 
-    public final int b() {
-        return this.width * this.height;
+    public final int getRecipeSize() {
+        return this.recipeWidth * this.recipeHeight;
     }
 }

@@ -25,149 +25,146 @@ public final class GameSettings {
     public boolean limitFramerate = false;
     public boolean touchscreen;
     public int guiScale = 3;
-    public KeyBinding keyBindForward = new KeyBinding("Forward", 17);
-    public KeyBinding keyBindLeft = new KeyBinding("Left", 30);
-    public KeyBinding keyBindBack = new KeyBinding("Back", 31);
-    public KeyBinding keyBindRight = new KeyBinding("Right", 32);
-    public KeyBinding keyBindJump = new KeyBinding("Jump", 57);
-    public KeyBinding keyBindInventory = new KeyBinding("Inventory", 23);
-    public KeyBinding keyBindDrop = new KeyBinding("Drop", 16);
-    private KeyBinding keyBindChat = new KeyBinding("Chat", 20);
-    public KeyBinding keyBindToggleFog = new KeyBinding("Toggle fog", 33);
-    public KeyBinding keyBindSave = new KeyBinding("Save location", 28);
-    public KeyBinding keyBindLoad = new KeyBinding("Load location", 19);
+    public KeyBinding keyBindForward = new KeyBinding("Forward", Keyboard.KEY_W);
+    public KeyBinding keyBindLeft = new KeyBinding("Left", Keyboard.KEY_A);
+    public KeyBinding keyBindBack = new KeyBinding("Back", Keyboard.KEY_S);
+    public KeyBinding keyBindRight = new KeyBinding("Right", Keyboard.KEY_D);
+    public KeyBinding keyBindJump = new KeyBinding("Jump", Keyboard.KEY_SPACE);
+    public KeyBinding keyBindInventory = new KeyBinding("Inventory", Keyboard.KEY_I);
+    public KeyBinding keyBindDrop = new KeyBinding("Drop", Keyboard.KEY_Q);
+    private KeyBinding keyBindChat = new KeyBinding("Chat", Keyboard.KEY_T);
+    public KeyBinding keyBindToggleFog = new KeyBinding("Toggle fog", Keyboard.KEY_F);
+    public KeyBinding keyBindSave = new KeyBinding("Save location", Keyboard.KEY_RETURN);
+    public KeyBinding keyBindLoad = new KeyBinding("Load location", Keyboard.KEY_R);
     public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
     private Minecraft mc;
     public int numberOfOptions = 10;
     public int difficulty = 2;
     public boolean thirdPersonView = false;
 
-    public GameSettings(Minecraft var1) {
-        this.mc = var1;
+    public GameSettings(Minecraft mc) {
+        this.mc = mc;
         this.loadOptions();
     }
 
-    public final String getOptionDisplayString(int var1) {
-        return this.keyBindings[var1].keyDescription + ": " + Keyboard.getKeyName(this.keyBindings[var1].keyCode);
+    public final String getKeyBindingDescription(int keyBindIndex) {
+        return this.keyBindings[keyBindIndex].keyDescription + ": " + Keyboard.getKeyName(this.keyBindings[keyBindIndex].keyCode);
     }
 
-    public final void setKeyBinding(int var1, int var2) {
-        this.keyBindings[var1].keyCode = var2;
+    public final void setKeyBinding(int keyBindIndex, int keyBinding) {
+        this.keyBindings[keyBindIndex].keyCode = keyBinding;
         this.saveOptions();
     }
 
-    public final void setOptionValue(int var1, int var2) {
-        if(var1 == 0) {
+    public final void setOptionValue(int keyBindIndex, int value) {
+        if(keyBindIndex == 0) {
             this.music = !this.music;
             this.mc.sndManager.onSoundOptionsChanged();
         }
 
-        if(var1 == 1) {
+        if(keyBindIndex == 1) {
             this.sound = !this.sound;
             this.mc.sndManager.onSoundOptionsChanged();
         }
 
-        if(var1 == 2) {
+        if(keyBindIndex == 2) {
             this.invertMouse = !this.invertMouse;
         }
 
-        if(var1 == 3) {
+        if(keyBindIndex == 3) {
             this.showFPS = !this.showFPS;
         }
 
-        if(var1 == 4) {
-            this.renderDistance = this.renderDistance + var2 & 3;
+        if(keyBindIndex == 4) {
+            this.renderDistance = this.renderDistance + value & 3;
         }
 
-        if(var1 == 5) {
+        if(keyBindIndex == 5) {
             this.viewBobbing = !this.viewBobbing;
         }
 
-        if(var1 == 6) {
+        if(keyBindIndex == 6) {
             this.anaglyph = !this.anaglyph;
             this.mc.renderEngine.refreshTextures();
         }
 
-        if(var1 == 7) {
+        if(keyBindIndex == 7) {
             this.limitFramerate = !this.limitFramerate;
         }
 
-        if(var1 == 8) {
-            this.guiScale = this.guiScale + var2 & 3;
+        if(keyBindIndex == 8) {
+            this.guiScale = this.guiScale + value & 3;
         }
 
-        if(var1 == 9) {
-            this.difficulty = this.difficulty + var2 & 3;
+        if(keyBindIndex == 9) {
+            this.difficulty = this.difficulty + value & 3;
         }
 
         this.saveOptions();
     }
 
-    public final String getOptionString(int var1) {
-        return var1 == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (var1 == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (var1 == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (var1 == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (var1 == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (var1 == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (var1 == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (var1 == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (var1 == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (var1 == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : "")))))))));
+    public final String getKeyBinding(int keyBindIndex) {
+        return keyBindIndex == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (keyBindIndex == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (keyBindIndex == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (keyBindIndex == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (keyBindIndex == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (keyBindIndex == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (keyBindIndex == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (keyBindIndex == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (keyBindIndex == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (keyBindIndex == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : "")))))))));
     }
 
     private void loadOptions() {
         try {
             byte[] options = EagRuntime.getStorage("g");
             if(options != null) {
-                BufferedReader var1 = new BufferedReader(
+                BufferedReader bufferedReader1 = new BufferedReader(
                         new InputStreamReader(new EaglerInputStream(options)));
 
-                while(true) {
-                    String var2 = var1.readLine();
-                    if(var2 == null) {
-                        var1.close();
-                        return;
+                String string2;
+                while((string2 = bufferedReader1.readLine()) != null) {
+                    String[] string5;
+                    if((string5 = string2.split(":"))[0].equals("music")) {
+                        this.music = string5[1].equals("true");
                     }
 
-                    String[] var5 = var2.split(":");
-                    if(var5[0].equals("music")) {
-                        this.music = var5[1].equals("true");
+                    if(string5[0].equals("sound")) {
+                        this.sound = string5[1].equals("true");
                     }
 
-                    if(var5[0].equals("sound")) {
-                        this.sound = var5[1].equals("true");
+                    if(string5[0].equals("invertYMouse")) {
+                        this.invertMouse = string5[1].equals("true");
                     }
 
-                    if(var5[0].equals("invertYMouse")) {
-                        this.invertMouse = var5[1].equals("true");
+                    if(string5[0].equals("showFrameRate")) {
+                        this.showFPS = string5[1].equals("true");
                     }
 
-                    if(var5[0].equals("showFrameRate")) {
-                        this.showFPS = var5[1].equals("true");
+                    if(string5[0].equals("viewDistance")) {
+                        this.renderDistance = Integer.parseInt(string5[1]);
                     }
 
-                    if(var5[0].equals("viewDistance")) {
-                        this.renderDistance = Integer.parseInt(var5[1]);
+                    if(string5[0].equals("guiScale")) {
+                        this.guiScale = Integer.parseInt(string5[1]);
                     }
 
-                    if(var5[0].equals("guiScale")) {
-                        this.guiScale = Integer.parseInt(var5[1]);
+                    if(string5[0].equals("bobView")) {
+                        this.viewBobbing = string5[1].equals("true");
                     }
 
-                    if(var5[0].equals("bobView")) {
-                        this.viewBobbing = var5[1].equals("true");
+                    if(string5[0].equals("anaglyph3d")) {
+                        this.anaglyph = string5[1].equals("true");
                     }
 
-                    if(var5[0].equals("anaglyph3d")) {
-                        this.anaglyph = var5[1].equals("true");
+                    if(string5[0].equals("limitFramerate")) {
+                        this.limitFramerate = string5[1].equals("true");
                     }
 
-                    if(var5[0].equals("limitFramerate")) {
-                        this.limitFramerate = var5[1].equals("true");
+                    if(string5[0].equals("difficulty")) {
+                        this.difficulty = Integer.parseInt(string5[1]);
                     }
 
-                    if(var5[0].equals("difficulty")) {
-                        this.difficulty = Integer.parseInt(var5[1]);
-                    }
-
-                    for(int var3 = 0; var3 < this.keyBindings.length; ++var3) {
-                        if(var5[0].equals("key_" + this.keyBindings[var3].keyDescription)) {
-                            this.keyBindings[var3].keyCode = Integer.parseInt(var5[1]);
+                    for(int i3 = 0; i3 < this.keyBindings.length; ++i3) {
+                        if(string5[0].equals("key_" + this.keyBindings[i3].keyDescription)) {
+                            this.keyBindings[i3].keyCode = Integer.parseInt(string5[1]);
                         }
                     }
                 }
+
+                bufferedReader1.close();
             }
         } catch (Exception var4) {
             System.out.println("Failed to load options");
@@ -178,23 +175,23 @@ public final class GameSettings {
     public final void saveOptions() {
         try {
             EaglerOutputStream bao = new EaglerOutputStream();
-            PrintWriter var1 = new PrintWriter(new OutputStreamWriter(bao));
-            var1.println("music:" + this.music);
-            var1.println("sound:" + this.sound);
-            var1.println("invertYMouse:" + this.invertMouse);
-            var1.println("showFrameRate:" + this.showFPS);
-            var1.println("viewDistance:" + this.renderDistance);
-            var1.println("guiScale:" + this.guiScale);
-            var1.println("bobView:" + this.viewBobbing);
-            var1.println("anaglyph3d:" + this.anaglyph);
-            var1.println("limitFramerate:" + this.limitFramerate);
-            var1.println("difficulty:" + this.difficulty);
+            PrintWriter printWriter1 = new PrintWriter(new OutputStreamWriter(bao));
+            printWriter1.println("music:" + this.music);
+            printWriter1.println("sound:" + this.sound);
+            printWriter1.println("invertYMouse:" + this.invertMouse);
+            printWriter1.println("showFrameRate:" + this.showFPS);
+            printWriter1.println("viewDistance:" + this.renderDistance);
+            printWriter1.println("guiScale:" + this.guiScale);
+            printWriter1.println("bobView:" + this.viewBobbing);
+            printWriter1.println("anaglyph3d:" + this.anaglyph);
+            printWriter1.println("limitFramerate:" + this.limitFramerate);
+            printWriter1.println("difficulty:" + this.difficulty);
 
-            for(int var2 = 0; var2 < this.keyBindings.length; ++var2) {
-                var1.println("key_" + this.keyBindings[var2].keyDescription + ":" + this.keyBindings[var2].keyCode);
+            for(int i2 = 0; i2 < this.keyBindings.length; ++i2) {
+                printWriter1.println("key_" + this.keyBindings[i2].keyDescription + ":" + this.keyBindings[i2].keyCode);
             }
 
-            var1.close();
+            printWriter1.close();
             byte[] options = bao.toByteArray();
             if (options != null) {
                 EagRuntime.setStorage("g", options);

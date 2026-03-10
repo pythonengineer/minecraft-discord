@@ -5,10 +5,10 @@ public class StepSound {
     public final float stepSoundVolume;
     public final float stepSoundPitch;
 
-    public StepSound(String var1, float var2, float var3) {
-        this.stepSoundName = var1;
-        this.stepSoundVolume = var2;
-        this.stepSoundPitch = var3;
+    public StepSound(String soundName, float volume, float pitch) {
+        this.stepSoundName = soundName;
+        this.stepSoundVolume = volume;
+        this.stepSoundPitch = pitch;
     }
 
     public String getBreakSound() {

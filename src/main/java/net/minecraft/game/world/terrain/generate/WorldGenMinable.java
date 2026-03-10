@@ -6,43 +6,43 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public final class WorldGenMinable extends WorldGenerator {
-    private int minableBlockId;
+	private int minableBlockId;
 
-    public WorldGenMinable(int var1) {
-        this.minableBlockId = var1;
-    }
+	public WorldGenMinable(int blockID) {
+		this.minableBlockId = blockID;
+	}
 
-    public final boolean generate(World var1, EaglercraftRandom var2, int var3, int var4, int var5) {
-        float var6 = var2.nextFloat() * (float)Math.PI;
-        double var7 = (double)((float)(var3 + 8) + MathHelper.sin(var6) * 2.0F);
-        double var9 = (double)((float)(var3 + 8) - MathHelper.sin(var6) * 2.0F);
-        double var11 = (double)((float)(var5 + 8) + MathHelper.cos(var6) * 2.0F);
-        double var13 = (double)((float)(var5 + 8) - MathHelper.cos(var6) * 2.0F);
-        double var15 = (double)(var4 + var2.nextInt(3) + 2);
-        double var17 = (double)(var4 + var2.nextInt(3) + 2);
+	public final boolean generate(World world, EaglercraftRandom rand, int x, int y, int z) {
+		float f6 = rand.nextFloat() * (float)Math.PI;
+		double d7 = (double)((float)(x + 8) + MathHelper.sin(f6) * 2.0F);
+		double d9 = (double)((float)(x + 8) - MathHelper.sin(f6) * 2.0F);
+		double d11 = (double)((float)(z + 8) + MathHelper.cos(f6) * 2.0F);
+		double d13 = (double)((float)(z + 8) - MathHelper.cos(f6) * 2.0F);
+		double d15 = (double)(y + rand.nextInt(3) + 2);
+		double d17 = (double)(y + rand.nextInt(3) + 2);
 
-        for(var3 = 0; var3 <= 16; ++var3) {
-            double var20 = var7 + (var9 - var7) * (double)var3 / 16.0D;
-            double var22 = var15 + (var17 - var15) * (double)var3 / 16.0D;
-            double var24 = var11 + (var13 - var11) * (double)var3 / 16.0D;
-            double var26 = var2.nextDouble();
-            double var28 = (double)(MathHelper.sin((float)var3 / 16.0F * (float)Math.PI) + 1.0F) * var26 + 1.0D;
-            double var30 = (double)(MathHelper.sin((float)var3 / 16.0F * (float)Math.PI) + 1.0F) * var26 + 1.0D;
+		for(x = 0; x <= 16; ++x) {
+			double d20 = d7 + (d9 - d7) * (double)x / 16.0D;
+			double d22 = d15 + (d17 - d15) * (double)x / 16.0D;
+			double d24 = d11 + (d13 - d11) * (double)x / 16.0D;
+			double d26 = rand.nextDouble();
+			double d28 = (double)(MathHelper.sin((float)x / 16.0F * (float)Math.PI) + 1.0F) * d26 + 1.0D;
+			double d30 = (double)(MathHelper.sin((float)x / 16.0F * (float)Math.PI) + 1.0F) * d26 + 1.0D;
 
-            for(var4 = (int)(var20 - var28 / 2.0D); var4 <= (int)(var20 + var28 / 2.0D); ++var4) {
-                for(var5 = (int)(var22 - var30 / 2.0D); var5 <= (int)(var22 + var30 / 2.0D); ++var5) {
-                    for(int var41 = (int)(var24 - var28 / 2.0D); var41 <= (int)(var24 + var28 / 2.0D); ++var41) {
-                        double var35 = ((double)var4 + 0.5D - var20) / (var28 / 2.0D);
-                        double var37 = ((double)var5 + 0.5D - var22) / (var30 / 2.0D);
-                        double var39 = ((double)var41 + 0.5D - var24) / (var28 / 2.0D);
-                        if(var35 * var35 + var37 * var37 + var39 * var39 < 1.0D && var1.getBlockId(var4, var5, var41) == Block.stone.blockID) {
-                            var1.setTileNoUpdate(var4, var5, var41, this.minableBlockId);
-                        }
-                    }
-                }
-            }
-        }
+			for(y = (int)(d20 - d28 / 2.0D); y <= (int)(d20 + d28 / 2.0D); ++y) {
+				for(z = (int)(d22 - d30 / 2.0D); z <= (int)(d22 + d30 / 2.0D); ++z) {
+					for(int i41 = (int)(d24 - d28 / 2.0D); i41 <= (int)(d24 + d28 / 2.0D); ++i41) {
+						double d35 = ((double)y + 0.5D - d20) / (d28 / 2.0D);
+						double d37 = ((double)z + 0.5D - d22) / (d30 / 2.0D);
+						double d39 = ((double)i41 + 0.5D - d24) / (d28 / 2.0D);
+						if(d35 * d35 + d37 * d37 + d39 * d39 < 1.0D && world.getBlockId(y, z, i41) == Block.stone.blockID) {
+							world.setBlock(y, z, i41, this.minableBlockId);
+						}
+					}
+				}
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 }

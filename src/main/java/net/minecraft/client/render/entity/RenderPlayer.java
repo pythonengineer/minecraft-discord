@@ -19,47 +19,45 @@ public final class RenderPlayer extends RenderLiving {
 		super(new ModelBiped(0.0F), 0.5F);
 	}
 
-    private void renderPlayer(EntityPlayer var1, double var2, double var4, double var6, float var8, float var9) {
-        super.renderLiving(var1, var2, var4 - (double)var1.yOffset, var6, var8, var9);
+	private void renderPlayer(EntityPlayer playerEntity, double x, double y, double z, float yaw, float partialTicks) {
+		super.renderLiving(playerEntity, x, y - (double)playerEntity.yOffset, z, yaw, partialTicks);
 	}
 
 	public final void drawFirstPersonHand() {
 		this.modelBipedMain.bipedRightArm.render(1.0F);
 	}
 
-	protected final boolean shouldRenderPass(EntityLiving var1, int var2) {
-		EntityPlayer var10001 = (EntityPlayer)var1;
-		int var3 = var2;
-		EntityPlayer var5 = var10001;
-		int var4 = 3 - var3;
-		InventoryPlayer var6 = var5.inventory;
-		ItemStack var7 = var6.armorInventory[var4];
-		if(var7 != null) {
-			Item var8 = var7.getItem();
-			if(var8 instanceof ItemArmor) {
-				ItemArmor var9 = (ItemArmor)var8;
-				this.loadTexture("/armor/" + armorFilenamePrefix[var9.renderIndex] + "_" + (var3 == 2 ? 2 : 1) + ".png");
-				ModelBiped var10 = var3 == 2 ? this.modelArmor : this.modelArmorChestplate;
-				var10.bipedHead.showModel = var3 == 0;
-				var10.bipedHeadwear.showModel = var3 == 0;
-				var10.bipedBody.showModel = var3 == 1 || var3 == 2;
-				var10.bipedRightArm.showModel = var3 == 1;
-				var10.bipedLeftArm.showModel = var3 == 1;
-				var10.bipedRightLeg.showModel = var3 == 2 || var3 == 3;
-				var10.bipedLeftLeg.showModel = var3 == 2 || var3 == 3;
-				this.setRenderPassModel(var10);
-				return true;
-			}
+	protected final boolean shouldRenderPass(EntityLiving livingEntity, int flag) {
+		EntityPlayer entityPlayer10001 = (EntityPlayer)livingEntity;
+		int i3 = flag;
+		EntityPlayer flag1 = entityPlayer10001;
+		int i4 = 3 - i3;
+		InventoryPlayer inventoryPlayer10 = flag1.inventory;
+		ItemStack flag2;
+		Item flag3;
+		if((flag2 = flag1.inventory.armorInventory[i4]) != null && (flag3 = flag2.getItem()) instanceof ItemArmor) {
+			ItemArmor flag4 = (ItemArmor)flag3;
+			this.loadTexture("/armor/" + armorFilenamePrefix[flag4.renderIndex] + "_" + (i3 == 2 ? 2 : 1) + ".png");
+			ModelBiped flag5 = i3 == 2 ? this.modelArmor : this.modelArmorChestplate;
+			(flag5 = i3 == 2 ? this.modelArmor : this.modelArmorChestplate).bipedHead.showModel = i3 == 0;
+			flag5.bipedHeadwear.showModel = i3 == 0;
+			flag5.bipedBody.showModel = i3 == 1 || i3 == 2;
+			flag5.bipedRightArm.showModel = i3 == 1;
+			flag5.bipedLeftArm.showModel = i3 == 1;
+			flag5.bipedRightLeg.showModel = i3 == 2 || i3 == 3;
+			flag5.bipedLeftLeg.showModel = i3 == 2 || i3 == 3;
+			this.setRenderPassModel(flag5);
+			return true;
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 
-    public final void renderLiving(EntityLiving var1, double var2, double var4, double var6, float var8, float var9) {
-        this.renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
-    }
+	public final void renderLiving(EntityLiving entityLiving1, double d2, double d4, double d6, float f8, float f9) {
+		this.renderPlayer((EntityPlayer)entityLiving1, d2, d4, d6, f8, f9);
+	}
 
-    public final void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-        this.renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
-    }
+	public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+		this.renderPlayer((EntityPlayer)entity, x, y, z, yaw, partialTicks);
+	}
 }

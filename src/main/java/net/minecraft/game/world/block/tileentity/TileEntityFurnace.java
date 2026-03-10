@@ -2,6 +2,7 @@ package net.minecraft.game.world.block.tileentity;
 
 import com.mojang.nbt.NBTTagCompound;
 import com.mojang.nbt.NBTTagList;
+
 import net.minecraft.game.IInventory;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -10,43 +11,43 @@ import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.material.Material;
 
 public class TileEntityFurnace extends TileEntity implements IInventory {
-    private ItemStack[] furnaceItemStacks = new ItemStack[3];
-    private int furnaceBurnTime = 0;
-    private int currentItemBurnTime = 0;
-    private int furnaceCookTime = 0;
+	private ItemStack[] furnaceItemStacks = new ItemStack[3];
+	private int furnaceBurnTime = 0;
+	private int currentItemBurnTime = 0;
+	private int furnaceCookTime = 0;
 
-    public final int getInventorySize() {
-        return this.furnaceItemStacks.length;
-    }
-
-	public final ItemStack getStackInSlot(int var1) {
-		return this.furnaceItemStacks[var1];
+	public final int getSizeInventory() {
+		return this.furnaceItemStacks.length;
 	}
 
-	public final ItemStack decrStackSize(int var1, int var2) {
-		if(this.furnaceItemStacks[var1] != null) {
-			ItemStack var3;
-			if(this.furnaceItemStacks[var1].stackSize <= var2) {
-				var3 = this.furnaceItemStacks[var1];
-				this.furnaceItemStacks[var1] = null;
-				return var3;
+	public final ItemStack getStackInSlot(int slot) {
+		return this.furnaceItemStacks[slot];
+	}
+
+	public final ItemStack decrStackSize(int slot, int decrementAmount) {
+		if(this.furnaceItemStacks[slot] != null) {
+			ItemStack decrementAmount1;
+			if(this.furnaceItemStacks[slot].stackSize <= decrementAmount) {
+				decrementAmount1 = this.furnaceItemStacks[slot];
+				this.furnaceItemStacks[slot] = null;
+				return decrementAmount1;
 			} else {
-				var3 = this.furnaceItemStacks[var1].splitStack(var2);
-				if(this.furnaceItemStacks[var1].stackSize == 0) {
-					this.furnaceItemStacks[var1] = null;
+				decrementAmount1 = this.furnaceItemStacks[slot].splitStack(decrementAmount);
+				if(this.furnaceItemStacks[slot].stackSize == 0) {
+					this.furnaceItemStacks[slot] = null;
 				}
 
-				return var3;
+				return decrementAmount1;
 			}
 		} else {
 			return null;
 		}
 	}
 
-	public final void setInventorySlotContents(int var1, ItemStack var2) {
-		this.furnaceItemStacks[var1] = var2;
-		if(var2 != null && var2.stackSize > 64) {
-			var2.stackSize = 64;
+	public final void setInventorySlotContents(int slot, ItemStack stack) {
+		this.furnaceItemStacks[slot] = stack;
+		if(stack != null && stack.stackSize > 64) {
+			stack.stackSize = 64;
 		}
 
 	}
@@ -55,159 +56,137 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		return "Chest";
 	}
 
-    public final void readFromNBT(NBTTagCompound var1) {
-        super.readFromNBT(var1);
-        NBTTagList var2 = var1.getTagList("Items");
-        this.furnaceItemStacks = new ItemStack[this.furnaceItemStacks.length];
+	public final void readFromNBT(NBTTagCompound compoundTag) {
+		super.readFromNBT(compoundTag);
+		NBTTagList nBTTagList2 = compoundTag.getTagList("Items");
+		this.furnaceItemStacks = new ItemStack[this.furnaceItemStacks.length];
 
-        for(int var3 = 0; var3 < var2.tagCount(); ++var3) {
-            NBTTagCompound var4 = (NBTTagCompound)var2.tagAt(var3);
-            byte var5 = var4.getByte("Slot");
-            if(var5 >= 0 && var5 < this.furnaceItemStacks.length) {
-                this.furnaceItemStacks[var5] = new ItemStack(var4);
-            }
-        }
+		for(int i3 = 0; i3 < nBTTagList2.tagCount(); ++i3) {
+			NBTTagCompound nBTTagCompound4;
+			byte b5;
+			if((b5 = (nBTTagCompound4 = (NBTTagCompound)nBTTagList2.tagAt(i3)).getByte("Slot")) >= 0 && b5 < this.furnaceItemStacks.length) {
+				this.furnaceItemStacks[b5] = new ItemStack(nBTTagCompound4);
+			}
+		}
 
-        this.furnaceBurnTime = var1.getShort("BurnTime");
-        this.furnaceCookTime = var1.getShort("CookTime");
-        this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
-        System.out.println("Lit: " + this.furnaceBurnTime + "/" + this.currentItemBurnTime);
-    }
+		this.furnaceBurnTime = compoundTag.getShort("BurnTime");
+		this.furnaceCookTime = compoundTag.getShort("CookTime");
+		this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
+		System.out.println("Lit: " + this.furnaceBurnTime + "/" + this.currentItemBurnTime);
+	}
 
-    public final void writeToNBT(NBTTagCompound var1) {
-        super.writeToNBT(var1);
-        var1.setShort("BurnTime", (short)this.furnaceBurnTime);
-        var1.setShort("CookTime", (short)this.furnaceCookTime);
-        NBTTagList var2 = new NBTTagList();
+	public final void writeToNBT(NBTTagCompound compoundTag) {
+		super.writeToNBT(compoundTag);
+		compoundTag.setShort("BurnTime", (short)this.furnaceBurnTime);
+		compoundTag.setShort("CookTime", (short)this.furnaceCookTime);
+		NBTTagList nBTTagList2 = new NBTTagList();
 
-        for(int var3 = 0; var3 < this.furnaceItemStacks.length; ++var3) {
-            if(this.furnaceItemStacks[var3] != null) {
-                NBTTagCompound var4 = new NBTTagCompound();
-                var4.setByte("Slot", (byte)var3);
-                this.furnaceItemStacks[var3].writeToNBT(var4);
-                var2.setTag(var4);
-            }
-        }
+		for(int i3 = 0; i3 < this.furnaceItemStacks.length; ++i3) {
+			if(this.furnaceItemStacks[i3] != null) {
+				NBTTagCompound nBTTagCompound4;
+				(nBTTagCompound4 = new NBTTagCompound()).setByte("Slot", (byte)i3);
+				this.furnaceItemStacks[i3].writeToNBT(nBTTagCompound4);
+				nBTTagList2.setTag(nBTTagCompound4);
+			}
+		}
 
-        var1.setTag("Items", var2);
-    }
+		compoundTag.setTag("Items", nBTTagList2);
+	}
 
 	public final int getInventoryStackLimit() {
 		return 64;
 	}
 
-    public final int getCookProgressScaled(int var1) {
-        return this.furnaceCookTime * 24 / 200;
-    }
+	public final int getCookProgressScaled(int scale) {
+		return this.furnaceCookTime * 24 / 200;
+	}
 
-    public final int getBurnTimeRemainingScaled(int var1) {
-        return this.furnaceBurnTime * 12 / this.currentItemBurnTime;
-    }
+	public final int getBurnTimeRemainingScaled(int scale) {
+		return this.furnaceBurnTime * 12 / this.currentItemBurnTime;
+	}
 
-    public final boolean isBurning() {
-        return this.furnaceBurnTime > 0;
-    }
+	public final boolean isBurning() {
+		return this.furnaceBurnTime > 0;
+	}
 
-    public final void updateEntity() {
-        boolean var1 = this.furnaceBurnTime > 0;
-        if(this.furnaceBurnTime > 0) {
-            --this.furnaceBurnTime;
-        }
+	public final void updateEntity() {
+		boolean z1 = this.furnaceBurnTime > 0;
+		if(this.furnaceBurnTime > 0) {
+			--this.furnaceBurnTime;
+		}
 
-        if(this.furnaceBurnTime == 0 && this.canSmelt()) {
-            this.currentItemBurnTime = this.furnaceBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
-            if(this.furnaceBurnTime > 0 && this.furnaceItemStacks[1] != null) {
-                --this.furnaceItemStacks[1].stackSize;
-                if(this.furnaceItemStacks[1].stackSize == 0) {
-                    this.furnaceItemStacks[1] = null;
-                }
-            }
-        }
+		if(this.furnaceBurnTime == 0 && this.canSmelt()) {
+			this.currentItemBurnTime = this.furnaceBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
+			if(this.furnaceBurnTime > 0 && this.furnaceItemStacks[1] != null) {
+				--this.furnaceItemStacks[1].stackSize;
+				if(this.furnaceItemStacks[1].stackSize == 0) {
+					this.furnaceItemStacks[1] = null;
+				}
+			}
+		}
 
-        if(this.isBurning() && this.canSmelt()) {
-            ++this.furnaceCookTime;
-            if(this.furnaceCookTime == 200) {
-                this.furnaceCookTime = 0;
-                if(this.canSmelt()) {
-                    int var3 = smeltItem(this.furnaceItemStacks[0].getItem().shiftedIndex);
-                    if(this.furnaceItemStacks[2] == null) {
-                        this.furnaceItemStacks[2] = new ItemStack(var3, 1);
-                    } else if(this.furnaceItemStacks[2].itemID == var3) {
-                        ++this.furnaceItemStacks[2].stackSize;
-                    }
+		if(this.isBurning() && this.canSmelt()) {
+			++this.furnaceCookTime;
+			if(this.furnaceCookTime == 200) {
+				this.furnaceCookTime = 0;
+				if(this.canSmelt()) {
+					int i3 = getRecipes(this.furnaceItemStacks[0].getItem().shiftedIndex);
+					if(this.furnaceItemStacks[2] == null) {
+						this.furnaceItemStacks[2] = new ItemStack(i3, 1);
+					} else if(this.furnaceItemStacks[2].itemID == i3) {
+						++this.furnaceItemStacks[2].stackSize;
+					}
 
-                    --this.furnaceItemStacks[0].stackSize;
-                    if(this.furnaceItemStacks[0].stackSize <= 0) {
-                        this.furnaceItemStacks[0] = null;
-                    }
-                }
-            }
-        } else {
-            this.furnaceCookTime = 0;
-        }
+					--this.furnaceItemStacks[0].stackSize;
+					if(this.furnaceItemStacks[0].stackSize <= 0) {
+						this.furnaceItemStacks[0] = null;
+					}
+				}
+			}
+		} else {
+			this.furnaceCookTime = 0;
+		}
 
-        if(var1 != this.furnaceBurnTime > 0) {
-            boolean var10000 = this.furnaceBurnTime > 0;
-            int var5 = this.zCoord;
-            int var4 = this.yCoord;
-            int var8 = this.xCoord;
-            World var9 = this.worldObj;
-            boolean var2 = var10000;
-            int var6 = var9.getBlockMetadata(var8, var4, var5);
-            TileEntity var7 = var9.getBlockTileEntity(var8, var4, var5);
-            if(var2) {
-                var9.setBlockWithNotify(var8, var4, var5, Block.stoneOvenActive.blockID);
-            } else {
-                var9.setBlockWithNotify(var8, var4, var5, Block.stoneOvenIdle.blockID);
-            }
+		if(z1 != this.furnaceBurnTime > 0) {
+			boolean z10000 = this.furnaceBurnTime > 0;
+			int i5 = this.zCoord;
+			int i4 = this.yCoord;
+			int i8 = this.xCoord;
+			World world9 = this.worldObj;
+			boolean z2 = z10000;
+			int i6 = world9.getBlockMetadata(i8, i4, i5);
+			TileEntity tileEntity7 = world9.getBlockTileEntity(i8, i4, i5);
+			if(z2) {
+				world9.notifyBlockChange(i8, i4, i5, Block.stoneOvenActive.blockID);
+			} else {
+				world9.notifyBlockChange(i8, i4, i5, Block.stoneOvenIdle.blockID);
+			}
 
-            var9.setBlockMetadataWithNotify(var8, var4, var5, var6);
-            var9.setBlockTileEntity(var8, var4, var5, var7);
-        }
+			world9.setBlockMetadata(i8, i4, i5, i6);
+			world9.setBlockTileEntity(i8, i4, i5, tileEntity7);
+		}
 
-        this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
-    }
+		this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
+	}
 
-    private boolean canSmelt() {
-        if(this.furnaceItemStacks[0] == null) {
-            return false;
-        } else {
-            int var1 = smeltItem(this.furnaceItemStacks[0].getItem().shiftedIndex);
-            if(var1 < 0) {
-                return false;
-            } else if(this.furnaceItemStacks[2] == null) {
-                return true;
-            } else if(this.furnaceItemStacks[2].itemID != var1) {
-                return false;
-            } else {
-                if(this.furnaceItemStacks[2].stackSize < 64) {
-                    ItemStack var2 = this.furnaceItemStacks[2];
-                    if(this.furnaceItemStacks[2].stackSize < var2.getItem().getItemStackLimit()) {
-                        return true;
-                    }
-                }
+	private boolean canSmelt() {
+		int i1;
+		ItemStack itemStack2;
+		return this.furnaceItemStacks[0] == null ? false : ((i1 = getRecipes(this.furnaceItemStacks[0].getItem().shiftedIndex)) < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != i1 ? false : (this.furnaceItemStacks[2].stackSize < 64 && this.furnaceItemStacks[2].stackSize < (itemStack2 = this.furnaceItemStacks[2]).getItem().getItemStackLimit() ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[i1].getItemStackLimit()))));
+	}
 
-                return this.furnaceItemStacks[2].stackSize < Item.itemsList[var1].getItemStackLimit();
-            }
-        }
-    }
+	public static int getRecipes(int shiftedIndex) {
+		return shiftedIndex == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (shiftedIndex == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (shiftedIndex == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (shiftedIndex == Block.sand.blockID ? Block.glass.blockID : (shiftedIndex == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (shiftedIndex == Block.cobblestone.blockID ? Block.stone.blockID : -1)))));
+	}
 
-    public static int smeltItem(int var0) {
-        return var0 == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (var0 == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (var0 == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (var0 == Block.sand.blockID ? Block.glass.blockID : (var0 == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (var0 == Block.cobblestone.blockID ? Block.stone.blockID : -1)))));
-    }
+	private static int getItemBurnTime(ItemStack stack) {
+		int stack1;
+		return stack == null ? 0 : ((stack1 = stack.getItem().shiftedIndex) < 256 && Block.blocksList[stack1].blockMaterial == Material.ground ? 300 : (stack1 == Item.stick.shiftedIndex ? 100 : (stack1 == Item.coal.shiftedIndex ? 1600 : 0)));
+	}
 
-    private static int getItemBurnTime(ItemStack var0) {
-        if(var0 == null) {
-            return 0;
-        } else {
-            int var1 = var0.getItem().shiftedIndex;
-            return var1 < 256 && Block.blocksList[var1].blockMaterial == Material.wood ? 300 : (var1 == Item.stick.shiftedIndex ? 100 : (var1 == Item.coal.shiftedIndex ? 1600 : 0));
-        }
-    }
-
-    public final void onInventoryChanged() {
-        this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
-    }
+	public final void onInventoryChanged() {
+		this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
+	}
 
     public static boolean isItemFuel(ItemStack parItemStack) {
         return getItemBurnTime(parItemStack) > 0;

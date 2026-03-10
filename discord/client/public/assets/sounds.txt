@@ -10,6 +10,8 @@ mob/sheep1.ogg
 mob/sheep2.ogg
 mob/sheep3.ogg
 random/click.ogg
+random/door_open.ogg
+random/door_close.ogg
 random/drr.ogg
 random/explode.ogg
 random/explode1.ogg

@@ -8,9 +8,9 @@ public class MovementInput {
 	public void updatePlayerMoveState() {
 	}
 
-	public void resetKeyState() {
-	}
+    public void resetPlayerKeyState() {
+    }
 
-	public void checkKeyForMovementInput(int var1, boolean var2) {
-	}
+    public void checkKeyForMovementInput(int keyState, boolean isMovementInput) {
+    }
 }

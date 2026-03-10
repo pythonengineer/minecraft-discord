@@ -10,16 +10,16 @@ public final class NBTTagShort extends NBTBase {
 	public NBTTagShort() {
 	}
 
-	public NBTTagShort(short var1) {
-		this.shortValue = var1;
+	public NBTTagShort(short shortValue) {
+		this.shortValue = shortValue;
 	}
 
-	final void writeTagContents(DataOutput var1) throws IOException {
-		var1.writeShort(this.shortValue);
+	final void writeTagContents(DataOutput dataOutput) throws IOException {
+		dataOutput.writeShort(this.shortValue);
 	}
 
-	final void readTagContents(DataInput var1) throws IOException {
-		this.shortValue = var1.readShort();
+	final void readTagContents(DataInput dataInput) throws IOException {
+		this.shortValue = dataInput.readShort();
 	}
 
 	public final byte getType() {

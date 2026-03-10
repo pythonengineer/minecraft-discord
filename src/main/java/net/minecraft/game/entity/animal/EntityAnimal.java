@@ -8,23 +8,23 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public abstract class EntityAnimal extends EntityCreature {
-	public EntityAnimal(World var1) {
-		super(var1);
+	public EntityAnimal(World world1) {
+		super(world1);
 	}
 
-	protected final float getBlockPathWeight(int var1, int var2, int var3) {
-		return this.worldObj.getBlockId(var1, var2 - 1, var3) == Block.grass.blockID ? 10.0F : this.worldObj.getBrightness(var1, var2, var3) - 0.5F;
+	protected final float getBlockPathWeight(int x, int y, int z) {
+		return this.worldObj.getBlockId(x, y - 1, z) == Block.grass.blockID ? 10.0F : this.worldObj.getBrightness(x, y, z) - 0.5F;
 	}
 
-	public void writeEntityToNBT(NBTTagCompound var1) {
-		super.writeEntityToNBT(var1);
+	public void writeEntityToNBT(NBTTagCompound compoundTag) {
+		super.writeEntityToNBT(compoundTag);
 	}
 
-	public void readEntityFromNBT(NBTTagCompound var1) {
-		super.readEntityFromNBT(var1);
+	public void readEntityFromNBT(NBTTagCompound compoundTag) {
+		super.readEntityFromNBT(compoundTag);
 	}
 
-    public final boolean getCanSpawnHere(float var1, float var2, float var3) {
-        return this.worldObj.getBlockLightValue(MathHelper.floor_float(var1), MathHelper.floor_float(var2), MathHelper.floor_float(var3)) > 8 && super.getCanSpawnHere(var1, var2, var3);
-    }
+	public final boolean getCanSpawnHere(float x, float y, float z) {
+		return this.worldObj.getBlockLightValue(MathHelper.floor_float(x), MathHelper.floor_float(y), MathHelper.floor_float(z)) > 8 && super.getCanSpawnHere(x, y, z);
+	}
 }

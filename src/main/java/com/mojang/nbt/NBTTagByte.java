@@ -10,16 +10,16 @@ public final class NBTTagByte extends NBTBase {
 	public NBTTagByte() {
 	}
 
-	public NBTTagByte(byte var1) {
-		this.byteValue = var1;
+	public NBTTagByte(byte byteValue) {
+		this.byteValue = byteValue;
 	}
 
-	final void writeTagContents(DataOutput var1) throws IOException {
-		var1.writeByte(this.byteValue);
+	final void writeTagContents(DataOutput dataOutput) throws IOException {
+		dataOutput.writeByte(this.byteValue);
 	}
 
-	final void readTagContents(DataInput var1) throws IOException {
-		this.byteValue = var1.readByte();
+	final void readTagContents(DataInput dataInput) throws IOException {
+		this.byteValue = dataInput.readByte();
 	}
 
 	public final byte getType() {

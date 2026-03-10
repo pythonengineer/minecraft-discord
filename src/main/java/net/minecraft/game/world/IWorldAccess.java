@@ -3,17 +3,17 @@ package net.minecraft.game.world;
 import net.minecraft.game.entity.Entity;
 
 public interface IWorldAccess {
-    void markBlockAndNeighborsNeedsUpdate(int var1, int var2, int var3);
+    void markBlockNeedsUpdate(int i1, int i2, int i3);
 
-    void markBlockRangeNeedsUpdate(int var1, int var2, int var3, int var4, int var5, int var6);
+    void markBlockRangeNeedsUpdate(int i1, int i2, int i3, int i4, int i5, int i6);
 
-    void playSound(String var1, double var2, double var4, double var6, float var8, float var9);
+    void playSound(String string1, double d2, double d4, double d6, float f8, float f9);
 
-    void spawnParticle(String var1, double var2, double var4, double var6, double var8, double var10, double var12);
+    void spawnParticle(String string1, double d2, double d4, double d6, double d8, double d10, double d12);
 
-    void obtainEntitySkin(Entity var1);
+    void obtainEntitySkin(Entity entity1);
 
-    void releaseEntitySkin(Entity var1);
+    void releaseEntitySkin(Entity entity1);
 
     void updateAllRenderers();
 }

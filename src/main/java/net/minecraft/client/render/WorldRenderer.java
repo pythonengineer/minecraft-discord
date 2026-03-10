@@ -1,175 +1,190 @@
 package net.minecraft.client.render;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.camera.Frustrum;
+import net.minecraft.client.render.tileentity.TileEntityRenderer;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.BlockContainer;
+import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.chunk.Chunk;
 
 public final class WorldRenderer {
 	private World worldObj;
 	private int glRenderList = -1;
 	private static Tessellator tessellator = Tessellator.instance;
-	public static int chunksUpdated = 0;
+	public static int chunkUpdates = 0;
 	private int posX;
 	private int posY;
 	private int posZ;
 	private int sizeWidth;
 	private int sizeHeight;
 	private int sizeDepth;
-    public int posXMinus;
-    public int posYMinus;
-    public int posZMinus;
-    private int posXClip;
-    private int posYClip;
-    private int posZClip;
-    public boolean isInFrustum = false;
+	public int posXMinus;
+	public int posYMinus;
+	public int posZMinus;
+	private int posXClip;
+	private int posYClip;
+	private int posZClip;
+	public boolean isInFrustrum = false;
 	private boolean[] skipRenderPass = new boolean[2];
-    private int posXPlus;
-    private int posYPlus;
-    private int posZPlus;
+	private int posXPlus;
+	private int posYPlus;
+	private int posZPlus;
 	public boolean needsUpdate;
-    private AxisAlignedBB rendererBoundingBox;
+	private AxisAlignedBB rendererBoundingBox;
 	private RenderBlocks renderBlocks;
-    public boolean isVisible = true;
-    public boolean isWaitingOnOcclusionQuery;
-    public int glOcclusionQuery;
-    public boolean isChunkLit;
+	public boolean isVisible = true;
+	public boolean isWaitingOnOcclusionQuery;
+	public int glOcclusionQuery;
+	public boolean isChunkLit;
+	public List tileEntityRenderers = new ArrayList();
 
-    public WorldRenderer(World var1, int var2, int var3, int var4, int var5, int var6) {
-        this.renderBlocks = new RenderBlocks(var1);
-        this.worldObj = var1;
-        this.sizeWidth = this.sizeHeight = this.sizeDepth = 16;
-        MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth));
-        this.glRenderList = var6;
-        this.posX = -999;
-        this.setPosition(var2, var3, var4);
-        this.needsUpdate = false;
-    }
+	public WorldRenderer(World world, int x, int y, int z, int unusedInt, int glRenderList) {
+		this.renderBlocks = new RenderBlocks(world);
+		this.worldObj = world;
+		this.sizeWidth = this.sizeHeight = this.sizeDepth = 16;
+		MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth));
+		this.glRenderList = glRenderList;
+		this.posX = -999;
+		this.setPosition(x, y, z);
+		this.needsUpdate = false;
+	}
 
-    public final void setPosition(int var1, int var2, int var3) {
-        if(var1 != this.posX || var2 != this.posY || var3 != this.posZ) {
-            this.setDontDraw();
-            this.posX = var1;
-            this.posY = var2;
-            this.posZ = var3;
-            this.posXPlus = var1 + this.sizeWidth / 2;
-            this.posYPlus = var2 + this.sizeHeight / 2;
-            this.posZPlus = var3 + this.sizeDepth / 2;
-            this.posXClip = var1 & 511;
-            this.posYClip = var2 & 511;
-            this.posZClip = var3 & 511;
-            this.posXMinus = var1 - this.posXClip;
-            this.posYMinus = var2 - this.posYClip;
-            this.posZMinus = var3 - this.posZClip;
-            this.rendererBoundingBox = (new AxisAlignedBB((double)var1, (double)var2, (double)var3, (double)(var1 + this.sizeWidth), (double)(var2 + this.sizeHeight), (double)(var3 + this.sizeDepth))).expand(2.0D, 2.0D, 2.0D);
-            GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
-            AxisAlignedBB var4 = new AxisAlignedBB((double)((float)this.posXClip - 2.0F), (double)((float)this.posYClip - 2.0F), (double)((float)this.posZClip - 2.0F), (double)((float)(this.posXClip + this.sizeWidth) + 2.0F), (double)((float)(this.posYClip + this.sizeHeight) + 2.0F), (double)((float)(this.posZClip + this.sizeDepth) + 2.0F));
-            Tessellator var5 = Tessellator.instance;
-            var5.startDrawingQuads(DefaultVertexFormats.POSITION);
-            var5.addVertex(var4.minX, var4.maxY, var4.minZ);
-            var5.addVertex(var4.maxX, var4.maxY, var4.minZ);
-            var5.addVertex(var4.maxX, var4.minY, var4.minZ);
-            var5.addVertex(var4.minX, var4.minY, var4.minZ);
-            var5.addVertex(var4.minX, var4.minY, var4.maxZ);
-            var5.addVertex(var4.maxX, var4.minY, var4.maxZ);
-            var5.addVertex(var4.maxX, var4.maxY, var4.maxZ);
-            var5.addVertex(var4.minX, var4.maxY, var4.maxZ);
-            var5.addVertex(var4.minX, var4.minY, var4.minZ);
-            var5.addVertex(var4.maxX, var4.minY, var4.minZ);
-            var5.addVertex(var4.maxX, var4.minY, var4.maxZ);
-            var5.addVertex(var4.minX, var4.minY, var4.maxZ);
-            var5.addVertex(var4.minX, var4.maxY, var4.maxZ);
-            var5.addVertex(var4.maxX, var4.maxY, var4.maxZ);
-            var5.addVertex(var4.maxX, var4.maxY, var4.minZ);
-            var5.addVertex(var4.minX, var4.maxY, var4.minZ);
-            var5.addVertex(var4.minX, var4.minY, var4.maxZ);
-            var5.addVertex(var4.minX, var4.maxY, var4.maxZ);
-            var5.addVertex(var4.minX, var4.maxY, var4.minZ);
-            var5.addVertex(var4.minX, var4.minY, var4.minZ);
-            var5.addVertex(var4.maxX, var4.minY, var4.minZ);
-            var5.addVertex(var4.maxX, var4.maxY, var4.minZ);
-            var5.addVertex(var4.maxX, var4.maxY, var4.maxZ);
-            var5.addVertex(var4.maxX, var4.minY, var4.maxZ);
-            var5.draw();
-            GL11.glEndList();
-            this.needsUpdate = true;
-        }
-    }
+	public final void setPosition(int x, int y, int z) {
+		if(x != this.posX || y != this.posY || z != this.posZ) {
+			this.setDontDraw();
+			this.posX = x;
+			this.posY = y;
+			this.posZ = z;
+			this.posXPlus = x + this.sizeWidth / 2;
+			this.posYPlus = y + this.sizeHeight / 2;
+			this.posZPlus = z + this.sizeDepth / 2;
+			this.posXClip = x & 511;
+			this.posYClip = y & 511;
+			this.posZClip = z & 511;
+			this.posXMinus = x - this.posXClip;
+			this.posYMinus = y - this.posYClip;
+			this.posZMinus = z - this.posZClip;
+			this.rendererBoundingBox = (new AxisAlignedBB((double)x, (double)y, (double)z, (double)(x + this.sizeWidth), (double)(y + this.sizeHeight), (double)(z + this.sizeDepth))).expand(2.0D, 2.0D, 2.0D);
+			GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
+			AxisAlignedBB x1 = new AxisAlignedBB((double)((float)this.posXClip - 2.0F), (double)((float)this.posYClip - 2.0F), (double)((float)this.posZClip - 2.0F), (double)((float)(this.posXClip + this.sizeWidth) + 2.0F), (double)((float)(this.posYClip + this.sizeHeight) + 2.0F), (double)((float)(this.posZClip + this.sizeDepth) + 2.0F));
+			Tessellator y1 = Tessellator.instance;
+			Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION);
+			y1.drawVertex(x1.minX, x1.maxY, x1.minZ);
+			y1.drawVertex(x1.maxX, x1.maxY, x1.minZ);
+			y1.drawVertex(x1.maxX, x1.minY, x1.minZ);
+			y1.drawVertex(x1.minX, x1.minY, x1.minZ);
+			y1.drawVertex(x1.minX, x1.minY, x1.maxZ);
+			y1.drawVertex(x1.maxX, x1.minY, x1.maxZ);
+			y1.drawVertex(x1.maxX, x1.maxY, x1.maxZ);
+			y1.drawVertex(x1.minX, x1.maxY, x1.maxZ);
+			y1.drawVertex(x1.minX, x1.minY, x1.minZ);
+			y1.drawVertex(x1.maxX, x1.minY, x1.minZ);
+			y1.drawVertex(x1.maxX, x1.minY, x1.maxZ);
+			y1.drawVertex(x1.minX, x1.minY, x1.maxZ);
+			y1.drawVertex(x1.minX, x1.maxY, x1.maxZ);
+			y1.drawVertex(x1.maxX, x1.maxY, x1.maxZ);
+			y1.drawVertex(x1.maxX, x1.maxY, x1.minZ);
+			y1.drawVertex(x1.minX, x1.maxY, x1.minZ);
+			y1.drawVertex(x1.minX, x1.minY, x1.maxZ);
+			y1.drawVertex(x1.minX, x1.maxY, x1.maxZ);
+			y1.drawVertex(x1.minX, x1.maxY, x1.minZ);
+			y1.drawVertex(x1.minX, x1.minY, x1.minZ);
+			y1.drawVertex(x1.maxX, x1.minY, x1.minZ);
+			y1.drawVertex(x1.maxX, x1.maxY, x1.minZ);
+			y1.drawVertex(x1.maxX, x1.maxY, x1.maxZ);
+			y1.drawVertex(x1.maxX, x1.minY, x1.maxZ);
+			y1.draw();
+			GL11.glEndList();
+			this.needsUpdate = true;
+		}
+	}
 
 	public final void updateRenderer() {
 		if(this.needsUpdate) {
-			++chunksUpdated;
-			int var1 = this.posX;
-			int var2 = this.posY;
-			int var3 = this.posZ;
-			int var4 = this.posX + this.sizeWidth;
-			int var5 = this.posY + this.sizeHeight;
-			int var6 = this.posZ + this.sizeDepth;
+			++chunkUpdates;
+			int i1 = this.posX;
+			int i2 = this.posY;
+			int i3 = this.posZ;
+			int i4 = this.posX + this.sizeWidth;
+			int i5 = this.posY + this.sizeHeight;
+			int i6 = this.posZ + this.sizeDepth;
 
-			int var7;
-			for(var7 = 0; var7 < 2; ++var7) {
-				this.skipRenderPass[var7] = true;
+			int i7;
+			for(i7 = 0; i7 < 2; ++i7) {
+				this.skipRenderPass[i7] = true;
 			}
 
-            Chunk.isLit = false;
+			Chunk.isLit = false;
+			this.tileEntityRenderers.clear();
 
-			for(var7 = 0; var7 < 2; ++var7) {
-				boolean var8 = false;
-				boolean var9 = false;
-				GL11.glNewList(this.glRenderList + var7, GL11.GL_COMPILE);
-                GL11.glPushMatrix();
-                GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
-                tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-                tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
+			for(i7 = 0; i7 < 2; ++i7) {
+				boolean z8 = false;
+				boolean z9 = false;
+				GL11.glNewList(this.glRenderList + i7, GL11.GL_COMPILE);
+				GL11.glPushMatrix();
+				GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
+				tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+				tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
 
-                for(int var10 = var2; var10 < var5; ++var10) {
-                    for(int var11 = var3; var11 < var6; ++var11) {
-                        for(int var12 = var1; var12 < var4; ++var12) {
-                            int var13 = this.worldObj.getBlockId(var12, var10, var11);
-                            if(var13 > 0) {
-                                Block var14 = Block.blocksList[var13];
-                                if(var14.getRenderBlockPass() != var7) {
-                                    var8 = true;
-                                } else {
-                                    var9 |= this.renderBlocks.renderBlockByRenderType(var14, var12, var10, var11);
-                                }
-                            }
-                        }
-                    }
-                }
+				for(int i10 = i2; i10 < i5; ++i10) {
+					for(int i11 = i3; i11 < i6; ++i11) {
+						for(int i12 = i1; i12 < i4; ++i12) {
+							int i13;
+							if((i13 = this.worldObj.getBlockId(i12, i10, i11)) > 0) {
+								if(i7 == 0 && Block.blocksList[i13] instanceof BlockContainer) {
+									TileEntity tileEntity14 = this.worldObj.getBlockTileEntity(i12, i10, i11);
+									if(TileEntityRenderer.instance.hasSpecialRenderer(tileEntity14)) {
+										this.tileEntityRenderers.add(tileEntity14);
+									}
+								}
 
-				tessellator.draw();
-                GL11.glPopMatrix();
-                GL11.glEndList();
-                tessellator.setTranslationD(0.0D, 0.0D, 0.0D);
-				if(var9) {
-					this.skipRenderPass[var7] = false;
+								Block block15;
+								if((block15 = Block.blocksList[i13]).getRenderBlockPass() != i7) {
+									z8 = true;
+								} else {
+									z9 |= this.renderBlocks.renderBlockByRenderType(block15, i12, i10, i11);
+								}
+							}
+						}
+					}
 				}
 
-				if(!var8) {
+				tessellator.draw();
+				GL11.glPopMatrix();
+				GL11.glEndList();
+				tessellator.setTranslationD(0.0D, 0.0D, 0.0D);
+				if(z9) {
+					this.skipRenderPass[i7] = false;
+				}
+
+				if(!z8) {
 					break;
 				}
 			}
 
-            this.isChunkLit = Chunk.isLit;
+			this.isChunkLit = Chunk.isLit;
 		}
 	}
 
-	public final float distanceToEntitySquared(Entity var1) {
-        float var2 = (float)(var1.posX - (double)this.posXPlus);
-        float var3 = (float)(var1.posY - (double)this.posYPlus);
-        float var4 = (float)(var1.posZ - (double)this.posZPlus);
-		return var2 * var2 + var3 * var3 + var4 * var4;
+	public final float distanceToEntitySquared(Entity entity) {
+		float f2 = (float)(entity.posX - (double)this.posXPlus);
+		float f3 = (float)(entity.posY - (double)this.posYPlus);
+		float entity1 = (float)(entity.posZ - (double)this.posZPlus);
+		return f2 * f2 + f3 * f3 + entity1 * entity1;
 	}
 
 	private void setDontDraw() {
-		for(int var1 = 0; var1 < 2; ++var1) {
-			this.skipRenderPass[var1] = true;
+		for(int i1 = 0; i1 < 2; ++i1) {
+			this.skipRenderPass[i1] = true;
 		}
 
 	}
@@ -179,19 +194,19 @@ public final class WorldRenderer {
 		this.worldObj = null;
 	}
 
-    public final int getGLCallListForPass(int var1) {
-        return !this.isInFrustum ? -1 : (!this.skipRenderPass[var1] ? this.glRenderList + var1 : -1);
-    }
+	public final int getGLCallListForPass(int pass) {
+		return !this.isInFrustrum ? -1 : (!this.skipRenderPass[pass] ? this.glRenderList + pass : -1);
+	}
 
-    public final void updateInFrustrum(Frustrum var1) {
-        this.isInFrustum = var1.isBoundingBoxInFrustrum(this.rendererBoundingBox);
-    }
+	public final void updateInFrustrum(Frustrum frustrum) {
+		this.isInFrustrum = frustrum.isBoundingBoxInFrustum(this.rendererBoundingBox);
+	}
 
-    public final void callOcclusionQueryList() {
-        GL11.glCallList(this.glRenderList + 2);
-    }
+	public final void callOcclusionQueryList() {
+		GL11.glCallList(this.glRenderList + 2);
+	}
 
-    public final boolean skipAllRenderPasses() {
-        return this.skipRenderPass[0] && this.skipRenderPass[1];
-    }
+	public final boolean skipAllRenderPasses() {
+		return this.skipRenderPass[0] && this.skipRenderPass[1];
+	}
 }

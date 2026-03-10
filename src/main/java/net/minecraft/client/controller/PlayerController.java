@@ -11,56 +11,56 @@ public class PlayerController {
 	protected final Minecraft mc;
 	public boolean isInTestMode = false;
 
-	public PlayerController(Minecraft var1) {
-		this.mc = var1;
+	public PlayerController(Minecraft mc) {
+		this.mc = mc;
 	}
 
-	public void clickBlock(int var1, int var2, int var3) {
-		this.sendBlockRemoved(var1, var2, var3);
+	public void clickBlock(int x, int y, int z) {
+		this.sendBlockRemoved(x, y, z);
 	}
 
-	public boolean sendBlockRemoved(int var1, int var2, int var3) {
-		this.mc.effectRenderer.addBlockDestroyEffects(var1, var2, var3);
-		World var4 = this.mc.theWorld;
-		Block var5 = Block.blocksList[var4.getBlockId(var1, var2, var3)];
-        int var6 = var4.getBlockMetadata(var1, var2, var3);
-        boolean var7 = var4.setBlockWithNotify(var1, var2, var3, 0);
-        if(var5 != null && var7) {
-            SoundManager var10000 = this.mc.sndManager;
-            String var10001 = var5.stepSound.getBreakSound();
-            float var10002 = (float)var1 + 0.5F;
-            float var10003 = (float)var2 + 0.5F;
-            float var10004 = (float)var3 + 0.5F;
-            StepSound var8 = var5.stepSound;
-            float var10005 = (var8.stepSoundVolume + 1.0F) / 2.0F;
-            var8 = var5.stepSound;
-            var10000.playSound(var10001, var10002, var10003, var10004, var10005, var8.stepSoundPitch * 0.8F);
-            var5.onBlockDestroyedByPlayer(var4, var1, var2, var3, var6);
-        }
+	public boolean sendBlockRemoved(int x, int y, int z) {
+		this.mc.effectRenderer.addBlockDestroyEffects(x, y, z);
+		World world4 = this.mc.theWorld;
+		Block block5 = Block.blocksList[world4.getBlockId(x, y, z)];
+		int i6 = world4.getBlockMetadata(x, y, z);
+		boolean z7 = world4.notifyBlockChange(x, y, z, 0);
+		if(block5 != null && z7) {
+			SoundManager soundManager10000 = this.mc.sndManager;
+			String string10001 = block5.stepSound.getBreakSound();
+			float f10002 = (float)x + 0.5F;
+			float f10003 = (float)y + 0.5F;
+			float f10004 = (float)z + 0.5F;
+			StepSound stepSound8 = block5.stepSound;
+			float f10005 = (block5.stepSound.stepSoundVolume + 1.0F) / 2.0F;
+			stepSound8 = block5.stepSound;
+			soundManager10000.playSound(string10001, f10002, f10003, f10004, f10005, block5.stepSound.stepSoundPitch * 0.8F);
+			block5.onBlockDestroyedByPlayer(world4, x, y, z, i6);
+		}
 
-        return var7;
+		return z7;
 	}
 
-	public void sendBlockRemoving(int var1, int var2, int var3, int var4) {
+	public void sendBlockRemoving(int x, int y, int z, int blockID) {
 	}
 
 	public void resetBlockRemoving() {
 	}
 
-	public void setPartialTime(float var1) {
+	public void setPartialTime(float partialTime) {
 	}
 
 	public float getBlockReachDistance() {
 		return 5.0F;
 	}
 
-	public void onUpdate() {
+	public void updateController() {
 	}
 
 	public boolean shouldDrawHUD() {
 		return true;
 	}
 
-	public void onRespawn(EntityPlayer var1) {
+	public void onRespawn(EntityPlayer playerEntity) {
 	}
 }

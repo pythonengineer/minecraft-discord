@@ -14,22 +14,22 @@ public final class PathPoint {
     PathPoint previous;
     public boolean isFirst = false;
 
-    public PathPoint(int var1, int var2, int var3) {
-        this.xCoord = var1;
-        this.yCoord = var2;
-        this.zCoord = var3;
-        this.hash = var1 | var2 << 10 | var3 << 20;
+    public PathPoint(int x, int y, int z) {
+        this.xCoord = x;
+        this.yCoord = y;
+        this.zCoord = z;
+        this.hash = x | y << 10 | z << 20;
     }
 
-    public final float distanceTo(PathPoint var1) {
-        float var2 = (float)(var1.xCoord - this.xCoord);
-        float var3 = (float)(var1.yCoord - this.yCoord);
-        float var4 = (float)(var1.zCoord - this.zCoord);
-        return MathHelper.sqrt_float(var2 * var2 + var3 * var3 + var4 * var4);
+    public final float distanceTo(PathPoint pathPoint) {
+        float f2 = (float)(pathPoint.xCoord - this.xCoord);
+        float f3 = (float)(pathPoint.yCoord - this.yCoord);
+        float pathPoint1 = (float)(pathPoint.zCoord - this.zCoord);
+        return MathHelper.sqrt_float(f2 * f2 + f3 * f3 + pathPoint1 * pathPoint1);
     }
 
-    public final boolean equals(Object var1) {
-        return ((PathPoint)var1).hash == this.hash;
+    public final boolean equals(Object pathPoint) {
+        return ((PathPoint)pathPoint).hash == this.hash;
     }
 
     public final int hashCode() {

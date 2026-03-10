@@ -2,9 +2,9 @@ package net.minecraft.game.entity.monster;
 
 import net.minecraft.game.world.World;
 
-public class EntityGiantZombie extends EntityMonster {
-    public EntityGiantZombie(World var1) {
-        super(var1);
+public class EntityGiantZombie extends EntityMob {
+    public EntityGiantZombie(World world1) {
+        super(world1);
         this.texture = "/mob/zombie.png";
         this.moveSpeed = 0.5F;
         this.attackStrength = 50;
@@ -13,7 +13,7 @@ public class EntityGiantZombie extends EntityMonster {
         this.setSize(this.width * 6.0F, this.height * 6.0F);
     }
 
-    protected final float getBlockPathWeight(int var1, int var2, int var3) {
-        return this.worldObj.getBrightness(var1, var2, var3) - 0.5F;
+    protected final float getBlockPathWeight(int x, int y, int z) {
+        return this.worldObj.getBrightness(x, y, z) - 0.5F;
     }
 }

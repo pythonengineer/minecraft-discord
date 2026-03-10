@@ -3,50 +3,50 @@ package net.minecraft.client.gui;
 import net.minecraft.client.GameSettings;
 
 public final class GuiControls extends GuiScreen {
-	private GuiScreen parentScreen;
-	private String screenTitle = "Controls";
-	private GameSettings options;
-	private int buttonId = -1;
+    private GuiScreen parentScreen;
+    private String screenTitle = "Controls";
+    private GameSettings options;
+    private int buttonId = -1;
 
-	public GuiControls(GuiScreen var1, GameSettings var2) {
-		this.parentScreen = var1;
-		this.options = var2;
-	}
+    public GuiControls(GuiScreen screen, GameSettings options) {
+        this.parentScreen = screen;
+        this.options = options;
+    }
 
-	public final void initGui() {
-		for(int var1 = 0; var1 < this.options.keyBindings.length; ++var1) {
-			this.controlList.add(new GuiSmallButton(var1, this.width / 2 - 155 + var1 % 2 * 160, this.height / 6 + 24 * (var1 >> 1), this.options.getOptionDisplayString(var1)));
-		}
+    public final void initGui() {
+        for(int i1 = 0; i1 < this.options.keyBindings.length; ++i1) {
+            this.controlList.add(new GuiSmallButton(i1, this.width / 2 - 155 + i1 % 2 * 160, this.height / 6 + 24 * (i1 >> 1), this.options.getKeyBindingDescription(i1)));
+        }
 
-		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, "Done"));
-	}
+        this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, "Done"));
+    }
 
-	protected final void actionPerformed(GuiButton var1) {
-		for(int var2 = 0; var2 < this.options.keyBindings.length; ++var2) {
-			((GuiButton)this.controlList.get(var2)).displayString = this.options.getOptionDisplayString(var2);
-		}
+    protected final void actionPerformed(GuiButton button) {
+        for(int i2 = 0; i2 < this.options.keyBindings.length; ++i2) {
+            ((GuiButton)this.controlList.get(i2)).displayString = this.options.getKeyBindingDescription(i2);
+        }
 
-		if(var1.id == 200) {
-			this.mc.displayGuiScreen(this.parentScreen);
-		} else {
-			this.buttonId = var1.id;
-			var1.displayString = "> " + this.options.getOptionDisplayString(var1.id) + " <";
-		}
-	}
+        if(button.id == 200) {
+            this.mc.setGuiScreen(this.parentScreen);
+        } else {
+            this.buttonId = button.id;
+            button.displayString = "> " + this.options.getKeyBindingDescription(button.id) + " <";
+        }
+    }
 
-	protected final void keyTyped(char var1, int var2) {
-		if(this.buttonId >= 0) {
-			this.options.setKeyBinding(this.buttonId, var2);
-			((GuiButton)this.controlList.get(this.buttonId)).displayString = this.options.getOptionDisplayString(this.buttonId);
-			this.buttonId = -1;
-		} else {
-			super.keyTyped(var1, var2);
-		}
-	}
+    protected final void keyTyped(char typedChar, int keyCode) {
+        if(this.buttonId >= 0) {
+            this.options.setKeyBinding(this.buttonId, keyCode);
+            ((GuiButton)this.controlList.get(this.buttonId)).displayString = this.options.getKeyBindingDescription(this.buttonId);
+            this.buttonId = -1;
+        } else {
+            super.keyTyped(typedChar, keyCode);
+        }
+    }
 
-    public final void drawScreen(int var1, int var2, float var3) {
+    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
-        super.drawScreen(var1, var2, var3);
-	}
+        drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 0xFFFFFF);
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    }
 }

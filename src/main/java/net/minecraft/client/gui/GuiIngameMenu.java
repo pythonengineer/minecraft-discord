@@ -12,30 +12,30 @@ public final class GuiIngameMenu extends GuiScreen {
 		this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 120, "Back to game"));
 	}
 
-	protected final void actionPerformed(GuiButton var1) {
-		if(var1.id == 0) {
-			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
+	protected final void actionPerformed(GuiButton button) {
+		if(button.id == 0) {
+			this.mc.setGuiScreen(new GuiOptions(this, this.mc.gameSettings));
 		}
 
-		if(var1.id == 1) {
-			this.mc.displayGuiScreen(new GuiSelectWorld(this));
+		if(button.id == 1) {
+			this.mc.setGuiScreen(new GuiSelectWorld(this));
 		}
 
-		if(var1.id == 2) {
-            this.mc.closeWorld((World)null);
-			this.mc.displayGuiScreen(new GuiMainMenu());
+		if(button.id == 2) {
+            this.mc.changeWorld1((World)null);
+			this.mc.setGuiScreen(new GuiMainMenu());
 		}
 
-		if(var1.id == 4) {
-			this.mc.displayGuiScreen((GuiScreen)null);
+		if(button.id == 4) {
+			this.mc.setGuiScreen((GuiScreen)null);
 			this.mc.setIngameFocus();
 		}
 
 	}
 
-	public final void drawScreen(int var1, int var2, float var3) {
-		this.drawDefaultBackground();
-		drawCenteredString(this.fontRenderer, "Game menu", this.width / 2, 40, 16777215);
-		super.drawScreen(var1, var2, var3);
-	}
+    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        this.drawDefaultBackground();
+        drawCenteredString(this.fontRenderer, "Game menu", this.width / 2, 40, 0xFFFFFF);
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    }
 }

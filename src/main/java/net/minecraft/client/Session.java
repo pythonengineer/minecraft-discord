@@ -9,8 +9,8 @@ public final class Session {
     public static List registeredBlocksList;
 	public String name;
 
-	public Session(String var1, String var2) {
-		this.name = var1;
+    public Session(String name, String sessionid) {
+        this.name = name;
 	}
 
 	static {

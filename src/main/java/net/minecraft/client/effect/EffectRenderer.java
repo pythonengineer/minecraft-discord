@@ -3,9 +3,9 @@ package net.minecraft.client.effect;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.Tessellator;
@@ -14,154 +14,158 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public final class EffectRenderer {
-    private World worldObj;
-    private List[] fxLayers = new List[3];
-    private RenderEngine renderer;
-    private EaglercraftRandom rand = new EaglercraftRandom();
+	private World worldObj;
+	private List[] fxLayers = new List[3];
+	private RenderEngine renderer;
+	private EaglercraftRandom rand = new EaglercraftRandom();
 
-    public EffectRenderer(World var1, RenderEngine var2) {
-        if(var1 != null) {
-            this.worldObj = var1;
-        }
+	public EffectRenderer(World world, RenderEngine renderEngine) {
+		if(world != null) {
+			this.worldObj = world;
+		}
 
-        this.renderer = var2;
+		this.renderer = renderEngine;
 
-        for(int var3 = 0; var3 < 3; ++var3) {
-            this.fxLayers[var3] = new ArrayList();
-        }
+		for(int i3 = 0; i3 < 3; ++i3) {
+			this.fxLayers[i3] = new ArrayList();
+		}
 
-    }
+	}
 
-    public final void addEffect(EntityFX var1) {
-        int var2 = var1.getFXLayer();
-        this.fxLayers[var2].add(var1);
-    }
+	public final void addEffect(EntityFX fxEntity) {
+		int i2 = fxEntity.getFXLayer();
+		this.fxLayers[i2].add(fxEntity);
+	}
 
-    public final void updateEffects() {
-        for(int var1 = 0; var1 < 3; ++var1) {
-            for(int var2 = 0; var2 < this.fxLayers[var1].size(); ++var2) {
-                EntityFX var3 = (EntityFX)this.fxLayers[var1].get(var2);
-                var3.onUpdate();
-                if(var3.isDead) {
-                    this.fxLayers[var1].remove(var2--);
-                }
-            }
-        }
+	public final void updateEffects() {
+		for(int i1 = 0; i1 < 3; ++i1) {
+			for(int i2 = 0; i2 < this.fxLayers[i1].size(); ++i2) {
+				EntityFX entityFX3;
+				(entityFX3 = (EntityFX)this.fxLayers[i1].get(i2)).onUpdate();
+				if(entityFX3.isDead) {
+					this.fxLayers[i1].remove(i2--);
+				}
+			}
+		}
 
-    }
+	}
 
-    public final void renderParticles(Entity var1, float var2) {
-        float var3 = MathHelper.cos(var1.rotationYaw * (float)Math.PI / 180.0F);
-        float var4 = MathHelper.sin(var1.rotationYaw * (float)Math.PI / 180.0F);
-        float var5 = -var4 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
-        float var6 = var3 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
-        float var7 = MathHelper.cos(var1.rotationPitch * (float)Math.PI / 180.0F);
-        EntityFX.interpPosX = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
-        EntityFX.interpPosY = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
-        EntityFX.interpPosZ = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
+	public final void renderParticles(Entity entity, float partialTime) {
+		float f3 = MathHelper.cos(entity.rotationYaw * (float)Math.PI / 180.0F);
+		float f4;
+		float f5 = -(f4 = MathHelper.sin(entity.rotationYaw * (float)Math.PI / 180.0F)) * MathHelper.sin(entity.rotationPitch * (float)Math.PI / 180.0F);
+		float f6 = f3 * MathHelper.sin(entity.rotationPitch * (float)Math.PI / 180.0F);
+		float f7 = MathHelper.cos(entity.rotationPitch * (float)Math.PI / 180.0F);
+		EntityFX.interpPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTime;
+		EntityFX.interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTime;
+		EntityFX.interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTime;
 
-        for(int var11 = 0; var11 < 2; ++var11) {
-            if(this.fxLayers[var11].size() != 0) {
-                int var8 = 0;
-                if(var11 == 0) {
-                    var8 = this.renderer.getTexture("/particles.png");
-                }
+		for(int i11 = 0; i11 < 2; ++i11) {
+			if(this.fxLayers[i11].size() != 0) {
+				int i8 = 0;
+				if(i11 == 0) {
+					i8 = this.renderer.getTexture("/particles.png");
+				}
 
-                if(var11 == 1) {
-                    var8 = this.renderer.getTexture("/terrain.png");
-                }
+				if(i11 == 1) {
+					i8 = this.renderer.getTexture("/terrain.png");
+				}
 
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var8);
-                Tessellator var12 = Tessellator.instance;
-                var12.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, i8);
+				Tessellator tessellator12 = Tessellator.instance;
+				Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
 
-                for(int var9 = 0; var9 < this.fxLayers[var11].size(); ++var9) {
-                    EntityFX var10 = (EntityFX)this.fxLayers[var11].get(var9);
-                    var10.renderParticle(var12, var2, var3, var7, var4, var5, var6);
-                }
+				for(int i9 = 0; i9 < this.fxLayers[i11].size(); ++i9) {
+					((EntityFX)this.fxLayers[i11].get(i9)).renderParticle(tessellator12, partialTime, f3, f7, f4, f5, f6);
+				}
 
-                var12.draw();
-            }
-        }
+				tessellator12.draw();
+			}
+		}
 
-    }
+	}
 
-    public final void renderLitParticles(float var1) {
-        if(this.fxLayers[2].size() != 0) {
-            Tessellator var2 = Tessellator.instance;
+	public final void renderLitParticles(float partialTime) {
+		if(this.fxLayers[2].size() != 0) {
+			Tessellator tessellator2 = Tessellator.instance;
 
-            for(int var3 = 0; var3 < this.fxLayers[2].size(); ++var3) {
-                EntityFX var4 = (EntityFX)this.fxLayers[2].get(var3);
-                var4.renderParticle(var2, var1, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-            }
+			for(int i3 = 0; i3 < this.fxLayers[2].size(); ++i3) {
+				((EntityFX)this.fxLayers[2].get(i3)).renderParticle(tessellator2, partialTime, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+			}
 
-        }
-    }
+		}
+	}
 
-    public final void clearEffects(World var1) {
-        this.worldObj = var1;
+	public final void clearEffects(World world) {
+		this.worldObj = world;
 
-        for(int var2 = 0; var2 < 3; ++var2) {
-            this.fxLayers[var2].clear();
-        }
+		for(int i2 = 0; i2 < 3; ++i2) {
+			this.fxLayers[i2].clear();
+		}
 
-    }
+	}
 
-    public final void addBlockDestroyEffects(int var1, int var2, int var3) {
-        int var4 = this.worldObj.getBlockId(var1, var2, var3);
-        if(var4 != 0) {
-            Block var15 = Block.blocksList[var4];
+	public final void addBlockDestroyEffects(int x, int y, int z) {
+		int i4;
+		if((i4 = this.worldObj.getBlockId(x, y, z)) != 0) {
+			Block block15 = Block.blocksList[i4];
 
-            for(int var5 = 0; var5 < 4; ++var5) {
-                for(int var6 = 0; var6 < 4; ++var6) {
-                    for(int var7 = 0; var7 < 4; ++var7) {
-                        double var9 = (double)var1 + ((double)var5 + 0.5D) / 4.0D;
-                        double var11 = (double)var2 + ((double)var6 + 0.5D) / 4.0D;
-                        double var13 = (double)var3 + ((double)var7 + 0.5D) / 4.0D;
-                        this.addEffect(new EntityDiggingFX(this.worldObj, var9, var11, var13, var9 - (double)var1 - 0.5D, var11 - (double)var2 - 0.5D, var13 - (double)var3 - 0.5D, var15));
-                    }
-                }
-            }
+			for(int i5 = 0; i5 < 4; ++i5) {
+				for(int i6 = 0; i6 < 4; ++i6) {
+					for(int i7 = 0; i7 < 4; ++i7) {
+						double d9 = (double)x + ((double)i5 + 0.5D) / 4.0D;
+						double d11 = (double)y + ((double)i6 + 0.5D) / 4.0D;
+						double d13 = (double)z + ((double)i7 + 0.5D) / 4.0D;
+						this.addEffect(new EntityDiggingFX(this.worldObj, d9, d11, d13, d9 - (double)x - 0.5D, d11 - (double)y - 0.5D, d13 - (double)z - 0.5D, block15));
+					}
+				}
+			}
 
-        }
-    }
+		}
+	}
 
-    public final void addBlockHitEffects(int var1, int var2, int var3, int var4) {
-        int var5 = this.worldObj.getBlockId(var1, var2, var3);
-        if(var5 != 0) {
-            Block var9 = Block.blocksList[var5];
-            double var6 = (double)var1 + this.rand.nextDouble() * (var9.maxX - var9.minX - (double)0.2F) + (double)0.1F + var9.minX;
-            double var7 = (double)var2 + this.rand.nextDouble() * (var9.maxY - var9.minY - (double)0.2F) + (double)0.1F + var9.minY;
-            double var8 = (double)var3 + this.rand.nextDouble() * (var9.maxZ - var9.minZ - (double)0.2F) + (double)0.1F + var9.minZ;
-            if(var4 == 0) {
-                var7 = (double)var2 + var9.minY - (double)0.1F;
-            }
+	public final void addBlockHitEffects(int x, int y, int z, int side) {
+		int i5;
+		if((i5 = this.worldObj.getBlockId(x, y, z)) != 0) {
+			Block block15 = Block.blocksList[i5];
+			double d7 = (double)x + this.rand.nextDouble() * (block15.maxX - block15.minX - (double)0.2F) + (double)0.1F + block15.minX;
+			double d9 = (double)y + this.rand.nextDouble() * (block15.maxY - block15.minY - (double)0.2F) + (double)0.1F + block15.minY;
+			double d11 = (double)z + this.rand.nextDouble() * (block15.maxZ - block15.minZ - (double)0.2F) + (double)0.1F + block15.minZ;
+			if(side == 0) {
+				d9 = (double)y + block15.minY - (double)0.1F;
+			}
 
-            if(var4 == 1) {
-                var7 = (double)var2 + var9.maxY + (double)0.1F;
-            }
+			if(side == 1) {
+				d9 = (double)y + block15.maxY + (double)0.1F;
+			}
 
-            if(var4 == 2) {
-                var8 = (double)var3 + var9.minZ - (double)0.1F;
-            }
+			if(side == 2) {
+				d11 = (double)z + block15.minZ - (double)0.1F;
+			}
 
-            if(var4 == 3) {
-                var8 = (double)var3 + var9.maxZ + (double)0.1F;
-            }
+			if(side == 3) {
+				d11 = (double)z + block15.maxZ + (double)0.1F;
+			}
 
-            if(var4 == 4) {
-                var6 = (double)var1 + var9.minX - (double)0.1F;
-            }
+			if(side == 4) {
+				d7 = (double)x + block15.minX - (double)0.1F;
+			}
 
-            if(var4 == 5) {
-                var6 = (double)var1 + var9.maxX + (double)0.1F;
-            }
+			if(side == 5) {
+				d7 = (double)x + block15.maxX + (double)0.1F;
+			}
 
-            this.addEffect((new EntityDiggingFX(this.worldObj, var6, var7, var8, 0.0D, 0.0D, 0.0D, var9)).multiplyVelocity(0.2F).multiplyParticleScaleBy(0.6F));
-        }
-    }
+			EntityDiggingFX entityDiggingFX10001 = new EntityDiggingFX(this.worldObj, d7, d9, d11, 0.0D, 0.0D, 0.0D, block15);
+			float x1 = 0.2F;
+			EntityDiggingFX x2 = entityDiggingFX10001;
+			entityDiggingFX10001.motionX *= (double)0.2F;
+			x2.motionY = (x2.motionY - (double)0.1F) * (double)0.2F + (double)0.1F;
+			x2.motionZ *= (double)0.2F;
+			this.addEffect(x2.multiplyParticleScaleBy(0.6F));
+		}
+	}
 
-    public final String getStatistics() {
-        return "" + (this.fxLayers[0].size() + this.fxLayers[1].size() + this.fxLayers[2].size());
-    }
+	public final String getStatistics() {
+		return "" + (this.fxLayers[0].size() + this.fxLayers[1].size() + this.fxLayers[2].size());
+	}
 }

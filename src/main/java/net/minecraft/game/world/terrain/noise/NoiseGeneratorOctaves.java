@@ -6,56 +6,56 @@ public final class NoiseGeneratorOctaves extends NoiseGenerator {
     private NoiseGeneratorPerlin[] generatorCollection;
     private int octaves;
 
-    public NoiseGeneratorOctaves(EaglercraftRandom var1, int var2) {
-        this.octaves = var2;
-        this.generatorCollection = new NoiseGeneratorPerlin[var2];
+    public NoiseGeneratorOctaves(EaglercraftRandom rand, int octaves) {
+        this.octaves = octaves;
+        this.generatorCollection = new NoiseGeneratorPerlin[octaves];
 
-        for(int var3 = 0; var3 < var2; ++var3) {
-            this.generatorCollection[var3] = new NoiseGeneratorPerlin(var1);
+        for(int i3 = 0; i3 < octaves; ++i3) {
+            this.generatorCollection[i3] = new NoiseGeneratorPerlin(rand);
         }
 
     }
 
-    public final double noiseGenerator(double var1, double var3) {
-        double var5 = 0.0D;
-        double var7 = 1.0D;
+    public final double generateNoiseOctaves(double x, double y) {
+        double d5 = 0.0D;
+        double d7 = 1.0D;
 
-        for(int var9 = 0; var9 < this.octaves; ++var9) {
-            var5 += this.generatorCollection[var9].generateNoise(var1 * var7, var3 * var7) / var7;
-            var7 /= 2.0D;
+        for(int i9 = 0; i9 < this.octaves; ++i9) {
+            d5 += this.generatorCollection[i9].generateNoise(x * d7, y * d7) / d7;
+            d7 /= 2.0D;
         }
 
-        return var5;
+        return d5;
     }
 
-    public final double generateNoiseOctaves(double var1, double var3, double var5) {
-        double var7 = 0.0D;
-        double var9 = 1.0D;
+    public final double generateNoiseOctaves(double x, double y, double z) {
+        double d7 = 0.0D;
+        double d9 = 1.0D;
 
-        for(int var11 = 0; var11 < this.octaves; ++var11) {
-            var7 += this.generatorCollection[var11].generateNoiseD(var1 * var9, var3 * var9, var5 * var9) / var9;
-            var9 /= 2.0D;
+        for(int i11 = 0; i11 < this.octaves; ++i11) {
+            d7 += this.generatorCollection[i11].generateNoiseD(x * d9, y * d9, z * d9) / d9;
+            d9 /= 2.0D;
         }
 
-        return var7;
+        return d7;
     }
 
-    public final double[] generateNoiseOctaves(double[] var1, int var2, int var3, int var4, int var5, int var6, int var7, double var8, double var10, double var12) {
-        if(var1 == null) {
-            var1 = new double[var5 * var6 * var7];
+    public final double[] generateNoiseOctaves(double[] octavesArray, int x, int y, int z, int sizeX, int sizeY, int sizeZ, double coordScaleX, double coordScaleY, double coordScaleZ) {
+        if(octavesArray == null) {
+            octavesArray = new double[sizeX * sizeY * sizeZ];
         } else {
-            for(int var14 = 0; var14 < var1.length; ++var14) {
-                var1[var14] = 0.0D;
+            for(int i14 = 0; i14 < octavesArray.length; ++i14) {
+                octavesArray[i14] = 0.0D;
             }
         }
 
-        double var17 = 1.0D;
+        double d17 = 1.0D;
 
-        for(int var16 = 0; var16 < this.octaves; ++var16) {
-            this.generatorCollection[var16].populateNoiseArray(var1, var2, var3, var4, var5, var6, var7, var8 * var17, var10 * var17, var12 * var17, var17);
-            var17 /= 2.0D;
+        for(int i16 = 0; i16 < this.octaves; ++i16) {
+            this.generatorCollection[i16].populateNoiseArray(octavesArray, x, y, z, sizeX, sizeY, sizeZ, coordScaleX * d17, coordScaleY * d17, coordScaleZ * d17, d17);
+            d17 /= 2.0D;
         }
 
-        return var1;
+        return octavesArray;
     }
 }

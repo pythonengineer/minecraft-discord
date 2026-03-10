@@ -21,27 +21,27 @@ public final class RenderHelper {
 		GL11.glEnable(GL11.GL_LIGHT1);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glColorMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT_AND_DIFFUSE);
-        Vec3D var0 = new Vec3D((double)0.3F, 1.0D, (double)-0.7F);
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, setColorBuffer(var0.xCoord, var0.yCoord, var0.zCoord, 0.0D));
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, setColorBuffer(0.5F, 0.5F, 0.5F, 1.0F));
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-        var0 = new Vec3D((double)-0.7F, 1.0D, (double)0.2F);
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION, setColorBuffer(var0.xCoord, var0.yCoord, var0.zCoord, 0.0D));
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, setColorBuffer(0.5F, 0.5F, 0.5F, 1.0F));
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_AMBIENT, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_SPECULAR, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-        GL11.glShadeModel(GL11.GL_SMOOTH);
-        GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, setColorBuffer(0.5F, 0.5F, 0.5F, 1.0F));
+		Vec3D vec3D0 = new Vec3D((double)0.3F, 1.0D, -0.699999988079071D);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, setColorBuffer(vec3D0.xCoord, vec3D0.yCoord, vec3D0.zCoord, 0.0D));
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, setColorBuffer(0.5F, 0.5F, 0.5F, 1.0F));
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+		vec3D0 = new Vec3D(-0.699999988079071D, 1.0D, (double)0.2F);
+		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION, setColorBuffer(vec3D0.xCoord, vec3D0.yCoord, vec3D0.zCoord, 0.0D));
+		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, setColorBuffer(0.5F, 0.5F, 0.5F, 1.0F));
+		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_AMBIENT, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_SPECULAR, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, setColorBuffer(0.5F, 0.5F, 0.5F, 1.0F));
 	}
 
-    private static FloatBuffer setColorBuffer(double var0, double var2, double var4, double var6) {
-        return setColorBuffer((float)var0, (float)var2, (float)var4, 0.0F);
-    }
+	private static FloatBuffer setColorBuffer(double r, double g, double b, double a) {
+		return setColorBuffer((float)r, (float)g, (float)b, 0.0F);
+	}
 
-	private static FloatBuffer setColorBuffer(float var0, float var1, float var2, float var3) {
+	private static FloatBuffer setColorBuffer(float r, float g, float b, float a) {
 		colorBuffer.clear();
-		colorBuffer.put(var0).put(var1).put(var2).put(var3);
+		colorBuffer.put(r).put(g).put(b).put(a);
 		colorBuffer.flip();
 		return colorBuffer;
 	}

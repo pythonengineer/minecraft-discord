@@ -5,23 +5,23 @@ import net.minecraft.game.world.block.Block;
 public final class ItemSword extends Item {
     private int weaponDamage;
 
-    public ItemSword(int var1, int var2) {
-        super(var1);
+    public ItemSword(int itemID, int damage) {
+        super(itemID);
         this.maxStackSize = 1;
-        this.maxDamage = 32 << var2;
-        this.weaponDamage = 4 + (var2 << 1);
+        this.maxDamage = 32 << damage;
+        this.weaponDamage = 4 + (damage << 1);
     }
 
-    public final float getStrVsBlock(Block var1) {
+    public final float getStrVsBlock(Block block) {
         return 1.5F;
     }
 
-    public final void hitEntity(ItemStack var1) {
-        var1.damageItem(1);
+    public final void hitEntity(ItemStack stack) {
+        stack.damageItem(1);
     }
 
-    public final void onBlockDestroyed(ItemStack var1) {
-        var1.damageItem(2);
+    public final void onBlockDestroyed(ItemStack stack) {
+        stack.damageItem(2);
     }
 
     public final int getDamageVsEntity() {

@@ -11,6 +11,7 @@ import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.block.tileentity.TileEntitySign;
 import net.minecraft.game.world.material.Material;
 
 public class Block {
@@ -27,8 +28,7 @@ public class Block {
     public static final boolean[] tickOnLoad = new boolean[256];
     public static final boolean[] opaqueCubeLookup = new boolean[256];
     public static final int[] lightOpacity = new int[256];
-    private static boolean[] canBlockGrass = new boolean[256];
-    public static final boolean[] isBlockContainer = new boolean[256];
+    public static final boolean[] canBlockGrass = new boolean[256];
     public static final int[] lightValue = new int[256];
     public static final Block stone;
     public static final BlockGrass grass;
@@ -87,9 +87,12 @@ public class Block {
     public static final Block blockDiamond;
     public static final Block workbench;
     public static final Block crops;
-    public static final Block tilledField;
+    public static final Block farmland;
     public static final Block stoneOvenIdle;
     public static final Block stoneOvenActive;
+    public static final Block signStanding;
+    public static final Block doorWood;
+    public static final Block ladder;
     public int blockIndexInTexture;
     public final int blockID;
     private float blockHardness;
@@ -104,40 +107,39 @@ public class Block {
     public float blockParticleGravity;
     public final Material blockMaterial;
 
-    protected Block(int var1, Material var2) {
+    protected Block(int blockID, Material material) {
         this.stepSound = soundPowderFootstep;
         this.blockParticleGravity = 1.0F;
-        if(blocksList[var1] != null) {
-            throw new IllegalArgumentException("Slot " + var1 + " is already occupied by " + blocksList[var1] + " when adding " + this);
+        if(blocksList[blockID] != null) {
+            throw new IllegalArgumentException("Slot " + blockID + " is already occupied by " + blocksList[blockID] + " when adding " + this);
         } else {
-            this.blockMaterial = var2;
-            blocksList[var1] = this;
-            this.blockID = var1;
+            this.blockMaterial = material;
+            blocksList[blockID] = this;
+            this.blockID = blockID;
             this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-            opaqueCubeLookup[var1] = this.isOpaqueCube();
-            lightOpacity[var1] = this.isOpaqueCube() ? 255 : 0;
-            canBlockGrass[var1] = this.renderAsNormalBlock();
-            isBlockContainer[var1] = false;
+            opaqueCubeLookup[blockID] = this.isOpaqueCube();
+            lightOpacity[blockID] = this.isOpaqueCube() ? 255 : 0;
+            canBlockGrass[blockID] = false;
         }
     }
 
-    protected Block(int var1, int var2, Material var3) {
-        this(var1, var3);
-        this.blockIndexInTexture = var2;
+    protected Block(int blockID, int textureIndex, Material material) {
+        this(blockID, material);
+        this.blockIndexInTexture = textureIndex;
     }
 
-    protected final Block setLightOpacity(int var1) {
-        lightOpacity[this.blockID] = var1;
+    protected final Block setLightOpacity(int opacity) {
+        lightOpacity[this.blockID] = opacity;
         return this;
     }
 
-    private Block setLightValue(float var1) {
-        lightValue[this.blockID] = (int)(15.0F * var1);
+    private Block setLightValue(float light) {
+        lightValue[this.blockID] = (int)(15.0F * light);
         return this;
     }
 
-    protected final Block setResistance(float var1) {
-        this.blockResistance = var1 * 3.0F;
+    protected final Block setResistance(float resistance) {
+        this.blockResistance = resistance * 3.0F;
         return this;
     }
 
@@ -149,54 +151,54 @@ public class Block {
         return 0;
     }
 
-    protected final Block setHardness(float var1) {
-        this.blockHardness = var1;
-        if(this.blockResistance < var1 * 5.0F) {
-            this.blockResistance = var1 * 5.0F;
+    protected final Block setHardness(float hardness) {
+        this.blockHardness = hardness;
+        if(this.blockResistance < hardness * 5.0F) {
+            this.blockResistance = hardness * 5.0F;
         }
 
         return this;
     }
 
-    protected final void setTickOnLoad(boolean var1) {
-        tickOnLoad[this.blockID] = var1;
+    protected final void setTickOnLoad(boolean ticksOnLoad) {
+        tickOnLoad[this.blockID] = ticksOnLoad;
     }
 
-    protected final void setBlockBounds(float var1, float var2, float var3, float var4, float var5, float var6) {
-        this.minX = (double)var1;
-        this.minY = (double)var2;
-        this.minZ = (double)var3;
-        this.maxX = (double)var4;
-        this.maxY = (double)var5;
-        this.maxZ = (double)var6;
+    protected final void setBlockBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+        this.minX = (double)minX;
+        this.minY = (double)minY;
+        this.minZ = (double)minZ;
+        this.maxX = (double)maxX;
+        this.maxY = (double)maxY;
+        this.maxZ = (double)maxZ;
     }
 
-    public float getBlockBrightness(World var1, int var2, int var3, int var4) {
-        return var1.getBrightness(var2, var3, var4);
+    public float getBrightness(World world, int x, int y, int z) {
+        return world.getBrightness(x, y, z);
     }
 
-    public boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
-        return !var1.isSolid(var2, var3, var4);
+    public boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
+        return !world.isBlockNormalCube(x, y, z);
     }
 
-    public int getBlockTexture(World var1, int var2, int var3, int var4, int var5) {
-        return this.getBlockTextureFromSideAndMetadata(var5, var1.getBlockMetadata(var2, var3, var4));
+    public int getBlockTexture(World world, int x, int y, int z, int side) {
+        return this.getBlockTextureFromSideAndMetadata(side, world.getBlockMetadata(x, y, z));
     }
 
-    public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
-        return this.getBlockTextureFromSide(var1);
+    public int getBlockTextureFromSideAndMetadata(int side, int metadata) {
+        return this.getBlockTextureFromSide(side);
     }
 
-    public int getBlockTextureFromSide(int var1) {
+    public int getBlockTextureFromSide(int side) {
         return this.blockIndexInTexture;
     }
 
-    public final AxisAlignedBB getSelectedBoundingBoxFromPool(int var1, int var2, int var3) {
-        return new AxisAlignedBB((double)var1 + this.minX, (double)var2 + this.minY, (double)var3 + this.minZ, (double)var1 + this.maxX, (double)var2 + this.maxY, (double)var3 + this.maxZ);
+    public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
+        return new AxisAlignedBB((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
     }
 
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
-        return new AxisAlignedBB((double)var1 + this.minX, (double)var2 + this.minY, (double)var3 + this.minZ, (double)var1 + this.maxX, (double)var2 + this.maxY, (double)var3 + this.maxZ);
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+        return new AxisAlignedBB((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
     }
 
     public boolean isOpaqueCube() {
@@ -207,80 +209,77 @@ public class Block {
         return true;
     }
 
-    public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+    public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
     }
 
-    public void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+    public void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
     }
 
-    public void onBlockDestroyedByPlayer(World var1, int var2, int var3, int var4, int var5) {
+    public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int metadata) {
     }
 
-    public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
+    public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
     }
 
     public int tickRate() {
         return 5;
     }
 
-    public void onBlockAdded(World var1, int var2, int var3, int var4) {
+    public void onBlockAdded(World world, int x, int y, int z) {
     }
 
-    public void onBlockRemoval(World var1, int var2, int var3, int var4) {
+    public void onBlockRemoval(World world, int x, int y, int z) {
     }
 
-    public int quantityDropped(EaglercraftRandom var1) {
+    public int quantityDropped(EaglercraftRandom rand) {
         return 1;
     }
 
-    public int idDropped(int var1, EaglercraftRandom var2) {
+    public int idDropped(int metadata, EaglercraftRandom rand) {
         return this.blockID;
     }
 
-    public final float blockStrength(EntityPlayer var1) {
+    public final float blockStrength(EntityPlayer playerEntity) {
         if(this.blockHardness < 0.0F) {
             return 0.0F;
-        } else if(!var1.canHarvestBlock(this)) {
+        } else if(!playerEntity.canHarvestBlock(this)) {
             return 1.0F / this.blockHardness / 100.0F;
         } else {
-            InventoryPlayer var2 = var1.inventory;
-            float var4 = 1.0F;
-            if(var2.mainInventory[var2.currentItem] != null) {
-                ItemStack var5 = var2.mainInventory[var2.currentItem];
-                var4 = 1.0F * var5.getItem().getStrVsBlock(this);
+            InventoryPlayer inventoryPlayer2 = (playerEntity = playerEntity).inventory;
+            float f4 = 1.0F;
+            if(inventoryPlayer2.mainInventory[inventoryPlayer2.currentItem] != null) {
+                f4 = 1.0F * inventoryPlayer2.mainInventory[inventoryPlayer2.currentItem].getItem().getStrVsBlock(this);
             }
 
-            float var6 = var4;
-            if(var1.isInsideOfMaterial()) {
-                var6 = var4 / 5.0F;
+            float f5 = f4;
+            if(playerEntity.isInsideOfMaterial()) {
+                f5 = f4 / 5.0F;
             }
 
-            if(!var1.onGround) {
-                var6 /= 5.0F;
+            if(!playerEntity.onGround) {
+                f5 /= 5.0F;
             }
 
-            return var6 / this.blockHardness / 30.0F;
+            return f5 / this.blockHardness / 30.0F;
         }
     }
 
-    public final void dropBlockAsItem(World var1, int var2, int var3, int var4, int var5) {
-        this.dropBlockAsItemWithChance(var1, var2, var3, var4, var5, 1.0F);
+    public final void harvestBlock(World world, int x, int y, int z, int metadata) {
+        this.dropBlockAsItemWithChance(world, x, y, z, metadata, 1.0F);
     }
 
-    public final void dropBlockAsItemWithChance(World var1, int var2, int var3, int var4, int var5, float var6) {
-        int var7 = this.quantityDropped(var1.rand);
+    public final void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance) {
+        int i7 = this.quantityDropped(world.rand);
 
-        for(int var8 = 0; var8 < var7; ++var8) {
-            if(var1.rand.nextFloat() <= var6) {
-                int var9 = this.idDropped(var5, var1.rand);
-                if(var9 > 0) {
-                    double var10 = (double)(var1.rand.nextFloat() * 0.7F) + (double)0.15F;
-                    double var12 = (double)(var1.rand.nextFloat() * 0.7F) + (double)0.15F;
-                    double var14 = (double)(var1.rand.nextFloat() * 0.7F) + (double)0.15F;
-                    EntityItem var16 = new EntityItem(var1, (double)var2 + var10, (double)var3 + var12, (double)var4 + var14, new ItemStack(var9));
-                    var16.delayBeforeCanPickup = 10;
-                    var1.spawnEntityInWorld(var16);
-                }
+        for(int i8 = 0; i8 < i7; ++i8) {
+            int i9;
+            if(world.rand.nextFloat() <= chance && (i9 = this.idDropped(metadata, world.rand)) > 0) {
+                double d10 = (double)(world.rand.nextFloat() * 0.7F) + (double)0.15F;
+                double d12 = (double)(world.rand.nextFloat() * 0.7F) + (double)0.15F;
+                double d14 = (double)(world.rand.nextFloat() * 0.7F) + (double)0.15F;
+                EntityItem entityItem16;
+                (entityItem16 = new EntityItem(world, (double)x + d10, (double)y + d12, (double)z + d14, new ItemStack(i9))).delayBeforeCanPickup = 10;
+                world.entityJoinedWorld(entityItem16);
             }
         }
 
@@ -290,426 +289,442 @@ public class Block {
         return this.blockResistance / 5.0F;
     }
 
-    public MovingObjectPosition collisionRayTrace(World var1, int var2, int var3, int var4, Vec3D var5, Vec3D var6) {
-        var5 = var5.addVector((double)(-var2), (double)(-var3), (double)(-var4));
-        var6 = var6.addVector((double)(-var2), (double)(-var3), (double)(-var4));
-        Vec3D var12 = var5.getIntermediateWithXValue(var6, this.minX);
-        Vec3D var7 = var5.getIntermediateWithXValue(var6, this.maxX);
-        Vec3D var8 = var5.getIntermediateWithYValue(var6, this.minY);
-        Vec3D var9 = var5.getIntermediateWithYValue(var6, this.maxY);
-        Vec3D var10 = var5.getIntermediateWithZValue(var6, this.minZ);
-        var6 = var5.getIntermediateWithZValue(var6, this.maxZ);
-        if(!this.isVecInsideYZBounds(var12)) {
-            var12 = null;
+    public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {
+        vector1 = vector1.addVector((double)(-x), (double)(-y), (double)(-z));
+        vector2 = vector2.addVector((double)(-x), (double)(-y), (double)(-z));
+        Vec3D world1 = vector1.getIntermediateWithXValue(vector2, this.minX);
+        Vec3D vec3D7 = vector1.getIntermediateWithXValue(vector2, this.maxX);
+        Vec3D vec3D8 = vector1.getIntermediateWithYValue(vector2, this.minY);
+        Vec3D vec3D9 = vector1.getIntermediateWithYValue(vector2, this.maxY);
+        Vec3D vec3D10 = vector1.getIntermediateWithZValue(vector2, this.minZ);
+        vector2 = vector1.getIntermediateWithZValue(vector2, this.maxZ);
+        if(!this.isVecInsideYZBounds(world1)) {
+            world1 = null;
         }
 
-        if(!this.isVecInsideYZBounds(var7)) {
-            var7 = null;
+        if(!this.isVecInsideYZBounds(vec3D7)) {
+            vec3D7 = null;
         }
 
-        if(!this.isVecInsideXZBounds(var8)) {
-            var8 = null;
+        if(!this.isVecInsideXZBounds(vec3D8)) {
+            vec3D8 = null;
         }
 
-        if(!this.isVecInsideXZBounds(var9)) {
-            var9 = null;
+        if(!this.isVecInsideXZBounds(vec3D9)) {
+            vec3D9 = null;
         }
 
-        if(!this.isVecInsideXYBounds(var10)) {
-            var10 = null;
+        if(!this.isVecInsideXYBounds(vec3D10)) {
+            vec3D10 = null;
         }
 
-        if(!this.isVecInsideXYBounds(var6)) {
-            var6 = null;
+        if(!this.isVecInsideXYBounds(vector2)) {
+            vector2 = null;
         }
 
-        Vec3D var11 = null;
-        if(var12 != null) {
-            var11 = var12;
+        Vec3D vec3D11 = null;
+        if(world1 != null) {
+            vec3D11 = world1;
         }
 
-        if(var7 != null && (var11 == null || var5.distanceTo(var7) < var5.distanceTo(var11))) {
-            var11 = var7;
+        if(vec3D7 != null && (vec3D11 == null || vector1.distanceTo(vec3D7) < vector1.distanceTo(vec3D11))) {
+            vec3D11 = vec3D7;
         }
 
-        if(var8 != null && (var11 == null || var5.distanceTo(var8) < var5.distanceTo(var11))) {
-            var11 = var8;
+        if(vec3D8 != null && (vec3D11 == null || vector1.distanceTo(vec3D8) < vector1.distanceTo(vec3D11))) {
+            vec3D11 = vec3D8;
         }
 
-        if(var9 != null && (var11 == null || var5.distanceTo(var9) < var5.distanceTo(var11))) {
-            var11 = var9;
+        if(vec3D9 != null && (vec3D11 == null || vector1.distanceTo(vec3D9) < vector1.distanceTo(vec3D11))) {
+            vec3D11 = vec3D9;
         }
 
-        if(var10 != null && (var11 == null || var5.distanceTo(var10) < var5.distanceTo(var11))) {
-            var11 = var10;
+        if(vec3D10 != null && (vec3D11 == null || vector1.distanceTo(vec3D10) < vector1.distanceTo(vec3D11))) {
+            vec3D11 = vec3D10;
         }
 
-        if(var6 != null && (var11 == null || var5.distanceTo(var6) < var5.distanceTo(var11))) {
-            var11 = var6;
+        if(vector2 != null && (vec3D11 == null || vector1.distanceTo(vector2) < vector1.distanceTo(vec3D11))) {
+            vec3D11 = vector2;
         }
 
-        if(var11 == null) {
+        if(vec3D11 == null) {
             return null;
         } else {
-            byte var13 = -1;
-            if(var11 == var12) {
-                var13 = 4;
+            byte vector11 = -1;
+            if(vec3D11 == world1) {
+                vector11 = 4;
             }
 
-            if(var11 == var7) {
-                var13 = 5;
+            if(vec3D11 == vec3D7) {
+                vector11 = 5;
             }
 
-            if(var11 == var8) {
-                var13 = 0;
+            if(vec3D11 == vec3D8) {
+                vector11 = 0;
             }
 
-            if(var11 == var9) {
-                var13 = 1;
+            if(vec3D11 == vec3D9) {
+                vector11 = 1;
             }
 
-            if(var11 == var10) {
-                var13 = 2;
+            if(vec3D11 == vec3D10) {
+                vector11 = 2;
             }
 
-            if(var11 == var6) {
-                var13 = 3;
+            if(vec3D11 == vector2) {
+                vector11 = 3;
             }
 
-            return new MovingObjectPosition(var2, var3, var4, var13, var11.addVector((double)var2, (double)var3, (double)var4));
+            return new MovingObjectPosition(x, y, z, vector11, vec3D11.addVector((double)x, (double)y, (double)z));
         }
     }
 
-    private boolean isVecInsideYZBounds(Vec3D var1) {
-        return var1 == null ? false : var1.yCoord >= this.minY && var1.yCoord <= this.maxY && var1.zCoord >= this.minZ && var1.zCoord <= this.maxZ;
+    private boolean isVecInsideYZBounds(Vec3D vector) {
+        return vector == null ? false : vector.yCoord >= this.minY && vector.yCoord <= this.maxY && vector.zCoord >= this.minZ && vector.zCoord <= this.maxZ;
     }
 
-    private boolean isVecInsideXZBounds(Vec3D var1) {
-        return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.zCoord >= this.minZ && var1.zCoord <= this.maxZ;
+    private boolean isVecInsideXZBounds(Vec3D vector) {
+        return vector == null ? false : vector.xCoord >= this.minX && vector.xCoord <= this.maxX && vector.zCoord >= this.minZ && vector.zCoord <= this.maxZ;
     }
 
-    private boolean isVecInsideXYBounds(Vec3D var1) {
-        return var1 == null ? false : var1.xCoord >= this.minX && var1.xCoord <= this.maxX && var1.yCoord >= this.minY && var1.yCoord <= this.maxY;
+    private boolean isVecInsideXYBounds(Vec3D vector) {
+        return vector == null ? false : vector.xCoord >= this.minX && vector.xCoord <= this.maxX && vector.yCoord >= this.minY && vector.yCoord <= this.maxY;
     }
 
-    public void onBlockDestroyedByExplosion(World var1, int var2, int var3, int var4) {
+    public void onBlockDestroyedByExplosion(World world, int x, int y, int z) {
     }
 
     public int getRenderBlockPass() {
         return 0;
     }
 
-    public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
+    public boolean canPlaceBlockAt(World world, int x, int y, int z) {
         return true;
     }
 
-    public boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
+    public boolean blockActivated(World world, int x, int y, int z, EntityPlayer playerEntity) {
         return false;
     }
 
-    public void onEntityWalking(World var1, int var2, int var3, int var4) {
+    public void onEntityWalking(World world, int x, int y, int z) {
     }
 
-    public void onBlockPlaced(World var1, int var2, int var3, int var4, int var5) {
+    public void onBlockPlaced(World world, int x, int y, int z, int side) {
+    }
+
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer playerEntity) {
     }
 
     static {
-        Block var10000 = (new BlockStone(1, 1)).setHardness(1.5F).setResistance(10.0F);
-        StepSound var1 = soundStoneFootstep;
-        Block var0 = var10000;
-        var0.stepSound = var1;
-        stone = var0;
-        var10000 = (new BlockGrass(2)).setHardness(0.6F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        grass = (BlockGrass)var0;
-        var10000 = (new BlockDirt(3, 2)).setHardness(0.5F);
-        var1 = soundGravelFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        dirt = var0;
-        var10000 = (new Block(4, 16, Material.rock)).setHardness(2.0F).setResistance(10.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        cobblestone = var0;
-        var10000 = (new Block(5, 4, Material.wood)).setHardness(2.0F).setResistance(5.0F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        planks = var0;
-        var10000 = (new BlockSapling(6, 15)).setHardness(0.0F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        sapling = var0;
-        var10000 = (new Block(7, 17, Material.rock)).setHardness(-1.0F).setResistance(6000000.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        bedrock = var0;
+        Block block10000 = (new BlockStone(1, 1)).setHardness(1.5F).setResistance(10.0F);
+        StepSound stepSound1 = soundStoneFootstep;
+        Block block0 = block10000;
+        block10000.stepSound = stepSound1;
+        stone = block0;
+        block10000 = (new BlockGrass(2)).setHardness(0.6F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        grass = (BlockGrass)block0;
+        block10000 = (new BlockDirt(3, 2)).setHardness(0.5F);
+        stepSound1 = soundGravelFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        dirt = block0;
+        block10000 = (new Block(4, 16, Material.rock)).setHardness(2.0F).setResistance(10.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        cobblestone = block0;
+        block10000 = (new Block(5, 4, Material.ground)).setHardness(2.0F).setResistance(5.0F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        planks = block0;
+        block10000 = (new BlockSapling(6, 15)).setHardness(0.0F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        sapling = block0;
+        block10000 = (new Block(7, 17, Material.rock)).setHardness(-1.0F).setResistance(6000000.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        bedrock = block0;
         waterMoving = (new BlockFlowing(8, Material.water)).setHardness(100.0F).setLightOpacity(3);
         waterStill = (new BlockStationary(9, Material.water)).setHardness(100.0F).setLightOpacity(3);
         lavaMoving = (new BlockFlowing(10, Material.lava)).setHardness(0.0F).setLightValue(1.0F).setLightOpacity(255);
         lavaStill = (new BlockStationary(11, Material.lava)).setHardness(100.0F).setLightValue(1.0F).setLightOpacity(255);
-        var10000 = (new BlockSand(12, 18)).setHardness(0.5F);
-        var1 = soundSandFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        sand = var0;
-        var10000 = (new BlockGravel(13, 19)).setHardness(0.6F);
-        var1 = soundGravelFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        gravel = var0;
-        var10000 = (new BlockOre(14, 32)).setHardness(3.0F).setResistance(5.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        oreGold = var0;
-        var10000 = (new BlockOre(15, 33)).setHardness(3.0F).setResistance(5.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        oreIron = var0;
-        var10000 = (new BlockOre(16, 34)).setHardness(3.0F).setResistance(5.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        oreCoal = var0;
-        var10000 = (new BlockLog(17)).setHardness(2.0F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        wood = var0;
-        var10000 = (new BlockLeaves(18, 52)).setHardness(0.2F).setLightOpacity(1);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        leaves = var0;
-        var10000 = (new BlockSponge(19)).setHardness(0.6F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        sponge = var0;
-        var10000 = (new BlockGlass(20, 49, Material.glass, false)).setHardness(0.3F);
-        var1 = soundGlassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        glass = var0;
-        var10000 = (new Block(21, 64, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothRed = var0;
-        var10000 = (new Block(22, 65, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothOrange = var0;
-        var10000 = (new Block(23, 66, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothYellow = var0;
-        var10000 = (new Block(24, 67, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothChartreuse = var0;
-        var10000 = (new Block(25, 68, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothGreen = var0;
-        var10000 = (new Block(26, 69, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothSpringGreen = var0;
-        var10000 = (new Block(27, 70, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothCyan = var0;
-        var10000 = (new Block(28, 71, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothCapri = var0;
-        var10000 = (new Block(29, 72, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothUltramarine = var0;
-        var10000 = (new Block(30, 73, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothViolet = var0;
-        var10000 = (new Block(31, 74, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothPurple = var0;
-        var10000 = (new Block(32, 75, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothMagenta = var0;
-        var10000 = (new Block(33, 76, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothRose = var0;
-        var10000 = (new Block(34, 77, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothDarkGray = var0;
-        var10000 = (new Block(35, 78, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothGray = var0;
-        var10000 = (new Block(36, 79, Material.cloth)).setHardness(0.8F);
-        var1 = soundClothFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        clothWhite = var0;
-        var10000 = (new BlockFlower(37, 13)).setHardness(0.0F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        plantYellow = (BlockFlower)var0;
-        var10000 = (new BlockFlower(38, 12)).setHardness(0.0F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        plantRed = (BlockFlower)var0;
-        var10000 = (new BlockMushroom(39, 29)).setHardness(0.0F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        mushroomBrown = (BlockFlower)var0.setLightValue(2.0F / 16.0F);
-        var10000 = (new BlockMushroom(40, 28)).setHardness(0.0F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        mushroomRed = (BlockFlower)var0;
-        var10000 = (new BlockOreBlock(41, 39)).setHardness(3.0F).setResistance(10.0F);
-        var1 = soundMetalFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        blockGold = var0;
-        var10000 = (new BlockOreBlock(42, 38)).setHardness(5.0F).setResistance(10.0F);
-        var1 = soundMetalFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        blockSteel = var0;
-        var10000 = (new BlockStep(43, true)).setHardness(2.0F).setResistance(10.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        stairDouble = var0;
-        var10000 = (new BlockStep(44, false)).setHardness(2.0F).setResistance(10.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        stairSingle = var0;
-        var10000 = (new Block(45, 7, Material.rock)).setHardness(2.0F).setResistance(10.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        brick = var0;
-        var10000 = (new BlockTNT(46, 8)).setHardness(0.0F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        tnt = var0;
-        var10000 = (new BlockBookshelf(47, 35)).setHardness(1.5F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        bookshelf = var0;
-        var10000 = (new Block(48, 36, Material.rock)).setHardness(2.0F).setResistance(10.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        cobblestoneMossy = var0;
-        var10000 = (new BlockStone(49, 37)).setHardness(10.0F).setResistance(10.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        obsidian = var0;
-        var10000 = (new BlockTorch(50, 80)).setHardness(0.0F).setLightValue(15.0F / 16.0F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        torch = var0;
-        var10000 = (new BlockFire(51, 31)).setHardness(0.0F).setLightValue(1.0F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        fire = (BlockFire)var0;
-        var10000 = (new BlockSource(52, waterMoving.blockID)).setHardness(0.0F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        var10000 = (new BlockSource(53, lavaMoving.blockID)).setHardness(0.0F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        var10000 = (new BlockChest(54)).setHardness(2.5F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        chest = var0;
-        var10000 = (new BlockGears(55, 62)).setHardness(0.5F);
-        var1 = soundMetalFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        cog = var0;
-        var10000 = (new BlockOre(56, 50)).setHardness(3.0F).setResistance(5.0F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        oreDiamond = var0;
-        var10000 = (new BlockOreBlock(57, 40)).setHardness(5.0F).setResistance(10.0F);
-        var1 = soundMetalFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        blockDiamond = var0;
-        var10000 = (new BlockWorkbench(58)).setHardness(2.5F);
-        var1 = soundWoodFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        workbench = var0;
-        var10000 = (new BlockCrops(59, 88)).setHardness(0.0F);
-        var1 = soundGrassFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        crops = var0;
-        var10000 = (new BlockFarmland(60)).setHardness(0.6F);
-        var1 = soundGravelFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        tilledField = var0;
-        var10000 = (new BlockFurnace(61, false)).setHardness(3.5F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        stoneOvenIdle = var0;
-        var10000 = (new BlockFurnace(62, true)).setHardness(3.5F);
-        var1 = soundStoneFootstep;
-        var0 = var10000;
-        var0.stepSound = var1;
-        stoneOvenActive = var0.setLightValue(14.0F / 16.0F);
+        block10000 = (new BlockSand(12, 18)).setHardness(0.5F);
+        stepSound1 = soundSandFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        sand = block0;
+        block10000 = (new BlockGravel(13, 19)).setHardness(0.6F);
+        stepSound1 = soundGravelFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        gravel = block0;
+        block10000 = (new BlockOre(14, 32)).setHardness(3.0F).setResistance(5.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        oreGold = block0;
+        block10000 = (new BlockOre(15, 33)).setHardness(3.0F).setResistance(5.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        oreIron = block0;
+        block10000 = (new BlockOre(16, 34)).setHardness(3.0F).setResistance(5.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        oreCoal = block0;
+        block10000 = (new BlockLog(17)).setHardness(2.0F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        wood = block0;
+        block10000 = (new BlockLeaves(18, 52)).setHardness(0.2F).setLightOpacity(1);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        leaves = block0;
+        block10000 = (new BlockSponge(19)).setHardness(0.6F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        sponge = block0;
+        block10000 = (new BlockGlass(20, 49, Material.glass, false)).setHardness(0.3F);
+        stepSound1 = soundGlassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        glass = block0;
+        block10000 = (new Block(21, 64, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothRed = block0;
+        block10000 = (new Block(22, 65, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothOrange = block0;
+        block10000 = (new Block(23, 66, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothYellow = block0;
+        block10000 = (new Block(24, 67, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothChartreuse = block0;
+        block10000 = (new Block(25, 68, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothGreen = block0;
+        block10000 = (new Block(26, 69, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothSpringGreen = block0;
+        block10000 = (new Block(27, 70, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothCyan = block0;
+        block10000 = (new Block(28, 71, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothCapri = block0;
+        block10000 = (new Block(29, 72, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothUltramarine = block0;
+        block10000 = (new Block(30, 73, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothViolet = block0;
+        block10000 = (new Block(31, 74, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothPurple = block0;
+        block10000 = (new Block(32, 75, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothMagenta = block0;
+        block10000 = (new Block(33, 76, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothRose = block0;
+        block10000 = (new Block(34, 77, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothDarkGray = block0;
+        block10000 = (new Block(35, 78, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothGray = block0;
+        block10000 = (new Block(36, 79, Material.cloth)).setHardness(0.8F);
+        stepSound1 = soundClothFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        clothWhite = block0;
+        block10000 = (new BlockFlower(37, 13)).setHardness(0.0F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        plantYellow = (BlockFlower)block0;
+        block10000 = (new BlockFlower(38, 12)).setHardness(0.0F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        plantRed = (BlockFlower)block0;
+        block10000 = (new BlockMushroom(39, 29)).setHardness(0.0F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        mushroomBrown = (BlockFlower)block0.setLightValue(0.125F);
+        block10000 = (new BlockMushroom(40, 28)).setHardness(0.0F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        mushroomRed = (BlockFlower)block0;
+        block10000 = (new BlockOreBlock(41, 39)).setHardness(3.0F).setResistance(10.0F);
+        stepSound1 = soundMetalFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        blockGold = block0;
+        block10000 = (new BlockOreBlock(42, 38)).setHardness(5.0F).setResistance(10.0F);
+        stepSound1 = soundMetalFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        blockSteel = block0;
+        block10000 = (new BlockStep(43, true)).setHardness(2.0F).setResistance(10.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        stairDouble = block0;
+        block10000 = (new BlockStep(44, false)).setHardness(2.0F).setResistance(10.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        stairSingle = block0;
+        block10000 = (new Block(45, 7, Material.rock)).setHardness(2.0F).setResistance(10.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        brick = block0;
+        block10000 = (new BlockTNT(46, 8)).setHardness(0.0F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        tnt = block0;
+        block10000 = (new BlockBookshelf(47, 35)).setHardness(1.5F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        bookshelf = block0;
+        block10000 = (new Block(48, 36, Material.rock)).setHardness(2.0F).setResistance(10.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        cobblestoneMossy = block0;
+        block10000 = (new BlockStone(49, 37)).setHardness(10.0F).setResistance(10.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        obsidian = block0;
+        block10000 = (new BlockTorch(50, 80)).setHardness(0.0F).setLightValue(0.9375F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        torch = block0;
+        block10000 = (new BlockFire(51, 31)).setHardness(0.0F).setLightValue(1.0F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        fire = (BlockFire)block0;
+        block10000 = (new BlockSource(52, waterMoving.blockID)).setHardness(0.0F);
+        stepSound1 = soundWoodFootstep;
+        block10000.stepSound = stepSound1;
+        block10000 = (new BlockSource(53, lavaMoving.blockID)).setHardness(0.0F);
+        stepSound1 = soundWoodFootstep;
+        block10000.stepSound = stepSound1;
+        block10000 = (new BlockChest(54)).setHardness(2.5F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        chest = block0;
+        block10000 = (new BlockGears(55, 62)).setHardness(0.5F);
+        stepSound1 = soundMetalFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        cog = block0;
+        block10000 = (new BlockOre(56, 50)).setHardness(3.0F).setResistance(5.0F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        oreDiamond = block0;
+        block10000 = (new BlockOreBlock(57, 40)).setHardness(5.0F).setResistance(10.0F);
+        stepSound1 = soundMetalFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        blockDiamond = block0;
+        block10000 = (new BlockWorkbench(58)).setHardness(2.5F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        workbench = block0;
+        block10000 = (new BlockCrops(59, 88)).setHardness(0.0F);
+        stepSound1 = soundGrassFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        crops = block0;
+        block10000 = (new BlockFarmland(60)).setHardness(0.6F);
+        stepSound1 = soundGravelFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        farmland = block0;
+        block10000 = (new BlockFurnace(61, false)).setHardness(3.5F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        stoneOvenIdle = block0;
+        block10000 = (new BlockFurnace(62, true)).setHardness(3.5F);
+        stepSound1 = soundStoneFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        stoneOvenActive = block0.setLightValue(0.875F);
+        block10000 = (new BlockSign(63, TileEntitySign.class)).setHardness(5.0F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        signStanding = block0;
+        block10000 = (new BlockDoor(64)).setHardness(5.0F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        doorWood = block0;
+        block10000 = (new BlockLadder(65, 83)).setHardness(0.4F);
+        stepSound1 = soundWoodFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        ladder = block0;
 
-        for(int var2 = 0; var2 < 256; ++var2) {
-            if(blocksList[var2] != null) {
-                Item.itemsList[var2] = new ItemBlock(var2 - 256);
+        for(int i2 = 0; i2 < 256; ++i2) {
+            if(blocksList[i2] != null) {
+                Item.itemsList[i2] = new ItemBlock(i2 - 256);
             }
         }
 

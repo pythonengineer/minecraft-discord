@@ -15,10 +15,9 @@ public final class SoundManager {
     private SoundPool soundPoolSounds = new SoundPool();
     private SoundPool soundPoolMusic = new SoundPool();
     private GameSettings options;
-    private SoundPoolEntry currentMusic;
 
-    public final void loadSoundSettings(GameSettings var1) {
-        this.options = var1;
+    public final void loadSoundSettings(GameSettings options) {
+        this.options = options;
         this.sndManager = new EaglercraftSoundManager();
     }
 
@@ -53,17 +52,17 @@ public final class SoundManager {
         this.sndManager.stopAllSounds();
     }
 
-    public final void addSound(String var1, String var2) {
-        EagRuntime.getRequiredResourceBytes(var1);
-        this.soundPoolSounds.addSound(this.sndManager, var2, var1);
+    public final void addSound(String soundName, String soundFile) {
+        EagRuntime.getRequiredResourceBytes(soundName);
+        this.soundPoolSounds.addSound(this.sndManager, soundFile, soundName);
     }
 
-    public final void addMusic(String var1, String var2) {
+    public final void addMusic(String musicName, String musicFile) {
         if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE && this.options.music) {
-            EagRuntime.getRequiredResourceBytes(var2);
+            EagRuntime.getRequiredResourceBytes(musicFile);
         }
 
-        this.soundPoolMusic.addSound(this.sndManager, var1, var2);
+        this.soundPoolMusic.addSound(this.sndManager, musicName, musicFile);
     }
 
     public final SoundPoolEntry play(SoundPoolEntry sound) {
@@ -71,27 +70,27 @@ public final class SoundManager {
         return sound;
     }
 
-    public final void setListener(EntityLiving var1, float var2) {
+    public final void setListener(EntityLiving livingEntity, float partialTicks) {
         if(this.options.sound) {
-            this.sndManager.setListener(var1, var2);
+            this.sndManager.setListener(livingEntity, partialTicks);
         }
     }
 
-    public final void playSound(String var1, float var2, float var3, float var4, float var5, float var6) {
+    public final void playSound(String soundName, float x, float y, float z, float volume, float pitch) {
         if(this.options.sound) {
-            SoundPoolEntry var8 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
-            if(var8 != null && var5 > 0.0F) {
-                this.play(new SoundPoolEntry(var8, var2, var3, var4, var5, var6));
+            SoundPoolEntry entry = this.soundPoolSounds.getRandomSoundFromSoundPool(soundName);
+            if(entry != null && volume > 0.0F) {
+                this.play(new SoundPoolEntry(entry, x, y, z, volume, pitch));
             }
 
         }
     }
 
-    public final void playSoundFX(String var1, float var2, float var3) {
+    public final void playSoundFX(String fxSoundName, float volume, float pitch) {
         if(this.options.sound) {
-            SoundPoolEntry var4 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
-            if(var4 != null) {
-                this.play(new SoundPoolEntry(var4, true, 1.0F, 0.25F));
+            SoundPoolEntry entry = this.soundPoolSounds.getRandomSoundFromSoundPool(fxSoundName);
+            if(entry != null) {
+                this.play(new SoundPoolEntry(entry, true, 1.0F, 0.25F));
             }
 
         }

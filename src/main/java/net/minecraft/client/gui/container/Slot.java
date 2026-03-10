@@ -5,32 +5,32 @@ import net.minecraft.game.item.ItemStack;
 
 public class Slot {
 	public final int slotIndex;
-	public final int xPos;
-	public final int yPos;
+	public final int xDisplayPosition;
+	public final int yDisplayPosition;
 	public final IInventory inventory;
-	private final GuiContainer guiHandler;
+	private final GuiContainer slotContainer;
 
-	public Slot(GuiContainer var1, IInventory var2, int var3, int var4, int var5) {
-		this.guiHandler = var1;
-		this.inventory = var2;
-		this.slotIndex = var3;
-		this.xPos = var4;
-		this.yPos = var5;
-	}
+    public Slot(GuiContainer container, IInventory inventory, int slot, int x, int y) {
+        this.slotContainer = container;
+        this.inventory = inventory;
+        this.slotIndex = slot;
+        this.xDisplayPosition = x;
+        this.yDisplayPosition = y;
+    }
 
-	public final boolean isAtCursorPos(int var1, int var2) {
-		int var3 = (this.guiHandler.width - this.guiHandler.xSize) / 2;
-		int var4 = (this.guiHandler.height - this.guiHandler.ySize) / 2;
-		var1 -= var3;
-		var2 -= var4;
-		return var1 >= this.xPos - 1 && var1 < this.xPos + 16 + 1 && var2 >= this.yPos - 1 && var2 < this.yPos + 16 + 1;
-	}
+    public final boolean getIsMouseOverSlot(int x, int y) {
+        int i3 = (this.slotContainer.width - this.slotContainer.xSize) / 2;
+        int i4 = (this.slotContainer.height - this.slotContainer.ySize) / 2;
+        x -= i3;
+        y -= i4;
+        return x >= this.xDisplayPosition - 1 && x < this.xDisplayPosition + 16 + 1 && y >= this.yDisplayPosition - 1 && y < this.yDisplayPosition + 16 + 1;
+    }
 
 	public void onPickupFromSlot() {
         this.onSlotChanged();
 	}
 
-    public boolean isItemValid(ItemStack var1) {
+    public boolean isItemValid(ItemStack stack) {
         return true;
     }
 
@@ -46,12 +46,12 @@ public class Slot {
         return this.inventory.decrStackSize(this.slotIndex, i);
     }
 
-	public final void putStack(ItemStack var1) {
-		this.inventory.setInventorySlotContents(this.slotIndex, var1);
+    public final void putStack(ItemStack stack) {
+        this.inventory.setInventorySlotContents(this.slotIndex, stack);
         this.onSlotChanged();
-	}
+    }
 
-    public int getBackgroundIconIndex() {
+    public int getRenderIndex() {
         return -1;
     }
 

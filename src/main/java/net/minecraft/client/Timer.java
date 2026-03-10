@@ -13,39 +13,39 @@ public final class Timer {
     private long lastSyncHRClock = EagRuntime.nanoTime() / 1000000L;
     private double timeSyncAdjustment = 1.0D;
 
-    public Timer(float var1) {
+    public Timer(float tps) {
     }
 
     public final void updateTimer() {
-        long var1 = EagRuntime.currentTimeMillis();
-        long var3 = var1 - this.lastSyncSysClock;
-        long var5 = EagRuntime.nanoTime() / 1000000L;
-        double var9;
-        if(var3 > 1000L) {
-            long var7 = var5 - this.lastSyncHRClock;
-            var9 = (double)var3 / (double)var7;
-            this.timeSyncAdjustment += (var9 - this.timeSyncAdjustment) * (double)0.2F;
-            this.lastSyncSysClock = var1;
-            this.lastSyncHRClock = var5;
+        long j1;
+        long j3 = (j1 = EagRuntime.currentTimeMillis()) - this.lastSyncSysClock;
+        long j5 = EagRuntime.nanoTime() / 1000000L;
+        double d9;
+        if(j3 > 1000L) {
+            long j7 = j5 - this.lastSyncHRClock;
+            d9 = (double)j3 / (double)j7;
+            this.timeSyncAdjustment += (d9 - this.timeSyncAdjustment) * (double)0.2F;
+            this.lastSyncSysClock = j1;
+            this.lastSyncHRClock = j5;
         }
 
-        if(var3 < 0L) {
-            this.lastSyncSysClock = var1;
-            this.lastSyncHRClock = var5;
+        if(j3 < 0L) {
+            this.lastSyncSysClock = j1;
+            this.lastSyncHRClock = j5;
         }
 
-        double var11 = (double)var5 / 1000.0D;
-        var9 = (var11 - this.lastHRTime) * this.timeSyncAdjustment;
-        this.lastHRTime = var11;
-        if(var9 < 0.0D) {
-            var9 = 0.0D;
+        double d11;
+        d9 = ((d11 = (double)j5 / 1000.0D) - this.lastHRTime) * this.timeSyncAdjustment;
+        this.lastHRTime = d11;
+        if(d9 < 0.0D) {
+            d9 = 0.0D;
         }
 
-        if(var9 > 1.0D) {
-            var9 = 1.0D;
+        if(d9 > 1.0D) {
+            d9 = 1.0D;
         }
 
-        this.elapsedPartialTicks = (float)((double)this.elapsedPartialTicks + var9 * (double)this.timerSpeed * (double)this.ticksPerSecond);
+        this.elapsedPartialTicks = (float)((double)this.elapsedPartialTicks + d9 * (double)this.timerSpeed * (double)this.ticksPerSecond);
         this.elapsedTicks = (int)this.elapsedPartialTicks;
         this.elapsedPartialTicks -= (float)this.elapsedTicks;
         if(this.elapsedTicks > 10) {

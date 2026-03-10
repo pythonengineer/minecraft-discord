@@ -3,37 +3,37 @@ package net.minecraft.client.render.camera;
 import net.minecraft.game.physics.AxisAlignedBB;
 
 public class Frustrum {
-    private ClippingHelper clippingHelper = ClippingHelperImplementation.init();
+    private ClippingHelper clippingHelper = ClippingHelperImplementation.getInstance();
     private double xPosition;
     private double yPosition;
     private double zPosition;
 
-    public boolean isBoundingBoxInFrustrum(AxisAlignedBB var1) {
-        return this.isBoxInFrustum(var1.minX, var1.minY, var1.minZ, var1.maxX, var1.maxY, var1.maxZ);
+    public boolean isBoundingBoxInFrustum(AxisAlignedBB aabb) {
+        return this.isBoxInFrustum(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ);
     }
 
-    public void setPosition(double var1, double var3, double var5) {
-        this.xPosition = var1;
-        this.yPosition = var3;
-        this.zPosition = var5;
+    public void setPosition(double x, double y, double z) {
+        this.xPosition = x;
+        this.yPosition = y;
+        this.zPosition = z;
     }
 
-    public boolean isBoxInFrustum(double var1, double var3, double var5, double var7, double var9, double var11) {
-        double var10001 = var1 - this.xPosition;
-        double var10002 = var3 - this.yPosition;
-        double var10003 = var5 - this.zPosition;
-        double var10004 = var7 - this.xPosition;
-        double var10005 = var9 - this.yPosition;
-        double var24 = var11 - this.zPosition;
-        double var22 = var10005;
-        double var20 = var10004;
-        double var18 = var10003;
-        double var16 = var10002;
-        double var14 = var10001;
-        ClippingHelper var26 = this.clippingHelper;
+    public boolean isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        double d10001 = minX - this.xPosition;
+        double d10002 = minY - this.yPosition;
+        double d10003 = minZ - this.zPosition;
+        double d10004 = maxX - this.xPosition;
+        double d10005 = maxY - this.yPosition;
+        double d24 = maxZ - this.zPosition;
+        double d22 = d10005;
+        double d20 = d10004;
+        double d18 = d10003;
+        double d16 = d10002;
+        double d14 = d10001;
+        ClippingHelper clippingHelper26 = this.clippingHelper;
 
-        for(int var2 = 0; var2 < 6; ++var2) {
-            if((double)var26.frustrum[var2][0] * var14 + (double)var26.frustrum[var2][1] * var16 + (double)var26.frustrum[var2][2] * var18 + (double)var26.frustrum[var2][3] <= 0.0D && (double)var26.frustrum[var2][0] * var20 + (double)var26.frustrum[var2][1] * var16 + (double)var26.frustrum[var2][2] * var18 + (double)var26.frustrum[var2][3] <= 0.0D && (double)var26.frustrum[var2][0] * var14 + (double)var26.frustrum[var2][1] * var22 + (double)var26.frustrum[var2][2] * var18 + (double)var26.frustrum[var2][3] <= 0.0D && (double)var26.frustrum[var2][0] * var20 + (double)var26.frustrum[var2][1] * var22 + (double)var26.frustrum[var2][2] * var18 + (double)var26.frustrum[var2][3] <= 0.0D && (double)var26.frustrum[var2][0] * var14 + (double)var26.frustrum[var2][1] * var16 + (double)var26.frustrum[var2][2] * var24 + (double)var26.frustrum[var2][3] <= 0.0D && (double)var26.frustrum[var2][0] * var20 + (double)var26.frustrum[var2][1] * var16 + (double)var26.frustrum[var2][2] * var24 + (double)var26.frustrum[var2][3] <= 0.0D && (double)var26.frustrum[var2][0] * var14 + (double)var26.frustrum[var2][1] * var22 + (double)var26.frustrum[var2][2] * var24 + (double)var26.frustrum[var2][3] <= 0.0D && (double)var26.frustrum[var2][0] * var20 + (double)var26.frustrum[var2][1] * var22 + (double)var26.frustrum[var2][2] * var24 + (double)var26.frustrum[var2][3] <= 0.0D) {
+        for(int i2 = 0; i2 < 6; ++i2) {
+            if((double)clippingHelper26.frustum[i2][0] * d14 + (double)clippingHelper26.frustum[i2][1] * d16 + (double)clippingHelper26.frustum[i2][2] * d18 + (double)clippingHelper26.frustum[i2][3] <= 0.0D && (double)clippingHelper26.frustum[i2][0] * d20 + (double)clippingHelper26.frustum[i2][1] * d16 + (double)clippingHelper26.frustum[i2][2] * d18 + (double)clippingHelper26.frustum[i2][3] <= 0.0D && (double)clippingHelper26.frustum[i2][0] * d14 + (double)clippingHelper26.frustum[i2][1] * d22 + (double)clippingHelper26.frustum[i2][2] * d18 + (double)clippingHelper26.frustum[i2][3] <= 0.0D && (double)clippingHelper26.frustum[i2][0] * d20 + (double)clippingHelper26.frustum[i2][1] * d22 + (double)clippingHelper26.frustum[i2][2] * d18 + (double)clippingHelper26.frustum[i2][3] <= 0.0D && (double)clippingHelper26.frustum[i2][0] * d14 + (double)clippingHelper26.frustum[i2][1] * d16 + (double)clippingHelper26.frustum[i2][2] * d24 + (double)clippingHelper26.frustum[i2][3] <= 0.0D && (double)clippingHelper26.frustum[i2][0] * d20 + (double)clippingHelper26.frustum[i2][1] * d16 + (double)clippingHelper26.frustum[i2][2] * d24 + (double)clippingHelper26.frustum[i2][3] <= 0.0D && (double)clippingHelper26.frustum[i2][0] * d14 + (double)clippingHelper26.frustum[i2][1] * d22 + (double)clippingHelper26.frustum[i2][2] * d24 + (double)clippingHelper26.frustum[i2][3] <= 0.0D && (double)clippingHelper26.frustum[i2][0] * d20 + (double)clippingHelper26.frustum[i2][1] * d22 + (double)clippingHelper26.frustum[i2][2] * d24 + (double)clippingHelper26.frustum[i2][3] <= 0.0D) {
                 return false;
             }
         }

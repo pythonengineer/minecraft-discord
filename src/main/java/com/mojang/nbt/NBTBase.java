@@ -7,9 +7,9 @@ import java.io.IOException;
 public abstract class NBTBase {
 	private String key = null;
 
-	abstract void writeTagContents(DataOutput var1) throws IOException;
+	abstract void writeTagContents(DataOutput dataOutput1) throws IOException;
 
-	abstract void readTagContents(DataInput var1) throws IOException;
+	abstract void readTagContents(DataInput dataInput1) throws IOException;
 
 	public abstract byte getType();
 
@@ -17,41 +17,41 @@ public abstract class NBTBase {
 		return this.key == null ? "" : this.key;
 	}
 
-	public final NBTBase setKey(String var1) {
-		this.key = var1;
+	public final NBTBase setKey(String key) {
+		this.key = key;
 		return this;
 	}
 
-    public static NBTBase read(DataInput var0, byte var1) throws IOException {
+    public static NBTBase read(DataInput dataInput, byte var1) throws IOException {
         if(var1 == 0) {
             return new NBTTagEnd();
         } else {
-            NBTBase var3 = createTagOfType(var1);
-            short var2 = var0.readShort();
+            NBTBase nBTBase3 = createTagOfType(var1);
+            short var2 = dataInput.readShort();
             byte[] var4 = new byte[var2];
-            var0.readFully(var4);
-            var3.key = new String(var4, "UTF-8");
-            var3.readTagContents(var0);
-            return var3;
+            dataInput.readFully(var4);
+            nBTBase3.key = new String(var4, "UTF-8");
+            nBTBase3.readTagContents(dataInput);
+            return nBTBase3;
         }
     }
 
-	public static NBTBase readNamedTag(DataInput var0) throws IOException {
-		return read(var0, var0.readByte());
-	}
+    public static NBTBase readNamedTag(DataInput dataInput) throws IOException {
+        return read(dataInput, dataInput.readByte());
+    }
 
-	public static void writeNamedTag(NBTBase var0, DataOutput var1) throws IOException {
-		var1.writeByte(var0.getType());
-		if(var0.getType() != 0) {
-			byte[] var2 = var0.getKey().getBytes("UTF-8");
-			var1.writeShort(var2.length);
-			var1.write(var2);
-			var0.writeTagContents(var1);
+	public static void writeNamedTag(NBTBase baseTag, DataOutput dataOutput) throws IOException {
+		dataOutput.writeByte(baseTag.getType());
+		if(baseTag.getType() != 0) {
+			byte[] b2 = baseTag.getKey().getBytes("UTF-8");
+			dataOutput.writeShort(b2.length);
+			dataOutput.write(b2);
+			baseTag.writeTagContents(dataOutput);
 		}
 	}
 
-	public static NBTBase createTagOfType(byte var0) {
-		switch(var0) {
+	public static NBTBase createTagOfType(byte type) {
+		switch(type) {
 		case 0:
 			return new NBTTagEnd();
 		case 1:

@@ -7,45 +7,42 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.monster.EntityCreeper;
 
 public final class RenderCreeper extends RenderLiving {
-    public RenderCreeper() {
-        super(new ModelCreeper(), 0.5F);
-    }
+	public RenderCreeper() {
+		super(new ModelCreeper(), 0.5F);
+	}
 
-    protected final void preRenderCallback(EntityLiving var1, float var2) {
-        EntityCreeper var4 = (EntityCreeper)var1;
-        float var5 = var4.getCreeperState(var2);
-        var2 = 1.0F + MathHelper.sin(var5 * 100.0F) * var5 * 0.01F;
-        if(var5 < 0.0F) {
-            var5 = 0.0F;
-        }
+	protected final void preRenderCallback(EntityLiving livingEntity, float partialTicks) {
+		float livingEntity1 = ((EntityCreeper)livingEntity).getCreeperFlashTime(partialTicks);
+		partialTicks = 1.0F + MathHelper.sin(livingEntity1 * 100.0F) * livingEntity1 * 0.01F;
+		if(livingEntity1 < 0.0F) {
+			livingEntity1 = 0.0F;
+		}
 
-        if(var5 > 1.0F) {
-            var5 = 1.0F;
-        }
+		if(livingEntity1 > 1.0F) {
+			livingEntity1 = 1.0F;
+		}
 
-        var5 *= var5;
-        var5 *= var5;
-        float var3 = (1.0F + var5 * 0.4F) * var2;
-        var5 = (1.0F + var5 * 0.1F) / var2;
-        GL11.glScalef(var3, var5, var3);
-    }
+		livingEntity1 = (livingEntity1 *= livingEntity1) * livingEntity1;
+		float f3 = (1.0F + livingEntity1 * 0.4F) * partialTicks;
+		livingEntity1 = (1.0F + livingEntity1 * 0.1F) / partialTicks;
+		GL11.glScalef(f3, livingEntity1, f3);
+	}
 
-    protected final int getColorMultiplier(EntityLiving var1, float var2, float var3) {
-        EntityCreeper var4 = (EntityCreeper)var1;
-        float var5 = var4.getCreeperState(var3);
-        if((int)(var5 * 10.0F) % 2 == 0) {
-            return 0;
-        } else {
-            int var6 = (int)(var5 * 0.2F * 255.0F);
-            if(var6 < 0) {
-                var6 = 0;
-            }
+	protected final int getColorMultiplier(EntityLiving livingEntity, float brightness, float partialTicks) {
+		float livingEntity1;
+		if((int)((livingEntity1 = ((EntityCreeper)livingEntity).getCreeperFlashTime(partialTicks)) * 10.0F) % 2 == 0) {
+			return 0;
+		} else {
+			int livingEntity2;
+			if((livingEntity2 = (int)(livingEntity1 * 0.2F * 255.0F)) < 0) {
+				livingEntity2 = 0;
+			}
 
-            if(var6 > 255) {
-                var6 = 255;
-            }
+			if(livingEntity2 > 255) {
+				livingEntity2 = 255;
+			}
 
-            return var6 << 24 | 16711680 | '\uff00' | 255;
-        }
-    }
+			return livingEntity2 << 24 | 16711680 | 65280 | 255;
+		}
+	}
 }

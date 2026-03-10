@@ -4,55 +4,45 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public class BlockSand extends Block {
-    public BlockSand(int var1, int var2) {
-        super(var1, var2, Material.sand);
-    }
+	public BlockSand(int blockID, int textureIndex) {
+		super(blockID, textureIndex, Material.sand);
+	}
 
-    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
-        this.scheduleBlockUpdate(var1, var2, var3, var4);
-    }
+	public final void onBlockAdded(World world, int x, int y, int z) {
+		this.tryToFall(world, x, y, z);
+	}
 
-    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-        this.scheduleBlockUpdate(var1, var2, var3, var4);
-    }
+	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		this.tryToFall(world, x, y, z);
+	}
 
-    private void scheduleBlockUpdate(World var1, int var2, int var3, int var4) {
-        int var5 = var3;
+	private void tryToFall(World world, int x, int y, int z) {
+		int i5 = y;
 
-        while(true) {
-            int var8 = var5 - 1;
-            int var6 = var1.getBlockId(var2, var8, var4);
-            boolean var10000;
-            if(var6 == 0) {
-                var10000 = true;
-            } else if(var6 == Block.fire.blockID) {
-                var10000 = true;
-            } else {
-                Material var10 = Block.blocksList[var6].blockMaterial;
-                var10000 = var10 == Material.water ? true : var10 == Material.lava;
-            }
+		while(true) {
+			int i8 = i5 - 1;
+			int i6;
+			Material material10;
+			if(!((i6 = world.getBlockId(x, i8, z)) == 0 ? true : (i6 == Block.fire.blockID ? true : ((material10 = Block.blocksList[i6].blockMaterial) == Material.water ? true : material10 == Material.lava))) || i5 < 0) {
+				if(i5 < 0) {
+					world.setBlock(x, y, z, 0);
+				}
 
-            if(!var10000 || var5 < 0) {
-                if(var5 < 0) {
-                    var1.setTileNoUpdate(var2, var3, var4, 0);
-                }
+				if(i5 != y) {
+					if((i6 = world.getBlockId(x, i5, z)) > 0 && Block.blocksList[i6].blockMaterial != Material.air) {
+						world.setBlock(x, i5, z, 0);
+					}
 
-                if(var5 != var3) {
-                    var6 = var1.getBlockId(var2, var5, var4);
-                    if(var6 > 0 && Block.blocksList[var6].blockMaterial != Material.air) {
-                        var1.setTileNoUpdate(var2, var5, var4, 0);
-                    }
+					world.swap(x, y, z, x, i5, z);
+				}
 
-                    var1.swap(var2, var3, var4, var2, var5, var4);
-                }
+				return;
+			}
 
-                return;
-            }
-
-            --var5;
-            if(var1.getBlockId(var2, var5, var4) == Block.fire.blockID) {
-                var1.setTileNoUpdate(var2, var5, var4, 0);
-            }
-        }
-    }
+			--i5;
+			if(world.getBlockId(x, i5, z) == Block.fire.blockID) {
+				world.setBlock(x, i5, z, 0);
+			}
+		}
+	}
 }

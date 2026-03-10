@@ -3624,10 +3624,10 @@ public class GL11 {
     }
 
     public static void glVertex3f(float x, float y, float z) {
-        Tessellator.instance.addVertex(x, y, z);
+        Tessellator.instance.drawVertex(x, y, z);
     }
 
     public static void glVertex2f(float x, float y) {
-        Tessellator.instance.addVertex(x, y, 0.0F);
+        Tessellator.instance.drawVertex(x, y, 0.0F);
     }
 }

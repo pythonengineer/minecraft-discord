@@ -10,22 +10,21 @@ import net.minecraft.game.world.block.tileentity.TileEntityFurnace;
 public final class GuiFurnace extends GuiContainer {
     private TileEntityFurnace furnaceInventory;
 
-    public GuiFurnace(InventoryPlayer var1, TileEntityFurnace var2) {
-        new InventoryCraftResult();
-        this.furnaceInventory = var2;
-        this.inventorySlots.add(new Slot(this, var2, 0, 56, 17));
-        this.inventorySlots.add(new Slot(this, var2, 1, 56, 53));
-        this.inventorySlots.add(new Slot(this, var2, 2, 116, 35));
+    public GuiFurnace(InventoryPlayer playerInventory, TileEntityFurnace furnaceTileEntity) {
+        this.furnaceInventory = furnaceTileEntity;
+        this.slotsList.add(new Slot(this, furnaceTileEntity, 0, 56, 17));
+        this.slotsList.add(new Slot(this, furnaceTileEntity, 1, 56, 53));
+        this.slotsList.add(new Slot(this, furnaceTileEntity, 2, 116, 35));
 
-        int var4;
-        for(var4 = 0; var4 < 3; ++var4) {
-            for(int var3 = 0; var3 < 9; ++var3) {
-                this.inventorySlots.add(new Slot(this, var1, var3 + (var4 + 1) * 9, 8 + var3 * 18, 84 + var4 * 18));
+        int i4;
+        for(i4 = 0; i4 < 3; ++i4) {
+            for(int i3 = 0; i3 < 9; ++i3) {
+                this.slotsList.add(new Slot(this, playerInventory, i3 + (i4 + 1) * 9, 8 + i3 * 18, 84 + i4 * 18));
             }
         }
 
-        for(var4 = 0; var4 < 9; ++var4) {
-            this.inventorySlots.add(new Slot(this, var1, var4, 8 + var4 * 18, 142));
+        for(i4 = 0; i4 < 9; ++i4) {
+            this.slotsList.add(new Slot(this, playerInventory, i4, 8 + i4 * 18, 142));
         }
 
     }
@@ -36,25 +35,25 @@ public final class GuiFurnace extends GuiContainer {
     }
 
     protected final void drawGuiContainerBackgroundLayer() {
-        int var1 = this.mc.renderEngine.getTexture("/gui/furnace.png");
+        int i1 = this.mc.renderEngine.getTexture("/gui/furnace.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderEngine.bindTexture(var1);
-        var1 = (this.width - this.xSize) / 2;
-        int var2 = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(var1, var2, 0, 0, this.xSize, this.ySize);
-        int var3;
+        RenderEngine.bindTexture(i1);
+        i1 = (this.width - this.xSize) / 2;
+        int i2 = (this.height - this.ySize) / 2;
+        this.drawTexturedModalRect(i1, i2, 0, 0, this.xSize, this.ySize);
+        int i3;
         if(this.furnaceInventory.isBurning()) {
-            var3 = this.furnaceInventory.getBurnTimeRemainingScaled(12);
-            this.drawTexturedModalRect(var1 + 56, var2 + 36 + 12 - var3, 176, 12 - var3, 14, var3 + 2);
+            i3 = this.furnaceInventory.getBurnTimeRemainingScaled(12);
+            this.drawTexturedModalRect(i1 + 56, i2 + 36 + 12 - i3, 176, 12 - i3, 14, i3 + 2);
         }
 
-        var3 = this.furnaceInventory.getCookProgressScaled(24);
-        this.drawTexturedModalRect(var1 + 79, var2 + 34, 176, 14, var3 + 1, 16);
+        i3 = this.furnaceInventory.getCookProgressScaled(24);
+        this.drawTexturedModalRect(i1 + 79, i2 + 34, 176, 14, i3 + 1, 16);
     }
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.inventorySlots.get(i);
+        Slot slot = (Slot) this.slotsList.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
@@ -63,7 +62,7 @@ public final class GuiFurnace extends GuiContainer {
                     return null;
                 }
             } else if (i != 1 && i != 0) {
-                if (TileEntityFurnace.smeltItem(itemstack1.itemID) != -1) {
+                if (TileEntityFurnace.getRecipes(itemstack1.itemID) != -1) {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
                         return null;
                     }

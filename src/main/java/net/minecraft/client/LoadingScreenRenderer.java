@@ -19,129 +19,127 @@ import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.Tessellator;
 
 public class LoadingScreenRenderer implements IProgressUpdate {
-    private String text;
+    private String currentlyDisplayedProgress;
     private Minecraft mc;
-    private String title;
-    private long start;
+    private String currentlyDisplayedText;
+    private long systemTime;
 
-    public LoadingScreenRenderer(Minecraft var1) {
-        this.text = "";
-        this.title = "";
-        this.start = EagRuntime.currentTimeMillis();
-        this.mc = var1;
+    public LoadingScreenRenderer(Minecraft minecraft) {
+        this.currentlyDisplayedProgress = "";
+        this.currentlyDisplayedText = "";
+        this.systemTime = EagRuntime.currentTimeMillis();
+        this.mc = minecraft;
     }
 
-    public final void setTitle(String var1) {
-		if(this.mc.running) {
-			this.title = var1;
-            int var3 = this.mc.scaledResolution.getScaledWidth();
-            int var2 = this.mc.scaledResolution.getScaledHeight();
-			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
-			GL11.glOrtho(0.0D, (double)var3, (double)var2, 0.0D, 100.0D, 300.0D);
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glLoadIdentity();
-			GL11.glTranslatef(0.0F, 0.0F, -200.0F);
-		}
-	}
-
-    public final void setText(String var1) {
+    public final void setTitle(String title) {
         if(this.mc.running) {
-            this.start = 0L;
-            this.text = var1;
-            this.setProgress(-1);
-            this.start = 0L;
+            this.currentlyDisplayedText = title;
+            int i2 = this.mc.scaledResolution.getScaledWidth();
+            int title2 = this.mc.scaledResolution.getScaledHeight();
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(0.0D, (double)i2, (double)title2, 0.0D, 100.0D, 300.0D);
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            GL11.glTranslatef(0.0F, 0.0F, -200.0F);
         }
     }
 
-    public final void setProgress(int var1) {
+    public final void displayLoadingString(String loadingString) {
         if(this.mc.running) {
-            long var4 = EagRuntime.currentTimeMillis();
-            if(var4 - this.start >= 20L) {
-                this.start = var4;
-                int var3 = this.mc.scaledResolution.getScaledWidth();
-                int var8 = this.mc.scaledResolution.getScaledHeight();
+            this.systemTime = 0L;
+            this.currentlyDisplayedProgress = loadingString;
+            this.setLoadingProgress(-1);
+            this.systemTime = 0L;
+        }
+    }
+
+    public final void setLoadingProgress(int loadingProgress) {
+        if(this.mc.running) {
+            long j2;
+            if((j2 = EagRuntime.currentTimeMillis()) - this.systemTime >= 20L) {
+                this.systemTime = j2;
+                int i3 = this.mc.scaledResolution.getScaledWidth();
+                int i9 = this.mc.scaledResolution.getScaledHeight();
                 GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
                 GL11.glMatrixMode(GL11.GL_PROJECTION);
                 GL11.glLoadIdentity();
-                GL11.glOrtho(0.0D, (double)var3, (double)var8, 0.0D, 100.0D, 300.0D);
+                GL11.glOrtho(0.0D, (double)i3, (double)i9, 0.0D, 100.0D, 300.0D);
                 GL11.glMatrixMode(GL11.GL_MODELVIEW);
                 GL11.glLoadIdentity();
                 GL11.glTranslatef(0.0F, 0.0F, -200.0F);
-                GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
-                Tessellator var9 = Tessellator.instance;
-                int var5 = this.mc.renderEngine.getTexture("/dirt.png");
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, var5);
-                var9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-                var9.setColorOpaque_I(4210752);
-                var9.addVertexWithUV(0.0D, (double)var8, 0.0D, 0.0D, (double)((float)var8 / 32.0F));
-                var9.addVertexWithUV((double)var3, (double)var8, 0.0D, (double)((float)var3 / 32.0F), (double)((float)var8 / 32.0F));
-                var9.addVertexWithUV((double)var3, 0.0D, 0.0D, (double)((float)var3 / 32.0F), 0.0D);
-                var9.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-                var9.draw();
-                if(var1 >= 0) {
-                    var5 = var3 / 2 - 50;
-                    int var6 = var8 / 2 + 16;
+                GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+                Tessellator tessellator4 = Tessellator.instance;
+                int i5 = this.mc.renderEngine.getTexture("/dirt.png");
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, i5);
+                tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+                tessellator4.setColorOpaque_I(4210752);
+                tessellator4.addVertexWithUV(0.0D, (double)i9, 0.0D, 0.0D, (double)((float)i9 / 32.0F));
+                tessellator4.addVertexWithUV((double)i3, (double)i9, 0.0D, (double)((float)i3 / 32.0F), (double)((float)i9 / 32.0F));
+                tessellator4.addVertexWithUV((double)i3, 0.0D, 0.0D, (double)((float)i3 / 32.0F), 0.0D);
+                tessellator4.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+                tessellator4.draw();
+                if(loadingProgress >= 0) {
+                    i5 = i3 / 2 - 50;
+                    int i6 = i9 / 2 + 16;
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    var9.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
-                    var9.setColorOpaque_I(8421504);
-                    var9.addVertex((double)var5, (double)var6, 0.0D);
-                    var9.addVertex((double)var5, (double)(var6 + 2), 0.0D);
-                    var9.addVertex((double)(var5 + 100), (double)(var6 + 2), 0.0D);
-                    var9.addVertex((double)(var5 + 100), (double)var6, 0.0D);
-                    var9.setColorOpaque_I(8454016);
-                    var9.addVertex((double)var5, (double)var6, 0.0D);
-                    var9.addVertex((double)var5, (double)(var6 + 2), 0.0D);
-                    var9.addVertex((double)(var5 + var1), (double)(var6 + 2), 0.0D);
-                    var9.addVertex((double)(var5 + var1), (double)var6, 0.0D);
-                    var9.draw();
+                    tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
+                    tessellator4.setColorOpaque_I(8421504);
+                    tessellator4.drawVertex((double)i5, (double)i6, 0.0D);
+                    tessellator4.drawVertex((double)i5, (double)(i6 + 2), 0.0D);
+                    tessellator4.drawVertex((double)(i5 + 100), (double)(i6 + 2), 0.0D);
+                    tessellator4.drawVertex((double)(i5 + 100), (double)i6, 0.0D);
+                    tessellator4.setColorOpaque_I(8454016);
+                    tessellator4.drawVertex((double)i5, (double)i6, 0.0D);
+                    tessellator4.drawVertex((double)i5, (double)(i6 + 2), 0.0D);
+                    tessellator4.drawVertex((double)(i5 + loadingProgress), (double)(i6 + 2), 0.0D);
+                    tessellator4.drawVertex((double)(i5 + loadingProgress), (double)i6, 0.0D);
+                    tessellator4.draw();
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }
 
-                this.mc.fontRenderer.drawStringWithShadow(this.title, (var3 - this.mc.fontRenderer.getStringWidth(this.title)) / 2, var8 / 2 - 4 - 16, 16777215);
-                this.mc.fontRenderer.drawStringWithShadow(this.text, (var3 - this.mc.fontRenderer.getStringWidth(this.text)) / 2, var8 / 2 - 4 + 8, 16777215);
+                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedText, (i3 - this.mc.fontRenderer.width(this.currentlyDisplayedText)) / 2, i9 / 2 - 4 - 16, 0xFFFFFF);
+                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedProgress, (i3 - this.mc.fontRenderer.width(this.currentlyDisplayedProgress)) / 2, i9 / 2 - 4 + 8, 0xFFFFFF);
                 Display.update();
 
                 try {
                     Thread.yield();
-                } catch (Exception var6) {
+                } catch (Exception exception7) {
                 }
             }
-
-            this.start = 0L;
         }
-	}
+    }
 
     public LoadingScreenRenderer() {
     }
 
-    public static NBTTagCompound read(InputStream var0) throws IOException {
-        DataInputStream var4 = new DataInputStream(new BufferedInputStream(EaglerZLIB.newGZIPInputStream(var0)));
+    public static NBTTagCompound read(InputStream inputStream) throws IOException {
+        DataInputStream inputStream1 = new DataInputStream(new BufferedInputStream(EaglerZLIB.newGZIPInputStream(inputStream)));
 
-        NBTTagCompound var5;
-        byte b0 = var4.readByte();
+        NBTTagCompound nBTTagCompound5;
+        byte b0 = inputStream1.readByte();
         try {
-            NBTBase var1 = NBTBase.read(var4, b0);
-            if(!(var1 instanceof NBTTagCompound)) {
+            NBTBase nBTBase1 = NBTBase.read(inputStream1, b0);
+            if(!(nBTBase1 instanceof NBTTagCompound)) {
                 throw new IOException("Root tag must be a named compound tag");
             }
 
-            var5 = (NBTTagCompound)var1;
+            nBTTagCompound5 = (NBTTagCompound)nBTBase1;
         } finally {
-            var4.close();
+            inputStream1.close();
         }
 
-        return var5;
+        return nBTTagCompound5;
     }
 
-    public static void write(NBTTagCompound var0, OutputStream var1) throws IOException {
-        DataOutputStream var5 = new DataOutputStream(new BufferedOutputStream(EaglerZLIB.newGZIPOutputStream(var1)));
+    public static void write(NBTTagCompound compoundTag, OutputStream outputStream) throws IOException {
+        DataOutputStream outputStream1 = new DataOutputStream(new BufferedOutputStream(EaglerZLIB.newGZIPOutputStream(outputStream)));
 
         try {
-            NBTBase.writeNamedTag(var0, var5);
+            NBTBase.writeNamedTag(compoundTag, outputStream1);
         } finally {
-            var5.close();
+            outputStream1.close();
         }
 
     }

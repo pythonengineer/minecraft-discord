@@ -6,48 +6,48 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockFlowing extends BlockFluid {
-	private int stillId1;
-	private int movingId1;
+	private int stillBlockId;
+	private int movingBlockId;
 
-	protected BlockFlowing(int var1, Material var2) {
-		super(var1, var2);
+	protected BlockFlowing(int i1, Material material2) {
+		super(i1, material2);
 		new EaglercraftRandom();
-		int[] var10000 = new int[]{0, 1, 2, 3};
+		int[] i10000 = new int[]{0, 1, 2, 3};
 		this.blockIndexInTexture = 14;
-		if(var2 == Material.lava) {
+		if(material2 == Material.lava) {
 			this.blockIndexInTexture = 30;
 		}
 
-		Block.isBlockContainer[var1] = true;
-		this.movingId1 = var1;
-		this.stillId1 = var1 + 1;
+		Block.canBlockGrass[i1] = true;
+		this.movingBlockId = i1;
+		this.stillBlockId = i1 + 1;
 		this.setBlockBounds(0.01F, -0.09F, 0.01F, 1.01F, 0.90999997F, 1.01F);
 		this.setTickOnLoad(true);
 	}
 
-    public final void onBlockAdded(World var1, int var2, int var3, int var4) {
-        var1.scheduleBlockUpdate(var2, var3, var4, this.movingId1);
-    }
+	public final void onBlockAdded(World world, int x, int y, int z) {
+		world.scheduleBlockUpdate(x, y, z, this.movingBlockId);
+	}
 
-    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        boolean var6 = false;
-        boolean var10000 = false;
-    }
+	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		boolean world1 = false;
+		boolean z10000 = false;
+	}
 
-    public final boolean update(World var1, int var2, int var3, int var4, int var5) {
-        return false;
-    }
+	public final boolean update(World world, int x, int y, int z, int rand) {
+		return false;
+	}
 
-	public final boolean shouldSideBeRendered(World var1, int var2, int var3, int var4, int var5) {
-		int var6 = var1.getBlockId(var2, var3, var4);
-		return var6 != this.movingId1 && var6 != this.stillId1 ? (var5 != 1 || var1.getBlockId(var2 - 1, var3, var4) != 0 && var1.getBlockId(var2 + 1, var3, var4) != 0 && var1.getBlockId(var2, var3, var4 - 1) != 0 && var1.getBlockId(var2, var3, var4 + 1) != 0 ? super.shouldSideBeRendered(var1, var2, var3, var4, var5) : true) : false;
+	public final boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
+		int i6;
+		return (i6 = world.getBlockId(x, y, z)) != this.movingBlockId && i6 != this.stillBlockId ? (metadata != 1 || world.getBlockId(x - 1, y, z) != 0 && world.getBlockId(x + 1, y, z) != 0 && world.getBlockId(x, y, z - 1) != 0 && world.getBlockId(x, y, z + 1) != 0 ? super.getIsBlockSolid(world, x, y, z, metadata) : true) : false;
 	}
 
 	public final boolean isCollidable() {
 		return false;
 	}
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
+	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 
@@ -55,14 +55,14 @@ public final class BlockFlowing extends BlockFluid {
 		return false;
 	}
 
-    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-    }
+	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+	}
 
-    public final int tickRate() {
-        return this.blockMaterial == Material.lava ? 25 : 5;
-    }
+	public final int tickRate() {
+		return this.blockMaterial == Material.lava ? 25 : 5;
+	}
 
-	public final int quantityDropped(EaglercraftRandom var1) {
+	public final int quantityDropped(EaglercraftRandom rand) {
 		return 0;
 	}
 

@@ -1,86 +1,87 @@
 package net.minecraft.game.item;
 
 import com.mojang.nbt.NBTTagCompound;
+
 import net.minecraft.game.world.block.Block;
 
 public final class ItemStack {
-    public int stackSize;
-    public int animationsToGo;
-    public int itemID;
-    public int itemDamage;
+	public int stackSize;
+	public int animationsToGo;
+	public int itemID;
+	public int itemDamage;
 
-    public ItemStack(Block var1) {
-        this((Block)var1, 1);
-    }
+	public ItemStack(Block block) {
+		this((Block)block, 1);
+	}
 
-    public ItemStack(Block var1, int var2) {
-        this(var1.blockID, var2);
-    }
+	public ItemStack(Block block, int amount) {
+		this(block.blockID, amount);
+	}
 
-    public ItemStack(Item var1) {
-        this((Item)var1, 1);
-    }
+	public ItemStack(Item item) {
+		this((Item)item, 1);
+	}
 
-    public ItemStack(Item var1, int var2) {
-        this(var1.shiftedIndex, var2);
-    }
+	public ItemStack(Item item, int amount) {
+		this(item.shiftedIndex, amount);
+	}
 
-    public ItemStack(int var1) {
-        this(var1, 1);
-    }
+	public ItemStack(int id) {
+		this(id, 1);
+	}
 
-    public ItemStack(int var1, int var2) {
-        this.stackSize = 0;
-        this.itemID = var1;
-        this.stackSize = var2;
-    }
+	public ItemStack(int itemID, int amount) {
+		this.stackSize = 0;
+		this.itemID = itemID;
+		this.stackSize = amount;
+	}
 
-    public ItemStack(int var1, int var2, int var3) {
-        this.stackSize = 0;
-        this.itemID = var1;
-        this.stackSize = var2;
-        this.itemDamage = var3;
-    }
+	public ItemStack(int itemID, int amount, int damage) {
+		this.stackSize = 0;
+		this.itemID = itemID;
+		this.stackSize = amount;
+		this.itemDamage = damage;
+	}
 
-    public ItemStack(NBTTagCompound var1) {
-        this.stackSize = 0;
-        this.itemID = var1.getShort("id");
-        this.stackSize = var1.getByte("Count");
-        this.itemDamage = var1.getShort("Damage");
-    }
+	public ItemStack(NBTTagCompound compoundTag) {
+		this.stackSize = 0;
+		this.itemID = compoundTag.getShort("id");
+		this.stackSize = compoundTag.getByte("Count");
+		this.itemDamage = compoundTag.getShort("Damage");
+	}
 
-    public final ItemStack splitStack(int var1) {
-        this.stackSize -= var1;
-        return new ItemStack(this.itemID, var1, this.itemDamage);
-    }
+	public final ItemStack splitStack(int amount) {
+		this.stackSize -= amount;
+		return new ItemStack(this.itemID, amount, this.itemDamage);
+	}
 
-    public final Item getItem() {
-        return Item.itemsList[this.itemID];
-    }
+	public final Item getItem() {
+		return Item.itemsList[this.itemID];
+	}
 
-    public final NBTTagCompound writeToNBT(NBTTagCompound var1) {
-        var1.setShort("id", (short)this.itemID);
-        var1.setByte("Count", (byte)this.stackSize);
-        var1.setShort("Damage", (short)this.itemDamage);
-        return var1;
-    }
+	public final NBTTagCompound writeToNBT(NBTTagCompound compoundTag) {
+		compoundTag.setShort("id", (short)this.itemID);
+		compoundTag.setByte("Count", (byte)this.stackSize);
+		compoundTag.setShort("Damage", (short)this.itemDamage);
+		return compoundTag;
+	}
 
-    public final int getMaxDamage() {
-        return Item.itemsList[this.itemID].getMaxDamage();
-    }
+	public final int getItemDamageForDisplay() {
+		return Item.itemsList[this.itemID].getMaxDamage();
+	}
 
-    public final void damageItem(int var1) {
-        this.itemDamage += var1;
-        if(this.itemDamage > this.getMaxDamage()) {
-            --this.stackSize;
-            if(this.stackSize < 0) {
-                this.stackSize = 0;
-            }
+	public final void damageItem(int damage) {
+		this.itemDamage += damage;
+		if(this.itemDamage > this.getItemDamageForDisplay()) {
+			--this.stackSize;
+			if(this.stackSize < 0) {
+				this.stackSize = 0;
+			}
 
-            this.itemDamage = 0;
-        }
+			this.itemDamage = 0;
+		}
 
-    }
+	}
 
     public ItemStack copy() {
         ItemStack itemstack = new ItemStack(this.itemID, this.stackSize, this.itemDamage);

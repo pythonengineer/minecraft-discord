@@ -11,18 +11,18 @@ public final class MovingObjectPosition {
 	public Vec3D hitVec;
 	public Entity entityHit;
 
-	public MovingObjectPosition(int var1, int var2, int var3, int var4, Vec3D var5) {
-		this.typeOfHit = 0;
-		this.blockX = var1;
-		this.blockY = var2;
-		this.blockZ = var3;
-		this.sideHit = var4;
-		this.hitVec = new Vec3D(var5.xCoord, var5.yCoord, var5.zCoord);
-	}
+    public MovingObjectPosition(int x, int y, int z, int side, Vec3D hitVector) {
+        this.typeOfHit = 0;
+        this.blockX = x;
+        this.blockY = y;
+        this.blockZ = z;
+        this.sideHit = side;
+        this.hitVec = new Vec3D(hitVector.xCoord, hitVector.yCoord, hitVector.zCoord);
+    }
 
-	public MovingObjectPosition(Entity var1) {
-		this.typeOfHit = 1;
-		this.entityHit = var1;
-        this.hitVec = new Vec3D(var1.posX, var1.posY, var1.posZ);
-	}
+    public MovingObjectPosition(Entity entity) {
+        this.typeOfHit = 1;
+        this.entityHit = entity;
+        this.hitVec = new Vec3D(entity.posX, entity.posY, entity.posZ);
+    }
 }

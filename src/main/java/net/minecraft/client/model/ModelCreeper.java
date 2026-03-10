@@ -34,8 +34,8 @@ public final class ModelCreeper extends ModelBase {
         this.leg4.setRotationPoint(2.0F, 16.0F, -4.0F);
     }
 
-    public final void render(float var1, float var2, float var3, float var4, float var5, float var6) {
-        this.setRotationAngles(var1, var2, var3, var4, var5, 1.0F);
+    public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 1.0F);
         this.head.render(1.0F);
         this.body.render(1.0F);
         this.leg1.render(1.0F);
@@ -44,12 +44,12 @@ public final class ModelCreeper extends ModelBase {
         this.leg4.render(1.0F);
     }
 
-    public final void setRotationAngles(float var1, float var2, float var3, float var4, float var5, float var6) {
-        this.head.rotateAngleY = var4 / (180.0F / (float)Math.PI);
-        this.head.rotateAngleX = var5 / (180.0F / (float)Math.PI);
-        this.leg1.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 1.4F * var2;
-        this.leg2.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
-        this.leg3.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 1.4F * var2;
-        this.leg4.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 1.4F * var2;
+    public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+        this.head.rotateAngleY = netHeadYaw / 57.295776F;
+        this.head.rotateAngleX = headPitch / 57.295776F;
+        this.leg1.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+        this.leg2.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.leg3.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.leg4.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
     }
 }

@@ -5,53 +5,53 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockStationary extends BlockFluid {
-	protected BlockStationary(int var1, Material var2) {
-		super(var1, var2);
-		this.movingId = var1 - 1;
-		this.stillId = var1;
+	protected BlockStationary(int i1, Material material2) {
+		super(i1, material2);
+		this.movingBlockId = i1 - 1;
+		this.stillBlockId = i1;
 		this.setTickOnLoad(false);
 	}
 
-	public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
 	}
 
-	public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-		boolean var6 = false;
-		if(this.canFlow(var1, var2, var3 - 1, var4)) {
-			var6 = true;
+	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		boolean z6 = false;
+		if(this.canFlow(world, x, y - 1, z)) {
+			z6 = true;
 		}
 
-		if(!var6 && this.canFlow(var1, var2 - 1, var3, var4)) {
-			var6 = true;
+		if(!z6 && this.canFlow(world, x - 1, y, z)) {
+			z6 = true;
 		}
 
-		if(!var6 && this.canFlow(var1, var2 + 1, var3, var4)) {
-			var6 = true;
+		if(!z6 && this.canFlow(world, x + 1, y, z)) {
+			z6 = true;
 		}
 
-		if(!var6 && this.canFlow(var1, var2, var3, var4 - 1)) {
-			var6 = true;
+		if(!z6 && this.canFlow(world, x, y, z - 1)) {
+			z6 = true;
 		}
 
-		if(!var6 && this.canFlow(var1, var2, var3, var4 + 1)) {
-			var6 = true;
+		if(!z6 && this.canFlow(world, x, y, z + 1)) {
+			z6 = true;
 		}
 
-		if(var5 != 0) {
-			Material var7 = Block.blocksList[var5].blockMaterial;
-			if(this.blockMaterial == Material.water && var7 == Material.lava || var7 == Material.water && this.blockMaterial == Material.lava) {
-				var1.setBlockWithNotify(var2, var3, var4, Block.stone.blockID);
+		if(blockID != 0) {
+			Material material7 = Block.blocksList[blockID].blockMaterial;
+			if(this.blockMaterial == Material.water && material7 == Material.lava || material7 == Material.water && this.blockMaterial == Material.lava) {
+				world.notifyBlockChange(x, y, z, Block.stone.blockID);
 				return;
 			}
 		}
 
-		if(Block.fire.getChanceOfNeighborsEncouragingFire(var5)) {
-			var6 = true;
+		if(Block.fire.getChanceOfNeighborsEncouragingFire(blockID)) {
+			z6 = true;
 		}
 
-		if(var6) {
-			var1.setTileNoUpdate(var2, var3, var4, this.movingId);
-			var1.scheduleBlockUpdate(var2, var3, var4, this.movingId);
+		if(z6) {
+			world.setBlock(x, y, z, this.movingBlockId);
+			world.scheduleBlockUpdate(x, y, z, this.movingBlockId);
 		}
 
 	}

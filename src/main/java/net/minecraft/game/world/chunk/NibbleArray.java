@@ -3,29 +3,25 @@ package net.minecraft.game.world.chunk;
 final class NibbleArray {
     public final byte[] data;
 
-    public NibbleArray(int var1) {
-        this.data = new byte[var1 >> 1];
+    public NibbleArray(int size) {
+        this.data = new byte[size >> 1];
     }
 
-    public NibbleArray(byte[] var1) {
-        this.data = var1;
+    public NibbleArray(byte[] data) {
+        this.data = data;
     }
 
-    public final int get(int var1, int var2, int var3) {
-        var1 = var1 << 11 | var3 << 7 | var2;
-        var2 = var1 >> 1;
-        var1 &= 1;
-        return var1 == 0 ? this.data[var2] & 15 : this.data[var2] >> 4 & 15;
+    public final int getNibble(int x, int y, int z) {
+        y = (x = x << 11 | z << 7 | y) >> 1;
+        return (x &= 1) == 0 ? this.data[y] & 15 : this.data[y] >> 4 & 15;
     }
 
-    public final void set(int var1, int var2, int var3, int var4) {
-        var1 = var1 << 11 | var3 << 7 | var2;
-        var2 = var1 >> 1;
-        var1 &= 1;
-        if(var1 == 0) {
-            this.data[var2] = (byte)(this.data[var2] & 240 | var4 & 15);
+    public final void setNibble(int x, int y, int z, int value) {
+        y = (x = x << 11 | z << 7 | y) >> 1;
+        if((x &= 1) == 0) {
+            this.data[y] = (byte)(this.data[y] & 240 | value & 15);
         } else {
-            this.data[var2] = (byte)(this.data[var2] & 15 | (var4 & 15) << 4);
+            this.data[y] = (byte)(this.data[y] & 15 | (value & 15) << 4);
         }
     }
 

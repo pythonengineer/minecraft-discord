@@ -3,13 +3,13 @@ package net.minecraft.game.item.recipe;
 import java.util.Comparator;
 
 final class RecipeSorter implements Comparator {
-    RecipeSorter(CraftingManager var1) {
+    RecipeSorter(CraftingManager craftingManager) {
     }
 
-    public final int compare(Object var1, Object var2) {
-        CraftingRecipe var10000 = (CraftingRecipe)var1;
-        CraftingRecipe var4 = (CraftingRecipe)var2;
-        CraftingRecipe var3 = var10000;
-        return var4.b() < var3.b() ? -1 : (var4.b() > var3.b() ? 1 : 0);
+    public final int compare(Object craftingRecipe1, Object craftingRecipe2) {
+        CraftingRecipe craftingRecipe10000 = (CraftingRecipe)craftingRecipe1;
+        CraftingRecipe craftingRecipe21 = (CraftingRecipe)craftingRecipe2;
+        CraftingRecipe craftingRecipe11 = craftingRecipe10000;
+        return craftingRecipe21.getRecipeSize() < craftingRecipe11.getRecipeSize() ? -1 : (craftingRecipe21.getRecipeSize() > craftingRecipe11.getRecipeSize() ? 1 : 0);
     }
 }

@@ -8,44 +8,44 @@ import net.minecraft.game.world.World;
 public final class GuiGameOver extends GuiScreen {
 	public final void initGui() {
 		this.controlList.clear();
-        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, "Respawn"));
-        this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, "Title menu"));
+		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, "Respawn"));
+		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, "Title menu"));
 		//if(this.mc.session == null) {
 		//	((GuiButton)this.controlList.get(1)).enabled = false;
 		//}
 
 	}
 
-    protected final void keyTyped(char var1, int var2) {
-    }
+	protected final void keyTyped(char typedChar, int keyCode) {
+	}
 
-	protected final void actionPerformed(GuiButton var1) {
-        if(var1.id == 1) {
-            this.mc.respawn();
-            this.mc.displayGuiScreen((GuiScreen)null);
-        }
+	protected final void actionPerformed(GuiButton button) {
+		if(button.id == 1) {
+			this.mc.respawn();
+			this.mc.setGuiScreen((GuiScreen)null);
+		}
 
-        if(var1.id == 2) {
-            this.mc.closeWorld((World)null);
-            this.mc.displayGuiScreen(new GuiMainMenu());
-        }
+		if(button.id == 2) {
+			this.mc.changeWorld1((World)null);
+			this.mc.setGuiScreen(new GuiMainMenu());
+		}
 
 	}
 
-    public final void drawScreen(int var1, int var2, float var3) {
-        drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
-        GL11.glPushMatrix();
-        GL11.glScalef(2.0F, 2.0F, 2.0F);
-        drawCenteredString(this.fontRenderer, "Game over!", this.width / 2 / 2, 30, 16777215);
-        GL11.glPopMatrix();
-        FontRenderer var10000 = this.fontRenderer;
-        StringBuilder var10001 = (new StringBuilder()).append("Score: &e");
-        EntityPlayerSP var4 = this.mc.thePlayer;
-        drawCenteredString(var10000, var10001.append(var4.score).toString(), this.width / 2, 100, 16777215);
-        super.drawScreen(var1, var2, var3);
-    }
+	public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		drawGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
+		GL11.glPushMatrix();
+		GL11.glScalef(2.0F, 2.0F, 2.0F);
+		drawCenteredString(this.fontRenderer, "Game over!", this.width / 2 / 2, 30, 0xFFFFFF);
+		GL11.glPopMatrix();
+		FontRenderer fontRenderer10000 = this.fontRenderer;
+		StringBuilder stringBuilder10001 = (new StringBuilder()).append("Score: &e");
+		EntityPlayerSP entityPlayerSP4 = this.mc.thePlayer;
+		drawCenteredString(fontRenderer10000, stringBuilder10001.append(this.mc.thePlayer.score).toString(), this.width / 2, 100, 0xFFFFFF);
+		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
 
-    public final boolean doesGuiPauseGame() {
-        return false;
-    }
+	public final boolean doesGuiPauseGame() {
+		return false;
+	}
 }

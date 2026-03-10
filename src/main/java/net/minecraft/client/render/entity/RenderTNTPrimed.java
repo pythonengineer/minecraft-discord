@@ -7,51 +7,48 @@ import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.world.block.Block;
 
 public final class RenderTNTPrimed extends Render {
-	private RenderBlocks blockRenderer = new RenderBlocks();
+	private RenderBlocks renderBlocks = new RenderBlocks();
 
-    public RenderTNTPrimed() {
-        this.shadowSize = 0.5F;
-    }
+	public RenderTNTPrimed() {
+		this.shadowSize = 0.5F;
+	}
 
-    public final void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-        EntityTNTPrimed var10001 = (EntityTNTPrimed)var1;
-        double var12 = var2;
-        EntityTNTPrimed var18 = var10001;
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float)var12, (float)var4, (float)var6);
-        float var19;
-        if((float)var18.fuse - var9 + 1.0F < 10.0F) {
-            var19 = 1.0F - ((float)var18.fuse - var9 + 1.0F) / 10.0F;
-            if(var19 < 0.0F) {
-                var19 = 0.0F;
-            }
+	public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+		EntityTNTPrimed entityTNTPrimed10001 = (EntityTNTPrimed)entity;
+		double d12 = x;
+		EntityTNTPrimed x1 = entityTNTPrimed10001;
+		GL11.glPushMatrix();
+		GL11.glTranslatef((float)d12, (float)y, (float)z);
+		float y1;
+		if((float)x1.fuse - partialTicks + 1.0F < 10.0F) {
+			if((y1 = 1.0F - ((float)x1.fuse - partialTicks + 1.0F) / 10.0F) < 0.0F) {
+				y1 = 0.0F;
+			}
 
-            if(var19 > 1.0F) {
-                var19 = 1.0F;
-            }
+			if(y1 > 1.0F) {
+				y1 = 1.0F;
+			}
 
-            var19 *= var19;
-            var19 *= var19;
-            var19 = 1.0F + var19 * 0.3F;
-            GL11.glScalef(var19, var19, var19);
-        }
+			y1 = (y1 *= y1) * y1;
+			GL11.glScalef(y1 = 1.0F + y1 * 0.3F, y1, y1);
+		}
 
-        var19 = (1.0F - ((float)var18.fuse - var9 + 1.0F) / 100.0F) * 0.8F;
-        this.loadTexture("/terrain.png");
-        this.blockRenderer.renderBlockOnInventory(Block.tnt);
-        if(var18.fuse / 5 % 2 == 0) {
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, var19);
-            this.blockRenderer.renderBlockOnInventory(Block.tnt);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDisable(GL11.GL_BLEND);
-            GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-        }
+		y1 = (1.0F - ((float)x1.fuse - partialTicks + 1.0F) / 100.0F) * 0.8F;
+		this.loadTexture("/terrain.png");
+		this.renderBlocks.renderBlockOnInventory(Block.tnt);
+		if(x1.fuse / 5 % 2 == 0) {
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, y1);
+			this.renderBlocks.renderBlockOnInventory(Block.tnt);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		}
 
-        GL11.glPopMatrix();
-    }
+		GL11.glPopMatrix();
+	}
 }

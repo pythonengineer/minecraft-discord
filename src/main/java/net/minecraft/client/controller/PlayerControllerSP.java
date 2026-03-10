@@ -7,123 +7,126 @@ import net.minecraft.game.entity.animal.EntityAnimal;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
 import net.minecraft.game.entity.monster.EntityCreeper;
-import net.minecraft.game.entity.monster.EntityMonster;
+import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.monster.EntitySkeleton;
 import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.world.MobSpawner;
+import net.minecraft.game.world.SpawnerAnimals;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.StepSound;
 
 public final class PlayerControllerSP extends PlayerController {
-	private int curBlockX = -1;
-	private int curBlockY = -1;
-	private int curBlockZ = -1;
-	private float curBlockDamage = 0.0F;
-	private float prevBlockDamage = 0.0F;
-	private float blockDestroySoundCounter = 0.0F;
-	private int blockHitWait = 0;
-    private MobSpawner monsterSpawner = new MobSpawner(100, EntityMonster.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
-    private MobSpawner animalSpawner = new MobSpawner(50, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class});
+    private int curBlockX = -1;
+    private int curBlockY = -1;
+    private int curBlockZ = -1;
+    private float curBlockDamage = 0.0F;
+    private float prevBlockDamage = 0.0F;
+    private float blockDestroySoundCounter = 0.0F;
+    private int blockHitWait = 0;
+    private SpawnerAnimals spawnerMonsters = new SpawnerAnimals(100, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
+    private SpawnerAnimals spawnerAnimals = new SpawnerAnimals(50, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class});
 
-	public PlayerControllerSP(Minecraft var1) {
-		super(var1);
-	}
+    public PlayerControllerSP(Minecraft minecraft1) {
+        super(minecraft1);
+    }
 
-	public final boolean sendBlockRemoved(int var1, int var2, int var3) {
-		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-        int var5 = this.mc.theWorld.getBlockMetadata(var1, var2, var3);
-        boolean var6 = super.sendBlockRemoved(var1, var2, var3);
-        EntityPlayerSP var7 = this.mc.thePlayer;
-        ItemStack var9 = var7.inventory.getCurrentItem();
-        if(var9 != null) {
-            Item.itemsList[var9.itemID].onBlockDestroyed(var9);
-            if(var9.stackSize == 0) {
+    public final boolean sendBlockRemoved(int x, int y, int z) {
+        int i4 = this.mc.theWorld.getBlockId(x, y, z);
+        int i5 = this.mc.theWorld.getBlockMetadata(x, y, z);
+        boolean z6 = super.sendBlockRemoved(x, y, z);
+        EntityPlayerSP entityPlayerSP7 = this.mc.thePlayer;
+        ItemStack itemStack9;
+        if((itemStack9 = this.mc.thePlayer.inventory.getCurrentItem()) != null) {
+            Item.itemsList[itemStack9.itemID].onBlockDestroyed(itemStack9);
+            if(itemStack9.stackSize == 0) {
                 this.mc.thePlayer.destroyCurrentEquippedItem();
             }
         }
 
-        if(var6 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[var4])) {
-            Block.blocksList[var4].dropBlockAsItem(this.mc.theWorld, var1, var2, var3, var5);
+        if(z6 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[i4])) {
+            Block.blocksList[i4].harvestBlock(this.mc.theWorld, x, y, z, i5);
         }
 
-        return var6;
-	}
+        return z6;
+    }
 
-	public final void clickBlock(int var1, int var2, int var3) {
-		int var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		if(var4 > 0 && Block.blocksList[var4].blockStrength(this.mc.thePlayer) >= 1.0F) {
-			this.sendBlockRemoved(var1, var2, var3);
-		}
+    public final void clickBlock(int x, int y, int z) {
+        int i4;
+        if((i4 = this.mc.theWorld.getBlockId(x, y, z)) > 0 && this.curBlockDamage == 0.0F) {
+            Block.blocksList[i4].onBlockClicked(this.mc.theWorld, x, y, z, this.mc.thePlayer);
+        }
 
-	}
+        if(i4 > 0 && Block.blocksList[i4].blockStrength(this.mc.thePlayer) >= 1.0F) {
+            this.sendBlockRemoved(x, y, z);
+        }
 
-	public final void resetBlockRemoving() {
-		this.curBlockDamage = 0.0F;
-		this.blockHitWait = 0;
-	}
+    }
 
-	public final void sendBlockRemoving(int var1, int var2, int var3, int var4) {
-		if(this.blockHitWait > 0) {
-			--this.blockHitWait;
-		} else {
-			super.sendBlockRemoving(var1, var2, var3, var4);
-			if(var1 == this.curBlockX && var2 == this.curBlockY && var3 == this.curBlockZ) {
-				var4 = this.mc.theWorld.getBlockId(var1, var2, var3);
-				if(var4 != 0) {
-					Block var6 = Block.blocksList[var4];
-					this.curBlockDamage += var6.blockStrength(this.mc.thePlayer);
-					if(this.blockDestroySoundCounter % 4.0F == 0.0F && var6 != null) {
-						SoundManager var10000 = this.mc.sndManager;
-						String var10001 = var6.stepSound.getStepSound();
-						float var10002 = (float)var1 + 0.5F;
-						float var10003 = (float)var2 + 0.5F;
-						float var10004 = (float)var3 + 0.5F;
-						StepSound var5 = var6.stepSound;
-						float var10005 = (var5.stepSoundVolume + 1.0F) / 8.0F;
-						var5 = var6.stepSound;
-						var10000.playSound(var10001, var10002, var10003, var10004, var10005, var5.stepSoundPitch * 0.5F);
-					}
+    public final void resetBlockRemoving() {
+        this.curBlockDamage = 0.0F;
+        this.blockHitWait = 0;
+    }
 
-					++this.blockDestroySoundCounter;
-					if(this.curBlockDamage >= 1.0F) {
-						this.sendBlockRemoved(var1, var2, var3);
-						this.curBlockDamage = 0.0F;
-						this.prevBlockDamage = 0.0F;
-						this.blockDestroySoundCounter = 0.0F;
-						this.blockHitWait = 5;
-					}
+    public final void sendBlockRemoving(int x, int y, int z, int blockID) {
+        if(this.blockHitWait > 0) {
+            --this.blockHitWait;
+        } else {
+            super.sendBlockRemoving(x, y, z, blockID);
+            if(x == this.curBlockX && y == this.curBlockY && z == this.curBlockZ) {
+                if((blockID = this.mc.theWorld.getBlockId(x, y, z)) != 0) {
+                    Block block6 = Block.blocksList[blockID];
+                    this.curBlockDamage += block6.blockStrength(this.mc.thePlayer);
+                    if(this.blockDestroySoundCounter % 4.0F == 0.0F && block6 != null) {
+                        SoundManager soundManager10000 = this.mc.sndManager;
+                        String string10001 = block6.stepSound.getStepSound();
+                        float f10002 = (float)x + 0.5F;
+                        float f10003 = (float)y + 0.5F;
+                        float f10004 = (float)z + 0.5F;
+                        StepSound stepSound5 = block6.stepSound;
+                        float f10005 = (block6.stepSound.stepSoundVolume + 1.0F) / 8.0F;
+                        stepSound5 = block6.stepSound;
+                        soundManager10000.playSound(string10001, f10002, f10003, f10004, f10005, block6.stepSound.stepSoundPitch * 0.5F);
+                    }
 
-				}
-			} else {
-				this.curBlockDamage = 0.0F;
-				this.prevBlockDamage = 0.0F;
-				this.blockDestroySoundCounter = 0.0F;
-				this.curBlockX = var1;
-				this.curBlockY = var2;
-				this.curBlockZ = var3;
-			}
-		}
-	}
+                    ++this.blockDestroySoundCounter;
+                    if(this.curBlockDamage >= 1.0F) {
+                        this.sendBlockRemoved(x, y, z);
+                        this.curBlockDamage = 0.0F;
+                        this.prevBlockDamage = 0.0F;
+                        this.blockDestroySoundCounter = 0.0F;
+                        this.blockHitWait = 5;
+                    }
 
-	public final void setPartialTime(float var1) {
-		if(this.curBlockDamage <= 0.0F) {
-			this.mc.renderGlobal.damagePartialTime = 0.0F;
-		} else {
-			var1 = this.prevBlockDamage + (this.curBlockDamage - this.prevBlockDamage) * var1;
-			this.mc.renderGlobal.damagePartialTime = var1;
-		}
-	}
+                }
+            } else {
+                this.curBlockDamage = 0.0F;
+                this.prevBlockDamage = 0.0F;
+                this.blockDestroySoundCounter = 0.0F;
+                this.curBlockX = x;
+                this.curBlockY = y;
+                this.curBlockZ = z;
+            }
+        }
+    }
 
-	public final float getBlockReachDistance() {
-		return 4.0F;
-	}
+    public final void setPartialTime(float partialTime) {
+        if(this.curBlockDamage <= 0.0F) {
+            this.mc.renderGlobal.damagePartialTime = 0.0F;
+        } else {
+            partialTime = this.prevBlockDamage + (this.curBlockDamage - this.prevBlockDamage) * partialTime;
+            this.mc.renderGlobal.damagePartialTime = partialTime;
+        }
+    }
 
-	public final void onUpdate() {
-		this.prevBlockDamage = this.curBlockDamage;
-        this.monsterSpawner.onUpdate(this.mc.theWorld);
-        this.animalSpawner.onUpdate(this.mc.theWorld);
-	}
+    public final float getBlockReachDistance() {
+        return 4.0F;
+    }
+
+    public final void updateController() {
+        this.prevBlockDamage = this.curBlockDamage;
+        this.spawnerMonsters.doRandomSpawn(this.mc.theWorld);
+        this.spawnerAnimals.doRandomSpawn(this.mc.theWorld);
+    }
 }

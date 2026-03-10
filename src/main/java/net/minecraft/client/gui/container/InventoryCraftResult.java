@@ -6,31 +6,31 @@ import net.minecraft.game.item.ItemStack;
 public final class InventoryCraftResult implements IInventory {
 	private ItemStack[] stackResult = new ItemStack[1];
 
-	public final int getInventorySize() {
+	public final int getSizeInventory() {
 		return 1;
 	}
 
-	public final ItemStack getStackInSlot(int var1) {
-		return this.stackResult[var1];
+	public final ItemStack getStackInSlot(int slot) {
+		return this.stackResult[slot];
 	}
 
 	public final String getInvName() {
 		return "Result";
 	}
 
-	public final ItemStack decrStackSize(int var1, int var2) {
-		if(this.stackResult[var1] != null) {
-			ItemStack var3 = this.stackResult[var1];
-			this.stackResult[var1] = null;
-			return var3;
-		} else {
-			return null;
-		}
-	}
+    public final ItemStack decrStackSize(int slot, int decrementAmount) {
+        if(this.stackResult[slot] != null) {
+            ItemStack decrementAmount1 = this.stackResult[slot];
+            this.stackResult[slot] = null;
+            return decrementAmount1;
+        } else {
+            return null;
+        }
+    }
 
-	public final void setInventorySlotContents(int var1, ItemStack var2) {
-		this.stackResult[var1] = var2;
-	}
+    public final void setInventorySlotContents(int slot, ItemStack stack) {
+        this.stackResult[slot] = stack;
+    }
 
 	public final int getInventoryStackLimit() {
 		return 64;

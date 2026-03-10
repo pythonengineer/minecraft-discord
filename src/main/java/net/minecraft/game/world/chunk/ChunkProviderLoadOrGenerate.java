@@ -1,157 +1,158 @@
 package net.minecraft.game.world.chunk;
 
+import com.mojang.nbt.NBTTagCompound;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mojang.nbt.NBTTagCompound;
 
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.game.world.World;
 
 public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
-    private IChunkProvider chunkProvider;
-    private Chunk[] chunks = new Chunk[1024];
-    private VFile2 saveDirectory;
-    private World worldObj;
-    private List emptyList = new ArrayList();
+	private IChunkProvider chunkProvider;
+	private Chunk[] chunks = new Chunk[1024];
+	private VFile2 saveDirectory;
+	private World worldObj;
+	private List emptyList = new ArrayList();
 
-    public ChunkProviderLoadOrGenerate(World var1, VFile2 var2, IChunkProvider var3) {
-        this.worldObj = var1;
-        this.chunkProvider = var3;
-        this.saveDirectory = var2;
-    }
+	public ChunkProviderLoadOrGenerate(World world, VFile2 saveDir, IChunkProvider chunkProvider) {
+		this.worldObj = world;
+		this.chunkProvider = chunkProvider;
+		this.saveDirectory = saveDir;
+	}
 
-    public final boolean chunkExists(int var1, int var2) {
-        int var3 = var1 & 31 | (var2 & 31) << 5;
-        if(this.chunks[var3] != null) {
-            Chunk var10000 = this.chunks[var3];
-            var3 = var2;
-            var2 = var1;
-            Chunk var4 = var10000;
-            if(var2 == var4.xPosition && var3 == var4.zPosition) {
-                return true;
-            }
-        }
+	public final boolean chunkExists(int chunkX, int chunkZ) {
+		int i3 = chunkX & 31 | (chunkZ & 31) << 5;
+		if(this.chunks[i3] != null) {
+			Chunk chunk10000 = this.chunks[i3];
+			i3 = chunkZ;
+			chunkZ = chunkX;
+			Chunk chunkX1 = chunk10000;
+			if(chunkZ == chunkX1.xPosition && i3 == chunkX1.zPosition) {
+				return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public final Chunk provideChunk(int var1, int var2) {
-        int var3 = var1 & 31 | (var2 & 31) << 5;
-        if(!this.chunkExists(var1, var2)) {
-            if(this.chunks[var3] != null) {
-                this.chunks[var3].unloadEntities();
-                this.saveChunk(this.chunks[var3]);
-            }
+	public final Chunk provideChunk(int chunkX, int chunkZ) {
+		int i3 = chunkX & 31 | (chunkZ & 31) << 5;
+		if(!this.chunkExists(chunkX, chunkZ)) {
+			if(this.chunks[i3] != null) {
+				this.chunks[i3].unloadTileEntities();
+				this.saveChunk(this.chunks[i3]);
+			}
 
-            Chunk var4 = this.loadChunk(var1, var2);
-            if(var4 == null) {
-                var4 = this.chunkProvider.provideChunk(var1, var2);
-            }
+			Chunk chunk4;
+			if((chunk4 = this.loadChunk(chunkX, chunkZ)) == null) {
+				chunk4 = this.chunkProvider.provideChunk(chunkX, chunkZ);
+			}
 
-            this.chunks[var3] = var4;
-            if(this.chunks[var3] != null) {
-                this.chunks[var3].loadEntities();
-            }
+			this.chunks[i3] = chunk4;
+			if(this.chunks[i3] != null) {
+				this.chunks[i3].loadTileEntities();
+			}
 
-            if(!this.chunks[var3].isTerrainPopulated && this.chunkExists(var1 + 1, var2 + 1) && this.chunkExists(var1, var2 + 1) && this.chunkExists(var1 + 1, var2)) {
-                this.populate(this, var1, var2);
-            }
+			if(!this.chunks[i3].isTerrainPopulated && this.chunkExists(chunkX + 1, chunkZ + 1) && this.chunkExists(chunkX, chunkZ + 1) && this.chunkExists(chunkX + 1, chunkZ)) {
+				this.populate(this, chunkX, chunkZ);
+			}
 
-            if(this.chunkExists(var1 - 1, var2) && !this.provideChunk(var1 - 1, var2).isTerrainPopulated && this.chunkExists(var1 - 1, var2 + 1) && this.chunkExists(var1, var2 + 1) && this.chunkExists(var1 - 1, var2)) {
-                this.populate(this, var1 - 1, var2);
-            }
+			if(this.chunkExists(chunkX - 1, chunkZ) && !this.provideChunk(chunkX - 1, chunkZ).isTerrainPopulated && this.chunkExists(chunkX - 1, chunkZ + 1) && this.chunkExists(chunkX, chunkZ + 1) && this.chunkExists(chunkX - 1, chunkZ)) {
+				this.populate(this, chunkX - 1, chunkZ);
+			}
 
-            if(this.chunkExists(var1, var2 - 1) && !this.provideChunk(var1, var2 - 1).isTerrainPopulated && this.chunkExists(var1 + 1, var2 - 1) && this.chunkExists(var1, var2 - 1) && this.chunkExists(var1 + 1, var2)) {
-                this.populate(this, var1, var2 - 1);
-            }
+			if(this.chunkExists(chunkX, chunkZ - 1) && !this.provideChunk(chunkX, chunkZ - 1).isTerrainPopulated && this.chunkExists(chunkX + 1, chunkZ - 1) && this.chunkExists(chunkX, chunkZ - 1) && this.chunkExists(chunkX + 1, chunkZ)) {
+				this.populate(this, chunkX, chunkZ - 1);
+			}
 
-            if(this.chunkExists(var1 - 1, var2 - 1) && !this.provideChunk(var1 - 1, var2 - 1).isTerrainPopulated && this.chunkExists(var1 - 1, var2 - 1) && this.chunkExists(var1, var2 - 1) && this.chunkExists(var1 - 1, var2)) {
-                this.populate(this, var1 - 1, var2 - 1);
-            }
-        }
+			if(this.chunkExists(chunkX - 1, chunkZ - 1) && !this.provideChunk(chunkX - 1, chunkZ - 1).isTerrainPopulated && this.chunkExists(chunkX - 1, chunkZ - 1) && this.chunkExists(chunkX, chunkZ - 1) && this.chunkExists(chunkX - 1, chunkZ)) {
+				this.populate(this, chunkX - 1, chunkZ - 1);
+			}
+		}
 
-        return this.chunks[var3];
-    }
+		return this.chunks[i3];
+	}
 
-    private VFile2 chunkFileForXZ(int var1, int var2) {
-        String var3 = "c." + Integer.toString(var1, 36) + "." + Integer.toString(var2, 36) + ".dat";
-        String var4 = Integer.toString(var1 & 63, 36);
-        String var6 = Integer.toString(var2 & 63, 36);
-        VFile2 var5 = new VFile2(this.saveDirectory, var4);
-        var5 = new VFile2(var5, var6);
-        var5 = new VFile2(var5, var3);
-        return var5;
-    }
+	private VFile2 chunkFileForXZ(int chunkX, int chunkZ) {
+		String string3 = "c." + Integer.toString(chunkX, 36) + "." + Integer.toString(chunkZ, 36) + ".dat";
+		String chunkX1 = Integer.toString(chunkX & 63, 36);
+		String chunkZ1 = Integer.toString(chunkZ & 63, 36);
+		VFile2 chunkX2;
+		chunkX2 = new VFile2(this.saveDirectory, chunkX1);
+		chunkX2 = new VFile2(chunkX2, chunkZ1);
+		return new VFile2(chunkX2, string3);
+	}
 
-    private Chunk loadChunk(int var1, int var2) {
-        VFile2 var4 = this.chunkFileForXZ(var1, var2);
-        if(var4.exists()) {
-            try (InputStream fis = var4.getInputStream()) {
-                NBTTagCompound var6 = LoadingScreenRenderer.read(fis);
-                return Chunk.readChunkNBTData(this.worldObj, var6.getCompoundTag("Level"));
-            } catch (Exception var3) {
-                var3.printStackTrace();
-            }
-        }
+	private Chunk loadChunk(int chunkX, int chunkZ) {
+		VFile2 chunkX1;
+		if((chunkX1 = this.chunkFileForXZ(chunkX, chunkZ)).exists()) {
+            try (InputStream fis = chunkX1.getInputStream()) {
+				NBTTagCompound chunkX2 = LoadingScreenRenderer.read(fis);
+				return Chunk.readChunkNBTData(this.worldObj, chunkX2.getCompoundTag("Level"));
+			} catch (IOException exception3) {
+				exception3.printStackTrace();
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    private void saveChunk(Chunk var1) {
-        VFile2 var2 = this.chunkFileForXZ(var1.xPosition, var1.zPosition);
-        if(var2.exists()) {
-            this.worldObj.sizeOnDisk -= var2.length();
-        }
+	private void saveChunk(Chunk chunk) {
+		VFile2 file2;
+		if((file2 = this.chunkFileForXZ(chunk.xPosition, chunk.zPosition)).exists()) {
+			this.worldObj.sizeOnDisk -= file2.length();
+		}
 
-        try (OutputStream fos = var2.getOutputStream()) {
-            NBTTagCompound var4 = new NBTTagCompound();
-            NBTTagCompound var5 = new NBTTagCompound();
-            var4.setTag("Level", var5);
-            var1.writeChunkNBTData(var5);
-            LoadingScreenRenderer.write(var4, fos);
-            this.worldObj.sizeOnDisk += var2.length();
-        } catch (Exception var6) {
-            var6.printStackTrace();
-        }
-    }
+        try (OutputStream fos = file2.getOutputStream()) {
+			NBTTagCompound nBTTagCompound4 = new NBTTagCompound();
+			NBTTagCompound nBTTagCompound5 = new NBTTagCompound();
+			nBTTagCompound4.setTag("Level", nBTTagCompound5);
+			chunk.writeChunkNBTData(nBTTagCompound5);
+			LoadingScreenRenderer.write(nBTTagCompound4, fos);
+			this.worldObj.sizeOnDisk += file2.length();
+		} catch (IOException exception6) {
+			exception6.printStackTrace();
+		}
+	}
 
-    public final void populate(IChunkProvider var1, int var2, int var3) {
-        Chunk var4 = this.provideChunk(var2, var3);
-        if(!var4.isTerrainPopulated) {
-            var4.isTerrainPopulated = true;
-            this.chunkProvider.populate(var1, var2, var3);
-        }
+	public final void populate(IChunkProvider chunkProvider, int chunkX, int chunkZ) {
+		Chunk chunk4;
+		if(!(chunk4 = this.provideChunk(chunkX, chunkZ)).isTerrainPopulated) {
+			chunk4.isTerrainPopulated = true;
+			this.chunkProvider.populate(chunkProvider, chunkX, chunkZ);
+		}
 
-    }
+	}
 
-    public final void saveChunks(boolean var1) {
-        int var2 = 0;
+	public final void saveChunks(boolean flag) {
+		int i2 = 0;
 
-        for(int var3 = 0; var3 < this.chunks.length; ++var3) {
-            if(this.chunks[var3] != null && this.chunks[var3].needsSaving(var1)) {
-                this.saveChunk(this.chunks[var3]);
-                this.chunks[var3].isModified = false;
-                ++var2;
-                if(var2 == 2 && !var1) {
-                    return;
-                }
-            }
-        }
+		for(int i3 = 0; i3 < this.chunks.length; ++i3) {
+			if(this.chunks[i3] != null && this.chunks[i3].needsSaving(flag)) {
+				this.saveChunk(this.chunks[i3]);
+				this.chunks[i3].isModified = false;
+				++i2;
+				if(i2 == 2 && !flag) {
+					return;
+				}
+			}
+		}
 
-    }
+	}
 
-    public final boolean unload100OldestChunks() {
-        this.chunkProvider.unload100OldestChunks();
-        int var1 = 0;
+	public final boolean unload100OldestChunks() {
+		this.chunkProvider.unload100OldestChunks();
+		int i1 = 0;
 
-        while(var1++ <= 0 && !this.emptyList.isEmpty()) {
-            this.emptyList.remove(0);
-        }
+		while(i1++ <= 0 && !this.emptyList.isEmpty()) {
+			this.emptyList.remove(0);
+		}
 
-        return !this.emptyList.isEmpty();
-    }
+		return !this.emptyList.isEmpty();
+	}
 }

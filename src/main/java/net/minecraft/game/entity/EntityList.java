@@ -11,7 +11,7 @@ import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.entity.monster.EntityCreeper;
 import net.minecraft.game.entity.monster.EntityGiantZombie;
-import net.minecraft.game.entity.monster.EntityMonster;
+import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.monster.EntitySkeleton;
 import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
@@ -84,8 +84,8 @@ public final class EntityList {
         return entity;
     }
 
-    public static String getEntityString(Entity var0) {
-        return (String)classToStringMapping.get(var0.getClass());
+    public static String getEntityString(Entity entity) {
+        return (String)classToStringMapping.get(entity.getClass());
     }
 
     static {
@@ -93,7 +93,7 @@ public final class EntityList {
         addMapping(EntityItem.class, EntityItem::new, "Item");
         addMapping(EntityPainting.class, EntityPainting::new, "Painting");
         addMapping(EntityLiving.class, EntityLiving::new, "Mob");
-        addMapping(EntityMonster.class, EntityMonster::new, "Monster");
+        addMapping(EntityMob.class, EntityMob::new, "Monster");
         addMapping(EntityCreeper.class, EntityCreeper::new, "Creeper");
         addMapping(EntitySkeleton.class, EntitySkeleton::new, "Skeleton");
         addMapping(EntitySpider.class, EntitySpider::new, "Spider");

@@ -9,28 +9,28 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.item.recipe.CraftingManager;
 
 public final class GuiCrafting extends GuiContainer {
-	private InventoryCrafting inventoryCrafting = new InventoryCrafting(this, 3, 3);
-	private IInventory iInventory = new InventoryCraftResult();
+	private InventoryCrafting craftingInventory = new InventoryCrafting(this, 3, 3);
+	private IInventory craftingResultInventory = new InventoryCraftResult();
 
-	public GuiCrafting(InventoryPlayer var1) {
-		this.inventorySlots.add(new SlotCrafting(this, this.inventoryCrafting, this.iInventory, 0, 124, 35));
+	public GuiCrafting(InventoryPlayer playerInventory) {
+		this.slotsList.add(new SlotCrafting(this, this.craftingInventory, this.craftingResultInventory, 0, 124, 35));
 
-		int var2;
-		int var3;
-		for(var2 = 0; var2 < 3; ++var2) {
-			for(var3 = 0; var3 < 3; ++var3) {
-				this.inventorySlots.add(new Slot(this, this.inventoryCrafting, var3 + var2 * 3, 30 + var3 * 18, 17 + var2 * 18));
+		int i2;
+		int i3;
+		for(i2 = 0; i2 < 3; ++i2) {
+			for(i3 = 0; i3 < 3; ++i3) {
+				this.slotsList.add(new Slot(this, this.craftingInventory, i3 + i2 * 3, 30 + i3 * 18, 17 + i2 * 18));
 			}
 		}
 
-		for(var2 = 0; var2 < 3; ++var2) {
-			for(var3 = 0; var3 < 9; ++var3) {
-				this.inventorySlots.add(new Slot(this, var1, var3 + (var2 + 1) * 9, 8 + var3 * 18, 84 + var2 * 18));
+		for(i2 = 0; i2 < 3; ++i2) {
+			for(i3 = 0; i3 < 9; ++i3) {
+				this.slotsList.add(new Slot(this, playerInventory, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
 			}
 		}
 
-		for(var2 = 0; var2 < 9; ++var2) {
-			this.inventorySlots.add(new Slot(this, var1, var2, 8 + var2 * 18, 142));
+		for(i2 = 0; i2 < 9; ++i2) {
+			this.slotsList.add(new Slot(this, playerInventory, i2, 8 + i2 * 18, 142));
 		}
 
 	}
@@ -38,31 +38,31 @@ public final class GuiCrafting extends GuiContainer {
 	public final void onGuiClosed() {
 		super.onGuiClosed();
 
-		for(int var1 = 0; var1 < 9; ++var1) {
-			ItemStack var2 = this.inventoryCrafting.getStackInSlot(var1);
-			if(var2 != null) {
-				this.mc.thePlayer.dropPlayerItem(var2);
+		for(int i1 = 0; i1 < 9; ++i1) {
+			ItemStack itemStack = this.craftingInventory.getStackInSlot(i1);
+			if(itemStack != null) {
+				this.mc.thePlayer.dropPlayerItem(itemStack);
 			}
 		}
 
 	}
 
-	public final void guiCraftingItemsCheck() {
-		int[] var1 = new int[9];
+	public final void onCraftMatrixChanged() {
+		int[] i1 = new int[9];
 
-		for(int var2 = 0; var2 < 3; ++var2) {
-			for(int var3 = 0; var3 < 3; ++var3) {
-				int var4 = var2 + var3 * 3;
-				ItemStack var5 = this.inventoryCrafting.getStackInSlot(var4);
-				if(var5 == null) {
-					var1[var4] = -1;
+		for(int i2 = 0; i2 < 3; ++i2) {
+			for(int i3 = 0; i3 < 3; ++i3) {
+				int i4 = i2 + i3 * 3;
+				ItemStack itemStack = this.craftingInventory.getStackInSlot(i4);
+				if(itemStack == null) {
+					i1[i4] = -1;
 				} else {
-					var1[var4] = var5.itemID;
+					i1[i4] = itemStack.itemID;
 				}
 			}
 		}
 
-		this.iInventory.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(var1));
+		this.craftingResultInventory.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(i1));
 	}
 
 	protected final void drawGuiContainerForegroundLayer() {
@@ -71,17 +71,17 @@ public final class GuiCrafting extends GuiContainer {
 	}
 
 	protected final void drawGuiContainerBackgroundLayer() {
-		int var1 = this.mc.renderEngine.getTexture("/gui/crafting.png");
+		int i1 = this.mc.renderEngine.getTexture("/gui/crafting.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderEngine.bindTexture(var1);
-		var1 = (this.width - this.xSize) / 2;
-		int var2 = (this.height - this.ySize) / 2;
-		this.drawTexturedModalRect(var1, var2, 0, 0, this.xSize, this.ySize);
+        RenderEngine.bindTexture(i1);
+		i1 = (this.width - this.xSize) / 2;
+		int i2 = (this.height - this.ySize) / 2;
+		this.drawTexturedModalRect(i1, i2, 0, 0, this.xSize, this.ySize);
 	}
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.inventorySlots.get(i);
+        Slot slot = (Slot) this.slotsList.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
@@ -118,6 +118,6 @@ public final class GuiCrafting extends GuiContainer {
     }
 
     public boolean canMergeSlot(ItemStack itemstack, Slot slot) {
-        return slot.inventory != this.iInventory && super.canMergeSlot(itemstack, slot);
+        return slot.inventory != this.craftingResultInventory && super.canMergeSlot(itemstack, slot);
     }
 }

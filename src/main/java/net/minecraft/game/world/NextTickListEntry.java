@@ -7,10 +7,10 @@ public final class NextTickListEntry {
     public int blockID;
     public int scheduledTime;
 
-    public NextTickListEntry(int var1, int var2, int var3, int var4) {
-        this.xCoord = var1;
-        this.yCoord = var2;
-        this.zCoord = var3;
-        this.blockID = var4;
+    public NextTickListEntry(int x, int y, int z, int blockID) {
+        this.xCoord = x;
+        this.yCoord = y;
+        this.zCoord = z;
+        this.blockID = blockID;
     }
 }

@@ -7,59 +7,58 @@ public class ImageBufferDownload {
     private int imageWidth;
     private int imageHeight;
 
-    public ImageData parseUserSkin(ImageData var1) {
+    public ImageData parseUserSkin(ImageData bufferedImage) {
         this.imageWidth = 64;
         this.imageHeight = 32;
-        ImageData var2 = new ImageData(this.imageWidth, this.imageHeight, true);
-        var2.drawImage(var1, 0, 0);
-        this.imageData = var2.pixels;
+        ImageData bufferedImage2 = new ImageData(this.imageWidth, this.imageHeight, true);
+        bufferedImage2.drawImage(bufferedImage, 0, 0);
+        this.imageData = bufferedImage2.pixels;
         this.setAreaOpaque(0, 0, 32, 16);
         this.setAreaTransparent(32, 0, 64, 32);
         this.setAreaOpaque(0, 16, 64, 32);
-        return var2;
+        return bufferedImage2;
     }
 
-    private void setAreaTransparent(int var1, int var2, int var3, int var4) {
-        byte var5 = 32;
-        byte var11 = 64;
-        byte var10 = 0;
-        byte var9 = 32;
-        ImageBufferDownload var8 = this;
-        var2 = var9;
+    private void setAreaTransparent(int minX, int minY, int maxX, int maxY) {
+        byte b5 = 32;
+        byte b11 = 64;
+        byte b10 = 0;
+        byte b9 = 32;
+        minY = b9;
 
-        boolean var10000;
+        boolean z10000;
         label43:
         while(true) {
-            if(var2 >= var11) {
-                var10000 = false;
+            if(minY >= b11) {
+                z10000 = false;
                 break;
             }
 
-            for(int var6 = var10; var6 < var5; ++var6) {
-                int var7 = var8.imageData[var2 + var6 * var8.imageWidth];
-                if(var7 >>> 24 < 128) {
-                    var10000 = true;
+            for(int i6 = b10; i6 < b5; ++i6) {
+                int i7 = this.imageData[minY + i6 * this.imageWidth];
+                if(i7 >>> 24 < 128) {
+                    z10000 = true;
                     break label43;
                 }
             }
 
-            ++var2;
+            ++minY;
         }
 
-        if(!var10000) {
-            for(var1 = 32; var1 < 64; ++var1) {
-                for(var2 = 0; var2 < 32; ++var2) {
-                    this.imageData[var1 + var2 * this.imageWidth] &= 16777215;
+        if(!z10000) {
+            for(minX = 32; minX < 64; ++minX) {
+                for(minY = 0; minY < 32; ++minY) {
+                    this.imageData[minX + minY * this.imageWidth] &= 0xFFFFFF;
                 }
             }
 
         }
     }
 
-    private void setAreaOpaque(int var1, int var2, int var3, int var4) {
-        for(var1 = 0; var1 < var3; ++var1) {
-            for(int var5 = var2; var5 < var4; ++var5) {
-                this.imageData[var1 + var5 * this.imageWidth] |= -16777216;
+    private void setAreaOpaque(int minX, int minY, int maxX, int maxY) {
+        for(minX = 0; minX < maxX; ++minX) {
+            for(int i5 = minY; i5 < maxY; ++i5) {
+                this.imageData[minX + i5 * this.imageWidth] |= 0xFF000000;
             }
         }
 

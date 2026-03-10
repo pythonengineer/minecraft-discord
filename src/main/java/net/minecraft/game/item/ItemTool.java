@@ -7,22 +7,22 @@ public class ItemTool extends Item {
     private float efficiencyOnProperMaterial = 4.0F;
     private int damageVsEntity;
 
-    public ItemTool(int var1, int var2, int var3, Block[] var4) {
-        super(var1);
-        this.blocksEffectiveAgainst = var4;
+    public ItemTool(int itemID, int damageAgainstEntities, int damage, Block[] effectiveBlocks) {
+        super(itemID);
+        this.blocksEffectiveAgainst = effectiveBlocks;
         this.maxStackSize = 1;
-        this.maxDamage = 32 << var3;
-        if(var3 == 3) {
+        this.maxDamage = 32 << damage;
+        if(damage == 3) {
             this.maxDamage <<= 1;
         }
 
-        this.efficiencyOnProperMaterial = (float)(var3 + 1 << 1);
-        this.damageVsEntity = var2 + var3;
+        this.efficiencyOnProperMaterial = (float)(damage + 1 << 1);
+        this.damageVsEntity = damageAgainstEntities + damage;
     }
 
-    public final float getStrVsBlock(Block var1) {
-        for(int var2 = 0; var2 < this.blocksEffectiveAgainst.length; ++var2) {
-            if(this.blocksEffectiveAgainst[var2] == var1) {
+    public final float getStrVsBlock(Block block) {
+        for(int i2 = 0; i2 < this.blocksEffectiveAgainst.length; ++i2) {
+            if(this.blocksEffectiveAgainst[i2] == block) {
                 return this.efficiencyOnProperMaterial;
             }
         }
@@ -30,12 +30,12 @@ public class ItemTool extends Item {
         return 1.0F;
     }
 
-    public final void hitEntity(ItemStack var1) {
-        var1.damageItem(2);
+    public final void hitEntity(ItemStack stack) {
+        stack.damageItem(2);
     }
 
-    public final void onBlockDestroyed(ItemStack var1) {
-        var1.damageItem(1);
+    public final void onBlockDestroyed(ItemStack stack) {
+        stack.damageItem(1);
     }
 
     public final int getDamageVsEntity() {

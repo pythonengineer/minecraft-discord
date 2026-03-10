@@ -3,13 +3,13 @@ package net.minecraft.game;
 import net.minecraft.game.item.ItemStack;
 
 public interface IInventory {
-    int getInventorySize();
+    int getSizeInventory();
 
-    ItemStack getStackInSlot(int var1);
+    ItemStack getStackInSlot(int i1);
 
-    ItemStack decrStackSize(int var1, int var2);
+    ItemStack decrStackSize(int i1, int i2);
 
-    void setInventorySlotContents(int var1, ItemStack var2);
+    void setInventorySlotContents(int i1, ItemStack itemStack2);
 
     String getInvName();
 

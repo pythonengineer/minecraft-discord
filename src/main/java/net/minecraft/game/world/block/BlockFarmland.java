@@ -6,16 +6,16 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public final class BlockFarmland extends Block {
-	protected BlockFarmland(int var1) {
-		super(60, Material.ground);
+	protected BlockFarmland(int blockID) {
+		super(60, Material.grassMaterial);
 		this.blockIndexInTexture = 87;
 		this.setTickOnLoad(true);
-		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 15.0F / 16.0F, 1.0F);
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.9375F, 1.0F);
 		this.setLightOpacity(255);
 	}
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(int var1, int var2, int var3) {
-		return new AxisAlignedBB((double)var1, (double)var2, (double)var3, (double)(var1 + 1), (double)(var2 + 1), (double)(var3 + 1));
+	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+		return new AxisAlignedBB((double)x, (double)y, (double)z, (double)(x + 1), (double)(y + 1), (double)(z + 1));
 	}
 
 	public final boolean isOpaqueCube() {
@@ -26,98 +26,97 @@ public final class BlockFarmland extends Block {
 		return false;
 	}
 
-	public final int getBlockTextureFromSideAndMetadata(int var1, int var2) {
-		return var1 == 1 && var2 > 0 ? this.blockIndexInTexture - 1 : (var1 == 1 ? this.blockIndexInTexture : 2);
+	public final int getBlockTextureFromSideAndMetadata(int side, int metadata) {
+		return side == 1 && metadata > 0 ? this.blockIndexInTexture - 1 : (side == 1 ? this.blockIndexInTexture : 2);
 	}
 
-    public final void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-        if(var5.nextInt(5) == 0) {
-            int var8 = var4;
-            int var7 = var3;
-            int var6 = var2;
-            World var12 = var1;
-            int var9 = var2 - 4;
+	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		if(rand.nextInt(5) == 0) {
+			int i8 = z;
+			int i7 = y;
+			int i6 = x;
+			World world12 = world;
+			int i9 = x - 4;
 
-            int var10;
-            int var11;
-            boolean var10000;
-            label69:
-            while(true) {
-                if(var9 > var6 + 4) {
-                    var10000 = false;
-                    break;
-                }
+			int i10;
+			int i11;
+			boolean z10000;
+			label69:
+			while(true) {
+				if(i9 > i6 + 4) {
+					z10000 = false;
+					break;
+				}
 
-                for(var10 = var7; var10 <= var7 + 1; ++var10) {
-                    for(var11 = var8 - 4; var11 <= var8 + 4; ++var11) {
-                        if(var12.getBlockMaterial(var9, var10, var11) == Material.water) {
-                            var10000 = true;
-                            break label69;
-                        }
-                    }
-                }
+				for(i10 = i7; i10 <= i7 + 1; ++i10) {
+					for(i11 = i8 - 4; i11 <= i8 + 4; ++i11) {
+						if(world12.getBlockMaterial(i9, i10, i11) == Material.water) {
+							z10000 = true;
+							break label69;
+						}
+					}
+				}
 
-                ++var9;
-            }
+				++i9;
+			}
 
-            if(var10000) {
-                var1.setBlockMetadataWithNotify(var2, var3, var4, 7);
-                return;
-            }
+			if(z10000) {
+				world.setBlockMetadata(x, y, z, 7);
+				return;
+			}
 
-            int var13 = var1.getBlockMetadata(var2, var3, var4);
-            if(var13 > 0) {
-                var1.setBlockMetadataWithNotify(var2, var3, var4, var13 - 1);
-                return;
-            }
+			int i13;
+			if((i13 = world.getBlockMetadata(x, y, z)) > 0) {
+				world.setBlockMetadata(x, y, z, i13 - 1);
+				return;
+			}
 
-            var8 = var4;
-            var7 = var3;
-            var6 = var2;
-            var12 = var1;
-            var10 = var2;
+			i8 = z;
+			i7 = y;
+			i6 = x;
+			world12 = world;
+			i10 = x;
 
-            label49:
-            while(true) {
-                if(var10 > var6) {
-                    var10000 = false;
-                    break;
-                }
+			label49:
+			while(true) {
+				if(i10 > i6) {
+					z10000 = false;
+					break;
+				}
 
-                for(var11 = var8; var11 <= var8; ++var11) {
-                    if(var12.getBlockId(var10, var7 + 1, var11) == Block.crops.blockID) {
-                        var10000 = true;
-                        break label49;
-                    }
-                }
+				for(i11 = i8; i11 <= i8; ++i11) {
+					if(world12.getBlockId(i10, i7 + 1, i11) == Block.crops.blockID) {
+						z10000 = true;
+						break label49;
+					}
+				}
 
-                ++var10;
-            }
+				++i10;
+			}
 
-            if(!var10000) {
-                var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
-            }
-        }
-
-    }
-
-	public final void onEntityWalking(World var1, int var2, int var3, int var4) {
-		if(var1.rand.nextInt(4) == 0) {
-            var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
+			if(!z10000) {
+				world.notifyBlockChange(x, y, z, Block.dirt.blockID);
+			}
 		}
 
 	}
 
-    public final void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-        super.onNeighborBlockChange(var1, var2, var3, var4, var5);
-        Material var6 = var1.getBlockMaterial(var2, var3 + 1, var4);
-        if(var6.isSolid()) {
-            var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
-        }
+	public final void onEntityWalking(World world, int x, int y, int z) {
+		if(world.rand.nextInt(4) == 0) {
+			world.notifyBlockChange(x, y, z, Block.dirt.blockID);
+		}
 
-    }
+	}
 
-	public final int idDropped(int var1, EaglercraftRandom var2) {
-		return Block.dirt.idDropped(0, var2);
+	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		super.onNeighborBlockChange(world, x, y, z, blockID);
+		if(world.getBlockMaterial(x, y + 1, z).isSolid()) {
+			world.notifyBlockChange(x, y, z, Block.dirt.blockID);
+		}
+
+	}
+
+	public final int idDropped(int metadata, EaglercraftRandom rand) {
+		return Block.dirt.idDropped(0, rand);
 	}
 }

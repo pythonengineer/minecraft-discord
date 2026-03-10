@@ -31,49 +31,48 @@ public class GuiScreen extends Gui {
     protected int touchModeCursorPosY = -1;
     private long lastTouchEvent;
 
-    public void drawScreen(int var1, int var2, float var3) {
-        for(int var5 = 0; var5 < this.controlList.size(); ++var5) {
-            GuiButton var4 = (GuiButton)this.controlList.get(var5);
-            var4.drawButton(this.mc, var1, var2);
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        for(int i5 = 0; i5 < this.controlList.size(); ++i5) {
+            ((GuiButton)this.controlList.get(i5)).drawButton(this.mc, mouseX, mouseY);
         }
 
     }
 
-	protected void keyTyped(char var1, int var2) {
-		if(var2 == 1) {
-			this.mc.displayGuiScreen((GuiScreen)null);
-			this.mc.setIngameFocus();
-		}
+    protected void keyTyped(char typedChar, int keyCode) {
+        if(keyCode == 1) {
+            this.mc.setGuiScreen((GuiScreen)null);
+            this.mc.setIngameFocus();
+        }
 
-	}
+    }
 
-	protected void mouseClicked(int var1, int var2, int var3) {
-		if(var3 == 0) {
-			for(var3 = 0; var3 < this.controlList.size(); ++var3) {
-				GuiButton var4 = (GuiButton)this.controlList.get(var3);
-                if(var4.mousePressed(var1, var2)) {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        if(mouseButton == 0) {
+            for(mouseButton = 0; mouseButton < this.controlList.size(); ++mouseButton) {
+                GuiButton guiButton4;
+                if((guiButton4 = (GuiButton)this.controlList.get(mouseButton)).mousePressed(mouseX, mouseY)) {
                     this.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
-					this.actionPerformed(var4);
-				}
-			}
-		}
+                    this.actionPerformed(guiButton4);
+                }
+            }
+        }
 
-	}
-
-    protected void mouseReleased(int i, int j, int k) {
     }
 
-    protected void mouseClickMove(int var1, int var2, int var3, long var4) {
+    protected void mouseReleased(int mouseX, int mouseY, int mouseButton) {
     }
 
-	protected void actionPerformed(GuiButton var1) {
+    protected void mouseClickMove(int mouseX, int mouseY, int mouseButton, long var4) {
+    }
+
+    protected void actionPerformed(GuiButton button) {
 	}
 
-	public final void setWorldAndResolution(Minecraft var1, int var2, int var3) {
-		this.mc = var1;
-		this.fontRenderer = var1.fontRenderer;
-		this.width = var2;
-		this.height = var3;
+    public final void setWorldAndResolution(Minecraft mc, int width, int height) {
+        this.mc = mc;
+        this.fontRenderer = mc.fontRenderer;
+        this.width = width;
+        this.height = height;
 		this.controlList.clear();
 		this.initGui();
 	}
@@ -147,22 +146,22 @@ public class GuiScreen extends Gui {
 	}
 
     public final void drawDefaultBackground() {
-        boolean var1 = false;
+        boolean z1 = false;
         if(this.mc.theWorld != null) {
-            drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454624);
+            drawGradient(0, 0, this.width, this.height, 1610941696, -1607454624);
         } else {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_FOG);
-            Tessellator var2 = Tessellator.instance;
+            Tessellator tessellator2 = Tessellator.instance;
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/dirt.png"));
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            var2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-            var2.setColorOpaque_I(4210752);
-            var2.addVertexWithUV(0.0D, (double)this.height, 0.0D, 0.0D, (double)((float)this.height / 32.0F));
-            var2.addVertexWithUV((double)this.width, (double)this.height, 0.0D, (double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F));
-            var2.addVertexWithUV((double)this.width, 0.0D, 0.0D, (double)((float)this.width / 32.0F), 0.0D);
-            var2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-            var2.draw();
+            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+            tessellator2.setColorOpaque_I(4210752);
+            tessellator2.addVertexWithUV(0.0D, (double)this.height, 0.0D, 0.0D, (double)((float)this.height / 32.0F));
+            tessellator2.addVertexWithUV((double)this.width, (double)this.height, 0.0D, (double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F));
+            tessellator2.addVertexWithUV((double)this.width, 0.0D, 0.0D, (double)((float)this.width / 32.0F), 0.0D);
+            tessellator2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+            tessellator2.draw();
         }
     }
 
@@ -170,7 +169,7 @@ public class GuiScreen extends Gui {
         return true;
     }
 
-    public void deleteWorld(boolean var1, int var2) {
+    public void deleteWorld(boolean shouldDelete, int worldIndex) {
     }
 
     public void touchEvent() {

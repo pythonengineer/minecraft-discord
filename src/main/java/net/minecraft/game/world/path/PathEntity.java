@@ -4,25 +4,25 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.Vec3D;
 
 public final class PathEntity {
-    private final PathPoint[] points;
-    private int pathIndex;
+	private final PathPoint[] points;
+	private int pathIndex;
 
-    public PathEntity(PathPoint[] var1) {
-        this.points = var1;
-    }
+	public PathEntity(PathPoint[] points) {
+		this.points = points;
+	}
 
-    public final void incrementPathIndex() {
-        ++this.pathIndex;
-    }
+	public final void incrementPathIndex() {
+		++this.pathIndex;
+	}
 
-    public final boolean isFinished() {
-        return this.pathIndex >= this.points.length;
-    }
+	public final boolean isFinished() {
+		return this.pathIndex >= this.points.length;
+	}
 
-    public final Vec3D getPosition(Entity var1) {
-        float var2 = (float)this.points[this.pathIndex].xCoord + (float)((int)(var1.width + 1.0F)) * 0.5F;
-        float var3 = (float)this.points[this.pathIndex].yCoord;
-        float var4 = (float)this.points[this.pathIndex].zCoord + (float)((int)(var1.width + 1.0F)) * 0.5F;
-        return new Vec3D((double)var2, (double)var3, (double)var4);
-    }
+	public final Vec3D getPosition(Entity entity) {
+		float f2 = (float)this.points[this.pathIndex].xCoord + (float)((int)(entity.width + 1.0F)) * 0.5F;
+		float f3 = (float)this.points[this.pathIndex].yCoord;
+		float entity1 = (float)this.points[this.pathIndex].zCoord + (float)((int)(entity.width + 1.0F)) * 0.5F;
+		return new Vec3D((double)f2, (double)f3, (double)entity1);
+	}
 }

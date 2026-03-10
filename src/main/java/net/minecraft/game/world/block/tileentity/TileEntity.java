@@ -1,62 +1,78 @@
 package net.minecraft.game.world.block.tileentity;
 
 import com.mojang.nbt.NBTTagCompound;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import net.minecraft.game.world.World;
 
 public class TileEntity {
-    private static Map nameToClassMap = new HashMap();
-    private static Map classToNameMap = new HashMap();
-    public World worldObj;
-    public int xCoord;
-    public int yCoord;
-    public int zCoord;
+	private static Map nameToClassMap = new HashMap();
+	private static Map classToNameMap = new HashMap();
+	public World worldObj;
+	public int xCoord;
+	public int yCoord;
+	public int zCoord;
 
-    private static void addMapping(Class var0, String var1) {
-        nameToClassMap.put(var1, var0);
-        classToNameMap.put(var0, var1);
-    }
+	private static void addMapping(Class tileEntityClass, String tileEntityName) {
+		nameToClassMap.put(tileEntityName, tileEntityClass);
+		classToNameMap.put(tileEntityClass, tileEntityName);
+	}
 
-    public void readFromNBT(NBTTagCompound var1) {
-        this.xCoord = var1.getInteger("x");
-        this.yCoord = var1.getInteger("y");
-        this.zCoord = var1.getInteger("z");
-    }
+	public void readFromNBT(NBTTagCompound compoundTag) {
+		this.xCoord = compoundTag.getInteger("x");
+		this.yCoord = compoundTag.getInteger("y");
+		this.zCoord = compoundTag.getInteger("z");
+	}
 
-    public void writeToNBT(NBTTagCompound var1) {
-        var1.setString("id", (String)classToNameMap.get(this.getClass()));
-        var1.setInteger("x", this.xCoord);
-        var1.setInteger("y", this.yCoord);
-        var1.setInteger("z", this.zCoord);
-    }
+	public void writeToNBT(NBTTagCompound compoundTag) {
+		String string2;
+		if((string2 = (String)classToNameMap.get(this.getClass())) == null) {
+			throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
+		} else {
+			compoundTag.setString("id", string2);
+			compoundTag.setInteger("x", this.xCoord);
+			compoundTag.setInteger("y", this.yCoord);
+			compoundTag.setInteger("z", this.zCoord);
+		}
+	}
 
-    public void updateEntity() {
-    }
+	public void updateEntity() {
+	}
 
-    public static TileEntity createAndLoadEntity(NBTTagCompound var0) {
-        TileEntity var1 = null;
+	public static TileEntity createAndLoadEntity(NBTTagCompound compoundTag) {
+		TileEntity tileEntity1 = null;
 
-        try {
-            Class var2 = (Class)nameToClassMap.get(var0.getString("id"));
-            if(var2 != null) {
-                var1 = (TileEntity)var2.newInstance();
-            }
-        } catch (Exception var3) {
-            var3.printStackTrace();
-        }
+		try {
+			Class class2;
+			if((class2 = (Class)nameToClassMap.get(compoundTag.getString("id"))) != null) {
+				tileEntity1 = (TileEntity)class2.newInstance();
+			}
+		} catch (Exception exception3) {
+			exception3.printStackTrace();
+		}
 
-        if(var1 != null) {
-            var1.readFromNBT(var0);
-        } else {
-            System.out.println("Skipping TileEntity with id " + var0.getString("id"));
-        }
+		if(tileEntity1 != null) {
+			tileEntity1.readFromNBT(compoundTag);
+		} else {
+			System.out.println("Skipping TileEntity with id " + compoundTag.getString("id"));
+		}
 
-        return var1;
-    }
+		return tileEntity1;
+	}
 
-    static {
-        addMapping(TileEntityFurnace.class, "Furnace");
-        addMapping(TileEntityChest.class, "Chest");
-    }
+	public final int getBlockMetadata() {
+		return this.worldObj.getBlockMetadata(this.xCoord, this.yCoord, this.zCoord);
+	}
+
+	public void onInventoryChanged() {
+		this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
+	}
+
+	static {
+		addMapping(TileEntityFurnace.class, "Furnace");
+		addMapping(TileEntityChest.class, "Chest");
+		addMapping(TileEntitySign.class, "Sign");
+	}
 }

@@ -4,11 +4,11 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.item.Item;
 
 public final class BlockGravel extends BlockSand {
-    public BlockGravel(int var1, int var2) {
-        super(13, 19);
-    }
+	public BlockGravel(int i1, int i2) {
+		super(13, 19);
+	}
 
-    public final int idDropped(int var1, EaglercraftRandom var2) {
-        return var2.nextInt(10) == 0 ? Item.flint.shiftedIndex : this.blockID;
-    }
+	public final int idDropped(int metadata, EaglercraftRandom rand) {
+		return rand.nextInt(10) == 0 ? Item.flint.shiftedIndex : this.blockID;
+	}
 }

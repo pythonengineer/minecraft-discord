@@ -10,98 +10,98 @@ import net.minecraft.game.entity.EntityPainting;
 import net.minecraft.game.entity.EnumArt;
 
 public final class RenderPainting extends Render {
-    private EaglercraftRandom rand = new EaglercraftRandom();
+	private EaglercraftRandom rand = new EaglercraftRandom();
 
-    public final void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-        EntityPainting var22 = (EntityPainting)var1;
-        this.rand.setSeed(187L);
-        GL11.glPushMatrix();
-        GL11.glTranslatef((float)var2, (float)var4, (float)var6);
-        GL11.glRotatef(var8, 0.0F, 1.0F, 0.0F);
-        GL11.glEnable(GL11.GL_NORMALIZE);
-        this.loadTexture("/art/kz.png");
-        EnumArt var3 = var22.art;
-        GL11.glScalef(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
-        int var25 = var3.offsetY;
-        int var5 = var3.offsetX;
-        int var24 = var3.sizeY;
-        int var23 = var3.sizeX;
-        var22 = var22;
-        RenderPainting var21 = this;
-        float var7 = (float)(-var23) / 2.0F;
-        var8 = (float)(-var24) / 2.0F;
+	public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+		EntityPainting entityPainting22 = (EntityPainting)entity;
+		this.rand.setSeed(187L);
+		GL11.glPushMatrix();
+		GL11.glTranslatef((float)x, (float)y, (float)z);
+		GL11.glRotatef(yaw, 0.0F, 1.0F, 0.0F);
+		GL11.glEnable(GL11.GL_NORMALIZE);
+		this.loadTexture("/art/kz.png");
+		EnumArt enumArt3 = entityPainting22.art;
+		GL11.glScalef(0.0625F, 0.0625F, 0.0625F);
+		int i25 = enumArt3.offsetY;
+		int i5 = enumArt3.offsetX;
+		int i24 = enumArt3.sizeY;
+		int i23 = enumArt3.sizeX;
+		entityPainting22 = entityPainting22;
+		RenderPainting renderPainting21 = this;
+		float f7 = (float)(-i23) / 2.0F;
+		yaw = (float)(-i24) / 2.0F;
 
-        for(int var26 = 0; var26 < var23 / 16; ++var26) {
-            for(int var10 = 0; var10 < var24 / 16; ++var10) {
-                float var11 = var7 + (float)(var26 + 1 << 4);
-                float var27 = var7 + (float)(var26 << 4);
-                float var13 = var8 + (float)(var10 + 1 << 4);
-                float var14 = var8 + (float)(var10 << 4);
-                float var10002 = (var11 + var27) / 2.0F;
-                float var18 = (var13 + var14) / 2.0F;
-                float var17 = var10002;
-                int var19 = MathHelper.floor_double(var22.posX);
-                int var28 = MathHelper.floor_double(var22.posY + (double)(var18 / 16.0F));
-                int var20 = MathHelper.floor_double(var22.posZ);
-                if(var22.direction == 0) {
-                    var19 = MathHelper.floor_double(var22.posX + (double)(var17 / 16.0F));
-                }
+		for(int i26 = 0; i26 < i23 / 16; ++i26) {
+			for(int i10 = 0; i10 < i24 / 16; ++i10) {
+				float f11 = f7 + (float)(i26 + 1 << 4);
+				float f27 = f7 + (float)(i26 << 4);
+				float f13 = yaw + (float)(i10 + 1 << 4);
+				float f14 = yaw + (float)(i10 << 4);
+				float f10002 = (f11 + f27) / 2.0F;
+				float f18 = (f13 + f14) / 2.0F;
+				float f17 = f10002;
+				int i19 = MathHelper.floor_double(entityPainting22.posX);
+				int i28 = MathHelper.floor_double(entityPainting22.posY + (double)(f18 / 16.0F));
+				int i20 = MathHelper.floor_double(entityPainting22.posZ);
+				if(entityPainting22.direction == 0) {
+					i19 = MathHelper.floor_double(entityPainting22.posX + (double)(f17 / 16.0F));
+				}
 
-                if(var22.direction == 1) {
-                    var20 = MathHelper.floor_double(var22.posZ - (double)(var17 / 16.0F));
-                }
+				if(entityPainting22.direction == 1) {
+					i20 = MathHelper.floor_double(entityPainting22.posZ - (double)(f17 / 16.0F));
+				}
 
-                if(var22.direction == 2) {
-                    var19 = MathHelper.floor_double(var22.posX - (double)(var17 / 16.0F));
-                }
+				if(entityPainting22.direction == 2) {
+					i19 = MathHelper.floor_double(entityPainting22.posX - (double)(f17 / 16.0F));
+				}
 
-                if(var22.direction == 3) {
-                    var20 = MathHelper.floor_double(var22.posZ + (double)(var17 / 16.0F));
-                }
+				if(entityPainting22.direction == 3) {
+					i20 = MathHelper.floor_double(entityPainting22.posZ + (double)(f17 / 16.0F));
+				}
 
-                float var15 = var21.renderManager.worldObj.getBrightness(var19, var28, var20);
-                GL11.glColor3f(var15, var15, var15);
-                var15 = (float)(var5 + var23 - (var26 << 4)) / 256.0F;
-                float var16 = (float)(var5 + var23 - (var26 + 1 << 4)) / 256.0F;
-                var17 = (float)(var25 + var24 - (var10 << 4)) / 256.0F;
-                var18 = (float)(var25 + var24 - (var10 + 1 << 4)) / 256.0F;
-                Tessellator var29 = Tessellator.instance;
-                var29.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                var29.normal(0.0F, 0.0F, -1.0F);
-                var29.addVertexWithUV((double)var11, (double)var14, -0.5D, (double)var16, (double)var17);
-                var29.addVertexWithUV((double)var27, (double)var14, -0.5D, (double)var15, (double)var17);
-                var29.addVertexWithUV((double)var27, (double)var13, -0.5D, (double)var15, (double)var18);
-                var29.addVertexWithUV((double)var11, (double)var13, -0.5D, (double)var16, (double)var18);
-                var29.normal(0.0F, 0.0F, 1.0F);
-                var29.addVertexWithUV((double)var11, (double)var13, 0.5D, 0.75D, 0.0D);
-                var29.addVertexWithUV((double)var27, (double)var13, 0.5D, 0.8125D, 0.0D);
-                var29.addVertexWithUV((double)var27, (double)var14, 0.5D, 0.8125D, 1.0D / 16.0D);
-                var29.addVertexWithUV((double)var11, (double)var14, 0.5D, 0.75D, 1.0D / 16.0D);
-                var29.normal(0.0F, -1.0F, 0.0F);
-                var29.addVertexWithUV((double)var11, (double)var13, -0.5D, 0.75D, 1.0D / 512.0D);
-                var29.addVertexWithUV((double)var27, (double)var13, -0.5D, 0.8125D, 1.0D / 512.0D);
-                var29.addVertexWithUV((double)var27, (double)var13, 0.5D, 0.8125D, 1.0D / 512.0D);
-                var29.addVertexWithUV((double)var11, (double)var13, 0.5D, 0.75D, 1.0D / 512.0D);
-                var29.normal(0.0F, 1.0F, 0.0F);
-                var29.addVertexWithUV((double)var11, (double)var14, 0.5D, 0.75D, 1.0D / 512.0D);
-                var29.addVertexWithUV((double)var27, (double)var14, 0.5D, 0.8125D, 1.0D / 512.0D);
-                var29.addVertexWithUV((double)var27, (double)var14, -0.5D, 0.8125D, 1.0D / 512.0D);
-                var29.addVertexWithUV((double)var11, (double)var14, -0.5D, 0.75D, 1.0D / 512.0D);
-                var29.normal(-1.0F, 0.0F, 0.0F);
-                var29.addVertexWithUV((double)var11, (double)var13, 0.5D, (double)0.7519531F, 0.0D);
-                var29.addVertexWithUV((double)var11, (double)var14, 0.5D, (double)0.7519531F, 1.0D / 16.0D);
-                var29.addVertexWithUV((double)var11, (double)var14, -0.5D, (double)0.7519531F, 1.0D / 16.0D);
-                var29.addVertexWithUV((double)var11, (double)var13, -0.5D, (double)0.7519531F, 0.0D);
-                var29.normal(1.0F, 0.0F, 0.0F);
-                var29.addVertexWithUV((double)var27, (double)var13, -0.5D, (double)0.7519531F, 0.0D);
-                var29.addVertexWithUV((double)var27, (double)var14, -0.5D, (double)0.7519531F, 1.0D / 16.0D);
-                var29.addVertexWithUV((double)var27, (double)var14, 0.5D, (double)0.7519531F, 1.0D / 16.0D);
-                var29.addVertexWithUV((double)var27, (double)var13, 0.5D, (double)0.7519531F, 0.0D);
-                var29.draw();
-            }
-        }
+				float f15;
+				GL11.glColor3f(f15 = renderPainting21.renderManager.worldObj.getBrightness(i19, i28, i20), f15, f15);
+				f15 = (float)(i5 + i23 - (i26 << 4)) / 256.0F;
+				float f16 = (float)(i5 + i23 - (i26 + 1 << 4)) / 256.0F;
+				f17 = (float)(i25 + i24 - (i10 << 4)) / 256.0F;
+				f18 = (float)(i25 + i24 - (i10 + 1 << 4)) / 256.0F;
+				Tessellator tessellator29 = Tessellator.instance;
+				Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+				tessellator29.normal(0.0F, 0.0F, -1.0F);
+				tessellator29.addVertexWithUV((double)f11, (double)f14, -0.5D, (double)f16, (double)f17);
+				tessellator29.addVertexWithUV((double)f27, (double)f14, -0.5D, (double)f15, (double)f17);
+				tessellator29.addVertexWithUV((double)f27, (double)f13, -0.5D, (double)f15, (double)f18);
+				tessellator29.addVertexWithUV((double)f11, (double)f13, -0.5D, (double)f16, (double)f18);
+				tessellator29.normal(0.0F, 0.0F, 1.0F);
+				tessellator29.addVertexWithUV((double)f11, (double)f13, 0.5D, 0.75D, 0.0D);
+				tessellator29.addVertexWithUV((double)f27, (double)f13, 0.5D, 0.8125D, 0.0D);
+				tessellator29.addVertexWithUV((double)f27, (double)f14, 0.5D, 0.8125D, 0.0625D);
+				tessellator29.addVertexWithUV((double)f11, (double)f14, 0.5D, 0.75D, 0.0625D);
+				tessellator29.normal(0.0F, -1.0F, 0.0F);
+				tessellator29.addVertexWithUV((double)f11, (double)f13, -0.5D, 0.75D, 0.001953125D);
+				tessellator29.addVertexWithUV((double)f27, (double)f13, -0.5D, 0.8125D, 0.001953125D);
+				tessellator29.addVertexWithUV((double)f27, (double)f13, 0.5D, 0.8125D, 0.001953125D);
+				tessellator29.addVertexWithUV((double)f11, (double)f13, 0.5D, 0.75D, 0.001953125D);
+				tessellator29.normal(0.0F, 1.0F, 0.0F);
+				tessellator29.addVertexWithUV((double)f11, (double)f14, 0.5D, 0.75D, 0.001953125D);
+				tessellator29.addVertexWithUV((double)f27, (double)f14, 0.5D, 0.8125D, 0.001953125D);
+				tessellator29.addVertexWithUV((double)f27, (double)f14, -0.5D, 0.8125D, 0.001953125D);
+				tessellator29.addVertexWithUV((double)f11, (double)f14, -0.5D, 0.75D, 0.001953125D);
+				tessellator29.normal(-1.0F, 0.0F, 0.0F);
+				tessellator29.addVertexWithUV((double)f11, (double)f13, 0.5D, 0.751953125D, 0.0D);
+				tessellator29.addVertexWithUV((double)f11, (double)f14, 0.5D, 0.751953125D, 0.0625D);
+				tessellator29.addVertexWithUV((double)f11, (double)f14, -0.5D, 0.751953125D, 0.0625D);
+				tessellator29.addVertexWithUV((double)f11, (double)f13, -0.5D, 0.751953125D, 0.0D);
+				tessellator29.normal(1.0F, 0.0F, 0.0F);
+				tessellator29.addVertexWithUV((double)f27, (double)f13, -0.5D, 0.751953125D, 0.0D);
+				tessellator29.addVertexWithUV((double)f27, (double)f14, -0.5D, 0.751953125D, 0.0625D);
+				tessellator29.addVertexWithUV((double)f27, (double)f14, 0.5D, 0.751953125D, 0.0625D);
+				tessellator29.addVertexWithUV((double)f27, (double)f13, 0.5D, 0.751953125D, 0.0D);
+				tessellator29.draw();
+			}
+		}
 
-        GL11.glDisable(GL11.GL_NORMALIZE);
-        GL11.glPopMatrix();
-    }
+		GL11.glDisable(GL11.GL_NORMALIZE);
+		GL11.glPopMatrix();
+	}
 }

@@ -14,71 +14,70 @@ public final class TextureLavaFX extends TextureFX {
 	}
 
 	public final void onTick() {
-		int var1;
-		int var2;
-		float var3;
-		int var5;
-		int var6;
-		int var7;
-		int var8;
-		int var9;
-		for(var1 = 0; var1 < 16; ++var1) {
-			for(var2 = 0; var2 < 16; ++var2) {
-				var3 = 0.0F;
-				int var4 = (int)(MathHelper.sin((float)var2 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
-				var5 = (int)(MathHelper.sin((float)var1 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
+		int i1;
+		int i2;
+		float f3;
+		int i5;
+		int i6;
+		int i7;
+		int i8;
+		int i9;
+		for(i1 = 0; i1 < 16; ++i1) {
+			for(i2 = 0; i2 < 16; ++i2) {
+				f3 = 0.0F;
+				int i4 = (int)(MathHelper.sin((float)i2 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
+				i5 = (int)(MathHelper.sin((float)i1 * (float)Math.PI * 2.0F / 16.0F) * 1.2F);
 
-				for(var6 = var1 - 1; var6 <= var1 + 1; ++var6) {
-					for(var7 = var2 - 1; var7 <= var2 + 1; ++var7) {
-						var8 = var6 + var4 & 15;
-						var9 = var7 + var5 & 15;
-						var3 += this.red[var8 + (var9 << 4)];
+				for(i6 = i1 - 1; i6 <= i1 + 1; ++i6) {
+					for(i7 = i2 - 1; i7 <= i2 + 1; ++i7) {
+						i8 = i6 + i4 & 15;
+						i9 = i7 + i5 & 15;
+						f3 += this.red[i8 + (i9 << 4)];
 					}
 				}
 
-				this.green[var1 + (var2 << 4)] = var3 / 10.0F + (this.blue[(var1 & 15) + ((var2 & 15) << 4)] + this.blue[(var1 + 1 & 15) + ((var2 & 15) << 4)] + this.blue[(var1 + 1 & 15) + ((var2 + 1 & 15) << 4)] + this.blue[(var1 & 15) + ((var2 + 1 & 15) << 4)]) / 4.0F * 0.8F;
-				this.blue[var1 + (var2 << 4)] += this.alpha[var1 + (var2 << 4)] * 0.01F;
-				if(this.blue[var1 + (var2 << 4)] < 0.0F) {
-					this.blue[var1 + (var2 << 4)] = 0.0F;
+				this.green[i1 + (i2 << 4)] = f3 / 10.0F + (this.blue[(i1 & 15) + ((i2 & 15) << 4)] + this.blue[(i1 + 1 & 15) + ((i2 & 15) << 4)] + this.blue[(i1 + 1 & 15) + ((i2 + 1 & 15) << 4)] + this.blue[(i1 & 15) + ((i2 + 1 & 15) << 4)]) / 4.0F * 0.8F;
+				this.blue[i1 + (i2 << 4)] += this.alpha[i1 + (i2 << 4)] * 0.01F;
+				if(this.blue[i1 + (i2 << 4)] < 0.0F) {
+					this.blue[i1 + (i2 << 4)] = 0.0F;
 				}
 
-				this.alpha[var1 + (var2 << 4)] -= 0.06F;
+				this.alpha[i1 + (i2 << 4)] -= 0.06F;
 				if(Math.random() < 0.005D) {
-					this.alpha[var1 + (var2 << 4)] = 1.5F;
+					this.alpha[i1 + (i2 << 4)] = 1.5F;
 				}
 			}
 		}
 
-		float[] var10 = this.green;
+		float[] f10 = this.green;
 		this.green = this.red;
-		this.red = var10;
+		this.red = f10;
 
-		for(var2 = 0; var2 < 256; ++var2) {
-			var3 = this.red[var2] * 2.0F;
-			if(var3 > 1.0F) {
-				var3 = 1.0F;
+		for(i2 = 0; i2 < 256; ++i2) {
+			if((f3 = this.red[i2] * 2.0F) > 1.0F) {
+				f3 = 1.0F;
 			}
 
-			if(var3 < 0.0F) {
-				var3 = 0.0F;
+			if(f3 < 0.0F) {
+				f3 = 0.0F;
 			}
 
-			var5 = (int)(var3 * 100.0F + 155.0F);
-			var6 = (int)(var3 * var3 * 255.0F);
-			var7 = (int)(var3 * var3 * var3 * var3 * 128.0F);
+			i5 = (int)(f3 * 100.0F + 155.0F);
+			i6 = (int)(f3 * f3 * 255.0F);
+			i7 = (int)(f3 * f3 * f3 * f3 * 128.0F);
 			if(this.anaglyphEnabled) {
-				var8 = (var5 * 30 + var6 * 59 + var7 * 11) / 100;
-				var9 = (var5 * 30 + var6 * 70) / 100;
-				var1 = (var5 * 30 + var7 * 70) / 100;
-				var5 = var8;
-				var6 = var9;
-				var7 = var1;
+				i8 = (i5 * 30 + i6 * 59 + i7 * 11) / 100;
+				i9 = (i5 * 30 + i6 * 70) / 100;
+				i1 = (i5 * 30 + i7 * 70) / 100;
+				i5 = i8;
+				i6 = i9;
+				i7 = i1;
 			}
 
-			this.imageData[var2 << 2] = (byte)var5;
-			this.imageData[(var2 << 2) + 1] = (byte)var6;
-			this.imageData[(var2 << 2) + 2] = (byte)var7;
-			this.imageData[(var2 << 2) + 3] = -1;
+			this.imageData[i2 << 2] = (byte)i5;
+			this.imageData[(i2 << 2) + 1] = (byte)i6;
+			this.imageData[(i2 << 2) + 2] = (byte)i7;
+			this.imageData[(i2 << 2) + 3] = -1;
 		}
 
 	}
