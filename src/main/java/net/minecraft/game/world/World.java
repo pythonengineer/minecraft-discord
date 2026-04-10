@@ -7,8 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
@@ -32,13 +33,14 @@ import net.minecraft.game.world.terrain.ChunkProviderGenerate;
 public class World {
 	private List lightingToUpdate;
 	private List loadedEntityList;
-	private List scheduledTickList;
+    private TreeSet scheduledTickTreeSet;
+    private Set scheduledTickSet;
 	public List loadedTileEntityList;
 	public long worldTime;
 	private long skyColor;
 	private long fogColor;
 	private long cloudColor;
-	private int skylightSubtracted;
+    public int skylightSubtracted;
 	private int randInt;
 	private int tickUpdateRandom;
 	private static float[] lightBrightnessTable = new float[16];
@@ -91,13 +93,10 @@ public class World {
 	}
 
 	private World(String worldName, long seed) {
-        this(worldName, seed, true);
-    }
-
-    private World(String worldName, long seed, boolean b) {
 		this.lightingToUpdate = new ArrayList();
 		this.loadedEntityList = new ArrayList();
-		this.scheduledTickList = new LinkedList();
+        this.scheduledTickTreeSet = new TreeSet();
+        this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.worldTime = 0L;
 		this.skyColor = 10079487L;
@@ -125,8 +124,8 @@ public class World {
 				this.worldTime = worldFile1.getLong("Time");
 				this.sizeOnDisk = worldFile1.getLong("SizeOnDisk");
 				this.playerData = worldFile1.getCompoundTag("Player");
-			} catch (IOException exception6) {
-				exception6.printStackTrace();
+			} catch (IOException exception5) {
+				exception5.printStackTrace();
 			}
 		}
 
@@ -136,7 +135,7 @@ public class World {
             worldFile2 = true;
         }
 
-        this.chunkProvider = new ChunkProviderLoadOrGenerate(this, this.levelFile, new ChunkProviderGenerate(this, this.seed));
+        this.chunkProvider = this.getChunkProvider(this.levelFile);
         int worldName1;
         if(worldFile2) {
             this.spawnX = 0;
@@ -162,6 +161,10 @@ public class World {
 
     }
 
+    protected IChunkProvider getChunkProvider(VFile2 worldFile) {
+        return new ChunkProviderLoadOrGenerate(this, worldFile, new ChunkProviderGenerate(this, this.seed));
+    }
+
     private int getFirstUncoveredBlock(int x, int z) {
         int i3;
         for(i3 = 63; this.getBlockId(x, i3 + 1, z) != 0; ++i3) {
@@ -183,47 +186,71 @@ public class World {
 		}
 	}
 
-	public void saveWorld(boolean saveWorldIndirectly) {
-		VFile2 file2 = new VFile2(this.levelFile, "level.dat");
-		NBTTagCompound nBTTagCompound3;
-		(nBTTagCompound3 = new NBTTagCompound()).setLong("RandomSeed", this.seed);
-		nBTTagCompound3.setInteger("SpawnX", this.spawnX);
-		nBTTagCompound3.setInteger("SpawnY", this.spawnY);
-		nBTTagCompound3.setInteger("SpawnZ", this.spawnZ);
-		nBTTagCompound3.setLong("Time", this.worldTime);
-		nBTTagCompound3.setLong("SizeOnDisk", this.sizeOnDisk);
-		nBTTagCompound3.setLong("LastPlayed", EagRuntime.currentTimeMillis());
-		NBTTagCompound nBTTagCompound4;
-		if(this.playerEntity != null) {
-			nBTTagCompound4 = new NBTTagCompound();
-			this.playerEntity.writeToNBT(nBTTagCompound4);
-			nBTTagCompound3.setCompoundTag("Player", nBTTagCompound4);
-		}
+    public void saveWorld(boolean saveWorldIndirectly) {
+        if(this.chunkProvider.canSave()) {
+            VFile2 file2 = new VFile2(this.levelFile, "level.dat");
+            NBTTagCompound nBTTagCompound3;
+            (nBTTagCompound3 = new NBTTagCompound()).setLong("RandomSeed", this.seed);
+            nBTTagCompound3.setInteger("SpawnX", this.spawnX);
+            nBTTagCompound3.setInteger("SpawnY", this.spawnY);
+            nBTTagCompound3.setInteger("SpawnZ", this.spawnZ);
+            nBTTagCompound3.setLong("Time", this.worldTime);
+            nBTTagCompound3.setLong("SizeOnDisk", this.sizeOnDisk);
+            nBTTagCompound3.setLong("LastPlayed", EagRuntime.currentTimeMillis());
+            NBTTagCompound nBTTagCompound4;
+            if(this.playerEntity != null) {
+                nBTTagCompound4 = new NBTTagCompound();
+                this.playerEntity.writeToNBT(nBTTagCompound4);
+                nBTTagCompound3.setCompoundTag("Player", nBTTagCompound4);
+            }
 
-		(nBTTagCompound4 = new NBTTagCompound()).setTag("Data", nBTTagCompound3);
+            (nBTTagCompound4 = new NBTTagCompound()).setTag("Data", nBTTagCompound3);
 
-        try (OutputStream fos = file2.getOutputStream()) {
-			LoadingScreenRenderer.write(nBTTagCompound4, fos);
-		} catch (IOException exception5) {
-			exception5.printStackTrace();
-		}
+            try (OutputStream fos = file2.getOutputStream()) {
+                LoadingScreenRenderer.write(nBTTagCompound4, fos);
+            } catch (IOException exception5) {
+                exception5.printStackTrace();
+            }
 
-		this.chunkProvider.saveChunks(saveWorldIndirectly);
+            this.chunkProvider.saveChunks(saveWorldIndirectly);
+        }
 	}
 
-	public final int getBlockId(int x, int y, int z) {
-		return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y <= 0 ? Block.lavaStill.blockID : (y >= 128 ? 0 : this.getChunkFromChunkCoords(x >> 4, z >> 4).getBlockID(x & 15, y, z & 15))) : 0;
-	}
+    public final int getBlockId(int x, int y, int z) {
+        return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y <= 0 ? 0 : (y >= 128 ? 0 : this.getChunkFromChunkCoords(x >> 4, z >> 4).getBlockID(x & 15, y, z & 15))) : 0;
+    }
 
-	public final boolean checkChunksExist(int minX, int minY, int minZ) {
-		return minY >= 0 && minY < 128 ? this.chunkExists(minX >> 4, minZ >> 4) : false;
-	}
+    public final boolean blockExists(int x, int y, int z) {
+        return y >= 0 && y < 128 ? this.chunkExists(x >> 4, z >> 4) : false;
+    }
+
+    private boolean checkChunksExist(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        minX >>= 4;
+        minY >>= 4;
+        minZ >>= 4;
+        maxX >>= 4;
+        maxY >>= 4;
+        maxZ >>= 4;
+        if(maxY >= 0 && minY < 128) {
+            for(minX = minX; minX <= maxX; ++minX) {
+                for(minY = minZ; minY <= maxZ; ++minY) {
+                    if(!this.chunkExists(minX, minY)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 	private boolean chunkExists(int chunkX, int chunkZ) {
 		return this.chunkProvider.chunkExists(chunkX, chunkZ);
 	}
 
-	private Chunk getChunkFromChunkCoords(int chunkX, int chunkZ) {
+    public final Chunk getChunkFromChunkCoords(int chunkX, int chunkZ) {
 		return this.chunkProvider.provideChunk(chunkX, chunkZ);
 	}
 
@@ -426,7 +453,7 @@ public class World {
 	}
 
 	public final void neighborLightPropagationChanged(EnumSkyBlock skyBlock, int x, int y, int z, int lightValue) {
-		if(this.checkChunksExist(x, y, z)) {
+        if(this.blockExists(x, y, z)) {
 			if(skyBlock == EnumSkyBlock.Sky) {
 				if(this.canExistingBlockSeeTheSky(x, y, z)) {
 					lightValue = 15;
@@ -802,15 +829,18 @@ public class World {
 		return partialTicks * partialTicks * 0.5F;
 	}
 
-	public final void scheduleBlockUpdate(int x, int y, int z, int blockID) {
-		NextTickListEntry x1 = new NextTickListEntry(x, y, z, blockID);
-		if(blockID > 0) {
-			z = Block.blocksList[blockID].tickRate();
-			x1.scheduledTime = z;
-		}
+    public final void scheduleBlockUpdate(int x, int y, int z, int blockID) {
+        NextTickListEntry x1 = new NextTickListEntry(x, y, z, blockID);
+        if(blockID > 0) {
+            x1.setScheduledTime((long)Block.blocksList[blockID].tickRate() + this.worldTime);
+        }
 
-		this.scheduledTickList.add(x1);
-	}
+        if(!this.scheduledTickSet.contains(x1)) {
+            this.scheduledTickSet.add(x1);
+            this.scheduledTickTreeSet.add(x1);
+        }
+
+    }
 
 	public final void updateEntities() {
 		int i1;
@@ -1235,7 +1265,7 @@ public class World {
 
 			for(int i4 = metadataChunkBlock10000.minX; i4 <= metadataChunkBlock2.maxX; ++i4) {
 				for(int i5 = metadataChunkBlock2.minZ; i5 <= metadataChunkBlock2.maxZ; ++i5) {
-					if(world3.checkChunksExist(i4, 0, i5)) {
+				    if(world3.blockExists(i4, 0, i5)) {
 						for(int i6 = metadataChunkBlock2.minY; i6 <= metadataChunkBlock2.maxY; ++i6) {
 							if(i6 >= 0 && i6 < 128) {
 								int i7 = world3.getSavedLightValue(metadataChunkBlock2.skyBlock, i4, i6, i5);
@@ -1416,36 +1446,39 @@ public class World {
             this.saveWorld(false);
         }
 
-        if((i1 = this.scheduledTickList.size()) > 200) {
-            i1 = 200;
-        }
-
-        int i2;
-        int i4;
-        for(i2 = 0; i2 < i1; ++i2) {
-            NextTickListEntry nextTickListEntry3;
-            if((nextTickListEntry3 = (NextTickListEntry)this.scheduledTickList.remove(0)).scheduledTime > 0) {
-                --nextTickListEntry3.scheduledTime;
-                this.scheduledTickList.add(nextTickListEntry3);
-            } else if(this.checkChunksExist(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord) && (i4 = this.getBlockId(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord)) == nextTickListEntry3.blockID && i4 > 0) {
-                Block.blocksList[i4].updateTick(this, nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord, this.rand);
+        if((i1 = this.scheduledTickTreeSet.size()) != this.scheduledTickSet.size()) {
+            throw new IllegalStateException("TickNextTick list out of synch");
+        } else {
+            if(i1 > 1000) {
+                i1 = 1000;
             }
+
+            int i2;
+            NextTickListEntry nextTickListEntry3;
+            int i4;
+            for(i2 = 0; i2 < i1 && (nextTickListEntry3 = (NextTickListEntry)this.scheduledTickTreeSet.first()).scheduledTime <= this.worldTime; ++i2) {
+                this.scheduledTickTreeSet.remove(nextTickListEntry3);
+                this.scheduledTickSet.remove(nextTickListEntry3);
+                if(this.blockExists(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord) && (i4 = this.getBlockId(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord)) == nextTickListEntry3.blockID && i4 > 0 && this.checkChunksExist(nextTickListEntry3.xCoord - 8, nextTickListEntry3.yCoord - 8, nextTickListEntry3.zCoord - 8, nextTickListEntry3.xCoord + 8, nextTickListEntry3.yCoord + 8, nextTickListEntry3.zCoord + 8)) {
+                    Block.blocksList[i4].updateTick(this, nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord, this.rand);
+                }
+            }
+
+            i1 = MathHelper.floor_double(this.playerEntity.posX);
+            i2 = MathHelper.floor_double(this.playerEntity.posZ);
+
+            for(int i8 = 0; i8 < 32000; ++i8) {
+                this.randInt = this.randInt * 3 + this.tickUpdateRandom;
+                int i5 = ((i4 = this.randInt >> 2) & 255) - 128 + i1;
+                int i6 = (i4 >> 8 & 255) - 128 + i2;
+                i4 = i4 >> 16 & 127;
+                int i7 = this.getBlockId(i5, i4, i6);
+                if(Block.tickOnLoad[i7]) {
+                    Block.blocksList[i7].updateTick(this, i5, i4, i6, this.rand);
+                }
+            }
+
         }
-
-        i1 = MathHelper.floor_double(this.playerEntity.posX);
-        i2 = MathHelper.floor_double(this.playerEntity.posZ);
-
-        for(int i8 = 0; i8 < 32000; ++i8) {
-            this.randInt = this.randInt * 3 + this.tickUpdateRandom;
-            int i5 = ((i4 = this.randInt >> 2) & 255) - 128 + i1;
-			int i6 = (i4 >> 8 & 255) - 128 + i2;
-			i4 = i4 >> 16 & 127;
-			int i7 = this.getBlockId(i5, i4, i6);
-			if(Block.tickOnLoad[i7]) {
-				Block.blocksList[i7].updateTick(this, i5, i4, i6, this.rand);
-			}
-		}
-
 	}
 
 	public final void randomDisplayUpdates(int x, int y, int z) {
@@ -1486,7 +1519,7 @@ public class World {
 	}
 
 	public final void updateTileEntityChunkAndDoNothing(int x, int y, int z) {
-		if(this.checkChunksExist(x, y, z)) {
+	    if(this.blockExists(x, y, z)) {
 			this.getChunkFromChunkCoords(x >> 4, z >> 4).isModified = true;
 		}
 

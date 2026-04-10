@@ -37,6 +37,7 @@ public final class Chunk {
 	public boolean isModified;
 	private boolean hasEntities;
     public boolean neverSave;
+    public boolean isChunkRendered;
 
 	private Chunk(World world, int chunkX, int chunkZ) {
 		this.chunkTileEntityMap = new HashMap();
@@ -44,6 +45,7 @@ public final class Chunk {
 		this.isTerrainPopulated = false;
 		this.isModified = false;
 		this.hasEntities = false;
+        this.isChunkRendered = false;
 		this.worldObj = world;
 		this.xPosition = chunkX;
 		this.zPosition = chunkZ;
@@ -62,6 +64,10 @@ public final class Chunk {
 		this.skyLightMap = new NibbleArray(blockData.length);
 		this.blockLightMap = new NibbleArray(blockData.length);
 	}
+
+    public final boolean isAtLocation(int chunkX, int chunkZ) {
+        return chunkX == this.xPosition && chunkZ == this.zPosition;
+    }
 
 	public final int getHeightValue(int x, int z) {
 		return this.heightMap[z << 4 | x] & 255;

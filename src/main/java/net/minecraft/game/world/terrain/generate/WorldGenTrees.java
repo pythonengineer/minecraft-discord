@@ -59,9 +59,9 @@ public final class WorldGenTrees extends WorldGenerator {
 				}
 
 				for(i15 = 0; i15 < i6; ++i15) {
-					if(!Block.opaqueCubeLookup[world.getBlockId(x, y + i15, z)]) {
-						world.setBlock(x, y + i15, z, Block.wood.blockID);
-					}
+                    if((i10 = world.getBlockId(x, y + i15, z)) == 0 || i10 == Block.leaves.blockID) {
+                        world.setBlock(x, y + i15, z, Block.wood.blockID);
+                    }
 				}
 
 				return true;

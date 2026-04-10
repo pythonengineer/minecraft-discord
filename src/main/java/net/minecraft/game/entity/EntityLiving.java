@@ -81,6 +81,10 @@ public class EntityLiving extends Entity {
 			}
 		}
 
+        if(this.isEntityAlive() && this.isEntityInsideOpaqueBlock()) {
+            this.attackEntityFrom((Entity)null, 1);
+        }
+
         int i9;
 		if(this.isEntityAlive() && this.isInsideOfMaterial(Material.water)) {
 			--this.air;

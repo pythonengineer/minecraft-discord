@@ -484,91 +484,82 @@ public final class Minecraft implements Runnable {
             }
 
             ItemStack itemStack2;
-            int i3;
+            int i12;
+            if(this.objectMouseOver == null) {
+                if(mouseButton == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
+                    this.leftClickCounter = 10;
+                }
+            } else if(this.objectMouseOver.typeOfHit == 1) {
+                if(mouseButton == 0) {
+                    Entity entity5 = this.objectMouseOver.entityHit;
+                    EntityPlayerSP entityPlayerSP4 = this.thePlayer;
+                    InventoryPlayer inventoryPlayer3;
+                    ItemStack itemStack10;
+                    int i10000 = (itemStack10 = (inventoryPlayer3 = this.thePlayer.inventory).getStackInSlot(inventoryPlayer3.currentItem)) != null ? Item.itemsList[itemStack10.itemID].getDamageVsEntity() : 1;
+                    int i8 = i10000;
+                    if(i10000 > 0) {
+                        entity5.attackEntityFrom(entityPlayerSP4, i8);
+                        if((itemStack2 = entityPlayerSP4.inventory.getCurrentItem()) != null && entity5 instanceof EntityLiving) {
+                            EntityLiving entityLiving9 = (EntityLiving)entity5;
+                            Item.itemsList[itemStack2.itemID].hitEntity(itemStack2);
+                            if(itemStack2.stackSize <= 0) {
+                                entityPlayerSP4.destroyCurrentEquippedItem();
+                            }
+                        }
+                    }
+                }
+            } else if(this.objectMouseOver.typeOfHit == 0) {
+                int i11 = this.objectMouseOver.blockX;
+                i12 = this.objectMouseOver.blockY;
+                int i13 = this.objectMouseOver.blockZ;
+                int i15 = this.objectMouseOver.sideHit;
+                Block block6 = Block.blocksList[this.theWorld.getBlockId(i11, i12, i13)];
+                if(mouseButton == 0) {
+                    this.theWorld.onBlockHit(i11, i12, i13, this.objectMouseOver.sideHit);
+                    if(block6 != Block.bedrock) {
+                        this.playerController.clickBlock(i11, i12, i13);
+                    }
+                } else {
+                    ItemStack itemStack18 = this.thePlayer.inventory.getCurrentItem();
+                    int i7;
+                    if((i7 = this.theWorld.getBlockId(i11, i12, i13)) > 0 && Block.blocksList[i7].blockActivated(this.theWorld, i11, i12, i13, this.thePlayer)) {
+                        return;
+                    }
+
+                    if(itemStack18 == null) {
+                        return;
+                    }
+
+                    i7 = itemStack18.stackSize;
+                    int i21 = i15;
+                    World world19 = this.theWorld;
+                    EntityPlayerSP entityPlayerSP16 = this.thePlayer;
+                    if(itemStack18.getItem().onItemUse(itemStack18, entityPlayerSP16, world19, i11, i12, i13, i21)) {
+                        this.entityRenderer.itemRenderer.swing();
+                    }
+
+                    if(itemStack18.stackSize == 0) {
+                        this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+                    } else if(itemStack18.stackSize != i7) {
+                        this.entityRenderer.itemRenderer.resetEquippedProgress();
+                    }
+                }
+            }
+
             if(mouseButton == 1 && (itemStack2 = this.thePlayer.inventory.getCurrentItem()) != null) {
-                i3 = itemStack2.stackSize;
-                EntityPlayerSP entityPlayerSP7 = this.thePlayer;
-                World world5 = this.theWorld;
-                ItemStack itemStack4;
-                if((itemStack4 = itemStack2.getItem().onItemRightClick(itemStack2, world5, entityPlayerSP7)) != itemStack2 || itemStack4 != null && itemStack4.stackSize != i3) {
-                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = itemStack4;
+                i12 = itemStack2.stackSize;
+                EntityPlayerSP entityPlayerSP20 = this.thePlayer;
+                World world17 = this.theWorld;
+                ItemStack itemStack14;
+                if((itemStack14 = itemStack2.getItem().onItemRightClick(itemStack2, world17, entityPlayerSP20)) != itemStack2 || itemStack14 != null && itemStack14.stackSize != i12) {
+                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = itemStack14;
                     this.entityRenderer.itemRenderer.resetEquippedProgress();
-                    if(itemStack4.stackSize == 0) {
+                    if(itemStack14.stackSize == 0) {
                         this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
                     }
                 }
             }
 
-            if(this.objectMouseOver == null) {
-                if(mouseButton == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
-                    this.leftClickCounter = 10;
-                }
-
-            } else {
-                if(this.objectMouseOver.typeOfHit == 1) {
-                    if(mouseButton == 0) {
-                        Entity entity15 = this.objectMouseOver.entityHit;
-                        EntityPlayerSP entityPlayerSP13 = this.thePlayer;
-                        ItemStack itemStack9;
-                        InventoryPlayer inventoryPlayer12;
-                        int i10000 = (itemStack9 = (inventoryPlayer12 = this.thePlayer.inventory).getStackInSlot(inventoryPlayer12.currentItem)) != null ? Item.itemsList[itemStack9.itemID].getDamageVsEntity() : 1;
-                        int i19 = i10000;
-                        if(i10000 > 0) {
-                            entity15.attackEntityFrom(entityPlayerSP13, i19);
-                            if((itemStack2 = entityPlayerSP13.inventory.getCurrentItem()) != null && entity15 instanceof EntityLiving) {
-                                EntityLiving entityLiving8 = (EntityLiving)entity15;
-                                Item.itemsList[itemStack2.itemID].hitEntity(itemStack2);
-                                if(itemStack2.stackSize <= 0) {
-                                    entityPlayerSP13.destroyCurrentEquippedItem();
-                                }
-                            }
-                        }
-
-                        return;
-                    }
-                } else if(this.objectMouseOver.typeOfHit == 0) {
-                    int i11 = this.objectMouseOver.blockX;
-                    i3 = this.objectMouseOver.blockY;
-                    int i14 = this.objectMouseOver.blockZ;
-                    int i16 = this.objectMouseOver.sideHit;
-                    Block block6 = Block.blocksList[this.theWorld.getBlockId(i11, i3, i14)];
-                    if(mouseButton == 0) {
-                        this.theWorld.onBlockHit(i11, i3, i14, this.objectMouseOver.sideHit);
-                        if(block6 != Block.bedrock) {
-                            this.playerController.clickBlock(i11, i3, i14);
-                            return;
-                        }
-                    } else {
-                        ItemStack mouseButton1 = this.thePlayer.inventory.getCurrentItem();
-                        int i18;
-                        if((i18 = this.theWorld.getBlockId(i11, i3, i14)) > 0 && Block.blocksList[i18].blockActivated(this.theWorld, i11, i3, i14, this.thePlayer)) {
-                            return;
-                        }
-
-                        if(mouseButton1 == null) {
-                            return;
-                        }
-
-                        i18 = mouseButton1.stackSize;
-                        int i21 = i16;
-                        World world20 = this.theWorld;
-                        EntityPlayerSP entityPlayerSP17 = this.thePlayer;
-                        if(mouseButton1.getItem().onItemUse(mouseButton1, entityPlayerSP17, world20, i11, i3, i14, i21)) {
-                            this.entityRenderer.itemRenderer.swing();
-                        }
-
-                        if(mouseButton1.stackSize == 0) {
-                            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-                            return;
-                        }
-
-                        if(mouseButton1.stackSize != i18) {
-                            this.entityRenderer.itemRenderer.resetEquippedProgress();
-                        }
-                    }
-                }
-
-            }
         }
     }
 

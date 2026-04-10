@@ -16,7 +16,7 @@ public final class WorldGenLiquids extends WorldGenerator {
             return false;
         } else if(world.getBlockId(x, y - 1, z) != Block.stone.blockID) {
             return false;
-        } else if(world.getBlockId(x, y, z) != 0) {
+        } else if(world.getBlockId(x, y, z) != 0 && world.getBlockId(x, y, z) != Block.stone.blockID) {
             return false;
         } else {
             int i7 = 0;

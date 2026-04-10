@@ -293,7 +293,7 @@ public final class EntityRenderer {
                 this.fogColorRed = 0.02F;
                 this.fogColorGreen = 0.02F;
                 this.fogColorBlue = 0.2F;
-            } else if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
+            } else if(this.mc.thePlayer.isInsideOfMaterial(Material.lava)) {
                 this.fogColorRed = 0.6F;
                 this.fogColorGreen = 0.1F;
                 this.fogColorBlue = 0.0F;
@@ -390,28 +390,6 @@ public final class EntityRenderer {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             RenderHelper.disableStandardItemLighting();
             this.mc.renderGlobal.sortAndRender(this.mc.thePlayer, 0, (double)partialTicks);
-            i14 = MathHelper.floor_double(this.mc.thePlayer.posX);
-            int i58 = MathHelper.floor_double(this.mc.thePlayer.posY);
-            int i60 = MathHelper.floor_double(this.mc.thePlayer.posZ);
-            if(this.mc.theWorld.isBlockNormalCube(i14, i58, i60)) {
-                RenderBlocks renderBlocks = new RenderBlocks(this.mc.theWorld);
-                Tessellator t = Tessellator.instance;
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-
-                for(int i63 = i14 - 1; i63 <= i14 + 1; ++i63) {
-                    for(int i65 = i58 - 1; i65 <= i58 + 1; ++i65) {
-                        for(int i20 = i60 - 1; i20 <= i60 + 1; ++i20) {
-                            int i21 = this.mc.theWorld.getBlockId(i63, i65, i20);
-                            if(i21 > 0) {
-                                renderBlocks.renderBlockAllFaces(Block.blocksList[i21], i63, i65, i20);
-                            }
-                        }
-                    }
-                }
-
-                t.draw();
-            }
-
             RenderHelper.enableStandardItemLighting();
             this.mc.renderGlobal.renderEntities(this.getMouseOver(partialTicks), frustrum51, partialTicks);
             this.mc.effectRenderer.renderLitParticles(partialTicks);

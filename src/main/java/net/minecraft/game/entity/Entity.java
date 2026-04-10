@@ -553,4 +553,11 @@ public abstract class Entity {
 	public boolean isEntityAlive() {
 		return !this.isDead;
 	}
+
+    public final boolean isEntityInsideOpaqueBlock() {
+        int i1 = MathHelper.floor_double(this.posX);
+        int i2 = MathHelper.floor_double(this.posY + (double)this.getEyeHeight());
+        int i3 = MathHelper.floor_double(this.posZ);
+        return this.worldObj.isBlockNormalCube(i1, i2, i3);
+    }
 }

@@ -226,7 +226,7 @@ public class Block {
     }
 
     public int tickRate() {
-        return 5;
+        return 10;
     }
 
     public void onBlockAdded(World world, int x, int y, int z) {

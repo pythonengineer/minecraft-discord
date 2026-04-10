@@ -10,4 +10,6 @@ public interface IChunkProvider {
     void saveChunks(boolean z1);
 
     boolean unload100OldestChunks();
+
+    boolean canSave();
 }

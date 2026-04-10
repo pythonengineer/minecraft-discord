@@ -74,8 +74,8 @@ public final class ItemBucket extends Item {
                         ++i15;
                     }
 
-                    if(world.getBlockId(i15, i16, i18) == 0) {
-                        world.setBlockWithNotify(i15, i16, i18, this.isFull);
+                    if(world.getBlockId(i15, i16, i18) == 0 || !world.getBlockMaterial(i15, i16, i18).isSolid()) {
+                        world.setBlockAndMetadataWithNotify(i15, i16, i18, this.isFull, 0);
                         return new ItemStack(Item.bucketEmpty);
                     }
                 }

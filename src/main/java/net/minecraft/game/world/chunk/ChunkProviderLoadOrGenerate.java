@@ -22,30 +22,17 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
 	public ChunkProviderLoadOrGenerate(World world, VFile2 saveDir, IChunkProvider chunkProvider) {
         this.currentChunk = new Chunk(world, new byte[32768], 0, 0);
+        this.currentChunk.isChunkRendered = true;
         this.currentChunk.neverSave = true;
 		this.worldObj = world;
 		this.chunkProvider = chunkProvider;
 		this.saveDirectory = saveDir;
 	}
 
-	public final boolean chunkExists(int chunkX, int chunkZ) {
-		int i3 = chunkX & 31 | (chunkZ & 31) << 5;
-		if(this.chunks[i3] != null) {
-            if(this.chunks[i3] == this.currentChunk) {
-                return true;
-            }
-
-			Chunk chunk10000 = this.chunks[i3];
-			i3 = chunkZ;
-			chunkZ = chunkX;
-			Chunk chunkX1 = chunk10000;
-			if(chunkZ == chunkX1.xPosition && i3 == chunkX1.zPosition) {
-				return true;
-			}
-		}
-
-		return false;
-	}
+    public final boolean chunkExists(int chunkX, int chunkZ) {
+        int i3 = chunkX & 31 | (chunkZ & 31) << 5;
+        return this.chunks[i3] != null && (this.chunks[i3] == this.currentChunk || this.chunks[i3].isAtLocation(chunkX, chunkZ));
+    }
 
 	public final Chunk provideChunk(int chunkX, int chunkZ) {
 		int i3 = chunkX & 31 | (chunkZ & 31) << 5;
@@ -191,4 +178,8 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
 		return !this.emptyList.isEmpty();
 	}
+
+    public final boolean canSave() {
+        return true;
+    }
 }

@@ -9,11 +9,15 @@ public final class BlockStationary extends BlockFluid {
 		this.setTickOnLoad(false);
 	}
 
-	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
-		int i6 = world.getBlockMetadata(x, y, z);
-		world.setBlock(x, y, z, this.blockID - 1);
-		world.setBlockAndMetadata(x, y, z, i6);
-		world.markBlocksDirty(x, y, z, x, y, z);
-		world.scheduleBlockUpdate(x, y, z, this.blockID - 1);
-	}
+    public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+        super.onNeighborBlockChange(world, x, y, z, blockID);
+        if(world.getBlockId(x, y, z) == this.blockID) {
+            int i6 = world.getBlockMetadata(x, y, z);
+            world.setBlock(x, y, z, this.blockID - 1);
+            world.setBlockAndMetadata(x, y, z, i6);
+            world.markBlocksDirty(x, y, z, x, y, z);
+            world.scheduleBlockUpdate(x, y, z, this.blockID - 1);
+        }
+
+    }
 }

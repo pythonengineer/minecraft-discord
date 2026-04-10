@@ -72,7 +72,6 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		this.furnaceBurnTime = compoundTag.getShort("BurnTime");
 		this.furnaceCookTime = compoundTag.getShort("CookTime");
 		this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
-		System.out.println("Lit: " + this.furnaceBurnTime + "/" + this.currentItemBurnTime);
 	}
 
 	public final void writeToNBT(NBTTagCompound compoundTag) {
