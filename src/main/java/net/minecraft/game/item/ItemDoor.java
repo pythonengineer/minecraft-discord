@@ -55,9 +55,9 @@ public final class ItemDoor extends Item {
 					i12 += 4;
 				}
 
-				world.notifyBlockChange(x, y, z, Block.doorWood.blockID);
+				world.setBlockWithNotify(x, y, z, Block.doorWood.blockID);
 				world.setBlockMetadata(x, y, z, i12);
-				world.notifyBlockChange(x, y + 1, z, Block.doorWood.blockID);
+				world.setBlockWithNotify(x, y + 1, z, Block.doorWood.blockID);
 				world.setBlockMetadata(x, y + 1, z, i12 + 8);
 				--stack.stackSize;
 				return true;

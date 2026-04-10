@@ -15,7 +15,7 @@ public class EntityCreature extends EntityLiving {
 	}
 
 	protected final boolean getClosestPlayerToEntity(Entity entity) {
-		return this.worldObj.rayTraceBlocks_do(new Vec3D(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), new Vec3D(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
+		return this.worldObj.rayTraceBlocks(new Vec3D(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), new Vec3D(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
 	}
 
 	protected void updatePlayerActionState() {

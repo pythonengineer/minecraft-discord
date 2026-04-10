@@ -18,6 +18,7 @@ import net.minecraft.client.gui.container.GuiInventory;
 import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.world.material.Material;
 
 public final class GuiIngame extends Gui {
     private static RenderItem itemRenderer = new RenderItem();
@@ -127,7 +128,7 @@ public final class GuiIngame extends Gui {
                 }
             }
 
-            if(this.mc.thePlayer.isInsideOfMaterial()) {
+            if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
                 i11 = (int)Math.ceil((double)(this.mc.thePlayer.air - 2) * 10.0D / 300.0D);
                 i12 = (int)Math.ceil((double)this.mc.thePlayer.air * 10.0D / 300.0D) - i11;
 

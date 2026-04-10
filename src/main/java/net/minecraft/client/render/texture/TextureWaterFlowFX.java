@@ -55,7 +55,7 @@ public final class TextureWaterFlowFX extends TextureFX {
         this.red = f8;
 
         for(i2 = 0; i2 < 256; ++i2) {
-            if((f3 = this.red[i2]) > 1.0F) {
+            if((f3 = this.red[i2 - (this.tickCounter << 4) & 255]) > 1.0F) {
                 f3 = 1.0F;
             }
 

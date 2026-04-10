@@ -128,6 +128,7 @@ public class EntityItem extends Entity {
 		}
 
 		boolean z10000 = false;
+        this.handleWaterMovement();
 		this.moveEntity(this.motionZ, this.motionY, this.motionX);
 		this.motionZ *= (double)0.98F;
 		this.motionY *= (double)0.98F;
@@ -145,6 +146,10 @@ public class EntityItem extends Entity {
 		}
 
 	}
+
+    public final boolean handleWaterMovement() {
+        return this.worldObj.handleMaterialAcceleration(this.boundingBox, Material.water, this);
+    }
 
 	protected final void dealFireDamage(int fireDamage) {
 		this.attackEntityFrom((Entity)null, 1);

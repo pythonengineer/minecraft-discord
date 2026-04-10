@@ -16,19 +16,19 @@ public final class BlockSource extends Block {
 	public final void onBlockAdded(World world, int x, int y, int z) {
 		super.onBlockAdded(world, x, y, z);
 		if(world.getBlockId(x - 1, y, z) == 0) {
-			world.notifyBlockChange(x - 1, y, z, this.fluid);
+			world.setBlockWithNotify(x - 1, y, z, this.fluid);
 		}
 
 		if(world.getBlockId(x + 1, y, z) == 0) {
-			world.notifyBlockChange(x + 1, y, z, this.fluid);
+			world.setBlockWithNotify(x + 1, y, z, this.fluid);
 		}
 
 		if(world.getBlockId(x, y, z - 1) == 0) {
-			world.notifyBlockChange(x, y, z - 1, this.fluid);
+			world.setBlockWithNotify(x, y, z - 1, this.fluid);
 		}
 
 		if(world.getBlockId(x, y, z + 1) == 0) {
-			world.notifyBlockChange(x, y, z + 1, this.fluid);
+			world.setBlockWithNotify(x, y, z + 1, this.fluid);
 		}
 
 	}
@@ -36,19 +36,19 @@ public final class BlockSource extends Block {
 	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
 		super.updateTick(world, x, y, z, rand);
 		if(world.getBlockId(x - 1, y, z) == 0) {
-			world.notifyBlockChange(x - 1, y, z, this.fluid);
+			world.setBlockWithNotify(x - 1, y, z, this.fluid);
 		}
 
 		if(world.getBlockId(x + 1, y, z) == 0) {
-			world.notifyBlockChange(x + 1, y, z, this.fluid);
+			world.setBlockWithNotify(x + 1, y, z, this.fluid);
 		}
 
 		if(world.getBlockId(x, y, z - 1) == 0) {
-			world.notifyBlockChange(x, y, z - 1, this.fluid);
+			world.setBlockWithNotify(x, y, z - 1, this.fluid);
 		}
 
 		if(world.getBlockId(x, y, z + 1) == 0) {
-			world.notifyBlockChange(x, y, z + 1, this.fluid);
+			world.setBlockWithNotify(x, y, z + 1, this.fluid);
 		}
 
 	}

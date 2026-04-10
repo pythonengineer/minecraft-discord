@@ -110,7 +110,7 @@ public final class BlockLadder extends Block {
 
         if(!z7) {
             this.harvestBlock(world, x, y, z, i6);
-            world.notifyBlockChange(x, y, z, 0);
+            world.setBlockWithNotify(x, y, z, 0);
         }
 
         super.onNeighborBlockChange(world, x, y, z, blockID);

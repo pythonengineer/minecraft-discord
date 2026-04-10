@@ -8,6 +8,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.StepSound;
+import net.minecraft.game.world.material.Material;
 
 public class EntityLiving extends Entity {
 	public int heartsHalvesLife = 20;
@@ -81,7 +82,7 @@ public class EntityLiving extends Entity {
 		}
 
         int i9;
-		if(this.isEntityAlive() && this.isInsideOfMaterial()) {
+		if(this.isEntityAlive() && this.isInsideOfMaterial(Material.water)) {
 			--this.air;
 			if(this.air == -20) {
 				this.air = 0;

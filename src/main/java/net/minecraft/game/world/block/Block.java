@@ -28,7 +28,7 @@ public class Block {
     public static final boolean[] tickOnLoad = new boolean[256];
     public static final boolean[] opaqueCubeLookup = new boolean[256];
     public static final int[] lightOpacity = new int[256];
-    public static final boolean[] canBlockGrass = new boolean[256];
+    private static boolean[] canBlockGrass = new boolean[256];
     public static final int[] lightValue = new int[256];
     public static final Block stone;
     public static final BlockGrass grass;
@@ -138,7 +138,7 @@ public class Block {
         return this;
     }
 
-    protected final Block setResistance(float resistance) {
+    private Block setResistance(float resistance) {
         this.blockResistance = resistance * 3.0F;
         return this;
     }
@@ -173,7 +173,7 @@ public class Block {
         this.maxZ = (double)maxZ;
     }
 
-    public float getBrightness(World world, int x, int y, int z) {
+    public float getBlockBrightness(World world, int x, int y, int z) {
         return world.getBrightness(x, y, z);
     }
 
@@ -203,6 +203,10 @@ public class Block {
 
     public boolean isOpaqueCube() {
         return true;
+    }
+
+    public boolean canCollideCheck(boolean flag) {
+        return this.isCollidable();
     }
 
     public boolean isCollidable() {
@@ -252,7 +256,7 @@ public class Block {
             }
 
             float f5 = f4;
-            if(playerEntity.isInsideOfMaterial()) {
+            if(playerEntity.isInsideOfMaterial(Material.water)) {
                 f5 = f4 / 5.0F;
             }
 
@@ -413,6 +417,12 @@ public class Block {
     }
 
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer playerEntity) {
+    }
+
+    public void velocityToAddToEntity(World world, int x, int y, int z, Vec3D velocityVector) {
+    }
+
+    public void setBlockBoundsBasedOnState(World world, int x, int y, int z) {
     }
 
     static {

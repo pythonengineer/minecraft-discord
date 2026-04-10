@@ -20,6 +20,7 @@ import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.BlockFluid;
 import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.chunk.Chunk;
 import net.minecraft.game.world.chunk.ChunkProviderLoadOrGenerate;
@@ -254,7 +255,7 @@ public class World {
 		this.setBlockAndMetadata(metadata, x, y, z);
 	}
 
-	private boolean setBlockAndMetadata(int x, int y, int z, int blockID) {
+    public final boolean setBlockAndMetadata(int x, int y, int z, int blockID) {
 		if(x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000) {
 			if(y < 0) {
 				return false;
@@ -272,24 +273,31 @@ public class World {
 		}
 	}
 
-	public final boolean notifyBlockChange(int blockID, int x, int y, int z) {
-		if(!this.setBlock(blockID, x, y, z)) {
-			return false;
-		} else {
-			int i5 = z;
-			z = y;
-			y = x;
-			x = blockID;
-			World world7 = this;
+    public final boolean setBlockWithNotify(int x, int y, int z, int blockID) {
+        if(this.setBlock(x, y, z, blockID)) {
+            this.notifyBlockChange(x, y, z, blockID);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-			for(int i6 = 0; i6 < world7.worldAccesses.size(); ++i6) {
-				((IWorldAccess)world7.worldAccesses.get(i6)).markBlockNeedsUpdate(x, y, z);
-			}
+    public final boolean setBlockAndMetadataWithNotify(int x, int y, int z, int blockID, int metadata) {
+        if(this.setBlock(x, y, z, blockID) | this.setBlockAndMetadata(x, y, z, metadata)) {
+            this.notifyBlockChange(x, y, z, blockID);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-			world7.notifyBlocksOfNeighborChange(x, y, z, i5);
-			return true;
-		}
-	}
+    private void notifyBlockChange(int x, int y, int z, int blockID) {
+        for(int i5 = 0; i5 < this.worldAccesses.size(); ++i5) {
+            ((IWorldAccess)this.worldAccesses.get(i5)).markBlockNeedsUpdate(x, y, z);
+        }
+
+        this.notifyBlocksOfNeighborChange(x, y, z, blockID);
+    }
 
 	public final void markBlocksDirtyVertical(int x, int z, int minY, int maxY) {
 		if(minY > maxY) {
@@ -454,148 +462,152 @@ public class World {
 		return this.skylightSubtracted < 8;
 	}
 
-	public final MovingObjectPosition rayTraceBlocks_do(Vec3D vector1, Vec3D vector2) {
-		if(!Double.isNaN(vector1.xCoord) && !Double.isNaN(vector1.yCoord) && !Double.isNaN(vector1.zCoord)) {
-			if(!Double.isNaN(vector2.xCoord) && !Double.isNaN(vector2.yCoord) && !Double.isNaN(vector2.zCoord)) {
-				int i3 = MathHelper.floor_double(vector2.xCoord);
-				int i4 = MathHelper.floor_double(vector2.yCoord);
-				int i5 = MathHelper.floor_double(vector2.zCoord);
-				int i6 = MathHelper.floor_double(vector1.xCoord);
-				int i7 = MathHelper.floor_double(vector1.yCoord);
-				int i8 = MathHelper.floor_double(vector1.zCoord);
-				int i9 = 20;
+    public final MovingObjectPosition rayTraceBlocks(Vec3D vector1, Vec3D vector2) {
+        return this.rayTraceBlocks_do(vector1, vector2, false);
+    }
 
-				Block block11;
-				int i30;
-				MovingObjectPosition movingObjectPosition31;
-				do {
-					if(i9-- < 0) {
-						return null;
-					}
+    public final MovingObjectPosition rayTraceBlocks_do(Vec3D vector1, Vec3D vector2, boolean flag) {
+        if(!Double.isNaN(vector1.xCoord) && !Double.isNaN(vector1.yCoord) && !Double.isNaN(vector1.zCoord)) {
+            if(!Double.isNaN(vector2.xCoord) && !Double.isNaN(vector2.yCoord) && !Double.isNaN(vector2.zCoord)) {
+                int i4 = MathHelper.floor_double(vector2.xCoord);
+                int i5 = MathHelper.floor_double(vector2.yCoord);
+                int i6 = MathHelper.floor_double(vector2.zCoord);
+                int i7 = MathHelper.floor_double(vector1.xCoord);
+                int i8 = MathHelper.floor_double(vector1.yCoord);
+                int i9 = MathHelper.floor_double(vector1.zCoord);
+                int i10 = 20;
 
-					if(Double.isNaN(vector1.xCoord) || Double.isNaN(vector1.yCoord) || Double.isNaN(vector1.zCoord)) {
-						return null;
-					}
+                Block block12;
+                int i31;
+                MovingObjectPosition movingObjectPosition32;
+                do {
+                    if(i10-- < 0) {
+                        return null;
+                    }
 
-					if(i6 == i3 && i7 == i4 && i8 == i5) {
-						return null;
-					}
+                    if(Double.isNaN(vector1.xCoord) || Double.isNaN(vector1.yCoord) || Double.isNaN(vector1.zCoord)) {
+                        return null;
+                    }
 
-					double d10 = 999.0D;
-					double d12 = 999.0D;
-					double d14 = 999.0D;
-					if(i3 > i6) {
-						d10 = (double)i6 + 1.0D;
-					}
+                    if(i7 == i4 && i8 == i5 && i9 == i6) {
+                        return null;
+                    }
 
-					if(i3 < i6) {
-						d10 = (double)i6;
-					}
+                    double d11 = 999.0D;
+                    double d13 = 999.0D;
+                    double d15 = 999.0D;
+                    if(i4 > i7) {
+                        d11 = (double)i7 + 1.0D;
+                    }
 
-					if(i4 > i7) {
-						d12 = (double)i7 + 1.0D;
-					}
+                    if(i4 < i7) {
+                        d11 = (double)i7;
+                    }
 
-					if(i4 < i7) {
-						d12 = (double)i7;
-					}
+                    if(i5 > i8) {
+                        d13 = (double)i8 + 1.0D;
+                    }
 
-					if(i5 > i8) {
-						d14 = (double)i8 + 1.0D;
-					}
+                    if(i5 < i8) {
+                        d13 = (double)i8;
+                    }
 
-					if(i5 < i8) {
-						d14 = (double)i8;
-					}
+                    if(i6 > i9) {
+                        d15 = (double)i9 + 1.0D;
+                    }
 
-					double d16 = 999.0D;
-					double d18 = 999.0D;
-					double d20 = 999.0D;
-					double d22 = vector2.xCoord - vector1.xCoord;
-					double d24 = vector2.yCoord - vector1.yCoord;
-					double d26 = vector2.zCoord - vector1.zCoord;
-					if(d10 != 999.0D) {
-						d16 = (d10 - vector1.xCoord) / d22;
-					}
+                    if(i6 < i9) {
+                        d15 = (double)i9;
+                    }
 
-					if(d12 != 999.0D) {
-						d18 = (d12 - vector1.yCoord) / d24;
-					}
+                    double d17 = 999.0D;
+                    double d19 = 999.0D;
+                    double d21 = 999.0D;
+                    double d23 = vector2.xCoord - vector1.xCoord;
+                    double d25 = vector2.yCoord - vector1.yCoord;
+                    double d27 = vector2.zCoord - vector1.zCoord;
+                    if(d11 != 999.0D) {
+                        d17 = (d11 - vector1.xCoord) / d23;
+                    }
 
-					if(d14 != 999.0D) {
-						d20 = (d14 - vector1.zCoord) / d26;
-					}
+                    if(d13 != 999.0D) {
+                        d19 = (d13 - vector1.yCoord) / d25;
+                    }
 
-					byte b28;
-					if(d16 < d18 && d16 < d20) {
-						if(i3 > i6) {
-							b28 = 4;
-						} else {
-							b28 = 5;
-						}
+                    if(d15 != 999.0D) {
+                        d21 = (d15 - vector1.zCoord) / d27;
+                    }
 
-						vector1.xCoord = d10;
-						vector1.yCoord += d24 * d16;
-						vector1.zCoord += d26 * d16;
-					} else if(d18 < d20) {
-						if(i4 > i7) {
-							b28 = 0;
-						} else {
-							b28 = 1;
-						}
+                    byte b29;
+                    if(d17 < d19 && d17 < d21) {
+                        if(i4 > i7) {
+                            b29 = 4;
+                        } else {
+                            b29 = 5;
+                        }
 
-						vector1.xCoord += d22 * d18;
-						vector1.yCoord = d12;
-						vector1.zCoord += d26 * d18;
-					} else {
-						if(i5 > i8) {
-							b28 = 2;
-						} else {
-							b28 = 3;
-						}
+                        vector1.xCoord = d11;
+                        vector1.yCoord += d25 * d17;
+                        vector1.zCoord += d27 * d17;
+                    } else if(d19 < d21) {
+                        if(i5 > i8) {
+                            b29 = 0;
+                        } else {
+                            b29 = 1;
+                        }
 
-						vector1.xCoord += d22 * d20;
-						vector1.yCoord += d24 * d20;
-						vector1.zCoord = d14;
-					}
+                        vector1.xCoord += d23 * d19;
+                        vector1.yCoord = d13;
+                        vector1.zCoord += d27 * d19;
+                    } else {
+                        if(i6 > i9) {
+                            b29 = 2;
+                        } else {
+                            b29 = 3;
+                        }
 
-					Vec3D vec3D29;
-					i6 = (int)((vec3D29 = new Vec3D(vector1.xCoord, vector1.yCoord, vector1.zCoord)).xCoord = (double)MathHelper.floor_double(vector1.xCoord));
-					if(b28 == 5) {
-						--i6;
-						++vec3D29.xCoord;
-					}
+                        vector1.xCoord += d23 * d21;
+                        vector1.yCoord += d25 * d21;
+                        vector1.zCoord = d15;
+                    }
 
-					i7 = (int)(vec3D29.yCoord = (double)MathHelper.floor_double(vector1.yCoord));
-					if(b28 == 1) {
-						--i7;
-						++vec3D29.yCoord;
-					}
+                    Vec3D vec3D30;
+                    i7 = (int)((vec3D30 = new Vec3D(vector1.xCoord, vector1.yCoord, vector1.zCoord)).xCoord = (double)MathHelper.floor_double(vector1.xCoord));
+                    if(b29 == 5) {
+                        --i7;
+                        ++vec3D30.xCoord;
+                    }
 
-					i8 = (int)(vec3D29.zCoord = (double)MathHelper.floor_double(vector1.zCoord));
-					if(b28 == 3) {
-						--i8;
-						++vec3D29.zCoord;
-					}
+                    i8 = (int)(vec3D30.yCoord = (double)MathHelper.floor_double(vector1.yCoord));
+                    if(b29 == 1) {
+                        --i8;
+                        ++vec3D30.yCoord;
+                    }
 
-					i30 = this.getBlockId(i6, i7, i8);
-					block11 = Block.blocksList[i30];
-					if(i30 > 0 && block11.isCollidable() && (movingObjectPosition31 = block11.collisionRayTrace(this, i6, i7, i8, vector1, vector2)) != null) {
-						return movingObjectPosition31;
-					}
+                    i9 = (int)(vec3D30.zCoord = (double)MathHelper.floor_double(vector1.zCoord));
+                    if(b29 == 3) {
+                        --i9;
+                        ++vec3D30.zCoord;
+                    }
 
-					i30 = this.getBlockId(i6, i7 - 1, i8);
-					block11 = Block.blocksList[i30];
-				} while(i30 <= 0 || !block11.isCollidable() || (movingObjectPosition31 = block11.collisionRayTrace(this, i6, i7 - 1, i8, vector1, vector2)) == null);
+                    i31 = this.getBlockId(i7, i8, i9);
+                    block12 = Block.blocksList[i31];
+                    if(i31 > 0 && block12.canCollideCheck(flag) && (movingObjectPosition32 = block12.collisionRayTrace(this, i7, i8, i9, vector1, vector2)) != null) {
+                        return movingObjectPosition32;
+                    }
 
-				return movingObjectPosition31;
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
+                    i31 = this.getBlockId(i7, i8 - 1, i9);
+                    block12 = Block.blocksList[i31];
+                } while(i31 <= 0 || !block12.canCollideCheck(flag) || (movingObjectPosition32 = block12.collisionRayTrace(this, i7, i8 - 1, i9, vector1, vector2)) == null);
+
+                return movingObjectPosition32;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
 	public final void playSoundAtEntity(Entity entity, String soundName, float volume, float pitch) {
 		for(int i5 = 0; i5 < this.worldAccesses.size(); ++i5) {
@@ -722,10 +734,20 @@ public class World {
 		return new Vec3D((double)f2, (double)f3, (double)f4);
 	}
 
-	public final float getCelestialAngle(float partialTicks) {
-		int i2;
-		return ((float)(i2 = (int)(this.worldTime % 24000L)) + partialTicks) / 24000.0F - 0.15F;
-	}
+    public final float getCelestialAngle(float partialTicks) {
+        int i2;
+        if((partialTicks = ((float)(i2 = (int)(this.worldTime % 24000L)) + partialTicks) / 24000.0F - 0.15F) < 0.0F) {
+            ++partialTicks;
+        }
+
+        if(partialTicks > 1.0F) {
+            --partialTicks;
+        }
+
+        float f3 = partialTicks;
+        partialTicks = 1.0F - (float)((Math.cos((double)partialTicks * Math.PI) + 1.0D) / 2.0D);
+        return f3 + (partialTicks - f3) / 3.0F;
+    }
 
 	public final Vec3D getCloudColor(float partialTicks) {
 		if((partialTicks = MathHelper.cos(this.getCelestialAngle(partialTicks) * (float)Math.PI * 2.0F) * 2.0F + 0.5F) < 0.0F) {
@@ -907,6 +929,41 @@ public class World {
 		return false;
 	}
 
+    public final boolean handleMaterialAcceleration(AxisAlignedBB aabb, Material material, Entity entity) {
+        int i4 = MathHelper.floor_double(aabb.minX);
+        int i5 = MathHelper.floor_double(aabb.maxX + 1.0D);
+        int i6 = MathHelper.floor_double(aabb.minY);
+        int i7 = MathHelper.floor_double(aabb.maxY + 1.0D);
+        int i8 = MathHelper.floor_double(aabb.minZ);
+        int i18 = MathHelper.floor_double(aabb.maxZ + 1.0D);
+        boolean z9 = false;
+        Vec3D vec3D10 = new Vec3D(0.0D, 0.0D, 0.0D);
+
+        for(i4 = i4; i4 < i5; ++i4) {
+            for(int i11 = i6; i11 < i7; ++i11) {
+                for(int i12 = i8; i12 < i18; ++i12) {
+                    Block block13;
+                    if((block13 = Block.blocksList[this.getBlockId(i4, i11, i12)]) != null && block13.blockMaterial == material) {
+                        double d16 = (double)((float)(i11 + 1) - BlockFluid.getFluidHeightPercent(this.getBlockMetadata(i4, i11, i12)));
+                        if((double)i7 >= d16) {
+                            z9 = true;
+                            block13.velocityToAddToEntity(this, i4, i11, i12, vec3D10);
+                        }
+                    }
+                }
+            }
+        }
+
+        if((double)MathHelper.sqrt_double(vec3D10.xCoord * vec3D10.xCoord + vec3D10.yCoord * vec3D10.yCoord + vec3D10.zCoord * vec3D10.zCoord) > 0.0D) {
+            vec3D10 = vec3D10.normalize();
+            entity.motionZ += vec3D10.xCoord * 0.003D;
+            entity.motionY += vec3D10.yCoord * 0.003D;
+            entity.motionX += vec3D10.zCoord * 0.003D;
+        }
+
+        return z9;
+    }
+
 	public final boolean isMaterialInBB(AxisAlignedBB aabb, Material material) {
 		int i3 = MathHelper.floor_double(aabb.minX);
 		int i4 = MathHelper.floor_double(aabb.maxX + 1.0D);
@@ -1052,7 +1109,7 @@ public class World {
 
 			if(i81 > 0) {
 				Block.blocksList[i81].dropBlockAsItemWithChance(world66, i79, i80, i33, world66.getBlockMetadata(i79, i80, i33), 0.3F);
-				world66.notifyBlockChange(i79, i80, i33, 0);
+				world66.setBlockWithNotify(i79, i80, i33, 0);
 				Block.blocksList[i81].onBlockDestroyedByExplosion(world66, i79, i80, i33);
 			}
 		}
@@ -1072,9 +1129,10 @@ public class World {
 					double d14 = aabb.minX + (aabb.maxX - aabb.minX) * (double)f11;
 					double d16 = aabb.minY + (aabb.maxY - aabb.minY) * (double)f12;
 					double d18 = aabb.minZ + (aabb.maxZ - aabb.minZ) * (double)f13;
-					if(this.rayTraceBlocks_do(new Vec3D(d14, d16, d18), vector) == null) {
-						++i9;
-					}
+                    Vec3D vec3D15 = new Vec3D(d14, d16, d18);
+                    if(this.rayTraceBlocks_do(vec3D15, vector, false) == null) {
+                        ++i9;
+                    }
 
 					++i10;
 				}
@@ -1111,7 +1169,7 @@ public class World {
 
 		if(this.getBlockId(x, y, z) == Block.fire.blockID) {
 			this.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.8F);
-			this.notifyBlockChange(x, y, z, 0);
+			this.setBlockWithNotify(x, y, z, 0);
 		}
 
 	}

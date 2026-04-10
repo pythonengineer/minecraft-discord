@@ -225,7 +225,7 @@ public final class EntityRenderer {
         float f34 = f19 * f30;
         double d35 = (double)this.mc.playerController.getBlockReachDistance();
         Vec3D vec3D37 = vec3D18.addVector((double)f32 * d35, (double)f31 * d35, (double)f34 * d35);
-        this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks_do(vec3D18, vec3D37);
+        this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(vec3D18, vec3D37);
         double d38 = d35;
         vec3D18 = this.getMouseOver(partialTicks);
         if(this.mc.objectMouseOver != null) {
@@ -328,7 +328,7 @@ public final class EntityRenderer {
             }
 
             f29 = 70.0F;
-            if(this.mc.thePlayer.isInsideOfMaterial()) {
+            if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
                 f29 = 60.0F;
             }
 
@@ -367,7 +367,7 @@ public final class EntityRenderer {
                     f55 *= 0.1F;
                     f50 *= 0.1F;
                     f16 *= 0.1F;
-                    if((movingObjectPosition = this.mc.theWorld.rayTraceBlocks_do(new Vec3D(d67 + (double)f55, d68 + (double)f50, d74 + (double)f16), new Vec3D(d67 - d78 + (double)f55 + (double)f16, d68 - d41 + (double)f50, d74 - d39 + (double)f16))) != null && (d48 = movingObjectPosition.hitVec.distanceTo(new Vec3D(d67, d68, d74))) < d35) {
+                    if((movingObjectPosition = this.mc.theWorld.rayTraceBlocks(new Vec3D(d67 + (double)f55, d68 + (double)f50, d74 + (double)f16), new Vec3D(d67 - d78 + (double)f55 + (double)f16, d68 - d41 + (double)f50, d74 - d39 + (double)f16))) != null && (d48 = movingObjectPosition.hitVec.distanceTo(new Vec3D(d67, d68, d74))) < d35) {
                         d35 = d48;
                     }
                 }
@@ -378,9 +378,12 @@ public final class EntityRenderer {
             GL11.glRotatef(this.mc.thePlayer.prevRotationPitch + (this.mc.thePlayer.rotationPitch - this.mc.thePlayer.prevRotationPitch) * f52, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(this.mc.thePlayer.prevRotationYaw + (this.mc.thePlayer.rotationYaw - this.mc.thePlayer.prevRotationYaw) * f52 + 180.0F, 0.0F, 1.0F, 0.0F);
             ClippingHelperImplementation.getInstance();
-            this.setupFog();
+            if(this.mc.gameSettings.renderDistance < 2) {
+                this.setupFog();
+                this.mc.renderGlobal.renderSky(partialTicks);
+            }
+
             GL11.glEnable(GL11.GL_FOG);
-            this.mc.renderGlobal.renderSky(partialTicks);
             this.setupFog();
             Frustrum frustrum51;
             (frustrum51 = new Frustrum()).setPosition(d6, d8, d10);
@@ -419,7 +422,7 @@ public final class EntityRenderer {
             RenderHelper.disableStandardItemLighting();
             this.setupFog();
             this.mc.effectRenderer.renderParticles(this.mc.thePlayer, partialTicks);
-            if(this.mc.objectMouseOver != null && this.mc.thePlayer.isInsideOfMaterial()) {
+            if(this.mc.objectMouseOver != null && this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 this.mc.renderGlobal.drawBlockBreaking(this.mc.thePlayer, this.mc.objectMouseOver, 0, this.mc.thePlayer.inventory.getCurrentItem(), partialTicks);
                 this.mc.renderGlobal.drawSelectionBox(this.mc.thePlayer, this.mc.objectMouseOver, 0, partialTicks);
@@ -430,27 +433,34 @@ public final class EntityRenderer {
             this.setupFog();
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_CULL_FACE);
-            GL11.glColorMask(false, false, false, false);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-            int i62 = this.mc.renderGlobal.sortAndRender(this.mc.thePlayer, 1, (double)partialTicks);
-            GL11.glColorMask(true, true, true, true);
-            if(this.mc.gameSettings.anaglyph) {
-                if(i12 == 0) {
-                    GL11.glColorMask(false, true, true, false);
-                } else {
-                    GL11.glColorMask(true, false, false, false);
-                }
-            }
-
-            if(i62 > 0) {
+            int i62;
+            if(this.mc.gameSettings.fancyGraphics) {
+                GL11.glColorMask(false, false, false, false);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-                this.mc.renderGlobal.renderAllRenderLists(1, (double)partialTicks);
+                i62 = this.mc.renderGlobal.sortAndRender(this.mc.thePlayer, 1, (double)partialTicks);
+                GL11.glColorMask(true, true, true, true);
+                if(this.mc.gameSettings.anaglyph) {
+                    if(i12 == 0) {
+                        GL11.glColorMask(false, true, true, false);
+                    } else {
+                        GL11.glColorMask(true, false, false, false);
+                    }
+                }
+
+                if(i62 > 0) {
+                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+                    this.mc.renderGlobal.renderAllRenderLists(1, (double)partialTicks);
+                }
+            } else {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+                this.mc.renderGlobal.sortAndRender(this.mc.thePlayer, 1, (double)partialTicks);
             }
 
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             GL11.glDepthMask(true);
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_BLEND);
-            if(this.mc.objectMouseOver != null && !this.mc.thePlayer.isInsideOfMaterial()) {
+            if(this.mc.objectMouseOver != null && !this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 this.mc.renderGlobal.drawBlockBreaking(this.mc.thePlayer, this.mc.objectMouseOver, 0, this.mc.thePlayer.inventory.getCurrentItem(), partialTicks);
                 this.mc.renderGlobal.drawSelectionBox(this.mc.thePlayer, this.mc.objectMouseOver, 0, partialTicks);
@@ -562,26 +572,22 @@ public final class EntityRenderer {
     }
 
     private void setupFog() {
-        int var10000 = GL11.GL_FOG_COLOR;
-        float f3 = 1.0F;
-        float f6 = this.fogColorBlue;
-        float f5 = this.fogColorGreen;
-        float f4 = this.fogColorRed;
+        float f2 = 1.0F;
+        float f5 = this.fogColorBlue;
+        float f4 = this.fogColorGreen;
+        float f3 = this.fogColorRed;
         this.fogColorBuffer.clear();
-        this.fogColorBuffer.put(f4).put(f5).put(f6).put(1.0F);
+        this.fogColorBuffer.put(f3).put(f4).put(f5).put(1.0F);
         this.fogColorBuffer.flip();
-        GL11.glFog(var10000, this.fogColorBuffer);
+        GL11.glFog(GL11.GL_FOG_COLOR, this.fogColorBuffer);
         GL11.glNormal3f(0.0F, -1.0F, 0.0F);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        Block block7 = Block.blocksList[this.mc.theWorld.getBlockId(MathHelper.floor_double(this.mc.thePlayer.posX), MathHelper.floor_double(this.mc.thePlayer.posY + (double)0.12F), MathHelper.floor_double(this.mc.thePlayer.posZ))];
-        if(block7 != null && block7.blockMaterial.getIsLiquid()) {
-            Material material8 = block7.blockMaterial;
+        if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
-            if(material8 == Material.water) {
-                GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F);
-            } else if(material8 == Material.lava) {
-                GL11.glFogf(GL11.GL_FOG_DENSITY, 2.0F);
-            }
+            GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F);
+        } else if(this.mc.thePlayer.isInsideOfMaterial(Material.lava)) {
+            GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
+            GL11.glFogf(GL11.GL_FOG_DENSITY, 2.0F);
         } else {
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
             GL11.glFogf(GL11.GL_FOG_START, this.farPlaneDistance * 0.25F);

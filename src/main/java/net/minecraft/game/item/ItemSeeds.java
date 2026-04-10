@@ -16,7 +16,7 @@ public final class ItemSeeds extends Item {
 		if(side != 1) {
 			return false;
 		} else if(world.getBlockId(x, y, z) == Block.farmland.blockID) {
-			world.notifyBlockChange(x, y + 1, z, this.blockType);
+			world.setBlockWithNotify(x, y + 1, z, this.blockType);
 			--stack.stackSize;
 			return true;
 		} else {

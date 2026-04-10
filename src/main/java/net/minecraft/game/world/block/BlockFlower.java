@@ -33,7 +33,7 @@ public class BlockFlower extends Block {
 	private void checkFlowerChange(World world, int x, int y, int z) {
 		if(!this.canBlockStay(world, x, y, z)) {
 			this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
-			world.notifyBlockChange(x, y, z, 0);
+			world.setBlockWithNotify(x, y, z, 0);
 		}
 
 	}

@@ -157,9 +157,9 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 			int i6 = world9.getBlockMetadata(i8, i4, i5);
 			TileEntity tileEntity7 = world9.getBlockTileEntity(i8, i4, i5);
 			if(z2) {
-				world9.notifyBlockChange(i8, i4, i5, Block.stoneOvenActive.blockID);
+				world9.setBlockWithNotify(i8, i4, i5, Block.stoneOvenActive.blockID);
 			} else {
-				world9.notifyBlockChange(i8, i4, i5, Block.stoneOvenIdle.blockID);
+				world9.setBlockWithNotify(i8, i4, i5, Block.stoneOvenIdle.blockID);
 			}
 
 			world9.setBlockMetadata(i8, i4, i5, i6);

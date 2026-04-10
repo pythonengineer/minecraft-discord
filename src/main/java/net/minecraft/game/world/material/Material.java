@@ -22,10 +22,6 @@ public class Material {
         return false;
     }
 
-    public final boolean liquidSolidCheck() {
-        return !this.getIsLiquid() && !this.isSolid();
-    }
-
     public boolean isSolid() {
         return true;
     }

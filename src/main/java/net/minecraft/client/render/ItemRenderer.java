@@ -10,6 +10,7 @@ import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.client.render.entity.RenderPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.material.Material;
 
 public final class ItemRenderer {
 	private Minecraft mc;
@@ -232,7 +233,7 @@ public final class ItemRenderer {
             GL11.glDisable(GL11.GL_BLEND);
         }
 
-        if(this.mc.thePlayer.isInsideOfMaterial()) {
+        if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
             i2 = this.mc.renderEngine.getTexture("/water.png");
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, i2);
             t = Tessellator.instance;

@@ -3,14 +3,15 @@ package net.minecraft.client.effect;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.block.BlockFluid;
 import net.minecraft.game.world.material.Material;
 
 public class EntityRainFX extends EntityFX {
-	public EntityRainFX(World world1, double d2, double d4, double d6) {
-		super(world1, d2, d4, d6, 0.0D, 0.0D, 0.0D);
-		this.motionX *= (double)0.3F;
-		this.motionY = (double)((float)Math.random() * 0.2F + 0.1F);
+	public EntityRainFX(World world, double posX, double posY, double posZ) {
+		super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
 		this.motionZ *= (double)0.3F;
+		this.motionY = (double)((float)Math.random() * 0.2F + 0.1F);
+		this.motionX *= (double)0.3F;
 		this.particleBlue = 1.0F;
 		this.particleGreen = 1.0F;
 		this.particleRed = 1.0F;
@@ -29,10 +30,10 @@ public class EntityRainFX extends EntityFX {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		this.motionY -= (double)this.particleGravity;
-		this.moveEntity(this.motionX, this.motionY, this.motionZ);
-		this.motionX *= (double)0.98F;
-		this.motionY *= (double)0.98F;
+		this.moveEntity(this.motionZ, this.motionY, this.motionX);
 		this.motionZ *= (double)0.98F;
+		this.motionY *= (double)0.98F;
+		this.motionX *= (double)0.98F;
 		if(this.particleMaxAge-- <= 0) {
 			super.isDead = true;
 		}
@@ -42,13 +43,16 @@ public class EntityRainFX extends EntityFX {
 				super.isDead = true;
 			}
 
-			this.motionX *= (double)0.7F;
 			this.motionZ *= (double)0.7F;
+			this.motionX *= (double)0.7F;
 		}
 
 		Material material1;
 		if((material1 = this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))).getIsLiquid() || material1.isSolid()) {
-			super.isDead = true;
+			double d2 = (double)((float)(MathHelper.floor_double(this.posY) + 1) - BlockFluid.getFluidHeightPercent(this.worldObj.getBlockMetadata(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))));
+			if(this.posY < d2) {
+				super.isDead = true;
+			}
 		}
 
 	}

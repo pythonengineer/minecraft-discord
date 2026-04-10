@@ -2,165 +2,129 @@ package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.physics.AxisAlignedBB;
+import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
-public class BlockFluid extends Block {
-	protected int stillBlockId;
-	protected int movingBlockId;
-
+public abstract class BlockFluid extends Block {
 	protected BlockFluid(int i1, Material material2) {
-		super(i1, material2);
-		this.blockIndexInTexture = 14;
-		if(material2 == Material.lava) {
-			this.blockIndexInTexture = 30;
+		super(i1, material2 == Material.lava ? 30 : 14, material2);
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+		this.setTickOnLoad(true);
+	}
+
+	public static float getFluidHeightPercent(int fluidHeight) {
+		if(fluidHeight >= 8) {
+			fluidHeight = 0;
 		}
 
-		Block.canBlockGrass[i1] = true;
-		this.movingBlockId = i1;
-		this.stillBlockId = i1 + 1;
-		this.setBlockBounds(0.01F, -0.09F, 0.01F, 1.01F, 0.90999997F, 1.01F);
-		this.setTickOnLoad(true);
-		this.setResistance(2.0F);
+		return (float)(fluidHeight + 1) / 9.0F;
 	}
 
 	public final int getBlockTextureFromSide(int side) {
-		return this.blockMaterial == Material.lava ? this.blockIndexInTexture : (side == 1 ? this.blockIndexInTexture : (side == 0 ? this.blockIndexInTexture : this.blockIndexInTexture + 32));
+		return this.blockMaterial != Material.lava && side != 0 && side != 1 ? this.blockIndexInTexture + 32 : this.blockIndexInTexture;
+	}
+
+	protected final int getFlowDecay(World world, int x, int y, int z) {
+		return world.getBlockMaterial(x, y, z) != this.blockMaterial ? -1 : world.getBlockMetadata(x, y, z);
+	}
+
+	private int getEffectiveFlowDecay(World world, int x, int y, int z) {
+		if(world.getBlockMaterial(x, y, z) != this.blockMaterial) {
+			return -1;
+		} else {
+			int world1;
+			if((world1 = world.getBlockMetadata(x, y, z)) >= 8) {
+				world1 = 0;
+			}
+
+			return world1;
+		}
 	}
 
 	public final boolean renderAsNormalBlock() {
 		return false;
 	}
 
-	public void onBlockAdded(World world, int x, int y, int z) {
-		world.scheduleBlockUpdate(x, y, z, this.movingBlockId);
-	}
-
-	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-		this.update(world, x, y, z, 0);
-	}
-
-	public boolean update(World world, int x, int y, int z, int rand) {
-		boolean z7 = false;
-		liquidSolidCheck(world, x, y, z);
-
-		boolean z6;
-		do {
-			--y;
-			if(!this.canFlow(world, x, y, z)) {
-				break;
-			}
-
-			liquidSolidCheck(world, x, y, z);
-			if(z6 = world.notifyBlockChange(x, y, z, this.movingBlockId)) {
-				z7 = true;
-			}
-		} while(z6 && this.blockMaterial != Material.lava);
-
-		++y;
-		if(this.blockMaterial == Material.water || !z7) {
-			z7 = z7 | this.flow(world, x - 1, y, z) | this.flow(world, x + 1, y, z) | this.flow(world, x, y, z - 1) | this.flow(world, x, y, z + 1);
-		}
-
-		if(this.blockMaterial == Material.lava) {
-			z7 = z7 | extinguishFireLava(world, x - 1, y, z) | extinguishFireLava(world, x + 1, y, z) | extinguishFireLava(world, x, y, z - 1) | extinguishFireLava(world, x, y, z + 1);
-		}
-
-		if(!z7) {
-			world.setBlock(x, y, z, this.stillBlockId);
-		} else {
-			world.scheduleBlockUpdate(x, y, z, this.movingBlockId);
-		}
-
-		return z7;
-	}
-
-	private static boolean liquidSolidCheck(World world, int x, int y, int z) {
-		return world.getBlockMaterial(x, y - 1, z).liquidSolidCheck();
-	}
-
-	protected final boolean canFlow(World world, int x, int y, int z) {
-		if(!world.getBlockMaterial(x, y, z).liquidSolidCheck()) {
-			return false;
-		} else {
-			if(this.blockMaterial == Material.water) {
-				for(int i5 = x - 2; i5 <= x + 2; ++i5) {
-					for(int i6 = y - 2; i6 <= y + 2; ++i6) {
-						for(int i7 = z - 2; i7 <= z + 2; ++i7) {
-							if(world.getBlockId(i5, i6, i7) == Block.sponge.blockID) {
-								return false;
-							}
-						}
-					}
-				}
-			}
-
-			return true;
-		}
-	}
-
-	private static boolean extinguishFireLava(World world, int x, int y, int z) {
-		if(Block.fire.getChanceOfNeighborsEncouragingFire(world.getBlockId(x, y, z))) {
-			Block.fire.fireSpread(world, x, y, z);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean flow(World world, int x, int y, int z) {
-		if(!this.canFlow(world, x, y, z)) {
-			return false;
-		} else {
-			if(world.notifyBlockChange(x, y, z, this.movingBlockId)) {
-				world.scheduleBlockUpdate(x, y, z, this.movingBlockId);
-			}
-
-			return false;
-		}
-	}
-
-	public final float getBlockBrightness(World world, int x, int y, int z) {
-		return this.blockMaterial == Material.lava ? 100.0F : super.getBrightness(world, x, y, z);
-	}
-
-	public boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
-		int i6;
-		return (i6 = world.getBlockId(x, y, z)) != this.movingBlockId && i6 != this.stillBlockId ? (metadata != 1 || world.getBlockId(x - 1, y, z) != 0 && world.getBlockId(x + 1, y, z) != 0 && world.getBlockId(x, y, z - 1) != 0 && world.getBlockId(x, y, z + 1) != 0 ? super.getIsBlockSolid(world, x, y, z, metadata) : true) : false;
-	}
-
-	public boolean isCollidable() {
+	public final boolean isOpaqueCube() {
 		return false;
 	}
 
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public final boolean canCollideCheck(boolean flag) {
+		return flag;
+	}
+
+	public final boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
+		return world.getBlockMaterial(x, y, z) == this.blockMaterial ? false : (metadata == 1 ? true : super.getIsBlockSolid(world, x, y, z, metadata));
+	}
+
+	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 
-	public boolean isOpaqueCube() {
-		return false;
+	public final int getRenderType() {
+		return 4;
 	}
 
-	public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
-		if(blockID != 0) {
-			Material blockID1 = Block.blocksList[blockID].blockMaterial;
-			if(this.blockMaterial == Material.water && blockID1 == Material.lava || blockID1 == Material.water && this.blockMaterial == Material.lava) {
-				world.notifyBlockChange(x, y, z, Block.stone.blockID);
-			}
-		}
-
-		world.scheduleBlockUpdate(x, y, z, this.blockID);
-	}
-
-	public int tickRate() {
-		return this.blockMaterial == Material.lava ? 25 : 5;
-	}
-
-	public int quantityDropped(EaglercraftRandom rand) {
+	public final int idDropped(int metadata, EaglercraftRandom rand) {
 		return 0;
 	}
 
-	public int getRenderBlockPass() {
+	public final int quantityDropped(EaglercraftRandom rand) {
+		return 0;
+	}
+
+	public final void velocityToAddToEntity(World world, int x, int y, int z, Vec3D velocityVector) {
+		Vec3D vec3D6 = new Vec3D(0.0D, 0.0D, 0.0D);
+		int i7 = this.getEffectiveFlowDecay(world, x, y, z);
+
+		for(int i8 = 0; i8 < 4; ++i8) {
+			int i9 = x;
+			int i10 = z;
+			if(i8 == 0) {
+				i9 = x - 1;
+			}
+
+			if(i8 == 1) {
+				i10 = z - 1;
+			}
+
+			if(i8 == 2) {
+				++i9;
+			}
+
+			if(i8 == 4) {
+				++i10;
+			}
+
+			int i11;
+			if((i11 = this.getEffectiveFlowDecay(world, i9, y, i10)) > 0 && i11 < 8) {
+				i11 -= i7;
+				vec3D6 = vec3D6.addVector((double)((i9 - x) * i11), (double)(i11 * 0), (double)((i10 - z) * i11));
+			}
+		}
+
+		vec3D6 = vec3D6.normalize();
+		velocityVector.xCoord += vec3D6.xCoord;
+		velocityVector.yCoord += vec3D6.yCoord;
+		velocityVector.zCoord += vec3D6.zCoord;
+	}
+
+	public final int tickRate() {
+		return this.blockMaterial == Material.water ? 3 : (this.blockMaterial == Material.lava ? 20 : 0);
+	}
+
+	public final float getBlockBrightness(World world, int x, int y, int z) {
+		float f5 = world.getBrightness(x, y, z);
+		float world1 = world.getBrightness(x, y + 1, z);
+		return f5 > world1 ? f5 : world1;
+	}
+
+	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		super.updateTick(world, x, y, z, rand);
+	}
+
+	public final int getRenderBlockPass() {
 		return this.blockMaterial == Material.water ? 1 : 0;
 	}
 
@@ -182,38 +146,5 @@ public class BlockFluid extends Block {
 			world.spawnParticle("lava", d6, d8, d10, 0.0D, 0.0D, 0.0D);
 		}
 
-		if(this.blockMaterial == Material.water) {
-			int i7;
-			if(liquidAirCheck(world, x + 1, y, z)) {
-				for(i7 = 0; i7 < 4; ++i7) {
-					world.spawnParticle("splash", (double)((float)(x + 1) + 0.125F), (double)y, (double)((float)z + rand.nextFloat()), 0.0D, 0.0D, 0.0D);
-				}
-			}
-
-			if(liquidAirCheck(world, x - 1, y, z)) {
-				for(i7 = 0; i7 < 4; ++i7) {
-					world.spawnParticle("splash", (double)((float)x - 0.125F), (double)y, (double)((float)z + rand.nextFloat()), 0.0D, 0.0D, 0.0D);
-				}
-			}
-
-			if(liquidAirCheck(world, x, y, z + 1)) {
-				for(i7 = 0; i7 < 4; ++i7) {
-					world.spawnParticle("splash", (double)((float)x + rand.nextFloat()), (double)y, (double)((float)(z + 1) + 0.125F), 0.0D, 0.0D, 0.0D);
-				}
-			}
-
-			if(liquidAirCheck(world, x, y, z - 1)) {
-				for(i7 = 0; i7 < 4; ++i7) {
-					world.spawnParticle("splash", (double)((float)x + rand.nextFloat()), (double)y, (double)((float)z - 0.125F), 0.0D, 0.0D, 0.0D);
-				}
-			}
-		}
-
-	}
-
-	private static boolean liquidAirCheck(World world, int x, int y, int z) {
-		Material material4 = world.getBlockMaterial(x, y, z);
-		Material world1 = world.getBlockMaterial(x, y - 1, z);
-		return !material4.getIsSolid() && !material4.getIsLiquid() ? world1.getIsSolid() || world1.getIsLiquid() : false;
 	}
 }

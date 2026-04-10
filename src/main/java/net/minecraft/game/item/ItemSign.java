@@ -21,7 +21,7 @@ public final class ItemSign extends Item {
 			if(!Block.signStanding.canPlaceBlockAt(world, x, y, z)) {
 				return false;
 			} else {
-				world.notifyBlockChange(x, y, z, Block.signStanding.blockID);
+				world.setBlockWithNotify(x, y, z, Block.signStanding.blockID);
 				world.setBlockMetadata(x, y, z, MathHelper.floor_double((double)((playerEntity.rotationYaw + 180.0F) * 16.0F / 360.0F) - 0.5D) & 15);
 				--stack.stackSize;
 				playerEntity.displayGUIEditSign((TileEntitySign)world.getBlockTileEntity(x, y, z));

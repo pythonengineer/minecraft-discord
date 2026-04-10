@@ -15,6 +15,7 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.BlockFluid;
 import net.minecraft.game.world.block.StepSound;
 import net.minecraft.game.world.material.Material;
 
@@ -362,14 +363,24 @@ public abstract class Entity {
 	protected void updateFallen(float fallDistance) {
 	}
 
-	public final boolean handleWaterMovement() {
-		return this.worldObj.isMaterialInBB(this.boundingBox.expand(0.0D, -0.4000000059604645D, 0.0D), Material.water);
-	}
+    public boolean handleWaterMovement() {
+        return this.worldObj.handleMaterialAcceleration(this.boundingBox.expand(0.0D, -0.4000000059604645D, 0.0D), Material.water, this);
+    }
 
-	public final boolean isInsideOfMaterial() {
-		int i1;
-		return (i1 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY + (double)this.getEyeHeight()), MathHelper.floor_double(this.posZ))) != 0 ? Block.blocksList[i1].blockMaterial == Material.water : false;
-	}
+    public final boolean isInsideOfMaterial(Material material) {
+        double d2 = this.posY + (double)this.getEyeHeight();
+        int i4 = MathHelper.floor_double(this.posX);
+        int i5 = MathHelper.floor_float((float)MathHelper.floor_double(d2));
+        int i6 = MathHelper.floor_double(this.posZ);
+        int i7;
+        if((i7 = this.worldObj.getBlockId(i4, i5, i6)) != 0 && Block.blocksList[i7].blockMaterial == material) {
+            float material1 = BlockFluid.getFluidHeightPercent(this.worldObj.getBlockMetadata(i4, i5, i6)) - 0.11111111F;
+            material1 = (float)(i5 + 1) - material1;
+            return d2 < (double)material1;
+        } else {
+            return false;
+        }
+    }
 
 	protected float getEyeHeight() {
 		return 0.0F;

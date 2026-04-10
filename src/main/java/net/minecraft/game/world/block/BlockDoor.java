@@ -105,21 +105,21 @@ public final class BlockDoor extends Block {
     public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
         if(((blockID = world.getBlockMetadata(x, y, z)) & 8) != 0) {
             if(world.getBlockId(x, y - 1, z) != this.blockID) {
-                world.notifyBlockChange(x, y, z, 0);
+                world.setBlockWithNotify(x, y, z, 0);
                 return;
             }
         } else {
             boolean z6 = false;
             if(world.getBlockId(x, y + 1, z) != this.blockID) {
-                world.notifyBlockChange(x, y, z, 0);
+                world.setBlockWithNotify(x, y, z, 0);
                 z6 = true;
             }
 
             if(!world.isBlockNormalCube(x, y - 1, z)) {
-                world.notifyBlockChange(x, y, z, 0);
+                world.setBlockWithNotify(x, y, z, 0);
                 z6 = true;
                 if(world.getBlockId(x, y + 1, z) == this.blockID) {
-                    world.notifyBlockChange(x, y + 1, z, 0);
+                    world.setBlockWithNotify(x, y + 1, z, 0);
                 }
             }
 

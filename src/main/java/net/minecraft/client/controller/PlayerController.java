@@ -24,7 +24,7 @@ public class PlayerController {
 		World world4 = this.mc.theWorld;
 		Block block5 = Block.blocksList[world4.getBlockId(x, y, z)];
 		int i6 = world4.getBlockMetadata(x, y, z);
-		boolean z7 = world4.notifyBlockChange(x, y, z, 0);
+		boolean z7 = world4.setBlockWithNotify(x, y, z, 0);
 		if(block5 != null && z7) {
 			SoundManager soundManager10000 = this.mc.sndManager;
 			String string10001 = block5.stepSound.getBreakSound();

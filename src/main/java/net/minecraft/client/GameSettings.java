@@ -23,6 +23,7 @@ public final class GameSettings {
     public boolean viewBobbing = true;
     public boolean anaglyph = false;
     public boolean limitFramerate = false;
+    public boolean fancyGraphics = true;
     public boolean touchscreen;
     public int guiScale = 3;
     public KeyBinding keyBindForward = new KeyBinding("Forward", Keyboard.KEY_W);
@@ -38,7 +39,7 @@ public final class GameSettings {
     public KeyBinding keyBindLoad = new KeyBinding("Load location", Keyboard.KEY_R);
     public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
     private Minecraft mc;
-    public int numberOfOptions = 10;
+    public int numberOfOptions = 11;
     public int difficulty = 2;
     public boolean thirdPersonView = false;
 
@@ -100,11 +101,15 @@ public final class GameSettings {
             this.difficulty = this.difficulty + value & 3;
         }
 
+        if(keyBindIndex == 10) {
+            this.fancyGraphics = !this.fancyGraphics;
+        }
+
         this.saveOptions();
     }
 
     public final String getKeyBinding(int keyBindIndex) {
-        return keyBindIndex == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (keyBindIndex == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (keyBindIndex == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (keyBindIndex == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (keyBindIndex == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (keyBindIndex == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (keyBindIndex == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (keyBindIndex == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (keyBindIndex == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (keyBindIndex == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : "")))))))));
+        return keyBindIndex == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (keyBindIndex == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (keyBindIndex == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (keyBindIndex == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (keyBindIndex == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (keyBindIndex == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (keyBindIndex == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (keyBindIndex == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (keyBindIndex == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (keyBindIndex == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : (keyBindIndex == 10 ? "Graphics: " + (this.fancyGraphics ? "FANCY" : "FAST") : ""))))))))));
     }
 
     private void loadOptions() {
@@ -157,6 +162,10 @@ public final class GameSettings {
                         this.difficulty = Integer.parseInt(string5[1]);
                     }
 
+                    if(string5[0].equals("fancyGraphics")) {
+                        this.fancyGraphics = string5[1].equals("true");
+                    }
+
                     for(int i3 = 0; i3 < this.keyBindings.length; ++i3) {
                         if(string5[0].equals("key_" + this.keyBindings[i3].keyDescription)) {
                             this.keyBindings[i3].keyCode = Integer.parseInt(string5[1]);
@@ -186,6 +195,7 @@ public final class GameSettings {
             printWriter1.println("anaglyph3d:" + this.anaglyph);
             printWriter1.println("limitFramerate:" + this.limitFramerate);
             printWriter1.println("difficulty:" + this.difficulty);
+            printWriter1.println("fancyGraphics:" + this.fancyGraphics);
 
             for(int i2 = 0; i2 < this.keyBindings.length; ++i2) {
                 printWriter1.println("key_" + this.keyBindings[i2].keyDescription + ":" + this.keyBindings[i2].keyCode);

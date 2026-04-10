@@ -48,7 +48,7 @@ public final class BlockSign extends BlockContainer {
     public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
         if(!world.isBlockNormalCube(x, y - 1, z)) {
             this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
-            world.notifyBlockChange(x, y, z, 0);
+            world.setBlockWithNotify(x, y, z, 0);
         }
 
     }

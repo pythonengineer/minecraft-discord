@@ -94,7 +94,7 @@ public class EntityArrow extends Entity {
 
 		Vec3D vec3D1 = new Vec3D(this.posX, this.posY, this.posZ);
 		Vec3D vec3D2 = new Vec3D(this.posX + this.motionZ, this.posY + this.motionY, this.posZ + this.motionX);
-		MovingObjectPosition movingObjectPosition3 = this.worldObj.rayTraceBlocks_do(vec3D1, vec3D2);
+		MovingObjectPosition movingObjectPosition3 = this.worldObj.rayTraceBlocks(vec3D1, vec3D2);
 		vec3D1 = new Vec3D(this.posX, this.posY, this.posZ);
 		vec3D2 = new Vec3D(this.posX + this.motionZ, this.posY + this.motionY, this.posZ + this.motionX);
 		if(movingObjectPosition3 != null) {

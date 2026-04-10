@@ -95,7 +95,7 @@ public final class BlockFarmland extends Block {
 			}
 
 			if(!z10000) {
-				world.notifyBlockChange(x, y, z, Block.dirt.blockID);
+				world.setBlockWithNotify(x, y, z, Block.dirt.blockID);
 			}
 		}
 
@@ -103,7 +103,7 @@ public final class BlockFarmland extends Block {
 
 	public final void onEntityWalking(World world, int x, int y, int z) {
 		if(world.rand.nextInt(4) == 0) {
-			world.notifyBlockChange(x, y, z, Block.dirt.blockID);
+			world.setBlockWithNotify(x, y, z, Block.dirt.blockID);
 		}
 
 	}
@@ -111,7 +111,7 @@ public final class BlockFarmland extends Block {
 	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
 		super.onNeighborBlockChange(world, x, y, z, blockID);
 		if(world.getBlockMaterial(x, y + 1, z).isSolid()) {
-			world.notifyBlockChange(x, y, z, Block.dirt.blockID);
+			world.setBlockWithNotify(x, y, z, Block.dirt.blockID);
 		}
 
 	}

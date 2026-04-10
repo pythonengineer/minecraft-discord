@@ -22,20 +22,20 @@ public class EntityFX extends Entity {
 	public static double interpPosY;
 	public static double interpPosZ;
 
-	public EntityFX(World world1, double d2, double d4, double d6, double d8, double d10, double d12) {
-		super(world1);
+	public EntityFX(World world, double posX, double posY, double posZ, double speedX, double speedY, double speedZ) {
+		super(world);
 		this.setSize(0.2F, 0.2F);
 		this.yOffset = this.height / 2.0F;
-		this.setPosition(d2, d4, d6);
+		this.setPosition(posX, posY, posZ);
 		this.particleBlue = this.particleGreen = this.particleRed = 1.0F;
-		this.motionX = d8 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
-		this.motionY = d10 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
-		this.motionZ = d12 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
-		float f14 = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
-		float f15 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-		this.motionX = this.motionX / (double)f15 * (double)f14 * (double)0.4F;
-		this.motionY = this.motionY / (double)f15 * (double)f14 * (double)0.4F + (double)0.1F;
-		this.motionZ = this.motionZ / (double)f15 * (double)f14 * (double)0.4F;
+		this.motionZ = speedX + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		this.motionY = speedY + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		this.motionX = speedZ + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		float world1 = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
+		float posX1 = MathHelper.sqrt_double(this.motionZ * this.motionZ + this.motionY * this.motionY + this.motionX * this.motionX);
+		this.motionZ = this.motionZ / (double)posX1 * (double)world1 * (double)0.4F;
+		this.motionY = this.motionY / (double)posX1 * (double)world1 * (double)0.4F + (double)0.1F;
+		this.motionX = this.motionX / (double)posX1 * (double)world1 * (double)0.4F;
 		this.particleTextureJitterX = this.rand.nextFloat() * 3.0F;
 		this.particleTextureJitterY = this.rand.nextFloat() * 3.0F;
 		this.particleScale = (this.rand.nextFloat() * 0.5F + 0.5F) * 2.0F;
@@ -59,13 +59,13 @@ public class EntityFX extends Entity {
 		}
 
 		this.motionY -= 0.04D * (double)this.particleGravity;
-		this.moveEntity(this.motionX, this.motionY, this.motionZ);
-		this.motionX *= (double)0.98F;
-		this.motionY *= (double)0.98F;
+		this.moveEntity(this.motionZ, this.motionY, this.motionX);
 		this.motionZ *= (double)0.98F;
+		this.motionY *= (double)0.98F;
+		this.motionX *= (double)0.98F;
 		if(this.onGround) {
-			this.motionX *= (double)0.7F;
 			this.motionZ *= (double)0.7F;
+			this.motionX *= (double)0.7F;
 		}
 
 	}

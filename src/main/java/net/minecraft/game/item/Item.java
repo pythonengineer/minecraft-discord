@@ -77,6 +77,9 @@ public class Item {
 	public static Item appleGold;
 	public static Item sign;
 	public static Item doorWood;
+    public static Item bucketEmpty;
+    public static Item bucketWater;
+    public static Item bucketLava;
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
 	protected int maxDamage = 32;
@@ -484,5 +487,20 @@ public class Item {
 		ItemDoor itemDoor16 = itemDoor30;
 		itemDoor30.iconIndex = b1;
 		doorWood = itemDoor16;
+        ItemBucket itemBucket32 = new ItemBucket(69, 0);
+        b1 = 74;
+        ItemBucket itemBucket17 = itemBucket32;
+        itemBucket32.iconIndex = b1;
+        bucketEmpty = itemBucket17;
+        itemBucket32 = new ItemBucket(70, Block.waterMoving.blockID);
+        b1 = 75;
+        itemBucket17 = itemBucket32;
+        itemBucket32.iconIndex = b1;
+        bucketWater = itemBucket17;
+        itemBucket32 = new ItemBucket(71, Block.lavaMoving.blockID);
+        b1 = 76;
+        itemBucket17 = itemBucket32;
+        itemBucket32.iconIndex = b1;
+        bucketLava = itemBucket17;
 	}
 }

@@ -27,7 +27,7 @@ public final class ItemHoe extends Item {
             float f10005 = (block13.stepSound.stepSoundVolume + 1.0F) / 2.0F;
             stepSound8 = block13.stepSound;
             world.playSoundEffect(d10001, d10002, d10003, string10004, f10005, block13.stepSound.stepSoundPitch * 0.8F);
-            world.notifyBlockChange(x, y, z, block13.blockID);
+            world.setBlockWithNotify(x, y, z, block13.blockID);
             stack.damageItem(1);
             if(world.rand.nextInt(8) == 0 && i10 == Block.grass.blockID) {
                 for(int i9 = 0; i9 <= 0; ++i9) {

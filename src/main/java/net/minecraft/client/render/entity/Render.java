@@ -43,7 +43,7 @@ public abstract class Render {
         float f20;
         int i88;
         int i89;
-        if(this.shadowSize > 0.0F) {
+        if(this.renderManager.options.fancyGraphics && this.shadowSize > 0.0F) {
             double d9 = this.renderManager.getDistanceToCamera(entity.posX, entity.posY, entity.posZ);
             float f86;
             if((f86 = (float)((1.0D - d9 / 256.0D) * (double)this.shadowOpaque)) > 0.0F) {

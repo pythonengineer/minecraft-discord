@@ -30,8 +30,8 @@ public final class Vec3D {
     }
 
     public final Vec3D normalize() {
-        double d1 = (double)MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
-        return new Vec3D(this.xCoord / d1, this.yCoord / d1, this.zCoord / d1);
+        double d1;
+        return (d1 = (double)MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord)) < 1.0E-4D ? new Vec3D(0.0D, 0.0D, 0.0D) : new Vec3D(this.xCoord / d1, this.yCoord / d1, this.zCoord / d1);
     }
 
     public final Vec3D addVector(double x, double y, double z) {

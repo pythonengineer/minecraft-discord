@@ -18,7 +18,7 @@ public final class BlockGrass extends Block {
 	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
 		if(world.getBlockLightValue(x, y + 1, z) < 4 && world.getBlockMaterial(x, y + 1, z).getCanBlockGrass()) {
 			if(rand.nextInt(4) == 0) {
-				world.notifyBlockChange(x, y, z, Block.dirt.blockID);
+				world.setBlockWithNotify(x, y, z, Block.dirt.blockID);
 			}
 		} else {
 			if(world.getBlockLightValue(x, y + 1, z) >= 9) {
@@ -26,7 +26,7 @@ public final class BlockGrass extends Block {
 				y = y + rand.nextInt(5) - 3;
 				z = z + rand.nextInt(3) - 1;
 				if(world.getBlockId(x, y, z) == Block.dirt.blockID && world.getBlockLightValue(x, y + 1, z) >= 4 && !world.getBlockMaterial(x, y + 1, z).getCanBlockGrass()) {
-					world.notifyBlockChange(x, y, z, Block.grass.blockID);
+					world.setBlockWithNotify(x, y, z, Block.grass.blockID);
 				}
 			}
 

@@ -62,11 +62,11 @@ public final class BlockFire extends Block {
 
 		if(!this.canNeighborBurn(world, x, y, z)) {
 			if(!world.isBlockNormalCube(x, y - 1, z) || i6 > 3) {
-				world.notifyBlockChange(x, y, z, 0);
+				world.setBlockWithNotify(x, y, z, 0);
 			}
 
 		} else if(!this.getChanceToEncourageFire(world, x, y - 1, z) && i6 == 15 && rand.nextInt(4) == 0) {
-			world.notifyBlockChange(x, y, z, 0);
+			world.setBlockWithNotify(x, y, z, 0);
 		} else {
 			if(i6 % 5 == 0 && i6 > 5) {
 				this.tryToCatchBlockOnFire(world, x + 1, y, z, 300, rand);
@@ -99,7 +99,7 @@ public final class BlockFire extends Block {
 
 								int i10 = i10000;
 								if(i10000 > 0 && rand.nextInt(i9) <= i10) {
-									world.notifyBlockChange(i6, i8, i7, this.blockID);
+									world.setBlockWithNotify(i6, i8, i7, this.blockID);
 								}
 							}
 						}
@@ -115,9 +115,9 @@ public final class BlockFire extends Block {
 		if(rand.nextInt(catchFireAbility) < i7) {
 			boolean catchFireAbility1 = world.getBlockId(x, y, z) == Block.tnt.blockID;
 			if(rand.nextInt(2) == 0) {
-				world.notifyBlockChange(x, y, z, this.blockID);
+				world.setBlockWithNotify(x, y, z, this.blockID);
 			} else {
-				world.notifyBlockChange(x, y, z, 0);
+				world.setBlockWithNotify(x, y, z, 0);
 			}
 
 			if(catchFireAbility1) {
@@ -150,48 +150,16 @@ public final class BlockFire extends Block {
 
 	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
 		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborBurn(world, x, y, z)) {
-			world.notifyBlockChange(x, y, z, 0);
+			world.setBlockWithNotify(x, y, z, 0);
 		}
 	}
 
 	public final void onBlockAdded(World world, int x, int y, int z) {
 		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborBurn(world, x, y, z)) {
-			world.notifyBlockChange(x, y, z, 0);
+			world.setBlockWithNotify(x, y, z, 0);
 		} else {
 			world.scheduleBlockUpdate(x, y, z, this.blockID);
 		}
-	}
-
-	public final boolean getChanceOfNeighborsEncouragingFire(int blockId) {
-		return this.chanceToEncourageFire[blockId] > 0;
-	}
-
-	public final void fireSpread(World world, int x, int y, int z) {
-		boolean z5 = false;
-		if(!(z5 = fireCheck(world, x, y + 1, z))) {
-			z5 = fireCheck(world, x - 1, y, z);
-		}
-
-		if(!z5) {
-			z5 = fireCheck(world, x + 1, y, z);
-		}
-
-		if(!z5) {
-			z5 = fireCheck(world, x, y, z - 1);
-		}
-
-		if(!z5) {
-			z5 = fireCheck(world, x, y, z + 1);
-		}
-
-		if(!z5) {
-			z5 = fireCheck(world, x, y - 1, z);
-		}
-
-		if(!z5) {
-			world.notifyBlockChange(x, y, z, Block.fire.blockID);
-		}
-
 	}
 
 	public final void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
@@ -257,18 +225,6 @@ public final class BlockFire extends Block {
 				world.spawnParticle("largesmoke", (double)f7, (double)f8, (double)f9, 0.0D, 0.0D, 0.0D);
 			}
 
-		}
-	}
-
-	private static boolean fireCheck(World world, int x, int y, int z) {
-		int i4;
-		if((i4 = world.getBlockId(x, y, z)) == Block.fire.blockID) {
-			return true;
-		} else if(i4 == 0) {
-			world.notifyBlockChange(x, y, z, Block.fire.blockID);
-			return true;
-		} else {
-			return false;
 		}
 	}
 }

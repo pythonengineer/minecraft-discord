@@ -37,8 +37,8 @@ public final class BlockStep extends Block {
 		}
 
 		if(world.getBlockId(x, y - 1, z) == stairSingle.blockID) {
-			world.notifyBlockChange(x, y, z, 0);
-			world.notifyBlockChange(x, y - 1, z, Block.stairDouble.blockID);
+			world.setBlockWithNotify(x, y, z, 0);
+			world.setBlockWithNotify(x, y - 1, z, Block.stairDouble.blockID);
 		}
 
 	}

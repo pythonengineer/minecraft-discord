@@ -48,7 +48,7 @@ public final class ItemBlock extends Item {
 			AxisAlignedBB axisAlignedBB8 = Block.blocksList[this.blockID].getCollisionBoundingBoxFromPool(world, x, y, z);
 			if(this.blockID > 0 && block10 == null || block10 == Block.waterMoving || block10 == Block.waterStill || block10 == Block.lavaMoving || block10 == Block.lavaStill || block10 == Block.fire) {
 				block10 = Block.blocksList[this.blockID];
-				if((axisAlignedBB8 == null || world.checkIfAABBIsClear(axisAlignedBB8)) && block10.canPlaceBlockAt(world, x, y, z) && world.notifyBlockChange(x, y, z, this.blockID)) {
+				if((axisAlignedBB8 == null || world.checkIfAABBIsClear(axisAlignedBB8)) && block10.canPlaceBlockAt(world, x, y, z) && world.setBlockWithNotify(x, y, z, this.blockID)) {
 					Block.blocksList[this.blockID].onBlockPlaced(world, x, y, z, side);
 					double d10001 = (double)((float)x + 0.5F);
 					double d10002 = (double)((float)y + 0.5F);

@@ -38,7 +38,7 @@ public final class ItemFlintAndSteel extends Item {
 
 		if(world.getBlockId(x, y, z) == 0) {
 			world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "fire.ignite", 1.0F, rand.nextFloat() * 0.4F + 0.8F);
-			world.notifyBlockChange(x, y, z, Block.fire.blockID);
+			world.setBlockWithNotify(x, y, z, Block.fire.blockID);
 		}
 
 		stack.damageItem(1);

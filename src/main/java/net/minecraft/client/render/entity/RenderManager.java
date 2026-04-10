@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.client.GameSettings;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPig;
@@ -38,6 +39,7 @@ public final class RenderManager {
 	public RenderEngine renderEngine;
 	public World worldObj;
 	public float playerViewY;
+    public GameSettings options;
 	private double viewerPosX;
 	private double viewerPosY;
 	private double viewerPosZ;
@@ -79,14 +81,15 @@ public final class RenderManager {
 		return this.getEntityClassRenderObject(entity.getClass());
 	}
 
-	public final void cacheActiveRenderInfo(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, float partialTime) {
-		this.worldObj = world;
-		this.renderEngine = renderEngine;
-		this.playerViewY = playerEntity.prevRotationYaw + (playerEntity.rotationYaw - playerEntity.prevRotationYaw) * partialTime;
-		this.viewerPosX = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTime;
-		this.viewerPosY = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTime;
-		this.viewerPosZ = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTime;
-	}
+    public final void cacheActiveRenderInfo(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, GameSettings options, float partialTicks) {
+        this.worldObj = world;
+        this.renderEngine = renderEngine;
+        this.options = options;
+        this.playerViewY = playerEntity.prevRotationYaw + (playerEntity.rotationYaw - playerEntity.prevRotationYaw) * partialTicks;
+        this.viewerPosX = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTicks;
+        this.viewerPosY = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTicks;
+        this.viewerPosZ = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTicks;
+    }
 
 	public final void renderEntity(Entity entity, float partialTicks) {
 		double d3 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
