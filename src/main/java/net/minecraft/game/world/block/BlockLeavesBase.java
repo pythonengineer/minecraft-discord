@@ -4,13 +4,13 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public class BlockLeavesBase extends Block {
-	private boolean graphicsLevel = true;
+    protected boolean graphicsLevel = true;
 
-	protected BlockLeavesBase(int blockID, int textureIndex, Material material, boolean flag) {
-		super(blockID, textureIndex, material);
-	}
+    protected BlockLeavesBase(int blockID, int textureIndex, Material material, boolean flag) {
+        super(blockID, textureIndex, material);
+    }
 
-	public final boolean isOpaqueCube() {
+    public boolean isOpaqueCube() {
 		return false;
 	}
 

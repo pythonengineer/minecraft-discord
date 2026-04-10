@@ -53,7 +53,7 @@ public class World {
 	private List worldAccesses;
 	private IChunkProvider chunkProvider;
 	private VFile2 levelFile;
-	private long seed;
+    public long seed;
 	private NBTTagCompound playerData;
 	public long sizeOnDisk;
 
@@ -157,6 +157,7 @@ public class World {
 
         if((worldName1 = this.calculateSkylightSubtracted(1.0F)) != this.skylightSubtracted) {
             this.skylightSubtracted = worldName1;
+            System.out.println(worldName1);
         }
 
     }
@@ -459,7 +460,7 @@ public class World {
 	}
 
 	public final boolean isDaytime() {
-		return this.skylightSubtracted < 8;
+        return this.skylightSubtracted < 4;
 	}
 
     public final MovingObjectPosition rayTraceBlocks(Vec3D vector1, Vec3D vector2) {
@@ -477,9 +478,10 @@ public class World {
                 int i9 = MathHelper.floor_double(vector1.zCoord);
                 int i10 = 20;
 
-                Block block12;
+                int i12;
                 int i31;
                 MovingObjectPosition movingObjectPosition32;
+                Block block33;
                 do {
                     if(i10-- < 0) {
                         return null;
@@ -591,14 +593,16 @@ public class World {
                     }
 
                     i31 = this.getBlockId(i7, i8, i9);
-                    block12 = Block.blocksList[i31];
-                    if(i31 > 0 && block12.canCollideCheck(flag) && (movingObjectPosition32 = block12.collisionRayTrace(this, i7, i8, i9, vector1, vector2)) != null) {
+                    i12 = this.getBlockMetadata(i7, i8, i9);
+                    block33 = Block.blocksList[i31];
+                    if(i31 > 0 && block33.canCollideCheck(i12, flag) && (movingObjectPosition32 = block33.collisionRayTrace(this, i7, i8, i9, vector1, vector2)) != null) {
                         return movingObjectPosition32;
                     }
 
                     i31 = this.getBlockId(i7, i8 - 1, i9);
-                    block12 = Block.blocksList[i31];
-                } while(i31 <= 0 || !block12.canCollideCheck(flag) || (movingObjectPosition32 = block12.collisionRayTrace(this, i7, i8 - 1, i9, vector1, vector2)) == null);
+                    i12 = this.getBlockMetadata(i7, i8 - 1, i9);
+                    block33 = Block.blocksList[i31];
+                } while(i31 <= 0 || !block33.canCollideCheck(i12, flag) || (movingObjectPosition32 = block33.collisionRayTrace(this, i7, i8 - 1, i9, vector1, vector2)) == null);
 
                 return movingObjectPosition32;
             } else {
@@ -713,7 +717,7 @@ public class World {
             partialTicks = 1.0F;
         }
 
-        return (int)(partialTicks * 13.0F);
+        return (int)(partialTicks * 11.0F);
     }
 
 	public final Vec3D getSkyColor(float partialTicks) {
@@ -736,7 +740,7 @@ public class World {
 
     public final float getCelestialAngle(float partialTicks) {
         int i2;
-        if((partialTicks = ((float)(i2 = (int)(this.worldTime % 24000L)) + partialTicks) / 24000.0F - 0.15F) < 0.0F) {
+        if((partialTicks = ((float)(i2 = (int)(this.worldTime % 24000L)) + partialTicks) / 24000.0F - 0.25F) < 0.0F) {
             ++partialTicks;
         }
 
@@ -956,9 +960,9 @@ public class World {
 
         if((double)MathHelper.sqrt_double(vec3D10.xCoord * vec3D10.xCoord + vec3D10.yCoord * vec3D10.yCoord + vec3D10.zCoord * vec3D10.zCoord) > 0.0D) {
             vec3D10 = vec3D10.normalize();
-            entity.motionZ += vec3D10.xCoord * 0.003D;
-            entity.motionY += vec3D10.yCoord * 0.003D;
-            entity.motionX += vec3D10.zCoord * 0.003D;
+            entity.motionZ += vec3D10.xCoord * 0.004D;
+            entity.motionY += vec3D10.yCoord * 0.004D;
+            entity.motionX += vec3D10.zCoord * 0.004D;
         }
 
         return z9;

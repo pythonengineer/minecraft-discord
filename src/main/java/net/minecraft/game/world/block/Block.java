@@ -47,7 +47,7 @@ public class Block {
     public static final Block oreIron;
     public static final Block oreCoal;
     public static final Block wood;
-    public static final Block leaves;
+    public static final BlockLeaves leaves;
     public static final Block sponge;
     public static final Block glass;
     public static final Block clothRed;
@@ -205,7 +205,7 @@ public class Block {
         return true;
     }
 
-    public boolean canCollideCheck(boolean flag) {
+    public boolean canCollideCheck(int metadata, boolean flag) {
         return this.isCollidable();
     }
 
@@ -499,7 +499,7 @@ public class Block {
         stepSound1 = soundGrassFootstep;
         block0 = block10000;
         block10000.stepSound = stepSound1;
-        leaves = block0;
+        leaves = (BlockLeaves)block0;
         block10000 = (new BlockSponge(19)).setHardness(0.6F);
         stepSound1 = soundGrassFootstep;
         block0 = block10000;

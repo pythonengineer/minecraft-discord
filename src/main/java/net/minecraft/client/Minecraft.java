@@ -41,6 +41,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.texture.TextureFlamesFX;
 import net.minecraft.client.render.texture.TextureGearsFX;
 import net.minecraft.client.render.texture.TextureLavaFX;
+import net.minecraft.client.render.texture.TextureLavaFlowFX;
 import net.minecraft.client.render.texture.TextureWaterFX;
 import net.minecraft.client.render.texture.TextureWaterFlowFX;
 import net.minecraft.client.sound.SoundManager;
@@ -217,6 +218,7 @@ public final class Minecraft implements Runnable {
             this.renderEngine.registerTextureFX(this.textureLavaFX);
             this.renderEngine.registerTextureFX(this.textureWaterFX);
             this.renderEngine.registerTextureFX(new TextureWaterFlowFX());
+            this.renderEngine.registerTextureFX(new TextureLavaFlowFX());
             this.renderEngine.registerTextureFX(new TextureFlamesFX(0));
             this.renderEngine.registerTextureFX(new TextureFlamesFX(1));
             this.renderEngine.registerTextureFX(new TextureGearsFX(0));
@@ -932,6 +934,7 @@ public final class Minecraft implements Runnable {
             if(this.thePlayer == null) {
                 this.thePlayer = new EntityPlayerSP(this, world, this.session);
                 this.thePlayer.preparePlayerToSpawn();
+                this.playerController.flipPlayer(this.thePlayer);
             }
 
             this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
@@ -1008,6 +1011,7 @@ public final class Minecraft implements Runnable {
 
         this.thePlayer = new EntityPlayerSP(this, this.theWorld, this.session);
         this.thePlayer.preparePlayerToSpawn();
+        this.playerController.flipPlayer(this.thePlayer);
         if(this.theWorld != null) {
             this.theWorld.playerEntity = this.thePlayer;
             this.theWorld.joinPlayerInWorld();

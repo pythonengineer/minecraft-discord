@@ -164,7 +164,12 @@ public class RenderEngine {
             this.imageData.clear();
             this.imageData.put(textureFX.imageData);
             this.imageData.position(0).limit(textureFX.imageData.length);
-            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, textureFX.iconIndex % 16 << 4, textureFX.iconIndex / 16 << 4, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
+
+            for(int i3 = 0; i3 < textureFX.tileSize; ++i3) {
+                for(int i4 = 0; i4 < textureFX.tileSize; ++i4) {
+                    GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, (textureFX.iconIndex % 16 << 4) + (i3 << 4), (textureFX.iconIndex / 16 << 4) + (i4 << 4), 16, 16, 6408, 5121, this.imageData);
+                }
+            }
         }
 
         for(i1 = 0; i1 < this.textureList.size(); ++i1) {

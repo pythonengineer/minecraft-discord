@@ -146,7 +146,8 @@ public final class RenderGlobal implements IWorldAccess {
 
     }
 
-    private void loadRenderers() {
+    public final void loadRenderers() {
+        Block.leaves.setGraphicsLevel(this.mc.gameSettings.fancyGraphics);
         this.renderDistance = this.mc.gameSettings.renderDistance;
         int i1;
         if(this.worldRenderers != null) {

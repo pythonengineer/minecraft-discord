@@ -132,6 +132,7 @@ public final class WorldRenderer {
 				GL11.glNewList(this.glRenderList + i7, GL11.GL_COMPILE);
 				GL11.glPushMatrix();
 				GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
+				GL11.glScalef(1.00001F, 1.00001F, 1.00001F);
 				tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
 				tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
 
@@ -148,9 +149,9 @@ public final class WorldRenderer {
 								}
 
 								Block block15;
-								if((block15 = Block.blocksList[i13]).getRenderBlockPass() != i7) {
-									z8 = true;
-								} else {
+                                if((i13 = (block15 = Block.blocksList[i13]).getRenderBlockPass()) != i7) {
+                                    z8 = true;
+                                } else if(i13 == i7) {
 									z9 |= this.renderBlocks.renderBlockByRenderType(block15, i12, i10, i11);
 								}
 							}

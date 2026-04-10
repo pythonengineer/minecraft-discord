@@ -11,6 +11,7 @@ import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.monster.EntitySkeleton;
 import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.SpawnerAnimals;
@@ -30,6 +31,10 @@ public final class PlayerControllerSP extends PlayerController {
 
     public PlayerControllerSP(Minecraft minecraft1) {
         super(minecraft1);
+    }
+
+    public final void flipPlayer(EntityPlayer playerEntity) {
+        playerEntity.rotationYaw = -180.0F;
     }
 
     public final boolean sendBlockRemoved(int x, int y, int z) {

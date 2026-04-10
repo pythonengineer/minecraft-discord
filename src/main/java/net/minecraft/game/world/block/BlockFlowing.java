@@ -25,10 +25,10 @@ public final class BlockFlowing extends BlockFluid {
 		int i14;
 		if((i14 = this.getFlowDecay(world, x, y, z)) > 0) {
 			this.numAdjacentSources = 0;
-			int i6 = this.getSmallestFlowDecay(world, x - 1, y, z, -1);
-			i6 = this.getSmallestFlowDecay(world, x + 1, y, z, i6);
-			i6 = this.getSmallestFlowDecay(world, x, y, z - 1, i6);
-			if((i7 = (i6 = this.getSmallestFlowDecay(world, x, y, z + 1, i6)) + 1) == 8 || i6 < 0) {
+            int i6 = this.getSmallestFlowDecay(world, x - 1, y, z, -100);
+            i6 = this.getSmallestFlowDecay(world, x + 1, y, z, i6);
+            i6 = this.getSmallestFlowDecay(world, x, y, z - 1, i6);
+            if((i7 = (i6 = this.getSmallestFlowDecay(world, x, y, z + 1, i6)) + this.liquidType) >= 8 || i6 < 0) {
 				i7 = -1;
 			}
 
@@ -121,12 +121,12 @@ public final class BlockFlowing extends BlockFluid {
 				}
 
 				boolean[] z16 = blockFlowing15.isOptimalFlowDirection;
-				i7 = i14 + 1;
-				if(i14 >= 8) {
-					i7 = 1;
-				}
+                i7 = i14 + this.liquidType;
+                if(i14 >= 8) {
+                    i7 = 1;
+                }
 
-				if(i7 == 8) {
+                if(i7 >= 8) {
 					return;
 				}
 

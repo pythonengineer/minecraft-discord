@@ -7,8 +7,14 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public abstract class BlockFluid extends Block {
+	protected int liquidType = 1;
+
 	protected BlockFluid(int i1, Material material2) {
-		super(i1, material2 == Material.lava ? 30 : 14, material2);
+		super(i1, ((material2 == Material.lava ? 14 : 12) << 4) + 13, material2);
+		if(material2 == Material.lava) {
+			this.liquidType = 2;
+		}
+
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		this.setTickOnLoad(true);
 	}
@@ -22,7 +28,7 @@ public abstract class BlockFluid extends Block {
 	}
 
 	public final int getBlockTextureFromSide(int side) {
-		return this.blockMaterial != Material.lava && side != 0 && side != 1 ? this.blockIndexInTexture + 32 : this.blockIndexInTexture;
+		return side != 0 && side != 1 ? this.blockIndexInTexture + 1 : this.blockIndexInTexture;
 	}
 
 	protected final int getFlowDecay(World world, int x, int y, int z) {
@@ -50,8 +56,8 @@ public abstract class BlockFluid extends Block {
 		return false;
 	}
 
-	public final boolean canCollideCheck(boolean flag) {
-		return flag;
+	public final boolean canCollideCheck(int metadata, boolean flag) {
+		return flag && metadata == 0;
 	}
 
 	public final boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
@@ -74,40 +80,52 @@ public abstract class BlockFluid extends Block {
 		return 0;
 	}
 
-	public final void velocityToAddToEntity(World world, int x, int y, int z, Vec3D velocityVector) {
-		Vec3D vec3D6 = new Vec3D(0.0D, 0.0D, 0.0D);
-		int i7 = this.getEffectiveFlowDecay(world, x, y, z);
+	private Vec3D getFlowVector(World world, int x, int y, int z) {
+		Vec3D vec3D5 = new Vec3D(0.0D, 0.0D, 0.0D);
+		int i6 = this.getEffectiveFlowDecay(world, x, y, z);
 
-		for(int i8 = 0; i8 < 4; ++i8) {
-			int i9 = x;
-			int i10 = z;
-			if(i8 == 0) {
-				i9 = x - 1;
+		for(int i7 = 0; i7 < 4; ++i7) {
+			int i8 = x;
+			int i9 = z;
+			if(i7 == 0) {
+				i8 = x - 1;
 			}
 
-			if(i8 == 1) {
-				i10 = z - 1;
+			if(i7 == 1) {
+				i9 = z - 1;
 			}
 
-			if(i8 == 2) {
+			if(i7 == 2) {
+				++i8;
+			}
+
+			if(i7 == 4) {
 				++i9;
 			}
 
-			if(i8 == 4) {
-				++i10;
+			int i10;
+			if((i10 = this.getEffectiveFlowDecay(world, i8, y, i9)) < 0 && !world.getBlockMaterial(i8, y, i9).isSolid()) {
+				i10 = 7;
 			}
 
-			int i11;
-			if((i11 = this.getEffectiveFlowDecay(world, i9, y, i10)) > 0 && i11 < 8) {
-				i11 -= i7;
-				vec3D6 = vec3D6.addVector((double)((i9 - x) * i11), (double)(i11 * 0), (double)((i10 - z) * i11));
+			if(i10 >= 0) {
+				i10 -= i6;
+				vec3D5 = vec3D5.addVector((double)((i8 - x) * i10), (double)(i10 * 0), (double)((i9 - z) * i10));
 			}
 		}
 
-		vec3D6 = vec3D6.normalize();
-		velocityVector.xCoord += vec3D6.xCoord;
-		velocityVector.yCoord += vec3D6.yCoord;
-		velocityVector.zCoord += vec3D6.zCoord;
+		if(world.getBlockMetadata(x, y, z) >= 8) {
+			vec3D5 = vec3D5.addVector(0.0D, -1.0D, 0.0D);
+		}
+
+		return vec3D5.normalize();
+	}
+
+	public final void velocityToAddToEntity(World world, int x, int y, int z, Vec3D velocityVector) {
+		Vec3D world1 = this.getFlowVector(world, x, y, z);
+		velocityVector.xCoord += world1.xCoord;
+		velocityVector.yCoord += world1.yCoord;
+		velocityVector.zCoord += world1.zCoord;
 	}
 
 	public final int tickRate() {
@@ -146,5 +164,18 @@ public abstract class BlockFluid extends Block {
 			world.spawnParticle("lava", d6, d8, d10, 0.0D, 0.0D, 0.0D);
 		}
 
+	}
+
+	public static double getFlowDirection(World world, int x, int y, int z, Material material) {
+		Vec3D vec3D5 = null;
+		if(material == Material.water) {
+			vec3D5 = ((BlockFluid)Block.waterMoving).getFlowVector(world, x, y, z);
+		}
+
+		if(material == Material.lava) {
+			vec3D5 = ((BlockFluid)Block.lavaMoving).getFlowVector(world, x, y, z);
+		}
+
+		return vec3D5.xCoord == 0.0D && vec3D5.zCoord == 0.0D ? -1000.0D : Math.atan2(vec3D5.zCoord, vec3D5.xCoord) - Math.PI / 2D;
 	}
 }

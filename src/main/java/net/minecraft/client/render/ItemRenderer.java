@@ -83,22 +83,22 @@ public final class ItemRenderer {
                 GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glRotatef(335.0F, 0.0F, 0.0F, 1.0F);
                 GL11.glTranslatef(-(15.0F / 16.0F), -(1.0F / 16.0F), 0.0F);
-                t.setNormal(0.0F, 0.0F, 1.0F);
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                t.setNormal(0.0F, 0.0F, 1.0F);
                 t.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)partialTicks, (double)f9);
                 t.addVertexWithUV(1.0D, 0.0D, 0.0D, (double)f5, (double)f9);
                 t.addVertexWithUV(1.0D, 1.0D, 0.0D, (double)f5, (double)f2);
                 t.addVertexWithUV(0.0D, 1.0D, 0.0D, (double)partialTicks, (double)f2);
                 t.draw();
-                t.setNormal(0.0F, 0.0F, -1.0F);
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                t.setNormal(0.0F, 0.0F, -1.0F);
                 t.addVertexWithUV(0.0D, 1.0D, -0.0625D, (double)partialTicks, (double)f2);
                 t.addVertexWithUV(1.0D, 1.0D, -0.0625D, (double)f5, (double)f2);
                 t.addVertexWithUV(1.0D, 0.0D, -0.0625D, (double)f5, (double)f9);
                 t.addVertexWithUV(0.0D, 0.0D, -0.0625D, (double)partialTicks, (double)f9);
                 t.draw();
-                t.setNormal(-1.0F, 0.0F, 0.0F);
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                t.setNormal(-1.0F, 0.0F, 0.0F);
 
                 int i6;
                 float f7;
@@ -114,8 +114,8 @@ public final class ItemRenderer {
                 }
 
                 t.draw();
-                t.setNormal(1.0F, 0.0F, 0.0F);
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                t.setNormal(1.0F, 0.0F, 0.0F);
 
                 for(i6 = 0; i6 < 16; ++i6) {
                     f7 = (float)i6 / 16.0F;
@@ -128,8 +128,8 @@ public final class ItemRenderer {
                 }
 
                 t.draw();
-                t.setNormal(0.0F, 1.0F, 0.0F);
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                t.setNormal(0.0F, 1.0F, 0.0F);
 
                 for(i6 = 0; i6 < 16; ++i6) {
                     f7 = (float)i6 / 16.0F;
@@ -142,8 +142,8 @@ public final class ItemRenderer {
                 }
 
                 t.draw();
-                t.setNormal(0.0F, -1.0F, 0.0F);
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                t.setNormal(0.0F, -1.0F, 0.0F);
 
                 for(i6 = 0; i6 < 16; ++i6) {
                     f7 = (float)i6 / 16.0F;

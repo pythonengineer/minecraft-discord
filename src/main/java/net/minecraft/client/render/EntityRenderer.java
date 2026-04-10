@@ -289,31 +289,27 @@ public final class EntityRenderer {
             this.fogColorRed += (f19 - this.fogColorRed) * f17;
             this.fogColorGreen += (f29 - this.fogColorGreen) * f17;
             this.fogColorBlue += (f30 - this.fogColorBlue) * f17;
-            Block block71 = Block.blocksList[this.mc.theWorld.getBlockId(MathHelper.floor_double(this.mc.thePlayer.posX), MathHelper.floor_double(this.mc.thePlayer.posY + (double)0.12F), MathHelper.floor_double(this.mc.thePlayer.posZ))];
-            if(block71 != null && block71.blockMaterial != Material.air) {
-                Material material = block71.blockMaterial;
-                if(material == Material.water) {
-                    this.fogColorRed = 0.02F;
-                    this.fogColorGreen = 0.02F;
-                    this.fogColorBlue = 0.2F;
-                } else if(material == Material.lava) {
-                    this.fogColorRed = 0.6F;
-                    this.fogColorGreen = 0.1F;
-                    this.fogColorBlue = 0.0F;
-                }
+            if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
+                this.fogColorRed = 0.02F;
+                this.fogColorGreen = 0.02F;
+                this.fogColorBlue = 0.2F;
+            } else if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
+                this.fogColorRed = 0.6F;
+                this.fogColorGreen = 0.1F;
+                this.fogColorBlue = 0.0F;
             }
 
-            float f73 = this.prevFogColor + (this.fogColor - this.prevFogColor) * partialTicks;
-            this.fogColorRed *= f73;
-            this.fogColorGreen *= f73;
-            this.fogColorBlue *= f73;
+            f32 = this.prevFogColor + (this.fogColor - this.prevFogColor) * partialTicks;
+            this.fogColorRed *= f32;
+            this.fogColorGreen *= f32;
+            this.fogColorBlue *= f32;
             if(this.mc.gameSettings.anaglyph) {
-                f34 = (this.fogColorRed * 30.0F + this.fogColorGreen * 59.0F + this.fogColorBlue * 11.0F) / 100.0F;
-                float f76 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
-                float f36 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;
-                this.fogColorRed = f34;
-                this.fogColorGreen = f76;
-                this.fogColorBlue = f36;
+                float f33 = (this.fogColorRed * 30.0F + this.fogColorGreen * 59.0F + this.fogColorBlue * 11.0F) / 100.0F;
+                f34 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
+                float f74 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;
+                this.fogColorRed = f33;
+                this.fogColorGreen = f34;
+                this.fogColorBlue = f74;
             }
 
             GL11.glClearColor(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 0.0F);
@@ -351,23 +347,23 @@ public final class EntityRenderer {
 
             double d67 = this.mc.thePlayer.prevPosX + (this.mc.thePlayer.posX - this.mc.thePlayer.prevPosX) * (double)partialTicks;
             double d68 = this.mc.thePlayer.prevPosY + (this.mc.thePlayer.posY - this.mc.thePlayer.prevPosY) * (double)partialTicks;
-            double d74 = this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * (double)partialTicks;
+            double d72 = this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * (double)partialTicks;
             if(!this.mc.gameSettings.thirdPersonView) {
                 GL11.glTranslatef(0.0F, 0.0F, -0.1F);
             } else {
                 d35 = 4.0D;
-                double d78 = (double)(-MathHelper.sin(this.mc.thePlayer.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.mc.thePlayer.rotationPitch / 180.0F * (float)Math.PI)) * 4.0D;
+                double d76 = (double)(-MathHelper.sin(this.mc.thePlayer.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.mc.thePlayer.rotationPitch / 180.0F * (float)Math.PI)) * 4.0D;
                 double d39 = (double)(MathHelper.cos(this.mc.thePlayer.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.mc.thePlayer.rotationPitch / 180.0F * (float)Math.PI)) * 4.0D;
                 d41 = (double)(-MathHelper.sin(this.mc.thePlayer.rotationPitch / 180.0F * (float)Math.PI)) * 4.0D;
 
-                for(int j = 0; j < 8; ++j) {
-                    float f55 = (float)(((j & 1) << 1) - 1);
-                    float f50 = (float)(((j >> 1 & 1) << 1) - 1);
-                    f16 = (float)(((j >> 2 & 1) << 1) - 1);
+                for (int i43 = 0; i43 < 8; ++i43) {
+                    float f55 = (float)(((i43 & 1) << 1) - 1);
+                    float f50 = (float)(((i43 >> 1 & 1) << 1) - 1);
+                    f16 = (float)(((i43 >> 2 & 1) << 1) - 1);
                     f55 *= 0.1F;
                     f50 *= 0.1F;
                     f16 *= 0.1F;
-                    if((movingObjectPosition = this.mc.theWorld.rayTraceBlocks(new Vec3D(d67 + (double)f55, d68 + (double)f50, d74 + (double)f16), new Vec3D(d67 - d78 + (double)f55 + (double)f16, d68 - d41 + (double)f50, d74 - d39 + (double)f16))) != null && (d48 = movingObjectPosition.hitVec.distanceTo(new Vec3D(d67, d68, d74))) < d35) {
+                    if((movingObjectPosition = this.mc.theWorld.rayTraceBlocks(new Vec3D(d67 + (double)f55, d68 + (double)f50, d72 + (double)f16), new Vec3D(d67 - d76 + (double)f55 + (double)f16, d68 - d41 + (double)f50, d72 - d39 + (double)f16))) != null && (d48 = movingObjectPosition.hitVec.distanceTo(new Vec3D(d67, d68, d72))) < d35) {
                         d35 = d48;
                     }
                 }
@@ -487,32 +483,32 @@ public final class EntityRenderer {
                         break;
                     }
 
-                    for(int i72 = i65 - 5; i72 <= i65 + 5; ++i72) {
-                        int i75 = i63 - 5;
-                        int i77 = i63 + 5;
+                    for(int i71 = i65 - 5; i71 <= i65 + 5; ++i71) {
+                        int i73 = i63 - 5;
+                        int i75 = i63 + 5;
+                        if(i73 < 64) {
+                            i73 = 64;
+                        }
+
                         if(i75 < 64) {
                             i75 = 64;
                         }
 
-                        if(i77 < 64) {
-                            i77 = 64;
-                        }
-
-                        if(i75 != i77) {
-                            float f79 = ((float)((this.rendererUpdateCount + i70 * 3121 + i72 * 418711) % 32) + partialTicks) / 32.0F;
+                        if(i73 != i75) {
+                            float f77 = ((float)((this.rendererUpdateCount + i70 * 3121 + i71 * 418711) % 32) + f52) / 32.0F;
                             d38 = (double)((float)i70 + 0.5F) - this.mc.thePlayer.posX;
-                            double d80 = (double)((float)i72 + 0.5F) - this.mc.thePlayer.posZ;
-                            float f42 = MathHelper.sqrt_double(d38 * d38 + d80 * d80) / 5.0F;
+                            double d78 = (double)((float)i71 + 0.5F) - this.mc.thePlayer.posZ;
+                            float f42 = MathHelper.sqrt_double(d38 * d38 + d78 * d78) / 5.0F;
                             GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - f42 * f42) * 0.7F);
                             tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                            tessellator.addVertexWithUV((double)i70, (double)i75, (double)i72, 0.0D, (double)((float)i75 * 2.0F / 8.0F + f79 * 2.0F));
-                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i75, (double)(i72 + 1), 2.0D, (double)((float)i75 * 2.0F / 8.0F + f79 * 2.0F));
-                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i77, (double)(i72 + 1), 2.0D, (double)((float)i77 * 2.0F / 8.0F + f79 * 2.0F));
-                            tessellator.addVertexWithUV((double)i70, (double)i77, (double)i72, 0.0D, (double)((float)i77 * 2.0F / 8.0F + f79 * 2.0F));
-                            tessellator.addVertexWithUV((double)i70, (double)i75, (double)(i72 + 1), 0.0D, (double)((float)i75 * 2.0F / 8.0F + f79 * 2.0F));
-                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i75, (double)i72, 2.0D, (double)((float)i75 * 2.0F / 8.0F + f79 * 2.0F));
-                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i77, (double)i72, 2.0D, (double)((float)i77 * 2.0F / 8.0F + f79 * 2.0F));
-                            tessellator.addVertexWithUV((double)i70, (double)i77, (double)(i72 + 1), 0.0D, (double)((float)i77 * 2.0F / 8.0F + f79 * 2.0F));
+                            tessellator.addVertexWithUV((double)i70, (double)i73, (double)i71, 0.0D, (double)((float)i73 * 2.0F / 8.0F + f77 * 2.0F));
+                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i73, (double)(i71 + 1), 2.0D, (double)((float)i73 * 2.0F / 8.0F + f77 * 2.0F));
+                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i75, (double)(i71 + 1), 2.0D, (double)((float)i75 * 2.0F / 8.0F + f77 * 2.0F));
+                            tessellator.addVertexWithUV((double)i70, (double)i75, (double)i71, 0.0D, (double)((float)i75 * 2.0F / 8.0F + f77 * 2.0F));
+                            tessellator.addVertexWithUV((double)i70, (double)i73, (double)(i71 + 1), 0.0D, (double)((float)i73 * 2.0F / 8.0F + f77 * 2.0F));
+                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i73, (double)i71, 2.0D, (double)((float)i73 * 2.0F / 8.0F + f77 * 2.0F));
+                            tessellator.addVertexWithUV((double)(i70 + 1), (double)i75, (double)i71, 2.0D, (double)((float)i75 * 2.0F / 8.0F + f77 * 2.0F));
+                            tessellator.addVertexWithUV((double)i70, (double)i75, (double)(i71 + 1), 0.0D, (double)((float)i75 * 2.0F / 8.0F + f77 * 2.0F));
                             tessellator.draw();
                         }
                     }

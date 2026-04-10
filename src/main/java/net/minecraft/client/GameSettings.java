@@ -103,6 +103,7 @@ public final class GameSettings {
 
         if(keyBindIndex == 10) {
             this.fancyGraphics = !this.fancyGraphics;
+            this.mc.renderGlobal.loadRenderers();
         }
 
         this.saveOptions();

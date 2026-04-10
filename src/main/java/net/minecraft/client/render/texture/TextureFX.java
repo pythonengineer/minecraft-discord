@@ -5,6 +5,7 @@ public class TextureFX {
 	public int iconIndex;
 	public boolean anaglyphEnabled = false;
     public int textureId = 0;
+    public int tileSize = 1;
 
     public TextureFX(int iconIndex) {
         this.iconIndex = iconIndex;
