@@ -35,13 +35,13 @@ public final class ModelCreeper extends ModelBase {
     }
 
     public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 1.0F);
-        this.head.render(1.0F);
-        this.body.render(1.0F);
-        this.leg1.render(1.0F);
-        this.leg2.render(1.0F);
-        this.leg3.render(1.0F);
-        this.leg4.render(1.0F);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
+        this.head.render(0.0625F);
+        this.body.render(0.0625F);
+        this.leg1.render(0.0625F);
+        this.leg2.render(0.0625F);
+        this.leg3.render(0.0625F);
+        this.leg4.render(0.0625F);
     }
 
     public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {

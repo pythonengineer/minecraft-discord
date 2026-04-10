@@ -438,6 +438,10 @@ public final class Minecraft implements Runnable {
         }
     }
 
+    public final void shutdown() {
+        this.running = false;
+    }
+
 	public final void setIngameFocus() {
         boolean touch = PointerInputAbstraction.isTouchMode();
         if (touch || Display.isActive()) {
@@ -967,6 +971,34 @@ public final class Minecraft implements Runnable {
         }
 
         this.theWorld.dropOldChunks();
+    }
+
+    public final void installResource(String resource, String resourceDir) {
+        int i3 = resource.indexOf("/");
+        String string4 = resource.substring(0, i3);
+        resource = resource.substring(i3 + 1);
+        if(string4.equalsIgnoreCase("sound")) {
+            this.sndManager.addSound(resource, resourceDir);
+        } else if(string4.equalsIgnoreCase("newsound")) {
+            this.sndManager.addSound(resource, resourceDir);
+        } else {
+            if(string4.equalsIgnoreCase("music")) {
+                this.sndManager.addMusic(resource, resourceDir);
+            }
+
+        }
+    }
+
+    public final String debugInfoRenders() {
+        return this.renderGlobal.getDebugInfoRenders();
+    }
+
+    public final String getEntityDebug() {
+        return this.renderGlobal.getDebugInfoEntities();
+    }
+
+    public final String debugInfoEntities() {
+        return "P: " + this.effectRenderer.getStatistics() + ". T: " + this.theWorld.getDebugLoadedEntities();
     }
 
     public final void respawn() {

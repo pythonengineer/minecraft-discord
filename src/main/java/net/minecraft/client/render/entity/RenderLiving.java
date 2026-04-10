@@ -22,6 +22,7 @@ public class RenderLiving extends Render {
 	public void renderLiving(EntityLiving entityLiving1, double d2, double d4, double d6, float f8, float f9) {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_CULL_FACE);
 
 		try {
 			f8 = entityLiving1.prevRenderYawOffset + (entityLiving1.renderYawOffset - entityLiving1.prevRenderYawOffset) * f9;
@@ -39,10 +40,10 @@ public class RenderLiving extends Render {
 				GL11.glRotatef(f3 * this.getDeathMaxRotation(entityLiving1), 0.0F, 0.0F, 1.0F);
 			}
 
-			GL11.glScalef(-0.0625F, -0.0625F, 0.0625F);
-			this.preRenderCallback(entityLiving1, f9);
-			GL11.glTranslatef(0.0F, -24.0F, 0.0F);
-			GL11.glEnable(GL11.GL_NORMALIZE);
+            GL11.glEnable(GL11.GL_RESCALE_NORMAL);
+            GL11.glScalef(-1.0F, -1.0F, 1.0F);
+            this.preRenderCallback(entityLiving1, f9);
+            GL11.glTranslatef(0.0F, -1.5F, 0.0F);
 			f3 = entityLiving1.prevLimbYaw + (entityLiving1.limbYaw - entityLiving1.prevLimbYaw) * f9;
 			float f15 = entityLiving1.limbSwing - entityLiving1.limbYaw * (1.0F - f9);
 			if(f3 > 1.0F) {
@@ -51,11 +52,11 @@ public class RenderLiving extends Render {
 
 			this.loadDownloadableImageTexture(entityLiving1.skinUrl, entityLiving1.getTexture());
 			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			this.mainModel.render(f15, f3, f14, f10 - f8, f11, 1.0F);
+            this.mainModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 
 			for(int i5 = 0; i5 < 4; ++i5) {
 				if(this.shouldRenderPass(entityLiving1, i5)) {
-					this.renderPassModel.render(f15, f3, f14, f10 - f8, f11, 1.0F);
+                    this.renderPassModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 					GL11.glDisable(GL11.GL_BLEND);
 					GL11.glEnable(GL11.GL_ALPHA_TEST);
 				}
@@ -71,12 +72,12 @@ public class RenderLiving extends Render {
 				GL11.glDepthFunc(GL11.GL_EQUAL);
 				if(entityLiving1.hurtTime > 0 || entityLiving1.deathTime > 0) {
 					GL11.glColor4f(f16, 0.0F, 0.0F, 0.4F);
-					this.mainModel.render(f15, f3, f14, f10 - f8, f11, 1.0F);
+                    this.mainModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 
 					for(int i7 = 0; i7 < 4; ++i7) {
 						if(this.shouldRenderPass(entityLiving1, i7)) {
 							GL11.glColor4f(f16, 0.0F, 0.0F, 0.4F);
-							this.renderPassModel.render(f15, f3, f14, f10 - f8, f11, 1.0F);
+                            this.renderPassModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 						}
 					}
 				}
@@ -87,12 +88,12 @@ public class RenderLiving extends Render {
 					f9 = (float)(i17 & 255) / 255.0F;
 					float f18 = (float)(i17 >>> 24) / 255.0F;
 					GL11.glColor4f(f19, f16, f9, f18);
-					this.mainModel.render(f15, f3, f14, f10 - f8, f11, 1.0F);
+                    this.mainModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 
 					for(int i12 = 0; i12 < 4; ++i12) {
 						if(this.shouldRenderPass(entityLiving1, i12)) {
 							GL11.glColor4f(f19, f16, f9, f18);
-							this.renderPassModel.render(f15, f3, f14, f10 - f8, f11, 1.0F);
+                            this.renderPassModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 						}
 					}
 				}
@@ -103,7 +104,7 @@ public class RenderLiving extends Render {
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 			}
 
-			GL11.glDisable(GL11.GL_NORMALIZE);
+            GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 		} catch (Exception exception13) {
 			exception13.printStackTrace();
 		}

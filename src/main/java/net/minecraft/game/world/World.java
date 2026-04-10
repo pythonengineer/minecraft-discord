@@ -90,6 +90,10 @@ public class World {
 	}
 
 	private World(String worldName, long seed) {
+        this(worldName, seed, true);
+    }
+
+    private World(String worldName, long seed, boolean b) {
 		this.lightingToUpdate = new ArrayList();
 		this.loadedEntityList = new ArrayList();
 		this.scheduledTickList = new LinkedList();
@@ -120,20 +124,49 @@ public class World {
 				this.worldTime = worldFile1.getLong("Time");
 				this.sizeOnDisk = worldFile1.getLong("SizeOnDisk");
 				this.playerData = worldFile1.getCompoundTag("Player");
-			} catch (IOException exception5) {
-				exception5.printStackTrace();
+			} catch (IOException exception6) {
+				exception6.printStackTrace();
 			}
 		}
 
-		if(this.seed == 0L) {
-			this.seed = seed;
-			this.spawnX = 0;
-			this.spawnY = 64;
-			this.spawnZ = 0;
-		}
+        boolean worldFile2 = false;
+        if(this.seed == 0L) {
+            this.seed = seed;
+            worldFile2 = true;
+        }
 
-		this.chunkProvider = new ChunkProviderLoadOrGenerate(this, this.levelFile, new ChunkProviderGenerate(this, this.seed));
-	}
+        this.chunkProvider = new ChunkProviderLoadOrGenerate(this, this.levelFile, new ChunkProviderGenerate(this, this.seed));
+        int worldName1;
+        if(worldFile2) {
+            this.spawnX = 0;
+            this.spawnY = 64;
+            this.spawnZ = 0;
+
+            while(true) {
+                int seed1 = this.spawnZ;
+                worldName1 = this.spawnX;
+                if(this.getFirstUncoveredBlock(worldName1, seed1) == Block.sand.blockID) {
+                    break;
+                }
+
+                this.spawnX += this.rand.nextInt(64) - this.rand.nextInt(64);
+                this.spawnZ += this.rand.nextInt(64) - this.rand.nextInt(64);
+            }
+        }
+
+        if((worldName1 = this.calculateSkylightSubtracted(1.0F)) != this.skylightSubtracted) {
+            this.skylightSubtracted = worldName1;
+        }
+
+    }
+
+    private int getFirstUncoveredBlock(int x, int z) {
+        int i3;
+        for(i3 = 63; this.getBlockId(x, i3 + 1, z) != 0; ++i3) {
+        }
+
+        return this.getBlockId(x, i3, z);
+    }
 
 	public final void joinPlayerInWorld() {
 		try {
@@ -657,6 +690,19 @@ public class World {
 
 		return arrayList2;
 	}
+
+    private int calculateSkylightSubtracted(float partialTicks) {
+        partialTicks = this.getCelestialAngle(1.0F);
+        if((partialTicks = 1.0F - (MathHelper.cos(partialTicks * (float)Math.PI * 2.0F) * 2.0F + 0.5F)) < 0.0F) {
+            partialTicks = 0.0F;
+        }
+
+        if(partialTicks > 1.0F) {
+            partialTicks = 1.0F;
+        }
+
+        return (int)(partialTicks * 13.0F);
+    }
 
 	public final Vec3D getSkyColor(float partialTicks) {
 		if((partialTicks = MathHelper.cos(this.getCelestialAngle(partialTicks) * (float)Math.PI * 2.0F) * 2.0F + 0.5F) < 0.0F) {
@@ -1294,52 +1340,42 @@ public class World {
 			this.entityJoinedWorld(this.playerEntity);
 		}
 
-		float f1 = 1.0F;
-		f1 = this.getCelestialAngle(1.0F);
-		if((f1 = 1.0F - (MathHelper.cos(f1 * (float)Math.PI * 2.0F) * 2.0F + 0.5F)) < 0.0F) {
-			f1 = 0.0F;
-		}
+        int i1;
+        if((i1 = this.calculateSkylightSubtracted(1.0F)) != this.skylightSubtracted) {
+            this.skylightSubtracted = i1;
 
-		if(f1 > 1.0F) {
-			f1 = 1.0F;
-		}
+            for(i1 = 0; i1 < this.worldAccesses.size(); ++i1) {
+                ((IWorldAccess)this.worldAccesses.get(i1)).updateAllRenderers();
+            }
+        }
 
-		int i8;
-		if((i8 = (int)(f1 * 13.0F)) != this.skylightSubtracted) {
-			this.skylightSubtracted = i8;
+        ++this.worldTime;
+        if(this.worldTime % 100L == 0L) {
+            this.saveWorld(false);
+        }
 
-			for(i8 = 0; i8 < this.worldAccesses.size(); ++i8) {
-				((IWorldAccess)this.worldAccesses.get(i8)).updateAllRenderers();
-			}
-		}
+        if((i1 = this.scheduledTickList.size()) > 200) {
+            i1 = 200;
+        }
 
-		++this.worldTime;
-		if(this.worldTime % 100L == 0L) {
-			this.saveWorld(false);
-		}
+        int i2;
+        int i4;
+        for(i2 = 0; i2 < i1; ++i2) {
+            NextTickListEntry nextTickListEntry3;
+            if((nextTickListEntry3 = (NextTickListEntry)this.scheduledTickList.remove(0)).scheduledTime > 0) {
+                --nextTickListEntry3.scheduledTime;
+                this.scheduledTickList.add(nextTickListEntry3);
+            } else if(this.checkChunksExist(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord) && (i4 = this.getBlockId(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord)) == nextTickListEntry3.blockID && i4 > 0) {
+                Block.blocksList[i4].updateTick(this, nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord, this.rand);
+            }
+        }
 
-		if((i8 = this.scheduledTickList.size()) > 200) {
-			i8 = 200;
-		}
+        i1 = MathHelper.floor_double(this.playerEntity.posX);
+        i2 = MathHelper.floor_double(this.playerEntity.posZ);
 
-		int i2;
-		int i4;
-		for(i2 = 0; i2 < i8; ++i2) {
-			NextTickListEntry nextTickListEntry3;
-			if((nextTickListEntry3 = (NextTickListEntry)this.scheduledTickList.remove(0)).scheduledTime > 0) {
-				--nextTickListEntry3.scheduledTime;
-				this.scheduledTickList.add(nextTickListEntry3);
-			} else if(this.checkChunksExist(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord) && (i4 = this.getBlockId(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord)) == nextTickListEntry3.blockID && i4 > 0) {
-				Block.blocksList[i4].updateTick(this, nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord, this.rand);
-			}
-		}
-
-		i8 = MathHelper.floor_double(this.playerEntity.posX);
-		i2 = MathHelper.floor_double(this.playerEntity.posZ);
-
-		for(int i9 = 0; i9 < 32000; ++i9) {
-			this.randInt = this.randInt * 3 + this.tickUpdateRandom;
-			int i5 = ((i4 = this.randInt >> 2) & 255) - 128 + i8;
+        for(int i8 = 0; i8 < 32000; ++i8) {
+            this.randInt = this.randInt * 3 + this.tickUpdateRandom;
+            int i5 = ((i4 = this.randInt >> 2) & 255) - 128 + i1;
 			int i6 = (i4 >> 8 & 255) - 128 + i2;
 			i4 = i4 >> 16 & 127;
 			int i7 = this.getBlockId(i5, i4, i6);

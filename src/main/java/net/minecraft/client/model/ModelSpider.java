@@ -51,18 +51,18 @@ public final class ModelSpider extends ModelBase {
     }
 
     public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 1.0F);
-        this.spiderHead.render(1.0F);
-        this.spiderNeck.render(1.0F);
-        this.spiderBody.render(1.0F);
-        this.spiderLeg1.render(1.0F);
-        this.spiderLeg2.render(1.0F);
-        this.spiderLeg3.render(1.0F);
-        this.spiderLeg4.render(1.0F);
-        this.spiderLeg5.render(1.0F);
-        this.spiderLeg6.render(1.0F);
-        this.spiderLeg7.render(1.0F);
-        this.spiderLeg8.render(1.0F);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
+        this.spiderHead.render(0.0625F);
+        this.spiderNeck.render(0.0625F);
+        this.spiderBody.render(0.0625F);
+        this.spiderLeg1.render(0.0625F);
+        this.spiderLeg2.render(0.0625F);
+        this.spiderLeg3.render(0.0625F);
+        this.spiderLeg4.render(0.0625F);
+        this.spiderLeg5.render(0.0625F);
+        this.spiderLeg6.render(0.0625F);
+        this.spiderLeg7.render(0.0625F);
+        this.spiderLeg8.render(0.0625F);
     }
 
     public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {

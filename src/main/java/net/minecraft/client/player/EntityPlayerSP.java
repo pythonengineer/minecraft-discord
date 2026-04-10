@@ -22,7 +22,7 @@ public class EntityPlayerSP extends EntityPlayer {
 	public MovementInput movementInput;
 	private Minecraft mc;
 
-    public EntityPlayerSP(Minecraft mc, World world, Session session3) {
+    public EntityPlayerSP(Minecraft mc, World world, Session session) {
         super(world);
         this.mc = mc;
         if(world != null) {
@@ -33,9 +33,9 @@ public class EntityPlayerSP extends EntityPlayer {
             world.playerEntity = this;
         }
 
-        if(session3 != null) {
-            this.skinUrl = session3.name;
-            this.username = session3.name;
+        if(session != null && session.name != null && session.name.length() > 0) {
+            this.skinUrl = session.name;
+            this.username = session.name;
         } else {
             this.username = "";
         }

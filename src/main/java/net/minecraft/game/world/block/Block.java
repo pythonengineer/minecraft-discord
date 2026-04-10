@@ -706,12 +706,12 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         stoneOvenActive = block0.setLightValue(0.875F);
-        block10000 = (new BlockSign(63, TileEntitySign.class)).setHardness(5.0F);
+        block10000 = (new BlockSign(63, TileEntitySign.class, Item.sign.shiftedIndex)).setHardness(1.0F);
         stepSound1 = soundWoodFootstep;
         block0 = block10000;
         block10000.stepSound = stepSound1;
         signStanding = block0;
-        block10000 = (new BlockDoor(64)).setHardness(5.0F);
+        block10000 = (new BlockDoor(64)).setHardness(3.0F);
         stepSound1 = soundWoodFootstep;
         block0 = block10000;
         block10000.stepSound = stepSound1;

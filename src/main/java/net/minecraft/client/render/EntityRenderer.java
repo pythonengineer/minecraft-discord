@@ -380,7 +380,7 @@ public final class EntityRenderer {
             ClippingHelperImplementation.getInstance();
             this.setupFog();
             GL11.glEnable(GL11.GL_FOG);
-            this.mc.renderGlobal.renderClouds(partialTicks);
+            this.mc.renderGlobal.renderSky(partialTicks);
             this.setupFog();
             Frustrum frustrum51;
             (frustrum51 = new Frustrum()).setPosition(d6, d8, d10);
@@ -414,10 +414,8 @@ public final class EntityRenderer {
             }
 
             RenderHelper.enableStandardItemLighting();
-            GL11.glPushMatrix();
             this.mc.renderGlobal.renderEntities(this.getMouseOver(partialTicks), frustrum51, partialTicks);
             this.mc.effectRenderer.renderLitParticles(partialTicks);
-            GL11.glPopMatrix();
             RenderHelper.disableStandardItemLighting();
             this.setupFog();
             this.mc.effectRenderer.renderParticles(this.mc.thePlayer, partialTicks);
@@ -459,6 +457,7 @@ public final class EntityRenderer {
                 GL11.glEnable(GL11.GL_ALPHA_TEST);
             }
 
+            GL11.glDisable(GL11.GL_FOG);
             if(this.mc.isRaining) {
                 i62 = MathHelper.floor_double(this.mc.thePlayer.posX);
                 int i63 = MathHelper.floor_double(this.mc.thePlayer.posY);
@@ -512,7 +511,11 @@ public final class EntityRenderer {
                 }
             }
 
+            this.setupFog();
+            GL11.glEnable(GL11.GL_FOG);
+            this.mc.renderGlobal.renderClouds(partialTicks);
             GL11.glDisable(GL11.GL_FOG);
+            this.setupFog();
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glLoadIdentity();
             if(this.mc.gameSettings.anaglyph) {

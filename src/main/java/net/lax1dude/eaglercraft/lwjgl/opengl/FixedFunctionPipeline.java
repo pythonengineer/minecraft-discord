@@ -118,6 +118,12 @@ public class FixedFunctionPipeline {
             GL11.vertexAttribPointer(self.attribNormalIndex, VertexFormat.COMPONENT_NORMAL_SIZE,
                     VertexFormat.COMPONENT_NORMAL_FORMAT, true, self.attribStride, self.attribNormalOffset);
         }
+
+        if (self.attribLightmapIndex != -1) {
+            GL11.enableVertexAttribArray(self.attribLightmapIndex);
+            GL11.vertexAttribPointer(self.attribLightmapIndex, VertexFormat.COMPONENT_LIGHTMAP_SIZE,
+                    VertexFormat.COMPONENT_LIGHTMAP_FORMAT, false, self.attribStride, self.attribLightmapOffset);
+        }
     }
 
     public static FixedFunctionPipeline setupRenderDisplayList(int attribs) {
@@ -396,6 +402,8 @@ public class FixedFunctionPipeline {
     private final int attribColorOffset;
     private final int attribNormalIndex;
     private final int attribNormalOffset;
+    private final int attribLightmapIndex;
+    private final int attribLightmapOffset;
 
     private final int attribStride;
 
@@ -547,6 +555,15 @@ public class FixedFunctionPipeline {
             attribNormalIndex = -1;
             attribNormalOffset = -1;
         }
+        if (stateHasAttribLightmap) {
+            attribLightmapIndex = ++index;
+            attribLightmapOffset = stride;
+            _wglBindAttribLocation(compiledProg, index, FixedFunctionConstants.ATTRIB_LIGHTMAP);
+            stride += VertexFormat.COMPONENT_LIGHTMAP_STRIDE; // vec2s
+        } else {
+            attribLightmapIndex = -1;
+            attribLightmapOffset = -1;
+        }
 
         attribStride = stride;
 
@@ -642,7 +659,7 @@ public class FixedFunctionPipeline {
                 ? _wglGetUniformLocation(compiledProg, UNIFORM_TEXTURE_MATRIX_01_NAME)
                 : null;
 
-        stateTextureMatrix02UniformMat4f = stateHasAttribLightmap
+        stateTextureMatrix02UniformMat4f = (stateHasAttribLightmap || stateEnableLightmap)
                 ? _wglGetUniformLocation(compiledProg, UNIFORM_TEXTURE_MATRIX_02_NAME)
                 : null;
 
@@ -806,14 +823,14 @@ public class FixedFunctionPipeline {
                         _wglUniform2f(stateTextureCoords02Uniform2f, x, y);
                     }
                 }
-            } else {
-                if (stateTextureMatrixSerial[1] != serial) {
-                    stateTextureMatrixSerial[1] = serial;
-                    matrixCopyBuffer.clear();
-                    GL11.textureMatrixStack[1][ptr].store(matrixCopyBuffer);
-                    matrixCopyBuffer.flip();
-                    _wglUniformMatrix4fv(stateTextureMatrix02UniformMat4f, false, matrixCopyBuffer);
-                }
+            }
+
+            if (stateTextureMatrixSerial[1] != serial) {
+                stateTextureMatrixSerial[1] = serial;
+                matrixCopyBuffer.clear();
+                GL11.textureMatrixStack[1][ptr].store(matrixCopyBuffer);
+                matrixCopyBuffer.flip();
+                _wglUniformMatrix4fv(stateTextureMatrix02UniformMat4f, false, matrixCopyBuffer);
             }
         }
 
@@ -1083,6 +1100,12 @@ public class FixedFunctionPipeline {
                 GL11.enableVertexAttribArray(attribNormalIndex);
                 GL11.vertexAttribPointer(attribNormalIndex, VertexFormat.COMPONENT_NORMAL_SIZE,
                         VertexFormat.COMPONENT_NORMAL_FORMAT, true, attribStride, attribNormalOffset);
+            }
+
+            if (attribLightmapIndex != -1) {
+                GL11.enableVertexAttribArray(attribLightmapIndex);
+                GL11.vertexAttribPointer(attribLightmapIndex, VertexFormat.COMPONENT_LIGHTMAP_SIZE,
+                        VertexFormat.COMPONENT_LIGHTMAP_FORMAT, false, attribStride, attribLightmapOffset);
             }
 
             return directVertexArray;

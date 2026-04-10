@@ -7,12 +7,14 @@ import net.minecraft.game.world.material.Material;
 
 public final class BlockSign extends BlockContainer {
     private Class signEntityClass;
+    private int itemDropID;
 
-    protected BlockSign(int blockID, Class signEntityClas) {
+    protected BlockSign(int blockID, Class signEntityClas, int droppedItemID) {
         super(63, Material.ground);
-        this.blockIndexInTexture = 0;
+        this.blockIndexInTexture = 4;
         this.signEntityClass = signEntityClas;
         this.setBlockBounds(0.25F, 0.0F, 0.25F, 0.75F, 1.625F, 0.75F);
+        this.itemDropID = droppedItemID;
     }
 
     public final int getRenderType() {
@@ -40,7 +42,7 @@ public final class BlockSign extends BlockContainer {
     }
 
     public final int idDropped(int metadata, EaglercraftRandom rand) {
-        return Block.planks.blockID;
+        return this.itemDropID;
     }
 
     public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {

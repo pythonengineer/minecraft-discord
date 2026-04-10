@@ -13,6 +13,7 @@ import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.game.world.World;
 
 public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
+    private Chunk currentChunk;
 	private IChunkProvider chunkProvider;
 	private Chunk[] chunks = new Chunk[1024];
 	private VFile2 saveDirectory;
@@ -20,6 +21,8 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	private List emptyList = new ArrayList();
 
 	public ChunkProviderLoadOrGenerate(World world, VFile2 saveDir, IChunkProvider chunkProvider) {
+        this.currentChunk = new Chunk(world, new byte[32768], 0, 0);
+        this.currentChunk.neverSave = true;
 		this.worldObj = world;
 		this.chunkProvider = chunkProvider;
 		this.saveDirectory = saveDir;
@@ -28,6 +31,10 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	public final boolean chunkExists(int chunkX, int chunkZ) {
 		int i3 = chunkX & 31 | (chunkZ & 31) << 5;
 		if(this.chunks[i3] != null) {
+            if(this.chunks[i3] == this.currentChunk) {
+                return true;
+            }
+
 			Chunk chunk10000 = this.chunks[i3];
 			i3 = chunkZ;
 			chunkZ = chunkX;
@@ -50,7 +57,11 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
 			Chunk chunk4;
 			if((chunk4 = this.loadChunk(chunkX, chunkZ)) == null) {
-				chunk4 = this.chunkProvider.provideChunk(chunkX, chunkZ);
+                if(this.chunkProvider == null) {
+                    chunk4 = this.currentChunk;
+                } else {
+                    chunk4 = this.chunkProvider.provideChunk(chunkX, chunkZ);
+                }
 			}
 
 			this.chunks[i3] = chunk4;
@@ -124,7 +135,9 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 		Chunk chunk4;
 		if(!(chunk4 = this.provideChunk(chunkX, chunkZ)).isTerrainPopulated) {
 			chunk4.isTerrainPopulated = true;
-			this.chunkProvider.populate(chunkProvider, chunkX, chunkZ);
+            if(this.chunkProvider != null) {
+                this.chunkProvider.populate(chunkProvider, chunkX, chunkZ);
+            }
 		}
 
 	}
@@ -149,9 +162,32 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 		this.chunkProvider.unload100OldestChunks();
 		int i1 = 0;
 
-		while(i1++ <= 0 && !this.emptyList.isEmpty()) {
-			this.emptyList.remove(0);
-		}
+        while(i1++ <= 0 && !this.emptyList.isEmpty()) {
+            this.emptyList.remove(0);
+            if(this.chunks[0].neverSave) {
+                Chunk chunk2 = this.chunkProvider.provideChunk(0, 0);
+                this.chunks[0] = chunk2;
+                if(this.chunks[0] != null) {
+                    this.chunks[0].loadTileEntities();
+                }
+
+                if(!this.chunks[0].isTerrainPopulated && this.chunkExists(1, 1) && this.chunkExists(0, 1) && this.chunkExists(1, 0)) {
+                    this.populate(this, 0, 0);
+                }
+
+                if(this.chunkExists(-1, 0) && !this.provideChunk(-1, 0).isTerrainPopulated && this.chunkExists(-1, 1) && this.chunkExists(0, 1) && this.chunkExists(-1, 0)) {
+                    this.populate(this, -1, 0);
+                }
+
+                if(this.chunkExists(0, -1) && !this.provideChunk(0, -1).isTerrainPopulated && this.chunkExists(1, -1) && this.chunkExists(0, -1) && this.chunkExists(1, 0)) {
+                    this.populate(this, 0, -1);
+                }
+
+                if(this.chunkExists(-1, -1) && !this.provideChunk(-1, -1).isTerrainPopulated && this.chunkExists(-1, -1) && this.chunkExists(0, -1) && this.chunkExists(-1, 0)) {
+                    this.populate(this, -1, -1);
+                }
+            }
+        }
 
 		return !this.emptyList.isEmpty();
 	}

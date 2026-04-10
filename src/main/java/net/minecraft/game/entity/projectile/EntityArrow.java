@@ -25,6 +25,11 @@ public class EntityArrow extends Entity {
 	private int ticksInGround;
 	private int ticksInAir = 0;
 
+    public EntityArrow(World world1) {
+        super(world1);
+        this.setSize(0.5F, 0.5F);
+    }
+
 	public EntityArrow(World world, EntityLiving livingEntity) {
 		super(world);
 		this.owner = livingEntity;

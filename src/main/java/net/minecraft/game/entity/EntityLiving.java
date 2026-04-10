@@ -80,12 +80,13 @@ public class EntityLiving extends Entity {
 			}
 		}
 
+        int i9;
 		if(this.isEntityAlive() && this.isInsideOfMaterial()) {
 			--this.air;
 			if(this.air == -20) {
 				this.air = 0;
 
-				for(int i9 = 0; i9 < 8; ++i9) {
+				for(i9 = 0; i9 < 8; ++i9) {
 					float f2 = this.rand.nextFloat() - this.rand.nextFloat();
 					float f3 = this.rand.nextFloat() - this.rand.nextFloat();
 					float f4 = this.rand.nextFloat() - this.rand.nextFloat();
@@ -117,6 +118,13 @@ public class EntityLiving extends Entity {
 			++this.deathTime;
 			if(this.deathTime > 20) {
 				super.isDead = true;
+
+                for(i9 = 0; i9 < 20; ++i9) {
+                    double d10 = this.rand.nextGaussian() * 0.02D;
+                    double d15 = this.rand.nextGaussian() * 0.02D;
+                    double d6 = this.rand.nextGaussian() * 0.02D;
+                    this.worldObj.spawnParticle("explode", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d10, d15, d6);
+                }
 			}
 		}
 
@@ -124,52 +132,52 @@ public class EntityLiving extends Entity {
 		this.prevRotationYaw = this.rotationYaw;
 		this.prevRotationPitch = this.rotationPitch;
 		this.onLivingUpdate();
-		double d10 = this.posX - this.prevPosX;
-		double d13 = this.posZ - this.prevPosZ;
-		float f5 = MathHelper.sqrt_double(d10 * d10 + d13 * d13);
-		float f6 = this.renderYawOffset;
-		float f7 = 0.0F;
-		float f8 = 0.0F;
-		if(f5 > 0.05F) {
-			f8 = 1.0F;
-			f7 = f5 * 3.0F;
-			f6 = (float)Math.atan2(d13, d10) * 180.0F / (float)Math.PI - 90.0F;
-		}
+        double d11 = this.posX - this.prevPosX;
+        double d14 = this.posZ - this.prevPosZ;
+        float f5 = MathHelper.sqrt_double(d11 * d11 + d14 * d14);
+        float f16 = this.renderYawOffset;
+        float f7 = 0.0F;
+        float f8 = 0.0F;
+        if(f5 > 0.05F) {
+            f8 = 1.0F;
+            f7 = f5 * 3.0F;
+            f16 = (float)Math.atan2(d14, d11) * 180.0F / (float)Math.PI - 90.0F;
+        }
 
-		if(!this.onGround) {
-			f8 = 0.0F;
-		}
+        if(!this.onGround) {
+            f8 = 0.0F;
+        }
 
-		this.prevRidingRotUnused += (f8 - this.prevRidingRotUnused) * 0.3F;
+        this.prevRidingRotUnused += (f8 - this.prevRidingRotUnused) * 0.3F;
 
-		float f11;
-		for(f11 = f6 - this.renderYawOffset; f11 < -180.0F; f11 += 360.0F) {
-		}
+        float f13;
+        for(f13 = f16 - this.renderYawOffset; f13 < -180.0F; f13 += 360.0F) {
+        }
 
-		while(f11 >= 180.0F) {
-			f11 -= 360.0F;
-		}
+        while(f13 >= 180.0F) {
+            f13 -= 360.0F;
+        }
 
-		this.renderYawOffset += f11 * 0.1F;
+        this.renderYawOffset += f13 * 0.1F;
 
-		for(f11 = this.rotationYaw - this.renderYawOffset; f11 < -180.0F; f11 += 360.0F) {
-		}
+        for(f13 = this.rotationYaw - this.renderYawOffset; f13 < -180.0F; f13 += 360.0F) {
+        }
 
-		while(f11 >= 180.0F) {
-			f11 -= 360.0F;
-		}
+        while(f13 >= 180.0F) {
+            f13 -= 360.0F;
+        }
 
-		boolean z12 = f11 < -90.0F || f11 >= 90.0F;
-		if(f11 < -75.0F) {
-			f11 = -75.0F;
-		}
+        boolean z12 = f13 < -90.0F || f13 >= 90.0F;
+        if(f13 < -75.0F) {
+            f13 = -75.0F;
+        }
 
-		if(f11 >= 75.0F) {
-			f11 = 75.0F;
-		}
+        if(f13 >= 75.0F) {
+            f13 = 75.0F;
+        }
 
-		this.renderYawOffset = this.rotationYaw - f11;
-		this.renderYawOffset += f11 * 0.1F;
+        this.renderYawOffset = this.rotationYaw - f13;
+        this.renderYawOffset += f13 * 0.1F;
 		if(z12) {
 			f7 = -f7;
 		}

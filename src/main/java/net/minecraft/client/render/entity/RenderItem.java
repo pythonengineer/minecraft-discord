@@ -142,7 +142,7 @@ public final class RenderItem extends Render {
         }
 
         GL11.glTranslatef((float)x, (float)y + f5, (float)z);
-        GL11.glEnable(GL11.GL_NORMALIZE);
+        GL11.glEnable(GL11.GL_RESCALE_NORMAL);
         float f7;
         float f21;
         if(itemStack24.itemID < 256 && Block.blocksList[itemStack24.itemID].getRenderType() == 0) {
@@ -193,7 +193,7 @@ public final class RenderItem extends Render {
 
                 GL11.glRotatef(180.0F - renderItem18.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
                 tessellator22.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                tessellator22.normal(0.0F, 1.0F, 0.0F);
+                tessellator22.setNormal(0.0F, 1.0F, 0.0F);
                 tessellator22.addVertexWithUV(-0.5D, -0.25D, 0.0D, (double)f5, (double)f21);
                 tessellator22.addVertexWithUV(0.5D, -0.25D, 0.0D, (double)f7, (double)f21);
                 tessellator22.addVertexWithUV(0.5D, 0.75D, 0.0D, (double)f7, (double)yaw);
@@ -203,7 +203,7 @@ public final class RenderItem extends Render {
             }
         }
 
-        GL11.glDisable(GL11.GL_NORMALIZE);
+        GL11.glDisable(GL11.GL_RESCALE_NORMAL);
         GL11.glPopMatrix();
     }
 }

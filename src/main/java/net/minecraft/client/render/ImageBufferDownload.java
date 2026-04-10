@@ -7,16 +7,20 @@ public class ImageBufferDownload {
     private int imageWidth;
     private int imageHeight;
 
-    public ImageData parseUserSkin(ImageData bufferedImage) {
-        this.imageWidth = 64;
-        this.imageHeight = 32;
-        ImageData bufferedImage2 = new ImageData(this.imageWidth, this.imageHeight, true);
-        bufferedImage2.drawImage(bufferedImage, 0, 0);
-        this.imageData = bufferedImage2.pixels;
-        this.setAreaOpaque(0, 0, 32, 16);
-        this.setAreaTransparent(32, 0, 64, 32);
-        this.setAreaOpaque(0, 16, 64, 32);
-        return bufferedImage2;
+    public ImageData parseUserSkin(ImageData skinImage) {
+        if(skinImage == null) {
+            return null;
+        } else {
+            this.imageWidth = 64;
+            this.imageHeight = 32;
+            ImageData bufferedImage2 = new ImageData(this.imageWidth, this.imageHeight, true);
+            bufferedImage2.drawImage(skinImage, 0, 0);
+            this.imageData = bufferedImage2.pixels;
+            this.setAreaOpaque(0, 0, 32, 16);
+            this.setAreaTransparent(32, 0, 64, 32);
+            this.setAreaOpaque(0, 16, 64, 32);
+            return bufferedImage2;
+        }
     }
 
     private void setAreaTransparent(int minX, int minY, int maxX, int maxY) {

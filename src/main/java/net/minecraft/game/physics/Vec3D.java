@@ -8,13 +8,25 @@ public final class Vec3D {
     public double zCoord;
 
     public Vec3D(double x, double y, double z) {
+        if(x == -0.0D) {
+            x = 0.0D;
+        }
+
+        if(y == -0.0D) {
+            y = 0.0D;
+        }
+
+        if(z == -0.0D) {
+            z = 0.0D;
+        }
+
         this.xCoord = x;
         this.yCoord = y;
         this.zCoord = z;
     }
 
-    public final Vec3D subtract(Vec3D vec) {
-        return new Vec3D(this.xCoord - vec.xCoord, this.yCoord - vec.yCoord, this.zCoord - vec.zCoord);
+    public final Vec3D subtract(Vec3D vector) {
+        return new Vec3D(vector.xCoord - this.xCoord, vector.yCoord - this.yCoord, vector.zCoord - this.zCoord);
     }
 
     public final Vec3D normalize() {

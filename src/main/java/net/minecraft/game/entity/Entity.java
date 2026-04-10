@@ -398,9 +398,10 @@ public abstract class Entity {
 
 	public float getBrightness(float partialTicks) {
 		int partialTicks1 = MathHelper.floor_double(this.posX);
-		int i2 = MathHelper.floor_double(this.posY + (double)(this.yOffset / 2.0F));
-		int i3 = MathHelper.floor_double(this.posZ);
-		return this.worldObj.getBrightness(partialTicks1, i2, i3);
+        double d3 = (this.boundingBox.maxY - this.boundingBox.minY) * 0.66D;
+        int i2 = MathHelper.floor_double(this.posY - (double)this.yOffset + d3);
+        int i6 = MathHelper.floor_double(this.posZ);
+        return this.worldObj.getBrightness(partialTicks1, i2, i6);
 	}
 
 	public final void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
@@ -497,7 +498,7 @@ public abstract class Entity {
 		NBTTagList nBTTagList3 = compoundTag.getTagList("Motion");
 		NBTTagList nBTTagList4 = compoundTag.getTagList("Rotation");
 		this.prevPosX = this.lastTickPosX = this.posX = ((NBTTagDouble)nBTTagList2.tagAt(0)).doubleValue;
-		this.prevPosY = this.lastTickPosY = this.posY = ((NBTTagDouble)nBTTagList2.tagAt(1)).doubleValue;
+        this.prevPosY = this.lastTickPosY = this.posY = ((NBTTagDouble)nBTTagList2.tagAt(1)).doubleValue + 0.2D;
 		this.prevPosZ = this.lastTickPosZ = this.posZ = ((NBTTagDouble)nBTTagList2.tagAt(2)).doubleValue;
 		this.motionZ = ((NBTTagDouble)nBTTagList3.tagAt(0)).doubleValue;
 		this.motionY = ((NBTTagDouble)nBTTagList3.tagAt(1)).doubleValue;

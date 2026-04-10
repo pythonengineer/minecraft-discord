@@ -20,13 +20,13 @@ public final class BlockDoor extends Block {
         if(side != 0 && side != 1) {
             int i3;
             if(((i3 = getState(metadata)) == 0 || i3 == 2) ^ side <= 3) {
-                return 4;
+                return this.blockIndexInTexture;
             } else {
                 side = i3 / 2 + (side & 1 ^ i3) + (metadata & 4) / 4;
                 return this.blockIndexInTexture + (side & 1) - ((metadata & 8) << 1);
             }
         } else {
-            return 4;
+            return this.blockIndexInTexture;
         }
     }
 
@@ -92,7 +92,7 @@ public final class BlockDoor extends Block {
 
             world.setBlockMetadata(x, y, z, i6 ^ 4);
             world.markBlocksDirty(x, y - 1, z, x, y, z);
-            if((i6 & 4) == 0) {
+            if(Math.random() < 0.5D) {
                 world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_open", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
             } else {
                 world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_close", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
@@ -109,23 +109,29 @@ public final class BlockDoor extends Block {
                 return;
             }
         } else {
+            boolean z6 = false;
             if(world.getBlockId(x, y + 1, z) != this.blockID) {
                 world.notifyBlockChange(x, y, z, 0);
+                z6 = true;
             }
 
             if(!world.isBlockNormalCube(x, y - 1, z)) {
                 world.notifyBlockChange(x, y, z, 0);
-                this.harvestBlock(world, x, y, z, blockID);
+                z6 = true;
                 if(world.getBlockId(x, y + 1, z) == this.blockID) {
                     world.notifyBlockChange(x, y + 1, z, 0);
                 }
+            }
+
+            if(z6) {
+                this.harvestBlock(world, x, y, z, blockID);
             }
         }
 
     }
 
     public final int idDropped(int metadata, EaglercraftRandom rand) {
-        return Item.doorWood.shiftedIndex;
+        return (metadata & 8) != 0 ? 0 : Item.doorWood.shiftedIndex;
     }
 
     public final MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {
@@ -138,6 +144,6 @@ public final class BlockDoor extends Block {
     }
 
     public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
-        return super.canPlaceBlockAt(world, x, y, z) && super.canPlaceBlockAt(world, x, y + 1, z);
+        return y >= 127 ? false : world.isBlockNormalCube(x, y - 1, z) && super.canPlaceBlockAt(world, x, y, z) && super.canPlaceBlockAt(world, x, y + 1, z);
     }
 }

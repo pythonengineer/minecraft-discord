@@ -24,7 +24,7 @@ public final class RenderPlayer extends RenderLiving {
 	}
 
 	public final void drawFirstPersonHand() {
-		this.modelBipedMain.bipedRightArm.render(1.0F);
+        this.modelBipedMain.bipedRightArm.render(0.0625F);
 	}
 
 	protected final boolean shouldRenderPass(EntityLiving livingEntity, int flag) {

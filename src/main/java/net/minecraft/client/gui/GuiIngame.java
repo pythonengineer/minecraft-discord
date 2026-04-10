@@ -142,7 +142,7 @@ public final class GuiIngame extends Gui {
         }
 
 		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_NORMALIZE);
+        GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 		GL11.glPushMatrix();
 		GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
 		RenderHelper.enableStandardItemLighting();
@@ -173,7 +173,7 @@ public final class GuiIngame extends Gui {
         }
 
 		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(GL11.GL_NORMALIZE);
+		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 
         onEndHotbarDraw();
 
@@ -188,12 +188,9 @@ public final class GuiIngame extends Gui {
 
         if(this.mc.gameSettings.showFPS) {
             this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
-            Minecraft minecraft23 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoRenders(), 2, 12, 0xFFFFFF);
-            minecraft23 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoEntities(), 2, 22, 0xFFFFFF);
-            minecraft23 = this.mc;
-            this.mc.fontRenderer.drawStringWithShadow("P: " + minecraft23.effectRenderer.getStatistics() + ". T: " + minecraft23.theWorld.getDebugLoadedEntities(), 2, 32, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoRenders(), 2, 12, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow(this.mc.getEntityDebug(), 2, 22, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 0xFFFFFF);
         } else {
             this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev", 2, 2, 0xFFFFFF);
         }

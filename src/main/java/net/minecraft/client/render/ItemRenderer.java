@@ -46,7 +46,7 @@ public final class ItemRenderer {
 
             GL11.glTranslatef(0.56F, -0.52F - (1.0F - f2) * 0.6F, -0.71999997F);
             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-            GL11.glEnable(GL11.GL_NORMALIZE);
+            GL11.glEnable(GL11.GL_RESCALE_NORMAL);
             if(this.itemSwingState) {
                 f9 = ((float)this.swingProgress + partialTicks) / 8.0F;
                 f4 = MathHelper.sin(f9 * f9 * (float)Math.PI);
@@ -76,28 +76,28 @@ public final class ItemRenderer {
                 f2 = (float)(itemStack.getItem().getIcon() / 16 << 4) / 256.0F;
                 itemStack = this.itemToRender;
                 f9 = (float)((itemStack.getItem().getIcon() / 16 << 4) + 16) / 256.0F;
-                GL11.glEnable(GL11.GL_NORMALIZE);
+                GL11.glEnable(GL11.GL_RESCALE_NORMAL);
                 GL11.glTranslatef(0.0F, -0.3F, 0.0F);
                 GL11.glScalef(1.5F, 1.5F, 1.5F);
                 GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glRotatef(335.0F, 0.0F, 0.0F, 1.0F);
                 GL11.glTranslatef(-(15.0F / 16.0F), -(1.0F / 16.0F), 0.0F);
-                Tessellator.setNormal(0.0F, 0.0F, 1.0F);
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                t.setNormal(0.0F, 0.0F, 1.0F);
+                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
                 t.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)partialTicks, (double)f9);
                 t.addVertexWithUV(1.0D, 0.0D, 0.0D, (double)f5, (double)f9);
                 t.addVertexWithUV(1.0D, 1.0D, 0.0D, (double)f5, (double)f2);
                 t.addVertexWithUV(0.0D, 1.0D, 0.0D, (double)partialTicks, (double)f2);
                 t.draw();
-                Tessellator.setNormal(0.0F, 0.0F, -1.0F);
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                t.setNormal(0.0F, 0.0F, -1.0F);
+                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
                 t.addVertexWithUV(0.0D, 1.0D, -0.0625D, (double)partialTicks, (double)f2);
                 t.addVertexWithUV(1.0D, 1.0D, -0.0625D, (double)f5, (double)f2);
                 t.addVertexWithUV(1.0D, 0.0D, -0.0625D, (double)f5, (double)f9);
                 t.addVertexWithUV(0.0D, 0.0D, -0.0625D, (double)partialTicks, (double)f9);
                 t.draw();
-                Tessellator.setNormal(-1.0F, 0.0F, 0.0F);
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                t.setNormal(-1.0F, 0.0F, 0.0F);
+                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 
                 int i6;
                 float f7;
@@ -113,8 +113,8 @@ public final class ItemRenderer {
                 }
 
                 t.draw();
-                Tessellator.setNormal(1.0F, 0.0F, 0.0F);
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                t.setNormal(1.0F, 0.0F, 0.0F);
+                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 
                 for(i6 = 0; i6 < 16; ++i6) {
                     f7 = (float)i6 / 16.0F;
@@ -127,8 +127,8 @@ public final class ItemRenderer {
                 }
 
                 t.draw();
-                Tessellator.setNormal(0.0F, 1.0F, 0.0F);
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                t.setNormal(0.0F, 1.0F, 0.0F);
+                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 
                 for(i6 = 0; i6 < 16; ++i6) {
                     f7 = (float)i6 / 16.0F;
@@ -141,8 +141,8 @@ public final class ItemRenderer {
                 }
 
                 t.draw();
-                Tessellator.setNormal(0.0F, -1.0F, 0.0F);
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                t.setNormal(0.0F, -1.0F, 0.0F);
+                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 
                 for(i6 = 0; i6 < 16; ++i6) {
                     f7 = (float)i6 / 16.0F;
@@ -155,7 +155,7 @@ public final class ItemRenderer {
                 }
 
                 t.draw();
-                GL11.glDisable(GL11.GL_NORMALIZE);
+                GL11.glDisable(GL11.GL_RESCALE_NORMAL);
             }
 
             GL11.glPopMatrix();
@@ -170,7 +170,7 @@ public final class ItemRenderer {
 
             GL11.glTranslatef(0.64000005F, -0.6F - (1.0F - f2) * 0.6F, -0.71999997F);
             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-            GL11.glEnable(GL11.GL_NORMALIZE);
+            GL11.glEnable(GL11.GL_RESCALE_NORMAL);
             if(this.itemSwingState) {
                 f9 = ((float)this.swingProgress + partialTicks) / 8.0F;
                 f4 = MathHelper.sin(f9 * f9 * (float)Math.PI);
@@ -184,13 +184,13 @@ public final class ItemRenderer {
             GL11.glRotatef(120.0F, 0.0F, 0.0F, 1.0F);
             GL11.glRotatef(200.0F, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
-            GL11.glScalef(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
+            GL11.glScalef(1.0F, 1.0F, 1.0F);
             GL11.glTranslatef(6.0F, 0.0F, 0.0F);
             ((RenderPlayer)RenderManager.instance.getEntityRenderObject(this.mc.thePlayer)).drawFirstPersonHand();
             GL11.glPopMatrix();
         }
 
-        GL11.glDisable(GL11.GL_NORMALIZE);
+        GL11.glDisable(GL11.GL_RESCALE_NORMAL);
         RenderHelper.disableStandardItemLighting();
     }
 

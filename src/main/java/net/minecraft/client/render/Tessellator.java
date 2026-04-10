@@ -138,15 +138,11 @@ public final class Tessellator {
         this.isColorDisabled = true;
 	}
 
-    public void normal(float x, float y, float z) {
+    public final void setNormal(float normalX, float normalY, float normalZ) {
         this.hasNormal = true;
-        this.nx = x;
-        this.ny = y;
-        this.nz = z;
-    }
-
-    public static void setNormal(float normalX, float normalY, float normalZ) {
-        GL11.glNormal3f(normalX, normalY, normalZ);
+        this.nx = normalX;
+        this.ny = normalY;
+        this.nz = normalZ;
     }
 
     public final void setTranslationD(double x, double y, double z) {

@@ -18,7 +18,7 @@ public final class RenderPainting extends Render {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glRotatef(yaw, 0.0F, 1.0F, 0.0F);
-		GL11.glEnable(GL11.GL_NORMALIZE);
+        GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 		this.loadTexture("/art/kz.png");
 		EnumArt enumArt3 = entityPainting22.art;
 		GL11.glScalef(0.0625F, 0.0625F, 0.0625F);
@@ -67,32 +67,32 @@ public final class RenderPainting extends Render {
 				f18 = (float)(i25 + i24 - (i10 + 1 << 4)) / 256.0F;
 				Tessellator tessellator29 = Tessellator.instance;
 				Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-				tessellator29.normal(0.0F, 0.0F, -1.0F);
+				tessellator29.setNormal(0.0F, 0.0F, -1.0F);
 				tessellator29.addVertexWithUV((double)f11, (double)f14, -0.5D, (double)f16, (double)f17);
 				tessellator29.addVertexWithUV((double)f27, (double)f14, -0.5D, (double)f15, (double)f17);
 				tessellator29.addVertexWithUV((double)f27, (double)f13, -0.5D, (double)f15, (double)f18);
 				tessellator29.addVertexWithUV((double)f11, (double)f13, -0.5D, (double)f16, (double)f18);
-				tessellator29.normal(0.0F, 0.0F, 1.0F);
+				tessellator29.setNormal(0.0F, 0.0F, 1.0F);
 				tessellator29.addVertexWithUV((double)f11, (double)f13, 0.5D, 0.75D, 0.0D);
 				tessellator29.addVertexWithUV((double)f27, (double)f13, 0.5D, 0.8125D, 0.0D);
 				tessellator29.addVertexWithUV((double)f27, (double)f14, 0.5D, 0.8125D, 0.0625D);
 				tessellator29.addVertexWithUV((double)f11, (double)f14, 0.5D, 0.75D, 0.0625D);
-				tessellator29.normal(0.0F, -1.0F, 0.0F);
+				tessellator29.setNormal(0.0F, -1.0F, 0.0F);
 				tessellator29.addVertexWithUV((double)f11, (double)f13, -0.5D, 0.75D, 0.001953125D);
 				tessellator29.addVertexWithUV((double)f27, (double)f13, -0.5D, 0.8125D, 0.001953125D);
 				tessellator29.addVertexWithUV((double)f27, (double)f13, 0.5D, 0.8125D, 0.001953125D);
 				tessellator29.addVertexWithUV((double)f11, (double)f13, 0.5D, 0.75D, 0.001953125D);
-				tessellator29.normal(0.0F, 1.0F, 0.0F);
+				tessellator29.setNormal(0.0F, 1.0F, 0.0F);
 				tessellator29.addVertexWithUV((double)f11, (double)f14, 0.5D, 0.75D, 0.001953125D);
 				tessellator29.addVertexWithUV((double)f27, (double)f14, 0.5D, 0.8125D, 0.001953125D);
 				tessellator29.addVertexWithUV((double)f27, (double)f14, -0.5D, 0.8125D, 0.001953125D);
 				tessellator29.addVertexWithUV((double)f11, (double)f14, -0.5D, 0.75D, 0.001953125D);
-				tessellator29.normal(-1.0F, 0.0F, 0.0F);
+				tessellator29.setNormal(-1.0F, 0.0F, 0.0F);
 				tessellator29.addVertexWithUV((double)f11, (double)f13, 0.5D, 0.751953125D, 0.0D);
 				tessellator29.addVertexWithUV((double)f11, (double)f14, 0.5D, 0.751953125D, 0.0625D);
 				tessellator29.addVertexWithUV((double)f11, (double)f14, -0.5D, 0.751953125D, 0.0625D);
 				tessellator29.addVertexWithUV((double)f11, (double)f13, -0.5D, 0.751953125D, 0.0D);
-				tessellator29.normal(1.0F, 0.0F, 0.0F);
+				tessellator29.setNormal(1.0F, 0.0F, 0.0F);
 				tessellator29.addVertexWithUV((double)f27, (double)f13, -0.5D, 0.751953125D, 0.0D);
 				tessellator29.addVertexWithUV((double)f27, (double)f14, -0.5D, 0.751953125D, 0.0625D);
 				tessellator29.addVertexWithUV((double)f27, (double)f14, 0.5D, 0.751953125D, 0.0625D);
@@ -101,7 +101,7 @@ public final class RenderPainting extends Render {
 			}
 		}
 
-		GL11.glDisable(GL11.GL_NORMALIZE);
+        GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();
 	}
 }

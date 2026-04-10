@@ -731,6 +731,16 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxX * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minZ * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxZ * 16.0D - 0.01D) / 256.0D;
+        if(block.minX < 0.0D || block.maxX > 1.0D) {
+            d12 = (double)((float)i10 / 256.0F);
+            d14 = (double)(((float)i10 + 15.99F) / 256.0F);
+        }
+
+        if(block.minZ < 0.0D || block.maxZ > 1.0D) {
+            d16 = (double)((float)blockTexture / 256.0F);
+            d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
+        }
+
 		double d20 = x + block.minX;
 		double d22 = x + block.maxX;
 		double d24 = y + block.minY;
@@ -754,6 +764,16 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxX * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minZ * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxZ * 16.0D - 0.01D) / 256.0D;
+        if(block.minX < 0.0D || block.maxX > 1.0D) {
+            d12 = (double)((float)i10 / 256.0F);
+            d14 = (double)(((float)i10 + 15.99F) / 256.0F);
+        }
+
+        if(block.minZ < 0.0D || block.maxZ > 1.0D) {
+            d16 = (double)((float)blockTexture / 256.0F);
+            d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
+        }
+
 		double d20 = x + block.minX;
 		double d22 = x + block.maxX;
 		double d24 = y + block.maxY;
@@ -777,6 +797,16 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxX * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        if(block.minX < 0.0D || block.maxX > 1.0D) {
+            d12 = (double)((float)i10 / 256.0F);
+            d14 = (double)(((float)i10 + 15.99F) / 256.0F);
+        }
+
+        if(block.minY < 0.0D || block.maxY > 1.0D) {
+            d16 = (double)((float)blockTexture / 256.0F);
+            d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
+        }
+
 		double d20 = x + block.minX;
 		double d22 = x + block.maxX;
 		double d24 = y + block.minY;
@@ -800,6 +830,16 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxX * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        if(block.minX < 0.0D || block.maxX > 1.0D) {
+            d12 = (double)((float)i10 / 256.0F);
+            d14 = (double)(((float)i10 + 15.99F) / 256.0F);
+        }
+
+        if(block.minY < 0.0D || block.maxY > 1.0D) {
+            d16 = (double)((float)blockTexture / 256.0F);
+            d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
+        }
+
 		double d20 = x + block.minX;
 		double d22 = x + block.maxX;
 		double d24 = y + block.minY;
@@ -823,6 +863,16 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxZ * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        if(block.minZ < 0.0D || block.maxZ > 1.0D) {
+            d12 = (double)((float)i10 / 256.0F);
+            d14 = (double)(((float)i10 + 15.99F) / 256.0F);
+        }
+
+        if(block.minY < 0.0D || block.maxY > 1.0D) {
+            d16 = (double)((float)blockTexture / 256.0F);
+            d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
+        }
+
 		double d20 = x + block.minX;
 		double d22 = y + block.minY;
 		double d24 = y + block.maxY;
@@ -846,6 +896,16 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxZ * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        if(block.minZ < 0.0D || block.maxZ > 1.0D) {
+            d12 = (double)((float)i10 / 256.0F);
+            d14 = (double)(((float)i10 + 15.99F) / 256.0F);
+        }
+
+        if(block.minY < 0.0D || block.maxY > 1.0D) {
+            d16 = (double)((float)blockTexture / 256.0F);
+            d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
+        }
+
 		double d20 = x + block.maxX;
 		double d22 = y + block.minY;
 		double d24 = y + block.maxY;
@@ -863,44 +923,44 @@ public final class RenderBlocks {
 		if((i3 = block.getRenderType()) == 0) {
 			GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(0.0F, -1.0F, 0.0F);
+			tessellator2.setNormal(0.0F, -1.0F, 0.0F);
 			this.renderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(0));
 			tessellator2.draw();
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(0.0F, 1.0F, 0.0F);
+			tessellator2.setNormal(0.0F, 1.0F, 0.0F);
 			this.renderTopFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(1));
 			tessellator2.draw();
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(0.0F, 0.0F, -1.0F);
+			tessellator2.setNormal(0.0F, 0.0F, -1.0F);
 			this.renderEastFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(2));
 			tessellator2.draw();
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(0.0F, 0.0F, 1.0F);
+			tessellator2.setNormal(0.0F, 0.0F, 1.0F);
 			this.renderWestFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(3));
 			tessellator2.draw();
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(-1.0F, 0.0F, 0.0F);
+			tessellator2.setNormal(-1.0F, 0.0F, 0.0F);
 			this.renderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(4));
 			tessellator2.draw();
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(1.0F, 0.0F, 0.0F);
+			tessellator2.setNormal(1.0F, 0.0F, 0.0F);
 			this.renderSouthFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(5));
 			tessellator2.draw();
 			GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 		} else if(i3 == 1) {
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(0.0F, -1.0F, 0.0F);
+			tessellator2.setNormal(0.0F, -1.0F, 0.0F);
 			this.renderCrossedSquares(block, -1, -0.5D, -0.5D, -0.5D);
 			tessellator2.draw();
 		} else if(i3 == 6) {
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-			tessellator2.normal(0.0F, -1.0F, 0.0F);
+			tessellator2.setNormal(0.0F, -1.0F, 0.0F);
 			this.renderBlockCrops(block, -1, -0.5D, -0.5D, -0.5D);
 			tessellator2.draw();
 		} else {
 			if(i3 == 2) {
 				tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-				tessellator2.normal(0.0F, -1.0F, 0.0F);
+				tessellator2.setNormal(0.0F, -1.0F, 0.0F);
 				this.renderTorchAtAngle(block, -0.5D, -0.5D, -0.5D, 0.0D, 0.0D);
 				tessellator2.draw();
 			}

@@ -46,14 +46,14 @@ public class ModelBiped extends ModelBase {
     }
 
     public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 1.0F);
-        this.bipedHead.render(1.0F);
-        this.bipedBody.render(1.0F);
-        this.bipedRightArm.render(1.0F);
-        this.bipedLeftArm.render(1.0F);
-        this.bipedRightLeg.render(1.0F);
-        this.bipedLeftLeg.render(1.0F);
-        this.bipedHeadwear.render(1.0F);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
+        this.bipedHead.render(0.0625F);
+        this.bipedBody.render(0.0625F);
+        this.bipedRightArm.render(0.0625F);
+        this.bipedLeftArm.render(0.0625F);
+        this.bipedRightLeg.render(0.0625F);
+        this.bipedLeftLeg.render(0.0625F);
+        this.bipedHeadwear.render(0.0625F);
     }
 
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {

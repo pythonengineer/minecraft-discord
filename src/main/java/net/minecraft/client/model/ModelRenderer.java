@@ -98,21 +98,24 @@ public final class ModelRenderer {
 				Tessellator tessellator4 = Tessellator.instance;
 
 				for(int i5 = 0; i5 < modelRenderer2.faces.length; ++i5) {
-					tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 					TexturedQuad texturedQuad10000 = modelRenderer2.faces[i5];
 					float f8 = f3;
 					Tessellator tessellator7 = tessellator4;
 					TexturedQuad texturedQuad6 = texturedQuad10000;
-					Vec3D vec3D9 = texturedQuad10000.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[0].vector3D).normalize();
-					Vec3D vec3D10 = texturedQuad6.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[2].vector3D).normalize();
-					Tessellator.setNormal((float)(-(vec3D9 = (new Vec3D(vec3D9.yCoord * vec3D10.zCoord - vec3D9.zCoord * vec3D10.yCoord, vec3D9.zCoord * vec3D10.xCoord - vec3D9.xCoord * vec3D10.zCoord, vec3D9.xCoord * vec3D10.yCoord - vec3D9.yCoord * vec3D10.xCoord)).normalize()).xCoord), (float)(-vec3D9.yCoord), (float)(-vec3D9.zCoord));
+                    Vec3D vec3D9 = texturedQuad10000.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[0].vector3D);
+                    Vec3D vec3D13 = texturedQuad6.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[2].vector3D);
+                    Vec3D vec3D10 = vec3D9;
+                    vec3D9 = vec3D13;
+                    vec3D9 = (new Vec3D(vec3D9.yCoord * vec3D10.zCoord - vec3D9.zCoord * vec3D10.yCoord, vec3D9.zCoord * vec3D10.xCoord - vec3D9.xCoord * vec3D10.zCoord, vec3D9.xCoord * vec3D10.yCoord - vec3D9.yCoord * vec3D10.xCoord)).normalize();
+                    tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                    tessellator4.setNormal((float)vec3D9.xCoord, (float)vec3D9.yCoord, (float)vec3D9.zCoord);
 
-					for(int i11 = 0; i11 < 4; ++i11) {
-						PositionTextureVertex positionTextureVertex12 = texturedQuad6.vertexPositions[i11];
-						tessellator7.addVertexWithUV((double)((float)positionTextureVertex12.vector3D.xCoord * f8), (double)((float)positionTextureVertex12.vector3D.yCoord * f8), (double)((float)positionTextureVertex12.vector3D.zCoord * f8), (double)positionTextureVertex12.texturePositionX, (double)positionTextureVertex12.texturePositionY);
-					}
+                    for(int i11 = 0; i11 < 4; ++i11) {
+                        PositionTextureVertex positionTextureVertex12 = texturedQuad6.vertexPositions[i11];
+                        tessellator7.addVertexWithUV((double)((float)positionTextureVertex12.vector3D.xCoord * f8), (double)((float)positionTextureVertex12.vector3D.yCoord * f8), (double)((float)positionTextureVertex12.vector3D.zCoord * f8), (double)positionTextureVertex12.texturePositionX, (double)positionTextureVertex12.texturePositionY);
+                    }
 
-					tessellator4.draw();
+                    tessellator7.draw();
 				}
 
 				GL11.glEndList();

@@ -16,7 +16,7 @@ public final class RenderArrow extends Render {
 		GL11.glRotatef(entityArrow19.prevRotationYaw + (entityArrow19.rotationYaw - entityArrow19.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(entityArrow19.prevRotationPitch + (entityArrow19.rotationPitch - entityArrow19.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
 		Tessellator tessellator18 = Tessellator.instance;
-		GL11.glEnable(GL11.GL_NORMALIZE);
+		GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 		float f20;
 		if((f20 = (float)entityArrow19.arrowShake - partialTicks) > 0.0F) {
 			GL11.glRotatef(-MathHelper.sin(f20 * 3.0F) * f20, 0.0F, 0.0F, 1.0F);
@@ -51,7 +51,7 @@ public final class RenderArrow extends Render {
 			tessellator18.draw();
 		}
 
-		GL11.glDisable(GL11.GL_NORMALIZE);
+		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();
 	}
 }

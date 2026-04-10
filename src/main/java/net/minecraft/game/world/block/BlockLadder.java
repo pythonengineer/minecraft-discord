@@ -69,20 +69,20 @@ public final class BlockLadder extends Block {
     }
 
     public final void onBlockPlaced(World world, int x, int y, int z, int side) {
-        int i6 = world.getBlockMetadata(x, y, z);
-        if(side == 2 && world.isBlockNormalCube(x, y, z + 1)) {
+        int i6;
+        if(((i6 = world.getBlockMetadata(x, y, z)) == 0 || side == 2) && world.isBlockNormalCube(x, y, z + 1)) {
             i6 = 2;
         }
 
-        if(side == 3 && world.isBlockNormalCube(x, y, z - 1)) {
+        if((i6 == 0 || side == 3) && world.isBlockNormalCube(x, y, z - 1)) {
             i6 = 3;
         }
 
-        if(side == 4 && world.isBlockNormalCube(x + 1, y, z)) {
+        if((i6 == 0 || side == 4) && world.isBlockNormalCube(x + 1, y, z)) {
             i6 = 4;
         }
 
-        if(side == 5 && world.isBlockNormalCube(x - 1, y, z)) {
+        if((i6 == 0 || side == 5) && world.isBlockNormalCube(x - 1, y, z)) {
             i6 = 5;
         }
 

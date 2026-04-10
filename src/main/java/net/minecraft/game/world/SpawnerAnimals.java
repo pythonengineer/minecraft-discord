@@ -21,7 +21,7 @@ public final class SpawnerAnimals {
 	}
 
 	public final void doRandomSpawn(World world) {
-		if(world.countEntities(this.entityType) < this.entityMax && this.rand.nextInt(10) == 0) {
+        if(world.countEntities(this.entityType) < this.entityMax && this.rand.nextInt(5) == 1) {
 			this.performSpawning(world, 1, world.playerEntity, (IProgressUpdate)null);
 		}
 

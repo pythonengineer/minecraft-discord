@@ -36,6 +36,7 @@ public final class Chunk {
 	public boolean isTerrainPopulated;
 	public boolean isModified;
 	private boolean hasEntities;
+    public boolean neverSave;
 
 	private Chunk(World world, int chunkX, int chunkZ) {
 		this.chunkTileEntityMap = new HashMap();
@@ -482,7 +483,9 @@ public final class Chunk {
 	}
 
 	public final boolean needsSaving(boolean flag) {
-		if(this.isModified) {
+        if(this.neverSave) {
+            return false;
+        } else if(this.isModified) {
 			return true;
 		} else {
 			if(flag) {

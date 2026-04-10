@@ -1211,6 +1211,15 @@ public class GL11 {
             case GL_POLYGON_OFFSET_FILL:
                 enablePolygonOffset();
                 break;
+            case GL_RESCALE_NORMAL:
+                enableRescaleNormal();
+                break;
+            case GL_TEXTURE_GEN_S:
+                enableTexGen();
+                break;
+            case GL_TEXTURE_GEN_T:
+                enableTexGen();
+                break;
             default:
                 _wglEnable(var);
         }
@@ -1255,6 +1264,15 @@ public class GL11 {
                 break;
             case GL_POLYGON_OFFSET_FILL:
                 disablePolygonOffset();
+                break;
+            case GL_RESCALE_NORMAL:
+                disableRescaleNormal();
+                break;
+            case GL_TEXTURE_GEN_S:
+                disableTexGen();
+                break;
+            case GL_TEXTURE_GEN_T:
+                disableTexGen();
                 break;
             default:
                 _wglDisable(var);
@@ -1656,7 +1674,51 @@ public class GL11 {
         ++stateTexGenSerial;
     }
 
-    public static void func_179105_a(TexGen coord, int plane, FloatBuffer vector) {
+    public static void glTexGeni(int coord, int pname, int source) {
+        TexGen gen = null;
+        switch (coord) {
+            case GL_S:
+                gen = TexGen.S;
+                break;
+            case GL_T:
+                gen = TexGen.T;
+                break;
+            case GL_R:
+                gen = TexGen.R;
+                break;
+            case GL_Q:
+                gen = TexGen.Q;
+                break;
+            default:
+                throw new UnsupportedOperationException("Only GL_S, GL_T, GL_R, GL_Q TexGeni are supported");
+        }
+
+        texGen(gen, source);
+    }
+
+    public static void glTexGen(int coord, int plane, FloatBuffer params) {
+        TexGen gen = null;
+        switch (coord) {
+            case GL_S:
+                gen = TexGen.S;
+                break;
+            case GL_T:
+                gen = TexGen.T;
+                break;
+            case GL_R:
+                gen = TexGen.R;
+                break;
+            case GL_Q:
+                gen = TexGen.Q;
+                break;
+            default:
+                throw new UnsupportedOperationException("Only GL_S, GL_T, GL_R, GL_Q TexGen are supported");
+        }
+
+        glTexGen(gen, plane, params);
+    }
+
+    public static void glTexGen(TexGen coord, int plane, FloatBuffer vector) {
         coord.plane = plane;
         coord.vector.load(vector);
         if (plane == GL_EYE_PLANE) {
@@ -1666,7 +1728,7 @@ public class GL11 {
         ++stateTexGenSerial;
     }
 
-    public static void setActiveTexture(int texture) {
+    public static void glActiveTexture(int texture) {
         int textureIdx = texture - GL_TEXTURE0;
         if (textureIdx != activeTexture) {
             _wglActiveTexture(texture);
@@ -2460,6 +2522,9 @@ public class GL11 {
             if ((dp.attribs & ATTRIB_NORMAL) != 0) {
                 disableVertexAttribArray(++c);
             }
+            if ((dp.attribs & ATTRIB_LIGHTMAP) != 0) {
+                disableVertexAttribArray(++c);
+            }
         }
         dp.ops.clear();
         dp.attribs = -1;
@@ -2650,7 +2715,7 @@ public class GL11 {
 
     public static void glNormal3f(float x, float y, float z) {
         if (fixedDrawing) {
-            Tessellator.instance.normal(x, y, z);
+            Tessellator.instance.setNormal(x, y, z);
         } else {
             stateNormalX = x;
             stateNormalY = y;

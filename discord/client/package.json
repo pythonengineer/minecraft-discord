@@ -1,7 +1,7 @@
 {
   "name": "minecraft-client",
   "private": true,
-  "version": "infdev-20100607",
+  "version": "infdev-20100611",
   "type": "module",
   "scripts": {
     "dev": "vite",
