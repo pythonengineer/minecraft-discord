@@ -120,7 +120,7 @@ public class BlockFluid extends Block {
 		}
 	}
 
-	public final float getBlockBrightness(World world, int x, int y, int z) {
+	public final float getBrightness(World world, int x, int y, int z) {
 		return this.blockMaterial == Material.lava ? 100.0F : super.getBrightness(world, x, y, z);
 	}
 
