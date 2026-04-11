@@ -14,7 +14,7 @@ public final class GuiDeleteWorld extends GuiSelectWorld {
 
     public final void actionWorld(int worldIndex) {
         String string2;
-        if((string2 = this.getWorldName(worldIndex)) != null) {
+        if((string2 = getWorldName(worldIndex)) != null) {
             this.mc.setGuiScreen(new GuiYesNo(this, "Are you sure you want to delete this world?", "\'" + string2 + "\' will be lost forever!", worldIndex));
         }
 

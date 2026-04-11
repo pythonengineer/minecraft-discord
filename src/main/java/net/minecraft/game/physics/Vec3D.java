@@ -52,6 +52,10 @@ public final class Vec3D {
         return d2 * d2 + d4 * d4 + d6 * d6;
     }
 
+    public final double lengthVector() {
+        return (double)MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
+    }
+
     public final Vec3D getIntermediateWithXValue(Vec3D vector, double intermediateValue) {
         double d4 = vector.xCoord - this.xCoord;
         double d6 = vector.yCoord - this.yCoord;

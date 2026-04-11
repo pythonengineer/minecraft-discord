@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
@@ -44,5 +45,9 @@ public final class BlockLeaves extends BlockLeavesBase {
     public final void setGraphicsLevel(boolean fancyGraphics) {
         this.graphicsLevel = fancyGraphics;
         this.blockIndexInTexture = this.leafTexIndex + (fancyGraphics ? 0 : 1);
+    }
+
+    public final void onEntityWalking(World world, int x, int y, int z, Entity entity) {
+        super.onEntityWalking(world, x, y, z, entity);
     }
 }

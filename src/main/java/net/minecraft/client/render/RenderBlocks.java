@@ -32,11 +32,11 @@ public final class RenderBlocks {
         block.setBlockBoundsBasedOnState(this.worldObj, x, y, z);
         Tessellator tessellator6;
         float f18;
-        boolean z61;
+        boolean z63;
         if(i5 == 0) {
             tessellator6 = Tessellator.instance;
-            z61 = false;
-            float f64 = block.getBlockBrightness(this.worldObj, x, y, z);
+            z63 = false;
+            float f66 = block.getBlockBrightness(this.worldObj, x, y, z);
             if(block.getIsBlockSolid(this.worldObj, x, y - 1, z, 0)) {
                 f18 = block.getBlockBrightness(this.worldObj, x, y - 1, z);
                 if(Block.lightValue[block.blockID] > 0) {
@@ -45,13 +45,13 @@ public final class RenderBlocks {
 
                 tessellator6.setColorOpaque_F(0.5F * f18, 0.5F * f18, 0.5F * f18);
                 this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 0));
-                z61 = true;
+                z63 = true;
             }
 
             if(block.getIsBlockSolid(this.worldObj, x, y + 1, z, 1)) {
                 f18 = block.getBlockBrightness(this.worldObj, x, y + 1, z);
                 if(block.maxY != 1.0D && !block.blockMaterial.getIsLiquid()) {
-                    f18 = f64;
+                    f18 = f66;
                 }
 
                 if(Block.lightValue[block.blockID] > 0) {
@@ -60,7 +60,7 @@ public final class RenderBlocks {
 
                 tessellator6.setColorOpaque_F(f18 * 1.0F, f18 * 1.0F, f18 * 1.0F);
                 this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 1));
-                z61 = true;
+                z63 = true;
             }
 
             if(block.getIsBlockSolid(this.worldObj, x, y, z - 1, 2)) {
@@ -71,7 +71,7 @@ public final class RenderBlocks {
 
                 tessellator6.setColorOpaque_F(0.8F * f18, 0.8F * f18, 0.8F * f18);
                 this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 2));
-                z61 = true;
+                z63 = true;
             }
 
             if(block.getIsBlockSolid(this.worldObj, x, y, z + 1, 3)) {
@@ -82,7 +82,7 @@ public final class RenderBlocks {
 
                 tessellator6.setColorOpaque_F(0.8F * f18, 0.8F * f18, 0.8F * f18);
                 this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 3));
-                z61 = true;
+                z63 = true;
             }
 
             if(block.getIsBlockSolid(this.worldObj, x - 1, y, z, 4)) {
@@ -93,7 +93,7 @@ public final class RenderBlocks {
 
                 tessellator6.setColorOpaque_F(0.6F * f18, 0.6F * f18, 0.6F * f18);
                 this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 4));
-                z61 = true;
+                z63 = true;
             }
 
             if(block.getIsBlockSolid(this.worldObj, x + 1, y, z, 5)) {
@@ -104,13 +104,20 @@ public final class RenderBlocks {
 
                 tessellator6.setColorOpaque_F(0.6F * f18, 0.6F * f18, 0.6F * f18);
                 this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 5));
-                z61 = true;
+                z63 = true;
             }
 
-            return z61;
+            return z63;
         } else {
-            float f8;
-            float f60;
+            float f26;
+            float f27;
+            float f28;
+            float f29;
+            float f30;
+            float f31;
+            float f37;
+            float f57;
+            float f62;
             if(i5 == 4) {
                 i5 = z;
                 z = y;
@@ -118,167 +125,165 @@ public final class RenderBlocks {
                 Block block54 = block;
                 RenderBlocks renderBlocks53 = this;
                 tessellator6 = Tessellator.instance;
-                z61 = block.getIsBlockSolid(this.worldObj, x, z + 1, i5, 1);
-                boolean z57 = block.getIsBlockSolid(this.worldObj, x, z - 1, i5, 0);
-                boolean[] z59;
-                (z59 = new boolean[4])[0] = block.getIsBlockSolid(this.worldObj, x, z, i5 - 1, 2);
-                z59[1] = block.getIsBlockSolid(this.worldObj, x, z, i5 + 1, 3);
-                z59[2] = block.getIsBlockSolid(this.worldObj, x - 1, z, i5, 4);
-                z59[3] = block.getIsBlockSolid(this.worldObj, x + 1, z, i5, 5);
-                if(!z61 && !z57 && !z59[0] && !z59[1] && !z59[2] && !z59[3]) {
+                z63 = block.getIsBlockSolid(this.worldObj, x, z + 1, i5, 1);
+                boolean z60 = block.getIsBlockSolid(this.worldObj, x, z - 1, i5, 0);
+                boolean[] z61;
+                (z61 = new boolean[4])[0] = block.getIsBlockSolid(this.worldObj, x, z, i5 - 1, 2);
+                z61[1] = block.getIsBlockSolid(this.worldObj, x, z, i5 + 1, 3);
+                z61[2] = block.getIsBlockSolid(this.worldObj, x - 1, z, i5, 4);
+                z61[3] = block.getIsBlockSolid(this.worldObj, x + 1, z, i5, 5);
+                if(!z63 && !z60 && !z61[0] && !z61[1] && !z61[2] && !z61[3]) {
                     return false;
                 } else {
-                    boolean z62 = false;
-                    Material material66 = block.blockMaterial;
-                    int i67 = this.worldObj.getBlockMetadata(x, z, i5);
-                    float f26 = this.getFluidHeight(x, z, i5, material66);
-                    float f69 = this.getFluidHeight(x, z, i5 + 1, material66);
-                    float f28 = this.getFluidHeight(x + 1, z, i5 + 1, material66);
-                    float f70 = this.getFluidHeight(x + 1, z, i5, material66);
-                    int i30;
+                    boolean z64 = false;
+                    Material material69 = block.blockMaterial;
+                    int i70 = this.worldObj.getBlockMetadata(x, z, i5);
+                    f26 = this.getFluidHeight(x, z, i5, material69);
+                    f27 = this.getFluidHeight(x, z, i5 + 1, material69);
+                    f28 = this.getFluidHeight(x + 1, z, i5 + 1, material69);
+                    f29 = this.getFluidHeight(x + 1, z, i5, material69);
                     float f38;
                     float f40;
-                    int i74;
-                    float f79;
-                    if(z61) {
-                        z62 = true;
-                        i30 = block.getBlockTextureFromSideAndMetadata(1, i67);
-                        float f72;
-                        if((f72 = (float)BlockFluid.getFlowDirection(this.worldObj, x, z, i5, material66)) > -999.0F) {
-                            i30 = block.getBlockTextureFromSideAndMetadata(2, i67);
+                    int i73;
+                    int i79;
+                    float f86;
+                    if(z63) {
+                        z64 = true;
+                        i73 = block.getBlockTextureFromSideAndMetadata(1, i70);
+                        if((f31 = (float)BlockFluid.getFlowDirection(this.worldObj, x, z, i5, material69)) > -999.0F) {
+                            i73 = block.getBlockTextureFromSideAndMetadata(2, i70);
                         }
 
-                        int i32 = (i30 & 15) << 4;
-                        i74 = i30 & 240;
-                        double d34 = ((double)i32 + 8.0D) / 256.0D;
-                        double d36 = ((double)i74 + 8.0D) / 256.0D;
-                        if(f72 < -999.0F) {
-                            f72 = 0.0F;
+                        int i75 = (i73 & 15) << 4;
+                        i79 = i73 & 240;
+                        double d77 = ((double)i75 + 8.0D) / 256.0D;
+                        double d83 = ((double)i79 + 8.0D) / 256.0D;
+                        if(f31 < -999.0F) {
+                            f31 = 0.0F;
                         } else {
-                            d34 = (double)((float)(i32 + 16) / 256.0F);
-                            d36 = (double)((float)(i74 + 16) / 256.0F);
+                            d77 = (double)((float)(i75 + 16) / 256.0F);
+                            d83 = (double)((float)(i79 + 16) / 256.0F);
                         }
 
-                        f38 = MathHelper.sin(f72) * 8.0F / 256.0F;
-                        f79 = MathHelper.cos(f72) * 8.0F / 256.0F;
+                        f38 = MathHelper.sin(f31) * 8.0F / 256.0F;
+                        f86 = MathHelper.cos(f31) * 8.0F / 256.0F;
                         f40 = block.getBlockBrightness(this.worldObj, x, z, i5);
                         tessellator6.setColorOpaque_F(f40 * 1.0F, f40 * 1.0F, f40 * 1.0F);
-                        tessellator6.addVertexWithUV((double)x, (double)((float)z + f26), (double)i5, d34 - (double)f79 - (double)f38, d36 - (double)f79 + (double)f38);
-                        tessellator6.addVertexWithUV((double)x, (double)((float)z + f69), (double)(i5 + 1), d34 - (double)f79 + (double)f38, d36 + (double)f79 + (double)f38);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + f28), (double)(i5 + 1), d34 + (double)f79 + (double)f38, d36 + (double)f79 - (double)f38);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + f70), (double)i5, d34 + (double)f79 - (double)f38, d36 - (double)f79 - (double)f38);
+                        tessellator6.addVertexWithUV((double)x, (double)((float)z + f26), (double)i5, d77 - (double)f86 - (double)f38, d83 - (double)f86 + (double)f38);
+                        tessellator6.addVertexWithUV((double)x, (double)((float)z + f27), (double)(i5 + 1), d77 - (double)f86 + (double)f38, d83 + (double)f86 + (double)f38);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + f28), (double)(i5 + 1), d77 + (double)f86 + (double)f38, d83 + (double)f86 - (double)f38);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + f29), (double)i5, d77 + (double)f86 - (double)f38, d83 - (double)f86 - (double)f38);
                     }
 
-                    if(z57) {
-                        float f71 = block.getBlockBrightness(this.worldObj, x, z - 1, i5);
-                        tessellator6.setColorOpaque_F(0.5F * f71, 0.5F * f71, 0.5F * f71);
+                    if(z60) {
+                        f30 = block.getBlockBrightness(this.worldObj, x, z - 1, i5);
+                        tessellator6.setColorOpaque_F(0.5F * f30, 0.5F * f30, 0.5F * f30);
                         this.renderBottomFace(block, (double)x, (double)z, (double)i5, block.getBlockTextureFromSide(0));
-                        z62 = true;
+                        z64 = true;
                     }
 
-                    for(i30 = 0; i30 < 4; ++i30) {
-                        int i73 = y;
-                        i74 = i5;
-                        if(i30 == 0) {
-                            i74 = i5 - 1;
+                    for(i73 = 0; i73 < 4; ++i73) {
+                        int i78 = y;
+                        i79 = i5;
+                        if(i73 == 0) {
+                            i79 = i5 - 1;
                         }
 
-                        if(i30 == 1) {
-                            ++i74;
+                        if(i73 == 1) {
+                            ++i79;
                         }
 
-                        if(i30 == 2) {
-                            i73 = y - 1;
+                        if(i73 == 2) {
+                            i78 = y - 1;
                         }
 
-                        if(i30 == 3) {
-                            ++i73;
+                        if(i73 == 3) {
+                            ++i78;
                         }
 
-                        int i75;
-                        int i76 = ((i75 = block54.getBlockTextureFromSideAndMetadata(i30 + 2, i67)) & 15) << 4;
-                        int i77 = i75 & 240;
-                        if(z59[i30]) {
-                            float f78;
-                            if(i30 == 0) {
-                                f78 = f26;
-                                f38 = f70;
-                                f79 = (float)y;
-                                f60 = (float)(y + 1);
-                                f8 = f40 = (float)i5;
-                            } else if(i30 == 1) {
-                                f78 = f28;
-                                f38 = f69;
-                                f79 = (float)(y + 1);
-                                f60 = (float)y;
-                                f8 = f40 = (float)(i5 + 1);
-                            } else if(i30 == 2) {
-                                f78 = f69;
+                        int i81;
+                        int i82 = ((i81 = block54.getBlockTextureFromSideAndMetadata(i73 + 2, i70)) & 15) << 4;
+                        int i85 = i81 & 240;
+                        if(z61[i73]) {
+                            if(i73 == 0) {
+                                f37 = f26;
+                                f38 = f29;
+                                f86 = (float)y;
+                                f62 = (float)(y + 1);
+                                f57 = f40 = (float)i5;
+                            } else if(i73 == 1) {
+                                f37 = f28;
+                                f38 = f27;
+                                f86 = (float)(y + 1);
+                                f62 = (float)y;
+                                f57 = f40 = (float)(i5 + 1);
+                            } else if(i73 == 2) {
+                                f37 = f27;
                                 f38 = f26;
-                                f60 = f79 = (float)y;
+                                f62 = f86 = (float)y;
                                 f40 = (float)(i5 + 1);
-                                f8 = (float)i5;
+                                f57 = (float)i5;
                             } else {
-                                f78 = f70;
+                                f37 = f29;
                                 f38 = f28;
-                                f60 = f79 = (float)(y + 1);
+                                f62 = f86 = (float)(y + 1);
                                 f40 = (float)i5;
-                                f8 = (float)(i5 + 1);
+                                f57 = (float)(i5 + 1);
                             }
 
-                            z62 = true;
-                            double d43 = (double)((float)i76 / 256.0F);
-                            double d45 = ((double)(i76 + 16) - 0.01D) / 256.0D;
-                            double d47 = (double)(((float)i77 + (1.0F - f78) * 16.0F) / 256.0F);
-                            double d49 = (double)(((float)i77 + (1.0F - f38) * 16.0F) / 256.0F);
-                            double d51 = ((double)(i77 + 16) - 0.01D) / 256.0D;
-                            float f11 = block54.getBlockBrightness(renderBlocks53.worldObj, i73, z, i74);
-                            if(i30 < 2) {
+                            z64 = true;
+                            double d43 = (double)((float)i82 / 256.0F);
+                            double d45 = ((double)(i82 + 16) - 0.01D) / 256.0D;
+                            double d47 = (double)(((float)i85 + (1.0F - f37) * 16.0F) / 256.0F);
+                            double d49 = (double)(((float)i85 + (1.0F - f38) * 16.0F) / 256.0F);
+                            double d51 = ((double)(i85 + 16) - 0.01D) / 256.0D;
+                            float f11 = block54.getBlockBrightness(renderBlocks53.worldObj, i78, z, i79);
+                            if(i73 < 2) {
                                 f11 *= 0.8F;
                             } else {
                                 f11 *= 0.6F;
                             }
 
                             tessellator6.setColorOpaque_F(f11 * 1.0F, f11 * 1.0F, f11 * 1.0F);
-                            tessellator6.addVertexWithUV((double)f79, (double)((float)z + f78), (double)f40, d43, d47);
-                            tessellator6.addVertexWithUV((double)f60, (double)((float)z + f38), (double)f8, d45, d49);
-                            tessellator6.addVertexWithUV((double)f60, (double)z, (double)f8, d45, d51);
-                            tessellator6.addVertexWithUV((double)f79, (double)z, (double)f40, d43, d51);
+                            tessellator6.addVertexWithUV((double)f86, (double)((float)z + f37), (double)f40, d43, d47);
+                            tessellator6.addVertexWithUV((double)f62, (double)((float)z + f38), (double)f57, d45, d49);
+                            tessellator6.addVertexWithUV((double)f62, (double)z, (double)f57, d45, d51);
+                            tessellator6.addVertexWithUV((double)f86, (double)z, (double)f40, d43, d51);
                         }
                     }
 
                     block54.minY = 0.0D;
                     block54.maxY = 1.0D;
-                    return z62;
+                    return z64;
                 }
             } else if(i5 == 1) {
                 tessellator6 = Tessellator.instance;
-                f60 = block.getBlockBrightness(this.worldObj, x, y, z);
-                tessellator6.setColorOpaque_F(f60, f60, f60);
+                f62 = block.getBlockBrightness(this.worldObj, x, y, z);
+                tessellator6.setColorOpaque_F(f62, f62, f62);
                 this.renderCrossedSquares(block, this.worldObj.getBlockMetadata(x, y, z), (double)x, (double)y, (double)z);
                 return true;
             } else if(i5 == 6) {
                 tessellator6 = Tessellator.instance;
-                f60 = block.getBlockBrightness(this.worldObj, x, y, z);
-                tessellator6.setColorOpaque_F(f60, f60, f60);
+                f62 = block.getBlockBrightness(this.worldObj, x, y, z);
+                tessellator6.setColorOpaque_F(f62, f62, f62);
                 this.renderBlockCrops(block, this.worldObj.getBlockMetadata(x, y, z), (double)x, (double)((float)y - 0.0625F), (double)z);
                 return true;
             } else if(i5 == 2) {
-                int i55 = this.worldObj.getBlockMetadata(x, y, z);
-                Tessellator tessellator58 = Tessellator.instance;
-                f8 = block.getBlockBrightness(this.worldObj, x, y, z);
+                int i56 = this.worldObj.getBlockMetadata(x, y, z);
+                Tessellator tessellator59 = Tessellator.instance;
+                f57 = block.getBlockBrightness(this.worldObj, x, y, z);
                 if(Block.lightValue[block.blockID] > 0) {
-                    f8 = 1.0F;
+                    f57 = 1.0F;
                 }
 
-                tessellator58.setColorOpaque_F(f8, f8, f8);
-                if(i55 == 1) {
+                tessellator59.setColorOpaque_F(f57, f57, f57);
+                if(i56 == 1) {
                     this.renderTorchAtAngle(block, (double)x - 0.09999999403953552D, (double)y + (double)0.2F, (double)z, -0.4000000059604645D, 0.0D);
-                } else if(i55 == 2) {
+                } else if(i56 == 2) {
                     this.renderTorchAtAngle(block, (double)x + 0.09999999403953552D, (double)y + (double)0.2F, (double)z, (double)0.4F, 0.0D);
-                } else if(i55 == 3) {
+                } else if(i56 == 3) {
                     this.renderTorchAtAngle(block, (double)x, (double)y + (double)0.2F, (double)z - 0.09999999403953552D, 0.0D, -0.4000000059604645D);
-                } else if(i55 == 4) {
+                } else if(i56 == 4) {
                     this.renderTorchAtAngle(block, (double)x, (double)y + (double)0.2F, (double)z + 0.09999999403953552D, 0.0D, (double)0.4F);
                 } else {
                     this.renderTorchAtAngle(block, (double)x, (double)y, (double)z, 0.0D, 0.0D);
@@ -286,362 +291,436 @@ public final class RenderBlocks {
 
                 return true;
             } else {
-                int i9;
+                int i7;
                 int i10;
-                double d16;
                 double d20;
                 double d22;
                 double d25;
-                double d27;
-                double d29;
-                double d31;
-                int i56;
+                int i58;
                 double d65;
+                double d67;
+                double d71;
+                double d72;
+                double d74;
                 if(i5 == 3) {
                     i5 = z;
                     tessellator6 = Tessellator.instance;
-                    i56 = block.getBlockTextureFromSide(0);
+                    i7 = block.getBlockTextureFromSide(0);
                     if(this.overrideBlockTexture >= 0) {
-                        i56 = this.overrideBlockTexture;
+                        i7 = this.overrideBlockTexture;
                     }
 
-                    f8 = block.getBlockBrightness(this.worldObj, x, y, z);
-                    tessellator6.setColorOpaque_F(f8, f8, f8);
-                    i9 = (i56 & 15) << 4;
-                    i10 = i56 & 240;
-                    d16 = (double)((float)i9 / 256.0F);
-                    d65 = (double)(((float)i9 + 15.99F) / 256.0F);
+                    f57 = block.getBlockBrightness(this.worldObj, x, y, z);
+                    tessellator6.setColorOpaque_F(f57, f57, f57);
+                    i58 = (i7 & 15) << 4;
+                    i10 = i7 & 240;
+                    d65 = (double)((float)i58 / 256.0F);
+                    d67 = (double)(((float)i58 + 15.99F) / 256.0F);
                     d20 = (double)((float)i10 / 256.0F);
                     d22 = (double)(((float)i10 + 15.99F) / 256.0F);
-                    double d33;
+                    double d76;
                     if(!this.worldObj.isBlockNormalCube(x, y - 1, z) && !Block.fire.getChanceToEncourageFire(this.worldObj, x, y - 1, z)) {
                         if((x + y + z & 1) == 1) {
-                            d16 = (double)((float)i9 / 256.0F);
-                            d65 = (double)(((float)i9 + 15.99F) / 256.0F);
+                            d65 = (double)((float)i58 / 256.0F);
+                            d67 = (double)(((float)i58 + 15.99F) / 256.0F);
                             d20 = (double)((float)(i10 + 16) / 256.0F);
                             d22 = (double)(((float)i10 + 15.99F + 16.0F) / 256.0F);
                         }
 
                         if((x / 2 + y / 2 + z / 2 & 1) == 1) {
-                            d27 = d65;
-                            d65 = d16;
-                            d16 = d27;
+                            d71 = d67;
+                            d67 = d65;
+                            d65 = d71;
                         }
 
                         if(Block.fire.getChanceToEncourageFire(this.worldObj, x - 1, y, z)) {
-                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d65, d20);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d16, d22);
-                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d16, d20);
-                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d16, d20);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d16, d22);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
-                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d65, d20);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d67, d20);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d65, d22);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d65, d20);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d65, d20);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d65, d22);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d67, d20);
                         }
 
                         if(Block.fire.getChanceToEncourageFire(this.worldObj, x + 1, y, z)) {
-                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d16, d20);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d16, d22);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
-                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d65, d20);
-                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d65, d20);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d16, d22);
-                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d16, d20);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d65, d20);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d65, d22);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d67, d20);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d67, d20);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d65, d22);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d65, d20);
                         }
 
                         if(Block.fire.getChanceToEncourageFire(this.worldObj, x, y, z - 1)) {
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d65, d20);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d65, d22);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d16, d22);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d16, d20);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d16, d20);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d16, d22);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d65, d22);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d65, d20);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d67, d20);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d67, d22);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d65, d22);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d65, d20);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d65, d20);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d65, d22);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d67, d22);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d67, d20);
                         }
 
                         if(Block.fire.getChanceToEncourageFire(this.worldObj, x, y, z + 1)) {
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d16, d20);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d16, d22);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d65, d20);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d65, d20);
-                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d16, d22);
-                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d16, d20);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d65, d20);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d67, d20);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d67, d20);
+                            tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
+                            tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d65, d20);
                         }
 
                         if(Block.fire.getChanceToEncourageFire(this.worldObj, x, y + 1, z)) {
-                            d27 = (double)x + 0.5D + 0.5D;
-                            d29 = (double)x + 0.5D - 0.5D;
-                            d31 = (double)z + 0.5D + 0.5D;
-                            d33 = (double)z + 0.5D - 0.5D;
-                            d16 = (double)((float)i9 / 256.0F);
-                            d65 = (double)(((float)i9 + 15.99F) / 256.0F);
+                            d71 = (double)x + 0.5D + 0.5D;
+                            d72 = (double)x + 0.5D - 0.5D;
+                            d74 = (double)z + 0.5D + 0.5D;
+                            d76 = (double)z + 0.5D - 0.5D;
+                            d65 = (double)((float)i58 / 256.0F);
+                            d67 = (double)(((float)i58 + 15.99F) / 256.0F);
                             d20 = (double)((float)i10 / 256.0F);
                             d22 = (double)(((float)i10 + 15.99F) / 256.0F);
                             z = y + 1;
                             if((x + z + i5 & 1) == 0) {
-                                tessellator6.addVertexWithUV(d29, (double)((float)z + -0.2F), (double)i5, d65, d20);
-                                tessellator6.addVertexWithUV(d27, (double)z, (double)i5, d65, d22);
-                                tessellator6.addVertexWithUV(d27, (double)z, (double)(i5 + 1), d16, d22);
-                                tessellator6.addVertexWithUV(d29, (double)((float)z + -0.2F), (double)(i5 + 1), d16, d20);
-                                d16 = (double)((float)i9 / 256.0F);
-                                d65 = (double)(((float)i9 + 15.99F) / 256.0F);
+                                tessellator6.addVertexWithUV(d72, (double)((float)z + -0.2F), (double)i5, d67, d20);
+                                tessellator6.addVertexWithUV(d71, (double)z, (double)i5, d67, d22);
+                                tessellator6.addVertexWithUV(d71, (double)z, (double)(i5 + 1), d65, d22);
+                                tessellator6.addVertexWithUV(d72, (double)((float)z + -0.2F), (double)(i5 + 1), d65, d20);
+                                d65 = (double)((float)i58 / 256.0F);
+                                d67 = (double)(((float)i58 + 15.99F) / 256.0F);
                                 d20 = (double)((float)(i10 + 16) / 256.0F);
                                 d22 = (double)(((float)i10 + 15.99F + 16.0F) / 256.0F);
-                                tessellator6.addVertexWithUV(d27, (double)((float)z + -0.2F), (double)(i5 + 1), d65, d20);
-                                tessellator6.addVertexWithUV(d29, (double)z, (double)(i5 + 1), d65, d22);
-                                tessellator6.addVertexWithUV(d29, (double)z, (double)i5, d16, d22);
-                                tessellator6.addVertexWithUV(d27, (double)((float)z + -0.2F), (double)i5, d16, d20);
+                                tessellator6.addVertexWithUV(d71, (double)((float)z + -0.2F), (double)(i5 + 1), d67, d20);
+                                tessellator6.addVertexWithUV(d72, (double)z, (double)(i5 + 1), d67, d22);
+                                tessellator6.addVertexWithUV(d72, (double)z, (double)i5, d65, d22);
+                                tessellator6.addVertexWithUV(d71, (double)((float)z + -0.2F), (double)i5, d65, d20);
                             } else {
-                                tessellator6.addVertexWithUV((double)x, (double)((float)z + -0.2F), d31, d65, d20);
-                                tessellator6.addVertexWithUV((double)x, (double)z, d33, d65, d22);
-                                tessellator6.addVertexWithUV((double)(x + 1), (double)z, d33, d16, d22);
-                                tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + -0.2F), d31, d16, d20);
-                                d16 = (double)((float)i9 / 256.0F);
-                                d65 = (double)(((float)i9 + 15.99F) / 256.0F);
+                                tessellator6.addVertexWithUV((double)x, (double)((float)z + -0.2F), d74, d67, d20);
+                                tessellator6.addVertexWithUV((double)x, (double)z, d76, d67, d22);
+                                tessellator6.addVertexWithUV((double)(x + 1), (double)z, d76, d65, d22);
+                                tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + -0.2F), d74, d65, d20);
+                                d65 = (double)((float)i58 / 256.0F);
+                                d67 = (double)(((float)i58 + 15.99F) / 256.0F);
                                 d20 = (double)((float)(i10 + 16) / 256.0F);
                                 d22 = (double)(((float)i10 + 15.99F + 16.0F) / 256.0F);
-                                tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + -0.2F), d33, d65, d20);
-                                tessellator6.addVertexWithUV((double)(x + 1), (double)z, d31, d65, d22);
-                                tessellator6.addVertexWithUV((double)x, (double)z, d31, d16, d22);
-                                tessellator6.addVertexWithUV((double)x, (double)((float)z + -0.2F), d33, d16, d20);
+                                tessellator6.addVertexWithUV((double)(x + 1), (double)((float)z + -0.2F), d76, d67, d20);
+                                tessellator6.addVertexWithUV((double)(x + 1), (double)z, d74, d67, d22);
+                                tessellator6.addVertexWithUV((double)x, (double)z, d74, d65, d22);
+                                tessellator6.addVertexWithUV((double)x, (double)((float)z + -0.2F), d76, d65, d20);
                             }
                         }
                     } else {
                         d25 = (double)x + 0.5D + 0.2D;
-                        d27 = (double)x + 0.5D - 0.2D;
-                        d29 = (double)z + 0.5D + 0.2D;
-                        d31 = (double)z + 0.5D - 0.2D;
-                        d33 = (double)x + 0.5D - 0.3D;
-                        double d35 = (double)x + 0.5D + 0.3D;
-                        double d37 = (double)z + 0.5D - 0.3D;
+                        d71 = (double)x + 0.5D - 0.2D;
+                        d72 = (double)z + 0.5D + 0.2D;
+                        d74 = (double)z + 0.5D - 0.2D;
+                        d76 = (double)x + 0.5D - 0.3D;
+                        double d80 = (double)x + 0.5D + 0.3D;
+                        double d84 = (double)z + 0.5D - 0.3D;
                         double d39 = (double)z + 0.5D + 0.3D;
-                        tessellator6.addVertexWithUV(d33, (double)((float)y + 1.4F), (double)(z + 1), d65, d20);
-                        tessellator6.addVertexWithUV(d25, (double)y, (double)(z + 1), d65, d22);
-                        tessellator6.addVertexWithUV(d25, (double)y, (double)z, d16, d22);
-                        tessellator6.addVertexWithUV(d33, (double)((float)y + 1.4F), (double)z, d16, d20);
-                        tessellator6.addVertexWithUV(d35, (double)((float)y + 1.4F), (double)z, d65, d20);
-                        tessellator6.addVertexWithUV(d27, (double)y, (double)z, d65, d22);
-                        tessellator6.addVertexWithUV(d27, (double)y, (double)(z + 1), d16, d22);
-                        tessellator6.addVertexWithUV(d35, (double)((float)y + 1.4F), (double)(z + 1), d16, d20);
-                        d16 = (double)((float)i9 / 256.0F);
-                        d65 = (double)(((float)i9 + 15.99F) / 256.0F);
+                        tessellator6.addVertexWithUV(d76, (double)((float)y + 1.4F), (double)(z + 1), d67, d20);
+                        tessellator6.addVertexWithUV(d25, (double)y, (double)(z + 1), d67, d22);
+                        tessellator6.addVertexWithUV(d25, (double)y, (double)z, d65, d22);
+                        tessellator6.addVertexWithUV(d76, (double)((float)y + 1.4F), (double)z, d65, d20);
+                        tessellator6.addVertexWithUV(d80, (double)((float)y + 1.4F), (double)z, d67, d20);
+                        tessellator6.addVertexWithUV(d71, (double)y, (double)z, d67, d22);
+                        tessellator6.addVertexWithUV(d71, (double)y, (double)(z + 1), d65, d22);
+                        tessellator6.addVertexWithUV(d80, (double)((float)y + 1.4F), (double)(z + 1), d65, d20);
+                        d65 = (double)((float)i58 / 256.0F);
+                        d67 = (double)(((float)i58 + 15.99F) / 256.0F);
                         d20 = (double)((float)(i10 + 16) / 256.0F);
                         d22 = (double)(((float)i10 + 15.99F + 16.0F) / 256.0F);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d39, d65, d20);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d31, d65, d22);
-                        tessellator6.addVertexWithUV((double)x, (double)y, d31, d16, d22);
-                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d39, d16, d20);
-                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d37, d65, d20);
-                        tessellator6.addVertexWithUV((double)x, (double)y, d29, d65, d22);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d29, d16, d22);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d37, d16, d20);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d39, d67, d20);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d74, d67, d22);
+                        tessellator6.addVertexWithUV((double)x, (double)y, d74, d65, d22);
+                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d39, d65, d20);
+                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d84, d67, d20);
+                        tessellator6.addVertexWithUV((double)x, (double)y, d72, d67, d22);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d72, d65, d22);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d84, d65, d20);
                         d25 = (double)x + 0.5D - 0.5D;
-                        d27 = (double)x + 0.5D + 0.5D;
-                        d29 = (double)z + 0.5D - 0.5D;
-                        d31 = (double)z + 0.5D + 0.5D;
-                        d33 = (double)x + 0.5D - 0.4D;
-                        d35 = (double)x + 0.5D + 0.4D;
-                        d37 = (double)z + 0.5D - 0.4D;
+                        d71 = (double)x + 0.5D + 0.5D;
+                        d72 = (double)z + 0.5D - 0.5D;
+                        d74 = (double)z + 0.5D + 0.5D;
+                        d76 = (double)x + 0.5D - 0.4D;
+                        d80 = (double)x + 0.5D + 0.4D;
+                        d84 = (double)z + 0.5D - 0.4D;
                         d39 = (double)z + 0.5D + 0.4D;
-                        tessellator6.addVertexWithUV(d33, (double)((float)y + 1.4F), (double)z, d16, d20);
-                        tessellator6.addVertexWithUV(d25, (double)y, (double)z, d16, d22);
-                        tessellator6.addVertexWithUV(d25, (double)y, (double)(z + 1), d65, d22);
-                        tessellator6.addVertexWithUV(d33, (double)((float)y + 1.4F), (double)(z + 1), d65, d20);
-                        tessellator6.addVertexWithUV(d35, (double)((float)y + 1.4F), (double)(z + 1), d16, d20);
-                        tessellator6.addVertexWithUV(d27, (double)y, (double)(z + 1), d16, d22);
-                        tessellator6.addVertexWithUV(d27, (double)y, (double)z, d65, d22);
-                        tessellator6.addVertexWithUV(d35, (double)((float)y + 1.4F), (double)z, d65, d20);
-                        d16 = (double)((float)i9 / 256.0F);
-                        d65 = (double)(((float)i9 + 15.99F) / 256.0F);
+                        tessellator6.addVertexWithUV(d76, (double)((float)y + 1.4F), (double)z, d65, d20);
+                        tessellator6.addVertexWithUV(d25, (double)y, (double)z, d65, d22);
+                        tessellator6.addVertexWithUV(d25, (double)y, (double)(z + 1), d67, d22);
+                        tessellator6.addVertexWithUV(d76, (double)((float)y + 1.4F), (double)(z + 1), d67, d20);
+                        tessellator6.addVertexWithUV(d80, (double)((float)y + 1.4F), (double)(z + 1), d65, d20);
+                        tessellator6.addVertexWithUV(d71, (double)y, (double)(z + 1), d65, d22);
+                        tessellator6.addVertexWithUV(d71, (double)y, (double)z, d67, d22);
+                        tessellator6.addVertexWithUV(d80, (double)((float)y + 1.4F), (double)z, d67, d20);
+                        d65 = (double)((float)i58 / 256.0F);
+                        d67 = (double)(((float)i58 + 15.99F) / 256.0F);
                         d20 = (double)((float)i10 / 256.0F);
                         d22 = (double)(((float)i10 + 15.99F) / 256.0F);
-                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d39, d16, d20);
-                        tessellator6.addVertexWithUV((double)x, (double)y, d31, d16, d22);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d31, d65, d22);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d39, d65, d20);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d37, d16, d20);
-                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d29, d16, d22);
-                        tessellator6.addVertexWithUV((double)x, (double)y, d29, d65, d22);
-                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d37, d65, d20);
+                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d39, d65, d20);
+                        tessellator6.addVertexWithUV((double)x, (double)y, d74, d65, d22);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d74, d67, d22);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d39, d67, d20);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F), d84, d65, d20);
+                        tessellator6.addVertexWithUV((double)(x + 1), (double)y, d72, d65, d22);
+                        tessellator6.addVertexWithUV((double)x, (double)y, d72, d67, d22);
+                        tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F), d84, d67, d20);
                     }
 
-                    return true;
-                } else if(i5 == 5) {
-                    tessellator6 = Tessellator.instance;
-                    i56 = block.getBlockTextureFromSide(0);
-                    if(this.overrideBlockTexture >= 0) {
-                        i56 = this.overrideBlockTexture;
-                    }
-
-                    f8 = block.getBlockBrightness(this.worldObj, x, y, z);
-                    tessellator6.setColorOpaque_F(f8, f8, f8);
-                    i9 = ((i56 & 15) << 4) + 16;
-                    i10 = (i56 & 15) << 4;
-                    int i63 = i56 & 240;
-                    if((x + y + z & 1) == 1) {
-                        i9 = (i56 & 15) << 4;
-                        i10 = ((i56 & 15) << 4) + 16;
-                    }
-
-                    double d17 = (double)((float)i9 / 256.0F);
-                    double d68 = (double)(((float)i9 + 15.99F) / 256.0F);
-                    double d21 = (double)((float)i63 / 256.0F);
-                    double d23 = (double)(((float)i63 + 15.99F) / 256.0F);
-                    d25 = (double)((float)i10 / 256.0F);
-                    d27 = (double)(((float)i10 + 15.99F) / 256.0F);
-                    d29 = (double)((float)i63 / 256.0F);
-                    d31 = (double)(((float)i63 + 15.99F) / 256.0F);
-                    if(this.worldObj.isBlockNormalCube(x - 1, y, z)) {
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) + 0.125F), d17, d21);
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y - 0.125F), (double)((float)(z + 1) + 0.125F), d17, d23);
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y - 0.125F), (double)((float)z - 0.125F), d68, d23);
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)z - 0.125F), d68, d21);
-                    }
-
-                    if(this.worldObj.isBlockNormalCube(x + 1, y, z)) {
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y - 0.125F), (double)((float)(z + 1) + 0.125F), d68, d23);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) + 0.125F), d68, d21);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)z - 0.125F), d17, d21);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y - 0.125F), (double)((float)z - 0.125F), d17, d23);
-                    }
-
-                    if(this.worldObj.isBlockNormalCube(x, y, z - 1)) {
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)y - 0.125F), (double)((float)z + 0.05F), d27, d31);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)z + 0.05F), d27, d29);
-                        tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)z + 0.05F), d25, d29);
-                        tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)y - 0.125F), (double)((float)z + 0.05F), d25, d31);
-                    }
-
-                    if(this.worldObj.isBlockNormalCube(x, y, z + 1)) {
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) - 0.05F), d25, d29);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)y - 0.125F), (double)((float)(z + 1) - 0.05F), d25, d31);
-                        tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)y - 0.125F), (double)((float)(z + 1) - 0.05F), d27, d31);
-                        tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) - 0.05F), d27, d29);
-                    }
-
-                    return true;
-                } else if(i5 == 8) {
-                    tessellator6 = Tessellator.instance;
-                    i56 = block.getBlockTextureFromSide(0);
-                    if(this.overrideBlockTexture >= 0) {
-                        i56 = this.overrideBlockTexture;
-                    }
-
-                    f8 = block.getBlockBrightness(this.worldObj, x, y, z);
-                    tessellator6.setColorOpaque_F(f8, f8, f8);
-                    i9 = (i56 & 15) << 4;
-                    i10 = i56 & 240;
-                    d16 = (double)((float)i9 / 256.0F);
-                    d65 = (double)(((float)i9 + 15.99F) / 256.0F);
-                    d20 = (double)((float)i10 / 256.0F);
-                    d22 = (double)(((float)i10 + 15.99F) / 256.0F);
-                    int i24;
-                    if((i24 = this.worldObj.getBlockMetadata(x, y, z)) == 5) {
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1)), (double)((float)(z + 1)), d16, d20);
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y), (double)((float)(z + 1)), d16, d22);
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y), (double)((float)z), d65, d22);
-                        tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1)), (double)((float)z), d65, d20);
-                    }
-
-                    if(i24 == 4) {
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y), (double)((float)(z + 1)), d65, d22);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1)), (double)((float)(z + 1)), d65, d20);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1)), (double)((float)z), d16, d20);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y), (double)((float)z), d16, d22);
-                    }
-
-                    if(i24 == 3) {
-                        tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)y), (double)((float)z + 0.05F), d65, d22);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)(y + 1)), (double)((float)z + 0.05F), d65, d20);
-                        tessellator6.addVertexWithUV((double)((float)x), (double)((float)(y + 1)), (double)((float)z + 0.05F), d16, d20);
-                        tessellator6.addVertexWithUV((double)((float)x), (double)((float)y), (double)((float)z + 0.05F), d16, d22);
-                    }
-
-                    if(i24 == 2) {
-                        tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)(y + 1)), (double)((float)(z + 1) - 0.05F), d16, d20);
-                        tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)y), (double)((float)(z + 1) - 0.05F), d16, d22);
-                        tessellator6.addVertexWithUV((double)((float)x), (double)((float)y), (double)((float)(z + 1) - 0.05F), d65, d22);
-                        tessellator6.addVertexWithUV((double)((float)x), (double)((float)(y + 1)), (double)((float)(z + 1) - 0.05F), d65, d20);
-                    }
-
-                    return true;
-                } else if(i5 == 7) {
-                    tessellator6 = Tessellator.instance;
-                    BlockDoor blockDoor7 = (BlockDoor)block;
-                    f18 = block.getBlockBrightness(this.worldObj, x, y, z);
-                    float f19 = block.getBlockBrightness(this.worldObj, x, y - 1, z);
-                    if(blockDoor7.minY > 0.0D) {
-                        f19 = f18;
-                    }
-
-                    if(Block.lightValue[block.blockID] > 0) {
-                        f19 = 1.0F;
-                    }
-
-                    tessellator6.setColorOpaque_F(0.5F * f19, 0.5F * f19, 0.5F * f19);
-                    this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 0));
-                    f19 = block.getBlockBrightness(this.worldObj, x, y + 1, z);
-                    if(blockDoor7.maxY < 1.0D) {
-                        f19 = f18;
-                    }
-
-                    if(Block.lightValue[block.blockID] > 0) {
-                        f19 = 1.0F;
-                    }
-
-                    tessellator6.setColorOpaque_F(f19 * 1.0F, f19 * 1.0F, f19 * 1.0F);
-                    this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 1));
-                    f19 = block.getBlockBrightness(this.worldObj, x, y, z - 1);
-                    if(blockDoor7.minZ > 0.0D) {
-                        f19 = f18;
-                    }
-
-                    if(Block.lightValue[block.blockID] > 0) {
-                        f19 = 1.0F;
-                    }
-
-                    tessellator6.setColorOpaque_F(0.8F * f19, 0.8F * f19, 0.8F * f19);
-                    this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 2));
-                    f19 = block.getBlockBrightness(this.worldObj, x, y, z + 1);
-                    if(blockDoor7.maxZ < 1.0D) {
-                        f19 = f18;
-                    }
-
-                    if(Block.lightValue[block.blockID] > 0) {
-                        f19 = 1.0F;
-                    }
-
-                    tessellator6.setColorOpaque_F(0.8F * f19, 0.8F * f19, 0.8F * f19);
-                    this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 3));
-                    f19 = block.getBlockBrightness(this.worldObj, x - 1, y, z);
-                    if(blockDoor7.minX > 0.0D) {
-                        f19 = f18;
-                    }
-
-                    if(Block.lightValue[block.blockID] > 0) {
-                        f19 = 1.0F;
-                    }
-
-                    tessellator6.setColorOpaque_F(0.6F * f19, 0.6F * f19, 0.6F * f19);
-                    this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 4));
-                    f19 = block.getBlockBrightness(this.worldObj, x + 1, y, z);
-                    if(blockDoor7.maxX < 1.0D) {
-                        f19 = f18;
-                    }
-
-                    if(Block.lightValue[block.blockID] > 0) {
-                        f19 = 1.0F;
-                    }
-
-                    tessellator6.setColorOpaque_F(0.6F * f19, 0.6F * f19, 0.6F * f19);
-                    this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 5));
                     return true;
                 } else {
-                    return false;
+                    int i16;
+                    double d17;
+                    double d19;
+                    double d21;
+                    double d23;
+                    if(i5 == 5) {
+                        tessellator6 = Tessellator.instance;
+                        i7 = block.getBlockTextureFromSide(0);
+                        if(this.overrideBlockTexture >= 0) {
+                            i7 = this.overrideBlockTexture;
+                        }
+
+                        f57 = block.getBlockBrightness(this.worldObj, x, y, z);
+                        tessellator6.setColorOpaque_F(f57, f57, f57);
+                        i58 = ((i7 & 15) << 4) + 16;
+                        i10 = (i7 & 15) << 4;
+                        i16 = i7 & 240;
+                        if((x + y + z & 1) == 1) {
+                            i58 = (i7 & 15) << 4;
+                            i10 = ((i7 & 15) << 4) + 16;
+                        }
+
+                        d17 = (double)((float)i58 / 256.0F);
+                        d19 = (double)(((float)i58 + 15.99F) / 256.0F);
+                        d21 = (double)((float)i16 / 256.0F);
+                        d23 = (double)(((float)i16 + 15.99F) / 256.0F);
+                        d25 = (double)((float)i10 / 256.0F);
+                        d71 = (double)(((float)i10 + 15.99F) / 256.0F);
+                        d72 = (double)((float)i16 / 256.0F);
+                        d74 = (double)(((float)i16 + 15.99F) / 256.0F);
+                        if(this.worldObj.isBlockNormalCube(x - 1, y, z)) {
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) + 0.125F), d17, d21);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y - 0.125F), (double)((float)(z + 1) + 0.125F), d17, d23);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y - 0.125F), (double)((float)z - 0.125F), d19, d23);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)z - 0.125F), d19, d21);
+                        }
+
+                        if(this.worldObj.isBlockNormalCube(x + 1, y, z)) {
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y - 0.125F), (double)((float)(z + 1) + 0.125F), d19, d23);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) + 0.125F), d19, d21);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)z - 0.125F), d17, d21);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y - 0.125F), (double)((float)z - 0.125F), d17, d23);
+                        }
+
+                        if(this.worldObj.isBlockNormalCube(x, y, z - 1)) {
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)y - 0.125F), (double)((float)z + 0.05F), d71, d74);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)z + 0.05F), d71, d72);
+                            tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)z + 0.05F), d25, d72);
+                            tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)y - 0.125F), (double)((float)z + 0.05F), d25, d74);
+                        }
+
+                        if(this.worldObj.isBlockNormalCube(x, y, z + 1)) {
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) - 0.05F), d25, d72);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)y - 0.125F), (double)((float)(z + 1) - 0.05F), d25, d74);
+                            tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)y - 0.125F), (double)((float)(z + 1) - 0.05F), d71, d74);
+                            tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) - 0.05F), d71, d72);
+                        }
+
+                        return true;
+                    } else if(i5 == 8) {
+                        tessellator6 = Tessellator.instance;
+                        i7 = block.getBlockTextureFromSide(0);
+                        if(this.overrideBlockTexture >= 0) {
+                            i7 = this.overrideBlockTexture;
+                        }
+
+                        f57 = block.getBlockBrightness(this.worldObj, x, y, z);
+                        tessellator6.setColorOpaque_F(f57, f57, f57);
+                        i58 = (i7 & 15) << 4;
+                        i10 = i7 & 240;
+                        d65 = (double)((float)i58 / 256.0F);
+                        d67 = (double)(((float)i58 + 15.99F) / 256.0F);
+                        d20 = (double)((float)i10 / 256.0F);
+                        d22 = (double)(((float)i10 + 15.99F) / 256.0F);
+                        int i24;
+                        if((i24 = this.worldObj.getBlockMetadata(x, y, z)) == 5) {
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1)), (double)((float)(z + 1)), d65, d20);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y), (double)((float)(z + 1)), d65, d22);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y), (double)((float)z), d67, d22);
+                            tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1)), (double)((float)z), d67, d20);
+                        }
+
+                        if(i24 == 4) {
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y), (double)((float)(z + 1)), d67, d22);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1)), (double)((float)(z + 1)), d67, d20);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1)), (double)((float)z), d65, d20);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y), (double)((float)z), d65, d22);
+                        }
+
+                        if(i24 == 3) {
+                            tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)y), (double)((float)z + 0.05F), d67, d22);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)(y + 1)), (double)((float)z + 0.05F), d67, d20);
+                            tessellator6.addVertexWithUV((double)((float)x), (double)((float)(y + 1)), (double)((float)z + 0.05F), d65, d20);
+                            tessellator6.addVertexWithUV((double)((float)x), (double)((float)y), (double)((float)z + 0.05F), d65, d22);
+                        }
+
+                        if(i24 == 2) {
+                            tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)(y + 1)), (double)((float)(z + 1) - 0.05F), d65, d20);
+                            tessellator6.addVertexWithUV((double)((float)(x + 1)), (double)((float)y), (double)((float)(z + 1) - 0.05F), d65, d22);
+                            tessellator6.addVertexWithUV((double)((float)x), (double)((float)y), (double)((float)(z + 1) - 0.05F), d67, d22);
+                            tessellator6.addVertexWithUV((double)((float)x), (double)((float)(y + 1)), (double)((float)(z + 1) - 0.05F), d67, d20);
+                        }
+
+                        return true;
+                    } else if(i5 == 7) {
+                        tessellator6 = Tessellator.instance;
+                        BlockDoor blockDoor55 = (BlockDoor)block;
+                        f18 = block.getBlockBrightness(this.worldObj, x, y, z);
+                        float f68 = block.getBlockBrightness(this.worldObj, x, y - 1, z);
+                        if(blockDoor55.minY > 0.0D) {
+                            f68 = f18;
+                        }
+
+                        if(Block.lightValue[block.blockID] > 0) {
+                            f68 = 1.0F;
+                        }
+
+                        tessellator6.setColorOpaque_F(0.5F * f68, 0.5F * f68, 0.5F * f68);
+                        this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 0));
+                        f68 = block.getBlockBrightness(this.worldObj, x, y + 1, z);
+                        if(blockDoor55.maxY < 1.0D) {
+                            f68 = f18;
+                        }
+
+                        if(Block.lightValue[block.blockID] > 0) {
+                            f68 = 1.0F;
+                        }
+
+                        tessellator6.setColorOpaque_F(f68 * 1.0F, f68 * 1.0F, f68 * 1.0F);
+                        this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 1));
+                        f68 = block.getBlockBrightness(this.worldObj, x, y, z - 1);
+                        if(blockDoor55.minZ > 0.0D) {
+                            f68 = f18;
+                        }
+
+                        if(Block.lightValue[block.blockID] > 0) {
+                            f68 = 1.0F;
+                        }
+
+                        tessellator6.setColorOpaque_F(0.8F * f68, 0.8F * f68, 0.8F * f68);
+                        this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 2));
+                        f68 = block.getBlockBrightness(this.worldObj, x, y, z + 1);
+                        if(blockDoor55.maxZ < 1.0D) {
+                            f68 = f18;
+                        }
+
+                        if(Block.lightValue[block.blockID] > 0) {
+                            f68 = 1.0F;
+                        }
+
+                        tessellator6.setColorOpaque_F(0.8F * f68, 0.8F * f68, 0.8F * f68);
+                        this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 3));
+                        f68 = block.getBlockBrightness(this.worldObj, x - 1, y, z);
+                        if(blockDoor55.minX > 0.0D) {
+                            f68 = f18;
+                        }
+
+                        if(Block.lightValue[block.blockID] > 0) {
+                            f68 = 1.0F;
+                        }
+
+                        tessellator6.setColorOpaque_F(0.6F * f68, 0.6F * f68, 0.6F * f68);
+                        this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 4));
+                        f68 = block.getBlockBrightness(this.worldObj, x + 1, y, z);
+                        if(blockDoor55.maxX < 1.0D) {
+                            f68 = f18;
+                        }
+
+                        if(Block.lightValue[block.blockID] > 0) {
+                            f68 = 1.0F;
+                        }
+
+                        tessellator6.setColorOpaque_F(0.6F * f68, 0.6F * f68, 0.6F * f68);
+                        this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 5));
+                        return true;
+                    } else if(i5 == 9) {
+                        tessellator6 = Tessellator.instance;
+                        i7 = this.worldObj.getBlockMetadata(x, y, z);
+                        int i8 = block.getBlockTextureFromSideAndMetadata(0, i7);
+                        if(this.overrideBlockTexture >= 0) {
+                            i8 = this.overrideBlockTexture;
+                        }
+
+                        float f9 = block.getBlockBrightness(this.worldObj, x, y, z);
+                        tessellator6.setColorOpaque_F(f9, f9, f9);
+                        i10 = (i8 & 15) << 4;
+                        i16 = i8 & 240;
+                        d17 = (double)((float)i10 / 256.0F);
+                        d19 = (double)(((float)i10 + 15.99F) / 256.0F);
+                        d21 = (double)((float)i16 / 256.0F);
+                        d23 = (double)(((float)i16 + 15.99F) / 256.0F);
+                        f27 = f26 = (float)(x + 1);
+                        f29 = f28 = (float)x;
+                        f30 = (float)z;
+                        float f32 = f31 = (float)(z + 1);
+                        float f33 = f30;
+                        float f34;
+                        float f35;
+                        float f36;
+                        f37 = f36 = f35 = f34 = (float)y + 0.0625F;
+                        if(i7 != 1 && i7 != 2 && i7 != 3 && i7 != 7) {
+                            if(i7 == 8) {
+                                f27 = f29;
+                                f26 = f29;
+                                f28 = f29 = (float)(x + 1);
+                                f33 = f32;
+                                f30 = f32;
+                                f31 = f32 = (float)z;
+                            } else if(i7 == 9) {
+                                f26 = f29 = f29;
+                                f28 = f27;
+                                f27 = f27;
+                                f30 = f31 = f30;
+                                f33 = f32;
+                                f32 = f32;
+                            }
+                        } else {
+                            f29 = f27;
+                            f26 = f27;
+                            f27 = f28 = f28;
+                            f31 = f32;
+                            f30 = f32;
+                            f32 = f33 = f33;
+                        }
+
+                        if(i7 != 2 && i7 != 4) {
+                            if(i7 == 3 || i7 == 5) {
+                                f36 = f35 = f34 + 1.0F;
+                            }
+                        } else {
+                            f37 = ++f34;
+                        }
+
+                        tessellator6.addVertexWithUV((double)f26, (double)f34, (double)f30, d19, d21);
+                        tessellator6.addVertexWithUV((double)f27, (double)f35, (double)f31, d19, d23);
+                        tessellator6.addVertexWithUV((double)f28, (double)f36, (double)f32, d17, d23);
+                        tessellator6.addVertexWithUV((double)f29, (double)f37, (double)f33, d17, d21);
+                        tessellator6.addVertexWithUV((double)f29, (double)f37, (double)f33, d17, d21);
+                        tessellator6.addVertexWithUV((double)f28, (double)f36, (double)f32, d17, d23);
+                        tessellator6.addVertexWithUV((double)f27, (double)f35, (double)f31, d19, d23);
+                        tessellator6.addVertexWithUV((double)f26, (double)f34, (double)f30, d19, d21);
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
             }
         }
@@ -811,6 +890,50 @@ public final class RenderBlocks {
         }
 
         return 1.0F - f6 / (float)i5;
+    }
+
+    public final void renderBlockFallingSand(Block block, World world, int x, int y, int z) {
+        Tessellator tessellator6 = Tessellator.instance;
+        Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+        float f7 = block.getBlockBrightness(world, x, y, z);
+        float f8;
+        if((f8 = block.getBlockBrightness(world, x, y - 1, z)) < f7) {
+            f8 = f7;
+        }
+
+        tessellator6.setColorOpaque_F(0.5F * f8, 0.5F * f8, 0.5F * f8);
+        this.renderBottomFace(block, -0.5D, -0.5D, -0.5D, block.getBlockTextureFromSide(0));
+        if((f8 = block.getBlockBrightness(world, x, y + 1, z)) < f7) {
+            f8 = f7;
+        }
+
+        tessellator6.setColorOpaque_F(f8 * 1.0F, f8 * 1.0F, f8 * 1.0F);
+        this.renderTopFace(block, -0.5D, -0.5D, -0.5D, block.getBlockTextureFromSide(1));
+        if((f8 = block.getBlockBrightness(world, x, y, z - 1)) < f7) {
+            f8 = f7;
+        }
+
+        tessellator6.setColorOpaque_F(0.8F * f8, 0.8F * f8, 0.8F * f8);
+        this.renderEastFace(block, -0.5D, -0.5D, -0.5D, block.getBlockTextureFromSide(2));
+        if((f8 = block.getBlockBrightness(world, x, y, z + 1)) < f7) {
+            f8 = f7;
+        }
+
+        tessellator6.setColorOpaque_F(0.8F * f8, 0.8F * f8, 0.8F * f8);
+        this.renderWestFace(block, -0.5D, -0.5D, -0.5D, block.getBlockTextureFromSide(3));
+        if((f8 = block.getBlockBrightness(world, x - 1, y, z)) < f7) {
+            f8 = f7;
+        }
+
+        tessellator6.setColorOpaque_F(0.6F * f8, 0.6F * f8, 0.6F * f8);
+        this.renderNorthFace(block, -0.5D, -0.5D, -0.5D, block.getBlockTextureFromSide(4));
+        if((f8 = block.getBlockBrightness(world, x + 1, y, z)) < f7) {
+            f8 = f7;
+        }
+
+        tessellator6.setColorOpaque_F(0.6F * f8, 0.6F * f8, 0.6F * f8);
+        this.renderSouthFace(block, -0.5D, -0.5D, -0.5D, block.getBlockTextureFromSide(5));
+        tessellator6.draw();
     }
 
 	private void renderBottomFace(Block block, double x, double y, double z, int blockTexture) {

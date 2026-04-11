@@ -53,6 +53,7 @@ public final class RenderGlobal implements IWorldAccess {
     private int cloudOffsetX = 0;
     private int rstarGLCallList;
     private int glSkyList;
+    private int glSkyList2;
     private int minBlockX;
     private int minBlockY;
     private int minBlockZ;
@@ -89,7 +90,7 @@ public final class RenderGlobal implements IWorldAccess {
             GL11.glGenQueriesARB(this.glOcclusionQueryBase);
         }
 
-        this.rstarGLCallList = GL11.glGenLists(2);
+        this.rstarGLCallList = GL11.glGenLists(3);
         GL11.glPushMatrix();
         GL11.glNewList(this.rstarGLCallList, GL11.GL_COMPILE);
         EaglercraftRandom random8 = new EaglercraftRandom(10842L);
@@ -114,13 +115,29 @@ public final class RenderGlobal implements IWorldAccess {
         this.glSkyList = this.rstarGLCallList + 1;
         GL11.glNewList(this.glSkyList, GL11.GL_COMPILE);
 
-        for(int i9 = -256; i9 <= 256; i9 += 64) {
-            for(i3 = -256; i3 <= 256; i3 += 64) {
+        int i9;
+        for(i9 = -384; i9 <= 384; i9 += 64) {
+            for(i3 = -384; i3 <= 384; i3 += 64) {
                 tessellator10.startDrawingQuads(DefaultVertexFormats.POSITION);
                 tessellator10.drawVertex((double)i9, 16.0D, (double)i3);
                 tessellator10.drawVertex((double)(i9 + 64), 16.0D, (double)i3);
                 tessellator10.drawVertex((double)(i9 + 64), 16.0D, (double)(i3 + 64));
                 tessellator10.drawVertex((double)i9, 16.0D, (double)(i3 + 64));
+                tessellator10.draw();
+            }
+        }
+
+        GL11.glEndList();
+        this.glSkyList2 = this.rstarGLCallList + 2;
+        GL11.glNewList(this.glSkyList2, GL11.GL_COMPILE);
+
+        for(i9 = -384; i9 <= 384; i9 += 64) {
+            for(i3 = -384; i3 <= 384; i3 += 64) {
+                tessellator10.startDrawingQuads(DefaultVertexFormats.POSITION);
+                tessellator10.drawVertex((double)(i9 + 64), -16.0D, (double)i3);
+                tessellator10.drawVertex((double)i9, -16.0D, (double)i3);
+                tessellator10.drawVertex((double)i9, -16.0D, (double)(i3 + 64));
+                tessellator10.drawVertex((double)(i9 + 64), -16.0D, (double)(i3 + 64));
                 tessellator10.draw();
             }
         }
@@ -541,6 +558,7 @@ public final class RenderGlobal implements IWorldAccess {
         Tessellator t = Tessellator.instance;
         GL11.glDepthMask(false);
         GL11.glEnable(GL11.GL_FOG);
+        GL11.glColor3f(f3, f4, f6);
         GL11.glCallList(this.glSkyList);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_FOG);
@@ -570,11 +588,14 @@ public final class RenderGlobal implements IWorldAccess {
         GL11.glColor4f(partialTime = this.worldObj.calculateFogLight(partialTime), partialTime, partialTime, partialTime);
         GL11.glCallList(this.rstarGLCallList);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL11.GL_FOG);
         GL11.glPopMatrix();
+        GL11.glColor3f(f3 * 0.2F + 0.04F, f4 * 0.2F + 0.04F, f6 * 0.6F + 0.1F);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glCallList(this.glSkyList2);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDepthMask(true);
     }
 

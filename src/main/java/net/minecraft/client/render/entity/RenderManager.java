@@ -19,7 +19,9 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.EntityPainting;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
+import net.minecraft.game.entity.misc.EntityFallingSand;
 import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.entity.misc.EntityMinecart;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.entity.monster.EntityCreeper;
 import net.minecraft.game.entity.monster.EntityGiantZombie;
@@ -59,6 +61,8 @@ public final class RenderManager {
 		this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
 		this.entityRenderMap.put(EntityItem.class, new RenderItem());
 		this.entityRenderMap.put(EntityTNTPrimed.class, new RenderTNTPrimed());
+        this.entityRenderMap.put(EntityFallingSand.class, new RenderFallingSand());
+        this.entityRenderMap.put(EntityMinecart.class, new RenderMinecart());
 		Iterator iterator1 = this.entityRenderMap.values().iterator();
 
 		while(iterator1.hasNext()) {

@@ -11,22 +11,22 @@ public final class RenderCreeper extends RenderLiving {
 		super(new ModelCreeper(), 0.5F);
 	}
 
-	protected final void preRenderCallback(EntityLiving livingEntity, float partialTicks) {
-		float livingEntity1 = ((EntityCreeper)livingEntity).getCreeperFlashTime(partialTicks);
-		partialTicks = 1.0F + MathHelper.sin(livingEntity1 * 100.0F) * livingEntity1 * 0.01F;
-		if(livingEntity1 < 0.0F) {
-			livingEntity1 = 0.0F;
-		}
+    protected final void preRenderCallback(EntityLiving livingEntity, float partialTicks) {
+        float f4 = ((EntityCreeper)livingEntity).getCreeperFlashTime(partialTicks);
+        partialTicks = 1.0F + MathHelper.sin(f4 * 100.0F) * f4 * 0.01F;
+        if(f4 < 0.0F) {
+            f4 = 0.0F;
+        }
 
-		if(livingEntity1 > 1.0F) {
-			livingEntity1 = 1.0F;
-		}
+        if(f4 > 1.0F) {
+            f4 = 1.0F;
+        }
 
-		livingEntity1 = (livingEntity1 *= livingEntity1) * livingEntity1;
-		float f3 = (1.0F + livingEntity1 * 0.4F) * partialTicks;
-		livingEntity1 = (1.0F + livingEntity1 * 0.1F) / partialTicks;
-		GL11.glScalef(f3, livingEntity1, f3);
-	}
+        f4 = (f4 *= f4) * f4;
+        float f3 = (1.0F + f4 * 0.4F) * partialTicks;
+        f4 = (1.0F + f4 * 0.1F) / partialTicks;
+        GL11.glScalef(f3, f4, f3);
+    }
 
 	protected final int getColorMultiplier(EntityLiving livingEntity, float brightness, float partialTicks) {
 		float livingEntity1;

@@ -1,7 +1,6 @@
 package net.minecraft.game.item;
 
 import net.minecraft.game.entity.player.EntityPlayer;
-import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.StepSound;
@@ -43,12 +42,9 @@ public final class ItemBlock extends Item {
 		if(stack.stackSize == 0) {
 			return false;
 		} else {
-			int i9 = world.getBlockId(x, y, z);
-			Block block10 = Block.blocksList[i9];
-			AxisAlignedBB axisAlignedBB8 = Block.blocksList[this.blockID].getCollisionBoundingBoxFromPool(world, x, y, z);
-			if(this.blockID > 0 && block10 == null || block10 == Block.waterMoving || block10 == Block.waterStill || block10 == Block.lavaMoving || block10 == Block.lavaStill || block10 == Block.fire) {
-				block10 = Block.blocksList[this.blockID];
-				if((axisAlignedBB8 == null || world.checkIfAABBIsClear(axisAlignedBB8)) && block10.canPlaceBlockAt(world, x, y, z) && world.setBlockWithNotify(x, y, z, this.blockID)) {
+            if(world.canBlockBePlacedAt(this.blockID, x, y, z, false)) {
+			    Block block10 = Block.blocksList[this.blockID];
+			    if(world.setBlockWithNotify(x, y, z, this.blockID)) {
 					Block.blocksList[this.blockID].onBlockPlaced(world, x, y, z, side);
 					double d10001 = (double)((float)x + 0.5F);
 					double d10002 = (double)((float)y + 0.5F);

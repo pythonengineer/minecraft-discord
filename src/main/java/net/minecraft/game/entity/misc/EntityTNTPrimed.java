@@ -7,13 +7,18 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.World;
 
 public class EntityTNTPrimed extends Entity {
-	public int fuse = 0;
+    public int fuse;
 
-	public EntityTNTPrimed(World world, float x, float y, float z) {
-		super(world);
-		this.preventEntitySpawning = true;
-		this.setSize(0.98F, 0.98F);
-		this.yOffset = this.height / 2.0F;
+    public EntityTNTPrimed(World world) {
+        super(world);
+        this.fuse = 0;
+        this.preventEntitySpawning = true;
+        this.setSize(0.98F, 0.98F);
+        this.yOffset = this.height / 2.0F;
+    }
+
+    public EntityTNTPrimed(World world, float x, float y, float z) {
+        this(world);
 		this.setPosition((double)x, (double)y, (double)z);
 		float world1 = (float)(Math.random() * (double)(float)Math.PI * 2.0D);
 		this.motionZ = (double)(-MathHelper.sin(world1 * (float)Math.PI / 180.0F) * 0.02F);

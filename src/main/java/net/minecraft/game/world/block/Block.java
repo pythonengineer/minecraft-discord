@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
@@ -93,6 +94,7 @@ public class Block {
     public static final Block signStanding;
     public static final Block doorWood;
     public static final Block ladder;
+    public static final Block minecartTrack;
     public int blockIndexInTexture;
     public final int blockID;
     private float blockHardness;
@@ -410,7 +412,7 @@ public class Block {
         return false;
     }
 
-    public void onEntityWalking(World world, int x, int y, int z) {
+    public void onEntityWalking(World world, int x, int y, int z, Entity entity) {
     }
 
     public void onBlockPlaced(World world, int x, int y, int z, int side) {
@@ -650,7 +652,7 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         cobblestoneMossy = block0;
-        block10000 = (new BlockStone(49, 37)).setHardness(10.0F).setResistance(10.0F);
+        block10000 = (new BlockObsidian(49, 37)).setHardness(10.0F).setResistance(20.0F);
         stepSound1 = soundStoneFootstep;
         block0 = block10000;
         block10000.stepSound = stepSound1;
@@ -731,6 +733,11 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         ladder = block0;
+        block10000 = (new BlockMinecartTrack(66, 128)).setHardness(1.0F);
+        stepSound1 = soundMetalFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        minecartTrack = block0;
 
         for(int i2 = 0; i2 < 256; ++i2) {
             if(blocksList[i2] != null) {

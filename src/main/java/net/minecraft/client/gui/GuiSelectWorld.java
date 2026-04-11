@@ -29,7 +29,7 @@ public class GuiSelectWorld extends GuiScreen {
 		this.addButtons();
 	}
 
-	protected final String getWorldName(int worldIndex) {
+	protected static String getWorldName(int worldIndex) {
 		return World.saveWorldFile("World" + worldIndex) != null ? "World" + worldIndex : null;
 	}
 

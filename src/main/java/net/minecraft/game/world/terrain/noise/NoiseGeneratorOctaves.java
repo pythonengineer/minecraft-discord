@@ -6,10 +6,6 @@ public final class NoiseGeneratorOctaves extends NoiseGenerator {
     private NoiseGeneratorPerlin[] generatorCollection;
     private int octaves;
 
-    public NoiseGeneratorOctaves(int i1) {
-        this(new EaglercraftRandom(), 6);
-    }
-
     public NoiseGeneratorOctaves(EaglercraftRandom rand, int octaves) {
         this.octaves = octaves;
         this.generatorCollection = new NoiseGeneratorPerlin[octaves];

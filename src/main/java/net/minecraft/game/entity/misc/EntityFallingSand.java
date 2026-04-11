@@ -1,0 +1,81 @@
+package net.minecraft.game.entity.misc;
+
+import com.mojang.nbt.NBTTagCompound;
+
+import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.game.entity.Entity;
+import net.minecraft.game.world.World;
+
+public class EntityFallingSand extends Entity {
+    public int blockID;
+    private int fallTime = 0;
+
+    public EntityFallingSand(World world1) {
+        super(world1);
+    }
+
+    public EntityFallingSand(World world, float x, float y, float z, int blockID) {
+        super(world);
+        this.blockID = blockID;
+        this.preventEntitySpawning = true;
+        this.setSize(0.98F, 0.98F);
+        this.yOffset = this.height / 2.0F;
+        this.setPosition((double)x, (double)y, (double)z);
+        this.motionZ = 0.0D;
+        this.motionY = 0.0D;
+        this.motionX = 0.0D;
+        this.canTriggerWalking = false;
+        this.prevPosX = (double)x;
+        this.prevPosY = (double)y;
+        this.prevPosZ = (double)z;
+    }
+
+    public final boolean canBeCollidedWith() {
+        return !this.isDead;
+    }
+
+    public final void onUpdate() {
+        if(this.blockID == 0) {
+            super.isDead = true;
+        } else {
+            this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.prevPosZ = this.posZ;
+            ++this.fallTime;
+            this.motionY -= (double)0.04F;
+            this.moveEntity(this.motionZ, this.motionY, this.motionX);
+            this.motionZ *= (double)0.98F;
+            this.motionY *= (double)0.98F;
+            this.motionX *= (double)0.98F;
+            int i1 = MathHelper.floor_double(this.posX);
+            int i2 = MathHelper.floor_double(this.posY);
+            int i3 = MathHelper.floor_double(this.posZ);
+            if(this.worldObj.getBlockId(i1, i2, i3) == this.blockID) {
+                this.worldObj.setBlockWithNotify(i1, i2, i3, 0);
+            }
+
+            if(this.onGround) {
+                this.motionZ *= (double)0.7F;
+                this.motionX *= (double)0.7F;
+                this.motionY *= -0.5D;
+                super.isDead = true;
+                if(!this.worldObj.canBlockBePlacedAt(this.blockID, i1, i2, i3, true) || !this.worldObj.setBlockWithNotify(i1, i2, i3, this.blockID)) {
+                    this.dropItemWithOffset(this.blockID, 1);
+                }
+            }
+
+        }
+    }
+
+    protected final void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
+        nBTTagCompound1.setByte("Tile", (byte)this.blockID);
+    }
+
+    protected final void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
+        this.blockID = nBTTagCompound1.getByte("Tile") & 255;
+    }
+
+    public final World getWorld() {
+        return this.worldObj;
+    }
+}

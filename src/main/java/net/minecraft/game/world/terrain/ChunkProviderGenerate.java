@@ -33,7 +33,6 @@ public final class ChunkProviderGenerate implements IChunkProvider {
     public ChunkProviderGenerate(World world, long randomSeed) {
         this.worldObj = world;
         this.rand = new EaglercraftRandom(randomSeed);
-        new EaglercraftRandom(randomSeed);
         this.noiseGen1 = new NoiseGeneratorOctaves(this.rand, 16);
         this.noiseGen2 = new NoiseGeneratorOctaves(this.rand, 16);
         this.noiseGen3 = new NoiseGeneratorOctaves(this.rand, 8);
@@ -42,9 +41,6 @@ public final class ChunkProviderGenerate implements IChunkProvider {
         this.noiseGen6 = new NoiseGeneratorOctaves(this.rand, 10);
         this.noiseGen7 = new NoiseGeneratorOctaves(this.rand, 16);
         this.mobSpawnerNoise = new NoiseGeneratorOctaves(this.rand, 8);
-        new NoiseGeneratorOctaves(6);
-        new NoiseGeneratorOctaves(6);
-        new NoiseGeneratorOctaves(6);
     }
 
     public final Chunk provideChunk(int chunkX, int chunkZ) {
@@ -193,7 +189,7 @@ public final class ChunkProviderGenerate implements IChunkProvider {
                 int i19 = Block.dirt.blockID;
 
                 for(int i93 = 127; i93 >= 0; --i93) {
-                    if(i93 <= this.rand.nextInt(5)) {
+                    if(i93 <= this.rand.nextInt(6) - 1) {
                         b3[i91] = (byte)Block.bedrock.blockID;
                     } else if(b3[i91] == 0) {
                         i17 = -1;

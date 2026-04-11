@@ -15,8 +15,7 @@ public final class BlockFlowing extends BlockFluid {
 
 	private void updateFlow(World world, int x, int y, int z) {
 		int i5 = world.getBlockMetadata(x, y, z);
-		world.setBlock(x, y, z, this.blockID + 1);
-		world.setBlockAndMetadata(x, y, z, i5);
+        world.setBlockAndMetadata(x, y, z, this.blockID + 1, i5);
 		world.markBlocksDirty(x, y, z, x, y, z);
 	}
 
@@ -56,8 +55,9 @@ public final class BlockFlowing extends BlockFluid {
 				if(i9 < 0) {
 					world.setBlockWithNotify(x, y, z, 0);
 				} else {
-					world.setBlockAndMetadataWithNotify(x, y, z, this.blockID, i9);
-					world.scheduleBlockUpdate(x, y, z, this.blockID);
+                    world.setBlockMetadata(x, y, z, i9);
+                    world.scheduleBlockUpdate(x, y, z, this.blockID);
+                    world.notifyBlocksOfNeighborChange(x, y, z, this.blockID);
 				}
 			} else if(z7) {
 				this.updateFlow(world, x, y, z);

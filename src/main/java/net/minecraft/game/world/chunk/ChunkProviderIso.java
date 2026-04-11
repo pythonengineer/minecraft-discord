@@ -10,7 +10,7 @@ import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.game.world.World;
 
 public final class ChunkProviderIso implements IChunkProvider {
-    private Chunk[] chunkMapping = new Chunk[1024];
+    private Chunk[] chunkMapping = new Chunk[256];
     private VFile2 saveDirectory;
     private World worldObj;
     private byte[] blankChunk = new byte[32768];
@@ -21,12 +21,12 @@ public final class ChunkProviderIso implements IChunkProvider {
     }
 
     public final boolean chunkExists(int chunkX, int chunkZ) {
-        int i3 = chunkX & 31 | (chunkZ & 31) << 5;
+        int i3 = chunkX & 15 | (chunkZ & 15) << 4;
         return this.chunkMapping[i3] != null && this.chunkMapping[i3].isAtLocation(chunkX, chunkZ);
     }
 
     public final Chunk provideChunk(int chunkX, int chunkZ) {
-        int i3 = chunkX & 31 | (chunkZ & 31) << 5;
+        int i3 = chunkX & 15 | (chunkZ & 15) << 4;
 
         try {
             if(!this.chunkExists(chunkX, chunkZ)) {

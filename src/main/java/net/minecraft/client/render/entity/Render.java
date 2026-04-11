@@ -82,7 +82,7 @@ public abstract class Render {
                                 Block block28 = Block.blocksList[i95];
                                 Tessellator tessellator67 = Tessellator.instance;
                                 double d68;
-                                if((d68 = ((double)f10 - (d16 - ((double)i92 + d39)) / 2.0D) * 0.5D * (double)render85.renderManager.worldObj.getBrightness(i87, i92, i26)) >= 0.0D) {
+                                if(block28.renderAsNormalBlock() && (d68 = ((double)f10 - (d16 - ((double)i92 + d39)) / 2.0D) * 0.5D * (double)render85.renderManager.worldObj.getBrightness(i87, i92, i26)) >= 0.0D) {
                                     if(d68 > 1.0D) {
                                         d68 = 1.0D;
                                     }

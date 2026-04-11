@@ -375,17 +375,17 @@ public final class EntityRenderer {
             GL11.glRotatef(this.mc.thePlayer.prevRotationYaw + (this.mc.thePlayer.rotationYaw - this.mc.thePlayer.prevRotationYaw) * f52 + 180.0F, 0.0F, 1.0F, 0.0F);
             ClippingHelperImplementation.getInstance();
             if(this.mc.gameSettings.renderDistance < 2) {
-                this.setupFog();
+                this.setupFog(-1);
                 this.mc.renderGlobal.renderSky(partialTicks);
             }
 
             GL11.glEnable(GL11.GL_FOG);
-            this.setupFog();
+            this.setupFog(1);
             Frustrum frustrum51;
             (frustrum51 = new Frustrum()).setPosition(d6, d8, d10);
             this.mc.renderGlobal.clipRenderersByFrustrum(frustrum51);
             this.mc.renderGlobal.updateRenderers(this.mc.thePlayer);
-            this.setupFog();
+            this.setupFog(0);
             GL11.glEnable(GL11.GL_FOG);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             RenderHelper.disableStandardItemLighting();
@@ -394,7 +394,7 @@ public final class EntityRenderer {
             this.mc.renderGlobal.renderEntities(this.getMouseOver(partialTicks), frustrum51, partialTicks);
             this.mc.effectRenderer.renderLitParticles(partialTicks);
             RenderHelper.disableStandardItemLighting();
-            this.setupFog();
+            this.setupFog(0);
             this.mc.effectRenderer.renderParticles(this.mc.thePlayer, partialTicks);
             if(this.mc.objectMouseOver != null && this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -404,7 +404,7 @@ public final class EntityRenderer {
             }
 
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            this.setupFog();
+            this.setupFog(0);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_CULL_FACE);
             int i62;
@@ -495,11 +495,11 @@ public final class EntityRenderer {
                 }
             }
 
-            this.setupFog();
+            this.setupFog(0);
             GL11.glEnable(GL11.GL_FOG);
             this.mc.renderGlobal.renderClouds(partialTicks);
             GL11.glDisable(GL11.GL_FOG);
-            this.setupFog();
+            this.setupFog(1);
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             GL11.glLoadIdentity();
             if(this.mc.gameSettings.anaglyph) {
@@ -545,7 +545,7 @@ public final class EntityRenderer {
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
     }
 
-    private void setupFog() {
+    private void setupFog(int fogFlag) {
         float f2 = 1.0F;
         float f5 = this.fogColorBlue;
         float f4 = this.fogColorGreen;
@@ -566,6 +566,10 @@ public final class EntityRenderer {
             GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
             GL11.glFogf(GL11.GL_FOG_START, this.farPlaneDistance * 0.25F);
             GL11.glFogf(GL11.GL_FOG_END, this.farPlaneDistance);
+            if(fogFlag < 0) {
+                GL11.glFogf(GL11.GL_FOG_START, 0.0F);
+                GL11.glFogf(GL11.GL_FOG_END, this.farPlaneDistance * 0.8F);
+            }
         }
 
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);

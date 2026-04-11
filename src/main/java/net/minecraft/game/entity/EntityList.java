@@ -7,7 +7,9 @@ import java.util.Map;
 import net.lax1dude.eaglercraft.minecraft.EntityConstructor;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
+import net.minecraft.game.entity.misc.EntityFallingSand;
 import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.entity.misc.EntityMinecart;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.entity.monster.EntityCreeper;
 import net.minecraft.game.entity.monster.EntityGiantZombie;
@@ -89,7 +91,7 @@ public final class EntityList {
     }
 
     static {
-        addMapping(EntityArrow.class, null, "Arrow");
+        addMapping(EntityArrow.class, EntityArrow::new, "Arrow");
         addMapping(EntityItem.class, EntityItem::new, "Item");
         addMapping(EntityPainting.class, EntityPainting::new, "Painting");
         addMapping(EntityLiving.class, EntityLiving::new, "Mob");
@@ -101,6 +103,8 @@ public final class EntityList {
         addMapping(EntityZombie.class, EntityZombie::new, "Zombie");
         addMapping(EntityPig.class, EntityPig::new, "Pig");
         addMapping(EntitySheep.class, EntitySheep::new, "Sheep");
-        addMapping(EntityTNTPrimed.class, null, "PrimedTnt");
+        addMapping(EntityTNTPrimed.class, EntityTNTPrimed::new, "PrimedTnt");
+        addMapping(EntityFallingSand.class, EntityFallingSand::new, "FallingSand");
+        addMapping(EntityMinecart.class, EntityMinecart::new, "Minecart");
     }
 }

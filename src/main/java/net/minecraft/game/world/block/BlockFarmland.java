@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
@@ -101,7 +102,7 @@ public final class BlockFarmland extends Block {
 
 	}
 
-	public final void onEntityWalking(World world, int x, int y, int z) {
+	public final void onEntityWalking(World world, int x, int y, int z, Entity entity) {
 		if(world.rand.nextInt(4) == 0) {
 			world.setBlockWithNotify(x, y, z, Block.dirt.blockID);
 		}

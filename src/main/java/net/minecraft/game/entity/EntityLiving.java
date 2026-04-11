@@ -488,4 +488,8 @@ public class EntityLiving extends Entity {
 		this.setPosition((double)x, (double)(y + this.height / 2.0F), (double)z);
 		return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
 	}
+
+    protected final void kill() {
+        this.attackEntityFrom((Entity)null, 4);
+    }
 }

@@ -11,7 +11,7 @@ public final class ModelRenderer {
 	private int textureOffsetX;
 	private int textureOffsetY;
 	private float rotationPointX;
-	private float rotationPointY;
+	public float rotationPointY;
 	private float rotationPointZ;
 	public float rotateAngleX;
 	public float rotateAngleY;

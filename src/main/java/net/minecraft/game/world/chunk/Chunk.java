@@ -196,6 +196,40 @@ public final class Chunk {
 		return this.blocks[x << 11 | z << 7 | y];
 	}
 
+    public final boolean setBlockIDWithMetadata(int x, int y, int z, int blockID, int metadata) {
+        byte b6 = (byte)blockID;
+        int i7 = this.heightMap[z << 4 | x] & 255;
+        this.data.setNibble(x, y, z, metadata);
+        if((metadata = this.blocks[x << 11 | z << 7 | y] & 255) == blockID) {
+            return false;
+        } else {
+            int i8 = (this.xPosition << 4) + x;
+            int i9 = (this.zPosition << 4) + z;
+            if(metadata != 0) {
+                Block.blocksList[metadata].onBlockRemoval(this.worldObj, i8, y, i9);
+            }
+
+            this.blocks[x << 11 | z << 7 | y] = b6;
+            if(Block.lightOpacity[b6] != 0) {
+                if(y >= i7) {
+                    this.relightBlock(x, y + 1, z);
+                }
+            } else if(y == i7 - 1) {
+                this.relightBlock(x, y, z);
+            }
+
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
+            this.updateSkylight_do(x, z);
+            if(blockID != 0) {
+                Block.blocksList[blockID].onBlockAdded(this.worldObj, i8, y, i9);
+            }
+
+            this.isModified = true;
+            return true;
+        }
+    }
+
 	public final boolean setBlockID(int x, int y, int z, int blockID) {
 		byte b5 = (byte)blockID;
 		int i6 = this.heightMap[z << 4 | x] & 255;
@@ -205,11 +239,11 @@ public final class Chunk {
 		} else {
 			int i8 = (this.xPosition << 4) + x;
 			int i9 = (this.zPosition << 4) + z;
+            this.blocks[x << 11 | z << 7 | y] = b5;
 			if(i7 != 0) {
 				Block.blocksList[i7].onBlockRemoval(this.worldObj, i8, y, i9);
 			}
 
-			this.blocks[x << 11 | z << 7 | y] = b5;
 			this.data.setNibble(x, y, z, 0);
 			if(Block.lightOpacity[b5] != 0) {
 				if(y >= i6) {

@@ -43,6 +43,7 @@ public class World {
     public int skylightSubtracted;
 	private int randInt;
 	private int tickUpdateRandom;
+    public boolean editingBlocks;
 	private static float[] lightBrightnessTable = new float[16];
 	public Entity playerEntity;
 	public int difficultySetting;
@@ -99,12 +100,13 @@ public class World {
         this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.worldTime = 0L;
-		this.skyColor = 10079487L;
-		this.fogColor = 11587839L;
+        this.skyColor = 8961023L;
+        this.fogColor = 12638463L;
 		this.cloudColor = 16777215L;
 		this.skylightSubtracted = 0;
 		this.randInt = (new EaglercraftRandom()).nextInt();
 		this.tickUpdateRandom = 1013904223;
+        this.editingBlocks = false;
 		this.pathFinder = new Pathfinder(this);
 		this.rand = new EaglercraftRandom();
 		this.isNewWorld = false;
@@ -156,7 +158,6 @@ public class World {
 
         if((worldName1 = this.calculateSkylightSubtracted(1.0F)) != this.skylightSubtracted) {
             this.skylightSubtracted = worldName1;
-            System.out.println(worldName1);
         }
 
     }
@@ -225,13 +226,12 @@ public class World {
     }
 
     private boolean checkChunksExist(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        minX >>= 4;
-        minY >>= 4;
-        minZ >>= 4;
-        maxX >>= 4;
-        maxY >>= 4;
-        maxZ >>= 4;
         if(maxY >= 0 && minY < 128) {
+            minX >>= 4;
+            minZ >>= 4;
+            maxX >>= 4;
+            maxZ >>= 4;
+
             for(minX = minX; minX <= maxX; ++minX) {
                 for(minY = minZ; minY <= maxZ; ++minY) {
                     if(!this.chunkExists(minX, minY)) {
@@ -253,6 +253,10 @@ public class World {
     public final Chunk getChunkFromChunkCoords(int chunkX, int chunkZ) {
 		return this.chunkProvider.provideChunk(chunkX, chunkZ);
 	}
+
+    public final boolean setBlockAndMetadata(int x, int y, int z, int blockID, int metadata) {
+        return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y < 0 ? false : (y >= 128 ? false : this.getChunkFromChunkCoords(x >> 4, z >> 4).setBlockIDWithMetadata(x & 15, y, z & 15, blockID, metadata))) : false;
+    }
 
 	public final boolean setBlock(int x, int y, int z, int blockID) {
 		return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y < 0 ? false : (y >= 128 ? false : this.getChunkFromChunkCoords(x >> 4, z >> 4).setBlockID(x & 15, y, z & 15, blockID))) : false;
@@ -279,27 +283,29 @@ public class World {
 		}
 	}
 
-	public final void setBlockMetadata(int metadata, int x, int y, int z) {
-		this.setBlockAndMetadata(metadata, x, y, z);
-	}
+    public final void setBlockMetadata(int metadata, int x, int y, int z) {
+        int i5 = z;
+        z = y;
+        y = x;
+        x = metadata;
+        boolean z10000;
+        if(metadata >= -32000000 && z >= -32000000 && metadata < 32000000 && z <= 32000000) {
+            if(y < 0) {
+                z10000 = false;
+            } else if(y >= 128) {
+                z10000 = false;
+            } else {
+                Chunk metadata1 = this.getChunkFromChunkCoords(metadata >> 4, z >> 4);
+                x &= 15;
+                z &= 15;
+                metadata1.setBlockMetadata(x, y, z, i5);
+                z10000 = true;
+            }
+        } else {
+            z10000 = false;
+        }
 
-    public final boolean setBlockAndMetadata(int x, int y, int z, int blockID) {
-		if(x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000) {
-			if(y < 0) {
-				return false;
-			} else if(y >= 128) {
-				return false;
-			} else {
-				Chunk chunk5 = this.getChunkFromChunkCoords(x >> 4, z >> 4);
-				x &= 15;
-				z &= 15;
-				chunk5.setBlockMetadata(x, y, z, blockID);
-				return true;
-			}
-		} else {
-			return false;
-		}
-	}
+    }
 
     public final boolean setBlockWithNotify(int x, int y, int z, int blockID) {
         if(this.setBlock(x, y, z, blockID)) {
@@ -311,7 +317,7 @@ public class World {
     }
 
     public final boolean setBlockAndMetadataWithNotify(int x, int y, int z, int blockID, int metadata) {
-        if(this.setBlock(x, y, z, blockID) | this.setBlockAndMetadata(x, y, z, metadata)) {
+        if(this.setBlockAndMetadata(x, y, z, blockID, metadata)) {
             this.notifyBlockChange(x, y, z, blockID);
             return true;
         } else {
@@ -344,19 +350,6 @@ public class World {
 
 	}
 
-	public final void swap(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		int i7 = this.getBlockId(minX, minY, minZ);
-		int i8 = this.getBlockMetadata(minX, minY, minZ);
-		int i9 = this.getBlockId(maxX, maxY, maxZ);
-		int i10 = this.getBlockMetadata(maxX, maxY, maxZ);
-		this.setBlock(minX, minY, minZ, i9);
-		this.setBlockAndMetadata(minX, minY, minZ, i10);
-		this.setBlock(maxX, maxY, maxZ, i7);
-		this.setBlockAndMetadata(maxX, maxY, maxZ, i8);
-		this.notifyBlocksOfNeighborChange(minX, minY, minZ, i9);
-		this.notifyBlocksOfNeighborChange(maxX, maxY, maxZ, i7);
-	}
-
 	public final void notifyBlocksOfNeighborChange(int x, int y, int z, int blockID) {
 		this.notifyBlockOfNeighborChange(x - 1, y, z, blockID);
 		this.notifyBlockOfNeighborChange(x + 1, y, z, blockID);
@@ -367,11 +360,13 @@ public class World {
 	}
 
 	private void notifyBlockOfNeighborChange(int x, int y, int z, int blockID) {
-		Block block5;
-		if((block5 = Block.blocksList[this.getBlockId(x, y, z)]) != null) {
-			block5.onNeighborBlockChange(this, x, y, z, blockID);
-		}
+        if(!this.editingBlocks) {
+            Block block5;
+            if((block5 = Block.blocksList[this.getBlockId(x, y, z)]) != null) {
+                block5.onNeighborBlockChange(this, x, y, z, blockID);
+            }
 
+        }
 	}
 
 	public final boolean canBlockSeeTheSky(int x, int y, int z) {
@@ -830,14 +825,16 @@ public class World {
 	}
 
     public final void scheduleBlockUpdate(int x, int y, int z, int blockID) {
-        NextTickListEntry x1 = new NextTickListEntry(x, y, z, blockID);
-        if(blockID > 0) {
-            x1.setScheduledTime((long)Block.blocksList[blockID].tickRate() + this.worldTime);
-        }
+        NextTickListEntry nextTickListEntry5 = new NextTickListEntry(x, y, z, blockID);
+        if(this.checkChunksExist(x - 8, y - 8, z - 8, x + 8, y + 8, z + 8)) {
+            if(blockID > 0) {
+                nextTickListEntry5.setScheduledTime((long)Block.blocksList[blockID].tickRate() + this.worldTime);
+            }
 
-        if(!this.scheduledTickSet.contains(x1)) {
-            this.scheduledTickSet.add(x1);
-            this.scheduledTickTreeSet.add(x1);
+            if(!this.scheduledTickSet.contains(nextTickListEntry5)) {
+                this.scheduledTickSet.add(nextTickListEntry5);
+                this.scheduledTickTreeSet.add(nextTickListEntry5);
+            }
         }
 
     }
@@ -858,7 +855,10 @@ public class World {
 				entity2.lastTickPosZ = entity2.posZ;
 				entity2.prevRotationYaw = entity2.rotationYaw;
 				entity2.prevRotationPitch = entity2.rotationPitch;
-				entity2.onUpdate();
+                if(this.chunkExists(i3, i5)) {
+                    entity2.onUpdate();
+                }
+
 				int i6 = MathHelper.floor_double(entity2.posX / 16.0D);
 				int i7 = MathHelper.floor_double(entity2.posY / 16.0D);
 				int i8 = MathHelper.floor_double(entity2.posZ / 16.0D);
@@ -896,17 +896,18 @@ public class World {
 
 	}
 
-	public final boolean checkIfAABBIsClear(AxisAlignedBB aabb) {
-		List list3 = this.getEntitiesWithinAABBExcludingEntity((Entity)null, aabb);
+    public final boolean checkIfAABBIsClear(AxisAlignedBB aabb) {
+        List list4 = this.getEntitiesWithinAABBExcludingEntity((Entity)null, aabb);
 
-		for(int i2 = 0; i2 < list3.size(); ++i2) {
-			if(((Entity)list3.get(i2)).preventEntitySpawning) {
-				return false;
-			}
-		}
+        for(int i2 = 0; i2 < list4.size(); ++i2) {
+            Entity entity3;
+            if(!(entity3 = (Entity)list4.get(i2)).isDead && entity3.preventEntitySpawning) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 	public final boolean getIsAnyLiquid(AxisAlignedBB aabb) {
 		int i2 = MathHelper.floor_double(aabb.minX);
@@ -988,7 +989,7 @@ public class World {
             }
         }
 
-        if((double)MathHelper.sqrt_double(vec3D10.xCoord * vec3D10.xCoord + vec3D10.yCoord * vec3D10.yCoord + vec3D10.zCoord * vec3D10.zCoord) > 0.0D) {
+        if(vec3D10.lengthVector() > 0.0D) {
             vec3D10 = vec3D10.normalize();
             entity.motionZ += vec3D10.xCoord * 0.004D;
             entity.motionY += vec3D10.yCoord * 0.004D;
@@ -1426,11 +1427,11 @@ public class World {
 
 	}
 
-	public final void tickUpdates() {
-		this.chunkProvider.unload100OldestChunks();
-		if(!this.loadedEntityList.contains(this.playerEntity)) {
-			this.entityJoinedWorld(this.playerEntity);
-		}
+    public final void tick() {
+        this.chunkProvider.unload100OldestChunks();
+        if(!this.loadedEntityList.contains(this.playerEntity) && this.playerEntity != null) {
+            this.entityJoinedWorld(this.playerEntity);
+        }
 
         int i1;
         if((i1 = this.calculateSkylightSubtracted(1.0F)) != this.skylightSubtracted) {
@@ -1446,40 +1447,50 @@ public class World {
             this.saveWorld(false);
         }
 
-        if((i1 = this.scheduledTickTreeSet.size()) != this.scheduledTickSet.size()) {
+        this.tickUpdates(false);
+        i1 = MathHelper.floor_double(this.playerEntity.posX);
+        int i2 = MathHelper.floor_double(this.playerEntity.posZ);
+
+        for(int i3 = 0; i3 < 32000; ++i3) {
+            this.randInt = this.randInt * 3 + this.tickUpdateRandom;
+            int i4;
+            int i5 = ((i4 = this.randInt >> 2) & 255) - 128 + i1;
+            int i6 = (i4 >> 8 & 255) - 128 + i2;
+            i4 = i4 >> 16 & 127;
+            int i7 = this.getBlockId(i5, i4, i6);
+            if(Block.tickOnLoad[i7]) {
+                Block.blocksList[i7].updateTick(this, i5, i4, i6, this.rand);
+            }
+        }
+
+	}
+
+    public final boolean tickUpdates(boolean skipUpdate) {
+        int i2;
+        if((i2 = this.scheduledTickTreeSet.size()) != this.scheduledTickSet.size()) {
             throw new IllegalStateException("TickNextTick list out of synch");
         } else {
-            if(i1 > 1000) {
-                i1 = 1000;
+            if(i2 > 500) {
+                i2 = 500;
             }
 
-            int i2;
-            NextTickListEntry nextTickListEntry3;
-            int i4;
-            for(i2 = 0; i2 < i1 && (nextTickListEntry3 = (NextTickListEntry)this.scheduledTickTreeSet.first()).scheduledTime <= this.worldTime; ++i2) {
-                this.scheduledTickTreeSet.remove(nextTickListEntry3);
-                this.scheduledTickSet.remove(nextTickListEntry3);
-                if(this.blockExists(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord) && (i4 = this.getBlockId(nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord)) == nextTickListEntry3.blockID && i4 > 0 && this.checkChunksExist(nextTickListEntry3.xCoord - 8, nextTickListEntry3.yCoord - 8, nextTickListEntry3.zCoord - 8, nextTickListEntry3.xCoord + 8, nextTickListEntry3.yCoord + 8, nextTickListEntry3.zCoord + 8)) {
-                    Block.blocksList[i4].updateTick(this, nextTickListEntry3.xCoord, nextTickListEntry3.yCoord, nextTickListEntry3.zCoord, this.rand);
+            for(int i3 = 0; i3 < i2; ++i3) {
+                NextTickListEntry nextTickListEntry4 = (NextTickListEntry)this.scheduledTickTreeSet.first();
+                if(!skipUpdate && nextTickListEntry4.scheduledTime > this.worldTime) {
+                    break;
+                }
+
+                this.scheduledTickTreeSet.remove(nextTickListEntry4);
+                this.scheduledTickSet.remove(nextTickListEntry4);
+                int i5;
+                if(this.checkChunksExist(nextTickListEntry4.xCoord - 8, nextTickListEntry4.yCoord - 8, nextTickListEntry4.zCoord - 8, nextTickListEntry4.xCoord + 8, nextTickListEntry4.yCoord + 8, nextTickListEntry4.zCoord + 8) && (i5 = this.getBlockId(nextTickListEntry4.xCoord, nextTickListEntry4.yCoord, nextTickListEntry4.zCoord)) == nextTickListEntry4.blockID && i5 > 0) {
+                    Block.blocksList[i5].updateTick(this, nextTickListEntry4.xCoord, nextTickListEntry4.yCoord, nextTickListEntry4.zCoord, this.rand);
                 }
             }
 
-            i1 = MathHelper.floor_double(this.playerEntity.posX);
-            i2 = MathHelper.floor_double(this.playerEntity.posZ);
-
-            for(int i8 = 0; i8 < 32000; ++i8) {
-                this.randInt = this.randInt * 3 + this.tickUpdateRandom;
-                int i5 = ((i4 = this.randInt >> 2) & 255) - 128 + i1;
-                int i6 = (i4 >> 8 & 255) - 128 + i2;
-                i4 = i4 >> 16 & 127;
-                int i7 = this.getBlockId(i5, i4, i6);
-                if(Block.tickOnLoad[i7]) {
-                    Block.blocksList[i7].updateTick(this, i5, i4, i6, this.rand);
-                }
-            }
-
+            return this.scheduledTickTreeSet.size() != 0;
         }
-	}
+    }
 
 	public final void randomDisplayUpdates(int x, int y, int z) {
 		EaglercraftRandom random4 = new EaglercraftRandom();
@@ -1569,6 +1580,18 @@ public class World {
 		}
 
 	}
+
+    public final boolean canBlockBePlacedAt(int blockID, int x, int y, int z, boolean ignoreBoundingBox) {
+        int i6 = this.getBlockId(x, y, z);
+        Block block9 = Block.blocksList[i6];
+        Block block7;
+        AxisAlignedBB axisAlignedBB8 = (block7 = Block.blocksList[blockID]).getCollisionBoundingBoxFromPool(this, x, y, z);
+        if(ignoreBoundingBox) {
+            axisAlignedBB8 = null;
+        }
+
+        return (blockID > 0 && block9 == null || block9 == Block.waterMoving || block9 == Block.waterStill || block9 == Block.lavaMoving || block9 == Block.lavaStill || block9 == Block.fire) && (axisAlignedBB8 == null || this.checkIfAABBIsClear(axisAlignedBB8)) && block7.canPlaceBlockAt(this, x, y, z);
+    }
 
 	static {
 		for(int i0 = 0; i0 <= 15; ++i0) {

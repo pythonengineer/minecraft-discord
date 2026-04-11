@@ -80,6 +80,7 @@ public class Item {
     public static Item bucketEmpty;
     public static Item bucketWater;
     public static Item bucketLava;
+    public static Item minecartEmpty;
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
 	protected int maxDamage = 32;
@@ -502,5 +503,10 @@ public class Item {
         itemBucket17 = itemBucket32;
         itemBucket32.iconIndex = b1;
         bucketLava = itemBucket17;
+        ItemMinecart itemMinecart34 = new ItemMinecart(72);
+        s11 = 135;
+        ItemMinecart itemMinecart18 = itemMinecart34;
+        itemMinecart34.iconIndex = s11;
+        minecartEmpty = itemMinecart18;
 	}
 }
