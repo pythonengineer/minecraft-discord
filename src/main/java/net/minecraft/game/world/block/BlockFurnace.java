@@ -2,6 +2,7 @@ package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.block.tileentity.TileEntityFurnace;
@@ -16,51 +17,42 @@ public final class BlockFurnace extends BlockContainer {
 		this.blockIndexInTexture = 45;
 	}
 
-	public final void onBlockAdded(World world, int x, int y, int z) {
-		super.onBlockAdded(world, x, y, z);
-		setDefaultDirection(world, x, y, z);
-	}
+    public final void onBlockAdded(World world, int x, int y, int z) {
+        super.onBlockAdded(world, x, y, z);
+        int i5 = (world = world).getBlockId(x, y, z - 1);
+        int i6 = world.getBlockId(x, y, z + 1);
+        int i7 = world.getBlockId(x - 1, y, z);
+        int i8 = world.getBlockId(x + 1, y, z);
+        byte b9 = 3;
+        if(Block.opaqueCubeLookup[i5] && !Block.opaqueCubeLookup[i6]) {
+            b9 = 3;
+        }
 
-	private static void setDefaultDirection(World world, int x, int y, int z) {
-		int i4 = world.getBlockId(x, y, z - 1);
-		int i5 = world.getBlockId(x, y, z + 1);
-		int i6 = world.getBlockId(x - 1, y, z);
-		int i7 = world.getBlockId(x + 1, y, z);
-		byte b8 = 3;
-		if(Block.opaqueCubeLookup[i4] && !Block.opaqueCubeLookup[i5]) {
-			b8 = 3;
-		}
+        if(Block.opaqueCubeLookup[i6] && !Block.opaqueCubeLookup[i5]) {
+            b9 = 2;
+        }
 
-		if(Block.opaqueCubeLookup[i5] && !Block.opaqueCubeLookup[i4]) {
-			b8 = 2;
-		}
+        if(Block.opaqueCubeLookup[i7] && !Block.opaqueCubeLookup[i8]) {
+            b9 = 5;
+        }
 
-		if(Block.opaqueCubeLookup[i6] && !Block.opaqueCubeLookup[i7]) {
-			b8 = 5;
-		}
+        if(Block.opaqueCubeLookup[i8] && !Block.opaqueCubeLookup[i7]) {
+            b9 = 4;
+        }
 
-		if(Block.opaqueCubeLookup[i7] && !Block.opaqueCubeLookup[i6]) {
-			b8 = 4;
-		}
+        world.setBlockMetadata(x, y, z, b9);
+    }
 
-		world.setBlockMetadata(x, y, z, b8);
-	}
-
-	public final int getBlockTexture(World world, int x, int y, int z, int side) {
-		if(side == 1) {
-			return Block.stone.blockIndexInTexture;
-		} else if(side == 0) {
-			return Block.stone.blockIndexInTexture;
-		} else {
-			int i6;
-			if((i6 = world.getBlockMetadata(x, y, z)) == 0) {
-				setDefaultDirection(world, x, y, z);
-				i6 = world.getBlockMetadata(x, y, z);
-			}
-
-			return side != i6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
-		}
-	}
+    public final int getBlockTexture(IBlockAccess iBlockAccess, int x, int y, int z, int side) {
+        if(side == 1) {
+            return Block.stone.blockIndexInTexture;
+        } else if(side == 0) {
+            return Block.stone.blockIndexInTexture;
+        } else {
+            int i6 = iBlockAccess.getBlockMetadata(x, y, z);
+            return side != i6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
+        }
+    }
 
 	public final void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
 		if(this.isActive) {

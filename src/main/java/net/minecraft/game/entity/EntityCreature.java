@@ -23,7 +23,7 @@ public class EntityCreature extends EntityLiving {
 		if(this.playerToAttack == null) {
 			this.playerToAttack = this.findPlayerToAttack();
 			if(this.playerToAttack != null) {
-				this.pathToEntity = this.worldObj.pathFinder.createEntityPathTo(this, this.playerToAttack, 16.0F);
+				this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, 16.0F);
 			}
 		} else if(!this.playerToAttack.isEntityAlive()) {
 			this.playerToAttack = null;
@@ -45,17 +45,17 @@ public class EntityCreature extends EntityLiving {
 		} else {
 			float f4;
 			if(this.playerToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
-				this.pathToEntity = this.worldObj.pathFinder.createEntityPathTo(this, this.playerToAttack, 16.0F);
+				this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, 16.0F);
 			} else if(this.pathToEntity == null || this.rand.nextInt(100) == 0) {
 				int i24 = -1;
 				int i2 = -1;
 				int i3 = -1;
 				f4 = -99999.0F;
 
-				for(int i28 = 0; i28 < 200; ++i28) {
-					int i6 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(21) - 10.0D);
-					int i7 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(9) - 4.0D);
-					int i8 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(21) - 10.0D);
+				for(int i28 = 0; i28 < 50; ++i28) {
+                    int i6 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(11) - 5.0D);
+                    int i7 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
+                    int i8 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(11) - 5.0D);
 					float f9;
 					if((f9 = this.getBlockPathWeight(i6, i7, i8)) > f4) {
 						f4 = f9;
@@ -66,7 +66,7 @@ public class EntityCreature extends EntityLiving {
 				}
 
 				if(i24 > 0) {
-					this.pathToEntity = this.worldObj.pathFinder.createEntityPathTo(this, i24, i2, i3, 16.0F);
+					this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i24, i2, i3, 16.0F);
 				}
 			}
 

@@ -15,6 +15,7 @@ import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayMode;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
 import net.lax1dude.eaglercraft.util.MathHelper;
@@ -37,6 +38,7 @@ import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.RenderGlobal;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.texture.TextureFlamesFX;
 import net.minecraft.client.render.texture.TextureGearsFX;
@@ -47,14 +49,16 @@ import net.minecraft.client.render.texture.TextureWaterFlowFX;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.misc.EntityMinecart;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.BlockSand;
 
-public final class Minecraft implements Runnable {
+public class Minecraft implements Runnable {
 	public PlayerController playerController = new PlayerControllerSP(this);
 	private boolean fullscreen = false;
 	public int displayWidth;
@@ -83,10 +87,13 @@ public final class Minecraft implements Runnable {
 	public MovingObjectPosition objectMouseOver;
     public GameSettings gameSettings;
     public SoundManager sndManager;
+    private static long[] frameTimes = new long[512];
+    private static int tickTimes = 0;
     private TextureWaterFX textureWaterFX;
     private TextureLavaFX textureLavaFX;
     volatile boolean running;
 	public String debug;
+    private long prevFrameTime;
     public boolean inGameHasFocus;
     private long systemTime;
     private int mouseTicksRan;
@@ -106,6 +113,7 @@ public final class Minecraft implements Runnable {
         this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
 		this.debug = "";
+        this.prevFrameTime = -1L;
         this.inGameHasFocus = false;
         this.systemTime = EagRuntime.currentTimeMillis();
         this.mouseTicksRan = 0;
@@ -117,6 +125,9 @@ public final class Minecraft implements Runnable {
         this.sndManager.loadSoundSettings(this.gameSettings);
         this.sndManager.registerSounds();
 	}
+
+    public void displayUnexpectedThrowable(UnexpectedThrowable unexpectedThrowable1) {
+    }
 
 	public final void setGuiScreen(GuiScreen screen) {
 		if(!(this.currentScreen instanceof GuiErrorScreen)) {
@@ -154,7 +165,7 @@ public final class Minecraft implements Runnable {
         }
 	}
 
-	public final void run() {
+	public void run() {
 		this.running = true;
 
 		try {
@@ -175,10 +186,6 @@ public final class Minecraft implements Runnable {
 
 			try {
 				Display.create();
-                System.out.println("GLES version: " + GL11.checkOpenGLESVersion());
-                System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
-                System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
-                System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
                 Mouse.destroy();
 			} catch (Exception lWJGLException17) {
 			    lWJGLException17.printStackTrace();
@@ -233,16 +240,16 @@ public final class Minecraft implements Runnable {
 			this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
 
 			this.ingameGUI = new GuiIngame(this);
-		} catch (Exception exception22) {
-		    exception22.printStackTrace();
-            EagRuntime.showPopup("Failed to start Minecraft");
+		} catch (Exception exception20) {
+            CrashReport crashreport1 = new CrashReport("Failed to start game", exception20);
+            this.displayCrashReport(crashreport1);
 			return;
 		}
 
-		long j23 = EagRuntime.currentTimeMillis();
-		int i3 = 0;
+        try {
+    		long j23 = EagRuntime.currentTimeMillis();
+    		int i3 = 0;
 
-		try {
 			while(this.running) {
 				if(Display.isCloseRequested()) {
 					this.running = false;
@@ -287,9 +294,6 @@ public final class Minecraft implements Runnable {
                 touchOverlayRenderer.render(this.displayWidth, this.displayHeight, this.scaledResolution);
                 GL11.disableBlend();
 
-                Thread.yield();
-                this.updateDisplay();
-
                 if(!Display.isActive()) {
                     if(this.fullscreen) {
                         this.toggleFullscreen();
@@ -298,14 +302,22 @@ public final class Minecraft implements Runnable {
                     Thread.sleep(10L);
                 }
 
+                if(Keyboard.isKeyDown(Keyboard.KEY_F6)) {
+                    this.renderDebugDisplay();
+                } else {
+                    this.prevFrameTime = EagRuntime.nanoTime();
+                }
+
+                Thread.yield();
+                this.updateDisplay();
+
                 if(this.gameSettings.limitFramerate) {
                     Thread.sleep(5L);
                 }
 
                 ++i3;
-                this.isGamePaused = this.currentScreen != null && this.currentScreen.doesGuiPauseGame();
 
-				while(EagRuntime.currentTimeMillis() >= j23 + 1000L) {
+                for(this.isGamePaused = this.currentScreen != null && this.currentScreen.doesGuiPauseGame(); EagRuntime.currentTimeMillis() >= j23 + 1000L; i3 = 0) {
 					this.debug = i3 + " fps, " + WorldRenderer.chunkUpdates + " chunk updates";
 					WorldRenderer.chunkUpdates = 0;
 					j23 += 1000L;
@@ -326,6 +338,62 @@ public final class Minecraft implements Runnable {
 		}
 
 	}
+
+    private void renderDebugDisplay() {
+        if(this.prevFrameTime == -1L) {
+            this.prevFrameTime = EagRuntime.nanoTime();
+        }
+
+        long j1 = EagRuntime.nanoTime();
+        frameTimes[tickTimes++ & frameTimes.length - 1] = j1 - this.prevFrameTime;
+        this.prevFrameTime = j1;
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0.0D, (double)this.displayWidth, (double)this.displayHeight, 0.0D, 1000.0D, 3000.0D);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
+        GL11.glLineWidth(1.0F);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        Tessellator tessellator13 = Tessellator.instance;
+        Tessellator.instance.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        tessellator13.setColorOpaque_I(0x20200000);
+        tessellator13.drawVertex(0.0D, (double)(this.displayHeight - 100), 0.0D);
+        tessellator13.drawVertex(0.0D, (double)this.displayHeight, 0.0D);
+        tessellator13.drawVertex((double)frameTimes.length, (double)this.displayHeight, 0.0D);
+        tessellator13.drawVertex((double)frameTimes.length, (double)(this.displayHeight - 100), 0.0D);
+        tessellator13.draw();
+        long j4 = 0L;
+
+        int i2;
+        for(i2 = 0; i2 < frameTimes.length; ++i2) {
+            j4 += frameTimes[i2];
+        }
+
+        i2 = (int)(j4 / 200000L / (long)frameTimes.length);
+        tessellator13.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        tessellator13.setColorOpaque_I(0x20400000);
+        tessellator13.drawVertex(0.0D, (double)(this.displayHeight - i2), 0.0D);
+        tessellator13.drawVertex(0.0D, (double)this.displayHeight, 0.0D);
+        tessellator13.drawVertex((double)frameTimes.length, (double)this.displayHeight, 0.0D);
+        tessellator13.drawVertex((double)frameTimes.length, (double)(this.displayHeight - i2), 0.0D);
+        tessellator13.draw();
+        tessellator13.startDrawing(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+
+        for(i2 = 0; i2 < frameTimes.length; ++i2) {
+            int i3;
+            int i14;
+            int i5 = (i5 = (i14 = (i14 = (i3 = (i2 - tickTimes & frameTimes.length - 1) * 255 / frameTimes.length) * i3 / 255) * i14 / 255) * i14 / 255) * i5 / 255;
+            tessellator13.setColorOpaque_I(i5 + 0xFF000000 + (i14 << 8) + (i3 << 16));
+            long j11 = frameTimes[i2] / 200000L;
+            tessellator13.drawVertex((double)((float)i2 + 0.5F), (double)((float)((long)this.displayHeight - j11) + 0.5F), 0.0D);
+            tessellator13.drawVertex((double)((float)i2 + 0.5F), (double)((float)this.displayHeight + 0.5F), 0.0D);
+        }
+
+        tessellator13.draw();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
 
     public void displayCrashReport(CrashReport crashReportIn) {
         String report = crashReportIn.getCompleteReport();
@@ -499,7 +567,16 @@ public final class Minecraft implements Runnable {
                 if(mouseButton == 1) {
                     entity5 = this.objectMouseOver.entityHit;
                     entityPlayerSP4 = this.thePlayer;
-                    entity5.displayInventoryGUI(entityPlayerSP4);
+                    if(entity5 instanceof EntityMinecart) {
+                        EntityMinecart entityMinecart19;
+                        if((entityMinecart19 = (EntityMinecart)entity5).riddenByEntity == null) {
+                            entityPlayerSP4.ridingEntity = entityMinecart19;
+                            entityMinecart19.interact(entityPlayerSP4);
+                        } else {
+                            entityPlayerSP4.ridingEntity = null;
+                            entityMinecart19.interact((Entity)null);
+                        }
+                    }
                 }
             } else if(this.objectMouseOver.typeOfHit == 0) {
                 int i11 = this.objectMouseOver.blockX;
@@ -889,16 +966,7 @@ public final class Minecraft implements Runnable {
             this.changeWorld(world3, "Loading level");
         }
 
-        world3.saveWorld(false);
-
-        this.loadingScreen.displayLoadingString("Preparing lights");
-        int i4 = 0;
-
-        while(world3.lightUpdatesNeeded() > 0) {
-            this.loadingScreen.setLoadingProgress(i4++ % 100);
-            world3.updatingLighting();
-        }
-
+        world3.saveWorld(false, (IProgressUpdate)null);
     }
 
     public final void changeWorld1(World world) {
@@ -907,7 +975,7 @@ public final class Minecraft implements Runnable {
 
     private void changeWorld(World world, String worldName) {
         if(this.theWorld != null) {
-            this.theWorld.saveWorldIndirectly();
+            this.theWorld.saveWorldIndirectly(this.loadingScreen);
         }
 
 		this.theWorld = world;
@@ -933,6 +1001,9 @@ public final class Minecraft implements Runnable {
             this.playerController.onRespawn(this.thePlayer);
             world.playerEntity = this.thePlayer;
             world.joinPlayerInWorld();
+            if(world.isNewWorld) {
+                world.saveWorldIndirectly(this.loadingScreen);
+            }
         }
 
 		System.gc();
@@ -940,12 +1011,12 @@ public final class Minecraft implements Runnable {
 	}
 
     private void preloadWorld(String worldName) {
-        this.loadingScreen.setTitle(worldName);
+        this.loadingScreen.printText(worldName);
         this.loadingScreen.displayLoadingString("Building terrain");
         int i6 = 0;
 
         int i2;
-        for(i2 = -128; i2 <= 128; i2 += 16) {
+        for(i2 = -240; i2 <= 240; i2 += 16) {
             int i3 = this.theWorld.spawnX;
             int i4 = this.theWorld.spawnZ;
             if(this.theWorld.playerEntity != null) {
@@ -953,8 +1024,8 @@ public final class Minecraft implements Runnable {
                 i4 = (int)this.theWorld.playerEntity.posZ;
             }
 
-            for(int i5 = -128; i5 <= 128; i5 += 16) {
-                this.loadingScreen.setLoadingProgress(i6++ * 100 / 289);
+            for(int i5 = -240; i5 <= 240; i5 += 16) {
+                this.loadingScreen.setLoadingProgress(i6++ * 100 / 961);
                 this.theWorld.getBlockId(i3 + i2, 64, i4 + i5);
 
                 while(this.theWorld.updatingLighting()) {
@@ -963,13 +1034,14 @@ public final class Minecraft implements Runnable {
         }
 
         this.loadingScreen.displayLoadingString("Simulating world for a bit");
+        BlockSand.fallInstantly = true;
 
         for(i2 = 0; i2 < 2000; ++i2) {
-            this.theWorld.tickUpdates(true);
+            this.theWorld.TickUpdates(true);
         }
 
-        this.loadingScreen.displayLoadingString("Preparing chunks");
         this.theWorld.dropOldChunks();
+        BlockSand.fallInstantly = false;
     }
 
     public final void installResource(String resource, String resourceDir) {
@@ -1016,9 +1088,6 @@ public final class Minecraft implements Runnable {
         this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
         this.playerController.onRespawn(this.thePlayer);
         this.preloadWorld("Respawning");
-    }
-
-    public void setServer(String string, int parseInt) {
     }
 
     public static void main(String[] args) throws LWJGLException {

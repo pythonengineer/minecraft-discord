@@ -2,6 +2,7 @@ package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.physics.AxisAlignedBB;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
@@ -16,11 +17,7 @@ public final class BlockFire extends Block {
 		this.setBurnRate(Block.leaves.blockID, 30, 60);
 		this.setBurnRate(Block.bookshelf.blockID, 30, 20);
 		this.setBurnRate(Block.tnt.blockID, 15, 100);
-
-		for(blockID = 0; blockID < 16; ++blockID) {
-			this.setBurnRate(Block.clothRed.blockID + blockID, 30, 60);
-		}
-
+        this.setBurnRate(Block.cloth.blockID, 30, 60);
 		this.setTickOnLoad(true);
 	}
 
@@ -65,7 +62,7 @@ public final class BlockFire extends Block {
 				world.setBlockWithNotify(x, y, z, 0);
 			}
 
-		} else if(!this.getChanceToEncourageFire(world, x, y - 1, z) && i6 == 15 && rand.nextInt(4) == 0) {
+		} else if(!this.canBlockCatchFire(world, x, y - 1, z) && i6 == 15 && rand.nextInt(4) == 0) {
 			world.setBlockWithNotify(x, y, z, 0);
 		} else {
 			if(i6 % 5 == 0 && i6 > 5) {
@@ -128,15 +125,15 @@ public final class BlockFire extends Block {
 	}
 
 	private boolean canNeighborBurn(World world, int x, int y, int z) {
-		return this.getChanceToEncourageFire(world, x + 1, y, z) ? true : (this.getChanceToEncourageFire(world, x - 1, y, z) ? true : (this.getChanceToEncourageFire(world, x, y - 1, z) ? true : (this.getChanceToEncourageFire(world, x, y + 1, z) ? true : (this.getChanceToEncourageFire(world, x, y, z - 1) ? true : this.getChanceToEncourageFire(world, x, y, z + 1)))));
+		return this.canBlockCatchFire(world, x + 1, y, z) ? true : (this.canBlockCatchFire(world, x - 1, y, z) ? true : (this.canBlockCatchFire(world, x, y - 1, z) ? true : (this.canBlockCatchFire(world, x, y + 1, z) ? true : (this.canBlockCatchFire(world, x, y, z - 1) ? true : this.canBlockCatchFire(world, x, y, z + 1)))));
 	}
 
 	public final boolean isCollidable() {
 		return false;
 	}
 
-	public final boolean getChanceToEncourageFire(World world, int x, int y, int z) {
-		return this.chanceToEncourageFire[world.getBlockId(x, y, z)] > 0;
+	public final boolean canBlockCatchFire(IBlockAccess iBlockAccess, int x, int y, int z) {
+		return this.chanceToEncourageFire[iBlockAccess.getBlockId(x, y, z)] > 0;
 	}
 
 	private int getChanceToEncourageFire(World world, int x, int y, int z, int fireEncourageChance) {
@@ -171,8 +168,8 @@ public final class BlockFire extends Block {
 		float f7;
 		float f8;
 		float f9;
-		if(!world.isBlockNormalCube(x, y - 1, z) && !Block.fire.getChanceToEncourageFire(world, x, y - 1, z)) {
-			if(Block.fire.getChanceToEncourageFire(world, x - 1, y, z)) {
+		if(!world.isBlockNormalCube(x, y - 1, z) && !Block.fire.canBlockCatchFire(world, x, y - 1, z)) {
+			if(Block.fire.canBlockCatchFire(world, x - 1, y, z)) {
 				for(i6 = 0; i6 < 2; ++i6) {
 					f7 = (float)x + rand.nextFloat() * 0.1F;
 					f8 = (float)y + rand.nextFloat();
@@ -181,7 +178,7 @@ public final class BlockFire extends Block {
 				}
 			}
 
-			if(Block.fire.getChanceToEncourageFire(world, x + 1, y, z)) {
+			if(Block.fire.canBlockCatchFire(world, x + 1, y, z)) {
 				for(i6 = 0; i6 < 2; ++i6) {
 					f7 = (float)(x + 1) - rand.nextFloat() * 0.1F;
 					f8 = (float)y + rand.nextFloat();
@@ -190,7 +187,7 @@ public final class BlockFire extends Block {
 				}
 			}
 
-			if(Block.fire.getChanceToEncourageFire(world, x, y, z - 1)) {
+			if(Block.fire.canBlockCatchFire(world, x, y, z - 1)) {
 				for(i6 = 0; i6 < 2; ++i6) {
 					f7 = (float)x + rand.nextFloat();
 					f8 = (float)y + rand.nextFloat();
@@ -199,7 +196,7 @@ public final class BlockFire extends Block {
 				}
 			}
 
-			if(Block.fire.getChanceToEncourageFire(world, x, y, z + 1)) {
+			if(Block.fire.canBlockCatchFire(world, x, y, z + 1)) {
 				for(i6 = 0; i6 < 2; ++i6) {
 					f7 = (float)x + rand.nextFloat();
 					f8 = (float)y + rand.nextFloat();
@@ -208,7 +205,7 @@ public final class BlockFire extends Block {
 				}
 			}
 
-			if(Block.fire.getChanceToEncourageFire(world, x, y + 1, z)) {
+			if(Block.fire.canBlockCatchFire(world, x, y + 1, z)) {
 				for(i6 = 0; i6 < 2; ++i6) {
 					f7 = (float)x + rand.nextFloat();
 					f8 = (float)(y + 1) - rand.nextFloat() * 0.1F;

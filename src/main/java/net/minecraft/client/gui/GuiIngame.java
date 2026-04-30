@@ -8,6 +8,7 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
 import net.minecraft.client.ChatLine;
@@ -15,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.gui.container.GuiInventory;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
@@ -26,6 +28,7 @@ public final class GuiIngame extends Gui {
 	private EaglercraftRandom rand = new EaglercraftRandom();
 	private Minecraft mc;
     private int updateCounter = 0;
+    private float prevVignetteBrightness = 1.0F;
 
 	public GuiIngame(Minecraft mc) {
 		this.mc = mc;
@@ -39,9 +42,38 @@ public final class GuiIngame extends Gui {
 
         onBeginHotbarDraw();
 
+        GL11.glEnable(GL11.GL_BLEND);
+        if(this.mc.gameSettings.fancyGraphics) {
+            float f5 = this.mc.thePlayer.getBrightness(partialTicks);
+            if((f5 = 1.0F - f5) < 0.0F) {
+                f5 = 0.0F;
+            }
+
+            if(f5 > 1.0F) {
+                f5 = 1.0F;
+            }
+
+            this.prevVignetteBrightness = (float)((double)this.prevVignetteBrightness + (double)(f5 - this.prevVignetteBrightness) * 0.01D);
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GL11.glDepthMask(false);
+            GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE_MINUS_SRC_COLOR);
+            GL11.glColor4f(this.prevVignetteBrightness, this.prevVignetteBrightness, this.prevVignetteBrightness, 1.0F);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/misc/vignette.png"));
+            Tessellator tessellator9 = Tessellator.instance;
+            Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+            tessellator9.addVertexWithUV(0.0D, (double)scaledHeight, -90.0D, 0.0D, 1.0D);
+            tessellator9.addVertexWithUV((double)scaledWidth, (double)scaledHeight, -90.0D, 1.0D, 1.0D);
+            tessellator9.addVertexWithUV((double)scaledWidth, 0.0D, -90.0D, 1.0D, 0.0D);
+            tessellator9.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
+            tessellator9.draw();
+            GL11.glDepthMask(true);
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glEnable(GL11.GL_BLEND);
         InventoryPlayer inventoryPlayer = this.mc.thePlayer.inventory;
 		this.zLevel = -90.0F;
         int i = scaledWidth / 2;
@@ -150,26 +182,26 @@ public final class GuiIngame extends Gui {
 		GL11.glPopMatrix();
 
         for(i10 = 0; i10 < 9; ++i10) {
-            float f25 = (float)(scaledWidth / 2 - 90 + i10 * 20 + 2);
-            i12 = scaledHeight - 16 - 3;
-            float f21 = f25;
-            ItemStack itemStack22;
-            if((itemStack22 = this.mc.thePlayer.inventory.mainInventory[i10]) != null) {
-                float f9;
-                if((f9 = (float)itemStack22.animationsToGo - partialTicks) > 0.0F) {
+            int i26 = scaledWidth / 2 - 90 + i10 * 20 + 2;
+            int i20 = scaledHeight - 16 - 3;
+            
+            ItemStack itemStack23;
+            if((itemStack23 = this.mc.thePlayer.inventory.mainInventory[i10]) != null) {
+                float f24;
+                if((f24 = (float)itemStack23.animationsToGo - partialTicks) > 0.0F) {
                     GL11.glPushMatrix();
-                    f25 = 1.0F + f9 / 5.0F;
-                    GL11.glTranslatef((float)(f21 + 8), (float)(i12 + 12), 0.0F);
+                    float f25 = 1.0F + f24 / 5.0F;
+                    GL11.glTranslatef((float)(i26 + 8), (float)(i20 + 12), 0.0F);
                     GL11.glScalef(1.0F / f25, (f25 + 1.0F) / 2.0F, 1.0F);
-                    GL11.glTranslatef((float)(-(f21 + 8)), (float)(-(i12 + 12)), 0.0F);
+                    GL11.glTranslatef((float)(-(i26 + 8)), (float)(-(i20 + 12)), 0.0F);
                 }
 
-                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemStack22, (int)f21, i12);
-                if(f9 > 0.0F) {
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemStack23, i26, i20);
+                if(f24 > 0.0F) {
                     GL11.glPopMatrix();
                 }
 
-                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, itemStack22, (int)f21, i12);
+                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, itemStack23, i26, i20);
             }
         }
 

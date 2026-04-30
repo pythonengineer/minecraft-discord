@@ -408,9 +408,9 @@ public final class EntityRenderer {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_CULL_FACE);
             int i62;
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             if(this.mc.gameSettings.fancyGraphics) {
                 GL11.glColorMask(false, false, false, false);
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
                 i62 = this.mc.renderGlobal.sortAndRender(this.mc.thePlayer, 1, (double)partialTicks);
                 GL11.glColorMask(true, true, true, true);
                 if(this.mc.gameSettings.anaglyph) {
@@ -422,15 +422,12 @@ public final class EntityRenderer {
                 }
 
                 if(i62 > 0) {
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-                    this.mc.renderGlobal.renderAllRenderLists(1, (double)partialTicks);
+                    this.mc.renderGlobal.renderAllRenderLists();
                 }
             } else {
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
                 this.mc.renderGlobal.sortAndRender(this.mc.thePlayer, 1, (double)partialTicks);
             }
 
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
             GL11.glDepthMask(true);
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_BLEND);

@@ -6,6 +6,7 @@ import net.minecraft.game.InventoryLargeChest;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.block.tileentity.TileEntityChest;
@@ -19,16 +20,16 @@ public final class BlockChest extends BlockContainer {
 		this.blockIndexInTexture = 26;
 	}
 
-	public final int getBlockTexture(World world, int x, int y, int z, int side) {
+	public final int getBlockTexture(IBlockAccess iBlockAccess, int x, int y, int z, int side) {
 		if(side == 1) {
 			return this.blockIndexInTexture - 1;
 		} else if(side == 0) {
 			return this.blockIndexInTexture - 1;
 		} else {
-			int i6 = world.getBlockId(x, y, z - 1);
-			int i7 = world.getBlockId(x, y, z + 1);
-			int i8 = world.getBlockId(x - 1, y, z);
-			int i9 = world.getBlockId(x + 1, y, z);
+			int i6 = iBlockAccess.getBlockId(x, y, z - 1);
+			int i7 = iBlockAccess.getBlockId(x, y, z + 1);
+			int i8 = iBlockAccess.getBlockId(x - 1, y, z);
+			int i9 = iBlockAccess.getBlockId(x + 1, y, z);
 			int i10;
 			int i11;
 			int world1;
@@ -59,8 +60,8 @@ public final class BlockChest extends BlockContainer {
 						i10 = -1;
 					}
 
-					i11 = world.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z - 1);
-					world1 = world.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z + 1);
+					i11 = iBlockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z - 1);
+					world1 = iBlockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z + 1);
 					if(side == 3) {
 						i10 = -1 - i10;
 					}
@@ -84,8 +85,8 @@ public final class BlockChest extends BlockContainer {
 					i10 = -1;
 				}
 
-				i11 = world.getBlockId(x - 1, y, i6 == this.blockID ? z - 1 : z + 1);
-				world1 = world.getBlockId(x + 1, y, i6 == this.blockID ? z - 1 : z + 1);
+				i11 = iBlockAccess.getBlockId(x - 1, y, i6 == this.blockID ? z - 1 : z + 1);
+				world1 = iBlockAccess.getBlockId(x + 1, y, i6 == this.blockID ? z - 1 : z + 1);
 				if(side == 4) {
 					i10 = -1 - i10;
 				}

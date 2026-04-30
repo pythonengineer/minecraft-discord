@@ -6,6 +6,7 @@ import net.minecraft.game.item.Item;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
@@ -23,7 +24,12 @@ public final class BlockDoor extends Block {
                 return this.blockIndexInTexture;
             } else {
                 side = i3 / 2 + (side & 1 ^ i3) + (metadata & 4) / 4;
-                return this.blockIndexInTexture + (side & 1) - ((metadata & 8) << 1);
+                metadata = this.blockIndexInTexture - ((metadata & 8) << 1);
+                if((side & 1) != 0) {
+                    metadata = -metadata;
+                }
+
+                return metadata;
             }
         } else {
             return this.blockIndexInTexture;
@@ -52,8 +58,8 @@ public final class BlockDoor extends Block {
         return super.getCollisionBoundingBoxFromPool(world, x, y, z);
     }
 
-    public final void setBlockBoundsBasedOnState(World world, int x, int y, int z) {
-        x = getState(world.getBlockMetadata(x, y, z));
+    public final void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess, int x, int y, int z) {
+        x = getState(iBlockAccess.getBlockMetadata(x, y, z));
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 1.0F);
         if(x == 0) {
             this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.1875F);

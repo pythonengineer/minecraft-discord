@@ -35,12 +35,12 @@ public class EntityRainFX extends EntityFX {
 		this.motionY *= (double)0.98F;
 		this.motionX *= (double)0.98F;
 		if(this.particleMaxAge-- <= 0) {
-			super.isDead = true;
+            this.setEntityDead();
 		}
 
 		if(this.onGround) {
 			if(Math.random() < 0.5D) {
-				super.isDead = true;
+	            this.setEntityDead();
 			}
 
 			this.motionZ *= (double)0.7F;
@@ -51,7 +51,7 @@ public class EntityRainFX extends EntityFX {
 		if((material1 = this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))).getIsLiquid() || material1.isSolid()) {
 			double d2 = (double)((float)(MathHelper.floor_double(this.posY) + 1) - BlockFluid.getFluidHeightPercent(this.worldObj.getBlockMetadata(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))));
 			if(this.posY < d2) {
-				super.isDead = true;
+	            this.setEntityDead();
 			}
 		}
 

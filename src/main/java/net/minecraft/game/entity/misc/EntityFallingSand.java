@@ -36,7 +36,7 @@ public class EntityFallingSand extends Entity {
 
     public final void onUpdate() {
         if(this.blockID == 0) {
-            super.isDead = true;
+            this.setEntityDead();
         } else {
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
@@ -58,10 +58,14 @@ public class EntityFallingSand extends Entity {
                 this.motionZ *= (double)0.7F;
                 this.motionX *= (double)0.7F;
                 this.motionY *= -0.5D;
-                super.isDead = true;
+                this.setEntityDead();
                 if(!this.worldObj.canBlockBePlacedAt(this.blockID, i1, i2, i3, true) || !this.worldObj.setBlockWithNotify(i1, i2, i3, this.blockID)) {
                     this.dropItemWithOffset(this.blockID, 1);
+                    return;
                 }
+            } else if(this.fallTime > 100) {
+                this.dropItemWithOffset(this.blockID, 1);
+                this.setEntityDead();
             }
 
         }

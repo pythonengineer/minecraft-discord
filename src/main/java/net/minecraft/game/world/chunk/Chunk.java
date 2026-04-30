@@ -1,17 +1,12 @@
 package net.minecraft.game.world.chunk;
 
-import com.mojang.nbt.NBTTagCompound;
-import com.mojang.nbt.NBTTagList;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
-import net.minecraft.game.entity.EntityList;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.EnumSkyBlock;
 import net.minecraft.game.world.World;
@@ -21,31 +16,29 @@ import net.minecraft.game.world.block.tileentity.TileEntity;
 
 public final class Chunk {
 	public static boolean isLit;
-	private byte[] blocks;
-	private boolean hasTileEntities;
-	private World worldObj;
-	private NibbleArray data;
-	private NibbleArray skyLightMap;
-	private NibbleArray blockLightMap;
-	private byte[] heightMap;
+	public byte[] blocks;
+	public boolean isChunkLoaded;
+	public World worldObj;
+	public NibbleArray data;
+	public NibbleArray skylightMap;
+	public NibbleArray blocklightMap;
+	public byte[] heightMap;
 	private int height;
 	public final int xPosition;
 	public final int zPosition;
-	private Map chunkTileEntityMap;
-	private List[] entities;
+	public Map chunkTileEntityMap;
+	public List[] entities;
 	public boolean isTerrainPopulated;
 	public boolean isModified;
-	private boolean hasEntities;
-    public boolean neverSave;
-    public boolean isChunkRendered;
+	public boolean neverSave;
+	public boolean isChunkRendered;
 
-	private Chunk(World world, int chunkX, int chunkZ) {
+	public Chunk(World world, int chunkX, int chunkZ) {
 		this.chunkTileEntityMap = new HashMap();
 		this.entities = new List[8];
 		this.isTerrainPopulated = false;
 		this.isModified = false;
-		this.hasEntities = false;
-        this.isChunkRendered = false;
+		this.isChunkRendered = false;
 		this.worldObj = world;
 		this.xPosition = chunkX;
 		this.zPosition = chunkZ;
@@ -61,13 +54,13 @@ public final class Chunk {
 		this(world, chunkX, chunkZ);
 		this.blocks = blockData;
 		this.data = new NibbleArray(blockData.length);
-		this.skyLightMap = new NibbleArray(blockData.length);
-		this.blockLightMap = new NibbleArray(blockData.length);
+		this.skylightMap = new NibbleArray(blockData.length);
+		this.blocklightMap = new NibbleArray(blockData.length);
 	}
 
-    public final boolean isAtLocation(int chunkX, int chunkZ) {
-        return chunkX == this.xPosition && chunkZ == this.zPosition;
-    }
+	public final boolean isAtLocation(int chunkX, int chunkZ) {
+		return chunkX == this.xPosition && chunkZ == this.zPosition;
+	}
 
 	public final int getHeightValue(int x, int z) {
 		return this.heightMap[z << 4 | x] & 255;
@@ -156,19 +149,19 @@ public final class Chunk {
 			i6 = (this.zPosition << 4) + z;
 			if(i5 < i4) {
 				for(i7 = i5; i7 < i4; ++i7) {
-					this.skyLightMap.setNibble(x, i7, z, 15);
+					this.skylightMap.setNibble(x, i7, z, 15);
 				}
 			} else {
 				this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, y, i4, i6, y, i5, i6);
 
 				for(i7 = i4; i7 < i5; ++i7) {
-					this.skyLightMap.setNibble(x, i7, z, 0);
+					this.skylightMap.setNibble(x, i7, z, 0);
 				}
 			}
 
 			i7 = 15;
 
-			for(i4 = i5; i5 > 0 && i7 > 0; this.skyLightMap.setNibble(x, i5, z, i7)) {
+			for(i4 = i5; i5 > 0 && i7 > 0; this.skylightMap.setNibble(x, i5, z, i7)) {
 				--i5;
 				int i8;
 				if((i8 = Block.lightOpacity[this.getBlockID(x, i5, z)]) == 0) {
@@ -196,39 +189,40 @@ public final class Chunk {
 		return this.blocks[x << 11 | z << 7 | y];
 	}
 
-    public final boolean setBlockIDWithMetadata(int x, int y, int z, int blockID, int metadata) {
-        byte b6 = (byte)blockID;
-        int i7 = this.heightMap[z << 4 | x] & 255;
-        this.data.setNibble(x, y, z, metadata);
-        if((metadata = this.blocks[x << 11 | z << 7 | y] & 255) == blockID) {
-            return false;
-        } else {
-            int i8 = (this.xPosition << 4) + x;
-            int i9 = (this.zPosition << 4) + z;
-            if(metadata != 0) {
-                Block.blocksList[metadata].onBlockRemoval(this.worldObj, i8, y, i9);
-            }
+	public final boolean setBlockIDWithMetadata(int x, int y, int z, int blockID, int metadata) {
+		byte b6 = (byte)blockID;
+		int i7 = this.heightMap[z << 4 | x] & 255;
+		int i8;
+		if((i8 = this.blocks[x << 11 | z << 7 | y] & 255) == blockID) {
+			return false;
+		} else {
+			int i9 = (this.xPosition << 4) + x;
+			int i10 = (this.zPosition << 4) + z;
+			this.blocks[x << 11 | z << 7 | y] = b6;
+			if(i8 != 0) {
+				Block.blocksList[i8].onBlockRemoval(this.worldObj, i9, y, i10);
+			}
 
-            this.blocks[x << 11 | z << 7 | y] = b6;
-            if(Block.lightOpacity[b6] != 0) {
-                if(y >= i7) {
-                    this.relightBlock(x, y + 1, z);
-                }
-            } else if(y == i7 - 1) {
-                this.relightBlock(x, y, z);
-            }
+			this.data.setNibble(x, y, z, metadata);
+			if(Block.lightOpacity[b6] != 0) {
+				if(y >= i7) {
+					this.relightBlock(x, y + 1, z);
+				}
+			} else if(y == i7 - 1) {
+				this.relightBlock(x, y, z);
+			}
 
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
-            this.updateSkylight_do(x, z);
-            if(blockID != 0) {
-                Block.blocksList[blockID].onBlockAdded(this.worldObj, i8, y, i9);
-            }
+			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i9, y, i10, i9, y, i10);
+			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i9, y, i10, i9, y, i10);
+			this.updateSkylight_do(x, z);
+			if(blockID != 0) {
+				Block.blocksList[blockID].onBlockAdded(this.worldObj, i9, y, i10);
+			}
 
-            this.isModified = true;
-            return true;
-        }
-    }
+			this.isModified = true;
+			return true;
+		}
+	}
 
 	public final boolean setBlockID(int x, int y, int z, int blockID) {
 		byte b5 = (byte)blockID;
@@ -239,7 +233,7 @@ public final class Chunk {
 		} else {
 			int i8 = (this.xPosition << 4) + x;
 			int i9 = (this.zPosition << 4) + z;
-            this.blocks[x << 11 | z << 7 | y] = b5;
+			this.blocks[x << 11 | z << 7 | y] = b5;
 			if(i7 != 0) {
 				Block.blocksList[i7].onBlockRemoval(this.worldObj, i8, y, i9);
 			}
@@ -269,130 +263,18 @@ public final class Chunk {
 		return this.data.getNibble(x, y, z);
 	}
 
-	public final void setBlockMetadata(int x, int y, int z, int metadata) {
-		this.isModified = true;
-		this.data.setNibble(x, y, z, metadata);
-	}
-
-	public final int getSavedLightValue(EnumSkyBlock skyBlock, int x, int y, int z) {
-		return skyBlock == EnumSkyBlock.Sky ? this.skyLightMap.getNibble(x, y, z) : (skyBlock == EnumSkyBlock.Block ? this.blockLightMap.getNibble(x, y, z) : 0);
-	}
-
-	public final void setLightValue(EnumSkyBlock skyBlock, int x, int y, int z, int lightValue) {
-		this.isModified = true;
-		if(skyBlock == EnumSkyBlock.Sky) {
-			this.skyLightMap.setNibble(x, y, z, lightValue);
-		} else if(skyBlock == EnumSkyBlock.Block) {
-			this.blockLightMap.setNibble(x, y, z, lightValue);
-		}
-	}
-
 	public final int getBlockLightValue(int x, int y, int z, int skyLightSubtracted) {
 		int i5;
-		if((i5 = this.skyLightMap.getNibble(x, y, z)) > 0) {
+		if((i5 = this.skylightMap.getNibble(x, y, z)) > 0) {
 			isLit = true;
 		}
 
 		i5 -= skyLightSubtracted;
-		if((x = this.blockLightMap.getNibble(x, y, z)) > i5) {
+		if((x = this.blocklightMap.getNibble(x, y, z)) > i5) {
 			i5 = x;
 		}
 
 		return i5;
-	}
-
-	public final void writeChunkNBTData(NBTTagCompound compoundTag) {
-		compoundTag.setInteger("xPos", this.xPosition);
-		compoundTag.setInteger("zPos", this.zPosition);
-		compoundTag.setLong("LastUpdate", this.worldObj.worldTime);
-		compoundTag.setByteArray("Blocks", this.blocks);
-		compoundTag.setByteArray("Data", this.data.data);
-		compoundTag.setByteArray("SkyLight", this.skyLightMap.data);
-		compoundTag.setByteArray("BlockLight", this.blockLightMap.data);
-		compoundTag.setByteArray("HeightMap", this.heightMap);
-		compoundTag.setBoolean("TerrainPopulated", this.isTerrainPopulated);
-		this.hasEntities = false;
-		NBTTagList nBTTagList2 = new NBTTagList();
-
-		Iterator iterator4;
-		NBTTagCompound nBTTagCompound6;
-		for(int i3 = 0; i3 < this.entities.length; ++i3) {
-			iterator4 = this.entities[i3].iterator();
-
-			while(iterator4.hasNext()) {
-				Entity entity5 = (Entity)iterator4.next();
-				nBTTagCompound6 = new NBTTagCompound();
-				if(entity5.addEntityID(nBTTagCompound6)) {
-					nBTTagList2.setTag(nBTTagCompound6);
-					this.hasEntities = true;
-				}
-			}
-		}
-
-		compoundTag.setTag("Entities", nBTTagList2);
-		NBTTagList nBTTagList7 = new NBTTagList();
-		iterator4 = this.chunkTileEntityMap.values().iterator();
-
-		while(iterator4.hasNext()) {
-			TileEntity tileEntity8 = (TileEntity)iterator4.next();
-			nBTTagCompound6 = new NBTTagCompound();
-			tileEntity8.writeToNBT(nBTTagCompound6);
-			nBTTagList7.setTag(nBTTagCompound6);
-		}
-
-		compoundTag.setTag("TileEntities", nBTTagList7);
-	}
-
-	public static Chunk readChunkNBTData(World world, NBTTagCompound compoundTag) {
-		int i2 = compoundTag.getInteger("xPos");
-		int i3 = compoundTag.getInteger("zPos");
-		Chunk chunk9;
-		(chunk9 = new Chunk(world, i2, i3)).blocks = compoundTag.getByteArray("Blocks");
-		chunk9.data = new NibbleArray(compoundTag.getByteArray("Data"));
-		chunk9.skyLightMap = new NibbleArray(compoundTag.getByteArray("SkyLight"));
-		chunk9.blockLightMap = new NibbleArray(compoundTag.getByteArray("BlockLight"));
-		chunk9.heightMap = compoundTag.getByteArray("HeightMap");
-		chunk9.isTerrainPopulated = compoundTag.getBoolean("TerrainPopulated");
-		if(!chunk9.data.isValid()) {
-			chunk9.data = new NibbleArray(chunk9.blocks.length);
-		}
-
-		if(chunk9.heightMap == null || !chunk9.skyLightMap.isValid()) {
-			chunk9.heightMap = new byte[256];
-			chunk9.skyLightMap = new NibbleArray(chunk9.blocks.length);
-			chunk9.generateHeightMap();
-		}
-
-		if(!chunk9.blockLightMap.isValid()) {
-			chunk9.blockLightMap = new NibbleArray(chunk9.blocks.length);
-		}
-
-		chunk9.hasEntities = false;
-		NBTTagList nBTTagList10;
-		if((nBTTagList10 = compoundTag.getTagList("Entities")) != null) {
-			for(int i4 = 0; i4 < nBTTagList10.tagCount(); ++i4) {
-				Entity entity6;
-				if((entity6 = EntityList.createEntityFromNBT((NBTTagCompound)nBTTagList10.tagAt(i4), world)) != null) {
-					chunk9.hasEntities = true;
-					chunk9.addEntity(entity6);
-				}
-			}
-		}
-
-		NBTTagList nBTTagList11;
-		if((nBTTagList11 = compoundTag.getTagList("TileEntities")) != null) {
-			for(int i5 = 0; i5 < nBTTagList11.tagCount(); ++i5) {
-				TileEntity tileEntity8;
-				if((tileEntity8 = TileEntity.createAndLoadEntity((NBTTagCompound)nBTTagList11.tagAt(i5))) != null) {
-					i3 = tileEntity8.xCoord - (chunk9.xPosition << 4);
-					int i12 = tileEntity8.yCoord;
-					int i7 = tileEntity8.zCoord - (chunk9.zPosition << 4);
-					chunk9.setChunkBlockTileEntity(i3, i12, i7, tileEntity8);
-				}
-			}
-		}
-
-		return chunk9;
 	}
 
 	public final void addEntity(Entity entity) {
@@ -411,7 +293,6 @@ public final class Chunk {
 		}
 
 		this.entities[i2].add(entity);
-		this.isModified = true;
 	}
 
 	public final void removeEntityAtIndex(Entity entity, int entityID) {
@@ -428,7 +309,6 @@ public final class Chunk {
 		}
 
 		this.entities[entityID].remove(entity);
-		this.isModified = true;
 	}
 
 	public final boolean canBlockSeeTheSky(int x, int y, int z) {
@@ -447,15 +327,21 @@ public final class Chunk {
 		return tileEntity5;
 	}
 
+	public final void addTileEntity(TileEntity tileEntity) {
+		int i2 = tileEntity.xCoord - (this.xPosition << 4);
+		int i3 = tileEntity.yCoord;
+		int i4 = tileEntity.zCoord - (this.zPosition << 4);
+		this.setChunkBlockTileEntity(i2, i3, i4, tileEntity);
+	}
+
 	public final void setChunkBlockTileEntity(int x, int y, int z, TileEntity tileEntity) {
-		this.isModified = true;
 		int i5 = x + (y << 10) + (z << 10 << 10);
 		tileEntity.worldObj = this.worldObj;
 		tileEntity.xCoord = (this.xPosition << 4) + x;
 		tileEntity.yCoord = y;
 		tileEntity.zCoord = (this.zPosition << 4) + z;
 		if(this.getBlockID(x, y, z) != 0 && Block.blocksList[this.getBlockID(x, y, z)] instanceof BlockContainer) {
-			if(this.hasTileEntities) {
+			if(this.isChunkLoaded) {
 				if(this.chunkTileEntityMap.get(i5) != null) {
 					this.worldObj.loadedTileEntityList.remove(this.chunkTileEntityMap.get(i5));
 				}
@@ -467,35 +353,6 @@ public final class Chunk {
 		} else {
 			System.out.println("Attempted to place a tile entity where there was no entity tile!");
 		}
-	}
-
-	public final void removeChunkBlockTileEntity(int x, int y, int z) {
-		this.isModified = true;
-		x = x + (y << 10) + (z << 10 << 10);
-		if(this.hasTileEntities) {
-			this.worldObj.loadedTileEntityList.remove(this.chunkTileEntityMap.remove(x));
-		}
-
-	}
-
-	public final void loadTileEntities() {
-		this.hasTileEntities = true;
-		this.worldObj.loadedTileEntityList.addAll(this.chunkTileEntityMap.values());
-
-		for(int i1 = 0; i1 < this.entities.length; ++i1) {
-			this.worldObj.addLoadedEntities(this.entities[i1]);
-		}
-
-	}
-
-	public final void unloadTileEntities() {
-		this.hasTileEntities = false;
-		this.worldObj.loadedTileEntityList.removeAll(this.chunkTileEntityMap.values());
-
-		for(int i1 = 0; i1 < this.entities.length; ++i1) {
-			this.worldObj.unloadEntities(this.entities[i1]);
-		}
-
 	}
 
 	public final void getEntitiesOfTypeWithinAAAB(Entity entity, AxisAlignedBB aabb, List entitiesOfTypeWithinAABBList) {
@@ -522,25 +379,7 @@ public final class Chunk {
 
 	}
 
-	public final boolean needsSaving(boolean flag) {
-        if(this.neverSave) {
-            return false;
-        } else if(this.isModified) {
-			return true;
-		} else {
-			if(flag) {
-				if(this.hasEntities) {
-					return true;
-				}
-
-				for(int i2 = 0; i2 < this.entities.length; ++i2) {
-					if(this.entities[i2].size() > 0) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
+	public final boolean needsSaving() {
+		return this.neverSave ? false : this.isModified;
 	}
 }

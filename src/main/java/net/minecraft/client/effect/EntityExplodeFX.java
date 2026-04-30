@@ -23,7 +23,7 @@ public final class EntityExplodeFX extends EntityFX {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		if(this.particleAge++ >= this.particleMaxAge) {
-			super.isDead = true;
+            this.setEntityDead();
 		}
 
 		this.particleTextureIndex = 7 - (this.particleAge << 3) / this.particleMaxAge;

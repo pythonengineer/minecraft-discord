@@ -76,7 +76,7 @@ public class EntityArrow extends Entity {
 			if(this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile) == this.inTile) {
 				++this.ticksInGround;
 				if(this.ticksInGround == 1200) {
-					super.isDead = true;
+				    this.setEntityDead();
 				}
 
 				return;
@@ -124,7 +124,7 @@ public class EntityArrow extends Entity {
 			if(movingObjectPosition3.entityHit != null) {
 				if(movingObjectPosition3.entityHit.attackEntityFrom(this, 4)) {
 					this.worldObj.playSoundAtEntity(this, "random.drr", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-					super.isDead = true;
+					this.setEntityDead();
 				} else {
 					this.motionZ *= -0.10000000149011612D;
 					this.motionY *= -0.10000000149011612D;
@@ -212,7 +212,7 @@ public class EntityArrow extends Entity {
 		if(this.inGround && this.owner == playerEntity && this.arrowShake <= 0 && playerEntity.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			playerEntity.onItemPickup(this);
-			super.isDead = true;
+			this.setEntityDead();
 		}
 
 	}

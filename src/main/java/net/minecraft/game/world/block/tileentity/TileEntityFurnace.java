@@ -110,18 +110,23 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 
 	public final void updateEntity() {
 		boolean z1 = this.furnaceBurnTime > 0;
+        boolean z2 = false;
 		if(this.furnaceBurnTime > 0) {
 			--this.furnaceBurnTime;
+            z2 = true;
 		}
 
 		if(this.furnaceBurnTime == 0 && this.canSmelt()) {
 			this.currentItemBurnTime = this.furnaceBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
-			if(this.furnaceBurnTime > 0 && this.furnaceItemStacks[1] != null) {
-				--this.furnaceItemStacks[1].stackSize;
-				if(this.furnaceItemStacks[1].stackSize == 0) {
-					this.furnaceItemStacks[1] = null;
-				}
-			}
+            if(this.furnaceBurnTime > 0) {
+                z2 = true;
+                if(this.furnaceItemStacks[1] != null) {
+                    --this.furnaceItemStacks[1].stackSize;
+                    if(this.furnaceItemStacks[1].stackSize == 0) {
+                        this.furnaceItemStacks[1] = null;
+                    }
+                }
+            }
 		}
 
 		if(this.isBurning() && this.canSmelt()) {
@@ -129,10 +134,10 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 			if(this.furnaceCookTime == 200) {
 				this.furnaceCookTime = 0;
 				if(this.canSmelt()) {
-					int i3 = getRecipes(this.furnaceItemStacks[0].getItem().shiftedIndex);
-					if(this.furnaceItemStacks[2] == null) {
-						this.furnaceItemStacks[2] = new ItemStack(i3, 1);
-					} else if(this.furnaceItemStacks[2].itemID == i3) {
+                    int i4 = getRecipes(this.furnaceItemStacks[0].getItem().shiftedIndex);
+                    if(this.furnaceItemStacks[2] == null) {
+                        this.furnaceItemStacks[2] = new ItemStack(i4, 1);
+                    } else if(this.furnaceItemStacks[2].itemID == i4) {
 						++this.furnaceItemStacks[2].stackSize;
 					}
 
@@ -141,31 +146,37 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 						this.furnaceItemStacks[0] = null;
 					}
 				}
+
+                z2 = true;
 			}
 		} else {
 			this.furnaceCookTime = 0;
 		}
 
-		if(z1 != this.furnaceBurnTime > 0) {
-			boolean z10000 = this.furnaceBurnTime > 0;
-			int i5 = this.zCoord;
-			int i4 = this.yCoord;
-			int i8 = this.xCoord;
-			World world9 = this.worldObj;
-			boolean z2 = z10000;
-			int i6 = world9.getBlockMetadata(i8, i4, i5);
-			TileEntity tileEntity7 = world9.getBlockTileEntity(i8, i4, i5);
-			if(z2) {
-				world9.setBlockWithNotify(i8, i4, i5, Block.stoneOvenActive.blockID);
-			} else {
-				world9.setBlockWithNotify(i8, i4, i5, Block.stoneOvenIdle.blockID);
-			}
+        if(z1 != this.furnaceBurnTime > 0) {
+            z2 = true;
+            boolean z10000 = this.furnaceBurnTime > 0;
+            int i6 = this.zCoord;
+            int i5 = this.yCoord;
+            int i9 = this.xCoord;
+            World world10 = this.worldObj;
+            boolean z3 = z10000;
+            int i7 = world10.getBlockMetadata(i9, i5, i6);
+            TileEntity tileEntity8 = world10.getBlockTileEntity(i9, i5, i6);
+            if(z3) {
+                world10.setBlockWithNotify(i9, i5, i6, Block.stoneOvenActive.blockID);
+            } else {
+                world10.setBlockWithNotify(i9, i5, i6, Block.stoneOvenIdle.blockID);
+            }
 
-			world9.setBlockMetadata(i8, i4, i5, i6);
-			world9.setBlockTileEntity(i8, i4, i5, tileEntity7);
-		}
+            world10.setBlockMetadata(i9, i5, i6, i7);
+            world10.setBlockTileEntity(i9, i5, i6, tileEntity8);
+        }
 
-		this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
+        if(z2) {
+            this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
+        }
+
 	}
 
 	private boolean canSmelt() {

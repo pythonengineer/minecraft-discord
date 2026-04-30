@@ -11,6 +11,7 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntitySign;
 import net.minecraft.game.world.material.Material;
@@ -51,22 +52,7 @@ public class Block {
     public static final BlockLeaves leaves;
     public static final Block sponge;
     public static final Block glass;
-    public static final Block clothRed;
-    public static final Block clothOrange;
-    public static final Block clothYellow;
-    public static final Block clothChartreuse;
-    public static final Block clothGreen;
-    public static final Block clothSpringGreen;
-    public static final Block clothCyan;
-    public static final Block clothCapri;
-    public static final Block clothUltramarine;
-    public static final Block clothViolet;
-    public static final Block clothPurple;
-    public static final Block clothMagenta;
-    public static final Block clothRose;
-    public static final Block clothDarkGray;
-    public static final Block clothGray;
-    public static final Block clothWhite;
+    public static final Block cloth;
     public static final BlockFlower plantYellow;
     public static final BlockFlower plantRed;
     public static final BlockFlower mushroomBrown;
@@ -175,16 +161,16 @@ public class Block {
         this.maxZ = (double)maxZ;
     }
 
-    public float getBlockBrightness(World world, int x, int y, int z) {
-        return world.getBrightness(x, y, z);
+    public float getBlockBrightness(IBlockAccess iBlockAccess, int x, int y, int z) {
+        return iBlockAccess.getBrightness(x, y, z);
     }
 
-    public boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
-        return !world.isBlockNormalCube(x, y, z);
+    public boolean getIsBlockSolid(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
+        return !iBlockAccess.isBlockNormalCube(x, y, z);
     }
 
-    public int getBlockTexture(World world, int x, int y, int z, int side) {
-        return this.getBlockTextureFromSideAndMetadata(side, world.getBlockMetadata(x, y, z));
+    public int getBlockTexture(IBlockAccess iBlockAccess, int x, int y, int z, int side) {
+        return this.getBlockTextureFromSideAndMetadata(side, iBlockAccess.getBlockMetadata(x, y, z));
     }
 
     public int getBlockTextureFromSideAndMetadata(int side, int metadata) {
@@ -424,7 +410,7 @@ public class Block {
     public void velocityToAddToEntity(World world, int x, int y, int z, Vec3D velocityVector) {
     }
 
-    public void setBlockBoundsBasedOnState(World world, int x, int y, int z) {
+    public void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess, int x, int y, int z) {
     }
 
     static {
@@ -512,86 +498,11 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         glass = block0;
-        block10000 = (new Block(21, 64, Material.cloth)).setHardness(0.8F);
+        block10000 = (new Block(35, 64, Material.cloth)).setHardness(0.8F);
         stepSound1 = soundClothFootstep;
         block0 = block10000;
         block10000.stepSound = stepSound1;
-        clothRed = block0;
-        block10000 = (new Block(22, 65, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothOrange = block0;
-        block10000 = (new Block(23, 66, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothYellow = block0;
-        block10000 = (new Block(24, 67, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothChartreuse = block0;
-        block10000 = (new Block(25, 68, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothGreen = block0;
-        block10000 = (new Block(26, 69, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothSpringGreen = block0;
-        block10000 = (new Block(27, 70, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothCyan = block0;
-        block10000 = (new Block(28, 71, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothCapri = block0;
-        block10000 = (new Block(29, 72, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothUltramarine = block0;
-        block10000 = (new Block(30, 73, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothViolet = block0;
-        block10000 = (new Block(31, 74, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothPurple = block0;
-        block10000 = (new Block(32, 75, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothMagenta = block0;
-        block10000 = (new Block(33, 76, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothRose = block0;
-        block10000 = (new Block(34, 77, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothDarkGray = block0;
-        block10000 = (new Block(35, 78, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothGray = block0;
-        block10000 = (new Block(36, 79, Material.cloth)).setHardness(0.8F);
-        stepSound1 = soundClothFootstep;
-        block0 = block10000;
-        block10000.stepSound = stepSound1;
-        clothWhite = block0;
+        cloth = block0;
         block10000 = (new BlockFlower(37, 13)).setHardness(0.0F);
         stepSound1 = soundGrassFootstep;
         block0 = block10000;
@@ -667,12 +578,6 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         fire = (BlockFire)block0;
-        block10000 = (new BlockSource(52, waterMoving.blockID)).setHardness(0.0F);
-        stepSound1 = soundWoodFootstep;
-        block10000.stepSound = stepSound1;
-        block10000 = (new BlockSource(53, lavaMoving.blockID)).setHardness(0.0F);
-        stepSound1 = soundWoodFootstep;
-        block10000.stepSound = stepSound1;
         block10000 = (new BlockChest(54)).setHardness(2.5F);
         stepSound1 = soundWoodFootstep;
         block0 = block10000;

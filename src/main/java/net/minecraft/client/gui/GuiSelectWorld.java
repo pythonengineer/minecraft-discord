@@ -26,14 +26,14 @@ public class GuiSelectWorld extends GuiScreen {
 			}
 		}
 
-		this.addButtons();
+		this.buttons();
 	}
 
 	protected static String getWorldName(int worldIndex) {
 		return World.saveWorldFile("World" + worldIndex) != null ? "World" + worldIndex : null;
 	}
 
-	public void addButtons() {
+	public void buttons() {
 		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, "Delete world..."));
 		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
 	}

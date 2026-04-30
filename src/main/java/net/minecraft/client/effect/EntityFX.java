@@ -55,7 +55,7 @@ public class EntityFX extends Entity {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		if(this.particleAge++ >= this.particleMaxAge) {
-			super.isDead = true;
+            this.setEntityDead();
 		}
 
 		this.motionY -= 0.04D * (double)this.particleGravity;

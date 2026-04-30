@@ -1,91 +1,99 @@
 package net.minecraft.game.world;
 
-import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.client.IProgressUpdate;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityList;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.world.material.Material;
 
-public final class SpawnerAnimals {
+public class SpawnerAnimals {
 	private int entityMax;
-	private EaglercraftRandom rand = new EaglercraftRandom();
-	private Class<? extends Entity> entityType;
+	private Class<? extends Entity> entityAmount;
 	private Class<? extends Entity>[] entities;
 
 	public SpawnerAnimals(int maxEntities, Class<? extends Entity> entityType, Class<? extends Entity>[] entityClasses) {
 		this.entityMax = maxEntities;
-		this.entityType = entityType;
+		this.entityAmount = entityType;
 		this.entities = entityClasses;
 	}
 
 	public final void doRandomSpawn(World world) {
-        if(world.countEntities(this.entityType) < this.entityMax && this.rand.nextInt(5) == 1) {
-			this.performSpawning(world, 1, world.playerEntity, (IProgressUpdate)null);
+		if(world.countEntities(this.entityAmount) < this.entityMax) {
+			for(int i2 = 0; i2 < 10; ++i2) {
+				this.performSpawning(world, world.playerEntity);
+			}
 		}
 
 	}
 
-	private int performSpawning(World world, int canSpawnHereFlag, Entity entity, IProgressUpdate progressListener) {
-		canSpawnHereFlag = 0;
-		int i30 = MathHelper.floor_double(entity.posX);
+	protected ChunkPosition getRandomSpawningPointInChunk(World world1, int i2, int i3) {
+		i2 = i2 + world1.rand.nextInt(256) - 128;
+		int i4 = world1.rand.nextInt(128);
+		int i5 = i3 + world1.rand.nextInt(256) - 128;
+		return new ChunkPosition(i2, i4, i5);
+	}
+
+	private int performSpawning(World world, Entity entity) {
+		int i3 = 0;
+		int i4 = MathHelper.floor_double(entity.posX);
 		int i5 = MathHelper.floor_double(entity.posZ);
+		int i6 = world.rand.nextInt(this.entities.length);
+		ChunkPosition chunkPosition28;
+		i5 = (chunkPosition28 = this.getRandomSpawningPointInChunk(world, i4, i5)).x;
+		int i7 = chunkPosition28.y;
+		i4 = chunkPosition28.z;
+		if(world.isBlockNormalCube(i5, i7, i4)) {
+			return 0;
+		} else if(world.getBlockMaterial(i5, i7, i4) != Material.air) {
+			return 0;
+		} else {
+			for(int i8 = 0; i8 < 4; ++i8) {
+				int i9 = i5;
+				int i10 = i7;
+				int i11 = i4;
 
-		for(int i6 = 0; i6 <= 0; ++i6) {
-			int i7 = world.rand.nextInt(this.entities.length);
-			int i8 = i30 + world.rand.nextInt(256) - 128;
-			int i9 = world.rand.nextInt(128);
-			int i10 = i5 + world.rand.nextInt(256) - 128;
-			if(!world.isBlockNormalCube(i8, i9, i10) && world.getBlockMaterial(i8, i9, i10) == Material.air) {
-				for(int i11 = 0; i11 < 4; ++i11) {
-					int i12 = i8;
-					int i13 = i9;
-					int i14 = i10;
-
-					for(int i15 = 0; i15 < 4; ++i15) {
-						i12 += world.rand.nextInt(6) - world.rand.nextInt(6);
-						i13 += world.rand.nextInt(1) - world.rand.nextInt(1);
-						i14 += world.rand.nextInt(6) - world.rand.nextInt(6);
-						if(world.isBlockNormalCube(i12, i13 - 1, i14) && !world.isBlockNormalCube(i12, i13, i14) && !world.getBlockMaterial(i12, i13, i14).getIsLiquid() && !world.isBlockNormalCube(i12, i13 + 1, i14)) {
-							float f16 = (float)i12 + 0.5F;
-							float f17 = (float)i13 + 1.0F;
-							float f18 = (float)i14 + 0.5F;
-							if(entity != null) {
-								double d21 = (double)f16 - entity.posX;
-								double d23 = (double)f17 - entity.posY;
-								double d25 = (double)f18 - entity.posZ;
-								if(d21 * d21 + d23 * d23 + d25 * d25 < 256.0D) {
-									continue;
-								}
-							} else {
-								float f31 = f16 - (float)world.spawnX;
-								float f22 = f17 - (float)world.spawnY;
-								float f33 = f18 - (float)world.spawnZ;
-								if(f31 * f31 + f22 * f22 + f33 * f33 < 256.0F) {
-									continue;
-								}
+				for(int i12 = 0; i12 < 4; ++i12) {
+					i9 += world.rand.nextInt(6) - world.rand.nextInt(6);
+					i10 += world.rand.nextInt(1) - world.rand.nextInt(1);
+					i11 += world.rand.nextInt(6) - world.rand.nextInt(6);
+					if(world.isBlockNormalCube(i9, i10 - 1, i11) && !world.isBlockNormalCube(i9, i10, i11) && !world.getBlockMaterial(i9, i10, i11).getIsLiquid() && !world.isBlockNormalCube(i9, i10 + 1, i11)) {
+						float f13 = (float)i9 + 0.5F;
+						float f14 = (float)i10 + 1.0F;
+						float f15 = (float)i11 + 0.5F;
+						if(entity != null) {
+							double d19 = (double)f13 - entity.posX;
+							double d21 = (double)f14 - entity.posY;
+							double d23 = (double)f15 - entity.posZ;
+							if(d19 * d19 + d21 * d21 + d23 * d23 < 32.0D) {
+								continue;
 							}
-
-							EntityLiving entityLiving32;
-                            try {
-                                entityLiving32 = (EntityLiving)EntityList.createEntityByClassUnsafe(this.entities[i7], world);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                return canSpawnHereFlag;
-                            }
-
-							entityLiving32.setLocationAndAngles((double)f16, (double)f17, (double)f18, world.rand.nextFloat() * 360.0F, 0.0F);
-							if(entityLiving32.getCanSpawnHere(f16, f17, f18)) {
-								++canSpawnHereFlag;
-								world.entityJoinedWorld(entityLiving32);
+						} else {
+							float f29 = f13 - (float)world.spawnX;
+							float f20 = f14 - (float)world.spawnY;
+							float f31 = f15 - (float)world.spawnZ;
+							if(f29 * f29 + f20 * f20 + f31 * f31 < 32.0F) {
+								continue;
 							}
+						}
+
+						EntityLiving entityLiving30;
+						try {
+							entityLiving30 = (EntityLiving)EntityList.createEntityByClassUnsafe(this.entities[i6], world);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							return i3;
+						}
+
+						entityLiving30.setLocationAndAngles((double)f13, (double)f14, (double)f15, world.rand.nextFloat() * 360.0F, 0.0F);
+						if(entityLiving30.getCanSpawnHere(f13, f14, f15)) {
+							++i3;
+							world.entityJoinedWorld(entityLiving30);
 						}
 					}
 				}
 			}
-		}
 
-		return canSpawnHereFlag;
+			return i3;
+		}
 	}
 }

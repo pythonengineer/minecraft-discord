@@ -130,14 +130,14 @@ public class EntityPainting extends Entity {
 	public final void onUpdate() {
 		if(this.tickCounter++ == 100 && !this.onValidSurface()) {
 			this.tickCounter = 0;
-			super.isDead = true;
+            this.setEntityDead();
 			this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
 		}
 
 	}
 
 	public final boolean onValidSurface() {
-		if(this.worldObj.getCollidingBoundingBoxes(this.boundingBox).size() > 0) {
+		if(this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() > 0) {
 			return false;
 		} else {
 			int i1 = this.art.sizeX / 16;
@@ -195,7 +195,7 @@ public class EntityPainting extends Entity {
 	}
 
 	public final boolean attackEntityFrom(Entity entity, int damage) {
-		super.isDead = true;
+        this.setEntityDead();
 		this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
 		return true;
 	}

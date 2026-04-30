@@ -38,6 +38,12 @@ public class EntityPlayer extends EntityLiving {
 		this.texture = "/char.png";
 	}
 
+    public final void updateRidden() {
+        super.updateRidden();
+        this.prevCameraYaw = this.cameraYaw;
+        this.cameraYaw = 0.0F;
+    }
+
 	public final void preparePlayerToSpawn() {
 		this.yOffset = 1.62F;
 		this.setSize(0.6F, 1.8F);

@@ -7,8 +7,7 @@ public final class GuiIngameMenu extends GuiScreen {
 	public final void initGui() {
 		this.controlList.clear();
 		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4, "Options..."));
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 24, "Change world..."));
-		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 48, "Quit game"));
+		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 24, "Save and quit to title.."));
 		this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 120, "Back to game"));
 	}
 
@@ -18,10 +17,6 @@ public final class GuiIngameMenu extends GuiScreen {
 		}
 
 		if(button.id == 1) {
-			this.mc.setGuiScreen(new GuiSelectWorld(this));
-		}
-
-		if(button.id == 2) {
             this.mc.changeWorld1((World)null);
 			this.mc.setGuiScreen(new GuiMainMenu());
 		}

@@ -133,25 +133,41 @@ public final class BlockFlowing extends BlockFluid {
 					return;
 				}
 
-				if(z16[0] && this.liquidCanDisplaceBlock(world, x - 1, y, z)) {
-					world.setBlockAndMetadataWithNotify(x - 1, y, z, this.blockID, i9);
-				}
+                if(z16[0]) {
+                    this.flowIntoBlock(world, x - 1, y, z, i9);
+                }
 
-				if(z16[1] && this.liquidCanDisplaceBlock(world, x + 1, y, z)) {
-					world.setBlockAndMetadataWithNotify(x + 1, y, z, this.blockID, i9);
-				}
+                if(z16[1]) {
+                    this.flowIntoBlock(world, x + 1, y, z, i9);
+                }
 
-				if(z16[2] && this.liquidCanDisplaceBlock(world, x, y, z - 1)) {
-					world.setBlockAndMetadataWithNotify(x, y, z - 1, this.blockID, i9);
-				}
+                if(z16[2]) {
+                    this.flowIntoBlock(world, x, y, z - 1, i9);
+                }
 
-				if(z16[3] && this.liquidCanDisplaceBlock(world, x, y, z + 1)) {
-					world.setBlockAndMetadataWithNotify(x, y, z + 1, this.blockID, i9);
-				}
-			}
+                if(z16[3]) {
+                    this.flowIntoBlock(world, x, y, z + 1, i9);
+                }
+            }
 
-		}
-	}
+        }
+    }
+
+    private void flowIntoBlock(World world, int x, int y, int z, int metadata) {
+        if(this.liquidCanDisplaceBlock(world, x, y, z)) {
+            int i6;
+            if((i6 = world.getBlockId(x, y, z)) > 0) {
+                if(this.blockMaterial == Material.lava) {
+                    triggerLavaMixEffects(world, x, y, z);
+                } else {
+                    Block.blocksList[i6].harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+                }
+            }
+
+            world.setBlockAndMetadataWithNotify(x, y, z, this.blockID, metadata);
+        }
+
+    }
 
 	private int calculateFlowCost(World world, int x, int y, int z, int blocksTravelled, int flowCost) {
 		int i7 = 1000;
@@ -214,8 +230,9 @@ public final class BlockFlowing extends BlockFluid {
 	}
 
 	private boolean liquidCanDisplaceBlock(World world, int x, int y, int z) {
-		return world.getBlockMaterial(x, y, z) == this.blockMaterial ? false : !blockBlocksFlow(world, x, y, z);
-	}
+        Material material5;
+        return (material5 = world.getBlockMaterial(x, y, z)) == this.blockMaterial ? false : (material5 == Material.lava ? false : !blockBlocksFlow(world, x, y, z));
+    }
 
 	public final void onBlockAdded(World world, int x, int y, int z) {
 		super.onBlockAdded(world, x, y, z);

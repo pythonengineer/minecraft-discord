@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockDoor;
@@ -10,13 +11,14 @@ import net.minecraft.game.world.block.BlockFluid;
 import net.minecraft.game.world.material.Material;
 
 public final class RenderBlocks {
-	private World worldObj;
+    private IBlockAccess blockAccess;
 	private int overrideBlockTexture = -1;
+    private boolean flipTexture = false;
 	private boolean renderAllFaces = false;
 
-	public RenderBlocks(World world) {
-		this.worldObj = world;
-	}
+    public RenderBlocks(IBlockAccess iBlockAccess) {
+        this.blockAccess = iBlockAccess;
+    }
 
 	public RenderBlocks() {
 	}
@@ -29,27 +31,27 @@ public final class RenderBlocks {
 
     public final boolean renderBlockByRenderType(Block block, int x, int y, int z) {
         int i5 = block.getRenderType();
-        block.setBlockBoundsBasedOnState(this.worldObj, x, y, z);
+        block.setBlockBoundsBasedOnState(this.blockAccess, x, y, z);
         Tessellator tessellator6;
         float f18;
         boolean z63;
         if(i5 == 0) {
             tessellator6 = Tessellator.instance;
             z63 = false;
-            float f66 = block.getBlockBrightness(this.worldObj, x, y, z);
-            if(block.getIsBlockSolid(this.worldObj, x, y - 1, z, 0)) {
-                f18 = block.getBlockBrightness(this.worldObj, x, y - 1, z);
+            float f66 = block.getBlockBrightness(this.blockAccess, x, y, z);
+            if(block.getIsBlockSolid(this.blockAccess, x, y - 1, z, 0)) {
+                f18 = block.getBlockBrightness(this.blockAccess, x, y - 1, z);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
                 }
 
                 tessellator6.setColorOpaque_F(0.5F * f18, 0.5F * f18, 0.5F * f18);
-                this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 0));
+                this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 0));
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.worldObj, x, y + 1, z, 1)) {
-                f18 = block.getBlockBrightness(this.worldObj, x, y + 1, z);
+            if(block.getIsBlockSolid(this.blockAccess, x, y + 1, z, 1)) {
+                f18 = block.getBlockBrightness(this.blockAccess, x, y + 1, z);
                 if(block.maxY != 1.0D && !block.blockMaterial.getIsLiquid()) {
                     f18 = f66;
                 }
@@ -59,51 +61,51 @@ public final class RenderBlocks {
                 }
 
                 tessellator6.setColorOpaque_F(f18 * 1.0F, f18 * 1.0F, f18 * 1.0F);
-                this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 1));
+                this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 1));
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.worldObj, x, y, z - 1, 2)) {
-                f18 = block.getBlockBrightness(this.worldObj, x, y, z - 1);
+            if(block.getIsBlockSolid(this.blockAccess, x, y, z - 1, 2)) {
+                f18 = block.getBlockBrightness(this.blockAccess, x, y, z - 1);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
                 }
 
                 tessellator6.setColorOpaque_F(0.8F * f18, 0.8F * f18, 0.8F * f18);
-                this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 2));
+                this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 2));
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.worldObj, x, y, z + 1, 3)) {
-                f18 = block.getBlockBrightness(this.worldObj, x, y, z + 1);
+            if(block.getIsBlockSolid(this.blockAccess, x, y, z + 1, 3)) {
+                f18 = block.getBlockBrightness(this.blockAccess, x, y, z + 1);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
                 }
 
                 tessellator6.setColorOpaque_F(0.8F * f18, 0.8F * f18, 0.8F * f18);
-                this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 3));
+                this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 3));
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.worldObj, x - 1, y, z, 4)) {
-                f18 = block.getBlockBrightness(this.worldObj, x - 1, y, z);
+            if(block.getIsBlockSolid(this.blockAccess, x - 1, y, z, 4)) {
+                f18 = block.getBlockBrightness(this.blockAccess, x - 1, y, z);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
                 }
 
                 tessellator6.setColorOpaque_F(0.6F * f18, 0.6F * f18, 0.6F * f18);
-                this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 4));
+                this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 4));
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.worldObj, x + 1, y, z, 5)) {
-                f18 = block.getBlockBrightness(this.worldObj, x + 1, y, z);
+            if(block.getIsBlockSolid(this.blockAccess, x + 1, y, z, 5)) {
+                f18 = block.getBlockBrightness(this.blockAccess, x + 1, y, z);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
                 }
 
                 tessellator6.setColorOpaque_F(0.6F * f18, 0.6F * f18, 0.6F * f18);
-                this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 5));
+                this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 5));
                 z63 = true;
             }
 
@@ -125,19 +127,19 @@ public final class RenderBlocks {
                 Block block54 = block;
                 RenderBlocks renderBlocks53 = this;
                 tessellator6 = Tessellator.instance;
-                z63 = block.getIsBlockSolid(this.worldObj, x, z + 1, i5, 1);
-                boolean z60 = block.getIsBlockSolid(this.worldObj, x, z - 1, i5, 0);
+                z63 = block.getIsBlockSolid(this.blockAccess, x, z + 1, i5, 1);
+                boolean z60 = block.getIsBlockSolid(this.blockAccess, x, z - 1, i5, 0);
                 boolean[] z61;
-                (z61 = new boolean[4])[0] = block.getIsBlockSolid(this.worldObj, x, z, i5 - 1, 2);
-                z61[1] = block.getIsBlockSolid(this.worldObj, x, z, i5 + 1, 3);
-                z61[2] = block.getIsBlockSolid(this.worldObj, x - 1, z, i5, 4);
-                z61[3] = block.getIsBlockSolid(this.worldObj, x + 1, z, i5, 5);
+                (z61 = new boolean[4])[0] = block.getIsBlockSolid(this.blockAccess, x, z, i5 - 1, 2);
+                z61[1] = block.getIsBlockSolid(this.blockAccess, x, z, i5 + 1, 3);
+                z61[2] = block.getIsBlockSolid(this.blockAccess, x - 1, z, i5, 4);
+                z61[3] = block.getIsBlockSolid(this.blockAccess, x + 1, z, i5, 5);
                 if(!z63 && !z60 && !z61[0] && !z61[1] && !z61[2] && !z61[3]) {
                     return false;
                 } else {
                     boolean z64 = false;
                     Material material69 = block.blockMaterial;
-                    int i70 = this.worldObj.getBlockMetadata(x, z, i5);
+                    int i70 = this.blockAccess.getBlockMetadata(x, z, i5);
                     f26 = this.getFluidHeight(x, z, i5, material69);
                     f27 = this.getFluidHeight(x, z, i5 + 1, material69);
                     f28 = this.getFluidHeight(x + 1, z, i5 + 1, material69);
@@ -150,7 +152,7 @@ public final class RenderBlocks {
                     if(z63) {
                         z64 = true;
                         i73 = block.getBlockTextureFromSideAndMetadata(1, i70);
-                        if((f31 = (float)BlockFluid.getFlowDirection(this.worldObj, x, z, i5, material69)) > -999.0F) {
+                        if((f31 = (float)BlockFluid.getFlowDirection(this.blockAccess, x, z, i5, material69)) > -999.0F) {
                             i73 = block.getBlockTextureFromSideAndMetadata(2, i70);
                         }
 
@@ -167,7 +169,7 @@ public final class RenderBlocks {
 
                         f38 = MathHelper.sin(f31) * 8.0F / 256.0F;
                         f86 = MathHelper.cos(f31) * 8.0F / 256.0F;
-                        f40 = block.getBlockBrightness(this.worldObj, x, z, i5);
+                        f40 = block.getBlockBrightness(this.blockAccess, x, z, i5);
                         tessellator6.setColorOpaque_F(f40 * 1.0F, f40 * 1.0F, f40 * 1.0F);
                         tessellator6.addVertexWithUV((double)x, (double)((float)z + f26), (double)i5, d77 - (double)f86 - (double)f38, d83 - (double)f86 + (double)f38);
                         tessellator6.addVertexWithUV((double)x, (double)((float)z + f27), (double)(i5 + 1), d77 - (double)f86 + (double)f38, d83 + (double)f86 + (double)f38);
@@ -176,7 +178,7 @@ public final class RenderBlocks {
                     }
 
                     if(z60) {
-                        f30 = block.getBlockBrightness(this.worldObj, x, z - 1, i5);
+                        f30 = block.getBlockBrightness(this.blockAccess, x, z - 1, i5);
                         tessellator6.setColorOpaque_F(0.5F * f30, 0.5F * f30, 0.5F * f30);
                         this.renderBottomFace(block, (double)x, (double)z, (double)i5, block.getBlockTextureFromSide(0));
                         z64 = true;
@@ -237,7 +239,7 @@ public final class RenderBlocks {
                             double d47 = (double)(((float)i85 + (1.0F - f37) * 16.0F) / 256.0F);
                             double d49 = (double)(((float)i85 + (1.0F - f38) * 16.0F) / 256.0F);
                             double d51 = ((double)(i85 + 16) - 0.01D) / 256.0D;
-                            float f11 = block54.getBlockBrightness(renderBlocks53.worldObj, i78, z, i79);
+                            float f11 = block54.getBlockBrightness(renderBlocks53.blockAccess, i78, z, i79);
                             if(i73 < 2) {
                                 f11 *= 0.8F;
                             } else {
@@ -258,20 +260,20 @@ public final class RenderBlocks {
                 }
             } else if(i5 == 1) {
                 tessellator6 = Tessellator.instance;
-                f62 = block.getBlockBrightness(this.worldObj, x, y, z);
+                f62 = block.getBlockBrightness(this.blockAccess, x, y, z);
                 tessellator6.setColorOpaque_F(f62, f62, f62);
-                this.renderCrossedSquares(block, this.worldObj.getBlockMetadata(x, y, z), (double)x, (double)y, (double)z);
+                this.renderCrossedSquares(block, this.blockAccess.getBlockMetadata(x, y, z), (double)x, (double)y, (double)z);
                 return true;
             } else if(i5 == 6) {
                 tessellator6 = Tessellator.instance;
-                f62 = block.getBlockBrightness(this.worldObj, x, y, z);
+                f62 = block.getBlockBrightness(this.blockAccess, x, y, z);
                 tessellator6.setColorOpaque_F(f62, f62, f62);
-                this.renderBlockCrops(block, this.worldObj.getBlockMetadata(x, y, z), (double)x, (double)((float)y - 0.0625F), (double)z);
+                this.renderBlockCrops(block, this.blockAccess.getBlockMetadata(x, y, z), (double)x, (double)((float)y - 0.0625F), (double)z);
                 return true;
             } else if(i5 == 2) {
-                int i56 = this.worldObj.getBlockMetadata(x, y, z);
+                int i56 = this.blockAccess.getBlockMetadata(x, y, z);
                 Tessellator tessellator59 = Tessellator.instance;
-                f57 = block.getBlockBrightness(this.worldObj, x, y, z);
+                f57 = block.getBlockBrightness(this.blockAccess, x, y, z);
                 if(Block.lightValue[block.blockID] > 0) {
                     f57 = 1.0F;
                 }
@@ -310,7 +312,7 @@ public final class RenderBlocks {
                         i7 = this.overrideBlockTexture;
                     }
 
-                    f57 = block.getBlockBrightness(this.worldObj, x, y, z);
+                    f57 = block.getBlockBrightness(this.blockAccess, x, y, z);
                     tessellator6.setColorOpaque_F(f57, f57, f57);
                     i58 = (i7 & 15) << 4;
                     i10 = i7 & 240;
@@ -319,7 +321,7 @@ public final class RenderBlocks {
                     d20 = (double)((float)i10 / 256.0F);
                     d22 = (double)(((float)i10 + 15.99F) / 256.0F);
                     double d76;
-                    if(!this.worldObj.isBlockNormalCube(x, y - 1, z) && !Block.fire.getChanceToEncourageFire(this.worldObj, x, y - 1, z)) {
+                    if(!this.blockAccess.isBlockNormalCube(x, y - 1, z) && !Block.fire.canBlockCatchFire(this.blockAccess, x, y - 1, z)) {
                         if((x + y + z & 1) == 1) {
                             d65 = (double)((float)i58 / 256.0F);
                             d67 = (double)(((float)i58 + 15.99F) / 256.0F);
@@ -333,7 +335,7 @@ public final class RenderBlocks {
                             d65 = d71;
                         }
 
-                        if(Block.fire.getChanceToEncourageFire(this.worldObj, x - 1, y, z)) {
+                        if(Block.fire.canBlockCatchFire(this.blockAccess, x - 1, y, z)) {
                             tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d67, d20);
                             tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
                             tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d65, d22);
@@ -344,7 +346,7 @@ public final class RenderBlocks {
                             tessellator6.addVertexWithUV((double)((float)x + 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)(z + 1), d67, d20);
                         }
 
-                        if(Block.fire.getChanceToEncourageFire(this.worldObj, x + 1, y, z)) {
+                        if(Block.fire.canBlockCatchFire(this.blockAccess, x + 1, y, z)) {
                             tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d65, d20);
                             tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d65, d22);
                             tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
@@ -355,7 +357,7 @@ public final class RenderBlocks {
                             tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.2F), (double)((float)y + 1.4F + 0.0625F), (double)z, d65, d20);
                         }
 
-                        if(Block.fire.getChanceToEncourageFire(this.worldObj, x, y, z - 1)) {
+                        if(Block.fire.canBlockCatchFire(this.blockAccess, x, y, z - 1)) {
                             tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d67, d20);
                             tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)z, d67, d22);
                             tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)z, d65, d22);
@@ -366,7 +368,7 @@ public final class RenderBlocks {
                             tessellator6.addVertexWithUV((double)x, (double)((float)y + 1.4F + 0.0625F), (double)((float)z + 0.2F), d67, d20);
                         }
 
-                        if(Block.fire.getChanceToEncourageFire(this.worldObj, x, y, z + 1)) {
+                        if(Block.fire.canBlockCatchFire(this.blockAccess, x, y, z + 1)) {
                             tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d65, d20);
                             tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 0.0625F), (double)(z + 1), d65, d22);
                             tessellator6.addVertexWithUV((double)x, (double)((float)y + 0.0625F), (double)(z + 1), d67, d22);
@@ -377,7 +379,7 @@ public final class RenderBlocks {
                             tessellator6.addVertexWithUV((double)(x + 1), (double)((float)y + 1.4F + 0.0625F), (double)((float)(z + 1) - 0.2F), d65, d20);
                         }
 
-                        if(Block.fire.getChanceToEncourageFire(this.worldObj, x, y + 1, z)) {
+                        if(Block.fire.canBlockCatchFire(this.blockAccess, x, y + 1, z)) {
                             d71 = (double)x + 0.5D + 0.5D;
                             d72 = (double)x + 0.5D - 0.5D;
                             d74 = (double)z + 0.5D + 0.5D;
@@ -488,7 +490,7 @@ public final class RenderBlocks {
                             i7 = this.overrideBlockTexture;
                         }
 
-                        f57 = block.getBlockBrightness(this.worldObj, x, y, z);
+                        f57 = block.getBlockBrightness(this.blockAccess, x, y, z);
                         tessellator6.setColorOpaque_F(f57, f57, f57);
                         i58 = ((i7 & 15) << 4) + 16;
                         i10 = (i7 & 15) << 4;
@@ -506,28 +508,28 @@ public final class RenderBlocks {
                         d71 = (double)(((float)i10 + 15.99F) / 256.0F);
                         d72 = (double)((float)i16 / 256.0F);
                         d74 = (double)(((float)i16 + 15.99F) / 256.0F);
-                        if(this.worldObj.isBlockNormalCube(x - 1, y, z)) {
+                        if(this.blockAccess.isBlockNormalCube(x - 1, y, z)) {
                             tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) + 0.125F), d17, d21);
                             tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y - 0.125F), (double)((float)(z + 1) + 0.125F), d17, d23);
                             tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y - 0.125F), (double)((float)z - 0.125F), d19, d23);
                             tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)z - 0.125F), d19, d21);
                         }
 
-                        if(this.worldObj.isBlockNormalCube(x + 1, y, z)) {
+                        if(this.blockAccess.isBlockNormalCube(x + 1, y, z)) {
                             tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y - 0.125F), (double)((float)(z + 1) + 0.125F), d19, d23);
                             tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) + 0.125F), d19, d21);
                             tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)(y + 1) + 0.125F), (double)((float)z - 0.125F), d17, d21);
                             tessellator6.addVertexWithUV((double)((float)(x + 1) - 0.05F), (double)((float)y - 0.125F), (double)((float)z - 0.125F), d17, d23);
                         }
 
-                        if(this.worldObj.isBlockNormalCube(x, y, z - 1)) {
+                        if(this.blockAccess.isBlockNormalCube(x, y, z - 1)) {
                             tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)y - 0.125F), (double)((float)z + 0.05F), d71, d74);
                             tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)z + 0.05F), d71, d72);
                             tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)z + 0.05F), d25, d72);
                             tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)y - 0.125F), (double)((float)z + 0.05F), d25, d74);
                         }
 
-                        if(this.worldObj.isBlockNormalCube(x, y, z + 1)) {
+                        if(this.blockAccess.isBlockNormalCube(x, y, z + 1)) {
                             tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)(y + 1) + 0.125F), (double)((float)(z + 1) - 0.05F), d25, d72);
                             tessellator6.addVertexWithUV((double)((float)(x + 1) + 0.125F), (double)((float)y - 0.125F), (double)((float)(z + 1) - 0.05F), d25, d74);
                             tessellator6.addVertexWithUV((double)((float)x - 0.125F), (double)((float)y - 0.125F), (double)((float)(z + 1) - 0.05F), d71, d74);
@@ -542,7 +544,7 @@ public final class RenderBlocks {
                             i7 = this.overrideBlockTexture;
                         }
 
-                        f57 = block.getBlockBrightness(this.worldObj, x, y, z);
+                        f57 = block.getBlockBrightness(this.blockAccess, x, y, z);
                         tessellator6.setColorOpaque_F(f57, f57, f57);
                         i58 = (i7 & 15) << 4;
                         i10 = i7 & 240;
@@ -551,7 +553,7 @@ public final class RenderBlocks {
                         d20 = (double)((float)i10 / 256.0F);
                         d22 = (double)(((float)i10 + 15.99F) / 256.0F);
                         int i24;
-                        if((i24 = this.worldObj.getBlockMetadata(x, y, z)) == 5) {
+                        if((i24 = this.blockAccess.getBlockMetadata(x, y, z)) == 5) {
                             tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)(y + 1)), (double)((float)(z + 1)), d65, d20);
                             tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y), (double)((float)(z + 1)), d65, d22);
                             tessellator6.addVertexWithUV((double)((float)x + 0.05F), (double)((float)y), (double)((float)z), d67, d22);
@@ -583,8 +585,8 @@ public final class RenderBlocks {
                     } else if(i5 == 7) {
                         tessellator6 = Tessellator.instance;
                         BlockDoor blockDoor55 = (BlockDoor)block;
-                        f18 = block.getBlockBrightness(this.worldObj, x, y, z);
-                        float f68 = block.getBlockBrightness(this.worldObj, x, y - 1, z);
+                        f18 = block.getBlockBrightness(this.blockAccess, x, y, z);
+                        float f68 = block.getBlockBrightness(this.blockAccess, x, y - 1, z);
                         if(blockDoor55.minY > 0.0D) {
                             f68 = f18;
                         }
@@ -594,8 +596,8 @@ public final class RenderBlocks {
                         }
 
                         tessellator6.setColorOpaque_F(0.5F * f68, 0.5F * f68, 0.5F * f68);
-                        this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 0));
-                        f68 = block.getBlockBrightness(this.worldObj, x, y + 1, z);
+                        this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 0));
+                        f68 = block.getBlockBrightness(this.blockAccess, x, y + 1, z);
                         if(blockDoor55.maxY < 1.0D) {
                             f68 = f18;
                         }
@@ -605,8 +607,8 @@ public final class RenderBlocks {
                         }
 
                         tessellator6.setColorOpaque_F(f68 * 1.0F, f68 * 1.0F, f68 * 1.0F);
-                        this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 1));
-                        f68 = block.getBlockBrightness(this.worldObj, x, y, z - 1);
+                        this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 1));
+                        f68 = block.getBlockBrightness(this.blockAccess, x, y, z - 1);
                         if(blockDoor55.minZ > 0.0D) {
                             f68 = f18;
                         }
@@ -616,8 +618,15 @@ public final class RenderBlocks {
                         }
 
                         tessellator6.setColorOpaque_F(0.8F * f68, 0.8F * f68, 0.8F * f68);
-                        this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 2));
-                        f68 = block.getBlockBrightness(this.worldObj, x, y, z + 1);
+                        int i20;
+                        if((i20 = block.getBlockTexture(this.blockAccess, x, y, z, 2)) < 0) {
+                            this.flipTexture = true;
+                            i20 = -i20;
+                        }
+
+                        this.renderEastFace(block, (double)x, (double)y, (double)z, i20);
+                        this.flipTexture = false;
+                        f68 = block.getBlockBrightness(this.blockAccess, x, y, z + 1);
                         if(blockDoor55.maxZ < 1.0D) {
                             f68 = f18;
                         }
@@ -627,8 +636,14 @@ public final class RenderBlocks {
                         }
 
                         tessellator6.setColorOpaque_F(0.8F * f68, 0.8F * f68, 0.8F * f68);
-                        this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 3));
-                        f68 = block.getBlockBrightness(this.worldObj, x - 1, y, z);
+                        if((i20 = block.getBlockTexture(this.blockAccess, x, y, z, 3)) < 0) {
+                            this.flipTexture = true;
+                            i20 = -i20;
+                        }
+
+                        this.renderWestFace(block, (double)x, (double)y, (double)z, i20);
+                        this.flipTexture = false;
+                        f68 = block.getBlockBrightness(this.blockAccess, x - 1, y, z);
                         if(blockDoor55.minX > 0.0D) {
                             f68 = f18;
                         }
@@ -638,8 +653,14 @@ public final class RenderBlocks {
                         }
 
                         tessellator6.setColorOpaque_F(0.6F * f68, 0.6F * f68, 0.6F * f68);
-                        this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 4));
-                        f68 = block.getBlockBrightness(this.worldObj, x + 1, y, z);
+                        if((i20 = block.getBlockTexture(this.blockAccess, x, y, z, 4)) < 0) {
+                            this.flipTexture = true;
+                            i20 = -i20;
+                        }
+
+                        this.renderNorthFace(block, (double)x, (double)y, (double)z, i20);
+                        this.flipTexture = false;
+                        f68 = block.getBlockBrightness(this.blockAccess, x + 1, y, z);
                         if(blockDoor55.maxX < 1.0D) {
                             f68 = f18;
                         }
@@ -649,17 +670,23 @@ public final class RenderBlocks {
                         }
 
                         tessellator6.setColorOpaque_F(0.6F * f68, 0.6F * f68, 0.6F * f68);
-                        this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.worldObj, x, y, z, 5));
+                        if((i20 = block.getBlockTexture(this.blockAccess, x, y, z, 5)) < 0) {
+                            this.flipTexture = true;
+                            i20 = -i20;
+                        }
+
+                        this.renderSouthFace(block, (double)x, (double)y, (double)z, i20);
+                        this.flipTexture = false;
                         return true;
                     } else if(i5 == 9) {
                         tessellator6 = Tessellator.instance;
-                        i7 = this.worldObj.getBlockMetadata(x, y, z);
+                        i7 = this.blockAccess.getBlockMetadata(x, y, z);
                         int i8 = block.getBlockTextureFromSideAndMetadata(0, i7);
                         if(this.overrideBlockTexture >= 0) {
                             i8 = this.overrideBlockTexture;
                         }
 
-                        float f9 = block.getBlockBrightness(this.worldObj, x, y, z);
+                        float f9 = block.getBlockBrightness(this.blockAccess, x, y, z);
                         tessellator6.setColorOpaque_F(f9, f9, f9);
                         i10 = (i8 & 15) << 4;
                         i16 = i8 & 240;
@@ -868,18 +895,18 @@ public final class RenderBlocks {
         for(int i7 = 0; i7 < 4; ++i7) {
             int i8 = x - (i7 & 1);
             int i9 = z - (i7 >> 1 & 1);
-            if(this.worldObj.getBlockMaterial(i8, y + 1, i9) == material) {
+            if(this.blockAccess.getBlockMaterial(i8, y + 1, i9) == material) {
                 return 1.0F;
             }
 
             Material material10;
-            if((material10 = this.worldObj.getBlockMaterial(i8, y, i9)) != material) {
+            if((material10 = this.blockAccess.getBlockMaterial(i8, y, i9)) != material) {
                 if(!material10.isSolid()) {
                     ++f6;
                     ++i5;
                 }
             } else {
-                if((i8 = this.worldObj.getBlockMetadata(i8, y, i9)) >= 8 || i8 == 0) {
+                if((i8 = this.blockAccess.getBlockMetadata(i8, y, i9)) >= 8 || i8 == 0) {
                     f6 += BlockFluid.getFluidHeightPercent(i8) * 10.0F;
                     i5 += 10;
                 }
@@ -1014,6 +1041,13 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxX * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        double d20;
+        if(this.flipTexture) {
+            d20 = d12;
+            d12 = d14;
+            d14 = d20;
+        }
+
         if(block.minX < 0.0D || block.maxX > 1.0D) {
             d12 = (double)((float)i10 / 256.0F);
             d14 = (double)(((float)i10 + 15.99F) / 256.0F);
@@ -1024,7 +1058,7 @@ public final class RenderBlocks {
             d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
         }
 
-		double d20 = x + block.minX;
+		d20 = x + block.minX;
 		double d22 = x + block.maxX;
 		double d24 = y + block.minY;
 		double d26 = y + block.maxY;
@@ -1047,6 +1081,13 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxX * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        double d20;
+        if(this.flipTexture) {
+            d20 = d12;
+            d12 = d14;
+            d14 = d20;
+        }
+
         if(block.minX < 0.0D || block.maxX > 1.0D) {
             d12 = (double)((float)i10 / 256.0F);
             d14 = (double)(((float)i10 + 15.99F) / 256.0F);
@@ -1057,7 +1098,7 @@ public final class RenderBlocks {
             d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
         }
 
-		double d20 = x + block.minX;
+		d20 = x + block.minX;
 		double d22 = x + block.maxX;
 		double d24 = y + block.minY;
 		double d26 = y + block.maxY;
@@ -1080,6 +1121,13 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxZ * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        double d20;
+        if(this.flipTexture) {
+            d20 = d12;
+            d12 = d14;
+            d14 = d20;
+        }
+
         if(block.minZ < 0.0D || block.maxZ > 1.0D) {
             d12 = (double)((float)i10 / 256.0F);
             d14 = (double)(((float)i10 + 15.99F) / 256.0F);
@@ -1090,7 +1138,7 @@ public final class RenderBlocks {
             d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
         }
 
-		double d20 = x + block.minX;
+		d20 = x + block.minX;
 		double d22 = y + block.minY;
 		double d24 = y + block.maxY;
 		double d26 = z + block.minZ;
@@ -1113,6 +1161,13 @@ public final class RenderBlocks {
 		double d14 = ((double)i10 + block.maxZ * 16.0D - 0.01D) / 256.0D;
 		double d16 = ((double)blockTexture + block.minY * 16.0D) / 256.0D;
 		double d18 = ((double)blockTexture + block.maxY * 16.0D - 0.01D) / 256.0D;
+        double d20;
+        if(this.flipTexture) {
+            d20 = d12;
+            d12 = d14;
+            d14 = d20;
+        }
+
         if(block.minZ < 0.0D || block.maxZ > 1.0D) {
             d12 = (double)((float)i10 / 256.0F);
             d14 = (double)(((float)i10 + 15.99F) / 256.0F);
@@ -1123,7 +1178,7 @@ public final class RenderBlocks {
             d18 = (double)(((float)blockTexture + 15.99F) / 256.0F);
         }
 
-		double d20 = x + block.maxX;
+		d20 = x + block.maxX;
 		double d22 = y + block.minY;
 		double d24 = y + block.maxY;
 		double d26 = z + block.minZ;

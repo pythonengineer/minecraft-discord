@@ -8,7 +8,7 @@ public final class GuiDeleteWorld extends GuiSelectWorld {
         this.screenTitle = "Delete world";
     }
 
-    public final void addButtons() {
+    public final void buttons() {
         this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
     }
 

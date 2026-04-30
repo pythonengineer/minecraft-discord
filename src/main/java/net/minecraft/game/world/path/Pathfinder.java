@@ -5,31 +5,31 @@ import java.util.Map;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
-import net.minecraft.game.world.World;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.material.Material;
 
 public final class Pathfinder {
-	private World worldObj;
+	private IBlockAccess worldMap;
 	private Path path = new Path();
 	private Map pointMap = new HashMap();
 	private PathPoint[] pathOptions = new PathPoint[32];
 
-	public Pathfinder(World world) {
-		this.worldObj = world;
+	public Pathfinder(IBlockAccess iBlockAccess) {
+		this.worldMap = iBlockAccess;
 	}
 
 	public final PathEntity createEntityPathTo(Entity entity1, Entity entity2, float distance) {
-		return this.createEntityPathTo(entity1, entity2.posX, entity2.boundingBox.minY, entity2.posZ, 16.0F);
+		return this.createEntityPathTo(entity1, entity2.posX, entity2.boundingBox.minY, entity2.posZ, distance);
 	}
 
 	public final PathEntity createEntityPathTo(Entity entity, int x, int y, int z, float distance) {
-		return this.createEntityPathTo(entity, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), 16.0F);
+		return this.createEntityPathTo(entity, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), distance);
 	}
 
 	private PathEntity createEntityPathTo(Entity entity, double x, double y, double z, float distance) {
 		this.path.clearPath();
 		this.pointMap.clear();
-		Object object9 = this.openPoint(MathHelper.floor_double(entity.boundingBox.minX), MathHelper.floor_double(entity.boundingBox.minY), MathHelper.floor_double(entity.boundingBox.minZ));
+		PathPoint object9 = this.openPoint(MathHelper.floor_double(entity.boundingBox.minX), MathHelper.floor_double(entity.boundingBox.minY), MathHelper.floor_double(entity.boundingBox.minZ));
 		PathPoint pathPoint21 = this.openPoint(MathHelper.floor_double(x - (double)(entity.width / 2.0F)), MathHelper.floor_double(y), MathHelper.floor_double(z - (double)(entity.width / 2.0F)));
 		PathPoint pathPoint3 = new PathPoint(MathHelper.floor_float(entity.width + 1.0F), MathHelper.floor_float(entity.height + 1.0F), MathHelper.floor_float(entity.width + 1.0F));
 		float f24 = distance;
@@ -64,7 +64,7 @@ public final class Pathfinder {
 			pathPoint25.isFirst = true;
 			int object15 = 0;
 			byte b16 = 0;
-			if(pathfinder20.getVerticalOffset(pathPoint25.xCoord, pathPoint25.yCoord + 1, pathPoint25.zCoord, pathPoint5) > 0) {
+			if(pathfinder20.findPathOptions(pathPoint25.xCoord, pathPoint25.yCoord + 1, pathPoint25.zCoord, pathPoint5) > 0) {
 				b16 = 1;
 			}
 
@@ -89,8 +89,6 @@ public final class Pathfinder {
 				pathfinder20.pathOptions[object15++] = pathPoint10;
 			}
 
-			object9 = object15;
-
 			for(int i26 = 0; i26 < object15; ++i26) {
 				PathPoint pathPoint11 = pathfinder20.pathOptions[i26];
 				float f12 = pathPoint25.totalPathDistance + pathPoint25.distanceTo(pathPoint11);
@@ -113,11 +111,11 @@ public final class Pathfinder {
 
 	private PathPoint getSafePoint(Entity entity, int x, int y, int z, PathPoint pathPoint, int offsetY) {
 		PathPoint pathPoint8 = null;
-		if(this.getVerticalOffset(x, y, z, pathPoint) > 0) {
+		if(this.findPathOptions(x, y, z, pathPoint) > 0) {
 			pathPoint8 = this.openPoint(x, y, z);
 		}
 
-		if(pathPoint8 == null && this.getVerticalOffset(x, y + offsetY, z, pathPoint) > 0) {
+		if(pathPoint8 == null && this.findPathOptions(x, y + offsetY, z, pathPoint) > 0) {
 			pathPoint8 = this.openPoint(x, y + offsetY, z);
 		}
 
@@ -126,9 +124,13 @@ public final class Pathfinder {
 
 			while(true) {
 				int i7;
-				if(y <= 0 || (i7 = this.getVerticalOffset(x, y - 1, z, pathPoint)) <= 0) {
+				if(y <= 0 || (i7 = this.findPathOptions(x, y - 1, z, pathPoint)) <= 0) {
+                    if(y > 0) {
+                        pathPoint8 = this.openPoint(x, y, z);
+                    }
+
 					Material material9;
-					if((material9 = this.worldObj.getBlockMaterial(x, y - 1, z)) == Material.water || material9 == Material.lava) {
+					if((material9 = this.worldMap.getBlockMaterial(x, y - 1, z)) == Material.water || material9 == Material.lava) {
 						return null;
 					}
 					break;
@@ -144,7 +146,6 @@ public final class Pathfinder {
 				}
 
 				--y;
-				pathPoint8 = this.openPoint(x, y, z);
 			}
 		}
 
@@ -162,12 +163,12 @@ public final class Pathfinder {
 		return pathPoint5;
 	}
 
-	private int getVerticalOffset(int x, int y, int z, PathPoint pathPoint) {
+	private int findPathOptions(int x, int y, int z, PathPoint pathPoint) {
 		for(int i5 = x; i5 < x + pathPoint.xCoord; ++i5) {
 			for(int i6 = y; i6 < y + pathPoint.yCoord; ++i6) {
 				for(int i7 = z; i7 < z + pathPoint.zCoord; ++i7) {
 					Material material8;
-					if((material8 = this.worldObj.getBlockMaterial(x, y, z)).getIsSolid()) {
+					if((material8 = this.worldMap.getBlockMaterial(x, y, z)).getIsSolid()) {
 						return 0;
 					}
 

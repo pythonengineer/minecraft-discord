@@ -26,7 +26,7 @@ public class EntityMob extends EntityCreature {
 	public final void onUpdate() {
 		super.onUpdate();
 		if(this.worldObj.difficultySetting == 0) {
-			super.isDead = true;
+            this.setEntityDead();
 		}
 
 	}

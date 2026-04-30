@@ -71,8 +71,8 @@ public class EntityLiving extends Entity {
 		return this.height * 0.85F;
 	}
 
-	public void onUpdate() {
-		super.onUpdate();
+    public final void onEntityUpdate() {
+        super.onEntityUpdate();
 		if(this.rand.nextInt(1000) < this.livingSoundTime++) {
 			this.livingSoundTime = -80;
 			String string1;
@@ -122,7 +122,7 @@ public class EntityLiving extends Entity {
 		if(this.health <= 0) {
 			++this.deathTime;
 			if(this.deathTime > 20) {
-				super.isDead = true;
+                this.setEntityDead();
 
                 for(i9 = 0; i9 < 20; ++i9) {
                     double d10 = this.rand.nextGaussian() * 0.02D;
@@ -136,6 +136,15 @@ public class EntityLiving extends Entity {
 		this.prevRenderYawOffset = this.renderYawOffset;
 		this.prevRotationYaw = this.rotationYaw;
 		this.prevRotationPitch = this.rotationPitch;
+    }
+
+    public void updateRidden() {
+        super.updateRidden();
+        this.prevRidingRotUnused = 0.0F;
+    }
+
+    public void onUpdate() {
+        super.onUpdate();
 		this.onLivingUpdate();
         double d11 = this.posX - this.prevPosX;
         double d14 = this.posZ - this.prevPosZ;
@@ -214,7 +223,7 @@ public class EntityLiving extends Entity {
 		this.rotationUnused += f7;
 	}
 
-	protected final void setSize(float width, float height) {
+	public final void setSize(float width, float height) {
 		super.setSize(width, height);
 	}
 
@@ -357,14 +366,14 @@ public class EntityLiving extends Entity {
 			double d6 = entity1.posZ - this.posZ;
 			double d8;
 			if((d8 = d2 * d2 + d4 * d4 + d6 * d6) > 16384.0D) {
-				super.isDead = true;
+                this.setEntityDead();
 			}
 
 			if(this.entityAge > 600 && this.rand.nextInt(800) == 0) {
 				if(d8 < 1024.0D) {
 					this.entityAge = 0;
 				} else {
-					super.isDead = true;
+	                this.setEntityDead();
 				}
 			}
 		}
@@ -486,7 +495,7 @@ public class EntityLiving extends Entity {
 
 	public boolean getCanSpawnHere(float x, float y, float z) {
 		this.setPosition((double)x, (double)(y + this.height / 2.0F), (double)z);
-		return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
+		return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
 	}
 
     protected final void kill() {

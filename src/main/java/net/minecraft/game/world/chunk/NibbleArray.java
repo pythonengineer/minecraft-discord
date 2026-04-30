@@ -1,6 +1,6 @@
 package net.minecraft.game.world.chunk;
 
-final class NibbleArray {
+public final class NibbleArray {
     public final byte[] data;
 
     public NibbleArray(int size) {

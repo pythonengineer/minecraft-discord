@@ -244,23 +244,26 @@ public final class ItemRenderer {
             int i10 = MathHelper.floor_double(this.mc.thePlayer.posZ);
             i5 = this.mc.renderEngine.getTexture("/terrain.png");
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, i5);
-            i10 = Block.blocksList[this.mc.theWorld.getBlockId(i2, i3, i10)].getBlockTextureFromSide(2);
-            Tessellator tessellator13 = Tessellator.instance;
-            this.mc.thePlayer.getBrightness(partialTicks);
-            GL11.glColor4f(0.1F, 0.1F, 0.1F, 0.5F);
-            GL11.glPushMatrix();
-            f9 = (float)(i10 % 16) / 256.0F - 0.0078125F;
-            float f8 = ((float)(i10 % 16) + 15.99F) / 256.0F + 0.0078125F;
-            f6 = (float)(i10 / 16) / 256.0F - 0.0078125F;
-            float f11 = ((float)(i10 / 16) + 15.99F) / 256.0F + 0.0078125F;
-            tessellator13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-            tessellator13.addVertexWithUV(-1.0D, -1.0D, -0.5D, (double)f8, (double)f11);
-            tessellator13.addVertexWithUV(1.0D, -1.0D, -0.5D, (double)f9, (double)f11);
-            tessellator13.addVertexWithUV(1.0D, 1.0D, -0.5D, (double)f9, (double)f6);
-            tessellator13.addVertexWithUV(-1.0D, 1.0D, -0.5D, (double)f8, (double)f6);
-            tessellator13.draw();
-            GL11.glPopMatrix();
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            i2 = this.mc.theWorld.getBlockId(i2, i3, i10);
+            if(Block.blocksList[i2] != null) {
+                i10 = Block.blocksList[i2].getBlockTextureFromSide(2);
+                Tessellator tessellator13 = Tessellator.instance;
+                this.mc.thePlayer.getBrightness(partialTicks);
+                GL11.glColor4f(0.1F, 0.1F, 0.1F, 0.5F);
+                GL11.glPushMatrix();
+                f9 = (float)(i10 % 16) / 256.0F - 0.0078125F;
+                float f8 = ((float)(i10 % 16) + 15.99F) / 256.0F + 0.0078125F;
+                f6 = (float)(i10 / 16) / 256.0F - 0.0078125F;
+                float f11 = ((float)(i10 / 16) + 15.99F) / 256.0F + 0.0078125F;
+                tessellator13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+                tessellator13.addVertexWithUV(-1.0D, -1.0D, -0.5D, (double)f8, (double)f11);
+                tessellator13.addVertexWithUV(1.0D, -1.0D, -0.5D, (double)f9, (double)f11);
+                tessellator13.addVertexWithUV(1.0D, 1.0D, -0.5D, (double)f9, (double)f6);
+                tessellator13.addVertexWithUV(-1.0D, 1.0D, -0.5D, (double)f8, (double)f6);
+                tessellator13.draw();
+                GL11.glPopMatrix();
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            }
         }
 
         if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {

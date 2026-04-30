@@ -1,5 +1,7 @@
 package net.minecraft.game.world.chunk;
 
+import net.minecraft.client.IProgressUpdate;
+
 public interface IChunkProvider {
     boolean chunkExists(int i1, int i2);
 
@@ -7,7 +9,7 @@ public interface IChunkProvider {
 
     void populate(IChunkProvider iChunkProvider1, int i2, int i3);
 
-    void saveChunks(boolean z1);
+    boolean saveChunks(boolean z1, IProgressUpdate iProgressUpdate2);
 
     boolean unload100OldestChunks();
 

@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
@@ -51,11 +52,11 @@ public final class BlockStep extends Block {
 		return this.blockType;
 	}
 
-	public final boolean getIsBlockSolid(World world, int x, int y, int z, int metadata) {
+	public final boolean getIsBlockSolid(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
 		if(this != Block.stairSingle) {
-			super.getIsBlockSolid(world, x, y, z, metadata);
+			super.getIsBlockSolid(iBlockAccess, x, y, z, metadata);
 		}
 
-		return metadata == 1 ? true : (!super.getIsBlockSolid(world, x, y, z, metadata) ? false : (metadata == 0 ? true : world.getBlockId(x, y, z) != this.blockID));
+		return metadata == 1 ? true : (!super.getIsBlockSolid(iBlockAccess, x, y, z, metadata) ? false : (metadata == 0 ? true : iBlockAccess.getBlockId(x, y, z) != this.blockID));
 	}
 }

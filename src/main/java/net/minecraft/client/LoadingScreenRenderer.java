@@ -1,37 +1,33 @@
 package net.minecraft.client;
 
-import com.mojang.nbt.NBTBase;
-import com.mojang.nbt.NBTTagCompound;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import net.lax1dude.eaglercraft.EagRuntime;
-import net.lax1dude.eaglercraft.EaglerZLIB;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.Tessellator;
 
-public class LoadingScreenRenderer implements IProgressUpdate {
-    private String currentlyDisplayedProgress;
+public final class LoadingScreenRenderer implements IProgressUpdate {
+    private String currentlyDisplayedProgress = "";
     private Minecraft mc;
-    private String currentlyDisplayedText;
-    private long systemTime;
+    private String currentlyDisplayedText = "";
+    private long systemTime = EagRuntime.currentTimeMillis();
+    private boolean printText = false;
 
     public LoadingScreenRenderer(Minecraft minecraft) {
-        this.currentlyDisplayedProgress = "";
-        this.currentlyDisplayedText = "";
-        this.systemTime = EagRuntime.currentTimeMillis();
         this.mc = minecraft;
     }
 
-    public final void setTitle(String title) {
+    public final void printText(String string1) {
+        this.printText = false;
+        this.drawScreen(string1);
+    }
+
+    public final void displayProgressMessage() {
+        this.printText = true;
+        this.drawScreen(this.currentlyDisplayedText);
+    }
+
+    private void drawScreen(String title) {
         if(this.mc.running) {
             this.currentlyDisplayedText = title;
             int i2 = this.mc.scaledResolution.getScaledWidth();
@@ -109,38 +105,5 @@ public class LoadingScreenRenderer implements IProgressUpdate {
                 }
             }
         }
-    }
-
-    public LoadingScreenRenderer() {
-    }
-
-    public static NBTTagCompound read(InputStream inputStream) throws IOException {
-        DataInputStream inputStream1 = new DataInputStream(new BufferedInputStream(EaglerZLIB.newGZIPInputStream(inputStream)));
-
-        NBTTagCompound nBTTagCompound5;
-        byte b0 = inputStream1.readByte();
-        try {
-            NBTBase nBTBase1 = NBTBase.read(inputStream1, b0);
-            if(!(nBTBase1 instanceof NBTTagCompound)) {
-                throw new IOException("Root tag must be a named compound tag");
-            }
-
-            nBTTagCompound5 = (NBTTagCompound)nBTBase1;
-        } finally {
-            inputStream1.close();
-        }
-
-        return nBTTagCompound5;
-    }
-
-    public static void write(NBTTagCompound compoundTag, OutputStream outputStream) throws IOException {
-        DataOutputStream outputStream1 = new DataOutputStream(new BufferedOutputStream(EaglerZLIB.newGZIPOutputStream(outputStream)));
-
-        try {
-            NBTBase.writeNamedTag(compoundTag, outputStream1);
-        } finally {
-            outputStream1.close();
-        }
-
     }
 }

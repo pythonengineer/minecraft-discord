@@ -142,7 +142,7 @@ public class EntityItem extends Entity {
 		++this.age2;
 		++this.age;
 		if(this.age >= 6000) {
-			super.isDead = true;
+            this.setEntityDead();
 		}
 
 	}
@@ -158,7 +158,7 @@ public class EntityItem extends Entity {
 	public final boolean attackEntityFrom(Entity entity, int damage) {
 		this.health -= damage;
 		if(this.health <= 0) {
-			super.isDead = true;
+            this.setEntityDead();
 		}
 
 		return false;
@@ -181,7 +181,7 @@ public class EntityItem extends Entity {
 		if(this.delayBeforeCanPickup == 0 && playerEntity.inventory.addItemStackToInventory(this.item)) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			playerEntity.onItemPickup(this);
-			super.isDead = true;
+            this.setEntityDead();
 		}
 
 	}

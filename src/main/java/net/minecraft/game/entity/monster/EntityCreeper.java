@@ -52,7 +52,7 @@ public class EntityCreeper extends EntityMob {
 			++this.timeSinceIgnited;
 			if(this.timeSinceIgnited == this.maxTime) {
 				this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
-				super.isDead = true;
+	            this.setEntityDead();
 			}
 
 			this.powered = true;

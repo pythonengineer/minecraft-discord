@@ -10,6 +10,7 @@ import net.minecraft.client.render.camera.Frustrum;
 import net.minecraft.client.render.tileentity.TileEntityRenderer;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
+import net.minecraft.game.world.ChunkCache;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockContainer;
@@ -34,21 +35,20 @@ public final class WorldRenderer {
 	private int posYClip;
 	private int posZClip;
 	public boolean isInFrustrum = false;
-	private boolean[] skipRenderPass = new boolean[2];
+    public boolean[] skipRenderPass = new boolean[2];
 	private int posXPlus;
 	private int posYPlus;
 	private int posZPlus;
 	public boolean needsUpdate;
 	private AxisAlignedBB rendererBoundingBox;
-	private RenderBlocks renderBlocks;
 	public boolean isVisible = true;
 	public boolean isWaitingOnOcclusionQuery;
 	public int glOcclusionQuery;
 	public boolean isChunkLit;
+    private boolean isInitialized = false;
 	public List tileEntityRenderers = new ArrayList();
 
 	public WorldRenderer(World world, int x, int y, int z, int unusedInt, int glRenderList) {
-		this.renderBlocks = new RenderBlocks(world);
 		this.worldObj = world;
 		this.sizeWidth = this.sizeHeight = this.sizeDepth = 16;
 		MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth));
@@ -67,9 +67,9 @@ public final class WorldRenderer {
 			this.posXPlus = x + this.sizeWidth / 2;
 			this.posYPlus = y + this.sizeHeight / 2;
 			this.posZPlus = z + this.sizeDepth / 2;
-			this.posXClip = x & 511;
-			this.posYClip = y & 511;
-			this.posZClip = z & 511;
+			this.posXClip = x & 1023;
+			this.posYClip = y;
+			this.posZClip = z & 1023;
 			this.posXMinus = x - this.posXClip;
 			this.posYMinus = y - this.posYClip;
 			this.posZMinus = z - this.posZClip;
@@ -108,8 +108,10 @@ public final class WorldRenderer {
 		}
 	}
 
-	public final void updateRenderer() {
-		if(this.needsUpdate) {
+	public final boolean updateRenderer() {
+        if(!this.needsUpdate) {
+            return true;
+        } else {
 			++chunkUpdates;
 			int i1 = this.posX;
 			int i2 = this.posY;
@@ -118,61 +120,76 @@ public final class WorldRenderer {
 			int i5 = this.posY + this.sizeHeight;
 			int i6 = this.posZ + this.sizeDepth;
 
-			int i7;
-			for(i7 = 0; i7 < 2; ++i7) {
+            for(int i7 = 0; i7 < 2; ++i7) {
 				this.skipRenderPass[i7] = true;
 			}
 
 			Chunk.isLit = false;
 			this.tileEntityRenderers.clear();
+            ChunkCache chunkCache18 = new ChunkCache(this.worldObj, i1 - 1, i3 - 1, i4 + 1, i6 + 1);
+            RenderBlocks renderBlocks8 = new RenderBlocks(chunkCache18);
 
-			for(i7 = 0; i7 < 2; ++i7) {
-				boolean z8 = false;
-				boolean z9 = false;
-				GL11.glNewList(this.glRenderList + i7, GL11.GL_COMPILE);
-				GL11.glPushMatrix();
-				GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
-				GL11.glScalef(1.00001F, 1.00001F, 1.00001F);
-				tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-				tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
+            for(int i9 = 0; i9 < 2; ++i9) {
+                boolean z10 = false;
+                boolean z11 = false;
+                boolean z12 = false;
 
-				for(int i10 = i2; i10 < i5; ++i10) {
-					for(int i11 = i3; i11 < i6; ++i11) {
-						for(int i12 = i1; i12 < i4; ++i12) {
-							int i13;
-							if((i13 = this.worldObj.getBlockId(i12, i10, i11)) > 0) {
-								if(i7 == 0 && Block.blocksList[i13] instanceof BlockContainer) {
-									TileEntity tileEntity14 = this.worldObj.getBlockTileEntity(i12, i10, i11);
-									if(TileEntityRenderer.instance.hasSpecialRenderer(tileEntity14)) {
-										this.tileEntityRenderers.add(tileEntity14);
-									}
-								}
+                for(int i13 = i2; i13 < i5; ++i13) {
+                    for(int i14 = i3; i14 < i6; ++i14) {
+                        for(int i15 = i1; i15 < i4; ++i15) {
+                            int i16;
+                            if((i16 = chunkCache18.getBlockId(i15, i13, i14)) > 0) {
+                                if(!z12) {
+                                    z12 = true;
+                                    GL11.glNewList(this.glRenderList + i9, GL11.GL_COMPILE);
+                                    GL11.glPushMatrix();
+                                    GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
+                                    GL11.glTranslatef((float)(-this.sizeDepth) / 2.0F, (float)(-this.sizeHeight) / 2.0F, (float)(-this.sizeDepth) / 2.0F);
+                                    GL11.glScalef(1.000001F, 1.000001F, 1.000001F);
+                                    GL11.glTranslatef((float)this.sizeDepth / 2.0F, (float)this.sizeHeight / 2.0F, (float)this.sizeDepth / 2.0F);
+                                    tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+                                    tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
+                                }
 
-								Block block15;
-                                if((i13 = (block15 = Block.blocksList[i13]).getRenderBlockPass()) != i7) {
-                                    z8 = true;
-                                } else if(i13 == i7) {
-									z9 |= this.renderBlocks.renderBlockByRenderType(block15, i12, i10, i11);
-								}
-							}
-						}
-					}
-				}
+                                if(i9 == 0 && Block.blocksList[i16] instanceof BlockContainer) {
+                                    TileEntity tileEntity17 = chunkCache18.getBlockTileEntity(i15, i13, i14);
+                                    if(TileEntityRenderer.instance.hasSpecialRenderer(tileEntity17)) {
+                                        this.tileEntityRenderers.add(tileEntity17);
+                                    }
+                                }
 
-				tessellator.draw();
-				GL11.glPopMatrix();
-				GL11.glEndList();
-				tessellator.setTranslationD(0.0D, 0.0D, 0.0D);
-				if(z9) {
-					this.skipRenderPass[i7] = false;
-				}
+                                Block block19;
+                                if((i16 = (block19 = Block.blocksList[i16]).getRenderBlockPass()) != i9) {
+                                    z10 = true;
+                                } else if(i16 == i9) {
+                                    z11 |= renderBlocks8.renderBlockByRenderType(block19, i15, i13, i14);
+                                }
+                            }
+                        }
+                    }
+                }
 
-				if(!z8) {
-					break;
-				}
-			}
+                if(z12) {
+                    tessellator.draw();
+                    GL11.glPopMatrix();
+                    GL11.glEndList();
+                    tessellator.setTranslationD(0.0D, 0.0D, 0.0D);
+                } else {
+                    z11 = false;
+                }
 
-			this.isChunkLit = Chunk.isLit;
+                if(z11) {
+                    this.skipRenderPass[i9] = false;
+                }
+
+                if(!z10) {
+                    break;
+                }
+            }
+
+            this.isChunkLit = Chunk.isLit;
+            this.isInitialized = true;
+            return true;
 		}
 	}
 
@@ -188,6 +205,8 @@ public final class WorldRenderer {
 			this.skipRenderPass[i1] = true;
 		}
 
+        this.isInFrustrum = false;
+        this.isInitialized = false;
 	}
 
 	public final void stopRendering() {
@@ -208,6 +227,10 @@ public final class WorldRenderer {
 	}
 
 	public final boolean skipAllRenderPasses() {
-		return this.skipRenderPass[0] && this.skipRenderPass[1];
-	}
+        return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
+    }
+
+    public final void markDirty() {
+        this.needsUpdate = true;
+    }
 }
