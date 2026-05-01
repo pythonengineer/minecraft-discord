@@ -27,11 +27,12 @@ public final class Chunk {
 	public final int xPosition;
 	public final int zPosition;
 	public Map chunkTileEntityMap;
-	public List[] entities;
+	public List<Entity>[] entities;
 	public boolean isTerrainPopulated;
 	public boolean isModified;
 	public boolean neverSave;
 	public boolean isChunkRendered;
+    public boolean hasEntities;
 
 	public Chunk(World world, int chunkX, int chunkZ) {
 		this.chunkTileEntityMap = new HashMap();
@@ -39,6 +40,7 @@ public final class Chunk {
 		this.isTerrainPopulated = false;
 		this.isModified = false;
 		this.isChunkRendered = false;
+        this.hasEntities = false;
 		this.worldObj = world;
 		this.xPosition = chunkX;
 		this.zPosition = chunkZ;
@@ -278,6 +280,7 @@ public final class Chunk {
 	}
 
 	public final void addEntity(Entity entity) {
+        this.hasEntities = true;
 		int i2 = MathHelper.floor_double(entity.posX / 16.0D);
 		int i3 = MathHelper.floor_double(entity.posZ / 16.0D);
 		if(i2 != this.xPosition || i3 != this.zPosition) {
@@ -327,13 +330,6 @@ public final class Chunk {
 		return tileEntity5;
 	}
 
-	public final void addTileEntity(TileEntity tileEntity) {
-		int i2 = tileEntity.xCoord - (this.xPosition << 4);
-		int i3 = tileEntity.yCoord;
-		int i4 = tileEntity.zCoord - (this.zPosition << 4);
-		this.setChunkBlockTileEntity(i2, i3, i4, tileEntity);
-	}
-
 	public final void setChunkBlockTileEntity(int x, int y, int z, TileEntity tileEntity) {
 		int i5 = x + (y << 10) + (z << 10 << 10);
 		tileEntity.worldObj = this.worldObj;
@@ -379,7 +375,31 @@ public final class Chunk {
 
 	}
 
-	public final boolean needsSaving() {
-		return this.neverSave ? false : this.isModified;
-	}
+    public final void getEntitiesOfTypeWithinAABB(Class<? extends Entity> class1, AxisAlignedBB axisAlignedBB2, List<Entity> list3) {
+        int i4 = MathHelper.floor_double((axisAlignedBB2.minY - 2.0D) / 16.0D);
+        int i5 = MathHelper.floor_double((axisAlignedBB2.maxY + 2.0D) / 16.0D);
+        if(i4 < 0) {
+            i4 = 0;
+        }
+
+        if(i5 >= this.entities.length) {
+            i5 = this.entities.length - 1;
+        }
+
+        for(i4 = i4; i4 <= i5; ++i4) {
+            List<Entity> list6 = this.entities[i4];
+
+            for(int i7 = 0; i7 < list6.size(); ++i7) {
+                Entity entity8 = (Entity)list6.get(i7);
+                if(class1.isAssignableFrom(entity8.getClass()) && entity8.boundingBox.intersectsWith(axisAlignedBB2)) {
+                    list3.add(entity8);
+                }
+            }
+        }
+
+    }
+
+    public final boolean needsSaving() {
+        return this.neverSave ? false : (this.hasEntities ? true : this.isModified);
+    }
 }

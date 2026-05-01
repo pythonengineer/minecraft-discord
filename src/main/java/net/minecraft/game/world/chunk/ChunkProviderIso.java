@@ -59,10 +59,6 @@ public final class ChunkProviderIso implements IChunkProvider {
 		return true;
 	}
 
-	public final boolean unload100OldestChunks() {
-		return false;
-	}
-
 	public final boolean canSave() {
 		return false;
 	}

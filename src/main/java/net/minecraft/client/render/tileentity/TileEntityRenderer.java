@@ -10,6 +10,8 @@ import net.minecraft.client.render.RenderEngine;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntity;
+import net.minecraft.game.world.block.tileentity.TileEntityMobSpawner;
+import net.minecraft.game.world.block.tileentity.TileEntityMobSpawnerRenderer;
 import net.minecraft.game.world.block.tileentity.TileEntitySign;
 
 public final class TileEntityRenderer {
@@ -24,6 +26,7 @@ public final class TileEntityRenderer {
 
     private TileEntityRenderer() {
         this.specialRendererMap.put(TileEntitySign.class, new TileEntitySignRenderer());
+        this.specialRendererMap.put(TileEntityMobSpawner.class, new TileEntityMobSpawnerRenderer());
         Iterator iterator1 = this.specialRendererMap.values().iterator();
 
         while(iterator1.hasNext()) {

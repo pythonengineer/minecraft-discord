@@ -6,11 +6,11 @@ import net.minecraft.game.world.World;
 public final class EntityFlameFX extends EntityFX {
 	private float flameScale;
 
-	public EntityFlameFX(World world, double posX, double posY, double posZ) {
-		super(world, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
-		this.motionX *= (double)0.01F;
-		this.motionY *= (double)0.01F;
-		this.motionZ *= (double)0.01F;
+	public EntityFlameFX(World world, double posX, double posY, double posZ, double speedX, double speedY, double speedZ) {
+		super(world, posX, posY, posZ, speedX, speedY, speedZ);
+        this.motionZ = this.motionZ * (double)0.01F + speedX;
+        this.motionY = this.motionY * (double)0.01F + speedY;
+        this.motionX = this.motionX * (double)0.01F + speedZ;
 		this.rand.nextFloat();
 		this.rand.nextFloat();
 		this.rand.nextFloat();

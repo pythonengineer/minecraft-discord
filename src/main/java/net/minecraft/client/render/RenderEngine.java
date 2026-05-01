@@ -50,7 +50,7 @@ public class RenderEngine {
 				this.textureMap.put(textureName, Integer.valueOf(i4));
 				return i4;
 			} catch (Exception iOException3) {
-				throw new RuntimeException("!!");
+				throw new RuntimeException("!! " + iOException3);
 			}
 		}
 	}

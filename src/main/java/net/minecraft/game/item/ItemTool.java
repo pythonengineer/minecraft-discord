@@ -1,5 +1,6 @@
 package net.minecraft.game.item;
 
+import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.world.block.Block;
 
 public class ItemTool extends Item {
@@ -30,7 +31,7 @@ public class ItemTool extends Item {
         return 1.0F;
     }
 
-    public final void hitEntity(ItemStack stack) {
+    public final void hitEntity(ItemStack stack, EntityLiving entityLiving) {
         stack.damageItem(2);
     }
 

@@ -9,6 +9,10 @@ public abstract class BlockContainer extends Block {
 		super(i1, material2);
 	}
 
+    protected BlockContainer(int i1, int i2, Material material3) {
+        super(i1, i2, material3);
+    }
+
 	public void onBlockAdded(World world, int x, int y, int z) {
 		super.onBlockAdded(world, x, y, z);
 		world.setBlockTileEntity(x, y, z, this.getBlockEntity());

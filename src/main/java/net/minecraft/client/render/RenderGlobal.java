@@ -1005,7 +1005,7 @@ public final class RenderGlobal implements IWorldAccess {
             } else if(particleName == "explode") {
                 this.mc.effectRenderer.addEffect(new EntityExplodeFX(this.worldObj, x, y, z, motionX, motionY, motionZ));
             } else if(particleName == "flame") {
-                this.mc.effectRenderer.addEffect(new EntityFlameFX(this.worldObj, x, y, z));
+                this.mc.effectRenderer.addEffect(new EntityFlameFX(this.worldObj, x, y, z, motionX, motionY, motionZ));
             } else if(particleName == "lava") {
                 this.mc.effectRenderer.addEffect(new EntityLavaFX(this.worldObj, x, y, z));
             } else if(particleName == "splash") {

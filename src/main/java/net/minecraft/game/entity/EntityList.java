@@ -64,6 +64,21 @@ public final class EntityList {
         return null;
     }
 
+    public static Entity createEntityByName(String entityName, World worldIn) {
+        Entity entity = null;
+
+        try {
+            EntityConstructor<? extends Entity> constructor = stringToConstructorMapping.get(entityName);
+            if (constructor != null) {
+                entity = constructor.createEntity(worldIn);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        return entity;
+    }
+
     public static Entity createEntityFromNBT(NBTTagCompound nbt, World worldIn) {
         Entity entity = null;
 

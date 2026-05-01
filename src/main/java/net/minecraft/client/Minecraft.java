@@ -7,7 +7,6 @@ import net.lax1dude.eaglercraft.crash.CrashReport;
 import net.lax1dude.eaglercraft.internal.EnumPlatformType;
 import net.lax1dude.eaglercraft.internal.ContextLostError;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
-import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.LWJGLException;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
@@ -49,7 +48,6 @@ import net.minecraft.client.render.texture.TextureWaterFlowFX;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
-import net.minecraft.game.entity.misc.EntityMinecart;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -537,7 +535,7 @@ public class Minecraft implements Runnable {
             }
 
             ItemStack itemStack2;
-            int i12;
+            int i13;
             if(this.objectMouseOver == null) {
                 if(mouseButton == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
                     this.leftClickCounter = 10;
@@ -556,7 +554,7 @@ public class Minecraft implements Runnable {
                         entity5.attackEntityFrom(entityPlayerSP4, i8);
                         if((itemStack2 = entityPlayerSP4.inventory.getCurrentItem()) != null && entity5 instanceof EntityLiving) {
                             EntityLiving entityLiving9 = (EntityLiving)entity5;
-                            Item.itemsList[itemStack2.itemID].hitEntity(itemStack2);
+                            Item.itemsList[itemStack2.itemID].hitEntity(itemStack2, entityLiving9);
                             if(itemStack2.stackSize <= 0) {
                                 entityPlayerSP4.destroyCurrentEquippedItem();
                             }
@@ -567,64 +565,62 @@ public class Minecraft implements Runnable {
                 if(mouseButton == 1) {
                     entity5 = this.objectMouseOver.entityHit;
                     entityPlayerSP4 = this.thePlayer;
-                    if(entity5 instanceof EntityMinecart) {
-                        EntityMinecart entityMinecart19;
-                        if((entityMinecart19 = (EntityMinecart)entity5).riddenByEntity == null) {
-                            entityPlayerSP4.ridingEntity = entityMinecart19;
-                            entityMinecart19.interact(entityPlayerSP4);
-                        } else {
-                            entityPlayerSP4.ridingEntity = null;
-                            entityMinecart19.interact((Entity)null);
+                    ItemStack itemStack20;
+                    if(!entity5.interact(entityPlayerSP4) && (itemStack20 = entityPlayerSP4.inventory.getCurrentItem()) != null && entity5 instanceof EntityLiving) {
+                        EntityLiving entityLiving12 = (EntityLiving)entity5;
+                        Item.itemsList[itemStack20.itemID].saddleEntity(itemStack20, entityLiving12);
+                        if(itemStack20.stackSize <= 0) {
+                            entityPlayerSP4.destroyCurrentEquippedItem();
                         }
                     }
                 }
             } else if(this.objectMouseOver.typeOfHit == 0) {
                 int i11 = this.objectMouseOver.blockX;
-                i12 = this.objectMouseOver.blockY;
-                int i13 = this.objectMouseOver.blockZ;
-                int i15 = this.objectMouseOver.sideHit;
-                Block block6 = Block.blocksList[this.theWorld.getBlockId(i11, i12, i13)];
+                i13 = this.objectMouseOver.blockY;
+                int i14 = this.objectMouseOver.blockZ;
+                int i16 = this.objectMouseOver.sideHit;
+                Block block6 = Block.blocksList[this.theWorld.getBlockId(i11, i13, i14)];
                 if(mouseButton == 0) {
-                    this.theWorld.onBlockHit(i11, i12, i13, this.objectMouseOver.sideHit);
+                    this.theWorld.onBlockHit(i11, i13, i14, this.objectMouseOver.sideHit);
                     if(block6 != Block.bedrock) {
-                        this.playerController.clickBlock(i11, i12, i13);
+                        this.playerController.clickBlock(i11, i13, i14);
                     }
                 } else {
-                    ItemStack itemStack18 = this.thePlayer.inventory.getCurrentItem();
+                    ItemStack itemStack19 = this.thePlayer.inventory.getCurrentItem();
                     int i7;
-                    if((i7 = this.theWorld.getBlockId(i11, i12, i13)) > 0 && Block.blocksList[i7].blockActivated(this.theWorld, i11, i12, i13, this.thePlayer)) {
+                    if((i7 = this.theWorld.getBlockId(i11, i13, i14)) > 0 && Block.blocksList[i7].blockActivated(this.theWorld, i11, i13, i14, this.thePlayer)) {
                         return;
                     }
 
-                    if(itemStack18 == null) {
+                    if(itemStack19 == null) {
                         return;
                     }
 
-                    i7 = itemStack18.stackSize;
-                    int i21 = i15;
-                    World world19 = this.theWorld;
-                    EntityPlayerSP entityPlayerSP16 = this.thePlayer;
-                    if(itemStack18.getItem().onItemUse(itemStack18, entityPlayerSP16, world19, i11, i12, i13, i21)) {
+                    i7 = itemStack19.stackSize;
+                    int i23 = i16;
+                    World world21 = this.theWorld;
+                    EntityPlayerSP entityPlayerSP17 = this.thePlayer;
+                    if(itemStack19.getItem().onItemUse(itemStack19, entityPlayerSP17, world21, i11, i13, i14, i23)) {
                         this.entityRenderer.itemRenderer.swing();
                     }
 
-                    if(itemStack18.stackSize == 0) {
+                    if(itemStack19.stackSize == 0) {
                         this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-                    } else if(itemStack18.stackSize != i7) {
+                    } else if(itemStack19.stackSize != i7) {
                         this.entityRenderer.itemRenderer.resetEquippedProgress();
                     }
                 }
             }
 
             if(mouseButton == 1 && (itemStack2 = this.thePlayer.inventory.getCurrentItem()) != null) {
-                i12 = itemStack2.stackSize;
-                EntityPlayerSP entityPlayerSP20 = this.thePlayer;
-                World world17 = this.theWorld;
-                ItemStack itemStack14;
-                if((itemStack14 = itemStack2.getItem().onItemRightClick(itemStack2, world17, entityPlayerSP20)) != itemStack2 || itemStack14 != null && itemStack14.stackSize != i12) {
-                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = itemStack14;
+                i13 = itemStack2.stackSize;
+                EntityPlayerSP entityPlayerSP22 = this.thePlayer;
+                World world18 = this.theWorld;
+                ItemStack itemStack15;
+                if((itemStack15 = itemStack2.getItem().onItemRightClick(itemStack2, world18, entityPlayerSP22)) != itemStack2 || itemStack15 != null && itemStack15.stackSize != i13) {
+                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = itemStack15;
                     this.entityRenderer.itemRenderer.resetEquippedProgress();
-                    if(itemStack14.stackSize == 0) {
+                    if(itemStack15.stackSize == 0) {
                         this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
                     }
                 }
@@ -1016,7 +1012,7 @@ public class Minecraft implements Runnable {
         int i6 = 0;
 
         int i2;
-        for(i2 = -240; i2 <= 240; i2 += 16) {
+        for(i2 = -128; i2 <= 128; i2 += 16) {
             int i3 = this.theWorld.spawnX;
             int i4 = this.theWorld.spawnZ;
             if(this.theWorld.playerEntity != null) {
@@ -1024,8 +1020,8 @@ public class Minecraft implements Runnable {
                 i4 = (int)this.theWorld.playerEntity.posZ;
             }
 
-            for(int i5 = -240; i5 <= 240; i5 += 16) {
-                this.loadingScreen.setLoadingProgress(i6++ * 100 / 961);
+            for(int i5 = -128; i5 <= 128; i5 += 16) {
+                this.loadingScreen.setLoadingProgress(i6++ * 100 / 289);
                 this.theWorld.getBlockId(i3 + i2, 64, i4 + i5);
 
                 while(this.theWorld.updatingLighting()) {
@@ -1040,7 +1036,6 @@ public class Minecraft implements Runnable {
             this.theWorld.TickUpdates(true);
         }
 
-        this.theWorld.dropOldChunks();
         BlockSand.fallInstantly = false;
     }
 

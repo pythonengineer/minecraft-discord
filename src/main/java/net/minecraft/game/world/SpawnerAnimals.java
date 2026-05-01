@@ -47,12 +47,12 @@ public class SpawnerAnimals {
 		} else if(world.getBlockMaterial(i5, i7, i4) != Material.air) {
 			return 0;
 		} else {
-			for(int i8 = 0; i8 < 4; ++i8) {
+			for(int i8 = 0; i8 < 3; ++i8) {
 				int i9 = i5;
 				int i10 = i7;
 				int i11 = i4;
 
-				for(int i12 = 0; i12 < 4; ++i12) {
+				for(int i12 = 0; i12 < 3; ++i12) {
 					i9 += world.rand.nextInt(6) - world.rand.nextInt(6);
 					i10 += world.rand.nextInt(1) - world.rand.nextInt(1);
 					i11 += world.rand.nextInt(6) - world.rand.nextInt(6);
@@ -64,14 +64,14 @@ public class SpawnerAnimals {
 							double d19 = (double)f13 - entity.posX;
 							double d21 = (double)f14 - entity.posY;
 							double d23 = (double)f15 - entity.posZ;
-							if(d19 * d19 + d21 * d21 + d23 * d23 < 32.0D) {
+							if(d19 * d19 + d21 * d21 + d23 * d23 < 1024.0D) {
 								continue;
 							}
 						} else {
 							float f29 = f13 - (float)world.spawnX;
 							float f20 = f14 - (float)world.spawnY;
 							float f31 = f15 - (float)world.spawnZ;
-							if(f29 * f29 + f20 * f20 + f31 * f31 < 32.0F) {
+							if(f29 * f29 + f20 * f20 + f31 * f31 < 1024.0F) {
 								continue;
 							}
 						}
@@ -85,7 +85,7 @@ public class SpawnerAnimals {
 						}
 
 						entityLiving30.setLocationAndAngles((double)f13, (double)f14, (double)f15, world.rand.nextFloat() * 360.0F, 0.0F);
-						if(entityLiving30.getCanSpawnHere(f13, f14, f15)) {
+						if(entityLiving30.getCanSpawnHere((double)f13, (double)f14, (double)f15)) {
 							++i3;
 							world.entityJoinedWorld(entityLiving30);
 						}

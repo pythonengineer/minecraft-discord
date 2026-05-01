@@ -122,7 +122,7 @@ public class EntityArrow extends Entity {
 		float f14;
 		if(movingObjectPosition3 != null) {
 			if(movingObjectPosition3.entityHit != null) {
-				if(movingObjectPosition3.entityHit.attackEntityFrom(this, 4)) {
+				if(movingObjectPosition3.entityHit.attackEntityFrom(this.owner, 4)) {
 					this.worldObj.playSoundAtEntity(this, "random.drr", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 					this.setEntityDead();
 				} else {

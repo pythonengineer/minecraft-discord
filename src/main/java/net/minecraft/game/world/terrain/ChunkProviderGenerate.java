@@ -7,6 +7,7 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.chunk.Chunk;
 import net.minecraft.game.world.chunk.IChunkProvider;
+import net.minecraft.game.world.terrain.generate.WorldGenDungeons;
 import net.minecraft.game.world.terrain.generate.WorldGenFlowers;
 import net.minecraft.game.world.terrain.generate.WorldGenLiquids;
 import net.minecraft.game.world.terrain.generate.WorldGenMinable;
@@ -495,6 +496,13 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 
 		int i5;
 		int i12;
+        for(chunkX = 0; chunkX < 4; ++chunkX) {
+            chunkZ = i10 + this.rand.nextInt(16) + 8;
+            i5 = this.rand.nextInt(128);
+            i12 = i4 + this.rand.nextInt(16) + 8;
+            (new WorldGenDungeons()).generate(this.worldObj, this.rand, chunkZ, i5, i12);
+        }
+
 		for(chunkX = 0; chunkX < 20; ++chunkX) {
 			chunkZ = i10 + this.rand.nextInt(16);
 			i5 = this.rand.nextInt(128);
@@ -537,7 +545,7 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 			(new WorldGenMinable(Block.oreDiamond.blockID, 8)).generate(this.worldObj, this.rand, chunkX, chunkZ, i5);
 		}
 
-		if((chunkX = (int)(this.mobSpawnerNoise.generateNoiseOctaves((double)i10 * 0.5D, (double)i4 * 0.5D) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D)) < 0) {
+        if((chunkX = (int)((this.mobSpawnerNoise.generateNoiseOctaves((double)i10 * 0.5D, (double)i4 * 0.5D) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D) / 3.0D)) < 0) {
 			chunkX = 0;
 		}
 
@@ -599,10 +607,6 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 
 	public final boolean saveChunks(boolean flag, IProgressUpdate iProgressUpdate2) {
 		return true;
-	}
-
-	public final boolean unload100OldestChunks() {
-		return false;
 	}
 
 	public final boolean canSave() {

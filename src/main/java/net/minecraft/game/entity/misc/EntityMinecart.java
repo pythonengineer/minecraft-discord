@@ -8,6 +8,7 @@ import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
@@ -32,6 +33,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.setSize(0.98F, 0.7F);
 		this.yOffset = this.height / 2.0F;
 		this.canTriggerWalking = false;
+        this.S = -0.4D;
 	}
 
 	public final AxisAlignedBB getCollisionBox(Entity entity1) {
@@ -120,10 +122,9 @@ public class EntityMinecart extends Entity implements IInventory {
 			--i2;
 		}
 
-		int i5;
 		if(this.worldObj.getBlockId(i1, i2, i3) == Block.minecartTrack.blockID) {
 			Vec3D vec3D4 = this.getPos(this.posX, this.posY, this.posZ);
-			i5 = this.worldObj.getBlockMetadata(i1, i2, i3);
+			int i5 = this.worldObj.getBlockMetadata(i1, i2, i3);
 			this.posY = (double)i2;
 			if(i5 >= 2 && i5 <= 5) {
 				this.posY = (double)(i2 + 1);
@@ -284,19 +285,31 @@ public class EntityMinecart extends Entity implements IInventory {
 			}
 		}
 
-		float f38 = this.rotationPitch;
-		float f39 = this.rotationYaw;
-		super.rotationYaw = f39;
-		super.rotationPitch = f38;
-		List list40;
-		if((list40 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F))) != null && list40.size() > 0) {
-			for(i5 = 0; i5 < list40.size(); ++i5) {
-				Entity entity41;
-				if((entity41 = (Entity)list40.get(i5)) != this.riddenByEntity && entity41.canBePushed() && entity41 instanceof EntityMinecart) {
-					entity41.applyEntityCollision(this);
-				}
-			}
-		}
+        double d38;
+        for(d38 = (double)(this.rotationYaw - this.prevRotationYaw); d38 >= 180.0D; d38 -= 360.0D) {
+        }
+
+        while(d38 < -180.0D) {
+            d38 += 360.0D;
+        }
+
+        if(d38 < -90.0D || d38 >= 90.0D) {
+            this.rotationYaw += 180.0F;
+        }
+
+        float f39 = this.rotationPitch;
+        float f40 = this.rotationYaw;
+        super.rotationYaw = f40;
+        super.rotationPitch = f39;
+        List list41;
+        if((list41 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F))) != null && list41.size() > 0) {
+            for(int i42 = 0; i42 < list41.size(); ++i42) {
+                Entity entity8;
+                if((entity8 = (Entity)list41.get(i42)) != this.riddenByEntity && entity8.canBePushed() && entity8 instanceof EntityMinecart) {
+                    entity8.applyEntityCollision(this);
+                }
+            }
+        }
 
 		if(this.riddenByEntity != null && this.riddenByEntity.isDead) {
 			this.riddenByEntity = null;
@@ -500,7 +513,8 @@ public class EntityMinecart extends Entity implements IInventory {
 	public final void onInventoryChanged() {
 	}
 
-	public final void interact(Entity entity1) {
-		this.riddenByEntity = entity1;
-	}
+    public final boolean interact(EntityPlayer entityPlayer1) {
+        entityPlayer1.mountEntity(this);
+        return true;
+    }
 }

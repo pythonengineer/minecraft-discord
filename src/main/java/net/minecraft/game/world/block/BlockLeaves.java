@@ -9,14 +9,14 @@ public final class BlockLeaves extends BlockLeavesBase {
     private int leafTexIndex = 52;
 
 	protected BlockLeaves(int blockID, int textureIndex) {
-		super(18, 52, Material.leaves, true);
+		super(18, 52, Material.leaves, false);
 		this.setTickOnLoad(true);
 	}
 
     public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
         if(!world.getBlockMaterial(x, y - 1, z).isSolid()) {
             for(int i8 = x - 2; i8 <= x + 2; ++i8) {
-                for(int i6 = y - 1; i6 <= y; ++i6) {
+                for(int i6 = y - 1; i6 <= y + 1; ++i6) {
                     for(int i7 = z - 2; i7 <= z + 2; ++i7) {
                         if(world.getBlockId(i8, i6, i7) == Block.wood.blockID) {
                             return;

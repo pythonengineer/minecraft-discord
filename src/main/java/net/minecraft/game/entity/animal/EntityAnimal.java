@@ -24,7 +24,7 @@ public abstract class EntityAnimal extends EntityCreature {
 		super.readEntityFromNBT(compoundTag);
 	}
 
-	public final boolean getCanSpawnHere(float x, float y, float z) {
-		return this.worldObj.getBlockLightValue(MathHelper.floor_float(x), MathHelper.floor_float(y), MathHelper.floor_float(z)) > 8 && super.getCanSpawnHere(x, y, z);
+	public final boolean getCanSpawnHere(double x, double y, double z) {
+		return this.worldObj.getBlockLightValue(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) > 8 && super.getCanSpawnHere(x, y, z);
 	}
 }

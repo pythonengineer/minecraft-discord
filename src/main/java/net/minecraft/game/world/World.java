@@ -28,7 +28,6 @@ import net.minecraft.game.world.chunk.Chunk;
 import net.minecraft.game.world.chunk.ChunkProviderLoadOrGenerate;
 import net.minecraft.game.world.chunk.IChunkProvider;
 import net.minecraft.game.world.chunk.loader.ChunkLoader;
-import net.minecraft.game.world.chunk.loader.IsomChunkLoader;
 import net.minecraft.game.world.material.Material;
 import net.minecraft.game.world.path.PathEntity;
 import net.minecraft.game.world.path.Pathfinder;
@@ -167,8 +166,7 @@ public class World implements IBlockAccess {
     }
 
     protected IChunkProvider getChunkProvider(VFile2 worldFile) {
-        ChunkLoader loader = new ChunkLoader(worldFile, false);
-        return new ChunkProviderLoadOrGenerate(this, new IsomChunkLoader(loader, loader), new ChunkProviderGenerate(this, this.seed));
+        return new ChunkProviderLoadOrGenerate(this, new ChunkLoader(worldFile, true), new ChunkProviderGenerate(this, this.seed));
     }
 
     private int getFirstUncoveredBlock(int x, int z) {
@@ -893,23 +891,30 @@ public class World implements IBlockAccess {
 
         for(i1 = 0; i1 < this.loadedEntityList.size(); ++i1) {
             Entity entity5;
-            if((entity5 = (Entity)this.loadedEntityList.get(i1)).ridingEntity == null) {
-                if(!entity5.isDead) {
-                    this.updateEntity(entity5);
+            if((entity5 = (Entity)this.loadedEntityList.get(i1)).ridingEntity != null) {
+                if(!entity5.ridingEntity.isDead && entity5.ridingEntity.riddenByEntity == entity5) {
+                    continue;
                 }
 
-                if(entity5.isDead) {
-                    i3 = MathHelper.floor_double(entity5.posX / 16.0D);
-                    int i4 = MathHelper.floor_double(entity5.posZ / 16.0D);
-                    if(this.chunkExists(i3, i4)) {
-                        this.getChunkFromChunkCoords(i3, i4).removeEntityAtIndex(entity5, MathHelper.floor_double(entity5.posY / 16.0D));
-                    }
+                entity5.ridingEntity = null;
+                entity5.ridingEntity.riddenByEntity = null;
+            }
 
-                    this.loadedEntityList.remove(i1--);
+            if(!entity5.isDead) {
+                this.updateEntity(entity5);
+            }
 
-                    for(i3 = 0; i3 < this.worldAccesses.size(); ++i3) {
-                        ((IWorldAccess)this.worldAccesses.get(i3)).releaseEntitySkin(entity5);
-                    }
+            if(entity5.isDead) {
+                i3 = MathHelper.floor_double(entity5.posX / 16.0D);
+                int i4 = MathHelper.floor_double(entity5.posZ / 16.0D);
+                if(this.chunkExists(i3, i4)) {
+                    this.getChunkFromChunkCoords(i3, i4).removeEntityAtIndex(entity5, MathHelper.floor_double(entity5.posY / 16.0D));
+                }
+
+                this.loadedEntityList.remove(i1--);
+
+                for(i3 = 0; i3 < this.worldAccesses.size(); ++i3) {
+                    ((IWorldAccess)this.worldAccesses.get(i3)).releaseEntitySkin(entity5);
                 }
             }
         }
@@ -921,15 +926,18 @@ public class World implements IBlockAccess {
     }
 
     private void updateEntity(Entity entity) {
-        while(true) {
+        int i2 = MathHelper.floor_double(entity.posX);
+        int i3 = MathHelper.floor_double(entity.posY);
+        int i4 = MathHelper.floor_double(entity.posZ);
+        if(this.checkChunksExist(i2 - 16, i3 - 16, i4 - 16, i2 + 16, i3 + 16, i4 + 16)) {
             entity.lastTickPosX = entity.posX;
             entity.lastTickPosY = entity.posY;
             entity.lastTickPosZ = entity.posZ;
             entity.prevRotationYaw = entity.rotationYaw;
             entity.prevRotationPitch = entity.rotationPitch;
-            int i2 = MathHelper.floor_double(entity.posX / 16.0D);
-            int i3 = MathHelper.floor_double(entity.posY / 16.0D);
-            int i4 = MathHelper.floor_double(entity.posZ / 16.0D);
+            i2 = MathHelper.floor_double(entity.posX / 16.0D);
+            i3 = MathHelper.floor_double(entity.posY / 16.0D);
+            i4 = MathHelper.floor_double(entity.posZ / 16.0D);
             if(entity.ridingEntity != null) {
                 entity.updateRidden();
             } else {
@@ -951,11 +959,35 @@ public class World implements IBlockAccess {
                 }
             }
 
-            if(entity.riddenByEntity == null) {
-                return;
+            if(entity.riddenByEntity != null) {
+                if(!entity.riddenByEntity.isDead && entity.riddenByEntity.ridingEntity == entity) {
+                    this.updateEntity(entity.riddenByEntity);
+                } else {
+                    entity.riddenByEntity.ridingEntity = null;
+                    entity.riddenByEntity = null;
+                }
             }
 
-            entity = entity.riddenByEntity;
+            if(Double.isNaN(entity.posX) || Double.isInfinite(entity.posX)) {
+                entity.posX = entity.lastTickPosX;
+            }
+
+            if(Double.isNaN(entity.posY) || Double.isInfinite(entity.posY)) {
+                entity.posY = entity.lastTickPosY;
+            }
+
+            if(Double.isNaN(entity.posZ) || Double.isInfinite(entity.posZ)) {
+                entity.posZ = entity.lastTickPosZ;
+            }
+
+            if(Double.isNaN((double)entity.rotationPitch) || Double.isInfinite((double)entity.rotationPitch)) {
+                entity.rotationPitch = entity.prevRotationPitch;
+            }
+
+            if(Double.isNaN((double)entity.rotationYaw) || Double.isInfinite((double)entity.rotationYaw)) {
+                entity.rotationYaw = entity.prevRotationYaw;
+            }
+
         }
     }
 
@@ -1507,7 +1539,6 @@ public class World implements IBlockAccess {
 	}
 
     public final void tick() {
-        this.chunkProvider.unload100OldestChunks();
         if(!this.loadedEntityList.contains(this.playerEntity) && this.playerEntity != null) {
             System.out.println("DOHASDOSHIH!");
             this.entityJoinedWorld(this.playerEntity);
@@ -1606,6 +1637,24 @@ public class World implements IBlockAccess {
 		return arrayList7;
 	}
 
+    public final List getEntitiesWithinAABB(Class<? extends Entity> entityClass, AxisAlignedBB aabb) {
+        int i3 = MathHelper.floor_double((aabb.minX - 2.0D) / 16.0D);
+        int i4 = MathHelper.floor_double((aabb.maxX + 2.0D) / 16.0D);
+        int i5 = MathHelper.floor_double((aabb.minZ - 2.0D) / 16.0D);
+        int i6 = MathHelper.floor_double((aabb.maxZ + 2.0D) / 16.0D);
+        ArrayList arrayList7 = new ArrayList();
+
+        for(i3 = i3; i3 <= i4; ++i3) {
+            for(int i8 = i5; i8 <= i6; ++i8) {
+                if(this.chunkExists(i3, i8)) {
+                    this.getChunkFromChunkCoords(i3, i8).getEntitiesOfTypeWithinAABB(entityClass, aabb, arrayList7);
+                }
+            }
+        }
+
+        return arrayList7;
+    }
+
 	public final List getLoadedEntityList() {
 		return this.loadedEntityList;
 	}
@@ -1645,12 +1694,6 @@ public class World implements IBlockAccess {
 
 	public final void unloadEntities(List unloadedEntities) {
         this.unloadedEntityList.addAll(unloadedEntities);
-	}
-
-	public final void dropOldChunks() {
-		while(this.chunkProvider.unload100OldestChunks()) {
-		}
-
 	}
 
     public final boolean canBlockBePlacedAt(int blockID, int x, int y, int z, boolean ignoreBoundingBox) {

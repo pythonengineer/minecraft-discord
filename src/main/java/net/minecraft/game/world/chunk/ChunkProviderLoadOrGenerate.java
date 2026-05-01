@@ -114,11 +114,6 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	}
 
 	private void saveChunkMap(Chunk chunk1) {
-		try {
-			this.chunkLoader.saveExtraChunkData(this.world, chunk1);
-		} catch (Exception exception2) {
-			exception2.printStackTrace();
-		}
 	}
 
 	private void saveChunk(Chunk chunk1) {
@@ -179,16 +174,7 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 			}
 		}
 
-		if(z1) {
-			this.chunkLoader.saveExtraData();
-		}
-
 		return true;
-	}
-
-	public final boolean unload100OldestChunks() {
-		this.chunkLoader.chunkTick();
-		return this.chunkProvider.unload100OldestChunks();
 	}
 
 	public final boolean canSave() {

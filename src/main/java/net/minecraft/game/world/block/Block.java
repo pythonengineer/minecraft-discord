@@ -68,6 +68,7 @@ public class Block {
     public static final Block obsidian;
     public static final Block torch;
     public static final BlockFire fire;
+    public static final Block mobSpawner;
     public static final Block chest;
     public static final Block cog;
     public static final Block oreDiamond;
@@ -578,6 +579,11 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         fire = (BlockFire)block0;
+        block10000 = (new BlockMobSpawner(52, 65)).setHardness(5.0F);
+        stepSound1 = soundMetalFootstep;
+        block0 = block10000;
+        block10000.stepSound = stepSound1;
+        mobSpawner = block0;
         block10000 = (new BlockChest(54)).setHardness(2.5F);
         stepSound1 = soundWoodFootstep;
         block0 = block10000;

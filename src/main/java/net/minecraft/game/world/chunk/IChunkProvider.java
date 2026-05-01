@@ -11,7 +11,5 @@ public interface IChunkProvider {
 
     boolean saveChunks(boolean z1, IProgressUpdate iProgressUpdate2);
 
-    boolean unload100OldestChunks();
-
     boolean canSave();
 }

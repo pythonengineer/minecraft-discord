@@ -4,7 +4,7 @@ import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.material.Material;
 
 public class BlockLeavesBase extends Block {
-    protected boolean graphicsLevel = true;
+    protected boolean graphicsLevel = false;
 
     protected BlockLeavesBase(int blockID, int textureIndex, Material material, boolean flag) {
         super(blockID, textureIndex, material);

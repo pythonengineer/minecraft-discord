@@ -23,7 +23,7 @@ public final class ChunkLoader implements IChunkLoader {
 
     public ChunkLoader(VFile2 file1, boolean z2) {
         this.saveDir = file1;
-        this.createIfNecessary = true;
+        this.createIfNecessary = z2;
     }
 
     private VFile2 chunkFileForXZ(int i1, int i2) {
@@ -88,6 +88,7 @@ public final class ChunkLoader implements IChunkLoader {
         nBTTagCompound2.setByteArray("BlockLight", chunk0.blocklightMap.data);
         nBTTagCompound2.setByteArray("HeightMap", chunk0.heightMap);
         nBTTagCompound2.setBoolean("TerrainPopulated", chunk0.isTerrainPopulated);
+        chunk0.hasEntities = false;
         NBTTagList nBTTagList7 = new NBTTagList();
 
         Iterator iterator4;
@@ -97,6 +98,7 @@ public final class ChunkLoader implements IChunkLoader {
 
             while(iterator4.hasNext()) {
                 Entity entity5 = (Entity)iterator4.next();
+                chunk0.hasEntities = true;
                 nBTTagCompound6 = new NBTTagCompound();
                 if(entity5.addEntityID(nBTTagCompound6)) {
                     nBTTagList7.setTag(nBTTagCompound6);
@@ -121,56 +123,51 @@ public final class ChunkLoader implements IChunkLoader {
     private static Chunk loadChunkIntoWorldFromCompound(World world0, NBTTagCompound nBTTagCompound1) {
         int i2 = nBTTagCompound1.getInteger("xPos");
         int i3 = nBTTagCompound1.getInteger("zPos");
-        Chunk chunk8;
-        (chunk8 = new Chunk(world0, i2, i3)).blocks = nBTTagCompound1.getByteArray("Blocks");
-        chunk8.data = new NibbleArray(nBTTagCompound1.getByteArray("Data"));
-        chunk8.skylightMap = new NibbleArray(nBTTagCompound1.getByteArray("SkyLight"));
-        chunk8.blocklightMap = new NibbleArray(nBTTagCompound1.getByteArray("BlockLight"));
-        chunk8.heightMap = nBTTagCompound1.getByteArray("HeightMap");
-        chunk8.isTerrainPopulated = nBTTagCompound1.getBoolean("TerrainPopulated");
-        if(!chunk8.data.isValid()) {
-            chunk8.data = new NibbleArray(chunk8.blocks.length);
+        Chunk chunk9;
+        (chunk9 = new Chunk(world0, i2, i3)).blocks = nBTTagCompound1.getByteArray("Blocks");
+        chunk9.data = new NibbleArray(nBTTagCompound1.getByteArray("Data"));
+        chunk9.skylightMap = new NibbleArray(nBTTagCompound1.getByteArray("SkyLight"));
+        chunk9.blocklightMap = new NibbleArray(nBTTagCompound1.getByteArray("BlockLight"));
+        chunk9.heightMap = nBTTagCompound1.getByteArray("HeightMap");
+        chunk9.isTerrainPopulated = nBTTagCompound1.getBoolean("TerrainPopulated");
+        if(!chunk9.data.isValid()) {
+            chunk9.data = new NibbleArray(chunk9.blocks.length);
         }
 
-        if(chunk8.heightMap == null || !chunk8.skylightMap.isValid()) {
-            chunk8.heightMap = new byte[256];
-            chunk8.skylightMap = new NibbleArray(chunk8.blocks.length);
-            chunk8.generateHeightMap();
+        if(chunk9.heightMap == null || !chunk9.skylightMap.isValid()) {
+            chunk9.heightMap = new byte[256];
+            chunk9.skylightMap = new NibbleArray(chunk9.blocks.length);
+            chunk9.generateHeightMap();
         }
 
-        if(!chunk8.blocklightMap.isValid()) {
-            chunk8.blocklightMap = new NibbleArray(chunk8.blocks.length);
-        }
-
-        NBTTagList nBTTagList9;
-        if((nBTTagList9 = nBTTagCompound1.getTagList("Entities")) != null) {
-            for(int i4 = 0; i4 < nBTTagList9.tagCount(); ++i4) {
-                Entity entity6;
-                if((entity6 = EntityList.createEntityFromNBT((NBTTagCompound)nBTTagList9.tagAt(i4), world0)) != null) {
-                    chunk8.addEntity(entity6);
-                }
-            }
+        if(!chunk9.blocklightMap.isValid()) {
+            chunk9.blocklightMap = new NibbleArray(chunk9.blocks.length);
         }
 
         NBTTagList nBTTagList10;
-        if((nBTTagList10 = nBTTagCompound1.getTagList("TileEntities")) != null) {
-            for(int i5 = 0; i5 < nBTTagList10.tagCount(); ++i5) {
-                TileEntity tileEntity7;
-                if((tileEntity7 = TileEntity.createAndLoadEntity((NBTTagCompound)nBTTagList10.tagAt(i5))) != null) {
-                    chunk8.addTileEntity(tileEntity7);
+        if((nBTTagList10 = nBTTagCompound1.getTagList("Entities")) != null) {
+            for(int i4 = 0; i4 < nBTTagList10.tagCount(); ++i4) {
+                Entity entity6 = EntityList.createEntityFromNBT((NBTTagCompound)nBTTagList10.tagAt(i4), world0);
+                chunk9.hasEntities = true;
+                if(entity6 != null) {
+                    chunk9.addEntity(entity6);
                 }
             }
         }
 
-        return chunk8;
-    }
+        NBTTagList nBTTagList11;
+        if((nBTTagList11 = nBTTagCompound1.getTagList("TileEntities")) != null) {
+            for(int i5 = 0; i5 < nBTTagList11.tagCount(); ++i5) {
+                TileEntity tileEntity8;
+                if((tileEntity8 = TileEntity.createAndLoadEntity((NBTTagCompound)nBTTagList11.tagAt(i5))) != null) {
+                    i3 = tileEntity8.xCoord - (chunk9.xPosition << 4);
+                    int i12 = tileEntity8.yCoord;
+                    int i7 = tileEntity8.zCoord - (chunk9.zPosition << 4);
+                    chunk9.setChunkBlockTileEntity(i3, i12, i7, tileEntity8);
+                }
+            }
+        }
 
-    public final void chunkTick() {
-    }
-
-    public final void saveExtraData() {
-    }
-
-    public final void saveExtraChunkData(World world1, Chunk chunk2) {
+        return chunk9;
     }
 }

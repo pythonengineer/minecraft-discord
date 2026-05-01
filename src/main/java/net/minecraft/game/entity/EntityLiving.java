@@ -138,6 +138,16 @@ public class EntityLiving extends Entity {
 		this.prevRotationPitch = this.rotationPitch;
     }
 
+    public final void spawnExplosionParticle() {
+        for(int i1 = 0; i1 < 20; ++i1) {
+            double d2 = this.rand.nextGaussian() * 0.02D;
+            double d4 = this.rand.nextGaussian() * 0.02D;
+            double d6 = this.rand.nextGaussian() * 0.02D;
+            this.worldObj.spawnParticle("explode", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d2 * 10.0D, this.posY + (double)(this.rand.nextFloat() * this.height) - d4 * 10.0D, this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d6 * 10.0D, d2, d4, d6);
+        }
+
+    }
+
     public void updateRidden() {
         super.updateRidden();
         this.prevRidingRotUnused = 0.0F;
@@ -260,7 +270,12 @@ public class EntityLiving extends Entity {
 			this.attackedAtYaw = 0.0F;
 			if(entity != null) {
 				double d3 = entity.posX - this.posX;
-				double d5 = entity.posZ - this.posZ;
+
+                double d5;
+                for(d5 = entity.posZ - this.posZ; d3 * d3 + d5 * d5 < 1.0E-4D; d5 = (Math.random() - Math.random()) * 0.01D) {
+                    d3 = (Math.random() - Math.random()) * 0.01D;
+                }
+
 				this.attackedAtYaw = (float)(Math.atan2(d5, d3) * 180.0D / (double)(float)Math.PI) - this.rotationYaw;
 				double d8 = d3;
 				float f12 = MathHelper.sqrt_double(d3 * d3 + d5 * d5);
@@ -493,8 +508,8 @@ public class EntityLiving extends Entity {
 
 	}
 
-	public boolean getCanSpawnHere(float x, float y, float z) {
-		this.setPosition((double)x, (double)(y + this.height / 2.0F), (double)z);
+	public boolean getCanSpawnHere(double x, double y, double z) {
+		this.setPosition(x, y + (double)(this.height / 2.0F), z);
 		return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
 	}
 
