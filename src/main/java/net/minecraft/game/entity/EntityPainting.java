@@ -89,22 +89,22 @@ public class EntityPainting extends Entity {
 		}
 
 		if(direction == 0) {
-			f5 -= getPaintingOffset(this.art.sizeX);
+			f5 -= getArtSize(this.art.sizeX);
 		}
 
 		if(direction == 1) {
-			f7 += getPaintingOffset(this.art.sizeX);
+			f7 += getArtSize(this.art.sizeX);
 		}
 
 		if(direction == 2) {
-			f5 += getPaintingOffset(this.art.sizeX);
+			f5 += getArtSize(this.art.sizeX);
 		}
 
 		if(direction == 3) {
-			f7 -= getPaintingOffset(this.art.sizeX);
+			f7 -= getArtSize(this.art.sizeX);
 		}
 
-		f6 += getPaintingOffset(this.art.sizeY);
+		f6 += getArtSize(this.art.sizeY);
 		this.setPosition((double)f5, (double)f6, (double)f7);
 		this.boundingBox = new AxisAlignedBB((double)(f5 - f2), (double)(f6 - f3), (double)(f7 - f4), (double)(f5 + f2), (double)(f6 + f3), (double)(f7 + f4));
 		double d13 = 0.0062500000931322575D;
@@ -123,7 +123,7 @@ public class EntityPainting extends Entity {
 		this.boundingBox = new AxisAlignedBB(d15, d17, d19, d21, d23, d25);
 	}
 
-	private static float getPaintingOffset(int textureSize) {
+	private static float getArtSize(int textureSize) {
 		return textureSize == 32 ? 0.5F : (textureSize == 64 ? 0.5F : 0.0F);
 	}
 
@@ -131,7 +131,7 @@ public class EntityPainting extends Entity {
 		if(this.tickCounter++ == 100 && !this.onValidSurface()) {
 			this.tickCounter = 0;
             this.setEntityDead();
-			this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+			this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
 		}
 
 	}
@@ -196,7 +196,7 @@ public class EntityPainting extends Entity {
 
 	public final boolean attackEntityFrom(Entity entity, int damage) {
         this.setEntityDead();
-		this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+		this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
 		return true;
 	}
 

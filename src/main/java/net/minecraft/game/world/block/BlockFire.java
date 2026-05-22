@@ -57,7 +57,7 @@ public final class BlockFire extends Block {
 			world.scheduleBlockUpdate(x, y, z, this.blockID);
 		}
 
-		if(!this.canNeighborBurn(world, x, y, z)) {
+		if(!this.canNeighborCatchFire(world, x, y, z)) {
 			if(!world.isBlockNormalCube(x, y - 1, z) || i6 > 3) {
 				world.setBlockWithNotify(x, y, z, 0);
 			}
@@ -124,7 +124,7 @@ public final class BlockFire extends Block {
 
 	}
 
-	private boolean canNeighborBurn(World world, int x, int y, int z) {
+	private boolean canNeighborCatchFire(World world, int x, int y, int z) {
 		return this.canBlockCatchFire(world, x + 1, y, z) ? true : (this.canBlockCatchFire(world, x - 1, y, z) ? true : (this.canBlockCatchFire(world, x, y - 1, z) ? true : (this.canBlockCatchFire(world, x, y + 1, z) ? true : (this.canBlockCatchFire(world, x, y, z - 1) ? true : this.canBlockCatchFire(world, x, y, z + 1)))));
 	}
 
@@ -142,17 +142,17 @@ public final class BlockFire extends Block {
 	}
 
 	public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
-		return world.isBlockNormalCube(x, y - 1, z) || this.canNeighborBurn(world, x, y, z);
+		return world.isBlockNormalCube(x, y - 1, z) || this.canNeighborCatchFire(world, x, y, z);
 	}
 
 	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
-		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborBurn(world, x, y, z)) {
+		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborCatchFire(world, x, y, z)) {
 			world.setBlockWithNotify(x, y, z, 0);
 		}
 	}
 
 	public final void onBlockAdded(World world, int x, int y, int z) {
-		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborBurn(world, x, y, z)) {
+		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborCatchFire(world, x, y, z)) {
 			world.setBlockWithNotify(x, y, z, 0);
 		} else {
 			world.scheduleBlockUpdate(x, y, z, this.blockID);

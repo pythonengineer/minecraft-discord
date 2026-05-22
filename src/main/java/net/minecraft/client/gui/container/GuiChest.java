@@ -23,18 +23,18 @@ public final class GuiChest extends GuiContainer {
         int i5;
         for(i4 = 0; i4 < this.inventoryRows; ++i4) {
             for(i5 = 0; i5 < 9; ++i5) {
-                this.slotsList.add(new Slot(this, lowerChestInventory, i5 + i4 * 9, 8 + i5 * 18, 18 + i4 * 18));
+                this.inventorySlots.add(new Slot(this, lowerChestInventory, i5 + i4 * 9, 8 + i5 * 18, 18 + i4 * 18));
             }
         }
 
         for(i4 = 0; i4 < 3; ++i4) {
             for(i5 = 0; i5 < 9; ++i5) {
-                this.slotsList.add(new Slot(this, upperChestInventory, i5 + (i4 + 1) * 9, 8 + i5 * 18, 103 + i4 * 18 + i3));
+                this.inventorySlots.add(new Slot(this, upperChestInventory, i5 + (i4 + 1) * 9, 8 + i5 * 18, 103 + i4 * 18 + i3));
             }
         }
 
         for(i4 = 0; i4 < 9; ++i4) {
-            this.slotsList.add(new Slot(this, upperChestInventory, i4, 8 + i4 * 18, i3 + 161));
+            this.inventorySlots.add(new Slot(this, upperChestInventory, i4, 8 + i4 * 18, i3 + 161));
         }
 
     }
@@ -56,12 +56,12 @@ public final class GuiChest extends GuiContainer {
 
     public ItemStack transferStackInSlot(EntityPlayer var1, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.slotsList.get(i);
+        Slot slot = (Slot) this.inventorySlots.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
             if (i < this.inventoryRows * 9) {
-                if (!this.mergeItemStack(itemstack1, this.inventoryRows * 9, this.slotsList.size(), true)) {
+                if (!this.mergeItemStack(itemstack1, this.inventoryRows * 9, this.inventorySlots.size(), true)) {
                     return null;
                 }
             } else if (!this.mergeItemStack(itemstack1, 0, this.inventoryRows * 9, false)) {

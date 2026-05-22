@@ -15,7 +15,7 @@ public final class FontRenderer {
 	private int fontDisplayLists;
 	private IntBuffer buffer = BufferUtils.createIntBuffer(1024);
 
-	public FontRenderer(GameSettings options, String fontTextureLocation, RenderEngine renderEngine) {
+	public FontRenderer(GameSettings gameSettings, String fontTextureLocation, RenderEngine renderEngine) {
 	    ImageData img;
 		try {
             img = ImageData.loadImageFile("/assets" + fontTextureLocation);
@@ -80,7 +80,7 @@ public final class FontRenderer {
             int i19 = ((i6 & 2) >> 1) * 191 + i8;
             i11 = ((i6 & 4) >> 2) * 191 + i8;
             boolean z20 = i6 >= 16;
-            if(options.anaglyph) {
+            if(gameSettings.anaglyph) {
                 i13 = (i11 * 30 + i19 * 59 + i9 * 11) / 100;
                 int i14 = (i11 * 30 + i19 * 70) / 100;
                 int i16 = (i11 * 30 + i9 * 70) / 100;
@@ -112,7 +112,6 @@ public final class FontRenderer {
 
     private void renderString(String message, int x, int y, int color, boolean dropShadow) {
         if(message != null) {
-            char[] c8 = message.toCharArray();
             if(dropShadow) {
                 color = (color & 16579836) >> 2;
             }
@@ -126,10 +125,10 @@ public final class FontRenderer {
             GL11.glPushMatrix();
             GL11.glTranslatef((float)x, (float)y, 0.0F);
 
-            for(int i10 = 0; i10 < c8.length; ++i10) {
-                for(; c8[i10] == 38 && c8.length > i10 + 1; i10 += 2) {
+            for(int i10 = 0; i10 < message.length(); ++i10) {
+                for(; message.charAt(i10) == 38 && message.length() > i10 + 1; i10 += 2) {
                     int i11;
-                    if((i11 = "0123456789abcdef".indexOf(c8[i10 + 1])) < 0 || i11 > 15) {
+                    if((i11 = "0123456789abcdef".indexOf(message.charAt(i10 + 1))) < 0 || i11 > 15) {
                         i11 = 15;
                     }
 
@@ -141,7 +140,7 @@ public final class FontRenderer {
                     }
                 }
 
-                this.buffer.put(this.fontDisplayLists + c8[i10]);
+                this.buffer.put(this.fontDisplayLists + message.charAt(i10));
                 if(this.buffer.remaining() == 0) {
                     this.buffer.flip();
                     GL11.glCallLists(this.buffer);
@@ -155,18 +154,17 @@ public final class FontRenderer {
         }
     }
 
-    public final int width(String message) {
+    public final int getStringWidth(String message) {
         if(message == null) {
             return 0;
         } else {
-            char[] c4 = message.toCharArray();
             int i2 = 0;
 
-            for(int i3 = 0; i3 < c4.length; ++i3) {
-                if(c4[i3] == 38) {
+            for(int i3 = 0; i3 < message.length(); ++i3) {
+                if(message.charAt(i3) == 38) {
                     ++i3;
                 } else {
-                    i2 += this.charWidth[c4[i3]];
+                    i2 += this.charWidth[message.charAt(i3)];
                 }
             }
 

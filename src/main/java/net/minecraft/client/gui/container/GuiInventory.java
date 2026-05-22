@@ -18,28 +18,28 @@ public final class GuiInventory extends GuiContainer {
 
 	public GuiInventory(IInventory var1) {
 		this.allowUserInput = true;
-        this.slotsList.add(new SlotCrafting(this, this.craftMatrix, this.craftResult, 0, 144, 36));
+        this.inventorySlots.add(new SlotCrafting(this, this.craftMatrix, this.craftResult, 0, 144, 36));
 
         int i2;
         int i3;
         for(i2 = 0; i2 < 2; ++i2) {
             for(i3 = 0; i3 < 2; ++i3) {
-                this.slotsList.add(new Slot(this, this.craftMatrix, i3 + (i2 << 1), 88 + i3 * 18, 26 + i2 * 18));
+                this.inventorySlots.add(new Slot(this, this.craftMatrix, i3 + (i2 << 1), 88 + i3 * 18, 26 + i2 * 18));
             }
         }
 
 		for(i2 = 0; i2 < 4; ++i2) {
-            this.slotsList.add(new SlotArmor(this, this, var1, var1.getSizeInventory() - 1 - i2, 8, 8 + i2 * 18, i2));
+            this.inventorySlots.add(new SlotArmor(this, this, var1, var1.getSizeInventory() - 1 - i2, 8, 8 + i2 * 18, i2));
 		}
 
 		for(i2 = 0; i2 < 3; ++i2) {
 			for(i3 = 0; i3 < 9; ++i3) {
-				this.slotsList.add(new Slot(this, var1, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
+				this.inventorySlots.add(new Slot(this, var1, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
 			}
 		}
 
 		for(i2 = 0; i2 < 9; ++i2) {
-			this.slotsList.add(new Slot(this, var1, i2, 8 + i2 * 18, 142));
+			this.inventorySlots.add(new Slot(this, var1, i2, 8 + i2 * 18, 142));
 		}
 
 	}
@@ -123,7 +123,7 @@ public final class GuiInventory extends GuiContainer {
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.slotsList.get(i);
+        Slot slot = (Slot) this.inventorySlots.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
@@ -140,7 +140,7 @@ public final class GuiInventory extends GuiContainer {
                     return null;
                 }
             } else if (itemstack.getItem() instanceof ItemArmor
-                    && !((Slot) this.slotsList.get(5 + ((ItemArmor) itemstack.getItem()).armorType))
+                    && !((Slot) this.inventorySlots.get(5 + ((ItemArmor) itemstack.getItem()).armorType))
                             .getHasStack()) {
                 int j = 5 + ((ItemArmor) itemstack.getItem()).armorType;
                 if (!this.mergeItemStack(itemstack1, j, j + 1, false)) {

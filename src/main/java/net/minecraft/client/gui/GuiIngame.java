@@ -109,7 +109,7 @@ public final class GuiIngame extends Gui {
         int i12;
         if(this.mc.playerController.shouldDrawHUD()) {
             EntityPlayerSP entityPlayerSP = this.mc.thePlayer;
-            i10 = entityPlayerSP.inventory.getPlayerArmorValue();
+            i10 = entityPlayerSP.inventory.getTotalArmorValue();
 
             int i11;
             int i13;
@@ -330,7 +330,7 @@ public final class GuiIngame extends Gui {
                 } else if (currentHotbarSlotTouch == 9) {
                     hotbarSlotTouchAlreadySelected = false;
                     currentHotbarSlotTouch = 69;
-                    this.mc.setGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
+                    this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
                 }
                 return true;
             }

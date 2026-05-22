@@ -12,7 +12,7 @@ import net.minecraft.game.world.material.Material;
 
 public final class BlockDoor extends Block {
     protected BlockDoor(int blockID) {
-        super(64, Material.ground);
+        super(64, Material.wood);
         this.blockIndexInTexture = 97;
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
@@ -130,14 +130,14 @@ public final class BlockDoor extends Block {
             }
 
             if(z6) {
-                this.harvestBlock(world, x, y, z, blockID);
+                this.dropBlockAsItem(world, x, y, z, blockID);
             }
         }
 
     }
 
     public final int idDropped(int metadata, EaglercraftRandom rand) {
-        return (metadata & 8) != 0 ? 0 : Item.doorWood.shiftedIndex;
+        return (metadata & 8) != 0 ? 0 : Item.door.shiftedIndex;
     }
 
     public final MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {

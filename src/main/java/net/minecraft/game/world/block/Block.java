@@ -75,7 +75,7 @@ public class Block {
     public static final Block blockDiamond;
     public static final Block workbench;
     public static final Block crops;
-    public static final Block farmland;
+    public static final Block tilledField;
     public static final Block stoneOvenIdle;
     public static final Block stoneOvenActive;
     public static final Block signStanding;
@@ -166,7 +166,7 @@ public class Block {
         return iBlockAccess.getBrightness(x, y, z);
     }
 
-    public boolean getIsBlockSolid(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
+    public boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
         return !iBlockAccess.isBlockNormalCube(x, y, z);
     }
 
@@ -257,7 +257,7 @@ public class Block {
         }
     }
 
-    public final void harvestBlock(World world, int x, int y, int z, int metadata) {
+    public final void dropBlockAsItem(World world, int x, int y, int z, int metadata) {
         this.dropBlockAsItemWithChance(world, x, y, z, metadata, 1.0F);
     }
 
@@ -272,7 +272,7 @@ public class Block {
                 double d14 = (double)(world.rand.nextFloat() * 0.7F) + (double)0.15F;
                 EntityItem entityItem16;
                 (entityItem16 = new EntityItem(world, (double)x + d10, (double)y + d12, (double)z + d14, new ItemStack(i9))).delayBeforeCanPickup = 10;
-                world.entityJoinedWorld(entityItem16);
+                world.spawnEntityInWorld(entityItem16);
             }
         }
 
@@ -435,7 +435,7 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         cobblestone = block0;
-        block10000 = (new Block(5, 4, Material.ground)).setHardness(2.0F).setResistance(5.0F);
+        block10000 = (new Block(5, 4, Material.wood)).setHardness(2.0F).setResistance(5.0F);
         stepSound1 = soundWoodFootstep;
         block0 = block10000;
         block10000.stepSound = stepSound1;
@@ -618,7 +618,7 @@ public class Block {
         stepSound1 = soundGravelFootstep;
         block0 = block10000;
         block10000.stepSound = stepSound1;
-        farmland = block0;
+        tilledField = block0;
         block10000 = (new BlockFurnace(61, false)).setHardness(3.5F);
         stepSound1 = soundStoneFootstep;
         block0 = block10000;

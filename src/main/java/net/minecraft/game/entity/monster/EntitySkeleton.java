@@ -33,13 +33,13 @@ public class EntitySkeleton extends EntityMob {
 				double d8 = entity.posY - (double)0.2F - damage1.posY;
 				float entity1 = MathHelper.sqrt_double(d3 * d3 + d5 * d5) * 0.2F;
 				this.worldObj.playSoundAtEntity(this, "random.bow", 1.0F, 1.0F / (this.rand.nextFloat() * 0.4F + 0.8F));
-				this.worldObj.entityJoinedWorld(damage1);
+				this.worldObj.spawnEntityInWorld(damage1);
 				damage1.setArrowHeading(d3, d8 + (double)entity1, d5, 0.6F, 12.0F);
 				this.attackTime = 30;
 			}
 
 			this.rotationYaw = (float)(Math.atan2(d5, d3) * 180.0D / (double)(float)Math.PI) - 90.0F;
-			this.powered = true;
+			this.hasAttacked = true;
 		}
 
 	}

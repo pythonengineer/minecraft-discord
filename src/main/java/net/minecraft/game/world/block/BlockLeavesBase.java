@@ -14,8 +14,8 @@ public class BlockLeavesBase extends Block {
 		return false;
 	}
 
-	public final boolean getIsBlockSolid(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
+	public final boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
 		int i6 = iBlockAccess.getBlockId(x, y, z);
-		return !this.graphicsLevel && i6 == this.blockID ? false : super.getIsBlockSolid(iBlockAccess, x, y, z, metadata);
+		return !this.graphicsLevel && i6 == this.blockID ? false : super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata);
 	}
 }

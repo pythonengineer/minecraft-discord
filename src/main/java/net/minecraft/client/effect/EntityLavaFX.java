@@ -12,7 +12,7 @@ public final class EntityLavaFX extends EntityFX {
 		this.motionY *= (double)0.8F;
 		this.motionZ *= (double)0.8F;
 		this.motionY = (double)(this.rand.nextFloat() * 0.4F + 0.05F);
-		this.particleBlue = this.particleGreen = this.particleRed = 1.0F;
+		this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
 		this.particleScale *= this.rand.nextFloat() * 2.0F + 0.2F;
 		this.lavaParticleScale = this.particleScale;
 		this.particleMaxAge = (int)(16.0D / (Math.random() * 0.8D + 0.2D));
@@ -20,7 +20,7 @@ public final class EntityLavaFX extends EntityFX {
 		this.particleTextureIndex = 49;
 	}
 
-	public final float getEntityBrightness(float partialTicks) {
+	public final float getBrightness(float partialTicks) {
 		return 1.0F;
 	}
 

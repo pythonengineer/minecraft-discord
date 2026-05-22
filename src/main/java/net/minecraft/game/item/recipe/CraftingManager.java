@@ -18,7 +18,7 @@ public final class CraftingManager {
 
     private CraftingManager() {
         (new RecipesTools()).addRecipes(this);
-        (new RecipesWeapons()).addRecipes(this);
+        (new RecipesWeapons()).addRecipe(this);
         (new RecipesIngots()).addRecipes(this);
         new RecipesFood();
         this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", 'X', Block.mushroomBrown, 'Y', Block.mushroomRed, '#', Item.bowlEmpty});
@@ -32,14 +32,14 @@ public final class CraftingManager {
         this.addRecipe(new ItemStack(Block.tnt, 1), new Object[]{"X#X", "#X#", "X#X", 'X', Item.gunpowder, '#', Block.sand});
         this.addRecipe(new ItemStack(Block.stairSingle, 3), new Object[]{"###", '#', Block.cobblestone});
         this.addRecipe(new ItemStack(Block.ladder, 1), new Object[]{"# #", "###", "# #", '#', Item.stick});
-        this.addRecipe(new ItemStack(Item.doorWood, 1), new Object[]{"##", "##", "##", '#', Block.planks});
+        this.addRecipe(new ItemStack(Item.door, 1), new Object[]{"##", "##", "##", '#', Block.planks});
         this.addRecipe(new ItemStack(Item.sign, 1), new Object[]{"###", "###", " X ", '#', Block.planks, 'X', Item.stick});
         this.addRecipe(new ItemStack(Block.planks, 4), new Object[]{"#", '#', Block.wood});
         this.addRecipe(new ItemStack(Item.stick, 4), new Object[]{"#", "#", '#', Block.planks});
         this.addRecipe(new ItemStack(Block.torch, 4), new Object[]{"X", "#", 'X', Item.coal, '#', Item.stick});
         this.addRecipe(new ItemStack(Item.bowlEmpty, 4), new Object[]{"# #", " # ", '#', Block.planks});
         this.addRecipe(new ItemStack(Block.minecartTrack, 16), new Object[]{"X X", "X#X", "X X", 'X', Item.ingotIron, '#', Item.stick});
-        this.addRecipe(new ItemStack(Item.minecartEmpty, 1), new Object[]{"# #", "###", '#', Item.ingotIron});
+        this.addRecipe(new ItemStack(Item.minecart, 1), new Object[]{"# #", "###", '#', Item.ingotIron});
         this.addRecipe(new ItemStack(Item.bucketEmpty, 1), new Object[]{"# #", " # ", '#', Item.ingotIron});
         this.addRecipe(new ItemStack(Item.striker, 1), new Object[]{"A ", " B", 'A', Item.ingotIron, 'B', Item.flint});
         this.addRecipe(new ItemStack(Item.bread, 1), new Object[]{"###", '#', Item.wheat});

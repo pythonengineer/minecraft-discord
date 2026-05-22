@@ -9,7 +9,7 @@ import net.minecraft.game.world.World;
 public class EntityCreeper extends EntityMob {
 	private int timeSinceIgnited;
 	private int lastActiveTime;
-	private int maxTime = 30;
+	private int fuseTime = 30;
 	private int creeperState = -1;
 
 	public EntityCreeper(World world1) {
@@ -25,7 +25,7 @@ public class EntityCreeper extends EntityMob {
 		super.readEntityFromNBT(compoundTag);
 	}
 
-	protected final void updatePlayerActionState() {
+	public final void updatePlayerActionState() {
 		this.lastActiveTime = this.timeSinceIgnited;
 		if(this.timeSinceIgnited > 0 && this.creeperState < 0) {
 			--this.timeSinceIgnited;
@@ -50,18 +50,18 @@ public class EntityCreeper extends EntityMob {
 
 			this.creeperState = 1;
 			++this.timeSinceIgnited;
-			if(this.timeSinceIgnited == this.maxTime) {
-				this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
+			if(this.timeSinceIgnited == this.fuseTime) {
+				this.worldObj.doExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
 	            this.setEntityDead();
 			}
 
-			this.powered = true;
+			this.hasAttacked = true;
 		}
 
 	}
 
 	public final float getCreeperFlashTime(float partialTime) {
-		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * partialTime) / (float)(this.maxTime - 2);
+		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * partialTime) / (float)(this.fuseTime - 2);
 	}
 
 	protected final int getDropItemId() {

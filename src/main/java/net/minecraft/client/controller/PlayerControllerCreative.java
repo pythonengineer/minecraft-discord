@@ -27,6 +27,6 @@ public final class PlayerControllerCreative extends PlayerController {
 		return false;
 	}
 
-	public final void updateController() {
+	public final void onUpdate() {
 	}
 }

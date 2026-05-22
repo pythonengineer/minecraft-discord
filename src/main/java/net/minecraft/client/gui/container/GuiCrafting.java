@@ -13,24 +13,24 @@ public final class GuiCrafting extends GuiContainer {
 	private IInventory craftingResultInventory = new InventoryCraftResult();
 
 	public GuiCrafting(InventoryPlayer playerInventory) {
-		this.slotsList.add(new SlotCrafting(this, this.craftingInventory, this.craftingResultInventory, 0, 124, 35));
+		this.inventorySlots.add(new SlotCrafting(this, this.craftingInventory, this.craftingResultInventory, 0, 124, 35));
 
 		int i2;
 		int i3;
 		for(i2 = 0; i2 < 3; ++i2) {
 			for(i3 = 0; i3 < 3; ++i3) {
-				this.slotsList.add(new Slot(this, this.craftingInventory, i3 + i2 * 3, 30 + i3 * 18, 17 + i2 * 18));
+				this.inventorySlots.add(new Slot(this, this.craftingInventory, i3 + i2 * 3, 30 + i3 * 18, 17 + i2 * 18));
 			}
 		}
 
 		for(i2 = 0; i2 < 3; ++i2) {
 			for(i3 = 0; i3 < 9; ++i3) {
-				this.slotsList.add(new Slot(this, playerInventory, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
+				this.inventorySlots.add(new Slot(this, playerInventory, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
 			}
 		}
 
 		for(i2 = 0; i2 < 9; ++i2) {
-			this.slotsList.add(new Slot(this, playerInventory, i2, 8 + i2 * 18, 142));
+			this.inventorySlots.add(new Slot(this, playerInventory, i2, 8 + i2 * 18, 142));
 		}
 
 	}
@@ -81,7 +81,7 @@ public final class GuiCrafting extends GuiContainer {
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.slotsList.get(i);
+        Slot slot = (Slot) this.inventorySlots.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();

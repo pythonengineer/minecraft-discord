@@ -13,7 +13,7 @@ import net.minecraft.game.world.World;
 public final class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
     private Map entityHashMap = new HashMap();
 
-    public final void renderTileEntityAt(TileEntity tileEntity1, double d2, double d4, double d6, float f8) {
+    public final void renderTileEntityMobSpawner(TileEntity tileEntity1, double d2, double d4, double d6, float f8) {
         TileEntityMobSpawner tileEntityMobSpawner10001 = (TileEntityMobSpawner)tileEntity1;
         double d11 = d2;
         TileEntityMobSpawner tileEntityMobSpawner17 = tileEntityMobSpawner10001;
@@ -21,7 +21,7 @@ public final class TileEntityMobSpawnerRenderer extends TileEntitySpecialRendere
         GL11.glTranslatef((float)d11 + 0.5F, (float)d4, (float)d6 + 0.5F);
         Entity entity18;
         if((entity18 = (Entity)this.entityHashMap.get(tileEntityMobSpawner17.mobID)) == null) {
-            entity18 = EntityList.createEntityByName(tileEntityMobSpawner17.mobID, (World)null);
+            entity18 = EntityList.createEntityInWorld(tileEntityMobSpawner17.mobID, (World)null);
             this.entityHashMap.put(tileEntityMobSpawner17.mobID, entity18);
         }
 

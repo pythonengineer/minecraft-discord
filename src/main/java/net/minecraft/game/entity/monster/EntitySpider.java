@@ -16,7 +16,7 @@ public class EntitySpider extends EntityMob {
     }
 
     protected final Entity findPlayerToAttack() {
-        return this.getBrightness(1.0F) < 0.5F && this.worldObj.playerEntity.getDistanceToEntity(this) < 256.0D ? this.worldObj.playerEntity : null;
+        return this.getBrightness(1.0F) < 0.5F && this.worldObj.playerEntity.getDistanceSqToEntity(this) < 256.0D ? this.worldObj.playerEntity : null;
     }
 
     protected final void attackEntity(Entity entity, float damage) {
@@ -28,8 +28,8 @@ public class EntitySpider extends EntityMob {
                     double d4 = entity.posX - this.posX;
                     double d6 = entity.posZ - this.posZ;
                     float entity1 = MathHelper.sqrt_double(d4 * d4 + d6 * d6);
-                    this.motionZ = d4 / (double)entity1 * 0.5D * (double)0.8F + this.motionZ * (double)0.2F;
-                    this.motionX = d6 / (double)entity1 * 0.5D * (double)0.8F + this.motionX * (double)0.2F;
+                    this.motionX = d4 / (double)entity1 * 0.5D * (double)0.8F + this.motionX * (double)0.2F;
+                    this.motionZ = d6 / (double)entity1 * 0.5D * (double)0.8F + this.motionZ * (double)0.2F;
                     this.motionY = (double)0.4F;
                     return;
                 }

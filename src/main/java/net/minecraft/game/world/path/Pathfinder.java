@@ -64,7 +64,7 @@ public final class Pathfinder {
 			pathPoint25.isFirst = true;
 			int object15 = 0;
 			byte b16 = 0;
-			if(pathfinder20.findPathOptions(pathPoint25.xCoord, pathPoint25.yCoord + 1, pathPoint25.zCoord, pathPoint5) > 0) {
+			if(pathfinder20.getVerticalOffset(pathPoint25.xCoord, pathPoint25.yCoord + 1, pathPoint25.zCoord, pathPoint5) > 0) {
 				b16 = 1;
 			}
 
@@ -111,11 +111,11 @@ public final class Pathfinder {
 
 	private PathPoint getSafePoint(Entity entity, int x, int y, int z, PathPoint pathPoint, int offsetY) {
 		PathPoint pathPoint8 = null;
-		if(this.findPathOptions(x, y, z, pathPoint) > 0) {
+		if(this.getVerticalOffset(x, y, z, pathPoint) > 0) {
 			pathPoint8 = this.openPoint(x, y, z);
 		}
 
-		if(pathPoint8 == null && this.findPathOptions(x, y + offsetY, z, pathPoint) > 0) {
+		if(pathPoint8 == null && this.getVerticalOffset(x, y + offsetY, z, pathPoint) > 0) {
 			pathPoint8 = this.openPoint(x, y + offsetY, z);
 		}
 
@@ -124,7 +124,7 @@ public final class Pathfinder {
 
 			while(true) {
 				int i7;
-				if(y <= 0 || (i7 = this.findPathOptions(x, y - 1, z, pathPoint)) <= 0) {
+				if(y <= 0 || (i7 = this.getVerticalOffset(x, y - 1, z, pathPoint)) <= 0) {
                     if(y > 0) {
                         pathPoint8 = this.openPoint(x, y, z);
                     }
@@ -163,7 +163,7 @@ public final class Pathfinder {
 		return pathPoint5;
 	}
 
-	private int findPathOptions(int x, int y, int z, PathPoint pathPoint) {
+	private int getVerticalOffset(int x, int y, int z, PathPoint pathPoint) {
 		for(int i5 = x; i5 < x + pathPoint.xCoord; ++i5) {
 			for(int i6 = y; i6 < y + pathPoint.yCoord; ++i6) {
 				for(int i7 = z; i7 < z + pathPoint.zCoord; ++i7) {

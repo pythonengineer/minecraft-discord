@@ -85,8 +85,8 @@ public class Minecraft implements Runnable {
 	public MovingObjectPosition objectMouseOver;
     public GameSettings gameSettings;
     public SoundManager sndManager;
-    private static long[] frameTimes = new long[512];
-    private static int tickTimes = 0;
+    private static long[] tickTimes = new long[512];
+    private static int numRecordedFrameTimes = 0;
     private TextureWaterFX textureWaterFX;
     private TextureLavaFX textureLavaFX;
     volatile boolean running;
@@ -124,10 +124,10 @@ public class Minecraft implements Runnable {
         this.sndManager.registerSounds();
 	}
 
-    public void displayUnexpectedThrowable(UnexpectedThrowable unexpectedThrowable1) {
+    public void displayUnexpectedThrowable(CompressedStreamTools compressedStreamTools) {
     }
 
-	public final void setGuiScreen(GuiScreen screen) {
+	public final void displayGuiScreen(GuiScreen screen) {
 		if(!(this.currentScreen instanceof GuiErrorScreen)) {
 			if(this.currentScreen != null) {
                 this.currentScreen.onGuiClosed();
@@ -232,7 +232,7 @@ public class Minecraft implements Runnable {
             this.scaledResolution = new ScaledResolution(this);
             PointerInputAbstraction.init(this);
             if(this.theWorld == null) {
-                this.setGuiScreen(new GuiMainMenu());
+                this.displayGuiScreen(new GuiMainMenu());
             }
 
 			this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
@@ -268,7 +268,7 @@ public class Minecraft implements Runnable {
 
                 for(int i26 = 0; i26 < this.timer.elapsedTicks; ++i26) {
                     ++this.ticksRan;
-                    this.tick();
+                    this.runTick();
                     if (i26 < this.timer.elapsedTicks - 1) {
                         PointerInputAbstraction.runGameLoop();
                     }
@@ -301,7 +301,7 @@ public class Minecraft implements Runnable {
                 }
 
                 if(Keyboard.isKeyDown(Keyboard.KEY_F6)) {
-                    this.renderDebugDisplay();
+                    this.displayDebugInfo();
                 } else {
                     this.prevFrameTime = EagRuntime.nanoTime();
                 }
@@ -316,8 +316,8 @@ public class Minecraft implements Runnable {
                 ++i3;
 
                 for(this.isGamePaused = this.currentScreen != null && this.currentScreen.doesGuiPauseGame(); EagRuntime.currentTimeMillis() >= j23 + 1000L; i3 = 0) {
-					this.debug = i3 + " fps, " + WorldRenderer.chunkUpdates + " chunk updates";
-					WorldRenderer.chunkUpdates = 0;
+					this.debug = i3 + " fps, " + WorldRenderer.chunksUpdated + " chunk updates";
+					WorldRenderer.chunksUpdated = 0;
 					j23 += 1000L;
 					i3 = 0;
 				}
@@ -337,13 +337,13 @@ public class Minecraft implements Runnable {
 
 	}
 
-    private void renderDebugDisplay() {
+    private void displayDebugInfo() {
         if(this.prevFrameTime == -1L) {
             this.prevFrameTime = EagRuntime.nanoTime();
         }
 
         long j1 = EagRuntime.nanoTime();
-        frameTimes[tickTimes++ & frameTimes.length - 1] = j1 - this.prevFrameTime;
+        tickTimes[numRecordedFrameTimes++ & tickTimes.length - 1] = j1 - this.prevFrameTime;
         this.prevFrameTime = j1;
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -357,36 +357,36 @@ public class Minecraft implements Runnable {
         Tessellator tessellator13 = Tessellator.instance;
         Tessellator.instance.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         tessellator13.setColorOpaque_I(0x20200000);
-        tessellator13.drawVertex(0.0D, (double)(this.displayHeight - 100), 0.0D);
-        tessellator13.drawVertex(0.0D, (double)this.displayHeight, 0.0D);
-        tessellator13.drawVertex((double)frameTimes.length, (double)this.displayHeight, 0.0D);
-        tessellator13.drawVertex((double)frameTimes.length, (double)(this.displayHeight - 100), 0.0D);
+        tessellator13.addVertex(0.0D, (double)(this.displayHeight - 100), 0.0D);
+        tessellator13.addVertex(0.0D, (double)this.displayHeight, 0.0D);
+        tessellator13.addVertex((double)tickTimes.length, (double)this.displayHeight, 0.0D);
+        tessellator13.addVertex((double)tickTimes.length, (double)(this.displayHeight - 100), 0.0D);
         tessellator13.draw();
         long j4 = 0L;
 
         int i2;
-        for(i2 = 0; i2 < frameTimes.length; ++i2) {
-            j4 += frameTimes[i2];
+        for(i2 = 0; i2 < tickTimes.length; ++i2) {
+            j4 += tickTimes[i2];
         }
 
-        i2 = (int)(j4 / 200000L / (long)frameTimes.length);
+        i2 = (int)(j4 / 200000L / (long)tickTimes.length);
         tessellator13.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         tessellator13.setColorOpaque_I(0x20400000);
-        tessellator13.drawVertex(0.0D, (double)(this.displayHeight - i2), 0.0D);
-        tessellator13.drawVertex(0.0D, (double)this.displayHeight, 0.0D);
-        tessellator13.drawVertex((double)frameTimes.length, (double)this.displayHeight, 0.0D);
-        tessellator13.drawVertex((double)frameTimes.length, (double)(this.displayHeight - i2), 0.0D);
+        tessellator13.addVertex(0.0D, (double)(this.displayHeight - i2), 0.0D);
+        tessellator13.addVertex(0.0D, (double)this.displayHeight, 0.0D);
+        tessellator13.addVertex((double)tickTimes.length, (double)this.displayHeight, 0.0D);
+        tessellator13.addVertex((double)tickTimes.length, (double)(this.displayHeight - i2), 0.0D);
         tessellator13.draw();
         tessellator13.startDrawing(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
 
-        for(i2 = 0; i2 < frameTimes.length; ++i2) {
+        for(i2 = 0; i2 < tickTimes.length; ++i2) {
             int i3;
             int i14;
-            int i5 = (i5 = (i14 = (i14 = (i3 = (i2 - tickTimes & frameTimes.length - 1) * 255 / frameTimes.length) * i3 / 255) * i14 / 255) * i14 / 255) * i5 / 255;
+            int i5 = (i5 = (i14 = (i14 = (i3 = (i2 - numRecordedFrameTimes & tickTimes.length - 1) * 255 / tickTimes.length) * i3 / 255) * i14 / 255) * i14 / 255) * i5 / 255;
             tessellator13.setColorOpaque_I(i5 + 0xFF000000 + (i14 << 8) + (i3 << 16));
-            long j11 = frameTimes[i2] / 200000L;
-            tessellator13.drawVertex((double)((float)i2 + 0.5F), (double)((float)((long)this.displayHeight - j11) + 0.5F), 0.0D);
-            tessellator13.drawVertex((double)((float)i2 + 0.5F), (double)((float)this.displayHeight + 0.5F), 0.0D);
+            long j11 = tickTimes[i2] / 200000L;
+            tessellator13.addVertex((double)((float)i2 + 0.5F), (double)((float)((long)this.displayHeight - j11) + 0.5F), 0.0D);
+            tessellator13.addVertex((double)((float)i2 + 0.5F), (double)((float)this.displayHeight + 0.5F), 0.0D);
         }
 
         tessellator13.draw();
@@ -503,7 +503,7 @@ public class Minecraft implements Runnable {
                 if (!touch && mouseGrabSupported) {
                     Mouse.setGrabbed(true);
                 }
-                this.setGuiScreen((GuiScreen) null);
+                this.displayGuiScreen((GuiScreen) null);
                 this.mouseTicksRan = this.ticksRan + 10000;
             }
         }
@@ -512,7 +512,7 @@ public class Minecraft implements Runnable {
     public void setIngameNotInFocus() {
         if (this.inGameHasFocus) {
             if(this.thePlayer != null) {
-                this.thePlayer.movementInput.resetPlayerKeyState();
+                this.thePlayer.movementInput.resetKeyState();
             }
 
             this.inGameHasFocus = false;
@@ -524,7 +524,7 @@ public class Minecraft implements Runnable {
 
 	public final void displayInGameMenu() {
 		if(this.currentScreen == null) {
-			this.setGuiScreen(new GuiIngameMenu());
+			this.displayGuiScreen(new GuiIngameMenu());
 		}
 	}
 
@@ -556,7 +556,7 @@ public class Minecraft implements Runnable {
                             EntityLiving entityLiving9 = (EntityLiving)entity5;
                             Item.itemsList[itemStack2.itemID].hitEntity(itemStack2, entityLiving9);
                             if(itemStack2.stackSize <= 0) {
-                                entityPlayerSP4.destroyCurrentEquippedItem();
+                                entityPlayerSP4.displayGUIInventory();
                             }
                         }
                     }
@@ -570,7 +570,7 @@ public class Minecraft implements Runnable {
                         EntityLiving entityLiving12 = (EntityLiving)entity5;
                         Item.itemsList[itemStack20.itemID].saddleEntity(itemStack20, entityLiving12);
                         if(itemStack20.stackSize <= 0) {
-                            entityPlayerSP4.destroyCurrentEquippedItem();
+                            entityPlayerSP4.displayGUIInventory();
                         }
                     }
                 }
@@ -581,7 +581,7 @@ public class Minecraft implements Runnable {
                 int i16 = this.objectMouseOver.sideHit;
                 Block block6 = Block.blocksList[this.theWorld.getBlockId(i11, i13, i14)];
                 if(mouseButton == 0) {
-                    this.theWorld.onBlockHit(i11, i13, i14, this.objectMouseOver.sideHit);
+                    this.theWorld.extinguishFire(i11, i13, i14, this.objectMouseOver.sideHit);
                     if(block6 != Block.bedrock) {
                         this.playerController.clickBlock(i11, i13, i14);
                     }
@@ -681,7 +681,7 @@ public class Minecraft implements Runnable {
         }
     }
 
-	private void tick() {
+	private void runTick() {
         if (this.rightClickDelayTimer > 0) {
             --this.rightClickDelayTimer;
         }
@@ -693,7 +693,7 @@ public class Minecraft implements Runnable {
 
         this.ingameGUI.updateTick();
         if(!this.isGamePaused && this.theWorld != null) {
-            this.playerController.updateController();
+            this.playerController.onUpdate();
         }
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png")); 
@@ -702,7 +702,7 @@ public class Minecraft implements Runnable {
         }
 
 		if(this.currentScreen == null && this.thePlayer != null && this.thePlayer.health <= 0) {
-			this.setGuiScreen((GuiScreen)null);
+			this.displayGuiScreen((GuiScreen)null);
 		}
 
 		int i4;
@@ -846,16 +846,16 @@ public class Minecraft implements Runnable {
                             }
 
                             if(Keyboard.getEventKey() == this.gameSettings.keyBindInventory.keyCode) {
-                                this.setGuiScreen(new GuiInventory(this.thePlayer.inventory));
+                                this.displayGuiScreen(new GuiInventory(this.thePlayer.inventory));
                             }
 
                             if(Keyboard.getEventKey() == this.gameSettings.keyBindDrop.keyCode) {
-                                this.thePlayer.dropItem(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1), false);
+                                this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1), false);
                             }
                         }
 
                         for(i1 = 0; i1 < 9; ++i1) {
-                            if(Keyboard.getEventKey() == i1 + 2) {
+                            if(Keyboard.getEventKey() == i1 + Keyboard.KEY_1) {
                                 this.thePlayer.inventory.currentItem = i1;
                             }
                         }
@@ -962,7 +962,7 @@ public class Minecraft implements Runnable {
             this.changeWorld(world3, "Loading level");
         }
 
-        world3.saveWorld(false, (IProgressUpdate)null);
+        world3.saveWorld(false, (LoadingScreenRenderer)null);
     }
 
     public final void changeWorld1(World world) {
@@ -996,7 +996,7 @@ public class Minecraft implements Runnable {
 
             this.playerController.onRespawn(this.thePlayer);
             world.playerEntity = this.thePlayer;
-            world.joinPlayerInWorld();
+            world.spawnPlayerWithLoadedChunks();
             if(world.isNewWorld) {
                 world.saveWorldIndirectly(this.loadingScreen);
             }
@@ -1033,7 +1033,7 @@ public class Minecraft implements Runnable {
         BlockSand.fallInstantly = true;
 
         for(i2 = 0; i2 < 2000; ++i2) {
-            this.theWorld.TickUpdates(true);
+            this.theWorld.tickUpdates(true);
         }
 
         BlockSand.fallInstantly = false;
@@ -1064,7 +1064,8 @@ public class Minecraft implements Runnable {
     }
 
     public final String debugInfoEntities() {
-        return "P: " + this.effectRenderer.getStatistics() + ". T: " + this.theWorld.getDebugLoadedEntities();
+        StringBuilder stringBuilder10000 = (new StringBuilder()).append("P: ");
+        return stringBuilder10000.append("" + this.effectRenderer.getStatistics()).append(". T: ").append(this.theWorld.getDebugLoadedEntities()).toString();
     }
 
     public final void respawn() {
@@ -1077,7 +1078,7 @@ public class Minecraft implements Runnable {
         this.playerController.flipPlayer(this.thePlayer);
         if(this.theWorld != null) {
             this.theWorld.playerEntity = this.thePlayer;
-            this.theWorld.joinPlayerInWorld();
+            this.theWorld.spawnPlayerWithLoadedChunks();
         }
 
         this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);

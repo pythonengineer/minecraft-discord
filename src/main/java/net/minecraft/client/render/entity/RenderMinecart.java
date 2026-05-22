@@ -11,11 +11,11 @@ import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.block.Block;
 
 public final class RenderMinecart extends Render {
-	private ModelBase minecartModel;
+	private ModelBase modelMinecart;
 
 	public RenderMinecart() {
 		this.shadowSize = 0.5F;
-		this.minecartModel = new ModelMinecart();
+		this.modelMinecart = new ModelMinecart();
 	}
 
 	public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
@@ -69,7 +69,7 @@ public final class RenderMinecart extends Render {
 		GL11.glScalef(1.3333334F, 1.3333334F, 1.3333334F);
 		this.loadTexture("/item/cart.png");
 		GL11.glScalef(-1.0F, -1.0F, 1.0F);
-		this.minecartModel.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		this.modelMinecart.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GL11.glPopMatrix();
 	}
 }

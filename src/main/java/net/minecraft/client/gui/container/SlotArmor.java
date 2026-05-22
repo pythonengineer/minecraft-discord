@@ -16,7 +16,7 @@ final class SlotArmor extends Slot {
         return stack.getItem() instanceof ItemArmor ? ((ItemArmor)stack.getItem()).armorType == this.armorType : false;
     }
 
-    public final int getRenderIndex() {
+    public final int getBackgroundIconIndex() {
         return 15 + (this.armorType << 4);
     }
 }

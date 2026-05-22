@@ -5,7 +5,6 @@ import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
-import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.client.render.entity.RenderPlayer;
 import net.minecraft.game.item.ItemStack;

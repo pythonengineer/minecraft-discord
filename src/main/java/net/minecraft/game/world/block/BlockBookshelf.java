@@ -5,7 +5,7 @@ import net.minecraft.game.world.material.Material;
 
 public final class BlockBookshelf extends Block {
 	public BlockBookshelf(int blockID, int textureIndex) {
-		super(47, 35, Material.ground);
+		super(47, 35, Material.wood);
 	}
 
 	public final int getBlockTextureFromSide(int side) {

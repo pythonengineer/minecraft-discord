@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class UnexpectedThrowable {
-    public final Exception exception;
+public class CompressedStreamTools {
+    public final Exception excep;
 
-    public UnexpectedThrowable(String string1, Exception exception2) {
-        this.exception = exception2;
+    public CompressedStreamTools(String string1, Exception exception2) {
+        this.excep = exception2;
     }
 
-    public static NBTTagCompound readCompressed(InputStream inputStream0) throws IOException {
+    public static NBTTagCompound read(InputStream inputStream0) throws IOException {
         DataInputStream dataInputStream4 = new DataInputStream(EaglerZLIB.newGZIPInputStream(inputStream0));
 
         NBTTagCompound nBTTagCompound5;
@@ -36,11 +36,11 @@ public class UnexpectedThrowable {
         return nBTTagCompound5;
     }
 
-    public static void writeCompressed(NBTTagCompound nBTTagCompound0, OutputStream outputStream1) throws IOException {
+    public static void writeCompressed(NBTTagCompound nbtcomptag, OutputStream outputStream1) throws IOException {
         DataOutputStream dataOutputStream5 = new DataOutputStream(EaglerZLIB.newGZIPOutputStream(outputStream1));
 
         try {
-            NBTBase.writeNamedTag(nBTTagCompound0, dataOutputStream5);
+            NBTBase.writeNamedTag(nbtcomptag, dataOutputStream5);
         } finally {
             dataOutputStream5.close();
         }

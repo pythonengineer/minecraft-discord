@@ -8,7 +8,7 @@ import net.minecraft.game.world.material.Material;
 
 public final class BlockFarmland extends Block {
 	protected BlockFarmland(int blockID) {
-		super(60, Material.grassMaterial);
+		super(60, Material.ground);
 		this.blockIndexInTexture = 87;
 		this.setTickOnLoad(true);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.9375F, 1.0F);

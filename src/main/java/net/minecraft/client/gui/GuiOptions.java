@@ -29,11 +29,11 @@ public final class GuiOptions extends GuiScreen {
             }
 
             if(button.id == 100) {
-                this.mc.setGuiScreen(new GuiControls(this, this.options));
+                this.mc.displayGuiScreen(new GuiControls(this, this.options));
             }
 
             if(button.id == 200) {
-                this.mc.setGuiScreen(this.parentScreen);
+                this.mc.displayGuiScreen(this.parentScreen);
             }
 
         }

@@ -21,12 +21,12 @@ public final class BlockTNT extends Block {
 	public final void onBlockDestroyedByExplosion(World world, int x, int y, int z) {
 		EntityTNTPrimed x1;
 		(x1 = new EntityTNTPrimed(world, (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F)).fuse = world.rand.nextInt(x1.fuse / 4) + x1.fuse / 8;
-		world.entityJoinedWorld(x1);
+		world.spawnEntityInWorld(x1);
 	}
 
 	public final void onBlockDestroyedByPlayer(World world, int x, int y, int z, int metadata) {
 		EntityTNTPrimed x1 = new EntityTNTPrimed(world, (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F);
-		world.entityJoinedWorld(x1);
+		world.spawnEntityInWorld(x1);
 		world.playSoundAtEntity(x1, "random.fuse", 1.0F, 1.0F);
 	}
 }

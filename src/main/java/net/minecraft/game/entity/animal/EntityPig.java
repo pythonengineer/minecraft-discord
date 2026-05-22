@@ -38,9 +38,9 @@ public class EntityPig extends EntityAnimal {
 		return "mob.pigdeath";
 	}
 
-	public final boolean interact(EntityPlayer entityPlayer1) {
+	public final boolean interact(EntityPlayer entityPlayer) {
 		if(this.saddled) {
-			entityPlayer1.mountEntity(this);
+			entityPlayer.mountEntity(this);
 			return true;
 		} else {
 			return false;

@@ -10,7 +10,7 @@ public final class BlockSign extends BlockContainer {
     private int itemDropID;
 
     protected BlockSign(int blockID, Class signEntityClas, int droppedItemID) {
-        super(63, Material.ground);
+        super(63, Material.wood);
         this.blockIndexInTexture = 4;
         this.signEntityClass = signEntityClas;
         this.setBlockBounds(0.25F, 0.0F, 0.25F, 0.75F, 1.625F, 0.75F);
@@ -47,7 +47,7 @@ public final class BlockSign extends BlockContainer {
 
     public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
         if(!world.isBlockNormalCube(x, y - 1, z)) {
-            this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+            this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
             world.setBlockWithNotify(x, y, z, 0);
         }
 

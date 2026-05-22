@@ -16,7 +16,7 @@ public final class EntityPickupFX extends EntityFX {
 	private float yOffs;
 
 	public EntityPickupFX(World world, Entity entity, EntityLiving livingEntity, float yOffset) {
-		super(world, entity.posX, entity.posY, entity.posZ, entity.motionX, entity.motionY, entity.motionZ);
+		super(world, entity.posX, entity.posY, entity.posZ, entity.motionZ, entity.motionY, entity.motionX);
 		this.entityToPickUp = entity;
 		this.entityPickingUp = livingEntity;
 		this.maxAge = 3;

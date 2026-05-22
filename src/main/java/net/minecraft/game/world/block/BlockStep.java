@@ -52,11 +52,11 @@ public final class BlockStep extends Block {
 		return this.blockType;
 	}
 
-	public final boolean getIsBlockSolid(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
+	public final boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
 		if(this != Block.stairSingle) {
-			super.getIsBlockSolid(iBlockAccess, x, y, z, metadata);
+			super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata);
 		}
 
-		return metadata == 1 ? true : (!super.getIsBlockSolid(iBlockAccess, x, y, z, metadata) ? false : (metadata == 0 ? true : iBlockAccess.getBlockId(x, y, z) != this.blockID));
+		return metadata == 1 ? true : (!super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata) ? false : (metadata == 0 ? true : iBlockAccess.getBlockId(x, y, z) != this.blockID));
 	}
 }

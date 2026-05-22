@@ -9,7 +9,7 @@ public final class EntityExplodeFX extends EntityFX {
 		this.motionX = d8 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.05F);
 		this.motionY = d10 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.05F);
 		this.motionZ = d12 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.05F);
-		this.particleBlue = this.particleGreen = this.particleRed = this.rand.nextFloat() * 0.3F + 0.7F;
+		this.particleRed = this.particleGreen = this.particleBlue = this.rand.nextFloat() * 0.3F + 0.7F;
 		this.particleScale = this.rand.nextFloat() * this.rand.nextFloat() * 6.0F + 1.0F;
 		this.particleMaxAge = (int)(16.0D / ((double)this.rand.nextFloat() * 0.8D + 0.2D)) + 2;
 	}

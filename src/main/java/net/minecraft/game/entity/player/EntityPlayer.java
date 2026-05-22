@@ -31,7 +31,7 @@ public class EntityPlayer extends EntityLiving {
 
 	public EntityPlayer(World world1) {
 		super(world1);
-		this.setLocationAndAngles((double)world1.spawnX + 0.5D, (double)world1.spawnY, (double)world1.spawnZ + 0.5D, 0.0F, 0.0F);
+		this.setPositionAndRotation((double)world1.spawnX + 0.5D, (double)world1.spawnY, (double)world1.spawnZ + 0.5D, 0.0F, 0.0F);
 		this.yOffset = 1.62F;
 		this.health = 20;
 		this.fireResistance = 20;
@@ -71,7 +71,7 @@ public class EntityPlayer extends EntityLiving {
 
 		this.prevCameraYaw = this.cameraYaw;
 		super.onLivingUpdate();
-		float f1 = MathHelper.sqrt_double(this.motionZ * this.motionZ + this.motionX * this.motionX);
+		float f1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
 		float f2 = (float)Math.atan(-this.motionY * (double)0.2F) * 15.0F;
 		if(f1 > 0.1F) {
 			f1 = 0.1F;
@@ -102,25 +102,25 @@ public class EntityPlayer extends EntityLiving {
 		this.setPosition(this.posX, this.posY, this.posZ);
 		this.motionY = (double)0.1F;
 		if(this.username.equals("Notch")) {
-			this.dropItem(new ItemStack(Item.appleRed, 1), true);
+			this.dropPlayerItemWithRandomChoice(new ItemStack(Item.appleRed, 1), true);
 		}
 
 		this.inventory.dropAllItems();
 		if(entity != null) {
-			this.motionZ = (double)(-MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
-			this.motionX = (double)(-MathHelper.sin((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
+			this.motionX = (double)(-MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
+			this.motionZ = (double)(-MathHelper.sin((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
 		} else {
-			this.motionZ = this.motionX = 0.0D;
+			this.motionX = this.motionZ = 0.0D;
 		}
 
 		this.yOffset = 0.1F;
 	}
 
 	public final void dropPlayerItem(ItemStack stack) {
-		this.dropItem(stack, false);
+		this.dropPlayerItemWithRandomChoice(stack, false);
 	}
 
-	public final void dropItem(ItemStack stack, boolean isRandom) {
+	public final void dropPlayerItemWithRandomChoice(ItemStack stack, boolean isRandom) {
 		if(stack != null) {
 			EntityItem stack1;
 			(stack1 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F, this.posZ, stack)).delayBeforeCanPickup = 40;
@@ -129,21 +129,21 @@ public class EntityPlayer extends EntityLiving {
 			if(isRandom) {
 				f3 = this.rand.nextFloat() * 0.5F;
 				isRandom1 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-				stack1.motionZ = (double)(-MathHelper.sin(isRandom1) * f3);
-				stack1.motionX = (double)(MathHelper.cos(isRandom1) * f3);
+				stack1.motionX = (double)(-MathHelper.sin(isRandom1) * f3);
+				stack1.motionZ = (double)(MathHelper.cos(isRandom1) * f3);
 				stack1.motionY = (double)0.2F;
 			} else {
-				stack1.motionZ = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
-				stack1.motionX = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
+				stack1.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
+				stack1.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F);
 				stack1.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F + 0.1F);
 				f3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
 				isRandom1 = 0.02F * this.rand.nextFloat();
-				stack1.motionZ += Math.cos((double)f3) * (double)isRandom1;
+				stack1.motionX += Math.cos((double)f3) * (double)isRandom1;
 				stack1.motionY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-				stack1.motionX += Math.sin((double)f3) * (double)isRandom1;
+				stack1.motionZ += Math.sin((double)f3) * (double)isRandom1;
 			}
 
-			this.worldObj.entityJoinedWorld(stack1);
+			this.worldObj.spawnEntityInWorld(stack1);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class EntityPlayer extends EntityLiving {
 				}
 			}
 
-			int i3 = 25 - this.inventory.getPlayerArmorValue();
+			int i3 = 25 - this.inventory.getTotalArmorValue();
 			i3 = damage * i3 + this.damageRemainder;
 			int i4 = damage;
 			InventoryPlayer inventoryPlayer6 = this.inventory;

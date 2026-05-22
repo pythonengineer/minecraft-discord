@@ -13,16 +13,16 @@ public final class GuiIngameMenu extends GuiScreen {
 
 	protected final void actionPerformed(GuiButton button) {
 		if(button.id == 0) {
-			this.mc.setGuiScreen(new GuiOptions(this, this.mc.gameSettings));
+			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
 		}
 
 		if(button.id == 1) {
             this.mc.changeWorld1((World)null);
-			this.mc.setGuiScreen(new GuiMainMenu());
+			this.mc.displayGuiScreen(new GuiMainMenu());
 		}
 
 		if(button.id == 4) {
-			this.mc.setGuiScreen((GuiScreen)null);
+			this.mc.displayGuiScreen((GuiScreen)null);
 			this.mc.setIngameFocus();
 		}
 

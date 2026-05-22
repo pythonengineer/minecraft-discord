@@ -16,8 +16,12 @@ public class TileEntity {
 	public int zCoord;
 
 	private static void addMapping(Class tileEntityClass, String tileEntityName) {
-		nameToClassMap.put(tileEntityName, tileEntityClass);
-		classToNameMap.put(tileEntityClass, tileEntityName);
+        if(classToNameMap.containsKey(tileEntityName)) {
+            throw new IllegalArgumentException("Duplicate id: " + tileEntityName);
+        } else {
+		    nameToClassMap.put(tileEntityName, tileEntityClass);
+		    classToNameMap.put(tileEntityClass, tileEntityName);
+        }
 	}
 
 	public void readFromNBT(NBTTagCompound compoundTag) {
@@ -74,6 +78,6 @@ public class TileEntity {
 		addMapping(TileEntityFurnace.class, "Furnace");
 		addMapping(TileEntityChest.class, "Chest");
 		addMapping(TileEntitySign.class, "Sign");
-        addMapping(TileEntityMobSpawner.class, "Sign");
+        addMapping(TileEntityMobSpawner.class, "MobSpawner");
 	}
 }

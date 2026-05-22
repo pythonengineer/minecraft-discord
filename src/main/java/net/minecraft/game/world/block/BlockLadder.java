@@ -109,7 +109,7 @@ public final class BlockLadder extends Block {
         }
 
         if(!z7) {
-            this.harvestBlock(world, x, y, z, i6);
+            this.dropBlockAsItem(world, x, y, z, i6);
             world.setBlockWithNotify(x, y, z, 0);
         }
 

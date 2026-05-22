@@ -7,18 +7,18 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.world.material.Material;
 
 public class SpawnerAnimals {
-	private int entityMax;
-	private Class<? extends Entity> entityAmount;
+	private int maxSpawns;
+	private Class<? extends Entity> entityType;
 	private Class<? extends Entity>[] entities;
 
 	public SpawnerAnimals(int maxEntities, Class<? extends Entity> entityType, Class<? extends Entity>[] entityClasses) {
-		this.entityMax = maxEntities;
-		this.entityAmount = entityType;
+		this.maxSpawns = maxEntities;
+		this.entityType = entityType;
 		this.entities = entityClasses;
 	}
 
-	public final void doRandomSpawn(World world) {
-		if(world.countEntities(this.entityAmount) < this.entityMax) {
+	public final void onUpdate(World world) {
+		if(world.countEntities(this.entityType) < this.maxSpawns) {
 			for(int i2 = 0; i2 < 10; ++i2) {
 				this.performSpawning(world, world.playerEntity);
 			}
@@ -26,10 +26,10 @@ public class SpawnerAnimals {
 
 	}
 
-	protected ChunkPosition getRandomSpawningPointInChunk(World world1, int i2, int i3) {
-		i2 = i2 + world1.rand.nextInt(256) - 128;
-		int i4 = world1.rand.nextInt(128);
-		int i5 = i3 + world1.rand.nextInt(256) - 128;
+	protected ChunkPosition getRandomSpawningPointInChunk(World world, int i2, int i3) {
+		i2 = i2 + world.rand.nextInt(256) - 128;
+		int i4 = world.rand.nextInt(128);
+		int i5 = i3 + world.rand.nextInt(256) - 128;
 		return new ChunkPosition(i2, i4, i5);
 	}
 
@@ -84,10 +84,10 @@ public class SpawnerAnimals {
 							return i3;
 						}
 
-						entityLiving30.setLocationAndAngles((double)f13, (double)f14, (double)f15, world.rand.nextFloat() * 360.0F, 0.0F);
+						entityLiving30.setPositionAndRotation((double)f13, (double)f14, (double)f15, world.rand.nextFloat() * 360.0F, 0.0F);
 						if(entityLiving30.getCanSpawnHere((double)f13, (double)f14, (double)f15)) {
 							++i3;
-							world.entityJoinedWorld(entityLiving30);
+							world.spawnEntityInWorld(entityLiving30);
 						}
 					}
 				}

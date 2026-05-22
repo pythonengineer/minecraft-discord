@@ -27,7 +27,7 @@ public final class GuiControls extends GuiScreen {
         }
 
         if(button.id == 200) {
-            this.mc.setGuiScreen(this.parentScreen);
+            this.mc.displayGuiScreen(this.parentScreen);
         } else {
             this.buttonId = button.id;
             button.displayString = "> " + this.options.getKeyBindingDescription(button.id) + " <";

@@ -51,7 +51,7 @@ public class Slot {
         this.onSlotChanged();
     }
 
-    public int getRenderIndex() {
+    public int getBackgroundIconIndex() {
         return -1;
     }
 

@@ -15,8 +15,8 @@ public final class RenderSorter implements Comparator {
 		WorldRenderer worldRenderer10001 = (WorldRenderer)worldRenderer1;
 		WorldRenderer worldRenderer3 = (WorldRenderer)worldRenderer2;
 		WorldRenderer worldRenderer21 = worldRenderer10001;
-		boolean z4 = worldRenderer21.isInFrustrum;
-		boolean z5 = worldRenderer3.isInFrustrum;
+		boolean z4 = worldRenderer21.isInFrustum;
+		boolean z5 = worldRenderer3.isInFrustum;
 		return z4 && !z5 ? 1 : ((!z5 || z4) && worldRenderer21.distanceToEntitySquared(this.player) < worldRenderer3.distanceToEntitySquared(this.player) ? 1 : -1);
 	}
 }

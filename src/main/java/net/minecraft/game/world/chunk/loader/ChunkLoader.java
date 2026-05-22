@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
-import net.minecraft.client.UnexpectedThrowable;
+import net.minecraft.client.CompressedStreamTools;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityList;
 import net.minecraft.game.world.World;
@@ -50,7 +50,7 @@ public final class ChunkLoader implements IChunkLoader {
         VFile2 file5;
         if((file5 = this.chunkFileForXZ(i2, i3)) != null && file5.exists()) {
             try (InputStream fis = file5.getInputStream()) {
-                NBTTagCompound nBTTagCompound6 = UnexpectedThrowable.readCompressed(fis);
+                NBTTagCompound nBTTagCompound6 = CompressedStreamTools.read(fis);
                 return loadChunkIntoWorldFromCompound(world1, nBTTagCompound6.getCompoundTag("Level"));
             } catch (IOException exception4) {
                 exception4.printStackTrace();
@@ -71,7 +71,7 @@ public final class ChunkLoader implements IChunkLoader {
             NBTTagCompound nBTTagCompound6 = new NBTTagCompound();
             nBTTagCompound5.setTag("Level", nBTTagCompound6);
             storeChunkInCompound(chunk2, world1, nBTTagCompound6);
-            UnexpectedThrowable.writeCompressed(nBTTagCompound5, fos);
+            CompressedStreamTools.writeCompressed(nBTTagCompound5, fos);
             world1.sizeOnDisk += file3.length();
         } catch (IOException exception7) {
             exception7.printStackTrace();

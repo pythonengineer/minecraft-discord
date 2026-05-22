@@ -35,7 +35,7 @@ public class BlockSand extends Block {
                     entityFallingSand10.onUpdate();
                 }
             } else {
-                world11.entityJoinedWorld(entityFallingSand10);
+                world11.spawnEntityInWorld(entityFallingSand10);
             }
         }
 

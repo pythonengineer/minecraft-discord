@@ -25,7 +25,7 @@ public final class BlockLeaves extends BlockLeavesBase {
                 }
             }
 
-            this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+            this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
             world.setBlockWithNotify(x, y, z, 0);
         }
     }

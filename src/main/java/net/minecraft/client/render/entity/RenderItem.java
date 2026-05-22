@@ -84,14 +84,14 @@ public final class RenderItem extends Render {
             if(s != null) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
-                fontRenderer.drawStringWithShadow(s, x + 19 - 2 - fontRenderer.width(s), y + 6 + 3, 0xFFFFFF);
+                fontRenderer.drawStringWithShadow(s, x + 19 - 2 - fontRenderer.getStringWidth(s), y + 6 + 3, 0xFFFFFF);
                 GL11.glEnable(GL11.GL_LIGHTING);
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
             }
 
-            if(stack.itemDamage > 0) {
-                int i9 = 13 - stack.itemDamage * 13 / stack.getItemDamageForDisplay();
-                int fontRenderer1 = 255 - stack.itemDamage * 255 / stack.getItemDamageForDisplay();
+            if(stack.itemDmg > 0) {
+                int i9 = 13 - stack.itemDmg * 13 / stack.getMaxDamage();
+                int fontRenderer1 = 255 - stack.itemDmg * 255 / stack.getMaxDamage();
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -113,10 +113,10 @@ public final class RenderItem extends Render {
     private static void renderQuad(Tessellator tessellator, int x, int y, int z, int offsetY, int color) {
         tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
         tessellator.setColorOpaque_I(color);
-        tessellator.drawVertex((double)x, (double)y, 0.0D);
-        tessellator.drawVertex((double)x, (double)(y + offsetY), 0.0D);
-        tessellator.drawVertex((double)(x + z), (double)(y + offsetY), 0.0D);
-        tessellator.drawVertex((double)(x + z), (double)y, 0.0D);
+        tessellator.addVertex((double)x, (double)y, 0.0D);
+        tessellator.addVertex((double)x, (double)(y + offsetY), 0.0D);
+        tessellator.addVertex((double)(x + z), (double)(y + offsetY), 0.0D);
+        tessellator.addVertex((double)(x + z), (double)y, 0.0D);
         tessellator.draw();
     }
 

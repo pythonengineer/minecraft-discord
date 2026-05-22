@@ -110,10 +110,10 @@ public final class Tessellator {
 
 	public final void addVertexWithUV(double x, double y, double z, double u, double v) {
 	    this.addUV(u, v);
-		this.drawVertex(x, y, z);
+		this.addVertex(x, y, z);
 	}
 
-	public final void drawVertex(double x, double y, double z) {
+	public final void addVertex(double x, double y, double z) {
         if (this.hasColor) {
             worldRenderer.color(this.r, this.g, this.b, this.a);
         }

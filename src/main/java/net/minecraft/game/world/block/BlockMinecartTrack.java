@@ -63,7 +63,7 @@ public final class BlockMinecartTrack extends Block {
 
     public final void onNeighborBlockChange(World world1, int i2, int i3, int i4, int i5) {
         if(!world1.isBlockNormalCube(i2, i3 - 1, i4)) {
-            this.harvestBlock(world1, i2, i3, i4, world1.getBlockMetadata(i2, i3, i4));
+            this.dropBlockAsItem(world1, i2, i3, i4, world1.getBlockMetadata(i2, i3, i4));
             world1.setBlockWithNotify(i2, i3, i4, 0);
         }
 

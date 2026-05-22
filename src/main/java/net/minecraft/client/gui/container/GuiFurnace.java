@@ -12,19 +12,19 @@ public final class GuiFurnace extends GuiContainer {
 
     public GuiFurnace(InventoryPlayer playerInventory, TileEntityFurnace furnaceTileEntity) {
         this.furnaceInventory = furnaceTileEntity;
-        this.slotsList.add(new Slot(this, furnaceTileEntity, 0, 56, 17));
-        this.slotsList.add(new Slot(this, furnaceTileEntity, 1, 56, 53));
-        this.slotsList.add(new Slot(this, furnaceTileEntity, 2, 116, 35));
+        this.inventorySlots.add(new Slot(this, furnaceTileEntity, 0, 56, 17));
+        this.inventorySlots.add(new Slot(this, furnaceTileEntity, 1, 56, 53));
+        this.inventorySlots.add(new Slot(this, furnaceTileEntity, 2, 116, 35));
 
         int i4;
         for(i4 = 0; i4 < 3; ++i4) {
             for(int i3 = 0; i3 < 9; ++i3) {
-                this.slotsList.add(new Slot(this, playerInventory, i3 + (i4 + 1) * 9, 8 + i3 * 18, 84 + i4 * 18));
+                this.inventorySlots.add(new Slot(this, playerInventory, i3 + (i4 + 1) * 9, 8 + i3 * 18, 84 + i4 * 18));
             }
         }
 
         for(i4 = 0; i4 < 9; ++i4) {
-            this.slotsList.add(new Slot(this, playerInventory, i4, 8 + i4 * 18, 142));
+            this.inventorySlots.add(new Slot(this, playerInventory, i4, 8 + i4 * 18, 142));
         }
 
     }
@@ -53,7 +53,7 @@ public final class GuiFurnace extends GuiContainer {
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.slotsList.get(i);
+        Slot slot = (Slot) this.inventorySlots.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
@@ -62,7 +62,7 @@ public final class GuiFurnace extends GuiContainer {
                     return null;
                 }
             } else if (i != 1 && i != 0) {
-                if (TileEntityFurnace.getRecipes(itemstack1.itemID) != -1) {
+                if (TileEntityFurnace.getSmeltingResult(itemstack1.itemID) != -1) {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
                         return null;
                     }

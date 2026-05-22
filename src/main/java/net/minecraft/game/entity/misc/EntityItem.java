@@ -25,9 +25,9 @@ public class EntityItem extends Entity {
 		this.setPosition(x, y, z);
 		this.item = stack;
 		this.rotationYaw = (float)(Math.random() * 360.0D);
-		this.motionZ = (double)((float)(Math.random() * (double)0.2F - (double)0.1F));
-		this.motionY = (double)0.2F;
 		this.motionX = (double)((float)(Math.random() * (double)0.2F - (double)0.1F));
+		this.motionY = (double)0.2F;
+		this.motionZ = (double)((float)(Math.random() * (double)0.2F - (double)0.1F));
 		this.canTriggerWalking = false;
 	}
 
@@ -49,8 +49,8 @@ public class EntityItem extends Entity {
 		this.motionY -= (double)0.04F;
 		if(this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) == Material.lava) {
 			this.motionY = (double)0.2F;
-			this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
 			this.motionX = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
+			this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
 			this.worldObj.playSoundAtEntity(this, "random.fizz", 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
 		}
 
@@ -103,11 +103,11 @@ public class EntityItem extends Entity {
 
 			float f27 = this.rand.nextFloat() * 0.2F + 0.1F;
 			if(b30 == 0) {
-				this.motionZ = (double)(-f27);
+				this.motionX = (double)(-f27);
 			}
 
 			if(b30 == 1) {
-				this.motionZ = (double)f27;
+				this.motionX = (double)f27;
 			}
 
 			if(b30 == 2) {
@@ -119,23 +119,23 @@ public class EntityItem extends Entity {
 			}
 
 			if(b30 == 4) {
-				this.motionX = (double)(-f27);
+				this.motionZ = (double)(-f27);
 			}
 
 			if(b30 == 5) {
-				this.motionX = (double)f27;
+				this.motionZ = (double)f27;
 			}
 		}
 
 		boolean z10000 = false;
         this.handleWaterMovement();
-		this.moveEntity(this.motionZ, this.motionY, this.motionX);
-		this.motionZ *= (double)0.98F;
-		this.motionY *= (double)0.98F;
+		this.moveEntity(this.motionX, this.motionY, this.motionZ);
 		this.motionX *= (double)0.98F;
+		this.motionY *= (double)0.98F;
+		this.motionZ *= (double)0.98F;
 		if(this.onGround) {
-			this.motionZ *= (double)0.7F;
 			this.motionX *= (double)0.7F;
+			this.motionZ *= (double)0.7F;
 			this.motionY *= -0.5D;
 		}
 
@@ -151,7 +151,7 @@ public class EntityItem extends Entity {
         return this.worldObj.handleMaterialAcceleration(this.boundingBox, Material.water, this);
     }
 
-	protected final void dealFireDamage(int fireDamage) {
+	protected final void dealFireDamage(int damage) {
 		this.attackEntityFrom((Entity)null, 1);
 	}
 

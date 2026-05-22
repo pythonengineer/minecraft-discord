@@ -4,6 +4,6 @@ import net.minecraft.game.world.material.Material;
 
 public final class BlockDirt extends Block {
     protected BlockDirt(int blockID, int textureIndex) {
-        super(3, 2, Material.grassMaterial);
+        super(3, 2, Material.ground);
     }
 }

@@ -1,6 +1,7 @@
 package net.minecraft.client.render;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
@@ -21,7 +22,7 @@ public final class WorldRenderer {
 	private World worldObj;
 	private int glRenderList = -1;
 	private static Tessellator tessellator = Tessellator.instance;
-	public static int chunkUpdates = 0;
+	public static int chunksUpdated = 0;
 	private int posX;
 	private int posY;
 	private int posZ;
@@ -34,7 +35,7 @@ public final class WorldRenderer {
 	private int posXClip;
 	private int posYClip;
 	private int posZClip;
-	public boolean isInFrustrum = false;
+	public boolean isInFrustum = false;
     public boolean[] skipRenderPass = new boolean[2];
 	private int posXPlus;
 	private int posYPlus;
@@ -47,9 +48,11 @@ public final class WorldRenderer {
 	public boolean isChunkLit;
     private boolean isInitialized = false;
 	public List tileEntityRenderers = new ArrayList();
+    private List tileEntities;
 
-	public WorldRenderer(World world, int x, int y, int z, int unusedInt, int glRenderList) {
+	public WorldRenderer(World world, List tileEntities, int x, int y, int z, int unusedInt, int glRenderList) {
 		this.worldObj = world;
+        this.tileEntities = tileEntities;
 		this.sizeWidth = this.sizeHeight = this.sizeDepth = 16;
 		MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth));
 		this.glRenderList = glRenderList;
@@ -78,30 +81,30 @@ public final class WorldRenderer {
 			AxisAlignedBB x1 = new AxisAlignedBB((double)((float)this.posXClip - 2.0F), (double)((float)this.posYClip - 2.0F), (double)((float)this.posZClip - 2.0F), (double)((float)(this.posXClip + this.sizeWidth) + 2.0F), (double)((float)(this.posYClip + this.sizeHeight) + 2.0F), (double)((float)(this.posZClip + this.sizeDepth) + 2.0F));
 			Tessellator y1 = Tessellator.instance;
 			Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION);
-			y1.drawVertex(x1.minX, x1.maxY, x1.minZ);
-			y1.drawVertex(x1.maxX, x1.maxY, x1.minZ);
-			y1.drawVertex(x1.maxX, x1.minY, x1.minZ);
-			y1.drawVertex(x1.minX, x1.minY, x1.minZ);
-			y1.drawVertex(x1.minX, x1.minY, x1.maxZ);
-			y1.drawVertex(x1.maxX, x1.minY, x1.maxZ);
-			y1.drawVertex(x1.maxX, x1.maxY, x1.maxZ);
-			y1.drawVertex(x1.minX, x1.maxY, x1.maxZ);
-			y1.drawVertex(x1.minX, x1.minY, x1.minZ);
-			y1.drawVertex(x1.maxX, x1.minY, x1.minZ);
-			y1.drawVertex(x1.maxX, x1.minY, x1.maxZ);
-			y1.drawVertex(x1.minX, x1.minY, x1.maxZ);
-			y1.drawVertex(x1.minX, x1.maxY, x1.maxZ);
-			y1.drawVertex(x1.maxX, x1.maxY, x1.maxZ);
-			y1.drawVertex(x1.maxX, x1.maxY, x1.minZ);
-			y1.drawVertex(x1.minX, x1.maxY, x1.minZ);
-			y1.drawVertex(x1.minX, x1.minY, x1.maxZ);
-			y1.drawVertex(x1.minX, x1.maxY, x1.maxZ);
-			y1.drawVertex(x1.minX, x1.maxY, x1.minZ);
-			y1.drawVertex(x1.minX, x1.minY, x1.minZ);
-			y1.drawVertex(x1.maxX, x1.minY, x1.minZ);
-			y1.drawVertex(x1.maxX, x1.maxY, x1.minZ);
-			y1.drawVertex(x1.maxX, x1.maxY, x1.maxZ);
-			y1.drawVertex(x1.maxX, x1.minY, x1.maxZ);
+			y1.addVertex(x1.minX, x1.maxY, x1.minZ);
+			y1.addVertex(x1.maxX, x1.maxY, x1.minZ);
+			y1.addVertex(x1.maxX, x1.minY, x1.minZ);
+			y1.addVertex(x1.minX, x1.minY, x1.minZ);
+			y1.addVertex(x1.minX, x1.minY, x1.maxZ);
+			y1.addVertex(x1.maxX, x1.minY, x1.maxZ);
+			y1.addVertex(x1.maxX, x1.maxY, x1.maxZ);
+			y1.addVertex(x1.minX, x1.maxY, x1.maxZ);
+			y1.addVertex(x1.minX, x1.minY, x1.minZ);
+			y1.addVertex(x1.maxX, x1.minY, x1.minZ);
+			y1.addVertex(x1.maxX, x1.minY, x1.maxZ);
+			y1.addVertex(x1.minX, x1.minY, x1.maxZ);
+			y1.addVertex(x1.minX, x1.maxY, x1.maxZ);
+			y1.addVertex(x1.maxX, x1.maxY, x1.maxZ);
+			y1.addVertex(x1.maxX, x1.maxY, x1.minZ);
+			y1.addVertex(x1.minX, x1.maxY, x1.minZ);
+			y1.addVertex(x1.minX, x1.minY, x1.maxZ);
+			y1.addVertex(x1.minX, x1.maxY, x1.maxZ);
+			y1.addVertex(x1.minX, x1.maxY, x1.minZ);
+			y1.addVertex(x1.minX, x1.minY, x1.minZ);
+			y1.addVertex(x1.maxX, x1.minY, x1.minZ);
+			y1.addVertex(x1.maxX, x1.maxY, x1.minZ);
+			y1.addVertex(x1.maxX, x1.maxY, x1.maxZ);
+			y1.addVertex(x1.maxX, x1.minY, x1.maxZ);
 			y1.draw();
 			GL11.glEndList();
 			this.needsUpdate = true;
@@ -112,7 +115,7 @@ public final class WorldRenderer {
         if(!this.needsUpdate) {
             return true;
         } else {
-			++chunkUpdates;
+			++chunksUpdated;
 			int i1 = this.posX;
 			int i2 = this.posY;
 			int i3 = this.posZ;
@@ -125,6 +128,8 @@ public final class WorldRenderer {
 			}
 
 			Chunk.isLit = false;
+            HashSet hashSet19;
+            (hashSet19 = new HashSet()).addAll(this.tileEntityRenderers);
 			this.tileEntityRenderers.clear();
             ChunkCache chunkCache18 = new ChunkCache(this.worldObj, i1 - 1, i3 - 1, i4 + 1, i6 + 1);
             RenderBlocks renderBlocks8 = new RenderBlocks(chunkCache18);
@@ -187,6 +192,12 @@ public final class WorldRenderer {
                 }
             }
 
+            HashSet hashSet20;
+            (hashSet20 = new HashSet()).addAll(this.tileEntityRenderers);
+            hashSet20.removeAll(hashSet19);
+            this.tileEntities.addAll(hashSet20);
+            hashSet19.removeAll(this.tileEntityRenderers);
+            this.tileEntities.removeAll(hashSet19);
             this.isChunkLit = Chunk.isLit;
             this.isInitialized = true;
             return true;
@@ -205,7 +216,7 @@ public final class WorldRenderer {
 			this.skipRenderPass[i1] = true;
 		}
 
-        this.isInFrustrum = false;
+        this.isInFrustum = false;
         this.isInitialized = false;
 	}
 
@@ -215,11 +226,11 @@ public final class WorldRenderer {
 	}
 
 	public final int getGLCallListForPass(int pass) {
-		return !this.isInFrustrum ? -1 : (!this.skipRenderPass[pass] ? this.glRenderList + pass : -1);
+		return !this.isInFrustum ? -1 : (!this.skipRenderPass[pass] ? this.glRenderList + pass : -1);
 	}
 
 	public final void updateInFrustrum(Frustrum frustrum) {
-		this.isInFrustrum = frustrum.isBoundingBoxInFrustum(this.rendererBoundingBox);
+		this.isInFrustum = frustrum.isBoundingBoxInFrustum(this.rendererBoundingBox);
 	}
 
 	public final void callOcclusionQueryList() {

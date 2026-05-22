@@ -8,9 +8,9 @@ public final class EntityFlameFX extends EntityFX {
 
 	public EntityFlameFX(World world, double posX, double posY, double posZ, double speedX, double speedY, double speedZ) {
 		super(world, posX, posY, posZ, speedX, speedY, speedZ);
-        this.motionZ = this.motionZ * (double)0.01F + speedX;
+        this.motionX = this.motionX * (double)0.01F + speedX;
         this.motionY = this.motionY * (double)0.01F + speedY;
-        this.motionX = this.motionX * (double)0.01F + speedZ;
+        this.motionZ = this.motionZ * (double)0.01F + speedZ;
 		this.rand.nextFloat();
 		this.rand.nextFloat();
 		this.rand.nextFloat();
@@ -18,7 +18,7 @@ public final class EntityFlameFX extends EntityFX {
 		this.rand.nextFloat();
 		this.rand.nextFloat();
 		this.flameScale = this.particleScale;
-		this.particleBlue = this.particleGreen = this.particleRed = 1.0F;
+		this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
 		this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.2D)) + 4;
 		this.noClip = true;
 		this.particleTextureIndex = 48;
@@ -30,7 +30,7 @@ public final class EntityFlameFX extends EntityFX {
 		super.renderParticle(tessellator, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
 
-	public final float getEntityBrightness(float partialTicks) {
+	public final float getBrightness(float partialTicks) {
 		float f2;
 		if((f2 = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge) < 0.0F) {
 			f2 = 0.0F;

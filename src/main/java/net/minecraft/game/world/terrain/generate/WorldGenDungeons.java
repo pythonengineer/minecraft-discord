@@ -92,7 +92,7 @@ public final class WorldGenDungeons extends WorldGenerator {
 
                                 ItemStack itemStack15;
                                 if((itemStack15 = (i14 = random2.nextInt(10)) == 0 ? new ItemStack(Item.saddle) : (i14 == 1 ? new ItemStack(Item.ingotIron, random2.nextInt(4) + 1) : (i14 == 2 ? new ItemStack(Item.bread) : (i14 == 3 ? new ItemStack(Item.wheat, random2.nextInt(4) + 1) : (i14 == 4 ? new ItemStack(Item.gunpowder, random2.nextInt(4) + 1) : (i14 == 5 ? new ItemStack(Item.silk, random2.nextInt(4) + 1) : (i14 == 6 ? new ItemStack(Item.bucketEmpty) : (i14 == 7 && random2.nextInt(100) == 0 ? new ItemStack(Item.appleGold) : null)))))))) != null) {
-                                    tileEntityChest13.setInventorySlotContents(random2.nextInt(tileEntityChest13.getSizeInventory()), itemStack15);
+                                    tileEntityChest13.setInventorySlotContents(random2.nextInt(27), itemStack15);
                                 }
 
                                 ++i10;

@@ -6,43 +6,19 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.Tessellator;
 
-public final class LoadingScreenRenderer implements IProgressUpdate {
+public class LoadingScreenRenderer {
     private String currentlyDisplayedProgress = "";
     private Minecraft mc;
     private String currentlyDisplayedText = "";
     private long systemTime = EagRuntime.currentTimeMillis();
     private boolean printText = false;
 
-    public LoadingScreenRenderer(Minecraft minecraft) {
-        this.mc = minecraft;
-    }
-
-    public final void printText(String string1) {
-        this.printText = false;
-        this.drawScreen(string1);
-    }
-
-    public final void displayProgressMessage() {
+    public void displayProgressMessage() {
         this.printText = true;
         this.drawScreen(this.currentlyDisplayedText);
     }
 
-    private void drawScreen(String title) {
-        if(this.mc.running) {
-            this.currentlyDisplayedText = title;
-            int i2 = this.mc.scaledResolution.getScaledWidth();
-            int title2 = this.mc.scaledResolution.getScaledHeight();
-            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-            GL11.glMatrixMode(GL11.GL_PROJECTION);
-            GL11.glLoadIdentity();
-            GL11.glOrtho(0.0D, (double)i2, (double)title2, 0.0D, 100.0D, 300.0D);
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glLoadIdentity();
-            GL11.glTranslatef(0.0F, 0.0F, -200.0F);
-        }
-    }
-
-    public final void displayLoadingString(String loadingString) {
+    public void displayLoadingString(String loadingString) {
         if(this.mc.running) {
             this.systemTime = 0L;
             this.currentlyDisplayedProgress = loadingString;
@@ -51,7 +27,7 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
         }
     }
 
-    public final void setLoadingProgress(int loadingProgress) {
+    public void setLoadingProgress(int loadingProgress) {
         if(this.mc.running) {
             long j2;
             if((j2 = EagRuntime.currentTimeMillis()) - this.systemTime >= 20L) {
@@ -82,21 +58,21 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
                     tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
                     tessellator4.setColorOpaque_I(8421504);
-                    tessellator4.drawVertex((double)i5, (double)i6, 0.0D);
-                    tessellator4.drawVertex((double)i5, (double)(i6 + 2), 0.0D);
-                    tessellator4.drawVertex((double)(i5 + 100), (double)(i6 + 2), 0.0D);
-                    tessellator4.drawVertex((double)(i5 + 100), (double)i6, 0.0D);
+                    tessellator4.addVertex((double)i5, (double)i6, 0.0D);
+                    tessellator4.addVertex((double)i5, (double)(i6 + 2), 0.0D);
+                    tessellator4.addVertex((double)(i5 + 100), (double)(i6 + 2), 0.0D);
+                    tessellator4.addVertex((double)(i5 + 100), (double)i6, 0.0D);
                     tessellator4.setColorOpaque_I(8454016);
-                    tessellator4.drawVertex((double)i5, (double)i6, 0.0D);
-                    tessellator4.drawVertex((double)i5, (double)(i6 + 2), 0.0D);
-                    tessellator4.drawVertex((double)(i5 + loadingProgress), (double)(i6 + 2), 0.0D);
-                    tessellator4.drawVertex((double)(i5 + loadingProgress), (double)i6, 0.0D);
+                    tessellator4.addVertex((double)i5, (double)i6, 0.0D);
+                    tessellator4.addVertex((double)i5, (double)(i6 + 2), 0.0D);
+                    tessellator4.addVertex((double)(i5 + loadingProgress), (double)(i6 + 2), 0.0D);
+                    tessellator4.addVertex((double)(i5 + loadingProgress), (double)i6, 0.0D);
                     tessellator4.draw();
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }
 
-                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedText, (i3 - this.mc.fontRenderer.width(this.currentlyDisplayedText)) / 2, i9 / 2 - 4 - 16, 0xFFFFFF);
-                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedProgress, (i3 - this.mc.fontRenderer.width(this.currentlyDisplayedProgress)) / 2, i9 / 2 - 4 + 8, 0xFFFFFF);
+                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedText, (i3 - this.mc.fontRenderer.getStringWidth(this.currentlyDisplayedText)) / 2, i9 / 2 - 4 - 16, 0xFFFFFF);
+                this.mc.fontRenderer.drawStringWithShadow(this.currentlyDisplayedProgress, (i3 - this.mc.fontRenderer.getStringWidth(this.currentlyDisplayedProgress)) / 2, i9 / 2 - 4 + 8, 0xFFFFFF);
                 Display.update();
 
                 try {
@@ -104,6 +80,30 @@ public final class LoadingScreenRenderer implements IProgressUpdate {
                 } catch (Exception exception7) {
                 }
             }
+        }
+    }
+
+    public LoadingScreenRenderer(Minecraft minecraft) {
+        this.mc = minecraft;
+    }
+
+    public final void printText(String string1) {
+        this.printText = false;
+        this.drawScreen(string1);
+    }
+
+    private void drawScreen(String title) {
+        if(this.mc.running) {
+            this.currentlyDisplayedText = title;
+            int i2 = this.mc.scaledResolution.getScaledWidth();
+            int title2 = this.mc.scaledResolution.getScaledHeight();
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(0.0D, (double)i2, (double)title2, 0.0D, 100.0D, 300.0D);
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            GL11.glTranslatef(0.0F, 0.0F, -200.0F);
         }
     }
 }

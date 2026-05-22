@@ -88,7 +88,7 @@ public enum EnumTouchControl {
                 if (mc.thePlayer != null) {
                     mc.setIngameFocus();
                 } else if(mc.currentScreen != null) {
-                    mc.setGuiScreen(null);
+                    mc.displayGuiScreen(null);
                 }
             }
         }

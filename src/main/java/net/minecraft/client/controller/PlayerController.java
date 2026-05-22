@@ -57,7 +57,7 @@ public class PlayerController {
     public void flipPlayer(EntityPlayer playerEntity) {
     }
 
-	public void updateController() {
+	public void onUpdate() {
 	}
 
 	public boolean shouldDrawHUD() {

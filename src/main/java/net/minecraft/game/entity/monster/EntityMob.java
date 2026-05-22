@@ -32,7 +32,7 @@ public class EntityMob extends EntityCreature {
 	}
 
 	protected Entity findPlayerToAttack() {
-		return this.worldObj.playerEntity.getDistanceToEntity(this) < 256.0D && this.getClosestPlayerToEntity(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
+		return this.worldObj.playerEntity.getDistanceSqToEntity(this) < 256.0D && this.canEntityBeSeen(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
 	}
 
 	public final boolean attackEntityFrom(Entity entity, int damage) {

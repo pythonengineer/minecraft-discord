@@ -97,11 +97,15 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 	}
 
 	public final int getCookProgressScaled(int scale) {
-		return this.furnaceCookTime * 24 / 200;
+		return this.furnaceCookTime * scale / 200;
 	}
 
 	public final int getBurnTimeRemainingScaled(int scale) {
-		return this.furnaceBurnTime * 12 / this.currentItemBurnTime;
+        if(this.currentItemBurnTime == 0) {
+            this.currentItemBurnTime = 200;
+        }
+
+		return this.furnaceBurnTime * scale / this.currentItemBurnTime;
 	}
 
 	public final boolean isBurning() {
@@ -134,7 +138,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 			if(this.furnaceCookTime == 200) {
 				this.furnaceCookTime = 0;
 				if(this.canSmelt()) {
-                    int i4 = getRecipes(this.furnaceItemStacks[0].getItem().shiftedIndex);
+                    int i4 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
                     if(this.furnaceItemStacks[2] == null) {
                         this.furnaceItemStacks[2] = new ItemStack(i4, 1);
                     } else if(this.furnaceItemStacks[2].itemID == i4) {
@@ -182,16 +186,16 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 	private boolean canSmelt() {
 		int i1;
 		ItemStack itemStack2;
-		return this.furnaceItemStacks[0] == null ? false : ((i1 = getRecipes(this.furnaceItemStacks[0].getItem().shiftedIndex)) < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != i1 ? false : (this.furnaceItemStacks[2].stackSize < 64 && this.furnaceItemStacks[2].stackSize < (itemStack2 = this.furnaceItemStacks[2]).getItem().getItemStackLimit() ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[i1].getItemStackLimit()))));
+		return this.furnaceItemStacks[0] == null ? false : ((i1 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex)) < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != i1 ? false : (this.furnaceItemStacks[2].stackSize < 64 && this.furnaceItemStacks[2].stackSize < (itemStack2 = this.furnaceItemStacks[2]).getItem().getItemStackLimit() ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[i1].getItemStackLimit()))));
 	}
 
-	public static int getRecipes(int shiftedIndex) {
+	public static int getSmeltingResult(int shiftedIndex) {
 		return shiftedIndex == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (shiftedIndex == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (shiftedIndex == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (shiftedIndex == Block.sand.blockID ? Block.glass.blockID : (shiftedIndex == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (shiftedIndex == Block.cobblestone.blockID ? Block.stone.blockID : -1)))));
 	}
 
 	private static int getItemBurnTime(ItemStack stack) {
 		int stack1;
-		return stack == null ? 0 : ((stack1 = stack.getItem().shiftedIndex) < 256 && Block.blocksList[stack1].blockMaterial == Material.ground ? 300 : (stack1 == Item.stick.shiftedIndex ? 100 : (stack1 == Item.coal.shiftedIndex ? 1600 : 0)));
+		return stack == null ? 0 : ((stack1 = stack.getItem().shiftedIndex) < 256 && Block.blocksList[stack1].blockMaterial == Material.wood ? 300 : (stack1 == Item.stick.shiftedIndex ? 100 : (stack1 == Item.coal.shiftedIndex ? 1600 : 0)));
 	}
 
 	public final void onInventoryChanged() {

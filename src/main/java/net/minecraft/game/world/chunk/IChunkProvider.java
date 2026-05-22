@@ -1,6 +1,6 @@
 package net.minecraft.game.world.chunk;
 
-import net.minecraft.client.IProgressUpdate;
+import net.minecraft.client.LoadingScreenRenderer;
 
 public interface IChunkProvider {
     boolean chunkExists(int i1, int i2);
@@ -9,7 +9,7 @@ public interface IChunkProvider {
 
     void populate(IChunkProvider iChunkProvider1, int i2, int i3);
 
-    boolean saveChunks(boolean z1, IProgressUpdate iProgressUpdate2);
+    boolean saveChunks(boolean z1, LoadingScreenRenderer loadingScreenRenderer);
 
     boolean canSave();
 }

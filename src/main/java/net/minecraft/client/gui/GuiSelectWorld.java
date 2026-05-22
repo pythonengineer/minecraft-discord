@@ -16,7 +16,7 @@ public class GuiSelectWorld extends GuiScreen {
 	public final void initGui() {
 		for(int i2 = 0; i2 < 5; ++i2) {
 			NBTTagCompound nBTTagCompound3;
-			if((nBTTagCompound3 = World.saveWorldFile("World" + (i2 + 1))) == null) {
+			if((nBTTagCompound3 = World.getLevelData("World" + (i2 + 1))) == null) {
 				this.controlList.add(new GuiButton(i2, this.width / 2 - 100, this.height / 6 + i2 * 24, "- empty -"));
 			} else {
 				String string4 = "World " + (i2 + 1);
@@ -26,14 +26,14 @@ public class GuiSelectWorld extends GuiScreen {
 			}
 		}
 
-		this.buttons();
+		this.initButtons();
 	}
 
-	protected static String getWorldName(int worldIndex) {
-		return World.saveWorldFile("World" + worldIndex) != null ? "World" + worldIndex : null;
+	protected static String getSaveFileName(int worldIndex) {
+		return World.getLevelData("World" + worldIndex) != null ? "World" + worldIndex : null;
 	}
 
-	public void buttons() {
+	public void initButtons() {
 		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, "Delete world..."));
 		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
 	}
@@ -43,10 +43,10 @@ public class GuiSelectWorld extends GuiScreen {
 			if(button.id < 5) {
 				this.actionWorld(button.id + 1);
 			} else if(button.id == 5) {
-				this.mc.setGuiScreen(new GuiDeleteWorld(this));
+				this.mc.displayGuiScreen(new GuiDeleteWorld(this));
 			} else {
 				if(button.id == 6) {
-					this.mc.setGuiScreen(this.currentScreen);
+					this.mc.displayGuiScreen(this.currentScreen);
 				}
 
 			}
@@ -54,11 +54,11 @@ public class GuiSelectWorld extends GuiScreen {
 	}
 
 	public void actionWorld(int worldIndex) {
-		this.mc.setGuiScreen((GuiScreen)null);
+		this.mc.displayGuiScreen((GuiScreen)null);
 		if(!this.selected) {
 			this.selected = true;
 			this.mc.startWorld("World" + worldIndex);
-			this.mc.setGuiScreen((GuiScreen)null);
+			this.mc.displayGuiScreen((GuiScreen)null);
 		}
 	}
 

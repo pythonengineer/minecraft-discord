@@ -9,7 +9,7 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public final class RenderFallingSand extends Render {
-    private RenderBlocks renderBlocks = new RenderBlocks();
+    private RenderBlocks sandRenderBlocks = new RenderBlocks();
 
     public RenderFallingSand() {
         this.shadowSize = 0.5F;
@@ -25,7 +25,7 @@ public final class RenderFallingSand extends Render {
         Block block3 = Block.blocksList[x1.blockID];
         World y1 = x1.getWorld();
         GL11.glDisable(GL11.GL_LIGHTING);
-        this.renderBlocks.renderBlockFallingSand(block3, y1, MathHelper.floor_double(x1.posX), MathHelper.floor_double(x1.posY), MathHelper.floor_double(x1.posZ));
+        this.sandRenderBlocks.renderBlockFallingSand(block3, y1, MathHelper.floor_double(x1.posX), MathHelper.floor_double(x1.posY), MathHelper.floor_double(x1.posZ));
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glPopMatrix();
     }

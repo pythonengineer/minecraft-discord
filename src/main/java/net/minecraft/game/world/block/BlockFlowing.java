@@ -29,7 +29,7 @@ public final class BlockFlowing extends BlockFluid {
 			i8 = this.getSmallestFlowDecay(world, x - 1, y, z, -100);
 			i8 = this.getSmallestFlowDecay(world, x + 1, y, z, i8);
 			i8 = this.getSmallestFlowDecay(world, x, y, z - 1, i8);
-			if((i9 = (i8 = this.getSmallestFlowDecay(world, x, y, z + 1, i8)) + this.liquidType) >= 8 || i8 < 0) {
+			if((i9 = (i8 = this.getSmallestFlowDecay(world, x, y, z + 1, i8)) + this.fluidType) >= 8 || i8 < 0) {
 				i9 = -1;
 			}
 
@@ -124,7 +124,7 @@ public final class BlockFlowing extends BlockFluid {
 				}
 
 				boolean[] z16 = blockFlowing14.isOptimalFlowDirection;
-				i9 = i6 + this.liquidType;
+				i9 = i6 + this.fluidType;
 				if(i6 >= 8) {
 					i9 = 1;
 				}
@@ -160,7 +160,7 @@ public final class BlockFlowing extends BlockFluid {
                 if(this.blockMaterial == Material.lava) {
                     triggerLavaMixEffects(world, x, y, z);
                 } else {
-                    Block.blocksList[i6].harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+                    Block.blocksList[i6].dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
                 }
             }
 

@@ -15,7 +15,7 @@ public final class ItemSeeds extends Item {
 	public final boolean onItemUse(ItemStack stack, EntityPlayer playerEntity, World world, int x, int y, int z, int side) {
 		if(side != 1) {
 			return false;
-		} else if(world.getBlockId(x, y, z) == Block.farmland.blockID) {
+		} else if(world.getBlockId(x, y, z) == Block.tilledField.blockID) {
 			world.setBlockWithNotify(x, y + 1, z, this.blockType);
 			--stack.stackSize;
 			return true;

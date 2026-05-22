@@ -6,8 +6,8 @@ public final class MovementInputFromOptions extends MovementInput {
     private boolean[] movementKeyStates = new boolean[10];
     private GameSettings gameSettings;
 
-    public MovementInputFromOptions(GameSettings options) {
-        this.gameSettings = options;
+    public MovementInputFromOptions(GameSettings gameSettings) {
+        this.gameSettings = gameSettings;
     }
 
     public final void checkKeyForMovementInput(int keyState, boolean isMovementInput) {
@@ -38,7 +38,7 @@ public final class MovementInputFromOptions extends MovementInput {
 
     }
 
-    public final void resetPlayerKeyState() {
+    public final void resetKeyState() {
         for(int i1 = 0; i1 < 10; ++i1) {
             this.movementKeyStates[i1] = false;
         }

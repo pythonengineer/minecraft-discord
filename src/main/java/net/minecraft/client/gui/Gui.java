@@ -18,16 +18,16 @@ public class Gui {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(var6, var7, var9, var5);
         var8.startDrawingQuads(DefaultVertexFormats.POSITION);
-        var8.drawVertex((double)var0, (double)var3, 0.0D);
-        var8.drawVertex((double)var2, (double)var3, 0.0D);
-        var8.drawVertex((double)var2, (double)var1, 0.0D);
-        var8.drawVertex((double)var0, (double)var1, 0.0D);
+        var8.addVertex((double)var0, (double)var3, 0.0D);
+        var8.addVertex((double)var2, (double)var3, 0.0D);
+        var8.addVertex((double)var2, (double)var1, 0.0D);
+        var8.addVertex((double)var0, (double)var1, 0.0D);
         var8.draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    protected static void drawGradient(int left, int top, int right, int bottom, int startColor, int endColor) {
+    protected static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
         float f6 = (float)(startColor >>> 24) / 255.0F;
         float f7 = (float)(startColor >> 16 & 255) / 255.0F;
         float f8 = (float)(startColor >> 8 & 255) / 255.0F;
@@ -43,11 +43,11 @@ public class Gui {
         Tessellator tessellator12 = Tessellator.instance;
         Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
         tessellator12.setColorRGBA_F(f7, f8, startColor1, f6);
-        tessellator12.drawVertex((double)right, (double)top, 0.0D);
-        tessellator12.drawVertex((double)left, (double)top, 0.0D);
+        tessellator12.addVertex((double)right, (double)top, 0.0D);
+        tessellator12.addVertex((double)left, (double)top, 0.0D);
         tessellator12.setColorRGBA_F(f10, f11, endColor1, f9);
-        tessellator12.drawVertex((double)left, (double)bottom, 0.0D);
-        tessellator12.drawVertex((double)right, (double)bottom, 0.0D);
+        tessellator12.addVertex((double)left, (double)bottom, 0.0D);
+        tessellator12.addVertex((double)right, (double)bottom, 0.0D);
         tessellator12.draw();
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -55,7 +55,7 @@ public class Gui {
     }
 
     public static void drawCenteredString(FontRenderer fontRenderer, String message, int x, int y, int color) {
-        fontRenderer.drawStringWithShadow(message, x - fontRenderer.width(message) / 2, y, color);
+        fontRenderer.drawStringWithShadow(message, x - fontRenderer.getStringWidth(message) / 2, y, color);
     }
 
     public static void drawString(FontRenderer fontRenderer, String message, int x, int y, int color) {

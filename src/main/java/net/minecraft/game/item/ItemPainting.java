@@ -31,7 +31,7 @@ public final class ItemPainting extends Item {
 
 			EntityPainting entityPainting9;
 			if((entityPainting9 = new EntityPainting(world, x, y, z, b8)).onValidSurface()) {
-				world.entityJoinedWorld(entityPainting9);
+				world.spawnEntityInWorld(entityPainting9);
 				--stack.stackSize;
 			}
 

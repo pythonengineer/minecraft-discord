@@ -7,9 +7,9 @@ import net.minecraft.game.world.material.Material;
 public final class EntityBubbleFX extends EntityFX {
 	public EntityBubbleFX(World world1, double d2, double d4, double d6, double d8, double d10, double d12) {
 		super(world1, d2, d4, d6, d8, d10, d12);
-		this.particleBlue = 1.0F;
-		this.particleGreen = 1.0F;
 		this.particleRed = 1.0F;
+		this.particleGreen = 1.0F;
+		this.particleBlue = 1.0F;
 		this.particleTextureIndex = 32;
 		this.setSize(0.02F, 0.02F);
 		this.particleScale *= this.rand.nextFloat() * 0.6F + 0.2F;

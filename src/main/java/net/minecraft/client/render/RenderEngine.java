@@ -16,7 +16,7 @@ import net.minecraft.client.render.texture.TextureFX;
 
 public class RenderEngine {
     private HashMap textureMap = new HashMap();
-    private HashMap textureNameToImageMap = new HashMap();
+    private HashMap textureContentsMap = new HashMap();
     private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
     private ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
     private List textureList = new ArrayList();
@@ -106,7 +106,7 @@ public class RenderEngine {
                 GL11.glGenTextures(this.singleIntBuffer);
                 int i5 = this.singleIntBuffer.get(0);
                 this.setupTexture(bufferedImage, i5);
-                this.textureNameToImageMap.put(Integer.valueOf(i5), bufferedImage);
+                this.textureContentsMap.put(Integer.valueOf(i5), bufferedImage);
                 url1.textureName = i5;
             } else {
                 this.setupTexture(url1.image, url1.textureName);
@@ -136,7 +136,7 @@ public class RenderEngine {
             if(threadDownloadImageData.referenceCount == 0) {
                 if(threadDownloadImageData.textureName >= 0) {
                     int i3 = threadDownloadImageData.textureName;
-                    this.textureNameToImageMap.remove(Integer.valueOf(i3));
+                    this.textureContentsMap.remove(Integer.valueOf(i3));
                     this.singleIntBuffer.clear();
                     this.singleIntBuffer.put(i3);
                     this.singleIntBuffer.flip();
@@ -179,13 +179,13 @@ public class RenderEngine {
     }
 
     public final void refreshTextures() {
-        Iterator iterator1 = this.textureNameToImageMap.keySet().iterator();
+        Iterator iterator1 = this.textureContentsMap.keySet().iterator();
 
         int i2;
         ImageData bufferedImage;
         while(iterator1.hasNext()) {
             i2 = ((Integer)iterator1.next()).intValue();
-            bufferedImage = (ImageData)this.textureNameToImageMap.get(Integer.valueOf(i2));
+            bufferedImage = (ImageData)this.textureContentsMap.get(Integer.valueOf(i2));
             this.setupTexture(bufferedImage, i2);
         }
 

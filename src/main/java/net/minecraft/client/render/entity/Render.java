@@ -39,7 +39,7 @@ public abstract class Render {
 		this.renderManager = renderManager;
 	}
 
-	public final void doRenderShadowAndFire(Entity entity, double x, double y, double z, float partialTicks) {
+	public final void renderShadow(Entity entity, double x, double y, double z, float partialTicks) {
         float f20;
         int i88;
         int i89;

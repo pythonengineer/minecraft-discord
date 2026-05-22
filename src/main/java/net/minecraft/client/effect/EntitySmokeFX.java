@@ -15,7 +15,7 @@ public final class EntitySmokeFX extends EntityFX {
 		this.motionX *= (double)0.1F;
 		this.motionY *= (double)0.1F;
 		this.motionZ *= (double)0.1F;
-		this.particleBlue = this.particleGreen = this.particleRed = (float)(Math.random() * (double)0.3F);
+		this.particleRed = this.particleGreen = this.particleBlue = (float)(Math.random() * (double)0.3F);
 		this.particleScale *= 0.75F;
 		this.particleScale *= scaleMultiplier;
 		this.smokeParticleScale = this.particleScale;

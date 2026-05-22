@@ -8,18 +8,18 @@ import net.minecraft.game.world.path.PathEntity;
 public class EntityCreature extends EntityLiving {
 	private PathEntity pathToEntity;
 	protected Entity playerToAttack;
-	protected boolean powered = false;
+	protected boolean hasAttacked = false;
 
 	public EntityCreature(World world1) {
 		super(world1);
 	}
 
-	protected final boolean getClosestPlayerToEntity(Entity entity) {
+	protected final boolean canEntityBeSeen(Entity entity) {
 		return this.worldObj.rayTraceBlocks(new Vec3D(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), new Vec3D(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
 	}
 
-	protected void updatePlayerActionState() {
-		this.powered = false;
+	public void updatePlayerActionState() {
+		this.hasAttacked = false;
         float f1;
         if(this.playerToAttack == null) {
             this.playerToAttack = this.findPlayerToAttack();
@@ -34,36 +34,38 @@ public class EntityCreature extends EntityLiving {
             float f21 = (float)(entity6.posY - super.posY);
             float f22 = (float)(entity6.posZ - super.posZ);
             f1 = MathHelper.sqrt_float(f20 * f20 + f21 * f21 + f22 * f22);
-            if(this.getClosestPlayerToEntity(this.playerToAttack)) {
+            if(this.canEntityBeSeen(this.playerToAttack)) {
                 this.attackEntity(this.playerToAttack, f1);
             }
         }
 
         int i31;
-        if(!this.powered && this.playerToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
-            this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, 16.0F);
-        } else if(this.pathToEntity == null || this.rand.nextInt(100) == 0) {
-            i31 = -1;
-            int i2 = -1;
-            int i3 = -1;
-            float f4 = -99999.0F;
+        if(this.hasAttacked || this.playerToAttack == null || this.pathToEntity != null && this.rand.nextInt(20) != 0) {
+            if(this.pathToEntity == null || this.rand.nextInt(100) == 0) {
+                i31 = -1;
+                int i2 = -1;
+                int i3 = -1;
+                float f4 = -99999.0F;
 
-            for(int i5 = 0; i5 < 50; ++i5) {
-                int i36 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(11) - 5.0D);
-                int i7 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
-                int i8 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(11) - 5.0D);
-                float f9;
-                if((f9 = this.getBlockPathWeight(i36, i7, i8)) > f4) {
-                    f4 = f9;
-                    i31 = i36;
-                    i2 = i7;
-                    i3 = i8;
+                for(int i5 = 0; i5 < 50; ++i5) {
+                    int i36 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(11) - 5.0D);
+                    int i7 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
+                    int i8 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(11) - 5.0D);
+                    float f9;
+                    if((f9 = this.getBlockPathWeight(i36, i7, i8)) > f4) {
+                        f4 = f9;
+                        i31 = i36;
+                        i2 = i7;
+                        i3 = i8;
+                    }
+                }
+
+                if(i31 > 0) {
+                    this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i31, i2, i3, 16.0F);
                 }
             }
-
-            if(i31 > 0) {
-                this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i31, i2, i3, 16.0F);
-            }
+        } else {
+            this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, 16.0F);
         }
 
         i31 = MathHelper.floor_double(this.boundingBox.minY);
@@ -100,7 +102,7 @@ public class EntityCreature extends EntityLiving {
                 double d10 = vec3D34.yCoord - (double)i31;
                 this.rotationYaw = (float)(Math.atan2(d38, d37) * 180.0D / (double)(float)Math.PI) - 90.0F;
                 this.moveForward = this.moveSpeed;
-                if(this.powered && this.playerToAttack != null) {
+                if(this.hasAttacked && this.playerToAttack != null) {
                     double d12 = this.playerToAttack.posX - this.posX;
                     double d14 = this.playerToAttack.posZ - this.posZ;
                     f1 = this.rotationYaw;

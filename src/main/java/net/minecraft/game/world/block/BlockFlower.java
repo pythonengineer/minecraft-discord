@@ -18,7 +18,7 @@ public class BlockFlower extends Block {
 	}
 
 	protected boolean canThisPlantGrowOnThisBlockID(int blockID) {
-		return blockID == Block.grass.blockID || blockID == Block.dirt.blockID || blockID == Block.farmland.blockID;
+		return blockID == Block.grass.blockID || blockID == Block.dirt.blockID || blockID == Block.tilledField.blockID;
 	}
 
 	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
@@ -32,7 +32,7 @@ public class BlockFlower extends Block {
 
 	private void checkFlowerChange(World world, int x, int y, int z) {
 		if(!this.canBlockStay(world, x, y, z)) {
-			this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
 			world.setBlockWithNotify(x, y, z, 0);
 		}
 

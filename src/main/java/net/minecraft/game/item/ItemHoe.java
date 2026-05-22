@@ -18,7 +18,7 @@ public final class ItemHoe extends Item {
         if((world.getBlockMaterial(x, y + 1, z).isSolid() || i10 != Block.grass.blockID) && i10 != Block.dirt.blockID) {
             return false;
         } else {
-            Block block13 = Block.farmland;
+            Block block13 = Block.tilledField;
             double d10001 = (double)((float)x + 0.5F);
             double d10002 = (double)((float)y + 0.5F);
             double d10003 = (double)((float)z + 0.5F);
@@ -35,7 +35,7 @@ public final class ItemHoe extends Item {
                     float f14 = world.rand.nextFloat() * 0.7F + 0.15F;
                     EntityItem entityItem12;
                     (entityItem12 = new EntityItem(world, (double)((float)x + f11), (double)((float)y + 1.2F), (double)((float)z + f14), new ItemStack(Item.seeds))).delayBeforeCanPickup = 10;
-                    world.entityJoinedWorld(entityItem12);
+                    world.spawnEntityInWorld(entityItem12);
                 }
             }
 

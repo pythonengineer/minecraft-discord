@@ -26,8 +26,8 @@ public final class PlayerControllerSP extends PlayerController {
     private float prevBlockDamage = 0.0F;
     private float blockDestroySoundCounter = 0.0F;
     private int blockHitWait = 0;
-    private SpawnerAnimals spawnerMonsters = new SpawnerMonsters(this, 100, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
-    private SpawnerAnimals spawnerAnimals = new SpawnerAnimals(20, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class});
+    private SpawnerAnimals monsterSpawner = new SpawnerMonsters(this, 100, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
+    private SpawnerAnimals animalSpawner = new SpawnerAnimals(20, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class});
 
     public PlayerControllerSP(Minecraft minecraft1) {
         super(minecraft1);
@@ -46,12 +46,12 @@ public final class PlayerControllerSP extends PlayerController {
         if((itemStack9 = this.mc.thePlayer.inventory.getCurrentItem()) != null) {
             Item.itemsList[itemStack9.itemID].onBlockDestroyed(itemStack9);
             if(itemStack9.stackSize == 0) {
-                this.mc.thePlayer.destroyCurrentEquippedItem();
+                this.mc.thePlayer.displayGUIInventory();
             }
         }
 
         if(z6 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[i4])) {
-            Block.blocksList[i4].harvestBlock(this.mc.theWorld, x, y, z, i5);
+            Block.blocksList[i4].dropBlockAsItem(this.mc.theWorld, x, y, z, i5);
         }
 
         return z6;
@@ -129,9 +129,9 @@ public final class PlayerControllerSP extends PlayerController {
         return 4.0F;
     }
 
-    public final void updateController() {
+    public final void onUpdate() {
         this.prevBlockDamage = this.curBlockDamage;
-        this.spawnerMonsters.doRandomSpawn(this.mc.theWorld);
-        this.spawnerAnimals.doRandomSpawn(this.mc.theWorld);
+        this.monsterSpawner.onUpdate(this.mc.theWorld);
+        this.animalSpawner.onUpdate(this.mc.theWorld);
     }
 }

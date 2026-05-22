@@ -16,7 +16,7 @@ public final class BlockChest extends BlockContainer {
 	private EaglercraftRandom random = new EaglercraftRandom();
 
 	protected BlockChest(int blockID) {
-		super(54, Material.ground);
+		super(54, Material.wood);
 		this.blockIndexInTexture = 26;
 	}
 
@@ -154,10 +154,10 @@ public final class BlockChest extends BlockContainer {
 
 					itemStack7.stackSize -= i11;
 					EntityItem entityItem12;
-					(entityItem12 = new EntityItem(world, (double)((float)x + f8), (double)((float)y + f9), (double)((float)z + f10), new ItemStack(itemStack7.itemID, i11, itemStack7.itemDamage))).motionZ = (double)((float)this.random.nextGaussian() * 0.05F);
+					(entityItem12 = new EntityItem(world, (double)((float)x + f8), (double)((float)y + f9), (double)((float)z + f10), new ItemStack(itemStack7.itemID, i11, itemStack7.itemDmg))).motionX = (double)((float)this.random.nextGaussian() * 0.05F);
 					entityItem12.motionY = (double)((float)this.random.nextGaussian() * 0.05F + 0.2F);
-					entityItem12.motionX = (double)((float)this.random.nextGaussian() * 0.05F);
-					world.entityJoinedWorld(entityItem12);
+					entityItem12.motionZ = (double)((float)this.random.nextGaussian() * 0.05F);
+					world.spawnEntityInWorld(entityItem12);
 				}
 			}
 		}

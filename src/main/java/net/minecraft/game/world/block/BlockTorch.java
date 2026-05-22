@@ -107,7 +107,7 @@ public final class BlockTorch extends Block {
 			}
 
 			if(z6) {
-				this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+				this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
 				world.setBlockWithNotify(x, y, z, 0);
 			}
 		}
@@ -116,7 +116,7 @@ public final class BlockTorch extends Block {
 
 	private boolean checkIfAttachedToBlock(World world, int x, int y, int z) {
 		if(!this.canPlaceBlockAt(world, x, y, z)) {
-			this.harvestBlock(world, x, y, z, world.getBlockMetadata(x, y, z));
+			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
 			world.setBlockWithNotify(x, y, z, 0);
 			return false;
 		} else {

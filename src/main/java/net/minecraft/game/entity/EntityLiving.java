@@ -95,7 +95,7 @@ public class EntityLiving extends Entity {
 					float f2 = this.rand.nextFloat() - this.rand.nextFloat();
 					float f3 = this.rand.nextFloat() - this.rand.nextFloat();
 					float f4 = this.rand.nextFloat() - this.rand.nextFloat();
-					this.worldObj.spawnParticle("bubble", this.posX + (double)f2, this.posY + (double)f3, this.posZ + (double)f4, this.motionZ, this.motionY, this.motionX);
+					this.worldObj.spawnParticle("bubble", this.posX + (double)f2, this.posY + (double)f3, this.posZ + (double)f4, this.motionX, this.motionY, this.motionZ);
 				}
 
 				this.attackEntityFrom((Entity)null, 2);
@@ -279,12 +279,12 @@ public class EntityLiving extends Entity {
 				this.attackedAtYaw = (float)(Math.atan2(d5, d3) * 180.0D / (double)(float)Math.PI) - this.rotationYaw;
 				double d8 = d3;
 				float f12 = MathHelper.sqrt_double(d3 * d3 + d5 * d5);
-				this.motionZ /= 2.0D;
-				this.motionY /= 2.0D;
 				this.motionX /= 2.0D;
-				this.motionZ -= d8 / (double)f12 * (double)0.4F;
+				this.motionY /= 2.0D;
+				this.motionZ /= 2.0D;
+				this.motionX -= d8 / (double)f12 * (double)0.4F;
 				this.motionY += (double)0.4F;
-				this.motionX -= d5 / (double)f12 * (double)0.4F;
+				this.motionZ -= d5 / (double)f12 * (double)0.4F;
 				if(this.motionY > (double)0.4F) {
 					this.motionY = (double)0.4F;
 				}
@@ -321,7 +321,7 @@ public class EntityLiving extends Entity {
 			int i2 = this.rand.nextInt(3);
 
 			for(int i3 = 0; i3 < i2; ++i3) {
-				this.dropItemWithOffset(i4, 1);
+				this.dropItem(i4, 1);
 			}
 		}
 
@@ -331,7 +331,7 @@ public class EntityLiving extends Entity {
 		return 0;
 	}
 
-	protected final void updateFallen(float fallDistance) {
+	protected final void fall(float fallDistance) {
 		int fallDistance1;
 		if((fallDistance1 = (int)Math.ceil((double)(fallDistance - 3.0F))) > 0) {
 			this.attackEntityFrom((Entity)null, fallDistance1);
@@ -423,23 +423,23 @@ public class EntityLiving extends Entity {
 		if(this.handleWaterMovement()) {
 			d13 = this.posY;
 			this.moveFlying(f18, f19, 0.02F);
-			this.moveEntity(this.motionZ, this.motionY, this.motionX);
-			this.motionZ *= (double)0.8F;
-			this.motionY *= (double)0.8F;
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= (double)0.8F;
+			this.motionY *= (double)0.8F;
+			this.motionZ *= (double)0.8F;
 			this.motionY -= 0.02D;
-			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionZ, this.motionY + (double)0.6F - this.posY + d13, this.motionX)) {
+			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + d13, this.motionZ)) {
 				this.motionY = (double)0.3F;
 			}
 		} else if(this.handleLavaMovement()) {
 			d13 = this.posY;
 			this.moveFlying(f18, f19, 0.02F);
-			this.moveEntity(this.motionZ, this.motionY, this.motionX);
-			this.motionZ *= 0.5D;
-			this.motionY *= 0.5D;
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= 0.5D;
+			this.motionY *= 0.5D;
+			this.motionZ *= 0.5D;
 			this.motionY -= 0.02D;
-			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionZ, this.motionY + (double)0.6F - this.posY + d13, this.motionX)) {
+			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + d13, this.motionZ)) {
 				this.motionY = (double)0.3F;
 			}
 		} else {
@@ -451,18 +451,18 @@ public class EntityLiving extends Entity {
 				}
 			}
 
-			this.moveEntity(this.motionZ, this.motionY, this.motionX);
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			if(this.isCollidedHorizontally && this.isOnLadder()) {
 				this.motionY = 0.2D;
 			}
 
-			this.motionZ *= (double)0.91F;
-			this.motionY *= (double)0.98F;
 			this.motionX *= (double)0.91F;
+			this.motionY *= (double)0.98F;
+			this.motionZ *= (double)0.91F;
 			this.motionY -= 0.08D;
 			if(this.onGround) {
-				this.motionZ *= (double)0.6F;
 				this.motionX *= (double)0.6F;
+				this.motionZ *= (double)0.6F;
 			}
 		}
 

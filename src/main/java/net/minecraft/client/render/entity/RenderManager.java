@@ -109,7 +109,7 @@ public final class RenderManager {
 		Render render10;
 		if((render10 = this.getEntityRenderObject(entity)) != null) {
 			render10.doRender(entity, x, y, z, yaw, partialTicks);
-			render10.doRenderShadowAndFire(entity, x, y, z, partialTicks);
+			render10.renderShadow(entity, x, y, z, partialTicks);
 		}
 
 	}

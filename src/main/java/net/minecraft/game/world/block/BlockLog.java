@@ -5,7 +5,7 @@ import net.minecraft.game.world.material.Material;
 
 public final class BlockLog extends Block {
 	protected BlockLog(int blockID) {
-		super(17, Material.ground);
+		super(17, Material.wood);
 		this.blockIndexInTexture = 20;
 	}
 

@@ -11,7 +11,7 @@ public final class RenderSpider extends RenderLiving {
 		this.setRenderPassModel(new ModelSpider());
 	}
 
-	protected final float getDeathMaxRotation(EntityLiving livingEntity) {
+	protected final float getMaxDeathRotation(EntityLiving livingEntity) {
 		return 180.0F;
 	}
 

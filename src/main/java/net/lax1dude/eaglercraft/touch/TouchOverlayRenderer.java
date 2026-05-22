@@ -133,13 +133,13 @@ public class TouchOverlayRenderer {
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
         tessellator.addUV(0.0F, 0.0F);
-        tessellator.drawVertex(0.0F, sh, 500.0F);
+        tessellator.addVertex(0.0F, sh, 500.0F);
         tessellator.addUV(1.0F, 0.0F);
-        tessellator.drawVertex(sw, sh, 500.0F);
+        tessellator.addVertex(sw, sh, 500.0F);
         tessellator.addUV(1.0F, 1.0F);
-        tessellator.drawVertex(sw, 0.0F, 500.0F);
+        tessellator.addVertex(sw, 0.0F, 500.0F);
         tessellator.addUV(0.0F, 1.0F);
-        tessellator.drawVertex(0.0F, 0.0F, 500.0F);
+        tessellator.addVertex(0.0F, 0.0F, 500.0F);
         tessellator.draw();
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GL11.enableDepth();
@@ -166,13 +166,13 @@ public class TouchOverlayRenderer {
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
         tessellator.addUV((float)(minU + 0) * f, (float)(minV + maxV) * f1);
-        tessellator.drawVertex(xCoord + 0.0F, yCoord + (float)maxV * scaleFac, 0.0F);
+        tessellator.addVertex(xCoord + 0.0F, yCoord + (float)maxV * scaleFac, 0.0F);
         tessellator.addUV((float)(minU + maxU) * f, (float)(minV + maxV) * f1);
-        tessellator.drawVertex(xCoord + (float)maxU * scaleFac, yCoord + (float)maxV * scaleFac, 0.0F);
+        tessellator.addVertex(xCoord + (float)maxU * scaleFac, yCoord + (float)maxV * scaleFac, 0.0F);
         tessellator.addUV((float)(minU + maxU) * f, (float)(minV + 0) * f1);
-        tessellator.drawVertex(xCoord + (float)maxU * scaleFac, yCoord + 0.0F, 0.0F);
+        tessellator.addVertex(xCoord + (float)maxU * scaleFac, yCoord + 0.0F, 0.0F);
         tessellator.addUV((float)(minU + 0) * f, (float)(minV + 0) * f1);
-        tessellator.drawVertex(xCoord + 0.0F, yCoord + 0.0F, 0.0F);
+        tessellator.addVertex(xCoord + 0.0F, yCoord + 0.0F, 0.0F);
         tessellator.draw();
     }
 }

@@ -9,7 +9,7 @@ public final class EntityDiggingFX extends EntityFX {
 		super(world, posX, posY, posZ, speedX, speedY, speedZ);
 		this.particleTextureIndex = block.blockIndexInTexture;
 		this.particleGravity = block.blockParticleGravity;
-		this.particleBlue = this.particleGreen = this.particleRed = 0.6F;
+		this.particleRed = this.particleGreen = this.particleBlue = 0.6F;
 		this.particleScale /= 2.0F;
 	}
 
@@ -27,7 +27,7 @@ public final class EntityDiggingFX extends EntityFX {
 		float f14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
 		float f15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - interpPosZ);
 		partialTicks = this.getBrightness(partialTicks);
-		tessellator.setColorOpaque_F(partialTicks * this.particleBlue, partialTicks * this.particleGreen, partialTicks * this.particleRed);
+		tessellator.setColorOpaque_F(partialTicks * this.particleRed, partialTicks * this.particleGreen, partialTicks * this.particleBlue);
 		tessellator.addVertexWithUV((double)(f13 - rotationX * f12 - rotationXY * f12), (double)(f14 - rotationZ * f12), (double)(f15 - rotationYZ * f12 - rotationXZ * f12), (double)f8, (double)f11);
 		tessellator.addVertexWithUV((double)(f13 - rotationX * f12 + rotationXY * f12), (double)(f14 + rotationZ * f12), (double)(f15 - rotationYZ * f12 + rotationXZ * f12), (double)f8, (double)f10);
 		tessellator.addVertexWithUV((double)(f13 + rotationX * f12 + rotationXY * f12), (double)(f14 + rotationZ * f12), (double)(f15 + rotationYZ * f12 + rotationXZ * f12), (double)f9, (double)f10);

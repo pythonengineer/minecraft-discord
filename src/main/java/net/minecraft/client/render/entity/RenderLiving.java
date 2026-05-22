@@ -36,7 +36,7 @@ public class RenderLiving extends Render {
 					f3 = 1.0F;
 				}
 
-				GL11.glRotatef(f3 * this.getDeathMaxRotation(entityLiving1), 0.0F, 0.0F, 1.0F);
+				GL11.glRotatef(f3 * this.getMaxDeathRotation(entityLiving1), 0.0F, 0.0F, 1.0F);
 			}
 
             GL11.glEnable(GL11.GL_RESCALE_NORMAL);
@@ -116,7 +116,7 @@ public class RenderLiving extends Render {
 		return false;
 	}
 
-	protected float getDeathMaxRotation(EntityLiving livingEntity) {
+	protected float getMaxDeathRotation(EntityLiving livingEntity) {
 		return 90.0F;
 	}
 

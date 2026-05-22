@@ -33,9 +33,9 @@ public class EntityPlayerSP extends EntityPlayer {
             world.playerEntity = this;
         }
 
-        if(session != null && session.name != null && session.name.length() > 0) {
-            this.skinUrl = session.name;
-            this.username = session.name;
+        if(session != null && session.username != null && session.username.length() > 0) {
+            this.skinUrl = session.username;
+            this.username = session.username;
         } else {
             this.username = "";
         }
@@ -43,7 +43,7 @@ public class EntityPlayerSP extends EntityPlayer {
 
     public final void onUpdate() {
         if(this.ridingEntity != null && !this.ridingEntity.isDead) {
-            this.motionZ = this.motionY = this.motionX = 0.0D;
+            this.motionX = this.motionY = this.motionZ = 0.0D;
         } else {
             super.onUpdate();
         }
@@ -112,22 +112,22 @@ public class EntityPlayerSP extends EntityPlayer {
     }
 
     public final void displayGUIChest(IInventory inventory) {
-        this.mc.setGuiScreen(new GuiChest(this.inventory, inventory));
+        this.mc.displayGuiScreen(new GuiChest(this.inventory, inventory));
     }
 
     public final void displayGUIEditSign(TileEntitySign signTileEntity) {
-        this.mc.setGuiScreen(new GuiEditSign(signTileEntity));
+        this.mc.displayGuiScreen(new GuiEditSign(signTileEntity));
     }
 
     public final void displayWorkbenchGUI() {
-        this.mc.setGuiScreen(new GuiCrafting(this.inventory));
+        this.mc.displayGuiScreen(new GuiCrafting(this.inventory));
     }
 
     public final void displayGUIFurnace(TileEntityFurnace furnaceTileEntity) {
-        this.mc.setGuiScreen(new GuiFurnace(this.inventory, furnaceTileEntity));
+        this.mc.displayGuiScreen(new GuiFurnace(this.inventory, furnaceTileEntity));
     }
 
-    public final void destroyCurrentEquippedItem() {
+    public final void displayGUIInventory() {
         this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
     }
 

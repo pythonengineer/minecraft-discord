@@ -14,7 +14,6 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.controller.PlayerControllerCreative;
-import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.effect.EntityRainFX;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.player.EntityPlayerSP;
@@ -23,7 +22,6 @@ import net.minecraft.client.render.camera.Frustrum;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
-import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.material.Material;
 
@@ -34,8 +32,8 @@ public final class EntityRenderer {
     public ItemRenderer itemRenderer;
     private int rendererUpdateCount;
     private Entity pointedEntity = null;
-    private int mouseMovement;
-    private int mouseMoved;
+    private int mouseDX;
+    private int mouseDY;
     private EaglercraftRandom random = new EaglercraftRandom();
     private volatile int unusedInt1 = 0;
     private volatile int unusedInt2 = 0;
@@ -80,7 +78,7 @@ public final class EntityRenderer {
 
     }
 
-    private Vec3D getMouseOver(float partialTicks) {
+    private Vec3D getPlayerPosition(float partialTicks) {
         EntityPlayerSP entityPlayerSP2 = this.mc.thePlayer;
         double d3 = this.mc.thePlayer.prevPosX + (entityPlayerSP2.posX - entityPlayerSP2.prevPosX) * (double)partialTicks;
         double d5 = entityPlayerSP2.prevPosY + (entityPlayerSP2.posY - entityPlayerSP2.prevPosY) * (double)partialTicks;
@@ -139,16 +137,16 @@ public final class EntityRenderer {
                 b4 = -1;
             }
 
-            if(this.mouseMovement != 0) {
-                System.out.println("xxo: " + 0 + ", " + this.mouseMovement + ": " + this.mouseMovement + ", xo: " + i5);
+            if(this.mouseDX != 0) {
+                System.out.println("xxo: " + 0 + ", " + this.mouseDX + ": " + this.mouseDX + ", xo: " + i5);
             }
 
-            if(this.mouseMovement != 0) {
-                this.mouseMovement = 0;
+            if(this.mouseDX != 0) {
+                this.mouseDX = 0;
             }
 
-            if(this.mouseMoved != 0) {
-                this.mouseMoved = 0;
+            if(this.mouseDY != 0) {
+                this.mouseDY = 0;
             }
 
             float f10001 = (float)i5;
@@ -216,7 +214,7 @@ public final class EntityRenderer {
     private void renderWorld(float partialTicks) {
         float f16 = this.mc.thePlayer.prevRotationPitch + (this.mc.thePlayer.rotationPitch - this.mc.thePlayer.prevRotationPitch) * partialTicks;
         float f17 = this.mc.thePlayer.prevRotationYaw + (this.mc.thePlayer.rotationYaw - this.mc.thePlayer.prevRotationYaw) * partialTicks;
-        Vec3D vec3D18 = this.getMouseOver(partialTicks);
+        Vec3D vec3D18 = this.getPlayerPosition(partialTicks);
         float f19 = MathHelper.cos(-f17 * ((float)Math.PI / 180.0F) - (float)Math.PI);
         float f29 = MathHelper.sin(-f17 * ((float)Math.PI / 180.0F) - (float)Math.PI);
         float f30 = -MathHelper.cos(-f16 * ((float)Math.PI / 180.0F));
@@ -227,7 +225,7 @@ public final class EntityRenderer {
         Vec3D vec3D37 = vec3D18.addVector((double)f32 * d35, (double)f31 * d35, (double)f34 * d35);
         this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(vec3D18, vec3D37);
         double d38 = d35;
-        vec3D18 = this.getMouseOver(partialTicks);
+        vec3D18 = this.getPlayerPosition(partialTicks);
         if(this.mc.objectMouseOver != null) {
             d38 = this.mc.objectMouseOver.hitVec.distanceTo(vec3D18);
         }
@@ -391,7 +389,7 @@ public final class EntityRenderer {
             RenderHelper.disableStandardItemLighting();
             this.mc.renderGlobal.sortAndRender(this.mc.thePlayer, 0, (double)partialTicks);
             RenderHelper.enableStandardItemLighting();
-            this.mc.renderGlobal.renderEntities(this.getMouseOver(partialTicks), frustrum51, partialTicks);
+            this.mc.renderGlobal.renderEntities(this.getPlayerPosition(partialTicks), frustrum51, partialTicks);
             this.mc.effectRenderer.renderLitParticles(partialTicks);
             RenderHelper.disableStandardItemLighting();
             this.setupFog(0);

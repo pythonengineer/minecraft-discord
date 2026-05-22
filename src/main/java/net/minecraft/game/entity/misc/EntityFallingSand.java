@@ -21,9 +21,9 @@ public class EntityFallingSand extends Entity {
         this.setSize(0.98F, 0.98F);
         this.yOffset = this.height / 2.0F;
         this.setPosition((double)x, (double)y, (double)z);
-        this.motionZ = 0.0D;
-        this.motionY = 0.0D;
         this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
         this.canTriggerWalking = false;
         this.prevPosX = (double)x;
         this.prevPosY = (double)y;
@@ -43,10 +43,10 @@ public class EntityFallingSand extends Entity {
             this.prevPosZ = this.posZ;
             ++this.fallTime;
             this.motionY -= (double)0.04F;
-            this.moveEntity(this.motionZ, this.motionY, this.motionX);
-            this.motionZ *= (double)0.98F;
-            this.motionY *= (double)0.98F;
+            this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= (double)0.98F;
+            this.motionY *= (double)0.98F;
+            this.motionZ *= (double)0.98F;
             int i1 = MathHelper.floor_double(this.posX);
             int i2 = MathHelper.floor_double(this.posY);
             int i3 = MathHelper.floor_double(this.posZ);
@@ -55,16 +55,16 @@ public class EntityFallingSand extends Entity {
             }
 
             if(this.onGround) {
-                this.motionZ *= (double)0.7F;
                 this.motionX *= (double)0.7F;
+                this.motionZ *= (double)0.7F;
                 this.motionY *= -0.5D;
                 this.setEntityDead();
                 if(!this.worldObj.canBlockBePlacedAt(this.blockID, i1, i2, i3, true) || !this.worldObj.setBlockWithNotify(i1, i2, i3, this.blockID)) {
-                    this.dropItemWithOffset(this.blockID, 1);
+                    this.dropItem(this.blockID, 1);
                     return;
                 }
             } else if(this.fallTime > 100) {
-                this.dropItemWithOffset(this.blockID, 1);
+                this.dropItem(this.blockID, 1);
                 this.setEntityDead();
             }
 

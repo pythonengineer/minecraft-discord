@@ -94,7 +94,7 @@ public final class Chunk {
 		this.isModified = true;
 	}
 
-	private void updateSkylight_do(int x, int z) {
+	public void updateSkylight_do(int x, int z) {
 		int i3 = this.getHeightValue(x, z);
 		x += this.xPosition << 4;
 		z += this.zPosition << 4;
@@ -115,7 +115,7 @@ public final class Chunk {
 		this.isModified = true;
 	}
 
-	private void relightBlock(int x, int y, int z) {
+	public void relightBlock(int x, int y, int z) {
 		int i4;
 		int i5 = i4 = this.heightMap[z << 4 | x] & 255;
 		if(y > i4) {
@@ -127,7 +127,7 @@ public final class Chunk {
 		}
 
 		if(i5 != i4) {
-			this.worldObj.markBlocksDirtyVertical(x, z, i5, i4);
+			this.worldObj.markBlockAsNeedsUpdate(x, z, i5, i4);
 			this.heightMap[z << 4 | x] = (byte)i5;
 			int i6;
 			int i7;
@@ -151,19 +151,19 @@ public final class Chunk {
 			i6 = (this.zPosition << 4) + z;
 			if(i5 < i4) {
 				for(i7 = i5; i7 < i4; ++i7) {
-					this.skylightMap.setNibble(x, i7, z, 15);
+					this.skylightMap.set(x, i7, z, 15);
 				}
 			} else {
 				this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, y, i4, i6, y, i5, i6);
 
 				for(i7 = i4; i7 < i5; ++i7) {
-					this.skylightMap.setNibble(x, i7, z, 0);
+					this.skylightMap.set(x, i7, z, 0);
 				}
 			}
 
 			i7 = 15;
 
-			for(i4 = i5; i5 > 0 && i7 > 0; this.skylightMap.setNibble(x, i5, z, i7)) {
+			for(i4 = i5; i5 > 0 && i7 > 0; this.skylightMap.set(x, i5, z, i7)) {
 				--i5;
 				int i8;
 				if((i8 = Block.lightOpacity[this.getBlockID(x, i5, z)]) == 0) {
@@ -191,88 +191,88 @@ public final class Chunk {
 		return this.blocks[x << 11 | z << 7 | y];
 	}
 
-	public final boolean setBlockIDWithMetadata(int x, int y, int z, int blockID, int metadata) {
-		byte b6 = (byte)blockID;
-		int i7 = this.heightMap[z << 4 | x] & 255;
-		int i8;
-		if((i8 = this.blocks[x << 11 | z << 7 | y] & 255) == blockID) {
-			return false;
-		} else {
-			int i9 = (this.xPosition << 4) + x;
-			int i10 = (this.zPosition << 4) + z;
-			this.blocks[x << 11 | z << 7 | y] = b6;
-			if(i8 != 0) {
-				Block.blocksList[i8].onBlockRemoval(this.worldObj, i9, y, i10);
-			}
+    public final boolean setBlockIDWithMetadata(int x, int y, int z, int blockID, int metadata) {
+        byte b6 = (byte)blockID;
+        int i7 = this.heightMap[z << 4 | x] & 255;
+        int i8;
+        if((i8 = this.blocks[x << 11 | z << 7 | y] & 255) == blockID) {
+            return false;
+        } else {
+            int i9 = (this.xPosition << 4) + x;
+            int i10 = (this.zPosition << 4) + z;
+            this.blocks[x << 11 | z << 7 | y] = b6;
+            if(i8 != 0) {
+                Block.blocksList[i8].onBlockRemoval(this.worldObj, i9, y, i10);
+            }
 
-			this.data.setNibble(x, y, z, metadata);
-			if(Block.lightOpacity[b6] != 0) {
-				if(y >= i7) {
-					this.relightBlock(x, y + 1, z);
-				}
-			} else if(y == i7 - 1) {
-				this.relightBlock(x, y, z);
-			}
+            this.data.set(x, y, z, metadata);
+            if(Block.lightOpacity[b6] != 0) {
+                if(y >= i7) {
+                    this.relightBlock(x, y + 1, z);
+                }
+            } else if(y == i7 - 1) {
+                this.relightBlock(x, y, z);
+            }
 
-			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i9, y, i10, i9, y, i10);
-			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i9, y, i10, i9, y, i10);
-			this.updateSkylight_do(x, z);
-			if(blockID != 0) {
-				Block.blocksList[blockID].onBlockAdded(this.worldObj, i9, y, i10);
-			}
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i9, y, i10, i9, y, i10);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i9, y, i10, i9, y, i10);
+            this.updateSkylight_do(x, z);
+            if(blockID != 0) {
+                Block.blocksList[blockID].onBlockAdded(this.worldObj, i9, y, i10);
+            }
 
-			this.isModified = true;
-			return true;
-		}
-	}
+            this.isModified = true;
+            return true;
+        }
+    }
 
-	public final boolean setBlockID(int x, int y, int z, int blockID) {
-		byte b5 = (byte)blockID;
-		int i6 = this.heightMap[z << 4 | x] & 255;
-		int i7;
-		if((i7 = this.blocks[x << 11 | z << 7 | y] & 255) == blockID) {
-			return false;
-		} else {
-			int i8 = (this.xPosition << 4) + x;
-			int i9 = (this.zPosition << 4) + z;
-			this.blocks[x << 11 | z << 7 | y] = b5;
-			if(i7 != 0) {
-				Block.blocksList[i7].onBlockRemoval(this.worldObj, i8, y, i9);
-			}
+    public final boolean setBlockID(int x, int y, int z, int blockID) {
+        byte b5 = (byte)blockID;
+        int i6 = this.heightMap[z << 4 | x] & 255;
+        int i7;
+        if((i7 = this.blocks[x << 11 | z << 7 | y] & 255) == blockID) {
+            return false;
+        } else {
+            int i8 = (this.xPosition << 4) + x;
+            int i9 = (this.zPosition << 4) + z;
+            this.blocks[x << 11 | z << 7 | y] = b5;
+            if(i7 != 0) {
+                Block.blocksList[i7].onBlockRemoval(this.worldObj, i8, y, i9);
+            }
 
-			this.data.setNibble(x, y, z, 0);
-			if(Block.lightOpacity[b5] != 0) {
-				if(y >= i6) {
-					this.relightBlock(x, y + 1, z);
-				}
-			} else if(y == i6 - 1) {
-				this.relightBlock(x, y, z);
-			}
+            this.data.set(x, y, z, 0);
+            if(Block.lightOpacity[b5] != 0) {
+                if(y >= i6) {
+                    this.relightBlock(x, y + 1, z);
+                }
+            } else if(y == i6 - 1) {
+                this.relightBlock(x, y, z);
+            }
 
-			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
-			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
-			this.updateSkylight_do(x, z);
-			if(blockID != 0) {
-				Block.blocksList[blockID].onBlockAdded(this.worldObj, i8, y, i9);
-			}
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
+            this.updateSkylight_do(x, z);
+            if(blockID != 0) {
+                Block.blocksList[blockID].onBlockAdded(this.worldObj, i8, y, i9);
+            }
 
-			this.isModified = true;
-			return true;
-		}
-	}
+            this.isModified = true;
+            return true;
+        }
+    }
 
 	public final int getBlockMetadata(int x, int y, int z) {
-		return this.data.getNibble(x, y, z);
+		return this.data.get(x, y, z);
 	}
 
 	public final int getBlockLightValue(int x, int y, int z, int skyLightSubtracted) {
 		int i5;
-		if((i5 = this.skylightMap.getNibble(x, y, z)) > 0) {
+		if((i5 = this.skylightMap.get(x, y, z)) > 0) {
 			isLit = true;
 		}
 
 		i5 -= skyLightSubtracted;
-		if((x = this.blocklightMap.getNibble(x, y, z)) > i5) {
+		if((x = this.blocklightMap.get(x, y, z)) > i5) {
 			i5 = x;
 		}
 
@@ -351,7 +351,7 @@ public final class Chunk {
 		}
 	}
 
-	public final void getEntitiesOfTypeWithinAAAB(Entity entity, AxisAlignedBB aabb, List entitiesOfTypeWithinAABBList) {
+	public final void getEntitiesOfTypeWithinAABB(Entity entity, AxisAlignedBB aabb, List entitiesOfTypeWithinAABBList) {
 		int i4 = MathHelper.floor_double((aabb.minY - 2.0D) / 16.0D);
 		int i5 = MathHelper.floor_double((aabb.maxY + 2.0D) / 16.0D);
 		if(i4 < 0) {
@@ -375,7 +375,7 @@ public final class Chunk {
 
 	}
 
-    public final void getEntitiesOfTypeWithinAABB(Class<? extends Entity> class1, AxisAlignedBB axisAlignedBB2, List<Entity> list3) {
+    public final void getEntitiesOfTypeWithinAAAB(Class<? extends Entity> class1, AxisAlignedBB axisAlignedBB2, List<Entity> list3) {
         int i4 = MathHelper.floor_double((axisAlignedBB2.minY - 2.0D) / 16.0D);
         int i5 = MathHelper.floor_double((axisAlignedBB2.maxY + 2.0D) / 16.0D);
         if(i4 < 0) {

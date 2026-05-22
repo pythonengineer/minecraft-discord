@@ -2,7 +2,7 @@ package net.minecraft.game.world.terrain;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.client.IProgressUpdate;
+import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.chunk.Chunk;
@@ -279,13 +279,13 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 		i7 = chunkZ;
 		i88 = chunkX;
 		chunkProviderGenerate5 = this;
-		this.rand.setSeed(this.worldObj.seed);
+		this.rand.setSeed(this.worldObj.randomSeed);
 		long j98 = (this.rand.nextLong() / 2L << 1) + 1L;
 		long j99 = (this.rand.nextLong() / 2L << 1) + 1L;
 
 		for(chunkX -= 8; chunkX <= i88 + 8; ++chunkX) {
 			for(chunkZ = i7 - 8; chunkZ <= i7 + 8; ++chunkZ) {
-				chunkProviderGenerate5.rand.setSeed((long)chunkX * j98 + (long)chunkZ * j99 ^ chunkProviderGenerate5.worldObj.seed);
+				chunkProviderGenerate5.rand.setSeed((long)chunkX * j98 + (long)chunkZ * j99 ^ chunkProviderGenerate5.worldObj.randomSeed);
 				int i86 = chunkProviderGenerate5.rand.nextInt(chunkProviderGenerate5.rand.nextInt(chunkProviderGenerate5.rand.nextInt(40) + 1) + 1);
 				if(chunkProviderGenerate5.rand.nextInt(15) != 0) {
 					i86 = 0;
@@ -297,7 +297,7 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 					double d60 = (double)((chunkZ << 4) + chunkProviderGenerate5.rand.nextInt(16));
 					int i62 = 1;
 					if(chunkProviderGenerate5.rand.nextInt(4) == 0) {
-						chunkProviderGenerate5.generateCaves(i88, i7, b91, d100, d101, d60, 1.0F + chunkProviderGenerate5.rand.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+						chunkProviderGenerate5.generateCaveNode(i88, i7, b91, d100, d101, d60, 1.0F + chunkProviderGenerate5.rand.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
 						i62 = 1 + chunkProviderGenerate5.rand.nextInt(4);
 					}
 
@@ -305,7 +305,7 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 						float f64 = chunkProviderGenerate5.rand.nextFloat() * (float)Math.PI * 2.0F;
 						float f102 = (chunkProviderGenerate5.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
 						float f66 = chunkProviderGenerate5.rand.nextFloat() * 2.0F + chunkProviderGenerate5.rand.nextFloat();
-						chunkProviderGenerate5.generateCaves(i88, i7, b91, d100, d101, d60, f66, f64, f102, 0, 0, 1.0D);
+						chunkProviderGenerate5.generateCaveNode(i88, i7, b91, d100, d101, d60, f66, f64, f102, 0, 0, 1.0D);
 					}
 				}
 			}
@@ -315,7 +315,7 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 		return chunk4;
 	}
 
-	private void generateCaves(int chunkX, int chunkZ, byte[] chunkData, double x, double y, double z, float scaleFactor, float directionHorizontal, float directionVertical, int outwardsSize, int inwardsSize, double radius) {
+	private void generateCaveNode(int chunkX, int chunkZ, byte[] chunkData, double x, double y, double z, float scaleFactor, float directionHorizontal, float directionVertical, int outwardsSize, int inwardsSize, double radius) {
 		label204:
 		while(true) {
 			double d17 = (double)((chunkX << 4) + 8);
@@ -356,7 +356,7 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 				f22 += (random23.nextFloat() - random23.nextFloat()) * random23.nextFloat() * 2.0F;
 				f21 += (random23.nextFloat() - random23.nextFloat()) * random23.nextFloat() * 4.0F;
 				if(!z24 && outwardsSize == i25 && scaleFactor > 1.0F) {
-					this.generateCaves(chunkX, chunkZ, chunkData, x, y, z, random23.nextFloat() * 0.5F + 0.5F, directionHorizontal - (float)Math.PI / 2F, directionVertical / 3.0F, outwardsSize, inwardsSize, 1.0D);
+					this.generateCaveNode(chunkX, chunkZ, chunkData, x, y, z, random23.nextFloat() * 0.5F + 0.5F, directionHorizontal - (float)Math.PI / 2F, directionVertical / 3.0F, outwardsSize, inwardsSize, 1.0D);
 					float f10007 = random23.nextFloat() * 0.5F + 0.5F;
 					float f10008 = directionHorizontal + (float)Math.PI / 2F;
 					float f10009 = directionVertical / 3.0F;
@@ -489,10 +489,10 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 	public final void populate(IChunkProvider chunkProvider, int chunkX, int chunkZ) {
 		int i10 = chunkX << 4;
 		int i4 = chunkZ << 4;
-		this.rand.setSeed(this.worldObj.seed);
+		this.rand.setSeed(this.worldObj.randomSeed);
 		long j6 = (this.rand.nextLong() / 2L << 1) + 1L;
 		long j8 = (this.rand.nextLong() / 2L << 1) + 1L;
-		this.rand.setSeed((long)chunkX * j6 + (long)chunkZ * j8 ^ this.worldObj.seed);
+		this.rand.setSeed((long)chunkX * j6 + (long)chunkZ * j8 ^ this.worldObj.randomSeed);
 
 		int i5;
 		int i12;
@@ -605,7 +605,7 @@ public final class ChunkProviderGenerate implements IChunkProvider {
 
 	}
 
-	public final boolean saveChunks(boolean flag, IProgressUpdate iProgressUpdate2) {
+	public final boolean saveChunks(boolean flag, LoadingScreenRenderer loadingScreen) {
 		return true;
 	}
 

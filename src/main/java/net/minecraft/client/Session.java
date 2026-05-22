@@ -7,10 +7,10 @@ import net.minecraft.game.world.block.Block;
 
 public final class Session {
     public static List registeredBlocksList;
-	public String name;
+	public String username;
 
     public Session(String name, String sessionid) {
-        this.name = name;
+        this.username = name;
 	}
 
 	static {

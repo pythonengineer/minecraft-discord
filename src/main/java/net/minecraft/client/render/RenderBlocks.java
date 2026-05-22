@@ -39,7 +39,7 @@ public final class RenderBlocks {
             tessellator6 = Tessellator.instance;
             z63 = false;
             float f66 = block.getBlockBrightness(this.blockAccess, x, y, z);
-            if(block.getIsBlockSolid(this.blockAccess, x, y - 1, z, 0)) {
+            if(block.shouldSideBeRendered(this.blockAccess, x, y - 1, z, 0)) {
                 f18 = block.getBlockBrightness(this.blockAccess, x, y - 1, z);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
@@ -50,7 +50,7 @@ public final class RenderBlocks {
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.blockAccess, x, y + 1, z, 1)) {
+            if(block.shouldSideBeRendered(this.blockAccess, x, y + 1, z, 1)) {
                 f18 = block.getBlockBrightness(this.blockAccess, x, y + 1, z);
                 if(block.maxY != 1.0D && !block.blockMaterial.getIsLiquid()) {
                     f18 = f66;
@@ -65,7 +65,7 @@ public final class RenderBlocks {
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.blockAccess, x, y, z - 1, 2)) {
+            if(block.shouldSideBeRendered(this.blockAccess, x, y, z - 1, 2)) {
                 f18 = block.getBlockBrightness(this.blockAccess, x, y, z - 1);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
@@ -76,7 +76,7 @@ public final class RenderBlocks {
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.blockAccess, x, y, z + 1, 3)) {
+            if(block.shouldSideBeRendered(this.blockAccess, x, y, z + 1, 3)) {
                 f18 = block.getBlockBrightness(this.blockAccess, x, y, z + 1);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
@@ -87,7 +87,7 @@ public final class RenderBlocks {
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.blockAccess, x - 1, y, z, 4)) {
+            if(block.shouldSideBeRendered(this.blockAccess, x - 1, y, z, 4)) {
                 f18 = block.getBlockBrightness(this.blockAccess, x - 1, y, z);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
@@ -98,7 +98,7 @@ public final class RenderBlocks {
                 z63 = true;
             }
 
-            if(block.getIsBlockSolid(this.blockAccess, x + 1, y, z, 5)) {
+            if(block.shouldSideBeRendered(this.blockAccess, x + 1, y, z, 5)) {
                 f18 = block.getBlockBrightness(this.blockAccess, x + 1, y, z);
                 if(Block.lightValue[block.blockID] > 0) {
                     f18 = 1.0F;
@@ -127,13 +127,13 @@ public final class RenderBlocks {
                 Block block54 = block;
                 RenderBlocks renderBlocks53 = this;
                 tessellator6 = Tessellator.instance;
-                z63 = block.getIsBlockSolid(this.blockAccess, x, z + 1, i5, 1);
-                boolean z60 = block.getIsBlockSolid(this.blockAccess, x, z - 1, i5, 0);
+                z63 = block.shouldSideBeRendered(this.blockAccess, x, z + 1, i5, 1);
+                boolean z60 = block.shouldSideBeRendered(this.blockAccess, x, z - 1, i5, 0);
                 boolean[] z61;
-                (z61 = new boolean[4])[0] = block.getIsBlockSolid(this.blockAccess, x, z, i5 - 1, 2);
-                z61[1] = block.getIsBlockSolid(this.blockAccess, x, z, i5 + 1, 3);
-                z61[2] = block.getIsBlockSolid(this.blockAccess, x - 1, z, i5, 4);
-                z61[3] = block.getIsBlockSolid(this.blockAccess, x + 1, z, i5, 5);
+                (z61 = new boolean[4])[0] = block.shouldSideBeRendered(this.blockAccess, x, z, i5 - 1, 2);
+                z61[1] = block.shouldSideBeRendered(this.blockAccess, x, z, i5 + 1, 3);
+                z61[2] = block.shouldSideBeRendered(this.blockAccess, x - 1, z, i5, 4);
+                z61[3] = block.shouldSideBeRendered(this.blockAccess, x + 1, z, i5, 5);
                 if(!z63 && !z60 && !z61[0] && !z61[1] && !z61[2] && !z61[3]) {
                     return false;
                 } else {
@@ -268,7 +268,7 @@ public final class RenderBlocks {
                 tessellator6 = Tessellator.instance;
                 f62 = block.getBlockBrightness(this.blockAccess, x, y, z);
                 tessellator6.setColorOpaque_F(f62, f62, f62);
-                this.renderBlockCrops(block, this.blockAccess.getBlockMetadata(x, y, z), (double)x, (double)((float)y - 0.0625F), (double)z);
+                this.renderBlockCropsImpl(block, this.blockAccess.getBlockMetadata(x, y, z), (double)x, (double)((float)y - 0.0625F), (double)z);
                 return true;
             } else if(i5 == 2) {
                 int i56 = this.blockAccess.getBlockMetadata(x, y, z);
@@ -833,7 +833,7 @@ public final class RenderBlocks {
 		tessellator9.addVertexWithUV(d21, y + 1.0D, d27, d15, d17);
 	}
 
-	private void renderBlockCrops(Block block, int metadata, double x, double y, double z) {
+	private void renderBlockCropsImpl(Block block, int metadata, double x, double y, double z) {
 		Tessellator tessellator9 = Tessellator.instance;
 		int block1 = block.getBlockTextureFromSideAndMetadata(0, metadata);
 		if(this.overrideBlockTexture >= 0) {
@@ -907,11 +907,11 @@ public final class RenderBlocks {
                 }
             } else {
                 if((i8 = this.blockAccess.getBlockMetadata(i8, y, i9)) >= 8 || i8 == 0) {
-                    f6 += BlockFluid.getFluidHeightPercent(i8) * 10.0F;
+                    f6 += BlockFluid.getPercentAir(i8) * 10.0F;
                     i5 += 10;
                 }
 
-                f6 += BlockFluid.getFluidHeightPercent(i8);
+                f6 += BlockFluid.getPercentAir(i8);
                 ++i5;
             }
         }
@@ -1227,7 +1227,7 @@ public final class RenderBlocks {
 		} else if(i3 == 6) {
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 			tessellator2.setNormal(0.0F, -1.0F, 0.0F);
-			this.renderBlockCrops(block, -1, -0.5D, -0.5D, -0.5D);
+			this.renderBlockCropsImpl(block, -1, -0.5D, -0.5D, -0.5D);
 			tessellator2.draw();
 		} else {
 			if(i3 == 2) {

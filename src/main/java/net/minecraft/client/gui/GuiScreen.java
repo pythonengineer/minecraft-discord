@@ -40,7 +40,7 @@ public class GuiScreen extends Gui {
 
     protected void keyTyped(char typedChar, int keyCode) {
         if(keyCode == 1) {
-            this.mc.setGuiScreen((GuiScreen)null);
+            this.mc.displayGuiScreen((GuiScreen)null);
             this.mc.setIngameFocus();
         }
 
@@ -148,7 +148,7 @@ public class GuiScreen extends Gui {
     public final void drawDefaultBackground() {
         boolean z1 = false;
         if(this.mc.theWorld != null) {
-            drawGradient(0, 0, this.width, this.height, 1610941696, -1607454656);
+            drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454656);
         } else {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_FOG);

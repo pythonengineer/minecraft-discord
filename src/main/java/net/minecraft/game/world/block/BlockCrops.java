@@ -15,7 +15,7 @@ public final class BlockCrops extends BlockFlower {
 	}
 
 	protected final boolean canThisPlantGrowOnThisBlockID(int blockID) {
-		return blockID == Block.farmland.blockID;
+		return blockID == Block.tilledField.blockID;
 	}
 
 	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
@@ -43,7 +43,7 @@ public final class BlockCrops extends BlockFlower {
 				for(i16 = i11 - 1; i16 <= i11 + 1; ++i16) {
 					i17 = world8.getBlockId(i14, i10 - 1, i16);
 					float f23 = 0.0F;
-					if(i17 == Block.farmland.blockID) {
+					if(i17 == Block.tilledField.blockID) {
 						f23 = 1.0F;
 						if(world8.getBlockMetadata(i14, i10 - 1, i16) > 0) {
 							f23 = 3.0F;
@@ -92,7 +92,7 @@ public final class BlockCrops extends BlockFlower {
 				float f9 = world.rand.nextFloat() * 0.7F + 0.15F;
 				EntityItem entityItem10;
 				(entityItem10 = new EntityItem(world, (double)((float)x + f7), (double)((float)y + f8), (double)((float)z + f9), new ItemStack(Item.seeds))).delayBeforeCanPickup = 10;
-				world.entityJoinedWorld(entityItem10);
+				world.spawnEntityInWorld(entityItem10);
 			}
 		}
 

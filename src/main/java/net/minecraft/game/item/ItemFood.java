@@ -17,8 +17,4 @@ public class ItemFood extends Item {
         playerEntity.heal(this.healAmount);
         return stack;
     }
-
-    public boolean shouldUseOnTouchEagler(ItemStack itemStack) {
-        return true;
-    }
 }

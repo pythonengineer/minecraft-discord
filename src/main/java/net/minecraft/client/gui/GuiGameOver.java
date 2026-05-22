@@ -22,18 +22,18 @@ public final class GuiGameOver extends GuiScreen {
 	protected final void actionPerformed(GuiButton button) {
 		if(button.id == 1) {
 			this.mc.respawn();
-			this.mc.setGuiScreen((GuiScreen)null);
+			this.mc.displayGuiScreen((GuiScreen)null);
 		}
 
 		if(button.id == 2) {
 			this.mc.changeWorld1((World)null);
-			this.mc.setGuiScreen(new GuiMainMenu());
+			this.mc.displayGuiScreen(new GuiMainMenu());
 		}
 
 	}
 
 	public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
+		drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
 		GL11.glPushMatrix();
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
 		drawCenteredString(this.fontRenderer, "Game over!", this.width / 2 / 2, 30, 0xFFFFFF);

@@ -18,7 +18,7 @@ public final class InventoryPlayer implements IInventory {
 		return this.mainInventory[this.currentItem];
 	}
 
-	private int getCurrentItem(int shiftedIndex) {
+	private int storeItemStack(int shiftedIndex) {
 		for(int i2 = 0; i2 < this.mainInventory.length; ++i2) {
 			if(this.mainInventory[i2] != null && this.mainInventory[i2].itemID == shiftedIndex) {
 				return i2;
@@ -39,13 +39,13 @@ public final class InventoryPlayer implements IInventory {
 	}
 
 	public final void changeCurrentItem(int blockID) {
-		if((blockID = this.getCurrentItem(blockID)) >= 0 && blockID < 9) {
+		if((blockID = this.storeItemStack(blockID)) >= 0 && blockID < 9) {
 			this.currentItem = blockID;
 		}
 	}
 
 	public final boolean consumeInventoryItem(int shiftedIndex) {
-		if((shiftedIndex = this.getCurrentItem(shiftedIndex)) < 0) {
+		if((shiftedIndex = this.storeItemStack(shiftedIndex)) < 0) {
 			return false;
 		} else {
 			if(--this.mainInventory[shiftedIndex].stackSize <= 0) {
@@ -57,7 +57,7 @@ public final class InventoryPlayer implements IInventory {
 	}
 
 	public final boolean addItemStackToInventory(ItemStack stack) {
-		if(stack.itemDamage == 0) {
+		if(stack.itemDmg == 0) {
 			int i4 = stack.stackSize;
 			int i3 = stack.itemID;
 			int i6 = i3;
@@ -184,15 +184,15 @@ public final class InventoryPlayer implements IInventory {
 		return 64;
 	}
 
-	public final int getPlayerArmorValue() {
+	public final int getTotalArmorValue() {
 		int i1 = 0;
 		int i2 = 0;
 		int i3 = 0;
 
 		for(int i4 = 0; i4 < this.armorInventory.length; ++i4) {
 			if(this.armorInventory[i4] != null && this.armorInventory[i4].getItem() instanceof ItemArmor) {
-				int i5 = this.armorInventory[i4].getItemDamageForDisplay();
-				int i6 = this.armorInventory[i4].itemDamage;
+				int i5 = this.armorInventory[i4].getMaxDamage();
+				int i6 = this.armorInventory[i4].itemDmg;
 				i6 = i5 - i6;
 				i2 += i6;
 				i3 += i5;
@@ -212,14 +212,14 @@ public final class InventoryPlayer implements IInventory {
 		int i1;
 		for(i1 = 0; i1 < this.mainInventory.length; ++i1) {
 			if(this.mainInventory[i1] != null) {
-				this.player.dropItem(this.mainInventory[i1], true);
+				this.player.dropPlayerItemWithRandomChoice(this.mainInventory[i1], true);
 				this.mainInventory[i1] = null;
 			}
 		}
 
 		for(i1 = 0; i1 < this.armorInventory.length; ++i1) {
 			if(this.armorInventory[i1] != null) {
-				this.player.dropItem(this.armorInventory[i1], true);
+				this.player.dropPlayerItemWithRandomChoice(this.armorInventory[i1], true);
 				this.armorInventory[i1] = null;
 			}
 		}

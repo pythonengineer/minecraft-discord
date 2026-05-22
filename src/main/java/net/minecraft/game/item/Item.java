@@ -77,11 +77,11 @@ public class Item {
 	public static Item painting;
 	public static Item appleGold;
 	public static Item sign;
-	public static Item doorWood;
+	public static Item door;
     public static Item bucketEmpty;
     public static Item bucketWater;
     public static Item bucketLava;
-    public static Item minecartEmpty;
+    public static Item minecart;
     public static Item saddle;
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
@@ -492,7 +492,7 @@ public class Item {
         b1 = 43;
         ItemDoor itemDoor16 = itemDoor33;
         itemDoor33.iconIndex = b1;
-        doorWood = itemDoor16;
+        door = itemDoor16;
         ItemBucket itemBucket34 = new ItemBucket(69, 0);
         b1 = 74;
         ItemBucket itemBucket17 = itemBucket34;
@@ -512,7 +512,7 @@ public class Item {
         s11 = 135;
         ItemMinecart itemMinecart18 = itemMinecart35;
         itemMinecart35.iconIndex = s11;
-        minecartEmpty = itemMinecart18;
+        minecart = itemMinecart18;
         ItemSaddle itemSaddle36 = new ItemSaddle(73);
         b1 = 104;
         ItemSaddle itemSaddle19 = itemSaddle36;

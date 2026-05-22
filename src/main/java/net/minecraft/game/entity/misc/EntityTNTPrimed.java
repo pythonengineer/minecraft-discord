@@ -21,9 +21,9 @@ public class EntityTNTPrimed extends Entity {
         this(world);
 		this.setPosition((double)x, (double)y, (double)z);
 		float world1 = (float)(Math.random() * (double)(float)Math.PI * 2.0D);
-		this.motionZ = (double)(-MathHelper.sin(world1 * (float)Math.PI / 180.0F) * 0.02F);
+		this.motionX = (double)(-MathHelper.sin(world1 * (float)Math.PI / 180.0F) * 0.02F);
 		this.motionY = (double)0.2F;
-		this.motionX = (double)(-MathHelper.cos(world1 * (float)Math.PI / 180.0F) * 0.02F);
+		this.motionZ = (double)(-MathHelper.cos(world1 * (float)Math.PI / 180.0F) * 0.02F);
 		this.canTriggerWalking = false;
 		this.fuse = 80;
 		this.prevPosX = (double)x;
@@ -40,19 +40,19 @@ public class EntityTNTPrimed extends Entity {
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
 		this.motionY -= (double)0.04F;
-		this.moveEntity(this.motionZ, this.motionY, this.motionX);
-		this.motionZ *= (double)0.98F;
-		this.motionY *= (double)0.98F;
+		this.moveEntity(this.motionX, this.motionY, this.motionZ);
 		this.motionX *= (double)0.98F;
+		this.motionY *= (double)0.98F;
+		this.motionZ *= (double)0.98F;
 		if(this.onGround) {
-			this.motionZ *= (double)0.7F;
 			this.motionX *= (double)0.7F;
+			this.motionZ *= (double)0.7F;
 			this.motionY *= -0.5D;
 		}
 
 		if(this.fuse-- <= 0) {
             this.setEntityDead();
-			this.worldObj.createExplosion((Entity)null, this.posX, this.posY, this.posZ, 4.0F);
+			this.worldObj.doExplosion((Entity)null, this.posX, this.posY, this.posZ, 4.0F);
 		} else {
 			this.worldObj.spawnParticle("smoke", this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
 		}

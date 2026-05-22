@@ -7,7 +7,7 @@ import net.minecraft.game.world.block.tileentity.TileEntity;
 public abstract class TileEntitySpecialRenderer {
     private TileEntityRenderer tileEntityRenderer;
 
-    public abstract void renderTileEntityAt(TileEntity tileEntity1, double d2, double d4, double d6, float f8);
+    public abstract void renderTileEntityMobSpawner(TileEntity tileEntity1, double d2, double d4, double d6, float f8);
 
     protected final void bindTextureByName(String textureName) {
         RenderEngine renderEngine2 = this.tileEntityRenderer.renderEngine;

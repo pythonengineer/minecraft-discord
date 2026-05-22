@@ -64,7 +64,7 @@ public final class EntityList {
         return null;
     }
 
-    public static Entity createEntityByName(String entityName, World worldIn) {
+    public static Entity createEntityInWorld(String entityName, World worldIn) {
         Entity entity = null;
 
         try {

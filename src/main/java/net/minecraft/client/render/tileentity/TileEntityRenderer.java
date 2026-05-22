@@ -18,9 +18,9 @@ public final class TileEntityRenderer {
     private Map specialRendererMap = new HashMap();
     public static TileEntityRenderer instance = new TileEntityRenderer();
     private FontRenderer fontRenderer;
-    public static double posX;
-    public static double posY;
-    public static double posZ;
+    public static double staticPlayerX;
+    public static double staticPlayerY;
+    public static double staticPlayerZ;
     public RenderEngine renderEngine;
     private World worldObj;
 
@@ -53,7 +53,7 @@ public final class TileEntityRenderer {
         return this.getSpecialRendererForClass(tileEntity.getClass());
     }
 
-    public final void renderTileEntity(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, float partialTicks) {
+    public final void cacheActiveRenderInfo(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, float partialTicks) {
         this.worldObj = world;
         this.renderEngine = renderEngine;
         this.fontRenderer = fontRenderer;
@@ -62,13 +62,13 @@ public final class TileEntityRenderer {
     public final void renderTileEntity(TileEntity tileEntity, float partialTicks) {
         float f3;
         GL11.glColor3f(f3 = this.worldObj.getBrightness(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord), f3, f3);
-        this.renderTileEntityAt(tileEntity, (double)tileEntity.xCoord - posX, (double)tileEntity.yCoord - posY, (double)tileEntity.zCoord - posZ, partialTicks);
+        this.renderTileEntityAt(tileEntity, (double)tileEntity.xCoord - staticPlayerX, (double)tileEntity.yCoord - staticPlayerY, (double)tileEntity.zCoord - staticPlayerZ, partialTicks);
     }
 
     public final void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks) {
         TileEntitySpecialRenderer tileEntitySpecialRenderer9;
         if((tileEntitySpecialRenderer9 = this.getSpecialRendererForEntity(tileEntity)) != null) {
-            tileEntitySpecialRenderer9.renderTileEntityAt(tileEntity, x, y, z, partialTicks);
+            tileEntitySpecialRenderer9.renderTileEntityMobSpawner(tileEntity, x, y, z, partialTicks);
         }
 
     }

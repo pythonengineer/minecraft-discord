@@ -7,9 +7,9 @@ import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.block.tileentity.TileEntitySign;
 
 public final class TileEntitySignRenderer extends TileEntitySpecialRenderer {
-    private SignModel modelSign = new SignModel();
+    private SignModel signModel = new SignModel();
 
-    public final void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks) {
+    public final void renderTileEntityMobSpawner(TileEntity tileEntity, double x, double y, double z, float partialTicks) {
         TileEntitySign tileEntitySign18 = (TileEntitySign)tileEntity;
         GL11.glPushMatrix();
         GL11.glTranslatef((float)x + 0.5F, (float)y + 0.75F, (float)z + 0.5F);
@@ -17,8 +17,8 @@ public final class TileEntitySignRenderer extends TileEntitySpecialRenderer {
         this.bindTextureByName("/item/sign.png");
         GL11.glPushMatrix();
         GL11.glScalef(1.0F, -1.0F, -1.0F);
-        SignModel signModel3 = this.modelSign;
-        this.modelSign.signBoard.render(0.0625F);
+        SignModel signModel3 = this.signModel;
+        this.signModel.signBoard.render(0.0625F);
         signModel3.signStick.render(0.0625F);
         GL11.glPopMatrix();
         GL11.glTranslatef(0.0F, 0.5F, 0.09F);
@@ -30,9 +30,9 @@ public final class TileEntitySignRenderer extends TileEntitySpecialRenderer {
             String string20 = tileEntitySign18.signText[i19];
             if(i19 == tileEntitySign18.lineBeingEdited) {
                 string20 = "> " + string20 + " <";
-                fontRenderer17.drawString(string20, -fontRenderer17.width(string20) / 2, i19 * 10 - tileEntitySign18.signText.length * 5, 0);
+                fontRenderer17.drawString(string20, -fontRenderer17.getStringWidth(string20) / 2, i19 * 10 - tileEntitySign18.signText.length * 5, 0);
             } else {
-                fontRenderer17.drawString(string20, -fontRenderer17.width(string20) / 2, i19 * 10 - tileEntitySign18.signText.length * 5, 0);
+                fontRenderer17.drawString(string20, -fontRenderer17.getStringWidth(string20) / 2, i19 * 10 - tileEntitySign18.signText.length * 5, 0);
             }
         }
 

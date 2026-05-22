@@ -8,19 +8,19 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public abstract class BlockFluid extends Block {
-    protected int liquidType = 1;
+    protected int fluidType = 1;
 
     protected BlockFluid(int i1, Material material2) {
         super(i1, ((material2 == Material.lava ? 14 : 12) << 4) + 13, material2);
         if(material2 == Material.lava) {
-            this.liquidType = 2;
+            this.fluidType = 2;
         }
 
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         this.setTickOnLoad(true);
     }
 
-    public static float getFluidHeightPercent(int fluidHeight) {
+    public static float getPercentAir(int fluidHeight) {
         if(fluidHeight >= 8) {
             fluidHeight = 0;
         }
@@ -61,8 +61,8 @@ public abstract class BlockFluid extends Block {
         return flag && metadata == 0;
     }
 
-    public final boolean getIsBlockSolid(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
-        return iBlockAccess.getBlockMaterial(x, y, z) == this.blockMaterial ? false : (metadata == 1 ? true : super.getIsBlockSolid(iBlockAccess, x, y, z, metadata));
+    public final boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
+        return iBlockAccess.getBlockMaterial(x, y, z) == this.blockMaterial ? false : (metadata == 1 ? true : super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata));
     }
 
     public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
@@ -118,35 +118,35 @@ public abstract class BlockFluid extends Block {
 
         if(iBlockAccess.getBlockMetadata(x, y, z) >= 8) {
             boolean z11 = false;
-            if(this.getIsBlockSolid(iBlockAccess, x, y, z - 1, 2)) {
+            if(this.shouldSideBeRendered(iBlockAccess, x, y, z - 1, 2)) {
                 z11 = true;
             }
 
-            if(z11 || this.getIsBlockSolid(iBlockAccess, x, y, z + 1, 3)) {
+            if(z11 || this.shouldSideBeRendered(iBlockAccess, x, y, z + 1, 3)) {
                 z11 = true;
             }
 
-            if(z11 || this.getIsBlockSolid(iBlockAccess, x - 1, y, z, 4)) {
+            if(z11 || this.shouldSideBeRendered(iBlockAccess, x - 1, y, z, 4)) {
                 z11 = true;
             }
 
-            if(z11 || this.getIsBlockSolid(iBlockAccess, x + 1, y, z, 5)) {
+            if(z11 || this.shouldSideBeRendered(iBlockAccess, x + 1, y, z, 5)) {
                 z11 = true;
             }
 
-            if(z11 || this.getIsBlockSolid(iBlockAccess, x, y + 1, z - 1, 2)) {
+            if(z11 || this.shouldSideBeRendered(iBlockAccess, x, y + 1, z - 1, 2)) {
                 z11 = true;
             }
 
-            if(z11 || this.getIsBlockSolid(iBlockAccess, x, y + 1, z + 1, 3)) {
+            if(z11 || this.shouldSideBeRendered(iBlockAccess, x, y + 1, z + 1, 3)) {
                 z11 = true;
             }
 
-            if(z11 || this.getIsBlockSolid(iBlockAccess, x - 1, y + 1, z, 4)) {
+            if(z11 || this.shouldSideBeRendered(iBlockAccess, x - 1, y + 1, z, 4)) {
                 z11 = true;
             }
 
-            if(z11 || this.getIsBlockSolid(iBlockAccess, x + 1, y + 1, z, 5)) {
+            if(z11 || this.shouldSideBeRendered(iBlockAccess, x + 1, y + 1, z, 5)) {
                 z11 = true;
             }
 
@@ -184,21 +184,16 @@ public abstract class BlockFluid extends Block {
     }
 
     public final void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-        if(rand.nextInt(128) == -1 && world.getBlockMaterial(x, y + 1, z).getIsSolid()) {
-            if(this.blockMaterial == Material.lava) {
-                world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.lava", rand.nextFloat() * 0.25F + 0.75F, rand.nextFloat() * 0.5F + 0.3F);
-            }
-
-            if(this.blockMaterial == Material.water) {
-                world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.water", rand.nextFloat() * 0.25F + 0.75F, rand.nextFloat() + 0.5F);
-            }
+        int i6;
+        if(this.blockMaterial == Material.water && rand.nextInt(64) == 0 && (i6 = world.getBlockMetadata(x, y, z)) > 0 && i6 < 8) {
+            world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.water", rand.nextFloat() * 0.25F + 0.75F, rand.nextFloat() + 0.5F);
         }
 
         if(this.blockMaterial == Material.lava && world.getBlockMaterial(x, y + 1, z) == Material.air && !world.isBlockNormalCube(x, y + 1, z) && rand.nextInt(100) == 0) {
-            double d6 = (double)((float)x + rand.nextFloat());
+            double d12 = (double)((float)x + rand.nextFloat());
             double d8 = (double)y + this.maxY;
             double d10 = (double)((float)z + rand.nextFloat());
-            world.spawnParticle("lava", d6, d8, d10, 0.0D, 0.0D, 0.0D);
+            world.spawnParticle("lava", d12, d8, d10, 0.0D, 0.0D, 0.0D);
         }
 
     }

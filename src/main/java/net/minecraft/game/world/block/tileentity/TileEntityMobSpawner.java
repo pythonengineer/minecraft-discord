@@ -47,7 +47,11 @@ public class TileEntityMobSpawner extends TileEntity {
                 --this.delay;
             } else {
                 for(int i7 = 0; i7 < 4; ++i7) {
-                    EntityLiving entityLiving8 = (EntityLiving)EntityList.createEntityByName(this.mobID, this.worldObj);
+                    EntityLiving entityLiving8;
+                    if((entityLiving8 = (EntityLiving)EntityList.createEntityInWorld(this.mobID, this.worldObj)) == null) {
+                        return;
+                    }
+
                     if(this.worldObj.getEntitiesWithinAABB(entityLiving8.getClass(), (new AxisAlignedBB((double)this.xCoord, (double)this.yCoord, (double)this.zCoord, (double)(this.xCoord + 1), (double)(this.yCoord + 1), (double)(this.zCoord + 1))).expand(8.0D, 4.0D, 8.0D)).size() >= 6) {
                         this.updateDelay();
                         return;
@@ -57,9 +61,9 @@ public class TileEntityMobSpawner extends TileEntity {
                         double d10 = (double)this.xCoord + (this.worldObj.rand.nextDouble() - this.worldObj.rand.nextDouble()) * 4.0D;
                         double d12 = (double)(this.yCoord + this.worldObj.rand.nextInt(3) - 1);
                         double d14 = (double)this.zCoord + (this.worldObj.rand.nextDouble() - this.worldObj.rand.nextDouble()) * 4.0D;
-                        entityLiving8.setLocationAndAngles(d10, d12, d14, this.worldObj.rand.nextFloat() * 360.0F, 0.0F);
+                        entityLiving8.setPositionAndRotation(d10, d12, d14, this.worldObj.rand.nextFloat() * 360.0F, 0.0F);
                         if(entityLiving8.getCanSpawnHere(d10, d12, d14)) {
-                            this.worldObj.entityJoinedWorld(entityLiving8);
+                            this.worldObj.spawnEntityInWorld(entityLiving8);
 
                             for(int i9 = 0; i9 < 20; ++i9) {
                                 d33 = (double)this.xCoord + 0.5D + ((double)this.worldObj.rand.nextFloat() - 0.5D) * 2.0D;

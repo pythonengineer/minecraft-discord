@@ -11,7 +11,7 @@ final class MinecartTrackLogic {
     private int trackX;
     private int trackY;
     private int trackZ;
-    private int connection;
+    private int trackMetadata;
     private List connectedTracks;
     private BlockMinecartTrack minecartTrack;
 
@@ -22,41 +22,41 @@ final class MinecartTrackLogic {
         this.trackX = i3;
         this.trackY = i4;
         this.trackZ = i5;
-        this.connection = world2.getBlockMetadata(i3, i4, i5);
-        this.setConnections();
+        this.trackMetadata = world2.getBlockMetadata(i3, i4, i5);
+        this.calculateConnectedTracks();
     }
 
-    private void setConnections() {
+    private void calculateConnectedTracks() {
         this.connectedTracks.clear();
-        if(this.connection == 0) {
+        if(this.trackMetadata == 0) {
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
-        } else if(this.connection == 1) {
+        } else if(this.trackMetadata == 1) {
             this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
             this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
-        } else if(this.connection == 2) {
+        } else if(this.trackMetadata == 2) {
             this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
             this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY + 1, this.trackZ));
-        } else if(this.connection == 3) {
+        } else if(this.trackMetadata == 3) {
             this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY + 1, this.trackZ));
             this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
-        } else if(this.connection == 4) {
+        } else if(this.trackMetadata == 4) {
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY + 1, this.trackZ - 1));
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
-        } else if(this.connection == 5) {
+        } else if(this.trackMetadata == 5) {
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY + 1, this.trackZ + 1));
-        } else if(this.connection == 6) {
+        } else if(this.trackMetadata == 6) {
             this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
-        } else if(this.connection == 7) {
+        } else if(this.trackMetadata == 7) {
             this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
-        } else if(this.connection == 8) {
+        } else if(this.trackMetadata == 8) {
             this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
         } else {
-            if(this.connection == 9) {
+            if(this.trackMetadata == 9) {
                 this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
                 this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
             }
@@ -179,8 +179,8 @@ final class MinecartTrackLogic {
             b5 = 0;
         }
 
-        this.connection = b5;
-        this.setConnections();
+        this.trackMetadata = b5;
+        this.calculateConnectedTracks();
         this.worldObj.setBlockMetadata(this.trackX, this.trackY, this.trackZ, b5);
 
         for(int i8 = 0; i8 < this.connectedTracks.size(); ++i8) {

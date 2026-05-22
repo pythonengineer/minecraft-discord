@@ -24,32 +24,7 @@ public class ImageBufferDownload {
     }
 
     private void setAreaTransparent(int minX, int minY, int maxX, int maxY) {
-        byte b5 = 32;
-        byte b11 = 64;
-        byte b10 = 0;
-        byte b9 = 32;
-        minY = b9;
-
-        boolean z10000;
-        label43:
-        while(true) {
-            if(minY >= b11) {
-                z10000 = false;
-                break;
-            }
-
-            for(int i6 = b10; i6 < b5; ++i6) {
-                int i7 = this.imageData[minY + i6 * this.imageWidth];
-                if(i7 >>> 24 < 128) {
-                    z10000 = true;
-                    break label43;
-                }
-            }
-
-            ++minY;
-        }
-
-        if(!z10000) {
+        if(!this.hasTransparency(32, 0, 64, 32)) {
             for(minX = 32; minX < 64; ++minX) {
                 for(minY = 0; minY < 32; ++minY) {
                     this.imageData[minX + minY * this.imageWidth] &= 0xFFFFFF;
@@ -66,5 +41,17 @@ public class ImageBufferDownload {
             }
         }
 
+    }
+
+    boolean hasTransparency(int i1, int i2, int i3, int i4) {
+        for(i1 = i1; i1 < i3; ++i1) {
+            for(int i5 = i2; i5 < i4; ++i5) {
+                if(this.imageData[i1 + i5 * this.imageWidth] >>> 24 < 128) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

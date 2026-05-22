@@ -15,9 +15,9 @@ public class EntityFX extends Entity {
 	protected int particleMaxAge = 0;
 	protected float particleScale;
 	protected float particleGravity;
-	protected float particleBlue;
-	protected float particleGreen;
 	protected float particleRed;
+	protected float particleGreen;
+	protected float particleBlue;
 	public static double interpPosX;
 	public static double interpPosY;
 	public static double interpPosZ;
@@ -27,15 +27,15 @@ public class EntityFX extends Entity {
 		this.setSize(0.2F, 0.2F);
 		this.yOffset = this.height / 2.0F;
 		this.setPosition(posX, posY, posZ);
-		this.particleBlue = this.particleGreen = this.particleRed = 1.0F;
-		this.motionZ = speedX + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
+		this.motionX = speedX + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
 		this.motionY = speedY + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
-		this.motionX = speedZ + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
+		this.motionZ = speedZ + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
 		float world1 = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
-		float posX1 = MathHelper.sqrt_double(this.motionZ * this.motionZ + this.motionY * this.motionY + this.motionX * this.motionX);
-		this.motionZ = this.motionZ / (double)posX1 * (double)world1 * (double)0.4F;
-		this.motionY = this.motionY / (double)posX1 * (double)world1 * (double)0.4F + (double)0.1F;
+		float posX1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
 		this.motionX = this.motionX / (double)posX1 * (double)world1 * (double)0.4F;
+		this.motionY = this.motionY / (double)posX1 * (double)world1 * (double)0.4F + (double)0.1F;
+		this.motionZ = this.motionZ / (double)posX1 * (double)world1 * (double)0.4F;
 		this.particleTextureJitterX = this.rand.nextFloat() * 3.0F;
 		this.particleTextureJitterY = this.rand.nextFloat() * 3.0F;
 		this.particleScale = (this.rand.nextFloat() * 0.5F + 0.5F) * 2.0F;
@@ -59,13 +59,13 @@ public class EntityFX extends Entity {
 		}
 
 		this.motionY -= 0.04D * (double)this.particleGravity;
-		this.moveEntity(this.motionZ, this.motionY, this.motionX);
-		this.motionZ *= (double)0.98F;
-		this.motionY *= (double)0.98F;
+		this.moveEntity(this.motionX, this.motionY, this.motionZ);
 		this.motionX *= (double)0.98F;
+		this.motionY *= (double)0.98F;
+		this.motionZ *= (double)0.98F;
 		if(this.onGround) {
-			this.motionZ *= (double)0.7F;
 			this.motionX *= (double)0.7F;
+			this.motionZ *= (double)0.7F;
 		}
 
 	}
@@ -80,7 +80,7 @@ public class EntityFX extends Entity {
 		float f14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
 		float f15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTicks - interpPosZ);
 		partialTicks = this.getBrightness(partialTicks);
-		tessellator.setColorOpaque_F(this.particleBlue * partialTicks, this.particleGreen * partialTicks, this.particleRed * partialTicks);
+		tessellator.setColorOpaque_F(this.particleRed * partialTicks, this.particleGreen * partialTicks, this.particleBlue * partialTicks);
 		tessellator.addVertexWithUV((double)(f13 - rotationX * f12 - rotationXY * f12), (double)(f14 - rotationZ * f12), (double)(f15 - rotationYZ * f12 - rotationXZ * f12), (double)f8, (double)f11);
 		tessellator.addVertexWithUV((double)(f13 - rotationX * f12 + rotationXY * f12), (double)(f14 + rotationZ * f12), (double)(f15 - rotationYZ * f12 + rotationXZ * f12), (double)f8, (double)f10);
 		tessellator.addVertexWithUV((double)(f13 + rotationX * f12 + rotationXY * f12), (double)(f14 + rotationZ * f12), (double)(f15 + rotationYZ * f12 + rotationXZ * f12), (double)f9, (double)f10);

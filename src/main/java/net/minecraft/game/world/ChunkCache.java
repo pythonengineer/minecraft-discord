@@ -11,8 +11,8 @@ public final class ChunkCache implements IBlockAccess {
     private Chunk[][] chunkArray;
     private World worldObj;
 
-    public ChunkCache(World world1, int i2, int i3, int i4, int i5) {
-        this.worldObj = world1;
+    public ChunkCache(World world, int i2, int i3, int i4, int i5) {
+        this.worldObj = world;
         this.chunkX = i2 >> 4;
         this.chunkZ = i3 >> 4;
         i2 = i4 >> 4;
@@ -21,7 +21,7 @@ public final class ChunkCache implements IBlockAccess {
 
         for(i4 = this.chunkX; i4 <= i2; ++i4) {
             for(i5 = this.chunkZ; i5 <= i3; ++i5) {
-                this.chunkArray[i4 - this.chunkX][i5 - this.chunkZ] = world1.getChunkFromChunkCoords(i4, i5);
+                this.chunkArray[i4 - this.chunkX][i5 - this.chunkZ] = world.getChunkFromChunkCoords(i4, i5);
             }
         }
 
@@ -49,30 +49,30 @@ public final class ChunkCache implements IBlockAccess {
         return World.lightBrightnessTable[this.getLightValueExt(i1, i2, i3, true)];
     }
 
-    private int getLightValueExt(int i1, int i2, int i3, boolean z4) {
-        if(i1 >= -32000000 && i3 >= -32000000 && i1 < 32000000 && i3 <= 32000000) {
+    private int getLightValueExt(int x, int y, int z, boolean z4) {
+        if(x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000) {
             int i5;
             int i8;
-            if(!z4 || (i8 = this.getBlockId(i1, i2, i3)) != Block.stairSingle.blockID && i8 != Block.farmland.blockID) {
-                if(i2 < 0) {
+            if(!z4 || (i8 = this.getBlockId(x, y, z)) != Block.stairSingle.blockID && i8 != Block.tilledField.blockID) {
+                if(y < 0) {
                     return 0;
-                } else if(i2 >= 128) {
+                } else if(y >= 128) {
                     if((i8 = 15 - this.worldObj.skylightSubtracted) < 0) {
                         i8 = 0;
                     }
 
                     return i8;
                 } else {
-                    i8 = (i1 >> 4) - this.chunkX;
-                    i5 = (i3 >> 4) - this.chunkZ;
-                    return this.chunkArray[i8][i5].getBlockLightValue(i1 & 15, i2, i3 & 15, this.worldObj.skylightSubtracted);
+                    i8 = (x >> 4) - this.chunkX;
+                    i5 = (z >> 4) - this.chunkZ;
+                    return this.chunkArray[i8][i5].getBlockLightValue(x & 15, y, z & 15, this.worldObj.skylightSubtracted);
                 }
             } else {
-                i5 = this.getLightValueExt(i1, i2 + 1, i3, false);
-                i8 = this.getLightValueExt(i1 + 1, i2, i3, false);
-                int i6 = this.getLightValueExt(i1 - 1, i2, i3, false);
-                int i7 = this.getLightValueExt(i1, i2, i3 + 1, false);
-                i1 = this.getLightValueExt(i1, i2, i3 - 1, false);
+                i5 = this.getLightValueExt(x, y + 1, z, false);
+                i8 = this.getLightValueExt(x + 1, y, z, false);
+                int i6 = this.getLightValueExt(x - 1, y, z, false);
+                int i7 = this.getLightValueExt(x, y, z + 1, false);
+                x = this.getLightValueExt(x, y, z - 1, false);
                 if(i8 > i5) {
                     i5 = i8;
                 }
@@ -85,8 +85,8 @@ public final class ChunkCache implements IBlockAccess {
                     i5 = i7;
                 }
 
-                if(i1 > i5) {
-                    i5 = i1;
+                if(x > i5) {
+                    i5 = x;
                 }
 
                 return i5;
