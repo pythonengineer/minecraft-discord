@@ -1,5 +1,6 @@
 package net.minecraft.game.world.block;
 
+import java.util.ArrayList;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.misc.EntityItem;
@@ -69,6 +70,7 @@ public class Block {
     public static final Block torch;
     public static final BlockFire fire;
     public static final Block mobSpawner;
+    public static final Block stairCompactWood;
     public static final Block chest;
     public static final Block cog;
     public static final Block oreDiamond;
@@ -82,10 +84,11 @@ public class Block {
     public static final Block doorWood;
     public static final Block ladder;
     public static final Block minecartTrack;
+    public static final Block stairCompactStone;
     public int blockIndexInTexture;
     public final int blockID;
-    private float blockHardness;
-    private float blockResistance;
+    protected float blockHardness;
+    protected float blockResistance;
     public double minX;
     public double minY;
     public double minZ;
@@ -117,6 +120,11 @@ public class Block {
         this.blockIndexInTexture = textureIndex;
     }
 
+    protected final Block setStepSound(StepSound soundName) {
+        this.stepSound = soundName;
+        return this;
+    }
+
     protected final Block setLightOpacity(int opacity) {
         lightOpacity[this.blockID] = opacity;
         return this;
@@ -127,7 +135,7 @@ public class Block {
         return this;
     }
 
-    private Block setResistance(float resistance) {
+    protected final Block setResistance(float resistance) {
         this.blockResistance = resistance * 3.0F;
         return this;
     }
@@ -153,7 +161,7 @@ public class Block {
         tickOnLoad[this.blockID] = ticksOnLoad;
     }
 
-    protected final void setBlockBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+    public final void setBlockBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
         this.minX = (double)minX;
         this.minY = (double)minY;
         this.minZ = (double)minZ;
@@ -162,16 +170,16 @@ public class Block {
         this.maxZ = (double)maxZ;
     }
 
-    public float getBlockBrightness(IBlockAccess iBlockAccess, int x, int y, int z) {
-        return iBlockAccess.getBrightness(x, y, z);
+    public float getBlockBrightness(IBlockAccess blockAccess, int x, int y, int z) {
+        return blockAccess.getBrightness(x, y, z);
     }
 
-    public boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
-        return !iBlockAccess.isBlockNormalCube(x, y, z);
+    public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
+        return metadata == 0 && this.minY > 0.0D ? true : (metadata == 1 && this.maxY < 1.0D ? true : (metadata == 2 && this.minZ > 0.0D ? true : (metadata == 3 && this.maxZ < 1.0D ? true : (metadata == 4 && this.minX > 0.0D ? true : (metadata == 5 && this.maxX < 1.0D ? true : !blockAccess.isBlockNormalCube(x, y, z))))));
     }
 
-    public int getBlockTexture(IBlockAccess iBlockAccess, int x, int y, int z, int side) {
-        return this.getBlockTextureFromSideAndMetadata(side, iBlockAccess.getBlockMetadata(x, y, z));
+    public int getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
+        return this.getBlockTextureFromSideAndMetadata(side, blockAccess.getBlockMetadata(x, y, z));
     }
 
     public int getBlockTextureFromSideAndMetadata(int side, int metadata) {
@@ -183,11 +191,19 @@ public class Block {
     }
 
     public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-        return new AxisAlignedBB((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
+        return AxisAlignedBB.getBoundingBoxFromPool((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
+    }
+
+    public void getCollidingBoundingBoxes(World world, int x, int y, int z, AxisAlignedBB aabb, ArrayList arrayList) {
+        AxisAlignedBB world1;
+        if((world1 = this.getCollisionBoundingBoxFromPool(world, x, y, z)) != null && aabb.intersectsWith(world1)) {
+            arrayList.add(world1);
+        }
+
     }
 
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        return new AxisAlignedBB((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
+        return AxisAlignedBB.getBoundingBoxFromPool((double)x + this.minX, (double)y + this.minY, (double)z + this.minZ, (double)x + this.maxX, (double)y + this.maxY, (double)z + this.maxZ);
     }
 
     public boolean isOpaqueCube() {
@@ -257,11 +273,11 @@ public class Block {
         }
     }
 
-    public final void dropBlockAsItem(World world, int x, int y, int z, int metadata) {
+    public void dropBlockAsItem(World world, int x, int y, int z, int metadata) {
         this.dropBlockAsItemWithChance(world, x, y, z, metadata, 1.0F);
     }
 
-    public final void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance) {
+    public void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance) {
         int i7 = this.quantityDropped(world.rand);
 
         for(int i8 = 0; i8 < i7; ++i8) {
@@ -278,7 +294,7 @@ public class Block {
 
     }
 
-    public final float getExplosionResistance() {
+    public float getExplosionResistance(Entity entity) {
         return this.blockResistance / 5.0F;
     }
 
@@ -408,7 +424,7 @@ public class Block {
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer playerEntity) {
     }
 
-    public void velocityToAddToEntity(World world, int x, int y, int z, Vec3D velocityVector) {
+    public void velocityToAddToEntity(World world, int x, int y, int z, Entity entity, Vec3D velocityVector) {
     }
 
     public void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess, int x, int y, int z) {
@@ -584,6 +600,7 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         mobSpawner = block0;
+        stairCompactWood = new BlockStairs(53, planks);
         block10000 = (new BlockChest(54)).setHardness(2.5F);
         stepSound1 = soundWoodFootstep;
         block0 = block10000;
@@ -649,6 +666,7 @@ public class Block {
         block0 = block10000;
         block10000.stepSound = stepSound1;
         minecartTrack = block0;
+        stairCompactStone = new BlockStairs(67, cobblestone);
 
         for(int i2 = 0; i2 < 256; ++i2) {
             if(blocksList[i2] != null) {

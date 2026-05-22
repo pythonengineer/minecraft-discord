@@ -66,12 +66,20 @@ public final class ChunkLoader implements IChunkLoader {
             world1.sizeOnDisk -= file3.length();
         }
 
-        try (OutputStream fos = file3.getOutputStream()) {
+        try {
+            VFile2 file4 = new VFile2(this.saveDir, "tmp_chunk.dat");
+            OutputStream fos = file4.getOutputStream();
             NBTTagCompound nBTTagCompound5 = new NBTTagCompound();
             NBTTagCompound nBTTagCompound6 = new NBTTagCompound();
             nBTTagCompound5.setTag("Level", nBTTagCompound6);
             storeChunkInCompound(chunk2, world1, nBTTagCompound6);
             CompressedStreamTools.writeCompressed(nBTTagCompound5, fos);
+            fos.close();
+            if(file3.exists()) {
+                file3.delete();
+            }
+
+            file4.renameTo(file3);
             world1.sizeOnDisk += file3.length();
         } catch (IOException exception7) {
             exception7.printStackTrace();

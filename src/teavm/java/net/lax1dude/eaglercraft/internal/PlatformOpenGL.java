@@ -343,14 +343,14 @@ public class PlatformOpenGL {
         return new OpenGLObjects.QueryGL(ctx.createQuery());
     }
 
-    public static void _wglGenQueries(java.nio.IntBuffer buffer) {
+    public static void _wglGenQueries(IntBuffer buffer) {
         int i = queryIds;
         for (queryIds = queryIds; queryIds < i + buffer.limit(); ++queryIds) {
             buffer.put(queryIds);
         }
     }
 
-    public static void _wglGetQueryObjectuiv(int id, int pname, java.nio.IntBuffer buffer) {
+    public static void _wglGetQueryObjectuiv(int id, int pname, IntBuffer buffer) {
         QueryGL q = (QueryGL)queries.get(id);
         if (q == null) {
             throw new NullPointerException("Bad query ID for glGetQueryObjectuiv: " + id);

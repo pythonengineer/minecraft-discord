@@ -62,6 +62,8 @@ public class World implements IBlockAccess {
     public long randomSeed;
 	private NBTTagCompound nbtCompoundPlayer;
 	public long sizeOnDisk;
+    private ArrayList collidingBoundingBoxes;
+    private List entitiesWithinAABBExcludingEntity;
 
 	public static NBTTagCompound getLevelData(String worldName) {
 		VFile2 worldFile = new VFile2("saves");
@@ -116,6 +118,8 @@ public class World implements IBlockAccess {
 		this.worldAccesses = new ArrayList();
 		this.randomSeed = 0L;
 		this.sizeOnDisk = 0L;
+        this.collidingBoundingBoxes = new ArrayList();
+        this.entitiesWithinAABBExcludingEntity = new ArrayList();
 		this.saveDirectory = new VFile2("saves", worldName);
 		VFile2 worldFile = new VFile2(this.saveDirectory, "level.dat");
 		this.isNewWorld = !worldFile.exists();
@@ -190,43 +194,74 @@ public class World implements IBlockAccess {
 		}
 	}
 
-    public void saveWorld(boolean saveWorldIndirectly, LoadingScreenRenderer loadingScreenRenderer) {
+    public void saveWorld(boolean saveWorldIndirectly, LoadingScreenRenderer loadingScreen) {
         if(this.chunkProvider.canSave()) {
-            if(loadingScreenRenderer != null) {
-                loadingScreenRenderer.displayProgressMessage();
+            if(loadingScreen != null) {
+                loadingScreen.displayProgressMessage();
             }
 
-            VFile2 file2 = new VFile2(this.saveDirectory, "level.dat");
-            NBTTagCompound nBTTagCompound3;
-            (nBTTagCompound3 = new NBTTagCompound()).setLong("RandomSeed", this.randomSeed);
-            nBTTagCompound3.setInteger("SpawnX", this.spawnX);
-            nBTTagCompound3.setInteger("SpawnY", this.spawnY);
-            nBTTagCompound3.setInteger("SpawnZ", this.spawnZ);
-            nBTTagCompound3.setLong("Time", this.worldTime);
-            nBTTagCompound3.setLong("SizeOnDisk", this.sizeOnDisk);
-            nBTTagCompound3.setLong("LastPlayed", EagRuntime.currentTimeMillis());
-            NBTTagCompound nBTTagCompound4;
-            if(this.playerEntity != null) {
-                nBTTagCompound4 = new NBTTagCompound();
-                this.playerEntity.writeToNBT(nBTTagCompound4);
-                nBTTagCompound3.setCompoundTag("Player", nBTTagCompound4);
+            this.saveLevel();
+            if(loadingScreen != null) {
+                loadingScreen.displayLoadingString("Saving chunks");
             }
 
-            (nBTTagCompound4 = new NBTTagCompound()).setTag("Data", nBTTagCompound3);
+            this.chunkProvider.saveChunks(saveWorldIndirectly, loadingScreen);
+        }
+    }
 
-            try (OutputStream fos = file2.getOutputStream()) {
-                CompressedStreamTools.writeCompressed(nBTTagCompound4, fos);
-            } catch (IOException exception5) {
-                exception5.printStackTrace();
+    private void saveLevel() {
+        NBTTagCompound nBTTagCompound3;
+        (nBTTagCompound3 = new NBTTagCompound()).setLong("RandomSeed", this.randomSeed);
+        nBTTagCompound3.setInteger("SpawnX", this.spawnX);
+        nBTTagCompound3.setInteger("SpawnY", this.spawnY);
+        nBTTagCompound3.setInteger("SpawnZ", this.spawnZ);
+        nBTTagCompound3.setLong("Time", this.worldTime);
+        nBTTagCompound3.setLong("SizeOnDisk", this.sizeOnDisk);
+        nBTTagCompound3.setLong("LastPlayed", EagRuntime.currentTimeMillis());
+        NBTTagCompound nBTTagCompound4;
+        if(this.playerEntity != null) {
+            nBTTagCompound4 = new NBTTagCompound();
+            this.playerEntity.writeToNBT(nBTTagCompound4);
+            nBTTagCompound3.setCompoundTag("Player", nBTTagCompound4);
+        }
+
+        (nBTTagCompound4 = new NBTTagCompound()).setTag("Data", nBTTagCompound3);
+
+        VFile2 file6 = new VFile2(this.saveDirectory, "level.dat_new");
+        try (OutputStream fos = file6.getOutputStream()) {
+            VFile2 file3 = new VFile2(this.saveDirectory, "level.dat_old");
+            VFile2 file4 = new VFile2(this.saveDirectory, "level.dat");
+            CompressedStreamTools.writeCompressed(nBTTagCompound4, fos);
+            if(file3.exists()) {
+                file3.delete();
             }
 
-            if(loadingScreenRenderer != null) {
-                loadingScreenRenderer.displayLoadingString("Saving chunks");
+            file4.renameTo(file3);
+            if(file4.exists()) {
+                file4.delete();
             }
 
-            this.chunkProvider.saveChunks(saveWorldIndirectly, loadingScreenRenderer);
+            file6.renameTo(file4);
+            if(file6.exists()) {
+                file6.delete();
+            }
+
+        } catch (IOException exception5) {
+            exception5.printStackTrace();
         }
 	}
+
+    public final boolean saveWorld(int i1) {
+        if(!this.chunkProvider.canSave()) {
+            return true;
+        } else {
+            if(i1 == 0) {
+                this.saveLevel();
+            }
+
+            return this.chunkProvider.saveChunks(false, (LoadingScreenRenderer)null);
+        }
+    }
 
     public final int getBlockId(int x, int y, int z) {
         return x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000 ? (y <= 0 ? 0 : (y >= 128 ? 0 : this.getChunkFromChunkCoords(x >> 4, z >> 4).getBlockID(x & 15, y, z & 15))) : 0;
@@ -619,7 +654,7 @@ public class World implements IBlockAccess {
                     }
 
                     Vec3D vec3D30;
-                    i7 = (int)((vec3D30 = new Vec3D(vector1.xCoord, vector1.yCoord, vector1.zCoord)).xCoord = (double)MathHelper.floor_double(vector1.xCoord));
+                    i7 = (int)((vec3D30 = Vec3D.createVector(vector1.xCoord, vector1.yCoord, vector1.zCoord)).xCoord = (double)MathHelper.floor_double(vector1.xCoord));
                     if(b29 == 5) {
                         --i7;
                         ++vec3D30.xCoord;
@@ -729,39 +764,38 @@ public class World implements IBlockAccess {
 	}
 
     public final List getCollidingBoundingBoxes(Entity entity, AxisAlignedBB aabb) {
-        ArrayList arrayList3 = new ArrayList();
-        int i4 = MathHelper.floor_double(aabb.minX);
-        int i5 = MathHelper.floor_double(aabb.maxX + 1.0D);
-        int i6 = MathHelper.floor_double(aabb.minY);
-        int i7 = MathHelper.floor_double(aabb.maxY + 1.0D);
-        int i8 = MathHelper.floor_double(aabb.minZ);
-        int i9 = MathHelper.floor_double(aabb.maxZ + 1.0D);
+        this.collidingBoundingBoxes.clear();
+        int i3 = MathHelper.floor_double(aabb.minX);
+        int i4 = MathHelper.floor_double(aabb.maxX + 1.0D);
+        int i5 = MathHelper.floor_double(aabb.minY);
+        int i6 = MathHelper.floor_double(aabb.maxY + 1.0D);
+        int i7 = MathHelper.floor_double(aabb.minZ);
+        int i8 = MathHelper.floor_double(aabb.maxZ + 1.0D);
 
-        AxisAlignedBB axisAlignedBB13;
-        for(i4 = i4; i4 < i5; ++i4) {
-            for(int i10 = i6 - 1; i10 < i7; ++i10) {
-                for(int i11 = i8; i11 < i9; ++i11) {
-                    Block block12;
-                    if((block12 = Block.blocksList[this.getBlockId(i4, i10, i11)]) != null && (axisAlignedBB13 = block12.getCollisionBoundingBoxFromPool(this, i4, i10, i11)) != null && aabb.intersectsWith(axisAlignedBB13)) {
-                        arrayList3.add(axisAlignedBB13);
+        for(i3 = i3; i3 < i4; ++i3) {
+            for(int i9 = i5 - 1; i9 < i6; ++i9) {
+                for(int i10 = i7; i10 < i8; ++i10) {
+                    Block block11;
+                    if((block11 = Block.blocksList[this.getBlockId(i3, i9, i10)]) != null) {
+                        block11.getCollidingBoundingBoxes(this, i3, i9, i10, aabb, this.collidingBoundingBoxes);
                     }
                 }
             }
         }
 
-        List list14 = this.getEntitiesWithinAABBExcludingEntity(entity, aabb.expand(0.25D, 0.25D, 0.25D));
+        List list12 = this.getEntitiesWithinAABBExcludingEntity(entity, aabb.expand(0.25D, 0.25D, 0.25D));
 
-        for(int i15 = 0; i15 < list14.size(); ++i15) {
-            if((axisAlignedBB13 = ((Entity)list14.get(i15)).getBoundingBox()) != null) {
-                arrayList3.add(axisAlignedBB13);
+        for(int i13 = 0; i13 < list12.size(); ++i13) {
+            if((aabb = ((Entity)list12.get(i13)).getBoundingBox()) != null) {
+                this.collidingBoundingBoxes.add(aabb);
             }
 
-            if((axisAlignedBB13 = entity.getCollisionBox((Entity)list14.get(i15))) != null) {
-                arrayList3.add(axisAlignedBB13);
+            if((aabb = entity.getCollisionBox((Entity)list12.get(i13))) != null) {
+                this.collidingBoundingBoxes.add(aabb);
             }
         }
 
-        return arrayList3;
+        return this.collidingBoundingBoxes;
     }
 
     private int calculateSkylightSubtracted(float partialTicks) {
@@ -792,7 +826,7 @@ public class World implements IBlockAccess {
 		f2 *= partialTicks;
 		f3 *= partialTicks;
 		f4 *= partialTicks;
-		return new Vec3D((double)f2, (double)f3, (double)f4);
+		return Vec3D.createVector((double)f2, (double)f3, (double)f4);
 	}
 
     public final float getCelestialAngle(float partialTicks) {
@@ -825,7 +859,7 @@ public class World implements IBlockAccess {
 		f2 *= partialTicks * 0.9F + 0.1F;
 		f3 *= partialTicks * 0.9F + 0.1F;
 		f4 *= partialTicks * 0.85F + 0.15F;
-		return new Vec3D((double)f2, (double)f3, (double)f4);
+		return Vec3D.createVector((double)f2, (double)f3, (double)f4);
 	}
 
 	public final Vec3D getFogColor(float partialTicks) {
@@ -843,7 +877,7 @@ public class World implements IBlockAccess {
 		f2 *= partialTicks * 0.94F + 0.06F;
 		f3 *= partialTicks * 0.94F + 0.06F;
 		f4 *= partialTicks * 0.91F + 0.09F;
-		return new Vec3D((double)f2, (double)f3, (double)f4);
+		return Vec3D.createVector((double)f2, (double)f3, (double)f4);
 	}
 
 	public final float getStarBrightness(float partialTicks) {
@@ -1067,7 +1101,7 @@ public class World implements IBlockAccess {
         int i8 = MathHelper.floor_double(aabb.minZ);
         int i18 = MathHelper.floor_double(aabb.maxZ + 1.0D);
         boolean z9 = false;
-        Vec3D vec3D10 = new Vec3D(0.0D, 0.0D, 0.0D);
+        Vec3D vec3D10 = Vec3D.createVector(0.0D, 0.0D, 0.0D);
 
         for(i4 = i4; i4 < i5; ++i4) {
             for(int i11 = i6; i11 < i7; ++i11) {
@@ -1077,7 +1111,7 @@ public class World implements IBlockAccess {
                         double d16 = (double)((float)(i11 + 1) - BlockFluid.getPercentAir(this.getBlockMetadata(i4, i11, i12)));
                         if((double)i7 >= d16) {
                             z9 = true;
-                            block13.velocityToAddToEntity(this, i4, i11, i12, vec3D10);
+                            block13.velocityToAddToEntity(this, i4, i11, i12, entity, vec3D10);
                         }
                     }
                 }
@@ -1154,7 +1188,7 @@ public class World implements IBlockAccess {
 							int i41 = MathHelper.floor_double(d36);
 							int i42;
 							if((i42 = world66.getBlockId(i39, i40, i41)) > 0) {
-								f31 -= (Block.blocksList[i42].getExplosionResistance() + 0.3F) * 0.3F;
+								f31 -= (Block.blocksList[i42].getExplosionResistance(entity) + 0.3F) * 0.3F;
 							}
 
 							if(f31 > 0.0F) {
@@ -1177,8 +1211,8 @@ public class World implements IBlockAccess {
 		int i72 = MathHelper.floor_double(d13 + (double)f3 + 1.0D);
 		int i24 = MathHelper.floor_double(d15 - (double)f3 - 1.0D);
 		int i73 = MathHelper.floor_double(d15 + (double)f3 + 1.0D);
-		List list26 = world66.getEntitiesWithinAABBExcludingEntity(entity, new AxisAlignedBB((double)i69, (double)i71, (double)i24, (double)i7, (double)i72, (double)i73));
-		Vec3D vec3D74 = new Vec3D(d11, d13, d15);
+		List list26 = world66.getEntitiesWithinAABBExcludingEntity(entity, AxisAlignedBB.getBoundingBoxFromPool((double)i69, (double)i71, (double)i24, (double)i7, (double)i72, (double)i73));
+		Vec3D vec3D74 = Vec3D.createVector(d11, d13, d15);
 
 		double d38;
 		double d65;
@@ -1259,7 +1293,7 @@ public class World implements IBlockAccess {
 					double d14 = aabb.minX + (aabb.maxX - aabb.minX) * (double)f11;
 					double d16 = aabb.minY + (aabb.maxY - aabb.minY) * (double)f12;
 					double d18 = aabb.minZ + (aabb.maxZ - aabb.minZ) * (double)f13;
-                    Vec3D vec3D15 = new Vec3D(d14, d16, d18);
+                    Vec3D vec3D15 = Vec3D.createVector(d14, d16, d18);
                     if(this.rayTraceBlocks_do(vec3D15, vector, false) == null) {
                         ++i9;
                     }
@@ -1620,21 +1654,21 @@ public class World implements IBlockAccess {
 	}
 
 	public final List getEntitiesWithinAABBExcludingEntity(Entity entity, AxisAlignedBB aabb) {
+	    this.entitiesWithinAABBExcludingEntity.clear();
 		int i3 = MathHelper.floor_double((aabb.minX - 2.0D) / 16.0D);
 		int i4 = MathHelper.floor_double((aabb.maxX + 2.0D) / 16.0D);
 		int i5 = MathHelper.floor_double((aabb.minZ - 2.0D) / 16.0D);
 		int i6 = MathHelper.floor_double((aabb.maxZ + 2.0D) / 16.0D);
-		ArrayList arrayList7 = new ArrayList();
 
 		for(i3 = i3; i3 <= i4; ++i3) {
 			for(int i8 = i5; i8 <= i6; ++i8) {
 				if(this.chunkExists(i3, i8)) {
-					this.getChunkFromChunkCoords(i3, i8).getEntitiesOfTypeWithinAABB(entity, aabb, arrayList7);
+					this.getChunkFromChunkCoords(i3, i8).getEntitiesOfTypeWithinAABB(entity, aabb, this.entitiesWithinAABBExcludingEntity);
 				}
 			}
 		}
 
-		return arrayList7;
+        return this.entitiesWithinAABBExcludingEntity;
 	}
 
     public final List getEntitiesWithinAABB(Class<? extends Entity> entityClass, AxisAlignedBB aabb) {

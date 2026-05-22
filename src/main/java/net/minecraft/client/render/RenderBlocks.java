@@ -32,85 +32,12 @@ public final class RenderBlocks {
     public final boolean renderBlockByRenderType(Block block, int x, int y, int z) {
         int i5 = block.getRenderType();
         block.setBlockBoundsBasedOnState(this.blockAccess, x, y, z);
-        Tessellator tessellator6;
-        float f18;
-        boolean z63;
         if(i5 == 0) {
-            tessellator6 = Tessellator.instance;
-            z63 = false;
-            float f66 = block.getBlockBrightness(this.blockAccess, x, y, z);
-            if(block.shouldSideBeRendered(this.blockAccess, x, y - 1, z, 0)) {
-                f18 = block.getBlockBrightness(this.blockAccess, x, y - 1, z);
-                if(Block.lightValue[block.blockID] > 0) {
-                    f18 = 1.0F;
-                }
-
-                tessellator6.setColorOpaque_F(0.5F * f18, 0.5F * f18, 0.5F * f18);
-                this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 0));
-                z63 = true;
-            }
-
-            if(block.shouldSideBeRendered(this.blockAccess, x, y + 1, z, 1)) {
-                f18 = block.getBlockBrightness(this.blockAccess, x, y + 1, z);
-                if(block.maxY != 1.0D && !block.blockMaterial.getIsLiquid()) {
-                    f18 = f66;
-                }
-
-                if(Block.lightValue[block.blockID] > 0) {
-                    f18 = 1.0F;
-                }
-
-                tessellator6.setColorOpaque_F(f18 * 1.0F, f18 * 1.0F, f18 * 1.0F);
-                this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 1));
-                z63 = true;
-            }
-
-            if(block.shouldSideBeRendered(this.blockAccess, x, y, z - 1, 2)) {
-                f18 = block.getBlockBrightness(this.blockAccess, x, y, z - 1);
-                if(Block.lightValue[block.blockID] > 0) {
-                    f18 = 1.0F;
-                }
-
-                tessellator6.setColorOpaque_F(0.8F * f18, 0.8F * f18, 0.8F * f18);
-                this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 2));
-                z63 = true;
-            }
-
-            if(block.shouldSideBeRendered(this.blockAccess, x, y, z + 1, 3)) {
-                f18 = block.getBlockBrightness(this.blockAccess, x, y, z + 1);
-                if(Block.lightValue[block.blockID] > 0) {
-                    f18 = 1.0F;
-                }
-
-                tessellator6.setColorOpaque_F(0.8F * f18, 0.8F * f18, 0.8F * f18);
-                this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 3));
-                z63 = true;
-            }
-
-            if(block.shouldSideBeRendered(this.blockAccess, x - 1, y, z, 4)) {
-                f18 = block.getBlockBrightness(this.blockAccess, x - 1, y, z);
-                if(Block.lightValue[block.blockID] > 0) {
-                    f18 = 1.0F;
-                }
-
-                tessellator6.setColorOpaque_F(0.6F * f18, 0.6F * f18, 0.6F * f18);
-                this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 4));
-                z63 = true;
-            }
-
-            if(block.shouldSideBeRendered(this.blockAccess, x + 1, y, z, 5)) {
-                f18 = block.getBlockBrightness(this.blockAccess, x + 1, y, z);
-                if(Block.lightValue[block.blockID] > 0) {
-                    f18 = 1.0F;
-                }
-
-                tessellator6.setColorOpaque_F(0.6F * f18, 0.6F * f18, 0.6F * f18);
-                this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 5));
-                z63 = true;
-            }
-
-            return z63;
+            return this.renderStandardBlockWithColorMultiplier(block, x, y, z);
         } else {
+            Tessellator tessellator6;
+            boolean z63;
+            float f18;
             float f26;
             float f27;
             float f28;
@@ -745,7 +672,71 @@ public final class RenderBlocks {
                         tessellator6.addVertexWithUV((double)f27, (double)f35, (double)f31, d19, d23);
                         tessellator6.addVertexWithUV((double)f26, (double)f34, (double)f30, d19, d21);
                         return true;
+                    } else if(i5 == 10) {
+                        if((i7 = this.blockAccess.getBlockMetadata(x, y, z)) == 0) {
+                            block.setBlockBounds(0.0F, 0.0F, 0.0F, 0.5F, 0.5F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                            block.setBlockBounds(0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        } else if(i7 == 1) {
+                            block.setBlockBounds(0.0F, 0.0F, 0.0F, 0.5F, 1.0F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                            block.setBlockBounds(0.5F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        } else if(i7 == 2) {
+                            block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 0.5F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                            block.setBlockBounds(0.0F, 0.0F, 0.5F, 1.0F, 1.0F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        } else if(i7 == 3) {
+                            block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                            block.setBlockBounds(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        }
+
+                        block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+                        return false;
+                    } else if(i5 != 11) {
+                        return false;
                     } else {
+                        block.setBlockBounds(0.375F, 0.0F, 0.375F, 0.625F, 1.0F, 0.625F);
+                        this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        boolean z9 = false;
+                        boolean z10 = false;
+                        if(this.blockAccess.getBlockId(x - 1, y, z) == block.blockID || this.blockAccess.getBlockId(x + 1, y, z) == block.blockID) {
+                            z9 = true;
+                        }
+
+                        if(this.blockAccess.getBlockId(x, y, z - 1) == block.blockID || this.blockAccess.getBlockId(x, y, z + 1) == block.blockID) {
+                            z10 = true;
+                        }
+
+                        if(!z9 && !z10) {
+                            z9 = true;
+                        }
+
+                        if(z9) {
+                            block.setBlockBounds(0.0F, 0.75F, 0.4375F, 1.0F, 0.9375F, 0.5625F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        }
+
+                        if(z10) {
+                            block.setBlockBounds(0.4375F, 0.75F, 0.0F, 0.5625F, 0.9375F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        }
+
+                        if(z9) {
+                            block.setBlockBounds(0.0F, 0.375F, 0.4375F, 1.0F, 0.5625F, 0.5625F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        }
+
+                        if(z10) {
+                            block.setBlockBounds(0.4375F, 0.375F, 0.0F, 0.5625F, 0.5625F, 1.0F);
+                            this.renderStandardBlockWithColorMultiplier(block, x, y, z);
+                        }
+
+                        block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                         return false;
                     }
                 }
@@ -961,6 +952,115 @@ public final class RenderBlocks {
         tessellator6.setColorOpaque_F(0.6F * f8, 0.6F * f8, 0.6F * f8);
         this.renderSouthFace(block, -0.5D, -0.5D, -0.5D, block.getBlockTextureFromSide(5));
         tessellator6.draw();
+    }
+
+    private boolean renderStandardBlockWithColorMultiplier(Block block, int x, int y, int z) {
+        float f8 = 1.0F;
+        float f7 = 1.0F;
+        float f6 = 1.0F;
+        Tessellator tessellator9 = Tessellator.instance;
+        boolean z10 = false;
+        float f11 = 0.5F * f6;
+        float f12 = f6 * 1.0F;
+        float f13 = 0.8F * f6;
+        f6 = 0.6F * f6;
+        float f14 = 0.5F * f7;
+        float f15 = f7 * 1.0F;
+        float f16 = 0.8F * f7;
+        f7 = 0.6F * f7;
+        float f17 = 0.5F * f8;
+        float f18 = f8 * 1.0F;
+        float f19 = 0.8F * f8;
+        f8 = 0.6F * f8;
+        float f20 = block.getBlockBrightness(this.blockAccess, x, y, z);
+        float f21;
+        if(block.shouldSideBeRendered(this.blockAccess, x, y - 1, z, 0)) {
+            f21 = block.getBlockBrightness(this.blockAccess, x, y - 1, z);
+            if(Block.lightValue[block.blockID] > 0) {
+                f21 = 1.0F;
+            }
+
+            tessellator9.setColorOpaque_F(f11 * f21, f14 * f21, f17 * f21);
+            this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 0));
+            z10 = true;
+        }
+
+        if(block.shouldSideBeRendered(this.blockAccess, x, y + 1, z, 1)) {
+            f21 = block.getBlockBrightness(this.blockAccess, x, y + 1, z);
+            if(block.maxY != 1.0D && !block.blockMaterial.getIsLiquid()) {
+                f21 = f20;
+            }
+
+            if(Block.lightValue[block.blockID] > 0) {
+                f21 = 1.0F;
+            }
+
+            tessellator9.setColorOpaque_F(f12 * f21, f15 * f21, f18 * f21);
+            this.renderTopFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 1));
+            z10 = true;
+        }
+
+        if(block.shouldSideBeRendered(this.blockAccess, x, y, z - 1, 2)) {
+            f21 = block.getBlockBrightness(this.blockAccess, x, y, z - 1);
+            if(block.minZ > 0.0D) {
+                f21 = f20;
+            }
+
+            if(Block.lightValue[block.blockID] > 0) {
+                f21 = 1.0F;
+            }
+
+            tessellator9.setColorOpaque_F(f13 * f21, f16 * f21, f19 * f21);
+            this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 2));
+            z10 = true;
+        }
+
+        if(block.shouldSideBeRendered(this.blockAccess, x, y, z + 1, 3)) {
+            f21 = block.getBlockBrightness(this.blockAccess, x, y, z + 1);
+            if(block.maxZ < 1.0D) {
+                f21 = f20;
+            }
+
+            if(Block.lightValue[block.blockID] > 0) {
+                f21 = 1.0F;
+            }
+
+            tessellator9.setColorOpaque_F(f13 * f21, f16 * f21, f19 * f21);
+            this.renderWestFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 3));
+            z10 = true;
+        }
+
+        if(block.shouldSideBeRendered(this.blockAccess, x - 1, y, z, 4)) {
+            f21 = block.getBlockBrightness(this.blockAccess, x - 1, y, z);
+            if(block.minX > 0.0D) {
+                f21 = f20;
+            }
+
+            if(Block.lightValue[block.blockID] > 0) {
+                f21 = 1.0F;
+            }
+
+            tessellator9.setColorOpaque_F(f6 * f21, f7 * f21, f8 * f21);
+            this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 4));
+            z10 = true;
+        }
+
+        if(block.shouldSideBeRendered(this.blockAccess, x + 1, y, z, 5)) {
+            f21 = block.getBlockBrightness(this.blockAccess, x + 1, y, z);
+            if(block.maxX < 1.0D) {
+                f21 = f20;
+            }
+
+            if(Block.lightValue[block.blockID] > 0) {
+                f21 = 1.0F;
+            }
+
+            tessellator9.setColorOpaque_F(f6 * f21, f7 * f21, f8 * f21);
+            this.renderSouthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 5));
+            z10 = true;
+        }
+
+        return z10;
     }
 
 	private void renderBottomFace(Block block, double x, double y, double z, int blockTexture) {

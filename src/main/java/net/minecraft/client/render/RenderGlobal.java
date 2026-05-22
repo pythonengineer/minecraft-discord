@@ -1,6 +1,5 @@
 package net.minecraft.client.render;
 
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,10 +7,11 @@ import java.util.List;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
+import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.GLAllocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.effect.EntityBubbleFX;
 import net.minecraft.client.effect.EntityExplodeFX;
@@ -47,7 +47,7 @@ public final class RenderGlobal implements IWorldAccess {
 	private int glRenderListBase;
     private Minecraft mc;
     private RenderBlocks globalRenderBlocks;
-    private java.nio.IntBuffer glOcclusionQueryBase;
+    private IntBuffer glOcclusionQueryBase;
     private boolean occlusionEnabled = false;
     private int cloudTicKCounter = 0;
     private int starGLCallList;
@@ -63,7 +63,7 @@ public final class RenderGlobal implements IWorldAccess {
     private int countEntitiesTotal;
     private int countEntitiesRendered;
     private int countEntitiesHidden;
-    private java.nio.IntBuffer occlusionResult = java.nio.ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
+    private IntBuffer occlusionResult = GLAllocation.createIntBuffer(64);
     private int renderersLoaded;
     private int renderersBeingClipped;
     private int renderersBeingOccluded;
@@ -78,25 +78,25 @@ public final class RenderGlobal implements IWorldAccess {
     private int frustumCheckOffset;
 
     public RenderGlobal(Minecraft mc, RenderEngine renderEngine) {
-        GL11.glGenLists(1);
+        GLAllocation.generateDisplayLists(1);
         this.prevSortX = -9999.0D;
         this.prevSortY = -9999.0D;
         this.prevSortZ = -9999.0D;
         this.frustumCheckOffset = 0;
         this.mc = mc;
         this.renderEngine = renderEngine;
-        this.glRenderListBase = GL11.glGenLists(786432);
+        this.glRenderListBase = GLAllocation.generateDisplayLists(786432);
         this.occlusionEnabled = false & GL11.checkOcclusionQuerySupport();
         if(this.occlusionEnabled) {
             this.occlusionResult.clear();
-            this.glOcclusionQueryBase = java.nio.ByteBuffer.allocateDirect(262144 << 2).order(ByteOrder.nativeOrder()).asIntBuffer();
+            this.glOcclusionQueryBase = GLAllocation.createIntBuffer(262144);
             this.glOcclusionQueryBase.clear();
             this.glOcclusionQueryBase.position(0);
             this.glOcclusionQueryBase.limit(262144);
             GL11.glGenQueriesARB(this.glOcclusionQueryBase);
         }
 
-        this.starGLCallList = GL11.glGenLists(3);
+        this.starGLCallList = GLAllocation.generateDisplayLists(3);
         GL11.glPushMatrix();
         GL11.glNewList(this.starGLCallList, GL11.GL_COMPILE);
         renderStars();
@@ -291,11 +291,7 @@ public final class RenderGlobal implements IWorldAccess {
             double d12 = entity7.posY - lookVector.yCoord;
             double d14 = entity7.posZ - lookVector.zCoord;
             double d16 = d10 * d10 + d12 * d12 + d14 * d14;
-            AxisAlignedBB axisAlignedBB31;
-            double d24 = (axisAlignedBB31 = entity7.boundingBox).maxX - axisAlignedBB31.minX;
-            double d26 = axisAlignedBB31.maxY - axisAlignedBB31.minY;
-            double d28 = axisAlignedBB31.maxZ - axisAlignedBB31.minZ;
-            double d21 = (d24 + d26 + d28) / 3.0D * 64.0D;
+            double d21 = entity7.boundingBox.getAverageEdgeLength() * 64.0D;
             if(d16 < d21 * d21 && frustrum.isBoundingBoxInFrustum(entity6.boundingBox) && (entity6 != this.theWorld.playerEntity || this.mc.gameSettings.thirdPersonView)) {
                 ++this.countEntitiesRendered;
                 RenderManager.instance.renderEntity(entity6, partialTicks);
@@ -894,48 +890,51 @@ public final class RenderGlobal implements IWorldAccess {
     }
 
     public final void drawSelectionBox(EntityPlayer playerEntity, MovingObjectPosition position, int blockId, float partialTime) {
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
-        GL11.glLineWidth(2.0F);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDepthMask(false);
-        blockId = this.theWorld.getBlockId(position.blockX, position.blockY, position.blockZ);
-        if(blockId > 0) {
-            double d6 = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTime;
-            double d8 = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTime;
-            double d10 = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTime;
-            AxisAlignedBB axisAlignedBB = Block.blocksList[blockId].getSelectedBoundingBoxFromPool(this.theWorld, position.blockX, position.blockY, position.blockZ).expand(0.0020000000949949026D, 0.0020000000949949026D, 0.0020000000949949026D).getOffsetBoundingBox(-d6, -d8, -d10);
-            Tessellator t = Tessellator.instance;
-            t.startDrawing(3, DefaultVertexFormats.POSITION);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
-            t.draw();
-            t.startDrawing(3, DefaultVertexFormats.POSITION);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-            t.draw();
-            t.startDrawing(1, DefaultVertexFormats.POSITION);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-            t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-            t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-            t.draw();
+        if(position.typeOfHit == 0) {
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
+            GL11.glLineWidth(2.0F);
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glDepthMask(false);
+            blockId = this.theWorld.getBlockId(position.blockX, position.blockY, position.blockZ);
+            if(blockId > 0) {
+                double d6 = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTime;
+                double d8 = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTime;
+                double d10 = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTime;
+                AxisAlignedBB axisAlignedBB = Block.blocksList[blockId].getSelectedBoundingBoxFromPool(this.theWorld, position.blockX, position.blockY, position.blockZ).expand(0.0020000000949949026D, 0.0020000000949949026D, 0.0020000000949949026D).getOffsetBoundingBox(-d6, -d8, -d10);
+                Tessellator t = Tessellator.instance;
+                t.startDrawing(3, DefaultVertexFormats.POSITION);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
+                t.draw();
+                t.startDrawing(3, DefaultVertexFormats.POSITION);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
+                t.draw();
+                t.startDrawing(1, DefaultVertexFormats.POSITION);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ);
+                t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ);
+                t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
+                t.draw();
+            }
+
+            GL11.glDepthMask(true);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glDisable(GL11.GL_BLEND);
         }
 
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
     }
 
     private void markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {

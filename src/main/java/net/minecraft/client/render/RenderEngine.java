@@ -8,17 +8,17 @@ import java.util.Map;
 
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.ImageData;
+import net.minecraft.client.GLAllocation;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.render.texture.TextureFX;
 
 public class RenderEngine {
     private HashMap textureMap = new HashMap();
     private HashMap textureContentsMap = new HashMap();
-    private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
-    private ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
+    private IntBuffer singleIntBuffer = GLAllocation.createIntBuffer(1);
+    private ByteBuffer imageData = GLAllocation.createDirectByteBuffer(262144);
     private List textureList = new ArrayList();
     private Map urlToImageDataMap = new HashMap();
     private GameSettings options;
@@ -35,7 +35,7 @@ public class RenderEngine {
 		} else {
 			try {
 				this.singleIntBuffer.clear();
-				GL11.glGenTextures(this.singleIntBuffer);
+				GLAllocation.generateDisplayLists(this.singleIntBuffer);
 				int i4 = this.singleIntBuffer.get(0);
 				if(textureName.startsWith("##")) {
 					this.setupTexture(ImageData.loadImageFile("/assets" + textureName.substring(2)), i4);
@@ -103,7 +103,7 @@ public class RenderEngine {
             if(url1.textureName < 0) {
                 ImageData bufferedImage = url1.image;
                 this.singleIntBuffer.clear();
-                GL11.glGenTextures(this.singleIntBuffer);
+                GLAllocation.generateDisplayLists(this.singleIntBuffer);
                 int i5 = this.singleIntBuffer.get(0);
                 this.setupTexture(bufferedImage, i5);
                 this.textureContentsMap.put(Integer.valueOf(i5), bufferedImage);

@@ -43,13 +43,13 @@ public final class BlockFurnace extends BlockContainer {
         world.setBlockMetadata(x, y, z, b9);
     }
 
-    public final int getBlockTexture(IBlockAccess iBlockAccess, int x, int y, int z, int side) {
+    public final int getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
         if(side == 1) {
             return Block.stone.blockIndexInTexture;
         } else if(side == 0) {
             return Block.stone.blockIndexInTexture;
         } else {
-            int i6 = iBlockAccess.getBlockMetadata(x, y, z);
+            int i6 = blockAccess.getBlockMetadata(x, y, z);
             return side != i6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
         }
     }

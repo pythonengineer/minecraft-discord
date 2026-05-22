@@ -106,21 +106,7 @@ public class EntityPainting extends Entity {
 
 		f6 += getArtSize(this.art.sizeY);
 		this.setPosition((double)f5, (double)f6, (double)f7);
-		this.boundingBox = new AxisAlignedBB((double)(f5 - f2), (double)(f6 - f3), (double)(f7 - f4), (double)(f5 + f2), (double)(f6 + f3), (double)(f7 + f4));
-		double d13 = 0.0062500000931322575D;
-		double d11 = 0.0062500000931322575D;
-		double d9 = 0.0062500000931322575D;
-		AxisAlignedBB direction1 = this.boundingBox;
-		double d15 = this.boundingBox.minX;
-		double d17 = direction1.minY;
-		double d19 = direction1.minZ;
-		double d21 = direction1.maxX;
-		double d23 = direction1.maxY;
-		double d25 = direction1.maxZ;
-		d21 -= 0.0062500000931322575D;
-		d23 -= 0.0062500000931322575D;
-		d25 -= 0.0062500000931322575D;
-		this.boundingBox = new AxisAlignedBB(d15, d17, d19, d21, d23, d25);
+        this.boundingBox.setBounds((double)(f5 - f2 - 0.00625F), (double)(f6 - f3 - 0.00625F), (double)(f7 - f4 - 0.00625F), (double)(f5 + f2 + 0.00625F), (double)(f6 + f3 + 0.00625F), (double)(f7 + f4 + 0.00625F));
 	}
 
 	private static float getArtSize(int textureSize) {

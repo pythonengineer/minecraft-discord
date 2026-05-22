@@ -15,7 +15,7 @@ public class EntityCreature extends EntityLiving {
 	}
 
 	protected final boolean canEntityBeSeen(Entity entity) {
-		return this.worldObj.rayTraceBlocks(new Vec3D(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), new Vec3D(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
+		return this.worldObj.rayTraceBlocks(Vec3D.createVector(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), Vec3D.createVector(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
 	}
 
 	public void updatePlayerActionState() {
@@ -75,17 +75,7 @@ public class EntityCreature extends EntityLiving {
             Vec3D vec3D34 = this.pathToEntity.getPosition(this);
             float f35 = this.width * 2.0F;
 
-            while(vec3D34 != null) {
-                double d23 = this.posZ;
-                double d39 = this.posY;
-                double d19 = this.posX;
-                double d25 = d19 - vec3D34.xCoord;
-                double d27 = d39 - vec3D34.yCoord;
-                double d29 = d23 - vec3D34.zCoord;
-                if(d25 * d25 + d27 * d27 + d29 * d29 >= (double)(f35 * f35) || vec3D34.yCoord > (double)i31) {
-                    break;
-                }
-
+            while(vec3D34 != null && vec3D34.squareDistanceTo(this.posX, this.posY, this.posZ) < (double)(f35 * f35) && vec3D34.yCoord <= (double)i31) {
                 this.pathToEntity.incrementPathIndex();
                 if(this.pathToEntity.isFinished()) {
                     vec3D34 = null;

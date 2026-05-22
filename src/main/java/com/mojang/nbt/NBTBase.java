@@ -27,10 +27,7 @@ public abstract class NBTBase {
             return new NBTTagEnd();
         } else {
             NBTBase nBTBase3 = createTagOfType(var1);
-            short var2 = dataInput.readShort();
-            byte[] var4 = new byte[var2];
-            dataInput.readFully(var4);
-            nBTBase3.key = new String(var4, "UTF-8");
+            nBTBase3.key = dataInput.readUTF();
             nBTBase3.readTagContents(dataInput);
             return nBTBase3;
         }
@@ -43,9 +40,7 @@ public abstract class NBTBase {
 	public static void writeNamedTag(NBTBase baseTag, DataOutput dataOutput) throws IOException {
 		dataOutput.writeByte(baseTag.getType());
 		if(baseTag.getType() != 0) {
-			byte[] b2 = baseTag.getKey().getBytes("UTF-8");
-			dataOutput.writeShort(b2.length);
-			dataOutput.write(b2);
+			dataOutput.writeUTF(baseTag.getKey());
 			baseTag.writeTagContents(dataOutput);
 		}
 	}

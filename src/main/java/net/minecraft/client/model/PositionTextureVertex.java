@@ -8,7 +8,7 @@ public final class PositionTextureVertex {
     public float texturePositionY;
 
     public PositionTextureVertex(float posX, float posY, float posZ, float u, float v) {
-        this(new Vec3D((double)posX, (double)posY, (double)posZ), u, v);
+        this(Vec3D.createVectorHelper((double)posX, (double)posY, (double)posZ), u, v);
     }
 
     public final PositionTextureVertex setTexturePosition(float u, float v) {

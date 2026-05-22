@@ -5,12 +5,12 @@ import java.util.List;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.lwjgl.util.glu.GLU;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.GLAllocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
 import net.minecraft.client.controller.PlayerControllerCreative;
@@ -37,7 +37,7 @@ public final class EntityRenderer {
     private EaglercraftRandom random = new EaglercraftRandom();
     private volatile int unusedInt1 = 0;
     private volatile int unusedInt2 = 0;
-    private FloatBuffer fogColorBuffer = BufferUtils.createFloatBuffer(16);
+    private FloatBuffer fogColorBuffer = GLAllocation.createFloatBuffer(16);
     private float fogColorRed;
     private float fogColorGreen;
     private float fogColorBlue;
@@ -83,7 +83,7 @@ public final class EntityRenderer {
         double d3 = this.mc.thePlayer.prevPosX + (entityPlayerSP2.posX - entityPlayerSP2.prevPosX) * (double)partialTicks;
         double d5 = entityPlayerSP2.prevPosY + (entityPlayerSP2.posY - entityPlayerSP2.prevPosY) * (double)partialTicks;
         double d7 = entityPlayerSP2.prevPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.prevPosZ) * (double)partialTicks;
-        return new Vec3D(d3, d5, d7);
+        return Vec3D.createVector(d3, d5, d7);
     }
 
     private void hurtCameraEffect(float partialTicks) {
@@ -361,7 +361,7 @@ public final class EntityRenderer {
                     f55 *= 0.1F;
                     f50 *= 0.1F;
                     f16 *= 0.1F;
-                    if((movingObjectPosition = this.mc.theWorld.rayTraceBlocks(new Vec3D(d67 + (double)f55, d68 + (double)f50, d72 + (double)f16), new Vec3D(d67 - d76 + (double)f55 + (double)f16, d68 - d41 + (double)f50, d72 - d39 + (double)f16))) != null && (d48 = movingObjectPosition.hitVec.distanceTo(new Vec3D(d67, d68, d72))) < d35) {
+                    if((movingObjectPosition = this.mc.theWorld.rayTraceBlocks(Vec3D.createVector(d67 + (double)f55, d68 + (double)f50, d72 + (double)f16), Vec3D.createVector(d67 - d76 + (double)f55 + (double)f16, d68 - d41 + (double)f50, d72 - d39 + (double)f16))) != null && (d48 = movingObjectPosition.hitVec.distanceTo(Vec3D.createVector(d67, d68, d72))) < d35) {
                         d35 = d48;
                     }
                 }
@@ -469,7 +469,6 @@ public final class EntityRenderer {
 
                         if(i73 != i75) {
                             float f77 = ((float)((this.rendererUpdateCount + i70 * 3121 + i71 * 418711) % 32) + f52) / 32.0F;
-                            d38 = (double)((float)i70 + 0.5F) - this.mc.thePlayer.posX;
                             double d78 = (double)((float)i71 + 0.5F) - this.mc.thePlayer.posZ;
                             float f42 = MathHelper.sqrt_double(d38 * d38 + d78 * d78) / 5.0F;
                             GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - f42 * f42) * 0.7F);

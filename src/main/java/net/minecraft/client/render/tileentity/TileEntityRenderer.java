@@ -23,6 +23,9 @@ public final class TileEntityRenderer {
     public static double staticPlayerZ;
     public RenderEngine renderEngine;
     private World worldObj;
+    private double playerX;
+    private double playerY;
+    private double playerZ;
 
     private TileEntityRenderer() {
         this.specialRendererMap.put(TileEntitySign.class, new TileEntitySignRenderer());
@@ -57,12 +60,18 @@ public final class TileEntityRenderer {
         this.worldObj = world;
         this.renderEngine = renderEngine;
         this.fontRenderer = fontRenderer;
+        this.playerX = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTicks;
+        this.playerY = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTicks;
+        this.playerZ = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTicks;
     }
 
     public final void renderTileEntity(TileEntity tileEntity, float partialTicks) {
-        float f3;
-        GL11.glColor3f(f3 = this.worldObj.getBrightness(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord), f3, f3);
-        this.renderTileEntityAt(tileEntity, (double)tileEntity.xCoord - staticPlayerX, (double)tileEntity.yCoord - staticPlayerY, (double)tileEntity.zCoord - staticPlayerZ, partialTicks);
+        if(tileEntity.getDistanceFrom(this.playerX, this.playerY, this.playerZ) < 4096.0D) {
+            float f3;
+            GL11.glColor3f(f3 = this.worldObj.getBrightness(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord), f3, f3);
+            this.renderTileEntityAt(tileEntity, (double)tileEntity.xCoord - staticPlayerX, (double)tileEntity.yCoord - staticPlayerY, (double)tileEntity.zCoord - staticPlayerZ, partialTicks);
+        }
+
     }
 
     public final void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks) {

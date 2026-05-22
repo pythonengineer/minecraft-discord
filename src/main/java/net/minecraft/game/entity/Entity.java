@@ -37,7 +37,7 @@ public abstract class Entity {
 	public float rotationPitch;
 	public float prevRotationYaw;
 	public float prevRotationPitch;
-	public AxisAlignedBB boundingBox = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+    public final AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
 	public boolean onGround = false;
 	public boolean isCollidedHorizontally = false;
 	private boolean surfaceCollision = true;
@@ -67,7 +67,6 @@ public abstract class Entity {
 	public int air = 300;
 	private boolean firstUpdate = true;
 	public String skinUrl;
-    public double S = 0.0D;
     private double entityRiderPitchDelta;
     private double entityRiderYawDelta;
 
@@ -107,24 +106,7 @@ public abstract class Entity {
 		this.posZ = z;
 		float f7 = this.width / 2.0F;
 		float f8 = this.height / 2.0F;
-		double d10001 = x - (double)f7;
-		double d10002 = y - (double)f8;
-		double d10003 = z - (double)f7;
-		double d10004 = x + (double)f7;
-		double d10005 = y + (double)f8;
-		double d20 = z + (double)f7;
-		double d18 = d10005;
-		double d16 = d10004;
-		double d14 = d10003;
-		double d12 = d10002;
-		double d10 = d10001;
-		AxisAlignedBB x1 = this.boundingBox;
-		this.boundingBox.minX = d10;
-		x1.minY = d12;
-		x1.minZ = d14;
-		x1.maxX = d16;
-		x1.maxY = d18;
-		x1.maxZ = d20;
+        this.boundingBox.setBounds(x - (double)f7, y - (double)f8, z - (double)f7, x + (double)f7, y + (double)f8, z + (double)f7);
 	}
 
 	public void onUpdate() {
@@ -268,7 +250,7 @@ public abstract class Entity {
 				y = (double)this.stepHeight;
 				z = d15;
 				AxisAlignedBB axisAlignedBB29 = this.boundingBox.copy();
-				this.boundingBox = axisAlignedBB17.copy();
+                this.boundingBox.setBB(axisAlignedBB17);
 				list18 = this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.addCoord(d11, y, d15));
 
 				for(i27 = 0; i27 < list18.size(); ++i27) {
@@ -308,7 +290,7 @@ public abstract class Entity {
 					x = d30;
 					y = d22;
 					z = d24;
-					this.boundingBox = axisAlignedBB29.copy();
+                    this.boundingBox.setBB(axisAlignedBB29);
 				} else {
 					this.ySize = (float)((double)this.ySize + 0.5D);
 				}
@@ -617,8 +599,8 @@ public abstract class Entity {
             this.motionX = 0.0D;
             this.motionY = 0.0D;
             this.motionZ = 0.0D;
-            this.onEntityUpdate();
-            this.setPosition(this.ridingEntity.posX, this.ridingEntity.posY + (double)this.yOffset + this.ridingEntity.S, this.ridingEntity.posZ);
+            this.onUpdate();
+            this.setPosition(this.ridingEntity.posX, this.ridingEntity.posY + (double)this.yOffset + this.ridingEntity.getYOffset(), this.ridingEntity.posZ);
             this.entityRiderYawDelta += (double)(this.ridingEntity.rotationYaw - this.ridingEntity.prevRotationYaw);
 
             for(this.entityRiderPitchDelta += (double)(this.ridingEntity.rotationPitch - this.ridingEntity.prevRotationPitch); this.entityRiderYawDelta >= 180.0D; this.entityRiderYawDelta -= 360.0D) {
@@ -659,6 +641,10 @@ public abstract class Entity {
             this.rotationYaw = (float)((double)this.rotationYaw + d1);
             this.rotationPitch = (float)((double)this.rotationPitch + d3);
         }
+    }
+
+    public double getYOffset() {
+        return (double)this.height * 0.75D;
     }
 
     public final void mountEntity(Entity entity) {

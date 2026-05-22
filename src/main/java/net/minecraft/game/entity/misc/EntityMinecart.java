@@ -21,6 +21,7 @@ public class EntityMinecart extends Entity implements IInventory {
 	public int damageTaken;
 	public int timeSinceHit;
 	public int forwardDirection;
+    private boolean isInReverse;
 	private static final int[][][] matrix = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
 
 	public EntityMinecart(World world1) {
@@ -29,11 +30,11 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.damageTaken = 0;
 		this.timeSinceHit = 0;
 		this.forwardDirection = 1;
+        this.isInReverse = false;
 		this.preventEntitySpawning = true;
 		this.setSize(0.98F, 0.7F);
 		this.yOffset = this.height / 2.0F;
 		this.canTriggerWalking = false;
-        this.S = -0.4D;
 	}
 
 	public final AxisAlignedBB getCollisionBox(Entity entity1) {
@@ -58,6 +59,10 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.prevPosY = y;
 		this.prevPosZ = z;
 	}
+
+    public final double getYOffset() {
+        return (double)this.height * 0.2D;
+    }
 
 	public final boolean attackEntityFrom(Entity entity1, int i2) {
 		this.forwardDirection = -this.forwardDirection;
@@ -231,24 +236,14 @@ public class EntityMinecart extends Entity implements IInventory {
 				}
 
 				this.setPosition(this.posX, vec3D31.yCoord, this.posZ);
-				if(vec3D31 != null) {
-					Vec3D vec3D36 = this.getPosOffset(this.posX, this.posY, this.posZ, (double)0.3F);
-					Vec3D vec3D37 = this.getPosOffset(this.posX, this.posY, this.posZ, -0.30000001192092896D);
-					if(vec3D36 == null) {
-						vec3D36 = vec3D31;
-					}
+            }
 
-					if(vec3D37 == null) {
-						vec3D37 = vec3D31;
-					}
-
-					Vec3D vec3D34;
-					if((vec3D34 = vec3D37.addVector(-vec3D36.xCoord, -vec3D36.yCoord, -vec3D36.zCoord)).lengthVector() != 0.0D) {
-						vec3D34 = vec3D34.normalize();
-						this.rotationYaw = -((float)(Math.atan2(vec3D34.zCoord, vec3D34.xCoord) * 180.0D / Math.PI));
-						this.rotationPitch = 0.0F;
-					}
-				}
+            int i39 = MathHelper.floor_double(this.posX);
+            int i33 = MathHelper.floor_double(this.posZ);
+            if(i39 != i1 || i33 != i3) {
+                d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                this.motionX = d15 * (double)(i39 - i1);
+                this.motionZ = d15 * (double)(i33 - i3);
 			}
 		} else {
 			if(this.motionX < -0.4D) {
@@ -274,16 +269,22 @@ public class EntityMinecart extends Entity implements IInventory {
 			}
 
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
-			if(this.motionX * this.motionX + this.motionZ * this.motionZ > 0.001D) {
-				this.rotationYaw = -((float)(Math.atan2(this.motionZ, this.motionX) * 180.0D / Math.PI));
-			}
-
 			if(!this.onGround) {
 				this.motionX *= (double)0.95F;
 				this.motionY *= (double)0.95F;
 				this.motionZ *= (double)0.95F;
 			}
 		}
+
+        this.rotationPitch = 0.0F;
+        double d36 = this.prevPosX - this.posX;
+        double d37 = this.prevPosZ - this.posZ;
+        if(d36 * d36 + d37 * d37 > 0.001D) {
+            this.rotationYaw = (float)(Math.atan2(d37, d36) * 180.0D / Math.PI);
+            if(this.isInReverse) {
+                this.rotationYaw += 180.0F;
+            }
+        }
 
         double d38;
         for(d38 = (double)(this.rotationYaw - this.prevRotationYaw); d38 >= 180.0D; d38 -= 360.0D) {
@@ -293,8 +294,9 @@ public class EntityMinecart extends Entity implements IInventory {
             d38 += 360.0D;
         }
 
-        if(d38 < -90.0D || d38 >= 90.0D) {
+        if(d38 < -170.0D || d38 >= 170.0D) {
             this.rotationYaw += 180.0F;
+            this.isInReverse = !this.isInReverse;
         }
 
         float f39 = this.rotationPitch;
@@ -394,7 +396,7 @@ public class EntityMinecart extends Entity implements IInventory {
 				y += 0.5D;
 			}
 
-			return new Vec3D(x, y, z);
+			return Vec3D.createVector(x, y, z);
 		} else {
 			return null;
 		}

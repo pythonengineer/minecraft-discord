@@ -1,6 +1,11 @@
 package net.minecraft.game.physics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class AxisAlignedBB {
+    private static List boundingBoxes = new ArrayList();
+    private static int numBoundingBoxesInUse = 0;
     public double minX;
     public double minY;
     public double minZ;
@@ -8,13 +13,39 @@ public final class AxisAlignedBB {
     public double maxY;
     public double maxZ;
 
-    public AxisAlignedBB(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-        this.minX = minX;
-        this.minY = minY;
-        this.minZ = minZ;
-        this.maxX = maxX;
-        this.maxY = maxY;
-        this.maxZ = maxZ;
+    public static AxisAlignedBB getBoundingBox(double aabbMinX, double aabbMinY, double aabbMinZ, double aabbMaxX, double aabbMaxY, double aabbMaxZ) {
+        return new AxisAlignedBB(aabbMinX, aabbMinY, aabbMinZ, aabbMaxX, aabbMaxY, aabbMaxZ);
+    }
+
+    public static void clearBoundingBoxPool() {
+        numBoundingBoxesInUse = 0;
+    }
+
+    public static AxisAlignedBB getBoundingBoxFromPool(double aabbMinX, double aabbMinY, double aabbMinZ, double aabbMaxX, double aabbMaxY, double aabbMaxZ) {
+        if(numBoundingBoxesInUse >= boundingBoxes.size()) {
+            boundingBoxes.add(getBoundingBox(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D));
+        }
+
+        return ((AxisAlignedBB)boundingBoxes.get(numBoundingBoxesInUse++)).setBounds(aabbMinX, aabbMinY, aabbMinZ, aabbMaxX, aabbMaxY, aabbMaxZ);
+    }
+
+    private AxisAlignedBB(double aabbMinX, double aabbMinY, double aabbMinZ, double aabbMaxX, double aabbMaxY, double aabbMaxZ) {
+        this.minX = aabbMinX;
+        this.minY = aabbMinY;
+        this.minZ = aabbMinZ;
+        this.maxX = aabbMaxX;
+        this.maxY = aabbMaxY;
+        this.maxZ = aabbMaxZ;
+    }
+
+    public final AxisAlignedBB setBounds(double aabbMinX, double aabbMinY, double aabbMinZ, double aabbMaxX, double aabbMaxY, double aabbMaxZ) {
+        this.minX = aabbMinX;
+        this.minY = aabbMinY;
+        this.minZ = aabbMinZ;
+        this.maxX = aabbMaxX;
+        this.maxY = aabbMaxY;
+        this.maxZ = aabbMaxZ;
+        return this;
     }
 
     public final AxisAlignedBB addCoord(double x, double y, double z) {
@@ -48,25 +79,21 @@ public final class AxisAlignedBB {
             d17 += z;
         }
 
-        return new AxisAlignedBB(d7, d9, d11, d13, d15, d17);
+        return getBoundingBoxFromPool(d7, d9, d11, d13, d15, d17);
     }
 
     public final AxisAlignedBB expand(double x, double y, double z) {
-        if(this.minY > this.maxY) {
-            throw new IllegalArgumentException("NOOOOOO!");
-        } else {
-            double d7 = this.minX - x;
-            double d9 = this.minY - y;
-            double d11 = this.minZ - z;
-            double d13 = this.maxX + x;
-            double d15 = this.maxY + y;
-            double d17 = this.maxZ + z;
-            return new AxisAlignedBB(d7, d9, d11, d13, d15, d17);
-        }
+        double d7 = this.minX - x;
+        double d9 = this.minY - y;
+        double d11 = this.minZ - z;
+        double d13 = this.maxX + x;
+        double d15 = this.maxY + y;
+        double d17 = this.maxZ + z;
+        return getBoundingBoxFromPool(d7, d9, d11, d13, d15, d17);
     }
 
     public final AxisAlignedBB getOffsetBoundingBox(double x, double y, double z) {
-        return new AxisAlignedBB(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
+        return getBoundingBoxFromPool(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
     }
 
     public final double calculateXOffset(AxisAlignedBB aabb, double xOffset) {
@@ -146,8 +173,15 @@ public final class AxisAlignedBB {
         return this;
     }
 
+    public final double getAverageEdgeLength() {
+        double d1 = this.maxX - this.minX;
+        double d3 = this.maxY - this.minY;
+        double d5 = this.maxZ - this.minZ;
+        return (d1 + d3 + d5) / 3.0D;
+    }
+
     public final AxisAlignedBB copy() {
-        return new AxisAlignedBB(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
+        return getBoundingBoxFromPool(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 
     public final MovingObjectPosition calculateIntercept(Vec3D vector1, Vec3D vector2) {
@@ -248,5 +282,14 @@ public final class AxisAlignedBB {
 
     private boolean isVecInXY(Vec3D vector) {
         return vector == null ? false : vector.xCoord >= this.minX && vector.xCoord <= this.maxX && vector.yCoord >= this.minY && vector.yCoord <= this.maxY;
+    }
+
+    public final void setBB(AxisAlignedBB aabb) {
+        this.minX = aabb.minX;
+        this.minY = aabb.minY;
+        this.minZ = aabb.minZ;
+        this.maxX = aabb.maxX;
+        this.maxY = aabb.maxY;
+        this.maxZ = aabb.maxZ;
     }
 }

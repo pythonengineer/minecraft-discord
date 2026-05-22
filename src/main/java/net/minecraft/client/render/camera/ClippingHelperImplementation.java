@@ -1,15 +1,15 @@
 package net.minecraft.client.render.camera;
 
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.GLAllocation;
 
 public final class ClippingHelperImplementation extends ClippingHelper {
 	private static ClippingHelperImplementation instance = new ClippingHelperImplementation();
-	private FloatBuffer projectionMatrixBuffer = BufferUtils.createFloatBuffer(16);
-	private FloatBuffer modelviewMatrixBuffer = BufferUtils.createFloatBuffer(16);
-	private FloatBuffer floatBuffer = BufferUtils.createFloatBuffer(16);
+	private FloatBuffer projectionMatrixBuffer = GLAllocation.createFloatBuffer(16);
+	private FloatBuffer modelviewMatrixBuffer = GLAllocation.createFloatBuffer(16);
+	private FloatBuffer floatBuffer = GLAllocation.createFloatBuffer(16);
 
 	public static ClippingHelper getInstance() {
 		ClippingHelperImplementation clippingHelperImplementation0 = instance;

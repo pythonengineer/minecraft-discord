@@ -1,10 +1,10 @@
 package net.minecraft.client.gui;
 
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.ImageData;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
+import net.minecraft.client.GLAllocation;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.Tessellator;
@@ -13,7 +13,7 @@ public final class FontRenderer {
 	private int[] charWidth = new int[256];
 	private int fontTextureName = 0;
 	private int fontDisplayLists;
-	private IntBuffer buffer = BufferUtils.createIntBuffer(1024);
+	private IntBuffer buffer = GLAllocation.createIntBuffer(1024);
 
 	public FontRenderer(GameSettings gameSettings, String fontTextureLocation, RenderEngine renderEngine) {
 	    ImageData img;

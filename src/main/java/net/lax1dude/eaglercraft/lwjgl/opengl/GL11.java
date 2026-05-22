@@ -3658,11 +3658,11 @@ public class GL11 {
         return hasOcclusionQuerySupport;
     }
 
-    public static void glGenQueriesARB(java.nio.IntBuffer buffer) {
+    public static void glGenQueriesARB(IntBuffer buffer) {
         _wglGenQueries(buffer);
     }
 
-    public static void glGetQueryObjectuARB(int id, int pname, java.nio.IntBuffer buffer) {
+    public static void glGetQueryObjectuARB(int id, int pname, IntBuffer buffer) {
         _wglGetQueryObjectuiv(id, pname, buffer);
     }
 

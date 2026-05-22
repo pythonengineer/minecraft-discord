@@ -149,6 +149,12 @@ public class DebugFilesystem implements IEaglerFilesystem {
                 return false;
             }
         }
+        File p = f2.getParentFile();
+        if (!p.isDirectory()) {
+            if (!p.mkdirs()) {
+                throw new EaglerFileSystemException("Could not create parent directory: " + p.getAbsolutePath());
+            }
+        }
         if (f1.renameTo(f2)) {
             deleteParentIfEmpty(f1);
             return true;

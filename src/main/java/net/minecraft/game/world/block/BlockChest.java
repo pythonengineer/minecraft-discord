@@ -20,16 +20,16 @@ public final class BlockChest extends BlockContainer {
 		this.blockIndexInTexture = 26;
 	}
 
-	public final int getBlockTexture(IBlockAccess iBlockAccess, int x, int y, int z, int side) {
+	public final int getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		if(side == 1) {
 			return this.blockIndexInTexture - 1;
 		} else if(side == 0) {
 			return this.blockIndexInTexture - 1;
 		} else {
-			int i6 = iBlockAccess.getBlockId(x, y, z - 1);
-			int i7 = iBlockAccess.getBlockId(x, y, z + 1);
-			int i8 = iBlockAccess.getBlockId(x - 1, y, z);
-			int i9 = iBlockAccess.getBlockId(x + 1, y, z);
+			int i6 = blockAccess.getBlockId(x, y, z - 1);
+			int i7 = blockAccess.getBlockId(x, y, z + 1);
+			int i8 = blockAccess.getBlockId(x - 1, y, z);
+			int i9 = blockAccess.getBlockId(x + 1, y, z);
 			int i10;
 			int i11;
 			int world1;
@@ -60,8 +60,8 @@ public final class BlockChest extends BlockContainer {
 						i10 = -1;
 					}
 
-					i11 = iBlockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z - 1);
-					world1 = iBlockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z + 1);
+					i11 = blockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z - 1);
+					world1 = blockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z + 1);
 					if(side == 3) {
 						i10 = -1 - i10;
 					}
@@ -85,8 +85,8 @@ public final class BlockChest extends BlockContainer {
 					i10 = -1;
 				}
 
-				i11 = iBlockAccess.getBlockId(x - 1, y, i6 == this.blockID ? z - 1 : z + 1);
-				world1 = iBlockAccess.getBlockId(x + 1, y, i6 == this.blockID ? z - 1 : z + 1);
+				i11 = blockAccess.getBlockId(x - 1, y, i6 == this.blockID ? z - 1 : z + 1);
+				world1 = blockAccess.getBlockId(x + 1, y, i6 == this.blockID ? z - 1 : z + 1);
 				if(side == 4) {
 					i10 = -1 - i10;
 				}

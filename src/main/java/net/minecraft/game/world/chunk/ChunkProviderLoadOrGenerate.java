@@ -106,7 +106,12 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
 	private Chunk getChunkAt(int i1, int i2) {
 		try {
-			return this.chunkLoader.loadChunk(this.worldObj, i1, i2);
+            Chunk chunk4;
+            if((chunk4 = this.chunkLoader.loadChunk(this.worldObj, i1, i2)) != null) {
+                chunk4.lastSaveTime = this.worldObj.worldTime;
+            }
+
+            return chunk4;
 		} catch (Exception exception3) {
 			exception3.printStackTrace();
 			return null;
@@ -116,9 +121,10 @@ public final class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	private void saveExtraChunkData(Chunk chunk1) {
 	}
 
-	private void saveChunk(Chunk chunk1) {
+	private void saveChunk(Chunk chunk) {
 		try {
-			this.chunkLoader.saveChunk(this.worldObj, chunk1);
+            chunk.lastSaveTime = this.worldObj.worldTime;
+            this.chunkLoader.saveChunk(this.worldObj, chunk);
 		} catch (IOException iOException2) {
 			iOException2.printStackTrace();
 		}

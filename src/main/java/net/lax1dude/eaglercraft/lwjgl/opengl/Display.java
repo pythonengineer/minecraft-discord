@@ -42,6 +42,9 @@ public class Display {
         return displayMode;
     }
 
+    public static void swapBuffers() {
+    }
+
     public static int getWidth() {
         return PlatformInput.getWindowWidth();
     }

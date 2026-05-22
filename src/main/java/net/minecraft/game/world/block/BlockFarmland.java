@@ -16,7 +16,7 @@ public final class BlockFarmland extends Block {
 	}
 
 	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-		return new AxisAlignedBB((double)x, (double)y, (double)z, (double)(x + 1), (double)(y + 1), (double)(z + 1));
+		return AxisAlignedBB.getBoundingBoxFromPool((double)x, (double)y, (double)z, (double)(x + 1), (double)(y + 1), (double)(z + 1));
 	}
 
 	public final boolean isOpaqueCube() {

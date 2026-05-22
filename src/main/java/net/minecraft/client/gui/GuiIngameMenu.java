@@ -1,14 +1,19 @@
 package net.minecraft.client.gui;
 
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.GuiMainMenu;
 import net.minecraft.game.world.World;
 
 public final class GuiIngameMenu extends GuiScreen {
-	public final void initGui() {
+    private int updateCounter2 = 0;
+    private int updateCounter = 0;
+
+    public final void initGui() {
+        this.updateCounter2 = 0;
 		this.controlList.clear();
-		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4, "Options..."));
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 24, "Save and quit to title.."));
-		this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 120, "Back to game"));
+        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Save and quit to title.."));
+        this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24, "Back to game"));
+        this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96, "Options..."));
 	}
 
 	protected final void actionPerformed(GuiButton button) {
@@ -28,8 +33,19 @@ public final class GuiIngameMenu extends GuiScreen {
 
 	}
 
+    public final void updateScreen() {
+        super.updateScreen();
+        ++this.updateCounter;
+    }
+
     public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
+        if(!this.mc.theWorld.saveWorld(this.updateCounter2++) || this.updateCounter < 20) {
+            float f4 = MathHelper.sin(((float)(this.updateCounter % 10) + partialTicks) / 10.0F * (float)Math.PI * 2.0F) * 0.2F + 0.8F;
+            int i5 = (int)(255.0F * f4);
+            drawString(this.fontRenderer, "Saving level..", 8, this.height - 16, i5 << 16 | i5 << 8 | i5);
+        }
+
         drawCenteredString(this.fontRenderer, "Game menu", this.width / 2, 40, 0xFFFFFF);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

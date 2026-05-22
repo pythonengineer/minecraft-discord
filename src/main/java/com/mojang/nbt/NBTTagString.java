@@ -18,15 +18,11 @@ public final class NBTTagString extends NBTBase {
 	}
 
 	final void writeTagContents(DataOutput dataOutput) throws IOException {
-		byte[] b2 = this.stringValue.getBytes("UTF-8");
-		dataOutput.writeShort(b2.length);
-		dataOutput.write(b2);
+        dataOutput.writeUTF(this.stringValue);
 	}
 
 	final void readTagContents(DataInput dataInput) throws IOException {
-		byte[] b2 = new byte[dataInput.readShort()];
-		dataInput.readFully(b2);
-		this.stringValue = new String(b2, "UTF-8");
+        this.stringValue = dataInput.readUTF();
 	}
 
 	public final byte getType() {

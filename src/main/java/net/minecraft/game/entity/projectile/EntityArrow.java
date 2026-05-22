@@ -92,14 +92,14 @@ public class EntityArrow extends Entity {
 			++this.ticksInAir;
 		}
 
-		Vec3D vec3D1 = new Vec3D(this.posX, this.posY, this.posZ);
-		Vec3D vec3D2 = new Vec3D(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-		MovingObjectPosition movingObjectPosition3 = this.worldObj.rayTraceBlocks(vec3D1, vec3D2);
-		vec3D1 = new Vec3D(this.posX, this.posY, this.posZ);
-		vec3D2 = new Vec3D(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-		if(movingObjectPosition3 != null) {
-			vec3D2 = new Vec3D(movingObjectPosition3.hitVec.xCoord, movingObjectPosition3.hitVec.yCoord, movingObjectPosition3.hitVec.zCoord);
-		}
+        Vec3D vec3D1 = Vec3D.createVector(this.posX, this.posY, this.posZ);
+        Vec3D vec3D2 = Vec3D.createVector(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+        MovingObjectPosition movingObjectPosition3 = this.worldObj.rayTraceBlocks(vec3D1, vec3D2);
+        vec3D1 = Vec3D.createVector(this.posX, this.posY, this.posZ);
+        vec3D2 = Vec3D.createVector(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+        if(movingObjectPosition3 != null) {
+            vec3D2 = Vec3D.createVector(movingObjectPosition3.hitVec.xCoord, movingObjectPosition3.hitVec.yCoord, movingObjectPosition3.hitVec.zCoord);
+        }
 
 		Entity entity4 = null;
 		List list5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));

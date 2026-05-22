@@ -17,12 +17,12 @@ public final class MovingObjectPosition {
         this.blockY = y;
         this.blockZ = z;
         this.sideHit = side;
-        this.hitVec = new Vec3D(hitVector.xCoord, hitVector.yCoord, hitVector.zCoord);
+        this.hitVec = Vec3D.createVector(hitVector.xCoord, hitVector.yCoord, hitVector.zCoord);
     }
 
     public MovingObjectPosition(Entity entity) {
         this.typeOfHit = 1;
         this.entityHit = entity;
-        this.hitVec = new Vec3D(entity.posX, entity.posY, entity.posZ);
+        this.hitVec = Vec3D.createVector(entity.posX, entity.posY, entity.posZ);
     }
 }

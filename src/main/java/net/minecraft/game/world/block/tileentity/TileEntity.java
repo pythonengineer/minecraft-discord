@@ -74,6 +74,13 @@ public class TileEntity {
 		this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
 	}
 
+    public final double getDistanceFrom(double x, double y, double z) {
+        double d7 = (double)this.xCoord + 0.5D - x;
+        double d9 = (double)this.yCoord + 0.5D - y;
+        double d11 = (double)this.zCoord + 0.5D - z;
+        return d7 * d7 + d9 * d9 + d11 * d11;
+    }
+
 	static {
 		addMapping(TileEntityFurnace.class, "Furnace");
 		addMapping(TileEntityChest.class, "Chest");

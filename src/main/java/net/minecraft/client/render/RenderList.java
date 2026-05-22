@@ -1,8 +1,8 @@
 package net.minecraft.client.render;
 
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.client.GLAllocation;
 
 public final class RenderList {
     private int posX;
@@ -11,7 +11,7 @@ public final class RenderList {
     private float playerPosX;
     private float playerPosY;
     private float playerPosZ;
-    private IntBuffer buffer = BufferUtils.createIntBuffer(65536);
+    private IntBuffer buffer = GLAllocation.createIntBuffer(65536);
     private boolean render = false;
     private boolean isCached = false;
 

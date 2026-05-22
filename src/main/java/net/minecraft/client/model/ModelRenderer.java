@@ -2,6 +2,7 @@ package net.minecraft.client.model;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
+import net.minecraft.client.GLAllocation;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.physics.Vec3D;
 
@@ -93,7 +94,7 @@ public final class ModelRenderer {
 			if(!this.compiled) {
 				float f3 = partialTicks;
 				ModelRenderer modelRenderer2 = this;
-				this.displayList = GL11.glGenLists(1);
+				this.displayList = GLAllocation.generateDisplayLists(1);
 				GL11.glNewList(this.displayList, GL11.GL_COMPILE);
 				Tessellator tessellator4 = Tessellator.instance;
 
@@ -103,10 +104,7 @@ public final class ModelRenderer {
 					Tessellator tessellator7 = tessellator4;
 					TexturedQuad texturedQuad6 = texturedQuad10000;
                     Vec3D vec3D9 = texturedQuad10000.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[0].vector3D);
-                    Vec3D vec3D13 = texturedQuad6.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[2].vector3D);
-                    Vec3D vec3D10 = vec3D9;
-                    vec3D9 = vec3D13;
-                    vec3D9 = (new Vec3D(vec3D9.yCoord * vec3D10.zCoord - vec3D9.zCoord * vec3D10.yCoord, vec3D9.zCoord * vec3D10.xCoord - vec3D9.xCoord * vec3D10.zCoord, vec3D9.xCoord * vec3D10.yCoord - vec3D9.yCoord * vec3D10.xCoord)).normalize();
+                    vec3D9 = texturedQuad6.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[2].vector3D).crossProduct(vec3D9).normalize();
                     tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
                     tessellator4.setNormal((float)vec3D9.xCoord, (float)vec3D9.yCoord, (float)vec3D9.zCoord);
 

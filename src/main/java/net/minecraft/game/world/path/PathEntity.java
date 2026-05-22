@@ -23,6 +23,6 @@ public final class PathEntity {
 		float f2 = (float)this.points[this.pathIndex].xCoord + (float)((int)(entity.width + 1.0F)) * 0.5F;
 		float f3 = (float)this.points[this.pathIndex].yCoord;
 		float entity1 = (float)this.points[this.pathIndex].zCoord + (float)((int)(entity.width + 1.0F)) * 0.5F;
-		return new Vec3D((double)f2, (double)f3, (double)entity1);
+		return Vec3D.createVector((double)f2, (double)f3, (double)entity1);
 	}
 }

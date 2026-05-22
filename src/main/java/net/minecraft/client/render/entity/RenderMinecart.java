@@ -45,15 +45,15 @@ public final class RenderMinecart extends Render {
 			d12 += vec3D5.xCoord - d20;
 			d14 = y + ((vec3D7.yCoord + vec3D29.yCoord) / 2.0D - d22);
 			d16 += vec3D5.zCoord - d24;
-			if((vec3D5 = vec3D29.addVector(-vec3D7.xCoord, -vec3D7.yCoord, -vec3D7.zCoord)).lengthVector() != 0.0D) {
-				f3 = -((float)(Math.atan2((vec3D5 = vec3D5.normalize()).zCoord, vec3D5.xCoord) * 180.0D / Math.PI));
+            if((vec3D5 = vec3D29.addVector(-vec3D7.xCoord, -vec3D7.yCoord, -vec3D7.zCoord)).lengthVector() != 0.0D) {
+                f3 = (float)(Math.atan2((vec3D5 = vec3D5.normalize()).zCoord, vec3D5.xCoord) * 180.0D / Math.PI);
 				f27 = (float)(Math.atan(vec3D5.yCoord) * 73.0D);
 			}
 		}
 
 		GL11.glTranslatef((float)d12, (float)d14, (float)d16);
-		GL11.glRotatef(f3, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(f27, 0.0F, 0.0F, 1.0F);
+        GL11.glRotatef(180.0F - f3, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(-f27, 0.0F, 0.0F, 1.0F);
 		float f28 = (float)entityMinecart26.timeSinceHit - partialTicks;
 		if((yaw = (float)entityMinecart26.damageTaken - partialTicks) < 0.0F) {
 			yaw = 0.0F;

@@ -285,12 +285,12 @@ public class PlatformOpenGL {
         return new OpenGLObjects.QueryGL(glGenQueries());
     }
 
-    public static void _wglGenQueries(java.nio.IntBuffer buffer) {
-        glGenQueries(buffer);
+    public static void _wglGenQueries(IntBuffer buffer) {
+        nglGenQueries(buffer.remaining(), EaglerBufferAllocator.getAddress(buffer));
     }
 
-    public static void _wglGetQueryObjectuiv(int id, int pname, java.nio.IntBuffer buffer) {
-        glGetQueryObjectuiv(id, pname, buffer);
+    public static void _wglGetQueryObjectuiv(int id, int pname, IntBuffer buffer) {
+        nglGetQueryObjectuiv(id, pname, EaglerBufferAllocator.getAddress(buffer));
     }
 
     public static void _wglBeginQuery(int target, int query) {

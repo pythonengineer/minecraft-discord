@@ -82,7 +82,7 @@ public abstract class BlockFluid extends Block {
     }
 
     private Vec3D getFlowVector(IBlockAccess iBlockAccess, int x, int y, int z) {
-        Vec3D vec3D5 = new Vec3D(0.0D, 0.0D, 0.0D);
+        Vec3D vec3D5 = Vec3D.createVector(0.0D, 0.0D, 0.0D);
         int i6 = this.getEffectiveFlowDecay(iBlockAccess, x, y, z);
 
         for(int i7 = 0; i7 < 4; ++i7) {

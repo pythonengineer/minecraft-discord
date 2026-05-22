@@ -33,6 +33,7 @@ public final class Chunk {
 	public boolean neverSave;
 	public boolean isChunkRendered;
     public boolean hasEntities;
+    public long lastSaveTime;
 
 	public Chunk(World world, int chunkX, int chunkZ) {
 		this.chunkTileEntityMap = new HashMap();
@@ -41,6 +42,7 @@ public final class Chunk {
 		this.isModified = false;
 		this.isChunkRendered = false;
         this.hasEntities = false;
+        this.lastSaveTime = 0L;
 		this.worldObj = world;
 		this.xPosition = chunkX;
 		this.zPosition = chunkZ;
@@ -400,6 +402,6 @@ public final class Chunk {
     }
 
     public final boolean needsSaving() {
-        return this.neverSave ? false : (this.hasEntities ? true : this.isModified);
+        return this.neverSave ? false : (this.hasEntities && this.worldObj.worldTime != this.lastSaveTime ? true : this.isModified);
     }
 }

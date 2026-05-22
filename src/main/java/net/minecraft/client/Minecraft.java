@@ -51,7 +51,9 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
+import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockSand;
@@ -78,8 +80,6 @@ public class Minecraft implements Runnable {
 	public EntityRenderer entityRenderer = new EntityRenderer(this);
 	private int ticksRan = 0;
 	private int leftClickCounter = 0;
-    public String loadMapUser = null;
-    public int loadMapID = 0;
 	public GuiIngame ingameGUI;
     public boolean skipRenderWorld = false;
 	public MovingObjectPosition objectMouseOver;
@@ -109,7 +109,7 @@ public class Minecraft implements Runnable {
         this.sndManager = new SoundManager();
         this.textureWaterFX = new TextureWaterFX();
         this.textureLavaFX = new TextureLavaFX();
-		this.running = false;
+		this.running = true;
 		this.debug = "";
         this.prevFrameTime = -1L;
         this.inGameHasFocus = false;
@@ -155,17 +155,27 @@ public class Minecraft implements Runnable {
         try {
             System.out.println("Stopping!");
             this.changeWorld((World)null, "");
+
+            try {
+                GLAllocation.deleteTexturesAndDisplayLists();
+            } catch (Exception exception6) {
+            }
+
             this.sndManager.closeMinecraft();
             Mouse.destroy();
             Keyboard.destroy();
         } finally {
             Display.destroy();
         }
+
+        System.gc();
 	}
 
 	public void run() {
 		this.running = true;
 
+        int i11;
+        int i12;
 		try {
 			Minecraft minecraft1 = this;
 	        this.displayWidth = Display.getVisualViewportW() != 0 ? Display.getVisualViewportW() : this.displayWidth;
@@ -196,6 +206,38 @@ public class Minecraft implements Runnable {
 				Display.create();
 			}
 
+
+            this.renderEngine = new RenderEngine(this.gameSettings);
+            this.fontRenderer = new FontRenderer(this.gameSettings, "/default.png", this.renderEngine);
+            ScaledResolution scaledResolution8;
+            i11 = (scaledResolution8 = new ScaledResolution(this)).getScaledWidth();
+            i12 = scaledResolution8.getScaledHeight();
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(0.0D, (double)i11, (double)i12, 0.0D, 1000.0D, 3000.0D);
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
+            GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
+            GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glDisable(GL11.GL_FOG);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            Tessellator tessellator13 = Tessellator.instance;
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/dirt.png"));
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            tessellator13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+            tessellator13.setColorOpaque_I(4210752);
+            tessellator13.addVertexWithUV(0.0D, (double)this.displayHeight, 0.0D, 0.0D, (double)((float)this.displayHeight / 32.0F));
+            tessellator13.addVertexWithUV((double)this.displayWidth, (double)this.displayHeight, 0.0D, (double)((float)this.displayWidth / 32.0F), (double)((float)this.displayHeight / 32.0F));
+            tessellator13.addVertexWithUV((double)this.displayWidth, 0.0D, 0.0D, (double)((float)this.displayWidth / 32.0F), 0.0D);
+            tessellator13.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+            tessellator13.draw();
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+            this.fontRenderer.drawStringWithShadow("Loading...", 8, this.displayHeight / 2 - 16, -1);
+            Display.swapBuffers();
 			Keyboard.create();
 			Mouse.create();
 			Display.update();
@@ -213,7 +255,6 @@ public class Minecraft implements Runnable {
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
             this.glCapabilities = new OpenGlCapsChecker();
-			this.renderEngine = new RenderEngine(this.gameSettings);
             this.renderEngine.registerTextureFX(this.textureLavaFX);
             this.renderEngine.registerTextureFX(this.textureWaterFX);
             this.renderEngine.registerTextureFX(new TextureWaterFlowFX());
@@ -222,8 +263,6 @@ public class Minecraft implements Runnable {
             this.renderEngine.registerTextureFX(new TextureFlamesFX(1));
             this.renderEngine.registerTextureFX(new TextureGearsFX(0));
             this.renderEngine.registerTextureFX(new TextureGearsFX(1));
-			this.fontRenderer = new FontRenderer(this.gameSettings, "/default.png", this.renderEngine);
-			BufferUtils.createIntBuffer(256).clear().limit(256);
 			this.renderGlobal = new RenderGlobal(this, this.renderEngine);
 			GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
 
@@ -231,10 +270,7 @@ public class Minecraft implements Runnable {
             this.touchOverlayRenderer = new TouchOverlayRenderer();
             this.scaledResolution = new ScaledResolution(this);
             PointerInputAbstraction.init(this);
-            if(this.theWorld == null) {
-                this.displayGuiScreen(new GuiMainMenu());
-            }
-
+            this.displayGuiScreen(new GuiMainMenu());
 			this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
 
 			this.ingameGUI = new GuiIngame(this);
@@ -249,6 +285,8 @@ public class Minecraft implements Runnable {
     		int i3 = 0;
 
 			while(this.running) {
+                AxisAlignedBB.clearBoundingBoxPool();
+                Vec3D.initialize();
 				if(Display.isCloseRequested()) {
 					this.running = false;
 				}

@@ -23,7 +23,7 @@ public final class ItemBucket extends Item {
         double d6 = playerEntity.prevPosX + (playerEntity.posX - playerEntity.prevPosX);
         double d8 = playerEntity.prevPosY + (playerEntity.posY - playerEntity.prevPosY);
         double d10 = playerEntity.prevPosZ + (playerEntity.posZ - playerEntity.prevPosZ);
-        Vec3D vec3D12 = new Vec3D(d6, d8, d10);
+        Vec3D vec3D12 = Vec3D.createVector(d6, d8, d10);
         float f17 = MathHelper.cos(-f5 * 0.017453292F - (float)Math.PI);
         f5 = MathHelper.sin(-f5 * 0.017453292F - (float)Math.PI);
         float f7 = -MathHelper.cos(-f4 * 0.017453292F);

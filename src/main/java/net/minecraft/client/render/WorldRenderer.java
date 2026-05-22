@@ -76,9 +76,9 @@ public final class WorldRenderer {
 			this.posXMinus = x - this.posXClip;
 			this.posYMinus = y - this.posYClip;
 			this.posZMinus = z - this.posZClip;
-			this.rendererBoundingBox = (new AxisAlignedBB((double)x, (double)y, (double)z, (double)(x + this.sizeWidth), (double)(y + this.sizeHeight), (double)(z + this.sizeDepth))).expand(2.0D, 2.0D, 2.0D);
-			GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
-			AxisAlignedBB x1 = new AxisAlignedBB((double)((float)this.posXClip - 2.0F), (double)((float)this.posYClip - 2.0F), (double)((float)this.posZClip - 2.0F), (double)((float)(this.posXClip + this.sizeWidth) + 2.0F), (double)((float)(this.posYClip + this.sizeHeight) + 2.0F), (double)((float)(this.posZClip + this.sizeDepth) + 2.0F));
+            this.rendererBoundingBox = AxisAlignedBB.getBoundingBox((double)((float)x - 2.0F), (double)((float)y - 2.0F), (double)((float)z - 2.0F), (double)((float)(x + this.sizeWidth) + 2.0F), (double)((float)(y + this.sizeHeight) + 2.0F), (double)((float)(z + this.sizeDepth) + 2.0F));
+            GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
+            AxisAlignedBB x1 = AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.posXClip - 2.0F), (double)((float)this.posYClip - 2.0F), (double)((float)this.posZClip - 2.0F), (double)((float)(this.posXClip + this.sizeWidth) + 2.0F), (double)((float)(this.posYClip + this.sizeHeight) + 2.0F), (double)((float)(this.posZClip + this.sizeDepth) + 2.0F));
 			Tessellator y1 = Tessellator.instance;
 			Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION);
 			y1.addVertex(x1.minX, x1.maxY, x1.minZ);

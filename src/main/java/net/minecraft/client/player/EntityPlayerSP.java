@@ -41,14 +41,6 @@ public class EntityPlayerSP extends EntityPlayer {
         }
     }
 
-    public final void onUpdate() {
-        if(this.ridingEntity != null && !this.ridingEntity.isDead) {
-            this.motionX = this.motionY = this.motionZ = 0.0D;
-        } else {
-            super.onUpdate();
-        }
-    }
-
     public final void updatePlayerActionState() {
         this.moveStrafing = this.movementInput.moveStrafe;
         this.moveForward = this.movementInput.moveForward;
