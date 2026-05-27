@@ -5,16 +5,19 @@ import java.util.List;
 
 import net.minecraft.game.world.block.Block;
 
-public final class Session {
-    public static List registeredBlocksList;
+public class Session {
+    public static List registeredBlocksList = new ArrayList();
 	public String username;
+    public String sessionId;
+    public String mpPassParameter;
 
     public Session(String name, String sessionid) {
         this.username = name;
+        this.sessionId = sessionid;
 	}
 
 	static {
-        (registeredBlocksList = new ArrayList()).add(Block.stone);
+        registeredBlocksList.add(Block.stone);
         registeredBlocksList.add(Block.cobblestone);
         registeredBlocksList.add(Block.brick);
         registeredBlocksList.add(Block.dirt);

@@ -2,21 +2,24 @@ package net.minecraft.client;
 
 import net.lax1dude.eaglercraft.EagRuntime;
 
-public final class Timer {
-    float ticksPerSecond = 20.0F;
+public class Timer {
+    float ticksPerSecond;
     private double lastHRTime;
     public int elapsedTicks;
     public float renderPartialTicks;
     private float timerSpeed = 1.0F;
     private float elapsedPartialTicks = 0.0F;
-    private long lastSyncSysClock = EagRuntime.currentTimeMillis();
-    private long lastSyncHRClock = EagRuntime.nanoTime() / 1000000L;
+    private long lastSyncSysClock;
+    private long lastSyncHRClock;
     private double timeSyncAdjustment = 1.0D;
 
     public Timer(float tps) {
+        this.ticksPerSecond = tps;
+        this.lastSyncSysClock = EagRuntime.currentTimeMillis();
+        this.lastSyncHRClock = EagRuntime.nanoTime() / 1000000L;
     }
 
-    public final void updateTimer() {
+    public void updateTimer() {
         long j1;
         long j3 = (j1 = EagRuntime.currentTimeMillis()) - this.lastSyncSysClock;
         long j5 = EagRuntime.nanoTime() / 1000000L;

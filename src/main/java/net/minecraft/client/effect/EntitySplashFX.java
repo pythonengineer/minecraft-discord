@@ -2,7 +2,7 @@ package net.minecraft.client.effect;
 
 import net.minecraft.game.world.World;
 
-public final class EntitySplashFX extends EntityRainFX {
+public class EntitySplashFX extends EntityRainFX {
     public EntitySplashFX(World world1, double d2, double d4, double d6, double d8, double d10, double d12) {
         super(world1, d2, d4, d6);
         this.particleGravity = 0.04F;

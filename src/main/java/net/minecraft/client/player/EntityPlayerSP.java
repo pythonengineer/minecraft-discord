@@ -11,8 +11,8 @@ import net.minecraft.client.gui.container.GuiEditSign;
 import net.minecraft.client.gui.container.GuiFurnace;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.EntityPlayer;
-import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.tileentity.TileEntityFurnace;
@@ -27,7 +27,7 @@ public class EntityPlayerSP extends EntityPlayer {
         this.mc = mc;
         if(world != null) {
             if(world.playerEntity != null) {
-                World.setEntityDead(world.playerEntity);
+                world.setEntityDead(world.playerEntity);
             }
 
             world.playerEntity = this;
@@ -41,89 +41,97 @@ public class EntityPlayerSP extends EntityPlayer {
         }
     }
 
-    public final void updatePlayerActionState() {
+    public void updatePlayerActionState() {
         this.moveStrafing = this.movementInput.moveStrafe;
         this.moveForward = this.movementInput.moveForward;
         this.isJumping = this.movementInput.jump;
     }
 
-    public final void onLivingUpdate() {
-        this.movementInput.updatePlayerMoveState();
+    public void onLivingUpdate() {
+        this.movementInput.updatePlayerMoveState(this);
         super.onLivingUpdate();
     }
 
-    public final void writeEntityToNBT(NBTTagCompound compoundTag) {
+    public void resetPlayerKeyState() {
+        this.movementInput.resetKeyState();
+    }
+
+    public void handleKeyPress(int keyState, boolean isMovementInput) {
+        this.movementInput.checkKeyForMovementInput(keyState, isMovementInput);
+    }
+
+    public void writeEntityToNBT(NBTTagCompound compoundTag) {
         super.writeEntityToNBT(compoundTag);
         compoundTag.setInteger("Score", this.score);
-        InventoryPlayer inventoryPlayer10002 = this.inventory;
-        NBTTagList nBTTagList2 = new NBTTagList();
-        InventoryPlayer inventoryPlayer5 = inventoryPlayer10002;
-
-        int i3;
-        NBTTagCompound nBTTagCompound4;
-        for(i3 = 0; i3 < inventoryPlayer5.mainInventory.length; ++i3) {
-            if(inventoryPlayer5.mainInventory[i3] != null) {
-                (nBTTagCompound4 = new NBTTagCompound()).setByte("Slot", (byte)i3);
-                inventoryPlayer5.mainInventory[i3].writeToNBT(nBTTagCompound4);
-                nBTTagList2.setTag(nBTTagCompound4);
-            }
-        }
-
-        for(i3 = 0; i3 < inventoryPlayer5.armorInventory.length; ++i3) {
-            if(inventoryPlayer5.armorInventory[i3] != null) {
-                (nBTTagCompound4 = new NBTTagCompound()).setByte("Slot", (byte)(i3 + 100));
-                inventoryPlayer5.armorInventory[i3].writeToNBT(nBTTagCompound4);
-                nBTTagList2.setTag(nBTTagCompound4);
-            }
-        }
-
-        compoundTag.setTag("Inventory", nBTTagList2);
+        compoundTag.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
     }
 
-    public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+    public void readEntityFromNBT(NBTTagCompound compoundTag) {
         super.readEntityFromNBT(compoundTag);
         this.score = compoundTag.getInteger("Score");
-        NBTTagList nBTTagList6 = compoundTag.getTagList("Inventory");
-        NBTTagList nBTTagList2 = nBTTagList6;
-        InventoryPlayer inventoryPlayer7 = this.inventory;
-        this.inventory.mainInventory = new ItemStack[36];
-        inventoryPlayer7.armorInventory = new ItemStack[4];
-
-        for(int i3 = 0; i3 < nBTTagList2.tagCount(); ++i3) {
-            NBTTagCompound nBTTagCompound4;
-            int i5;
-            if((i5 = (nBTTagCompound4 = (NBTTagCompound)nBTTagList2.tagAt(i3)).getByte("Slot") & 255) >= 0 && i5 < inventoryPlayer7.mainInventory.length) {
-                inventoryPlayer7.mainInventory[i5] = new ItemStack(nBTTagCompound4);
-            }
-
-            if(i5 >= 100 && i5 < inventoryPlayer7.armorInventory.length + 100) {
-                inventoryPlayer7.armorInventory[i5 - 100] = new ItemStack(nBTTagCompound4);
-            }
-        }
-
+        NBTTagList nBTTagList2 = compoundTag.getTagList("Inventory");
+        this.inventory.readFromNBT(nBTTagList2);
     }
 
-    public final void displayGUIChest(IInventory inventory) {
+    public void displayGUIChest(IInventory inventory) {
         this.mc.displayGuiScreen(new GuiChest(this.inventory, inventory));
     }
 
-    public final void displayGUIEditSign(TileEntitySign signTileEntity) {
+    public void displayGUIEditSign(TileEntitySign signTileEntity) {
         this.mc.displayGuiScreen(new GuiEditSign(signTileEntity));
     }
 
-    public final void displayWorkbenchGUI() {
+    public void displayWorkbenchGUI() {
         this.mc.displayGuiScreen(new GuiCrafting(this.inventory));
     }
 
-    public final void displayGUIFurnace(TileEntityFurnace furnaceTileEntity) {
+    public void displayGUIFurnace(TileEntityFurnace furnaceTileEntity) {
         this.mc.displayGuiScreen(new GuiFurnace(this.inventory, furnaceTileEntity));
     }
 
-    public final void displayGUIInventory() {
+    public ItemStack getCurrentEquippedItem() {
+        return this.inventory.getCurrentItem();
+    }
+
+    public void displayGUIInventory() {
         this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
     }
 
-    public final void onItemPickup(Entity entity) {
+    public void attackEntity(Entity entity1) {
+        int i2 = this.inventory.getDamageVsEntity(entity1);
+        if(i2 > 0) {
+            entity1.attackEntityFrom(this, i2);
+            ItemStack itemStack3 = this.getCurrentEquippedItem();
+            if(itemStack3 != null && entity1 instanceof EntityLiving) {
+                itemStack3.hitEntity((EntityLiving)entity1);
+                if(itemStack3.stackSize <= 0) {
+                    itemStack3.onItemDestroyedByUse(this);
+                    this.displayGUIInventory();
+                }
+            }
+        }
+
+    }
+
+    public void onItemPickup(Entity entity) {
         this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, entity, this, -0.5F));
+    }
+
+    public int getPlayerArmorValue() {
+        return this.inventory.getTotalArmorValue();
+    }
+
+    public void interactWithEntity(Entity entity1) {
+        if(!entity1.interact(this)) {
+            ItemStack itemStack2 = this.getCurrentEquippedItem();
+            if(itemStack2 != null && entity1 instanceof EntityLiving) {
+                itemStack2.useItemOnEntity((EntityLiving)entity1);
+                if(itemStack2.stackSize <= 0) {
+                    itemStack2.onItemDestroyedByUse(this);
+                    this.displayGUIInventory();
+                }
+            }
+
+        }
     }
 }

@@ -44,9 +44,16 @@ public class EntityFX extends Entity {
 		this.canTriggerWalking = false;
 	}
 
-	public final EntityFX multiplyParticleScaleBy(float scale) {
-		this.setSize(0.120000005F, 0.120000005F);
-		this.particleScale *= 0.6F;
+	public EntityFX multiplyVelocity(float multiplier) {
+		this.motionX *= (double)multiplier;
+		this.motionY = (this.motionY - (double)0.1F) * (double)multiplier + (double)0.1F;
+		this.motionZ *= (double)multiplier;
+		return this;
+	}
+
+	public EntityFX multipleParticleScaleBy(float scale) {
+		this.setSize(0.2F * scale, 0.2F * scale);
+		this.particleScale *= scale;
 		return this;
 	}
 
@@ -71,10 +78,10 @@ public class EntityFX extends Entity {
 	}
 
 	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		float f8;
-		float f9 = (f8 = (float)(this.particleTextureIndex % 16) / 16.0F) + 0.0624375F;
-		float f10;
-		float f11 = (f10 = (float)(this.particleTextureIndex / 16) / 16.0F) + 0.0624375F;
+		float f8 = (float)(this.particleTextureIndex % 16) / 16.0F;
+		float f9 = f8 + 0.0624375F;
+		float f10 = (float)(this.particleTextureIndex / 16) / 16.0F;
+		float f11 = f10 + 0.0624375F;
 		float f12 = 0.1F * this.particleScale;
 		float f13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - interpPosX);
 		float f14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);
@@ -91,9 +98,9 @@ public class EntityFX extends Entity {
 		return 0;
 	}
 
-	public final void writeEntityToNBT(NBTTagCompound compoundTag) {
+	public void writeEntityToNBT(NBTTagCompound compoundTag) {
 	}
 
-	public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+	public void readEntityFromNBT(NBTTagCompound compoundTag) {
 	}
 }

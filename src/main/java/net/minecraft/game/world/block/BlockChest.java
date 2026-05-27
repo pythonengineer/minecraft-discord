@@ -12,15 +12,15 @@ import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.block.tileentity.TileEntityChest;
 import net.minecraft.game.world.material.Material;
 
-public final class BlockChest extends BlockContainer {
+public class BlockChest extends BlockContainer {
 	private EaglercraftRandom random = new EaglercraftRandom();
 
 	protected BlockChest(int blockID) {
-		super(54, Material.wood);
+		super(blockID, Material.wood);
 		this.blockIndexInTexture = 26;
 	}
 
-	public final int getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public int getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		if(side == 1) {
 			return this.blockIndexInTexture - 1;
 		} else if(side == 0) {
@@ -32,8 +32,8 @@ public final class BlockChest extends BlockContainer {
 			int i9 = blockAccess.getBlockId(x + 1, y, z);
 			int i10;
 			int i11;
-			int world1;
-			byte x1;
+			int i12;
+			byte b13;
 			if(i6 != this.blockID && i7 != this.blockID) {
 				if(i8 != this.blockID && i9 != this.blockID) {
 					byte b14 = 3;
@@ -61,21 +61,21 @@ public final class BlockChest extends BlockContainer {
 					}
 
 					i11 = blockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z - 1);
-					world1 = blockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z + 1);
+					i12 = blockAccess.getBlockId(i8 == this.blockID ? x - 1 : x + 1, y, z + 1);
 					if(side == 3) {
 						i10 = -1 - i10;
 					}
 
-					x1 = 3;
-					if((Block.opaqueCubeLookup[i6] || Block.opaqueCubeLookup[i11]) && !Block.opaqueCubeLookup[i7] && !Block.opaqueCubeLookup[world1]) {
-						x1 = 3;
+					b13 = 3;
+					if((Block.opaqueCubeLookup[i6] || Block.opaqueCubeLookup[i11]) && !Block.opaqueCubeLookup[i7] && !Block.opaqueCubeLookup[i12]) {
+						b13 = 3;
 					}
 
-					if((Block.opaqueCubeLookup[i7] || Block.opaqueCubeLookup[world1]) && !Block.opaqueCubeLookup[i6] && !Block.opaqueCubeLookup[i11]) {
-						x1 = 2;
+					if((Block.opaqueCubeLookup[i7] || Block.opaqueCubeLookup[i12]) && !Block.opaqueCubeLookup[i6] && !Block.opaqueCubeLookup[i11]) {
+						b13 = 2;
 					}
 
-					return (side == x1 ? this.blockIndexInTexture + 16 : this.blockIndexInTexture + 32) + i10;
+					return (side == b13 ? this.blockIndexInTexture + 16 : this.blockIndexInTexture + 32) + i10;
 				} else {
 					return this.blockIndexInTexture;
 				}
@@ -86,32 +86,32 @@ public final class BlockChest extends BlockContainer {
 				}
 
 				i11 = blockAccess.getBlockId(x - 1, y, i6 == this.blockID ? z - 1 : z + 1);
-				world1 = blockAccess.getBlockId(x + 1, y, i6 == this.blockID ? z - 1 : z + 1);
+				i12 = blockAccess.getBlockId(x + 1, y, i6 == this.blockID ? z - 1 : z + 1);
 				if(side == 4) {
 					i10 = -1 - i10;
 				}
 
-				x1 = 5;
-				if((Block.opaqueCubeLookup[i8] || Block.opaqueCubeLookup[i11]) && !Block.opaqueCubeLookup[i9] && !Block.opaqueCubeLookup[world1]) {
-					x1 = 5;
+				b13 = 5;
+				if((Block.opaqueCubeLookup[i8] || Block.opaqueCubeLookup[i11]) && !Block.opaqueCubeLookup[i9] && !Block.opaqueCubeLookup[i12]) {
+					b13 = 5;
 				}
 
-				if((Block.opaqueCubeLookup[i9] || Block.opaqueCubeLookup[world1]) && !Block.opaqueCubeLookup[i8] && !Block.opaqueCubeLookup[i11]) {
-					x1 = 4;
+				if((Block.opaqueCubeLookup[i9] || Block.opaqueCubeLookup[i12]) && !Block.opaqueCubeLookup[i8] && !Block.opaqueCubeLookup[i11]) {
+					b13 = 4;
 				}
 
-				return (side == x1 ? this.blockIndexInTexture + 16 : this.blockIndexInTexture + 32) + i10;
+				return (side == b13 ? this.blockIndexInTexture + 16 : this.blockIndexInTexture + 32) + i10;
 			} else {
 				return this.blockIndexInTexture;
 			}
 		}
 	}
 
-	public final int getBlockTextureFromSide(int side) {
+	public int getBlockTextureFromSide(int side) {
 		return side == 1 ? this.blockIndexInTexture - 1 : (side == 0 ? this.blockIndexInTexture - 1 : (side == 3 ? this.blockIndexInTexture + 1 : this.blockIndexInTexture));
 	}
 
-	public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
+	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
 		int i5 = 0;
 		if(world.getBlockId(x - 1, y, z) == this.blockID) {
 			++i5;
@@ -136,27 +136,28 @@ public final class BlockChest extends BlockContainer {
 		return world.getBlockId(x, y, z) != this.blockID ? false : (world.getBlockId(x - 1, y, z) == this.blockID ? true : (world.getBlockId(x + 1, y, z) == this.blockID ? true : (world.getBlockId(x, y, z - 1) == this.blockID ? true : world.getBlockId(x, y, z + 1) == this.blockID)));
 	}
 
-	public final void onBlockRemoval(World world, int x, int y, int z) {
+	public void onBlockRemoval(World world, int x, int y, int z) {
 		TileEntityChest tileEntityChest5 = (TileEntityChest)world.getBlockTileEntity(x, y, z);
 
 		for(int i6 = 0; i6 < tileEntityChest5.getSizeInventory(); ++i6) {
-			ItemStack itemStack7;
-			if((itemStack7 = tileEntityChest5.getStackInSlot(i6)) != null) {
+            ItemStack itemStack7 = tileEntityChest5.getStackInSlot(i6);
+            if(itemStack7 != null) {
 				float f8 = this.random.nextFloat() * 0.8F + 0.1F;
 				float f9 = this.random.nextFloat() * 0.8F + 0.1F;
 				float f10 = this.random.nextFloat() * 0.8F + 0.1F;
 
 				while(itemStack7.stackSize > 0) {
-					int i11;
-					if((i11 = this.random.nextInt(21) + 10) > itemStack7.stackSize) {
+                    int i11 = this.random.nextInt(21) + 10;
+                    if(i11 > itemStack7.stackSize) {
 						i11 = itemStack7.stackSize;
 					}
 
 					itemStack7.stackSize -= i11;
-					EntityItem entityItem12;
-					(entityItem12 = new EntityItem(world, (double)((float)x + f8), (double)((float)y + f9), (double)((float)z + f10), new ItemStack(itemStack7.itemID, i11, itemStack7.itemDmg))).motionX = (double)((float)this.random.nextGaussian() * 0.05F);
-					entityItem12.motionY = (double)((float)this.random.nextGaussian() * 0.05F + 0.2F);
-					entityItem12.motionZ = (double)((float)this.random.nextGaussian() * 0.05F);
+                    EntityItem entityItem12 = new EntityItem(world, (double)((float)x + f8), (double)((float)y + f9), (double)((float)z + f10), new ItemStack(itemStack7.itemID, i11, itemStack7.itemDmg));
+                    float f13 = 0.05F;
+                    entityItem12.motionX = (double)((float)this.random.nextGaussian() * f13);
+					entityItem12.motionY = (double)((float)this.random.nextGaussian() * f13 + 0.2F);
+					entityItem12.motionZ = (double)((float)this.random.nextGaussian() * f13);
 					world.spawnEntityInWorld(entityItem12);
 				}
 			}
@@ -165,7 +166,7 @@ public final class BlockChest extends BlockContainer {
 		super.onBlockRemoval(world, x, y, z);
 	}
 
-	public final boolean blockActivated(World world, int x, int y, int z, EntityPlayer playerEntity) {
+	public boolean blockActivated(World world, int x, int y, int z, EntityPlayer playerEntity) {
 		Object object6 = (TileEntityChest)world.getBlockTileEntity(x, y, z);
 		if(world.isBlockNormalCube(x, y + 1, z)) {
 			return true;
@@ -199,7 +200,7 @@ public final class BlockChest extends BlockContainer {
 		}
 	}
 
-	protected final TileEntity getBlockEntity() {
+	protected TileEntity getBlockEntity() {
 		return new TileEntityChest();
 	}
 }

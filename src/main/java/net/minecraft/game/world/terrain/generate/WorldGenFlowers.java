@@ -5,14 +5,14 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockFlower;
 
-public final class WorldGenFlowers extends WorldGenerator {
+public class WorldGenFlowers extends WorldGenerator {
     private int plantBlockId;
 
     public WorldGenFlowers(int blockID) {
         this.plantBlockId = blockID;
     }
 
-    public final boolean generate(World world, EaglercraftRandom rand, int x, int y, int z) {
+    public boolean generate(World world, EaglercraftRandom rand, int x, int y, int z) {
         for(int i6 = 0; i6 < 64; ++i6) {
             int i7 = x + rand.nextInt(8) - rand.nextInt(8);
             int i8 = y + rand.nextInt(4) - rand.nextInt(4);

@@ -30,7 +30,7 @@ public class GuiButton extends Gui {
 		this.displayString = displayString;
 	}
 
-	public final void drawButton(Minecraft mc, int x, int y) {
+	public void drawButton(Minecraft mc, int x, int y) {
 		if(this.visible) {
 			FontRenderer fontRenderer4 = mc.fontRenderer;
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, mc.renderEngine.getTexture("/gui/gui.png"));
@@ -55,7 +55,7 @@ public class GuiButton extends Gui {
 		}
 	}
 
-	public final boolean mousePressed(int x, int y) {
+	public boolean mousePressed(int x, int y) {
 		return this.enabled && x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width && y < this.yPosition + this.height;
 	}
 }

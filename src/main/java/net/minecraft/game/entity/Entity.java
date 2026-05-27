@@ -13,6 +13,7 @@ import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
+import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockFluid;
@@ -40,7 +41,8 @@ public abstract class Entity {
     public final AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
 	public boolean onGround = false;
 	public boolean isCollidedHorizontally = false;
-	private boolean surfaceCollision = true;
+	public boolean isCollided = false;
+	public boolean surfaceCollision = true;
 	public boolean isDead = false;
 	public float yOffset = 0.0F;
 	public float width = 0.6F;
@@ -53,16 +55,17 @@ public abstract class Entity {
 	public double lastTickPosX;
 	public double lastTickPosY;
 	public double lastTickPosZ;
-	private float ySize = 0.0F;
+	public float ySize = 0.0F;
 	public float stepHeight = 0.0F;
 	public boolean noClip = false;
 	public float entityCollisionReduction = 0.0F;
+	public boolean unusedBool = false;
 	protected EaglercraftRandom rand = new EaglercraftRandom();
 	public int ticksExisted = 0;
 	public int fireResistance = 1;
 	public int fire = 0;
 	protected int maxAir = 300;
-	private boolean inWater = false;
+	protected boolean inWater = false;
 	public int heartsLife = 0;
 	public int air = 300;
 	private boolean firstUpdate = true;
@@ -75,7 +78,7 @@ public abstract class Entity {
 		this.setPosition(0.0D, 0.0D, 0.0D);
 	}
 
-	public void preparePlayerToSpawn() {
+	protected void preparePlayerToSpawn() {
 		if(this.worldObj != null) {
 			while(this.posY > 0.0D) {
 				this.setPosition(this.posX, this.posY, this.posZ);
@@ -100,13 +103,35 @@ public abstract class Entity {
 		this.height = height;
 	}
 
-	public final void setPosition(double x, double y, double z) {
+	protected void setRotation(float yaw, float pitch) {
+		this.rotationYaw = yaw;
+		this.rotationPitch = pitch;
+	}
+
+	public void setPosition(double x, double y, double z) {
 		this.posX = x;
 		this.posY = y;
 		this.posZ = z;
 		float f7 = this.width / 2.0F;
 		float f8 = this.height / 2.0F;
         this.boundingBox.setBounds(x - (double)f7, y - (double)f8, z - (double)f7, x + (double)f7, y + (double)f8, z + (double)f7);
+	}
+
+	public void setAngles(float yaw, float pitch) {
+		float f3 = this.rotationPitch;
+		float f4 = this.rotationYaw;
+		this.rotationYaw = (float)((double)this.rotationYaw + (double)yaw * 0.15D);
+		this.rotationPitch = (float)((double)this.rotationPitch - (double)pitch * 0.15D);
+		if(this.rotationPitch < -90.0F) {
+			this.rotationPitch = -90.0F;
+		}
+
+		if(this.rotationPitch > 90.0F) {
+			this.rotationPitch = 90.0F;
+		}
+
+		this.prevRotationPitch += this.rotationPitch - f3;
+		this.prevRotationYaw += this.rotationYaw - f4;
 	}
 
 	public void onUpdate() {
@@ -182,12 +207,12 @@ public abstract class Entity {
         this.setEntityDead();
     }
 
-	public final boolean isOffsetPositionInLiquid(double x, double y, double z) {
+	public boolean isOffsetPositionInLiquid(double x, double y, double z) {
 		AxisAlignedBB x1 = this.boundingBox.getOffsetBoundingBox(x, y, z);
 		return this.worldObj.getCollidingBoundingBoxes(this, x1).size() > 0 ? false : !this.worldObj.getIsAnyLiquid(x1);
 	}
 
-	public final void moveEntity(double x, double y, double z) {
+	public void moveEntity(double x, double y, double z) {
 		if(this.noClip) {
 			this.boundingBox.offset(x, y, z);
 			this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
@@ -301,6 +326,7 @@ public abstract class Entity {
 			this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
 			this.isCollidedHorizontally = d11 != x || d15 != z;
 			this.onGround = d13 != y && d13 < 0.0D;
+			this.isCollided = this.isCollidedHorizontally || d13 != y;
 			if(this.onGround) {
 				if(this.fallDistance > 0.0F) {
 					this.fall(this.fallDistance);
@@ -334,7 +360,7 @@ public abstract class Entity {
 					++this.nextStepDistance;
 					StepSound stepSound26 = Block.blocksList[i27].stepSound;
 					if(!Block.blocksList[i27].blockMaterial.getIsLiquid()) {
-						this.worldObj.playSoundAtEntity(this, stepSound26.getStepSound(), stepSound26.stepSoundVolume * 0.15F, stepSound26.stepSoundPitch);
+						this.worldObj.playSoundAtEntity(this, stepSound26.getStepSound(), stepSound26.getVolume() * 0.15F, stepSound26.getPitch());
 					}
 
 					Block.blocksList[i27].onEntityWalking(this.worldObj, i31, i25, i19, this);
@@ -368,7 +394,7 @@ public abstract class Entity {
     }
 
 	protected void dealFireDamage(int damage) {
-		this.attackEntityFrom((Entity)null, 1);
+		this.attackEntityFrom((Entity)null, damage);
 	}
 
 	protected void fall(float fallDistance) {
@@ -378,7 +404,7 @@ public abstract class Entity {
         return this.worldObj.handleMaterialAcceleration(this.boundingBox.expand(0.0D, -0.4000000059604645D, 0.0D), Material.water, this);
     }
 
-    public final boolean isInsideOfMaterial(Material material) {
+    public boolean isInsideOfMaterial(Material material) {
         double d2 = this.posY + (double)this.getEyeHeight();
         int i4 = MathHelper.floor_double(this.posX);
         int i5 = MathHelper.floor_float((float)MathHelper.floor_double(d2));
@@ -397,11 +423,11 @@ public abstract class Entity {
 		return 0.0F;
 	}
 
-	public final boolean handleLavaMovement() {
+	public boolean handleLavaMovement() {
 		return this.worldObj.isMaterialInBB(this.boundingBox.expand(0.0D, -0.4000000059604645D, 0.0D), Material.lava);
 	}
 
-	public final void moveFlying(float x, float y, float z) {
+	public void moveFlying(float x, float y, float z) {
 		float f4;
 		if((f4 = MathHelper.sqrt_float(x * x + y * y)) >= 0.01F) {
 			if(f4 < 1.0F) {
@@ -426,11 +452,11 @@ public abstract class Entity {
         return this.worldObj.getBrightness(partialTicks1, i2, i6);
 	}
 
-    public final void setWorld(World world) {
+    public void setWorld(World world) {
         this.worldObj = world;
     }
 
-	public final void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
 		this.prevPosX = this.posX = x;
 		this.prevPosY = this.posY = y + (double)this.yOffset;
 		this.prevPosZ = this.posZ = z;
@@ -439,7 +465,28 @@ public abstract class Entity {
 		this.setPosition(this.posX, this.posY, this.posZ);
 	}
 
-	public final double getDistanceSqToEntity(Entity entity) {
+	public float getDistanceToEntity(Entity entity) {
+		float f2 = (float)(this.posX - entity.posX);
+		float f3 = (float)(this.posY - entity.posY);
+		float f4 = (float)(this.posZ - entity.posZ);
+		return MathHelper.sqrt_float(f2 * f2 + f3 * f3 + f4 * f4);
+	}
+
+	public double getDistanceSq(double x, double y, double z) {
+		double d7 = this.posX - x;
+		double d9 = this.posY - y;
+		double d11 = this.posZ - z;
+		return d7 * d7 + d9 * d9 + d11 * d11;
+	}
+
+	public double getDistance(double x, double y, double z) {
+		double d7 = this.posX - x;
+		double d9 = this.posY - y;
+		double d11 = this.posZ - z;
+		return (double)MathHelper.sqrt_double(d7 * d7 + d9 * d9 + d11 * d11);
+	}
+
+	public double getDistanceSqToEntity(Entity entity) {
 		double d2 = this.posX - entity.posX;
 		double d4 = this.posY - entity.posY;
 		double d6 = this.posZ - entity.posZ;
@@ -466,15 +513,17 @@ public abstract class Entity {
             d4 *= d8;
             d2 *= (double)0.05F;
             d4 *= (double)0.05F;
+            d2 *= (double)(1.0F - this.entityCollisionReduction);
+            d4 *= (double)(1.0F - this.entityCollisionReduction);
             this.addVelocity(-d2, 0.0D, -d4);
             entity.addVelocity(d2, 0.0D, d4);
         }
 
     }
 
-    public final void addVelocity(double motionX, double motionY, double motionZ) {
+    public void addVelocity(double motionX, double motionY, double motionZ) {
         this.motionX += motionX;
-        this.motionY = this.motionY;
+        this.motionY += motionY;
         this.motionZ += motionZ;
     }
 
@@ -490,12 +539,29 @@ public abstract class Entity {
 		return false;
 	}
 
+	public void addToPlayerScore(Entity entity, int score) {
+	}
+
+	public boolean isInRangeToRenderVec3D(Vec3D vec) {
+		double d2 = this.posX - vec.xCoord;
+		double d4 = this.posY - vec.yCoord;
+		double d6 = this.posZ - vec.zCoord;
+		double d8 = d2 * d2 + d4 * d4 + d6 * d6;
+		return this.isInRangeToRenderDist(d8);
+	}
+
+	public boolean isInRangeToRenderDist(double distance) {
+		double d3 = this.boundingBox.getAverageEdgeLength();
+		d3 *= 64.0D;
+		return distance < d3 * d3;
+	}
+
 	public String getTexture() {
 		return null;
 	}
 
-	public final boolean addEntityID(NBTTagCompound nbt) {
-		String string2 = EntityList.getEntityString(this);
+	public boolean addEntityID(NBTTagCompound nbt) {
+		String string2 = this.getEntityString();
 		if(!this.isDead && string2 != null) {
 			nbt.setString("id", string2);
 			this.writeToNBT(nbt);
@@ -505,27 +571,18 @@ public abstract class Entity {
 		}
 	}
 
-	public final void writeToNBT(NBTTagCompound compoundTag) {
-		compoundTag.setTag("Pos", newDoubleNBTList(new double[]{this.posX, this.posY, this.posZ}));
-		compoundTag.setTag("Motion", newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
-		float[] f2 = new float[]{this.rotationYaw, this.rotationPitch};
-		NBTTagList nBTTagList3 = new NBTTagList();
-		int i4 = (f2 = f2).length;
-
-		for(int i5 = 0; i5 < i4; ++i5) {
-			float f6 = f2[i5];
-			nBTTagList3.setTag(new NBTTagFloat(f6));
-		}
-
-		compoundTag.setTag("Rotation", nBTTagList3);
-		compoundTag.setFloat("FallDistance", this.fallDistance);
-		compoundTag.setShort("Fire", (short)this.fire);
-		compoundTag.setShort("Air", (short)this.air);
-        compoundTag.setBoolean("OnGround", this.onGround);
-		this.writeEntityToNBT(compoundTag);
+	public void writeToNBT(NBTTagCompound nbt) {
+		nbt.setTag("Pos", this.newDoubleNBTList(new double[]{this.posX, this.posY, this.posZ}));
+		nbt.setTag("Motion", this.newDoubleNBTList(new double[]{this.motionX, this.motionY, this.motionZ}));
+		nbt.setTag("Rotation", this.newFloatNBTList(new float[]{this.rotationYaw, this.rotationPitch}));
+		nbt.setFloat("FallDistance", this.fallDistance);
+		nbt.setShort("Fire", (short)this.fire);
+		nbt.setShort("Air", (short)this.air);
+        nbt.setBoolean("OnGround", this.onGround);
+		this.writeEntityToNBT(nbt);
 	}
 
-	public final void readFromNBT(NBTTagCompound nbt) {
+	public void readFromNBT(NBTTagCompound nbt) {
 		NBTTagList nBTTagList2 = nbt.getTagList("Pos");
 		NBTTagList nBTTagList3 = nbt.getTagList("Motion");
 		NBTTagList nBTTagList4 = nbt.getTagList("Rotation");
@@ -546,11 +603,15 @@ public abstract class Entity {
 		this.readEntityFromNBT(nbt);
 	}
 
+	protected final String getEntityString() {
+		return EntityList.getEntityString(this);
+	}
+
 	protected abstract void readEntityFromNBT(NBTTagCompound nBTTagCompound1);
 
 	protected abstract void writeEntityToNBT(NBTTagCompound nBTTagCompound1);
 
-	private static NBTTagList newDoubleNBTList(double... doubleArray) {
+	protected NBTTagList newDoubleNBTList(double... doubleArray) {
 		NBTTagList nBTTagList1 = new NBTTagList();
 		int i2 = (doubleArray = doubleArray).length;
 
@@ -562,11 +623,24 @@ public abstract class Entity {
 		return nBTTagList1;
 	}
 
-	public final EntityItem dropItem(int itemID, int offset) {
-		return this.entityDropItem(itemID, 1, 0.0F);
+	protected NBTTagList newFloatNBTList(float... floatArray) {
+		NBTTagList nBTTagList2 = new NBTTagList();
+		float[] f3 = floatArray;
+		int i4 = floatArray.length;
+
+		for(int i5 = 0; i5 < i4; ++i5) {
+			float f6 = f3[i5];
+			nBTTagList2.setTag(new NBTTagFloat(f6));
+		}
+
+		return nBTTagList2;
 	}
 
-	public final EntityItem entityDropItem(int blockID, int amount, float offsetY) {
+	public EntityItem dropItem(int itemID, int offset) {
+		return this.entityDropItem(itemID, offset, 0.0F);
+	}
+
+	public EntityItem entityDropItem(int blockID, int amount, float offsetY) {
 		EntityItem blockID1;
 		(blockID1 = new EntityItem(this.worldObj, this.posX, this.posY + (double)offsetY, this.posZ, new ItemStack(blockID, amount))).delayBeforeCanPickup = 10;
 		this.worldObj.spawnEntityInWorld(blockID1);
@@ -577,7 +651,7 @@ public abstract class Entity {
 		return !this.isDead;
 	}
 
-    public final boolean isEntityInsideOpaqueBlock() {
+    public boolean isEntityInsideOpaqueBlock() {
         int i1 = MathHelper.floor_double(this.posX);
         int i2 = MathHelper.floor_double(this.posY + (double)this.getEyeHeight());
         int i3 = MathHelper.floor_double(this.posZ);
@@ -647,7 +721,7 @@ public abstract class Entity {
         return (double)this.height * 0.75D;
     }
 
-    public final void mountEntity(Entity entity) {
+    public void mountEntity(Entity entity) {
         this.entityRiderPitchDelta = 0.0D;
         this.entityRiderYawDelta = 0.0D;
         if(this.ridingEntity == entity) {

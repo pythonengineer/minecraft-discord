@@ -3,23 +3,25 @@ package net.minecraft.game.item;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.animal.EntityPig;
 
-public final class ItemSaddle extends Item {
+public class ItemSaddle extends Item {
     public ItemSaddle(int i1) {
-        super(73);
+        super(i1);
         this.maxStackSize = 1;
         this.maxDamage = 64;
     }
 
-    public final void saddleEntity(ItemStack itemStack, EntityLiving entityLiving) {
-        EntityPig entityPig3;
-        if(entityLiving instanceof EntityPig && !(entityPig3 = (EntityPig)entityLiving).saddled) {
-            entityPig3.saddled = true;
-            --itemStack.stackSize;
+    public void saddleEntity(ItemStack itemStack1, EntityLiving entityLiving2) {
+        if(entityLiving2 instanceof EntityPig) {
+            EntityPig entityPig3 = (EntityPig)entityLiving2;
+            if(!entityPig3.saddled) {
+                entityPig3.saddled = true;
+                --itemStack1.stackSize;
+            }
         }
 
     }
 
-    public final void hitEntity(ItemStack itemStack, EntityLiving entityLiving) {
-        this.saddleEntity(itemStack, entityLiving);
+    public void hitEntity(ItemStack itemStack1, EntityLiving entityLiving2) {
+        this.saddleEntity(itemStack1, entityLiving2);
     }
 }

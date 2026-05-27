@@ -6,14 +6,14 @@ import java.util.List;
 import net.minecraft.game.world.ChunkPosition;
 import net.minecraft.game.world.World;
 
-final class MinecartTrackLogic {
+class MinecartTrackLogic {
     private World worldObj;
     private int trackX;
     private int trackY;
     private int trackZ;
     private int trackMetadata;
     private List connectedTracks;
-    private BlockMinecartTrack minecartTrack;
+    final BlockMinecartTrack minecartTrack;
 
     public MinecartTrackLogic(BlockMinecartTrack blockMinecartTrack1, World world2, int i3, int i4, int i5) {
         this.minecartTrack = blockMinecartTrack1;
@@ -55,19 +55,17 @@ final class MinecartTrackLogic {
         } else if(this.trackMetadata == 8) {
             this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
             this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
-        } else {
-            if(this.trackMetadata == 9) {
-                this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
-                this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
-            }
-
+        } else if(this.trackMetadata == 9) {
+            this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
+            this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
         }
+
     }
 
     private void refreshConnectedTracks() {
         for(int i1 = 0; i1 < this.connectedTracks.size(); ++i1) {
-            MinecartTrackLogic minecartTrackLogic2;
-            if((minecartTrackLogic2 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(i1))) != null && minecartTrackLogic2.isConnectedTo(this)) {
+            MinecartTrackLogic minecartTrackLogic2 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(i1));
+            if(minecartTrackLogic2 != null && minecartTrackLogic2.isConnectedTo(this)) {
                 this.connectedTracks.set(i1, new ChunkPosition(minecartTrackLogic2.trackX, minecartTrackLogic2.trackY, minecartTrackLogic2.trackZ));
             } else {
                 this.connectedTracks.remove(i1--);
@@ -82,8 +80,8 @@ final class MinecartTrackLogic {
 
     private boolean isConnectedTo(MinecartTrackLogic minecartTrackLogic1) {
         for(int i2 = 0; i2 < this.connectedTracks.size(); ++i2) {
-            ChunkPosition chunkPosition3;
-            if((chunkPosition3 = (ChunkPosition)this.connectedTracks.get(i2)).x == minecartTrackLogic1.trackX && chunkPosition3.z == minecartTrackLogic1.trackZ) {
+            ChunkPosition chunkPosition3 = (ChunkPosition)this.connectedTracks.get(i2);
+            if(chunkPosition3.x == minecartTrackLogic1.trackX && chunkPosition3.z == minecartTrackLogic1.trackZ) {
                 return true;
             }
         }
@@ -91,10 +89,10 @@ final class MinecartTrackLogic {
         return false;
     }
 
-    private boolean isInTrack(int i1, int i2) {
-        for(int i3 = 0; i3 < this.connectedTracks.size(); ++i3) {
-            ChunkPosition chunkPosition4;
-            if((chunkPosition4 = (ChunkPosition)this.connectedTracks.get(i3)).x == i1 && chunkPosition4.z == i2) {
+    private boolean isInTrack(int i1, int i2, int i3) {
+        for(int i4 = 0; i4 < this.connectedTracks.size(); ++i4) {
+            ChunkPosition chunkPosition5 = (ChunkPosition)this.connectedTracks.get(i4);
+            if(chunkPosition5.x == i1 && chunkPosition5.z == i3) {
                 return true;
             }
         }
@@ -115,9 +113,67 @@ final class MinecartTrackLogic {
         }
     }
 
+    private void connectToNeighbor(MinecartTrackLogic minecartTrackLogic1) {
+        this.connectedTracks.add(new ChunkPosition(minecartTrackLogic1.trackX, minecartTrackLogic1.trackY, minecartTrackLogic1.trackZ));
+        boolean z2 = this.isInTrack(this.trackX, this.trackY, this.trackZ - 1);
+        boolean z3 = this.isInTrack(this.trackX, this.trackY, this.trackZ + 1);
+        boolean z4 = this.isInTrack(this.trackX - 1, this.trackY, this.trackZ);
+        boolean z5 = this.isInTrack(this.trackX + 1, this.trackY, this.trackZ);
+        byte b6 = -1;
+        if(z2 || z3) {
+            b6 = 0;
+        }
+
+        if(z4 || z5) {
+            b6 = 1;
+        }
+
+        if(z3 && z5 && !z2 && !z4) {
+            b6 = 6;
+        }
+
+        if(z3 && z4 && !z2 && !z5) {
+            b6 = 7;
+        }
+
+        if(z2 && z4 && !z3 && !z5) {
+            b6 = 8;
+        }
+
+        if(z2 && z5 && !z3 && !z4) {
+            b6 = 9;
+        }
+
+        if(b6 == 0) {
+            if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ - 1) == this.minecartTrack.blockID) {
+                b6 = 4;
+            }
+
+            if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ + 1) == this.minecartTrack.blockID) {
+                b6 = 5;
+            }
+        }
+
+        if(b6 == 1) {
+            if(this.worldObj.getBlockId(this.trackX + 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
+                b6 = 2;
+            }
+
+            if(this.worldObj.getBlockId(this.trackX - 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
+                b6 = 3;
+            }
+        }
+
+        if(b6 < 0) {
+            b6 = 0;
+        }
+
+        this.worldObj.setBlockMetadataWithNotify(this.trackX, this.trackY, this.trackZ, b6);
+    }
+
     private boolean canConnectFrom(int i1, int i2, int i3) {
-        MinecartTrackLogic minecartTrackLogic4;
-        if((minecartTrackLogic4 = this.getMinecartTrackLogic(new ChunkPosition(i1, i2, i3))) == null) {
+        MinecartTrackLogic minecartTrackLogic4 = this.getMinecartTrackLogic(new ChunkPosition(i1, i2, i3));
+        if(minecartTrackLogic4 == null) {
             return false;
         } else {
             minecartTrackLogic4.refreshConnectedTracks();
@@ -125,7 +181,7 @@ final class MinecartTrackLogic {
         }
     }
 
-    public final void place() {
+    public void place() {
         boolean z1 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ - 1);
         boolean z2 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ + 1);
         boolean z3 = this.canConnectFrom(this.trackX - 1, this.trackY, this.trackZ);
@@ -181,68 +237,14 @@ final class MinecartTrackLogic {
 
         this.trackMetadata = b5;
         this.calculateConnectedTracks();
-        this.worldObj.setBlockMetadata(this.trackX, this.trackY, this.trackZ, b5);
+        this.worldObj.setBlockMetadataWithNotify(this.trackX, this.trackY, this.trackZ, b5);
 
-        for(int i8 = 0; i8 < this.connectedTracks.size(); ++i8) {
-            MinecartTrackLogic minecartTrackLogic9;
-            if((minecartTrackLogic9 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(i8))) != null) {
-                minecartTrackLogic9.refreshConnectedTracks();
-                if(minecartTrackLogic9.handleKeyPress(this)) {
-                    (minecartTrackLogic9 = minecartTrackLogic9).connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ));
-                    z3 = minecartTrackLogic9.isInTrack(minecartTrackLogic9.trackX, minecartTrackLogic9.trackZ - 1);
-                    z4 = minecartTrackLogic9.isInTrack(minecartTrackLogic9.trackX, minecartTrackLogic9.trackZ + 1);
-                    boolean z10 = minecartTrackLogic9.isInTrack(minecartTrackLogic9.trackX - 1, minecartTrackLogic9.trackZ);
-                    boolean z6 = minecartTrackLogic9.isInTrack(minecartTrackLogic9.trackX + 1, minecartTrackLogic9.trackZ);
-                    byte b7 = -1;
-                    if(z3 || z4) {
-                        b7 = 0;
-                    }
-
-                    if(z10 || z6) {
-                        b7 = 1;
-                    }
-
-                    if(z4 && z6 && !z3 && !z10) {
-                        b7 = 6;
-                    }
-
-                    if(z4 && z10 && !z3 && !z6) {
-                        b7 = 7;
-                    }
-
-                    if(z3 && z10 && !z4 && !z6) {
-                        b7 = 8;
-                    }
-
-                    if(z3 && z6 && !z4 && !z10) {
-                        b7 = 9;
-                    }
-
-                    if(b7 == 0) {
-                        if(minecartTrackLogic9.worldObj.getBlockId(minecartTrackLogic9.trackX, minecartTrackLogic9.trackY + 1, minecartTrackLogic9.trackZ - 1) == minecartTrackLogic9.minecartTrack.blockID) {
-                            b7 = 4;
-                        }
-
-                        if(minecartTrackLogic9.worldObj.getBlockId(minecartTrackLogic9.trackX, minecartTrackLogic9.trackY + 1, minecartTrackLogic9.trackZ + 1) == minecartTrackLogic9.minecartTrack.blockID) {
-                            b7 = 5;
-                        }
-                    }
-
-                    if(b7 == 1) {
-                        if(minecartTrackLogic9.worldObj.getBlockId(minecartTrackLogic9.trackX + 1, minecartTrackLogic9.trackY + 1, minecartTrackLogic9.trackZ) == minecartTrackLogic9.minecartTrack.blockID) {
-                            b7 = 2;
-                        }
-
-                        if(minecartTrackLogic9.worldObj.getBlockId(minecartTrackLogic9.trackX - 1, minecartTrackLogic9.trackY + 1, minecartTrackLogic9.trackZ) == minecartTrackLogic9.minecartTrack.blockID) {
-                            b7 = 3;
-                        }
-                    }
-
-                    if(b7 < 0) {
-                        b7 = 0;
-                    }
-
-                    minecartTrackLogic9.worldObj.setBlockMetadata(minecartTrackLogic9.trackX, minecartTrackLogic9.trackY, minecartTrackLogic9.trackZ, b7);
+        for(int i6 = 0; i6 < this.connectedTracks.size(); ++i6) {
+            MinecartTrackLogic minecartTrackLogic7 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(i6));
+            if(minecartTrackLogic7 != null) {
+                minecartTrackLogic7.refreshConnectedTracks();
+                if(minecartTrackLogic7.handleKeyPress(this)) {
+                    minecartTrackLogic7.connectToNeighbor(this);
                 }
             }
         }

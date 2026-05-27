@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **Infdev 20100629**, an *Infdev* version of the game which was released on _**June 29, 2010**_. This is technically the first version of *Alpha* as the launcher was first released alongside this version.
+This version is **Infdev 20100630-2**, an *Infdev* version of the game which was released on _**June 30, 2010**_. This is the final version of Alpha that was still named Infdev.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Infdev_20100629).
+You can learn about the version itself [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Infdev_20100630-1835).
 
 ### Setup
 

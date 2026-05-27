@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
-public final class EntityBubbleFX extends EntityFX {
+public class EntityBubbleFX extends EntityFX {
 	public EntityBubbleFX(World world1, double d2, double d4, double d6, double d8, double d10, double d12) {
 		super(world1, d2, d4, d6, d8, d10, d12);
 		this.particleRed = 1.0F;
@@ -19,7 +19,7 @@ public final class EntityBubbleFX extends EntityFX {
 		this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.2D));
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;

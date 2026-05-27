@@ -32,19 +32,22 @@ import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.projectile.EntityArrow;
 import net.minecraft.game.world.World;
 
-public final class RenderManager {
+public class RenderManager {
 	private Map entityRenderMap = new HashMap();
 	public static RenderManager instance = new RenderManager();
+    private FontRenderer fontRenderer;
 	public static double renderPosX;
 	public static double renderPosY;
 	public static double renderPosZ;
 	public RenderEngine renderEngine;
 	public World worldObj;
+	public EntityPlayer player;
 	public float playerViewY;
+	public float playerViewX;
     public GameSettings options;
-	private double viewerPosX;
-	private double viewerPosY;
-	private double viewerPosZ;
+	public double viewerPosX;
+	public double viewerPosY;
+	public double viewerPosZ;
 
 	private RenderManager() {
 		this.entityRenderMap.put(EntitySpider.class, new RenderSpider());
@@ -66,14 +69,15 @@ public final class RenderManager {
 		Iterator iterator1 = this.entityRenderMap.values().iterator();
 
 		while(iterator1.hasNext()) {
-			((Render)iterator1.next()).setRenderManager(this);
+			Render render2 = (Render)iterator1.next();
+			render2.setRenderManager(this);
 		}
 
 	}
 
-	private Render getEntityClassRenderObject(Class entityClass) {
-		Render render2;
-		if((render2 = (Render)this.entityRenderMap.get(entityClass)) == null && entityClass != Entity.class) {
+	public Render getEntityClassRenderObject(Class entityClass) {
+		Render render2 = (Render)this.entityRenderMap.get(entityClass);
+		if(render2 == null && entityClass != Entity.class) {
 			render2 = this.getEntityClassRenderObject(entityClass.getSuperclass());
 			this.entityRenderMap.put(entityClass, render2);
 		}
@@ -81,44 +85,47 @@ public final class RenderManager {
 		return render2;
 	}
 
-	public final Render getEntityRenderObject(Entity entity) {
+	public Render getEntityRenderObject(Entity entity) {
 		return this.getEntityClassRenderObject(entity.getClass());
 	}
 
-    public final void cacheActiveRenderInfo(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, GameSettings options, float partialTicks) {
+    public void cacheActiveRenderInfo(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, GameSettings options, float partialTicks) {
         this.worldObj = world;
         this.renderEngine = renderEngine;
         this.options = options;
+        this.player = playerEntity;
+        this.fontRenderer = fontRenderer;
         this.playerViewY = playerEntity.prevRotationYaw + (playerEntity.rotationYaw - playerEntity.prevRotationYaw) * partialTicks;
+        this.playerViewX = playerEntity.prevRotationPitch + (playerEntity.rotationPitch - playerEntity.prevRotationPitch) * partialTicks;
         this.viewerPosX = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTicks;
         this.viewerPosY = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTicks;
         this.viewerPosZ = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTicks;
     }
 
-	public final void renderEntity(Entity entity, float partialTicks) {
+	public void renderEntity(Entity entity, float partialTicks) {
 		double d3 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
 		double d5 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
 		double d7 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
 		float f9 = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
-		float f10;
-		GL11.glColor3f(f10 = entity.getBrightness(partialTicks), f10, f10);
+		float f10 = entity.getBrightness(partialTicks);
+		GL11.glColor3f(f10, f10, f10);
 		this.renderEntityWithPosYaw(entity, d3 - renderPosX, d5 - renderPosY, d7 - renderPosZ, f9, partialTicks);
 	}
 
-	public final void renderEntityWithPosYaw(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
-		Render render10;
-		if((render10 = this.getEntityRenderObject(entity)) != null) {
+	public void renderEntityWithPosYaw(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+		Render render10 = this.getEntityRenderObject(entity);
+		if(render10 != null) {
 			render10.doRender(entity, x, y, z, yaw, partialTicks);
-			render10.renderShadow(entity, x, y, z, partialTicks);
+			render10.doRenderShadowAndFire(entity, x, y, z, yaw, partialTicks);
 		}
 
 	}
 
-	public final void set(World world) {
+	public void set(World world) {
 		this.worldObj = world;
 	}
 
-	public final double getDistanceToCamera(double x, double y, double z) {
+	public double getDistanceToCamera(double x, double y, double z) {
 		double d7 = x - this.viewerPosX;
 		double d9 = y - this.viewerPosY;
 		double d11 = z - this.viewerPosZ;

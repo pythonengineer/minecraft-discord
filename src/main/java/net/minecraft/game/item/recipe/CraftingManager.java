@@ -8,7 +8,7 @@ import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 
-public final class CraftingManager {
+public class CraftingManager {
 	private static final CraftingManager instance = new CraftingManager();
 	private List recipes = new ArrayList();
 
@@ -20,13 +20,8 @@ public final class CraftingManager {
         (new RecipesTools()).addRecipes(this);
         (new RecipesWeapons()).addRecipe(this);
         (new RecipesIngots()).addRecipes(this);
-        new RecipesFood();
-        this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", 'X', Block.mushroomBrown, 'Y', Block.mushroomRed, '#', Item.bowlEmpty});
-        this.addRecipe(new ItemStack(Item.bowlSoup), new Object[]{"Y", "X", "#", 'X', Block.mushroomRed, 'Y', Block.mushroomBrown, '#', Item.bowlEmpty});
-        new RecipesCrafting();
-        this.addRecipe(new ItemStack(Block.chest), new Object[]{"###", "# #", "###", '#', Block.planks});
-        this.addRecipe(new ItemStack(Block.stoneOvenIdle), new Object[]{"###", "# #", "###", '#', Block.cobblestone});
-        this.addRecipe(new ItemStack(Block.workbench), new Object[]{"##", "##", '#', Block.planks});
+        (new RecipesFood()).addRecipes(this);
+        (new RecipesCrafting()).addRecipes(this);
         (new RecipesArmor()).addRecipes(this);
         this.addRecipe(new ItemStack(Block.cloth, 1), new Object[]{"###", "###", "###", '#', Item.silk});
         this.addRecipe(new ItemStack(Block.tnt, 1), new Object[]{"X#X", "#X#", "X#X", 'X', Item.gunpowder, '#', Block.sand});
@@ -51,14 +46,13 @@ public final class CraftingManager {
         System.out.println(this.recipes.size() + " recipes");
     }
 
-    final void addRecipe(ItemStack stack, Object... recipeObjects) {
+    void addRecipe(ItemStack itemStack1, Object... recipeObjects) {
         String string3 = "";
         int i4 = 0;
         int i5 = 0;
         int i6 = 0;
-        if(recipeObjects[0] instanceof String[]) {
-            ++i4;
-            String[] string11 = (String[])recipeObjects[0];
+        if(recipeObjects[i4] instanceof String[]) {
+            String[] string11 = (String[])((String[])recipeObjects[i4++]);
 
             for(int i8 = 0; i8 < string11.length; ++i8) {
                 String string9 = string11[i8];
@@ -100,14 +94,14 @@ public final class CraftingManager {
             }
         }
 
-        this.recipes.add(new CraftingRecipe(i5, i6, i14, stack));
+        this.recipes.add(new CraftingRecipe(i5, i6, i14, itemStack1));
     }
 
-    public final ItemStack findMatchingRecipe(int[] ids) {
+    public ItemStack findMatchingRecipe(int[] ids) {
         for(int i2 = 0; i2 < this.recipes.size(); ++i2) {
-            CraftingRecipe craftingRecipe3;
-            if((craftingRecipe3 = (CraftingRecipe)this.recipes.get(i2)).matches(ids)) {
-                return craftingRecipe3.getCraftingResult();
+            CraftingRecipe craftingRecipe3 = (CraftingRecipe)this.recipes.get(i2);
+            if(craftingRecipe3.matchRecipe(ids)) {
+                return craftingRecipe3.createResult(ids);
             }
         }
 

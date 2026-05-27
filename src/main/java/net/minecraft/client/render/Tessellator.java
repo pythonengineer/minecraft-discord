@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.VertexFormat;
 
-public final class Tessellator {
+public class Tessellator {
     private static net.lax1dude.eaglercraft.opengl.WorldRenderer worldRenderer = new net.lax1dude.eaglercraft.opengl.WorldRenderer(2097152);
 	private float r;
 	private float g;
@@ -21,7 +21,7 @@ public final class Tessellator {
     private boolean isColorDisabled = false;
 	public static Tessellator instance = new Tessellator();
 
-	public final void draw() {
+	public void draw() {
         worldRenderer.finishDrawing();
         int cunt = worldRenderer.getVertexCount();
         if (cunt > 0) {
@@ -38,7 +38,7 @@ public final class Tessellator {
 	private void reset() {
 	}
 
-    public final void startDrawing(int mode, VertexFormat fmt) {
+    public void startDrawing(int mode, VertexFormat fmt) {
         this.reset();
         worldRenderer.begin(mode, fmt);
         this.hasNormal = false;
@@ -46,15 +46,15 @@ public final class Tessellator {
         this.isColorDisabled = false;
     }
 
-	public final void startDrawingQuads(VertexFormat fmt) {
+	public void startDrawingQuads(VertexFormat fmt) {
 		this.startDrawing(GL11.GL_QUADS, fmt);
 	}
 
-    public final void setColorOpaque_F(float r, float g, float b) {
+    public void setColorOpaque_F(float r, float g, float b) {
         this.setColorOpaque((int)(r * 255.0F), (int)(g * 255.0F), (int)(b * 255.0F));
     }
 
-    public final void setColorRGBA_F(float r, float g, float b, float a) {
+    public void setColorRGBA_F(float r, float g, float b, float a) {
         this.setColorRGBA((int)(r * 255.0F), (int)(g * 255.0F), (int)(b * 255.0F), (int)(a * 255.0F));
     }
 
@@ -104,16 +104,16 @@ public final class Tessellator {
         }
     }
 
-    public final void addUV(double u, double v) {
+    public void addUV(double u, double v) {
         worldRenderer.tex(u, v);
     }
 
-	public final void addVertexWithUV(double x, double y, double z, double u, double v) {
+	public void addVertexWithUV(double x, double y, double z, double u, double v) {
 	    this.addUV(u, v);
 		this.addVertex(x, y, z);
 	}
 
-	public final void addVertex(double x, double y, double z) {
+	public void addVertex(double x, double y, double z) {
         if (this.hasColor) {
             worldRenderer.color(this.r, this.g, this.b, this.a);
         }
@@ -127,25 +127,25 @@ public final class Tessellator {
 
 	}
 
-    public final void setColorOpaque_I(int color) {
+    public void setColorOpaque_I(int color) {
         int i2 = color >> 16 & 255;
         int i3 = color >> 8 & 255;
         color &= 255;
         this.setColorOpaque(i2, i3, color);
     }
 
-	public final void disableColor() {
+	public void disableColor() {
         this.isColorDisabled = true;
 	}
 
-    public final void setNormal(float normalX, float normalY, float normalZ) {
+    public void setNormal(float normalX, float normalY, float normalZ) {
         this.hasNormal = true;
         this.nx = normalX;
         this.ny = normalY;
         this.nz = normalZ;
     }
 
-    public final void setTranslationD(double x, double y, double z) {
+    public void setTranslationD(double x, double y, double z) {
         this.xOffset = x;
         this.yOffset = y;
         this.zOffset = z;

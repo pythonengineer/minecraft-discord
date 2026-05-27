@@ -3,7 +3,7 @@ package net.minecraft.client.sound;
 import net.lax1dude.eaglercraft.EaglercraftSoundManager;
 import net.lax1dude.eaglercraft.internal.IAudioResource;
 
-public final class SoundPoolEntry {
+public class SoundPoolEntry {
     private EaglercraftSoundManager mgr;
     public String soundName;
     public String soundUrl;

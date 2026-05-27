@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.game.physics.Vec3D;
 
-public final class RenderHelper {
+public class RenderHelper {
 	private static FloatBuffer colorBuffer = GLAllocation.createFloatBuffer(16);
 
 	public static void disableStandardItemLighting() {
@@ -35,7 +35,7 @@ public final class RenderHelper {
     }
 
 	private static FloatBuffer setColorBuffer(double r, double g, double b, double a) {
-		return setColorBuffer((float)r, (float)g, (float)b, 0.0F);
+		return setColorBuffer((float)r, (float)g, (float)b, (float)a);
 	}
 
 	private static FloatBuffer setColorBuffer(float r, float g, float b, float a) {

@@ -12,7 +12,6 @@ import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.projectile.EntityArrow;
 import net.minecraft.game.item.Item;
-import net.minecraft.game.item.ItemArmor;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -34,17 +33,19 @@ public class EntityPlayer extends EntityLiving {
 		this.setPositionAndRotation((double)world1.spawnX + 0.5D, (double)world1.spawnY, (double)world1.spawnZ + 0.5D, 0.0F, 0.0F);
 		this.yOffset = 1.62F;
 		this.health = 20;
+		this.entityType = "humanoid";
+		this.unusedRotation = 180.0F;
 		this.fireResistance = 20;
 		this.texture = "/char.png";
 	}
 
-    public final void updateRidden() {
+    public void updateRidden() {
         super.updateRidden();
         this.prevCameraYaw = this.cameraYaw;
         this.cameraYaw = 0.0F;
     }
 
-	public final void preparePlayerToSpawn() {
+	public void preparePlayerToSpawn() {
 		this.yOffset = 1.62F;
 		this.setSize(0.6F, 1.8F);
 		super.preparePlayerToSpawn();
@@ -57,18 +58,12 @@ public class EntityPlayer extends EntityLiving {
 	}
 
 	public void onLivingUpdate() {
-		if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 << 2 == 0) {
+		this.worldObj.playMusic(this.posX, this.posY, this.posZ, "calm", 0.0F);
+		if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 * 4 == 0) {
 			this.heal(1);
 		}
 
-		InventoryPlayer inventoryPlayer3 = this.inventory;
-
-		for(int i4 = 0; i4 < inventoryPlayer3.mainInventory.length; ++i4) {
-			if(inventoryPlayer3.mainInventory[i4] != null && inventoryPlayer3.mainInventory[i4].animationsToGo > 0) {
-				--inventoryPlayer3.mainInventory[i4].animationsToGo;
-			}
-		}
-
+		this.inventory.decrementAnimations();
 		this.prevCameraYaw = this.cameraYaw;
 		super.onLivingUpdate();
 		float f1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
@@ -87,17 +82,26 @@ public class EntityPlayer extends EntityLiving {
 
 		this.cameraYaw += (f1 - this.cameraYaw) * 0.4F;
 		this.cameraPitch += (f2 - this.cameraPitch) * 0.8F;
-		List list5;
-		if(this.health > 0 && (list5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D))) != null) {
-			for(int i6 = 0; i6 < list5.size(); ++i6) {
-				Entity entity7 = (Entity)list5.get(i6);
-				entity7.onCollideWithPlayer(this);
+		if(this.health > 0) {
+			List list3 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
+			if(list3 != null) {
+				for(int i4 = 0; i4 < list3.size(); ++i4) {
+					this.collideWithPlayer((Entity)list3.get(i4));
+				}
 			}
 		}
 
 	}
 
-	public final void onDeath(Entity entity) {
+	private void collideWithPlayer(Entity entity1) {
+		entity1.onCollideWithPlayer(this);
+	}
+
+	public int getScore() {
+		return this.score;
+	}
+
+	public void onDeath(Entity entity) {
 		this.setSize(0.2F, 0.2F);
 		this.setPosition(this.posX, this.posY, this.posZ);
 		this.motionY = (double)0.1F;
@@ -116,11 +120,15 @@ public class EntityPlayer extends EntityLiving {
 		this.yOffset = 0.1F;
 	}
 
-	public final void dropPlayerItem(ItemStack stack) {
+    public void addToPlayerScore(Entity entity, int score) {
+        this.score += score;
+    }
+
+	public void dropPlayerItem(ItemStack stack) {
 		this.dropPlayerItemWithRandomChoice(stack, false);
 	}
 
-	public final void dropPlayerItemWithRandomChoice(ItemStack stack, boolean isRandom) {
+	public void dropPlayerItemWithRandomChoice(ItemStack stack, boolean isRandom) {
 		if(stack != null) {
 			EntityItem stack1;
 			(stack1 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F, this.posZ, stack)).delayBeforeCanPickup = 40;
@@ -147,11 +155,21 @@ public class EntityPlayer extends EntityLiving {
 		}
 	}
 
-	public final boolean canHarvestBlock(Block block1) {
-		Block block2 = block1;
-		InventoryPlayer inventoryPlayer3 = this.inventory;
-		ItemStack itemStack4;
-		return block2.blockMaterial != Material.rock && block2.blockMaterial != Material.iron ? true : ((itemStack4 = inventoryPlayer3.getStackInSlot(inventoryPlayer3.currentItem)) != null ? Item.itemsList[itemStack4.itemID].canHarvestBlock(block2) : false);
+	public float getCurrentPlayerStrVsBlock(Block block1) {
+		float f2 = this.inventory.getStrVsBlock(block1);
+		if(this.isInsideOfMaterial(Material.water)) {
+			f2 /= 5.0F;
+		}
+
+		if(!this.onGround) {
+			f2 /= 5.0F;
+		}
+
+		return f2;
+	}
+
+	public boolean canHarvestBlock(Block block1) {
+		return this.inventory.canHarvestBlock(block1);
 	}
 
 	public void readEntityFromNBT(NBTTagCompound compoundTag) {
@@ -171,11 +189,11 @@ public class EntityPlayer extends EntityLiving {
 	public void onItemPickup(Entity entity) {
 	}
 
-	protected final float getEyeHeight() {
+	protected float getEyeHeight() {
 		return 0.12F;
 	}
 
-	public final boolean attackEntityFrom(Entity entity, int damage) {
+	public boolean attackEntityFrom(Entity entity, int damage) {
 		this.entityAge = 0;
 		if(this.health <= 0) {
 			return false;
@@ -197,26 +215,11 @@ public class EntityPlayer extends EntityLiving {
 			}
 
 			int i3 = 25 - this.inventory.getTotalArmorValue();
-			i3 = damage * i3 + this.damageRemainder;
-			int i4 = damage;
-			InventoryPlayer inventoryPlayer6 = this.inventory;
-
-			for(int i5 = 0; i5 < inventoryPlayer6.armorInventory.length; ++i5) {
-				if(inventoryPlayer6.armorInventory[i5] != null && inventoryPlayer6.armorInventory[i5].getItem() instanceof ItemArmor) {
-					inventoryPlayer6.armorInventory[i5].damageItem(i4);
-					if(inventoryPlayer6.armorInventory[i5].stackSize == 0) {
-						inventoryPlayer6.armorInventory[i5] = null;
-					}
-				}
-			}
-
-			damage = i3 / 25;
-			this.damageRemainder = i3 % 25;
-			if(damage == 0) {
-				return false;
-			} else {
-				return super.attackEntityFrom(entity, damage);
-			}
+			int i4 = damage * i3 + this.damageRemainder;
+			this.inventory.damageArmor(damage);
+			damage = i4 / 25;
+			this.damageRemainder = i4 % 25;
+			return damage == 0 ? false : super.attackEntityFrom(entity, damage);
 		}
 	}
 
@@ -226,7 +229,7 @@ public class EntityPlayer extends EntityLiving {
 	public void displayGUIEditSign(TileEntitySign signTileEntity) {
 	}
 
-    public final void dropOneItem(boolean flag) {
+    public void dropOneItem(boolean flag) {
         this.dropPlayerItem(this.inventory.decrStackSize(this.inventory.currentItem,
             flag && this.inventory.getCurrentItem() != null ? this.inventory.getCurrentItem().stackSize : 1));
     }
@@ -235,4 +238,11 @@ public class EntityPlayer extends EntityLiving {
         ItemStack st = this.inventory.getCurrentItem();
         return st != null && st.getItem().shouldUseOnTouchEagler(st);
     }
+
+	public int getPlayerArmorValue() {
+		return this.inventory.getTotalArmorValue();
+	}
+
+	public void interactWithEntity(Entity entity1) {
+	}
 }

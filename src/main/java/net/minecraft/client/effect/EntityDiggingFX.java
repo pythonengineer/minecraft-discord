@@ -4,7 +4,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
-public final class EntityDiggingFX extends EntityFX {
+public class EntityDiggingFX extends EntityFX {
 	public EntityDiggingFX(World world, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, Block block) {
 		super(world, posX, posY, posZ, speedX, speedY, speedZ);
 		this.particleTextureIndex = block.blockIndexInTexture;
@@ -13,15 +13,15 @@ public final class EntityDiggingFX extends EntityFX {
 		this.particleScale /= 2.0F;
 	}
 
-	public final int getFXLayer() {
+	public int getFXLayer() {
 		return 1;
 	}
 
-	public final void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		float f8;
-		float f9 = (f8 = ((float)(this.particleTextureIndex % 16) + this.particleTextureJitterX / 4.0F) / 16.0F) + 0.015609375F;
-		float f10;
-		float f11 = (f10 = ((float)(this.particleTextureIndex / 16) + this.particleTextureJitterY / 4.0F) / 16.0F) + 0.015609375F;
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+		float f8 = ((float)(this.particleTextureIndex % 16) + this.particleTextureJitterX / 4.0F) / 16.0F;
+		float f9 = f8 + 0.015609375F;
+		float f10 = ((float)(this.particleTextureIndex / 16) + this.particleTextureJitterY / 4.0F) / 16.0F;
+		float f11 = f10 + 0.015609375F;
 		float f12 = 0.1F * this.particleScale;
 		float f13 = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTicks - interpPosX);
 		float f14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTicks - interpPosY);

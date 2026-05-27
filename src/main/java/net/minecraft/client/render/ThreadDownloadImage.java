@@ -10,19 +10,19 @@ import net.ellerton.japng.error.PngException;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
-final class ThreadDownloadImage extends Thread {
-    private String username;
-    private ImageBufferDownload buffer;
+class ThreadDownloadImage extends Thread {
+    private String location;
+    private ImageBuffer buffer;
     private ThreadDownloadImageData imageData;
 
-    ThreadDownloadImage(ThreadDownloadImageData downloadImageDataThread, String username, ImageBufferDownload imageBufferDownloader) {
+    ThreadDownloadImage(ThreadDownloadImageData downloadImageDataThread, String location, ImageBuffer imageBuffer) {
         this.imageData = downloadImageDataThread;
-        this.username = username;
-        this.buffer = imageBufferDownloader;
+        this.location = location;
+        this.buffer = imageBuffer;
     }
 
-    public final void run() {
-        byte[] data = EagRuntime.downloadSkinDbURL(this.username);
+    public void run() {
+        byte[] data = EagRuntime.downloadSkinDbURL(this.location);
         if (data == null) {
             return;
         }

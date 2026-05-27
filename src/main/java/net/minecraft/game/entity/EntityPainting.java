@@ -54,7 +54,7 @@ public class EntityPainting extends Entity {
 		this.setDirection(direction);
 	}
 
-	private void setDirection(int direction) {
+	public void setDirection(int direction) {
 		this.direction = direction;
 		this.prevRotationYaw = this.rotationYaw = (float)(direction * 90);
 		float f2 = (float)this.art.sizeX;
@@ -72,48 +72,50 @@ public class EntityPainting extends Entity {
 		float f5 = (float)this.xPosition + 0.5F;
 		float f6 = (float)this.yPosition + 0.5F;
 		float f7 = (float)this.zPosition + 0.5F;
+		float f8 = 0.5625F;
 		if(direction == 0) {
-			f7 -= 0.5625F;
+			f7 -= f8;
 		}
 
 		if(direction == 1) {
-			f5 -= 0.5625F;
+			f5 -= f8;
 		}
 
 		if(direction == 2) {
-			f7 += 0.5625F;
+			f7 += f8;
 		}
 
 		if(direction == 3) {
-			f5 += 0.5625F;
+			f5 += f8;
 		}
 
 		if(direction == 0) {
-			f5 -= getArtSize(this.art.sizeX);
+			f5 -= this.getArtSize(this.art.sizeX);
 		}
 
 		if(direction == 1) {
-			f7 += getArtSize(this.art.sizeX);
+			f7 += this.getArtSize(this.art.sizeX);
 		}
 
 		if(direction == 2) {
-			f5 += getArtSize(this.art.sizeX);
+			f5 += this.getArtSize(this.art.sizeX);
 		}
 
 		if(direction == 3) {
-			f7 -= getArtSize(this.art.sizeX);
+			f7 -= this.getArtSize(this.art.sizeX);
 		}
 
-		f6 += getArtSize(this.art.sizeY);
+		f6 += this.getArtSize(this.art.sizeY);
 		this.setPosition((double)f5, (double)f6, (double)f7);
-        this.boundingBox.setBounds((double)(f5 - f2 - 0.00625F), (double)(f6 - f3 - 0.00625F), (double)(f7 - f4 - 0.00625F), (double)(f5 + f2 + 0.00625F), (double)(f6 + f3 + 0.00625F), (double)(f7 + f4 + 0.00625F));
+		float f9 = -0.00625F;
+        this.boundingBox.setBounds((double)(f5 - f2 - f9), (double)(f6 - f3 - f9), (double)(f7 - f4 - f9), (double)(f5 + f2 + f9), (double)(f6 + f3 + f9), (double)(f7 + f4 + f9));
 	}
 
-	private static float getArtSize(int textureSize) {
+	private float getArtSize(int textureSize) {
 		return textureSize == 32 ? 0.5F : (textureSize == 64 ? 0.5F : 0.0F);
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		if(this.tickCounter++ == 100 && !this.onValidSurface()) {
 			this.tickCounter = 0;
             this.setEntityDead();
@@ -122,13 +124,14 @@ public class EntityPainting extends Entity {
 
 	}
 
-	public final boolean onValidSurface() {
+	public boolean onValidSurface() {
 		if(this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() > 0) {
 			return false;
 		} else {
 			int i1 = this.art.sizeX / 16;
 			int i2 = this.art.sizeY / 16;
 			int i3 = this.xPosition;
+			int i4 = this.yPosition;
 			int i5 = this.zPosition;
 			if(this.direction == 0) {
 				i3 = MathHelper.floor_double(this.posX - (double)((float)this.art.sizeX / 32.0F));
@@ -146,7 +149,7 @@ public class EntityPainting extends Entity {
 				i5 = MathHelper.floor_double(this.posZ - (double)((float)this.art.sizeX / 32.0F));
 			}
 
-			int i4 = MathHelper.floor_double(this.posY - (double)((float)this.art.sizeY / 32.0F));
+			i4 = MathHelper.floor_double(this.posY - (double)((float)this.art.sizeY / 32.0F));
 
 			int i7;
 			for(int i6 = 0; i6 < i1; ++i6) {
@@ -176,17 +179,17 @@ public class EntityPainting extends Entity {
 		}
 	}
 
-	public final boolean canBeCollidedWith() {
+	public boolean canBeCollidedWith() {
 		return true;
 	}
 
-	public final boolean attackEntityFrom(Entity entity, int damage) {
+	public boolean attackEntityFrom(Entity entity, int damage) {
         this.setEntityDead();
 		this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
 		return true;
 	}
 
-	public final void writeEntityToNBT(NBTTagCompound compoundTag) {
+	public void writeEntityToNBT(NBTTagCompound compoundTag) {
 		compoundTag.setByte("Dir", (byte)this.direction);
 		compoundTag.setString("Motive", this.art.title);
 		compoundTag.setInteger("TileX", this.xPosition);
@@ -194,19 +197,19 @@ public class EntityPainting extends Entity {
 		compoundTag.setInteger("TileZ", this.zPosition);
 	}
 
-	public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+	public void readEntityFromNBT(NBTTagCompound compoundTag) {
 		this.direction = compoundTag.getByte("Dir");
 		this.xPosition = compoundTag.getInteger("TileX");
 		this.yPosition = compoundTag.getInteger("TileY");
 		this.zPosition = compoundTag.getInteger("TileZ");
-		String string6 = compoundTag.getString("Motive");
-		EnumArt[] enumArt2;
-		int i3 = (enumArt2 = EnumArt.values()).length;
+		String string2 = compoundTag.getString("Motive");
+		EnumArt[] enumArt3 = EnumArt.values();
+		int i4 = enumArt3.length;
 
-		for(int i4 = 0; i4 < i3; ++i4) {
-			EnumArt enumArt5;
-			if((enumArt5 = enumArt2[i4]).title.equals(string6)) {
-				this.art = enumArt5;
+		for(int i5 = 0; i5 < i4; ++i5) {
+			EnumArt enumArt6 = enumArt3[i5];
+			if(enumArt6.title.equals(string2)) {
+				this.art = enumArt6;
 			}
 		}
 

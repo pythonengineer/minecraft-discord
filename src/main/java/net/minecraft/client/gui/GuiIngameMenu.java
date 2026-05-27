@@ -4,11 +4,11 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.GuiMainMenu;
 import net.minecraft.game.world.World;
 
-public final class GuiIngameMenu extends GuiScreen {
+public class GuiIngameMenu extends GuiScreen {
     private int updateCounter2 = 0;
     private int updateCounter = 0;
 
-    public final void initGui() {
+    public void initGui() {
         this.updateCounter2 = 0;
 		this.controlList.clear();
         this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Save and quit to title.."));
@@ -16,7 +16,7 @@ public final class GuiIngameMenu extends GuiScreen {
         this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96, "Options..."));
 	}
 
-	protected final void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) {
 		if(button.id == 0) {
 			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
 		}
@@ -33,12 +33,12 @@ public final class GuiIngameMenu extends GuiScreen {
 
 	}
 
-    public final void updateScreen() {
+    public void updateScreen() {
         super.updateScreen();
         ++this.updateCounter;
     }
 
-    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         if(!this.mc.theWorld.saveWorld(this.updateCounter2++) || this.updateCounter < 20) {
             float f4 = MathHelper.sin(((float)(this.updateCounter % 10) + partialTicks) / 10.0F * (float)Math.PI * 2.0F) * 0.2F + 0.8F;

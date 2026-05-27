@@ -4,23 +4,26 @@ import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
-public final class ItemSeeds extends Item {
+public class ItemSeeds extends Item {
 	private int blockType;
 
 	public ItemSeeds(int itemID, int blockType) {
-		super(39);
+		super(itemID);
 		this.blockType = blockType;
 	}
 
-	public final boolean onItemUse(ItemStack stack, EntityPlayer playerEntity, World world, int x, int y, int z, int side) {
-		if(side != 1) {
+	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int xCoord, int yCoord, int zCoord, int i7) {
+		if(i7 != 1) {
 			return false;
-		} else if(world.getBlockId(x, y, z) == Block.tilledField.blockID) {
-			world.setBlockWithNotify(x, y + 1, z, this.blockType);
-			--stack.stackSize;
-			return true;
 		} else {
-			return false;
+			int i8 = world3.getBlockId(xCoord, yCoord, zCoord);
+			if(i8 == Block.tilledField.blockID) {
+				world3.setBlockWithNotify(xCoord, yCoord + 1, zCoord, this.blockType);
+				--itemStack1.stackSize;
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 }

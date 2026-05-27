@@ -2,7 +2,7 @@ package net.minecraft.game.physics;
 
 import net.minecraft.game.entity.Entity;
 
-public final class MovingObjectPosition {
+public class MovingObjectPosition {
 	public int typeOfHit;
 	public int blockX;
 	public int blockY;

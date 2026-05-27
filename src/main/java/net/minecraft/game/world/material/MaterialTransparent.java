@@ -1,15 +1,15 @@
 package net.minecraft.game.world.material;
 
-public final class MaterialTransparent extends Material {
-    public final boolean isSolid() {
+public class MaterialTransparent extends Material {
+    public boolean isSolid() {
         return false;
     }
 
-    public final boolean getCanBlockGrass() {
+    public boolean getCanBlockGrass() {
         return false;
     }
 
-    public final boolean getIsSolid() {
+    public boolean getIsSolid() {
         return false;
     }
 }

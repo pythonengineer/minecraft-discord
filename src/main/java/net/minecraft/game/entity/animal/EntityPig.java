@@ -16,29 +16,29 @@ public class EntityPig extends EntityAnimal {
 		this.saddled = false;
 	}
 
-	public final void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
+	public void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
 		super.writeEntityToNBT(nBTTagCompound1);
 		nBTTagCompound1.setBoolean("Saddle", this.saddled);
 	}
 
-	public final void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
+	public void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
 		super.readEntityFromNBT(nBTTagCompound1);
 		this.saddled = nBTTagCompound1.getBoolean("Saddle");
 	}
 
-	protected final String getLivingSound() {
+	protected String getLivingSound() {
 		return "mob.pig";
 	}
 
-	protected final String getHurtSound() {
+	protected String getHurtSound() {
 		return "mob.pig";
 	}
 
-	protected final String getDeathSound() {
+	protected String getDeathSound() {
 		return "mob.pigdeath";
 	}
 
-	public final boolean interact(EntityPlayer entityPlayer) {
+	public boolean interact(EntityPlayer entityPlayer) {
 		if(this.saddled) {
 			entityPlayer.mountEntity(this);
 			return true;
@@ -47,7 +47,7 @@ public class EntityPig extends EntityAnimal {
 		}
 	}
 
-	protected final int getDropItemId() {
+	protected int getDropItemId() {
 		return Item.porkRaw.shiftedIndex;
 	}
 }

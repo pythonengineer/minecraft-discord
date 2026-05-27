@@ -2,11 +2,11 @@ package net.minecraft.client.render.texture;
 
 import net.minecraft.game.world.block.Block;
 
-public final class TextureWaterFlowFX extends TextureFX {
-    private float[] red = new float[256];
-    private float[] green = new float[256];
-    private float[] blue = new float[256];
-    private float[] alpha = new float[256];
+public class TextureWaterFlowFX extends TextureFX {
+    protected float[] red = new float[256];
+    protected float[] green = new float[256];
+    protected float[] blue = new float[256];
+    protected float[] alpha = new float[256];
     private int tickCounter = 0;
 
     public TextureWaterFlowFX() {
@@ -14,7 +14,7 @@ public final class TextureWaterFlowFX extends TextureFX {
         this.tileSize = 2;
     }
 
-    public final void onTick() {
+    public void onTick() {
         ++this.tickCounter;
 
         int i1;
@@ -56,7 +56,8 @@ public final class TextureWaterFlowFX extends TextureFX {
         this.red = f8;
 
         for(i2 = 0; i2 < 256; ++i2) {
-            if((f3 = this.red[i2 - (this.tickCounter << 4) & 255]) > 1.0F) {
+            f3 = this.red[i2 - (this.tickCounter << 4) & 255];
+            if(f3 > 1.0F) {
                 f3 = 1.0F;
             }
 

@@ -9,19 +9,19 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSelectWorld;
 import net.minecraft.client.render.Tessellator;
 
-public final class GuiMainMenu extends GuiScreen {
+public class GuiMainMenu extends GuiScreen {
 	private float updateCounter = 0.0F;
 	private String[] splashes = new String[]{"Pre-beta!", "Now on Discord!", "Built on Eaglercraft!", "Christ is King", "As seen on TV!", "Awesome!", "100% pure!", "May contain nuts!", "Better than Prey!", "More polygons!", "Sexy!", "Limited edition!", "Flashing letters!", "Made by Notch!", "Coming soon!", "Best in class!", "When it\'s finished!", "Absolutely dragon free!", "Excitement!", "More than 5000 sold!", "One of a kind!", "700+ hits on YouTube!", "Indev!", "Spiders everywhere!", "Check it out!", "Holy cow, man!", "It\'s a game!", "Made in Sweden!", "Reticulating splines!", "Minecraft!", "Yaaay!", "Alpha version!", "Singleplayer!", "Keyboard compatible!", "Undocumented!", "Ingots!", "Exploding creepers!", "That\'s not a moon!", "l33t!", "Create!", "Survive!", "Dungeon!", "Exclusive!", "The bee\'s knees!", "Down with O.P.P.!", "Closed source!", "Classy!", "Wow!", "Not on steam!", "9.95 euro!", "Half price!", "Oh man!", "Check it out!", "Awesome community!", "Pixels!", "Teetsuuuuoooo!", "Kaaneeeedaaaa!", "Now with difficulty!", "Enhanced!", "90% bug free!", "Pretty!", "12 herbs and spices!", "Fat free!", "Absolutely no memes!", "Free dental!", "Ask your doctor!", "Minors welcome!", "Cloud computing!", "Legal in Finland!", "Hard to label!", "Technically good!", "Bringing home the bacon!", "Indie!", "GOTY!", "Ceci n\'est pas une title screen!", "Euclidian!", "Now in 3D!", "Inspirational!", "Herregud!", "Complex cellular automata!", "Yes, sir!", "Played by cowboys!", "WebGL2!", "Thousands of colors!", "Try it!", "Age of Wonders is better!", "Try the mushroom stew!", "Sensational!", "Hot tamale, hot hot tamale!", "Play him off, keyboard cat!", "Guaranteed!", "Macroscopic!", "Bring it on!", "Random splash!", "Call your mother!", "Monster infighting!", "Loved by millions!", "Ultimate edition!", "Freaky!", "You\'ve got a brand new key!", "Water proof!", "Uninflammable!", "Whoa, dude!", "All inclusive!", "Tell your friends!", "NP is not in P!", "Notch <3 Ez!", "Music by C418!"};
 	private String splashString = this.splashes[(int)(Math.random() * (double)this.splashes.length)];
 
-	public final void updateScreen() {
+	public void updateScreen() {
 		this.updateCounter += 0.01F;
 	}
 
-	protected final void keyTyped(char typedChar, int keyCode) {
+	protected void keyTyped(char typedChar, int keyCode) {
 	}
 
-	public final void initGui() {
+	public void initGui() {
 		this.controlList.clear();
         this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Single player"));
         this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, "Multi player"));
@@ -35,7 +35,7 @@ public final class GuiMainMenu extends GuiScreen {
 
 	}
 
-    protected final void actionPerformed(GuiButton button) {
+    protected void actionPerformed(GuiButton button) {
         if(button.id == 0) {
             this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
         }
@@ -46,7 +46,7 @@ public final class GuiMainMenu extends GuiScreen {
 
     }
 
-    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         Tessellator tessellator4 = Tessellator.instance;
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/logo.png"));

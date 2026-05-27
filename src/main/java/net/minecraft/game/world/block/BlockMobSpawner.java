@@ -4,16 +4,16 @@ import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.block.tileentity.TileEntityMobSpawner;
 import net.minecraft.game.world.material.Material;
 
-public final class BlockMobSpawner extends BlockContainer {
+public class BlockMobSpawner extends BlockContainer {
     protected BlockMobSpawner(int i1, int i2) {
-        super(52, 65, Material.rock);
+        super(i1, i2, Material.rock);
     }
 
-    protected final TileEntity getBlockEntity() {
+    protected TileEntity getBlockEntity() {
         return new TileEntityMobSpawner();
     }
 
-    public final boolean isOpaqueCube() {
+    public boolean isOpaqueCube() {
         return false;
     }
 }

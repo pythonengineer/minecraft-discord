@@ -5,115 +5,124 @@ import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.chunk.Chunk;
 import net.minecraft.game.world.material.Material;
 
-public final class ChunkCache implements IBlockAccess {
+public class ChunkCache implements IBlockAccess {
     private int chunkX;
     private int chunkZ;
     private Chunk[][] chunkArray;
     private World worldObj;
 
-    public ChunkCache(World world, int i2, int i3, int i4, int i5) {
+    public ChunkCache(World world, int i2, int i3, int i4, int i5, int i6, int i7) {
         this.worldObj = world;
         this.chunkX = i2 >> 4;
-        this.chunkZ = i3 >> 4;
-        i2 = i4 >> 4;
-        i3 = i5 >> 4;
-        this.chunkArray = new Chunk[i2 - this.chunkX + 1][i3 - this.chunkZ + 1];
+        this.chunkZ = i4 >> 4;
+        int i8 = i5 >> 4;
+        int i9 = i7 >> 4;
+        this.chunkArray = new Chunk[i8 - this.chunkX + 1][i9 - this.chunkZ + 1];
 
-        for(i4 = this.chunkX; i4 <= i2; ++i4) {
-            for(i5 = this.chunkZ; i5 <= i3; ++i5) {
-                this.chunkArray[i4 - this.chunkX][i5 - this.chunkZ] = world.getChunkFromChunkCoords(i4, i5);
+        for(int i10 = this.chunkX; i10 <= i8; ++i10) {
+            for(int i11 = this.chunkZ; i11 <= i9; ++i11) {
+                this.chunkArray[i10 - this.chunkX][i11 - this.chunkZ] = world.getChunkFromChunkCoords(i10, i11);
             }
         }
 
     }
 
-    public final int getBlockId(int i1, int i2, int i3) {
-        if(i2 < 0) {
+    public int getBlockId(int xCoord, int yCoord, int zCoord) {
+        if(yCoord < 0) {
             return 0;
-        } else if(i2 >= 128) {
+        } else if(yCoord >= 128) {
             return 0;
         } else {
-            int i4 = (i1 >> 4) - this.chunkX;
-            int i5 = (i3 >> 4) - this.chunkZ;
-            return this.chunkArray[i4][i5].getBlockID(i1 & 15, i2, i3 & 15);
+            int i4 = (xCoord >> 4) - this.chunkX;
+            int i5 = (zCoord >> 4) - this.chunkZ;
+            return this.chunkArray[i4][i5].getBlockID(xCoord & 15, yCoord, zCoord & 15);
         }
     }
 
-    public final TileEntity getBlockTileEntity(int i1, int i2, int i3) {
-        int i4 = (i1 >> 4) - this.chunkX;
-        int i5 = (i3 >> 4) - this.chunkZ;
-        return this.chunkArray[i4][i5].getChunkBlockTileEntity(i1 & 15, i2, i3 & 15);
+    public TileEntity getBlockTileEntity(int xCoord, int yCoord, int zCoord) {
+        int i4 = (xCoord >> 4) - this.chunkX;
+        int i5 = (zCoord >> 4) - this.chunkZ;
+        return this.chunkArray[i4][i5].getChunkBlockTileEntity(xCoord & 15, yCoord, zCoord & 15);
     }
 
-    public final float getBrightness(int i1, int i2, int i3) {
-        return World.lightBrightnessTable[this.getLightValueExt(i1, i2, i3, true)];
+    public float getBrightness(int nya1, int nya2, int nya3) {
+        return World.lightBrightnessTable[this.getLightValue(nya1, nya2, nya3)];
     }
 
-    private int getLightValueExt(int x, int y, int z, boolean z4) {
-        if(x >= -32000000 && z >= -32000000 && x < 32000000 && z <= 32000000) {
+    public int getLightValue(int xCoord, int yCoord, int zCoord) {
+        return this.getLightValueExt(xCoord, yCoord, zCoord, true);
+    }
+
+    public int getLightValueExt(int xCoord, int yCoord, int zCoord, boolean z4) {
+        if(xCoord >= -32000000 && zCoord >= -32000000 && xCoord < 32000000 && zCoord <= 32000000) {
             int i5;
-            int i8;
-            if(!z4 || (i8 = this.getBlockId(x, y, z)) != Block.stairSingle.blockID && i8 != Block.tilledField.blockID) {
-                if(y < 0) {
-                    return 0;
-                } else if(y >= 128) {
-                    if((i8 = 15 - this.worldObj.skylightSubtracted) < 0) {
-                        i8 = 0;
+            int i6;
+            if(z4) {
+                i5 = this.getBlockId(xCoord, yCoord, zCoord);
+                if(i5 == Block.stairSingle.blockID || i5 == Block.tilledField.blockID) {
+                    i6 = this.getLightValueExt(xCoord, yCoord + 1, zCoord, false);
+                    int i7 = this.getLightValueExt(xCoord + 1, yCoord, zCoord, false);
+                    int i8 = this.getLightValueExt(xCoord - 1, yCoord, zCoord, false);
+                    int i9 = this.getLightValueExt(xCoord, yCoord, zCoord + 1, false);
+                    int i10 = this.getLightValueExt(xCoord, yCoord, zCoord - 1, false);
+                    if(i7 > i6) {
+                        i6 = i7;
                     }
 
-                    return i8;
-                } else {
-                    i8 = (x >> 4) - this.chunkX;
-                    i5 = (z >> 4) - this.chunkZ;
-                    return this.chunkArray[i8][i5].getBlockLightValue(x & 15, y, z & 15, this.worldObj.skylightSubtracted);
-                }
-            } else {
-                i5 = this.getLightValueExt(x, y + 1, z, false);
-                i8 = this.getLightValueExt(x + 1, y, z, false);
-                int i6 = this.getLightValueExt(x - 1, y, z, false);
-                int i7 = this.getLightValueExt(x, y, z + 1, false);
-                x = this.getLightValueExt(x, y, z - 1, false);
-                if(i8 > i5) {
-                    i5 = i8;
-                }
+                    if(i8 > i6) {
+                        i6 = i8;
+                    }
 
-                if(i6 > i5) {
-                    i5 = i6;
-                }
+                    if(i9 > i6) {
+                        i6 = i9;
+                    }
 
-                if(i7 > i5) {
-                    i5 = i7;
-                }
+                    if(i10 > i6) {
+                        i6 = i10;
+                    }
 
-                if(x > i5) {
-                    i5 = x;
+                    return i6;
+                }
+            }
+
+            if(yCoord < 0) {
+                return 0;
+            } else if(yCoord >= 128) {
+                i5 = 15 - this.worldObj.skylightSubtracted;
+                if(i5 < 0) {
+                    i5 = 0;
                 }
 
                 return i5;
+            } else {
+                i5 = (xCoord >> 4) - this.chunkX;
+                i6 = (zCoord >> 4) - this.chunkZ;
+                return this.chunkArray[i5][i6].getBlockLightValue(xCoord & 15, yCoord, zCoord & 15, this.worldObj.skylightSubtracted);
             }
         } else {
             return 15;
         }
     }
 
-    public final int getBlockMetadata(int i1, int i2, int i3) {
-        if(i2 < 0) {
+    public int getBlockMetadata(int xCoord, int yCoord, int zCoord) {
+        if(yCoord < 0) {
             return 0;
-        } else if(i2 >= 128) {
+        } else if(yCoord >= 128) {
             return 0;
         } else {
-            int i4 = (i1 >> 4) - this.chunkX;
-            int i5 = (i3 >> 4) - this.chunkZ;
-            return this.chunkArray[i4][i5].getBlockMetadata(i1 & 15, i2, i3 & 15);
+            int i4 = (xCoord >> 4) - this.chunkX;
+            int i5 = (zCoord >> 4) - this.chunkZ;
+            return this.chunkArray[i4][i5].getBlockMetadata(xCoord & 15, yCoord, zCoord & 15);
         }
     }
 
-    public final Material getBlockMaterial(int i1, int i2, int i3) {
-        return (i1 = this.getBlockId(i1, i2, i3)) == 0 ? Material.air : Block.blocksList[i1].blockMaterial;
+    public Material getBlockMaterial(int nya1, int nya2, int nya3) {
+        int i4 = this.getBlockId(nya1, nya2, nya3);
+        return i4 == 0 ? Material.air : Block.blocksList[i4].blockMaterial;
     }
 
-    public final boolean isBlockNormalCube(int i1, int i2, int i3) {
-        Block block4;
-        return (block4 = Block.blocksList[this.getBlockId(i1, i2, i3)]) == null ? false : block4.isOpaqueCube();
+    public boolean isBlockNormalCube(int xCoord, int yCoord, int zCoord) {
+        Block block4 = Block.blocksList[this.getBlockId(xCoord, yCoord, zCoord)];
+        return block4 == null ? false : block4.isOpaqueCube();
     }
 }

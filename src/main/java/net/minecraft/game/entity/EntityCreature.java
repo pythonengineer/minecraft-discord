@@ -14,107 +14,101 @@ public class EntityCreature extends EntityLiving {
 		super(world1);
 	}
 
-	protected final boolean canEntityBeSeen(Entity entity) {
+	protected boolean canEntityBeSeen(Entity entity) {
 		return this.worldObj.rayTraceBlocks(Vec3D.createVector(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), Vec3D.createVector(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
 	}
 
-	public void updatePlayerActionState() {
+	protected void updatePlayerActionState() {
 		this.hasAttacked = false;
-        float f1;
-        if(this.playerToAttack == null) {
-            this.playerToAttack = this.findPlayerToAttack();
-            if(this.playerToAttack != null) {
-                this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, 16.0F);
-            }
-        } else if(!this.playerToAttack.isEntityAlive()) {
-            this.playerToAttack = null;
-        } else {
-            Entity entity6 = this.playerToAttack;
-            float f20 = (float)(this.playerToAttack.posX - super.posX);
-            float f21 = (float)(entity6.posY - super.posY);
-            float f22 = (float)(entity6.posZ - super.posZ);
-            f1 = MathHelper.sqrt_float(f20 * f20 + f21 * f21 + f22 * f22);
-            if(this.canEntityBeSeen(this.playerToAttack)) {
-                this.attackEntity(this.playerToAttack, f1);
-            }
-        }
+		float f1 = 16.0F;
+		if(this.playerToAttack == null) {
+			this.playerToAttack = this.findPlayerToAttack();
+			if(this.playerToAttack != null) {
+				this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, f1);
+			}
+		} else if(!this.playerToAttack.isEntityAlive()) {
+			this.playerToAttack = null;
+		} else {
+			float f2 = this.playerToAttack.getDistanceToEntity(this);
+			if(this.canEntityBeSeen(this.playerToAttack)) {
+				this.attackEntity(this.playerToAttack, f2);
+			}
+		}
 
-        int i31;
-        if(this.hasAttacked || this.playerToAttack == null || this.pathToEntity != null && this.rand.nextInt(20) != 0) {
-            if(this.pathToEntity == null || this.rand.nextInt(100) == 0) {
-                i31 = -1;
-                int i2 = -1;
-                int i3 = -1;
-                float f4 = -99999.0F;
+		int i19;
+		if(!this.hasAttacked && this.playerToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
+			this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, f1);
+		} else if(this.pathToEntity == null || this.rand.nextInt(100) == 0) {
+			i19 = -1;
+			int i3 = -1;
+			int i4 = -1;
+			float f5 = -99999.0F;
 
-                for(int i5 = 0; i5 < 50; ++i5) {
-                    int i36 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(11) - 5.0D);
-                    int i7 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
-                    int i8 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(11) - 5.0D);
-                    float f9;
-                    if((f9 = this.getBlockPathWeight(i36, i7, i8)) > f4) {
-                        f4 = f9;
-                        i31 = i36;
-                        i2 = i7;
-                        i3 = i8;
-                    }
-                }
+			for(int i6 = 0; i6 < 50; ++i6) {
+				int i7 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(11) - 5.0D);
+				int i8 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
+				int i9 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(11) - 5.0D);
+				float f10 = this.getBlockPathWeight(i7, i8, i9);
+				if(f10 > f5) {
+					f5 = f10;
+					i19 = i7;
+					i3 = i8;
+					i4 = i9;
+				}
+			}
 
-                if(i31 > 0) {
-                    this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i31, i2, i3, 16.0F);
-                }
-            }
-        } else {
-            this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, 16.0F);
-        }
+			if(i19 > 0) {
+				this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i19, i3, i4, f1);
+			}
+		}
 
-        i31 = MathHelper.floor_double(this.boundingBox.minY);
-        boolean z32 = this.handleWaterMovement();
-        boolean z33 = this.handleLavaMovement();
-        if(this.pathToEntity != null && this.rand.nextInt(100) != 0) {
-            Vec3D vec3D34 = this.pathToEntity.getPosition(this);
-            float f35 = this.width * 2.0F;
+		i19 = MathHelper.floor_double(this.boundingBox.minY);
+		boolean z20 = this.handleWaterMovement();
+		boolean z21 = this.handleLavaMovement();
+		if(this.pathToEntity != null && this.rand.nextInt(100) != 0) {
+			Vec3D vec3D22 = this.pathToEntity.getPosition(this);
+			float f23 = this.width * 2.0F;
 
-            while(vec3D34 != null && vec3D34.squareDistanceTo(this.posX, this.posY, this.posZ) < (double)(f35 * f35) && vec3D34.yCoord <= (double)i31) {
-                this.pathToEntity.incrementPathIndex();
-                if(this.pathToEntity.isFinished()) {
-                    vec3D34 = null;
-                    this.pathToEntity = null;
-                } else {
-                    vec3D34 = this.pathToEntity.getPosition(this);
-                }
-            }
+			while(vec3D22 != null && vec3D22.squareDistanceTo(this.posX, this.posY, this.posZ) < (double)(f23 * f23) && vec3D22.yCoord <= (double)i19) {
+				this.pathToEntity.incrementPathIndex();
+				if(this.pathToEntity.isFinished()) {
+					vec3D22 = null;
+					this.pathToEntity = null;
+				} else {
+					vec3D22 = this.pathToEntity.getPosition(this);
+				}
+			}
 
-            this.isJumping = false;
-            if(vec3D34 != null) {
-                double d37 = vec3D34.xCoord - this.posX;
-                double d38 = vec3D34.zCoord - this.posZ;
-                double d10 = vec3D34.yCoord - (double)i31;
-                this.rotationYaw = (float)(Math.atan2(d38, d37) * 180.0D / (double)(float)Math.PI) - 90.0F;
-                this.moveForward = this.moveSpeed;
-                if(this.hasAttacked && this.playerToAttack != null) {
-                    double d12 = this.playerToAttack.posX - this.posX;
-                    double d14 = this.playerToAttack.posZ - this.posZ;
-                    f1 = this.rotationYaw;
-                    this.rotationYaw = (float)(Math.atan2(d14, d12) * 180.0D / (double)(float)Math.PI) - 90.0F;
-                    f1 = (f1 - this.rotationYaw + 90.0F) * (float)Math.PI / 180.0F;
-                    this.moveStrafing = -MathHelper.sin(f1) * this.moveForward;
-                    this.moveForward = MathHelper.cos(f1) * this.moveForward;
-                }
+			this.isJumping = false;
+			if(vec3D22 != null) {
+				double d24 = vec3D22.xCoord - this.posX;
+				double d25 = vec3D22.zCoord - this.posZ;
+				double d11 = vec3D22.yCoord - (double)i19;
+				this.rotationYaw = (float)(Math.atan2(d25, d24) * 180.0D / (double)(float)Math.PI) - 90.0F;
+				this.moveForward = this.moveSpeed;
+				if(this.hasAttacked && this.playerToAttack != null) {
+					double d13 = this.playerToAttack.posX - this.posX;
+					double d15 = this.playerToAttack.posZ - this.posZ;
+					float f17 = this.rotationYaw;
+					this.rotationYaw = (float)(Math.atan2(d15, d13) * 180.0D / (double)(float)Math.PI) - 90.0F;
+					float f18 = (f17 - this.rotationYaw + 90.0F) * (float)Math.PI / 180.0F;
+					this.moveStrafing = -MathHelper.sin(f18) * this.moveForward * 1.0F;
+					this.moveForward = MathHelper.cos(f18) * this.moveForward * 1.0F;
+				}
 
-                if(d10 != 0.0D) {
-                    this.isJumping = true;
-                }
-            }
+				if(d11 != 0.0D) {
+					this.isJumping = true;
+				}
+			}
 
-            if(this.rand.nextFloat() < 0.8F && (z32 || z33)) {
-                this.isJumping = true;
-            }
+			if(this.rand.nextFloat() < 0.8F && (z20 || z21)) {
+				this.isJumping = true;
+			}
 
-        } else {
-            super.updatePlayerActionState();
-            this.pathToEntity = null;
-        }
+		} else {
+			super.updatePlayerActionState();
+			this.pathToEntity = null;
+		}
 	}
 
 	protected void attackEntity(Entity entity, float damage) {

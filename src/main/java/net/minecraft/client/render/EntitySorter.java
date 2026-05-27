@@ -4,17 +4,18 @@ import java.util.Comparator;
 
 import net.minecraft.game.entity.Entity;
 
-public final class EntitySorter implements Comparator {
-	private Entity entity;
+public class EntitySorter implements Comparator {
+	private Entity comparedEntity;
 
 	public EntitySorter(Entity entity) {
-		this.entity = entity;
+		this.comparedEntity = entity;
 	}
 
-	public final int compare(Object entity1, Object entity2) {
-		WorldRenderer worldRenderer10001 = (WorldRenderer)entity1;
-		WorldRenderer worldRenderer3 = (WorldRenderer)entity2;
-		WorldRenderer entity21 = worldRenderer10001;
-		return entity21.distanceToEntitySquared(this.entity) < worldRenderer3.distanceToEntitySquared(this.entity) ? -1 : 1;
-	}
+    public int compare(WorldRenderer worldRenderer1, WorldRenderer worldRenderer2) {
+        return worldRenderer1.distanceToEntitySquared(this.comparedEntity) < worldRenderer2.distanceToEntitySquared(this.comparedEntity) ? -1 : 1;
+    }
+
+    public int compare(Object object1, Object object2) {
+        return this.compare((WorldRenderer)object1, (WorldRenderer)object2);
+    }
 }

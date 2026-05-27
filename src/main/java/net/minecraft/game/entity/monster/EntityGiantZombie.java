@@ -13,7 +13,7 @@ public class EntityGiantZombie extends EntityMob {
         this.setSize(this.width * 6.0F, this.height * 6.0F);
     }
 
-    protected final float getBlockPathWeight(int x, int y, int z) {
+    protected float getBlockPathWeight(int x, int y, int z) {
         return this.worldObj.getBrightness(x, y, z) - 0.5F;
     }
 }

@@ -3,10 +3,10 @@ package net.minecraft.client.model;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class ModelZombie extends ModelBiped {
-    public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
-        limbSwing = MathHelper.sin(0.0F);
-        limbSwingAmount = MathHelper.sin(0.0F);
+        limbSwing = MathHelper.sin(this.swingProgress * (float)Math.PI);
+        limbSwingAmount = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
         this.bipedRightArm.rotateAngleZ = 0.0F;
         this.bipedLeftArm.rotateAngleZ = 0.0F;
         this.bipedRightArm.rotateAngleY = -(0.1F - limbSwing * 0.6F);

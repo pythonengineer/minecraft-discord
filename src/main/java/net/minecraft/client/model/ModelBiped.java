@@ -19,7 +19,7 @@ public class ModelBiped extends ModelBase {
         this(modelSize, 0.0F);
     }
 
-    private ModelBiped(float modelSize, float unused) {
+    public ModelBiped(float modelSize, float unused) {
         this.bipedHead = new ModelRenderer(0, 0);
         this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, modelSize);
         this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -45,7 +45,7 @@ public class ModelBiped extends ModelBase {
         this.bipedLeftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
     }
 
-    public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
         this.bipedHead.render(0.0625F);
         this.bipedBody.render(0.0625F);

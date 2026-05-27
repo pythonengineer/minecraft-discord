@@ -1,11 +1,11 @@
 package net.minecraft.game.world.path;
 
-public final class Path {
+public class Path {
     private PathPoint[] pathPoints = new PathPoint[1024];
     private int count = 0;
 
-    public final PathPoint addPoint(PathPoint pathPoint) {
-        if(pathPoint.index >= 0) {
+    public PathPoint addPoint(PathPoint pathPoint1) {
+        if(pathPoint1.index >= 0) {
             throw new IllegalStateException("OW KNOWS!");
         } else {
             if(this.count == this.pathPoints.length) {
@@ -14,18 +14,18 @@ public final class Path {
                 this.pathPoints = pathPoint2;
             }
 
-            this.pathPoints[this.count] = pathPoint;
-            pathPoint.index = this.count;
+            this.pathPoints[this.count] = pathPoint1;
+            pathPoint1.index = this.count;
             this.sortBack(this.count++);
-            return pathPoint;
+            return pathPoint1;
         }
     }
 
-    public final void clearPath() {
+    public void clearPath() {
         this.count = 0;
     }
 
-    public final PathPoint dequeue() {
+    public PathPoint dequeue() {
         PathPoint pathPoint1 = this.pathPoints[0];
         this.pathPoints[0] = this.pathPoints[--this.count];
         this.pathPoints[this.count] = null;
@@ -37,54 +37,57 @@ public final class Path {
         return pathPoint1;
     }
 
-    public final void changeDistance(PathPoint pathPoint, float distanceToTarget) {
-        float f3 = pathPoint.distanceToTarget;
-        pathPoint.distanceToTarget = distanceToTarget;
-        if(distanceToTarget < f3) {
-            this.sortBack(pathPoint.index);
+    public void changeDistance(PathPoint pathPoint1, float f2) {
+        float f3 = pathPoint1.distanceToTarget;
+        pathPoint1.distanceToTarget = f2;
+        if(f2 < f3) {
+            this.sortBack(pathPoint1.index);
         } else {
-            this.sortForward(pathPoint.index);
+            this.sortForward(pathPoint1.index);
         }
+
     }
 
-    private void sortBack(int pathPointIndex) {
-        PathPoint pathPoint2;
+    private void sortBack(int i1) {
+        PathPoint pathPoint2 = this.pathPoints[i1];
+
         int i4;
-        for(float f3 = (pathPoint2 = this.pathPoints[pathPointIndex]).distanceToTarget; pathPointIndex > 0; pathPointIndex = i4) {
-            i4 = pathPointIndex - 1 >> 1;
+        for(float f3 = pathPoint2.distanceToTarget; i1 > 0; i1 = i4) {
+            i4 = i1 - 1 >> 1;
             PathPoint pathPoint5 = this.pathPoints[i4];
             if(f3 >= pathPoint5.distanceToTarget) {
                 break;
             }
 
-            this.pathPoints[pathPointIndex] = pathPoint5;
-            pathPoint5.index = pathPointIndex;
+            this.pathPoints[i1] = pathPoint5;
+            pathPoint5.index = i1;
         }
 
-        this.pathPoints[pathPointIndex] = pathPoint2;
-        pathPoint2.index = pathPointIndex;
+        this.pathPoints[i1] = pathPoint2;
+        pathPoint2.index = i1;
     }
 
-    private void sortForward(int pathPointIndex) {
-        PathPoint pathPoint2;
-        float f3 = (pathPoint2 = this.pathPoints[pathPointIndex]).distanceToTarget;
+    private void sortForward(int i1) {
+        PathPoint pathPoint2 = this.pathPoints[i1];
+        float f3 = pathPoint2.distanceToTarget;
 
         while(true) {
-            int i4;
-            int i5 = (i4 = 1 + (pathPointIndex << 1)) + 1;
+            int i4 = 1 + (i1 << 1);
+            int i5 = i4 + 1;
             if(i4 >= this.count) {
                 break;
             }
 
-            PathPoint pathPoint6;
-            float f7 = (pathPoint6 = this.pathPoints[i4]).distanceToTarget;
+            PathPoint pathPoint6 = this.pathPoints[i4];
+            float f7 = pathPoint6.distanceToTarget;
             PathPoint pathPoint8;
             float f9;
             if(i5 >= this.count) {
                 pathPoint8 = null;
                 f9 = Float.POSITIVE_INFINITY;
             } else {
-                f9 = (pathPoint8 = this.pathPoints[i5]).distanceToTarget;
+                pathPoint8 = this.pathPoints[i5];
+                f9 = pathPoint8.distanceToTarget;
             }
 
             if(f7 < f9) {
@@ -92,25 +95,25 @@ public final class Path {
                     break;
                 }
 
-                this.pathPoints[pathPointIndex] = pathPoint6;
-                pathPoint6.index = pathPointIndex;
-                pathPointIndex = i4;
+                this.pathPoints[i1] = pathPoint6;
+                pathPoint6.index = i1;
+                i1 = i4;
             } else {
                 if(f9 >= f3) {
                     break;
                 }
 
-                this.pathPoints[pathPointIndex] = pathPoint8;
-                pathPoint8.index = pathPointIndex;
-                pathPointIndex = i5;
+                this.pathPoints[i1] = pathPoint8;
+                pathPoint8.index = i1;
+                i1 = i5;
             }
         }
 
-        this.pathPoints[pathPointIndex] = pathPoint2;
-        pathPoint2.index = pathPointIndex;
+        this.pathPoints[i1] = pathPoint2;
+        pathPoint2.index = i1;
     }
 
-    public final boolean isPathEmpty() {
+    public boolean isPathEmpty() {
         return this.count == 0;
     }
 }

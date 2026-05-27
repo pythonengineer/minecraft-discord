@@ -3,7 +3,7 @@ package net.minecraft.game.physics;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class AxisAlignedBB {
+public class AxisAlignedBB {
     private static List boundingBoxes = new ArrayList();
     private static int numBoundingBoxesInUse = 0;
     public double minX;
@@ -38,7 +38,7 @@ public final class AxisAlignedBB {
         this.maxZ = aabbMaxZ;
     }
 
-    public final AxisAlignedBB setBounds(double aabbMinX, double aabbMinY, double aabbMinZ, double aabbMaxX, double aabbMaxY, double aabbMaxZ) {
+    public AxisAlignedBB setBounds(double aabbMinX, double aabbMinY, double aabbMinZ, double aabbMaxX, double aabbMaxY, double aabbMaxZ) {
         this.minX = aabbMinX;
         this.minY = aabbMinY;
         this.minZ = aabbMinZ;
@@ -48,7 +48,7 @@ public final class AxisAlignedBB {
         return this;
     }
 
-    public final AxisAlignedBB addCoord(double x, double y, double z) {
+    public AxisAlignedBB addCoord(double x, double y, double z) {
         double d7 = this.minX;
         double d9 = this.minY;
         double d11 = this.minZ;
@@ -82,7 +82,7 @@ public final class AxisAlignedBB {
         return getBoundingBoxFromPool(d7, d9, d11, d13, d15, d17);
     }
 
-    public final AxisAlignedBB expand(double x, double y, double z) {
+    public AxisAlignedBB expand(double x, double y, double z) {
         double d7 = this.minX - x;
         double d9 = this.minY - y;
         double d11 = this.minZ - z;
@@ -92,78 +92,96 @@ public final class AxisAlignedBB {
         return getBoundingBoxFromPool(d7, d9, d11, d13, d15, d17);
     }
 
-    public final AxisAlignedBB getOffsetBoundingBox(double x, double y, double z) {
+    public AxisAlignedBB getOffsetBoundingBox(double x, double y, double z) {
         return getBoundingBoxFromPool(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
     }
 
-    public final double calculateXOffset(AxisAlignedBB aabb, double xOffset) {
+    public double calculateXOffset(AxisAlignedBB aabb, double offsetX) {
         if(aabb.maxY > this.minY && aabb.minY < this.maxY) {
             if(aabb.maxZ > this.minZ && aabb.minZ < this.maxZ) {
                 double d4;
-                if(xOffset > 0.0D && aabb.maxX <= this.minX && (d4 = this.minX - aabb.maxX) < xOffset) {
-                    xOffset = d4;
+                if(offsetX > 0.0D && aabb.maxX <= this.minX) {
+                    d4 = this.minX - aabb.maxX;
+                    if(d4 < offsetX) {
+                        offsetX = d4;
+                    }
                 }
 
-                if(xOffset < 0.0D && aabb.minX >= this.maxX && (d4 = this.maxX - aabb.minX) > xOffset) {
-                    xOffset = d4;
+                if(offsetX < 0.0D && aabb.minX >= this.maxX) {
+                    d4 = this.maxX - aabb.minX;
+                    if(d4 > offsetX) {
+                        offsetX = d4;
+                    }
                 }
 
-                return xOffset;
+                return offsetX;
             } else {
-                return xOffset;
+                return offsetX;
             }
         } else {
-            return xOffset;
+            return offsetX;
         }
     }
 
-    public final double calculateYOffset(AxisAlignedBB aabb, double yOffset) {
+    public double calculateYOffset(AxisAlignedBB aabb, double offsetY) {
         if(aabb.maxX > this.minX && aabb.minX < this.maxX) {
             if(aabb.maxZ > this.minZ && aabb.minZ < this.maxZ) {
                 double d4;
-                if(yOffset > 0.0D && aabb.maxY <= this.minY && (d4 = this.minY - aabb.maxY) < yOffset) {
-                    yOffset = d4;
+                if(offsetY > 0.0D && aabb.maxY <= this.minY) {
+                    d4 = this.minY - aabb.maxY;
+                    if(d4 < offsetY) {
+                        offsetY = d4;
+                    }
                 }
 
-                if(yOffset < 0.0D && aabb.minY >= this.maxY && (d4 = this.maxY - aabb.minY) > yOffset) {
-                    yOffset = d4;
+                if(offsetY < 0.0D && aabb.minY >= this.maxY) {
+                    d4 = this.maxY - aabb.minY;
+                    if(d4 > offsetY) {
+                        offsetY = d4;
+                    }
                 }
 
-                return yOffset;
+                return offsetY;
             } else {
-                return yOffset;
+                return offsetY;
             }
         } else {
-            return yOffset;
+            return offsetY;
         }
     }
 
-    public final double calculateZOffset(AxisAlignedBB aabb, double zOffset) {
+    public double calculateZOffset(AxisAlignedBB aabb, double offsetZ) {
         if(aabb.maxX > this.minX && aabb.minX < this.maxX) {
             if(aabb.maxY > this.minY && aabb.minY < this.maxY) {
                 double d4;
-                if(zOffset > 0.0D && aabb.maxZ <= this.minZ && (d4 = this.minZ - aabb.maxZ) < zOffset) {
-                    zOffset = d4;
+                if(offsetZ > 0.0D && aabb.maxZ <= this.minZ) {
+                    d4 = this.minZ - aabb.maxZ;
+                    if(d4 < offsetZ) {
+                        offsetZ = d4;
+                    }
                 }
 
-                if(zOffset < 0.0D && aabb.minZ >= this.maxZ && (d4 = this.maxZ - aabb.minZ) > zOffset) {
-                    zOffset = d4;
+                if(offsetZ < 0.0D && aabb.minZ >= this.maxZ) {
+                    d4 = this.maxZ - aabb.minZ;
+                    if(d4 > offsetZ) {
+                        offsetZ = d4;
+                    }
                 }
 
-                return zOffset;
+                return offsetZ;
             } else {
-                return zOffset;
+                return offsetZ;
             }
         } else {
-            return zOffset;
+            return offsetZ;
         }
     }
 
-    public final boolean intersectsWith(AxisAlignedBB aabb) {
+    public boolean intersectsWith(AxisAlignedBB aabb) {
         return aabb.maxX > this.minX && aabb.minX < this.maxX ? (aabb.maxY > this.minY && aabb.minY < this.maxY ? aabb.maxZ > this.minZ && aabb.minZ < this.maxZ : false) : false;
     }
 
-    public final AxisAlignedBB offset(double x, double y, double z) {
+    public AxisAlignedBB offset(double x, double y, double z) {
         this.minX += x;
         this.minY += y;
         this.minZ += z;
@@ -173,24 +191,24 @@ public final class AxisAlignedBB {
         return this;
     }
 
-    public final double getAverageEdgeLength() {
+    public double getAverageEdgeLength() {
         double d1 = this.maxX - this.minX;
         double d3 = this.maxY - this.minY;
         double d5 = this.maxZ - this.minZ;
         return (d1 + d3 + d5) / 3.0D;
     }
 
-    public final AxisAlignedBB copy() {
+    public AxisAlignedBB copy() {
         return getBoundingBoxFromPool(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 
-    public final MovingObjectPosition calculateIntercept(Vec3D vector1, Vec3D vector2) {
+    public MovingObjectPosition calculateIntercept(Vec3D vector1, Vec3D vector2) {
         Vec3D vec3D3 = vector1.getIntermediateWithXValue(vector2, this.minX);
         Vec3D vec3D4 = vector1.getIntermediateWithXValue(vector2, this.maxX);
         Vec3D vec3D5 = vector1.getIntermediateWithYValue(vector2, this.minY);
         Vec3D vec3D6 = vector1.getIntermediateWithYValue(vector2, this.maxY);
         Vec3D vec3D7 = vector1.getIntermediateWithZValue(vector2, this.minZ);
-        vector2 = vector1.getIntermediateWithZValue(vector2, this.maxZ);
+        Vec3D vec3D8 = vector1.getIntermediateWithZValue(vector2, this.maxZ);
         if(!this.isVecInYZ(vec3D3)) {
             vec3D3 = null;
         }
@@ -211,64 +229,64 @@ public final class AxisAlignedBB {
             vec3D7 = null;
         }
 
-        if(!this.isVecInXY(vector2)) {
-            vector2 = null;
+        if(!this.isVecInXY(vec3D8)) {
+            vec3D8 = null;
         }
 
-        Vec3D vec3D8 = null;
-        if(vec3D3 != null) {
-            vec3D8 = vec3D3;
+        Vec3D vec3D9 = null;
+        if(vec3D3 != null && (vec3D9 == null || vector1.squaredDistanceTo(vec3D3) < vector1.squaredDistanceTo(vec3D9))) {
+            vec3D9 = vec3D3;
         }
 
-        if(vec3D4 != null && (vec3D8 == null || vector1.squaredDistanceTo(vec3D4) < vector1.squaredDistanceTo(vec3D8))) {
-            vec3D8 = vec3D4;
+        if(vec3D4 != null && (vec3D9 == null || vector1.squaredDistanceTo(vec3D4) < vector1.squaredDistanceTo(vec3D9))) {
+            vec3D9 = vec3D4;
         }
 
-        if(vec3D5 != null && (vec3D8 == null || vector1.squaredDistanceTo(vec3D5) < vector1.squaredDistanceTo(vec3D8))) {
-            vec3D8 = vec3D5;
+        if(vec3D5 != null && (vec3D9 == null || vector1.squaredDistanceTo(vec3D5) < vector1.squaredDistanceTo(vec3D9))) {
+            vec3D9 = vec3D5;
         }
 
-        if(vec3D6 != null && (vec3D8 == null || vector1.squaredDistanceTo(vec3D6) < vector1.squaredDistanceTo(vec3D8))) {
-            vec3D8 = vec3D6;
+        if(vec3D6 != null && (vec3D9 == null || vector1.squaredDistanceTo(vec3D6) < vector1.squaredDistanceTo(vec3D9))) {
+            vec3D9 = vec3D6;
         }
 
-        if(vec3D7 != null && (vec3D8 == null || vector1.squaredDistanceTo(vec3D7) < vector1.squaredDistanceTo(vec3D8))) {
-            vec3D8 = vec3D7;
+        if(vec3D7 != null && (vec3D9 == null || vector1.squaredDistanceTo(vec3D7) < vector1.squaredDistanceTo(vec3D9))) {
+            vec3D9 = vec3D7;
         }
 
-        if(vector2 != null && (vec3D8 == null || vector1.squaredDistanceTo(vector2) < vector1.squaredDistanceTo(vec3D8))) {
-            vec3D8 = vector2;
+        if(vec3D8 != null && (vec3D9 == null || vector1.squaredDistanceTo(vec3D8) < vector1.squaredDistanceTo(vec3D9))) {
+            vec3D9 = vec3D8;
         }
 
-        if(vec3D8 == null) {
+        if(vec3D9 == null) {
             return null;
         } else {
-            byte vector11 = -1;
-            if(vec3D8 == vec3D3) {
-                vector11 = 4;
+            byte b10 = -1;
+            if(vec3D9 == vec3D3) {
+                b10 = 4;
             }
 
-            if(vec3D8 == vec3D4) {
-                vector11 = 5;
+            if(vec3D9 == vec3D4) {
+                b10 = 5;
             }
 
-            if(vec3D8 == vec3D5) {
-                vector11 = 0;
+            if(vec3D9 == vec3D5) {
+                b10 = 0;
             }
 
-            if(vec3D8 == vec3D6) {
-                vector11 = 1;
+            if(vec3D9 == vec3D6) {
+                b10 = 1;
             }
 
-            if(vec3D8 == vec3D7) {
-                vector11 = 2;
+            if(vec3D9 == vec3D7) {
+                b10 = 2;
             }
 
-            if(vec3D8 == vector2) {
-                vector11 = 3;
+            if(vec3D9 == vec3D8) {
+                b10 = 3;
             }
 
-            return new MovingObjectPosition(0, 0, 0, vector11, vec3D8);
+            return new MovingObjectPosition(0, 0, 0, b10, vec3D9);
         }
     }
 
@@ -284,7 +302,7 @@ public final class AxisAlignedBB {
         return vector == null ? false : vector.xCoord >= this.minX && vector.xCoord <= this.maxX && vector.yCoord >= this.minY && vector.yCoord <= this.maxY;
     }
 
-    public final void setBB(AxisAlignedBB aabb) {
+    public void setBB(AxisAlignedBB aabb) {
         this.minX = aabb.minX;
         this.minY = aabb.minY;
         this.minZ = aabb.minZ;

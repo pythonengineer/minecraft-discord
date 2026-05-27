@@ -37,15 +37,15 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.canTriggerWalking = false;
 	}
 
-	public final AxisAlignedBB getCollisionBox(Entity entity1) {
-		return entity1.boundingBox;
+	public AxisAlignedBB getCollisionBox(Entity entity) {
+		return entity.boundingBox;
 	}
 
-	public final AxisAlignedBB getBoundingBox() {
+	public AxisAlignedBB getBoundingBox() {
 		return this.boundingBox;
 	}
 
-	public final boolean canBePushed() {
+	public boolean canBePushed() {
 		return true;
 	}
 
@@ -60,11 +60,11 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.prevPosZ = z;
 	}
 
-    public final double getYOffset() {
+    public double getYOffset() {
         return (double)this.height * 0.2D;
     }
 
-	public final boolean attackEntityFrom(Entity entity1, int i2) {
+	public boolean attackEntityFrom(Entity entity1, int i2) {
 		this.forwardDirection = -this.forwardDirection;
 		this.timeSinceHit = 10;
 		this.damageTaken += i2 * 10;
@@ -76,29 +76,30 @@ public class EntityMinecart extends Entity implements IInventory {
 		return true;
 	}
 
-	public final boolean canBeCollidedWith() {
+	public boolean canBeCollidedWith() {
 		return !this.isDead;
 	}
 
-	public final void setEntityDead() {
-		for(int i1 = 0; i1 < 27; ++i1) {
-			ItemStack itemStack2;
-			if((itemStack2 = this.cargoItems[i1]) != null) {
+	public void setEntityDead() {
+		for(int i1 = 0; i1 < this.getSizeInventory(); ++i1) {
+			ItemStack itemStack2 = this.getStackInSlot(i1);
+			if(itemStack2 != null) {
 				float f3 = this.rand.nextFloat() * 0.8F + 0.1F;
 				float f4 = this.rand.nextFloat() * 0.8F + 0.1F;
 				float f5 = this.rand.nextFloat() * 0.8F + 0.1F;
 
 				while(itemStack2.stackSize > 0) {
-					int i6;
-					if((i6 = this.rand.nextInt(21) + 10) > itemStack2.stackSize) {
+					int i6 = this.rand.nextInt(21) + 10;
+					if(i6 > itemStack2.stackSize) {
 						i6 = itemStack2.stackSize;
 					}
 
 					itemStack2.stackSize -= i6;
-					EntityItem entityItem7;
-					(entityItem7 = new EntityItem(this.worldObj, this.posX + (double)f3, this.posY + (double)f4, this.posZ + (double)f5, new ItemStack(itemStack2.itemID, i6, itemStack2.itemDmg))).motionX = (double)((float)this.rand.nextGaussian() * 0.05F);
-					entityItem7.motionY = (double)((float)this.rand.nextGaussian() * 0.05F + 0.2F);
-					entityItem7.motionZ = (double)((float)this.rand.nextGaussian() * 0.05F);
+					EntityItem entityItem7 = new EntityItem(this.worldObj, this.posX + (double)f3, this.posY + (double)f4, this.posZ + (double)f5, new ItemStack(itemStack2.itemID, i6, itemStack2.itemDmg));
+					float f8 = 0.05F;
+					entityItem7.motionX = (double)((float)this.rand.nextGaussian() * f8);
+					entityItem7.motionY = (double)((float)this.rand.nextGaussian() * f8 + 0.2F);
+					entityItem7.motionZ = (double)((float)this.rand.nextGaussian() * f8);
 					this.worldObj.spawnEntityInWorld(entityItem7);
 				}
 			}
@@ -107,7 +108,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		super.setEntityDead();
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		if(this.timeSinceHit > 0) {
 			--this.timeSinceHit;
 		}
@@ -127,6 +128,8 @@ public class EntityMinecart extends Entity implements IInventory {
 			--i2;
 		}
 
+		double d4 = 0.4D;
+		double d6 = 2.0D / 256D;
 		if(this.worldObj.getBlockId(i1, i2, i3) == Block.minecartTrack.blockID) {
 			Vec3D vec3D4 = this.getPos(this.posX, this.posY, this.posZ);
 			int i5 = this.worldObj.getBlockMetadata(i1, i2, i3);
@@ -136,26 +139,27 @@ public class EntityMinecart extends Entity implements IInventory {
 			}
 
 			if(i5 == 2) {
-				this.motionX -= 2.0D / 256D;
+				this.motionX -= d6;
 			}
 
 			if(i5 == 3) {
-				this.motionX += 2.0D / 256D;
+				this.motionX += d6;
 			}
 
 			if(i5 == 4) {
-				this.motionZ += 2.0D / 256D;
+				this.motionZ += d6;
 			}
 
 			if(i5 == 5) {
-				this.motionZ -= 2.0D / 256D;
+				this.motionZ -= d6;
 			}
 
-			int[][] i35;
-			double d7 = (double)((i35 = matrix[i5])[1][0] - i35[0][0]);
+			int[][] i35 = matrix[i5];
+			double d7 = (double)(i35[1][0] - i35[0][0]);
 			double d9 = (double)(i35[1][2] - i35[0][2]);
 			double d11 = Math.sqrt(d7 * d7 + d9 * d9);
-			if(this.motionX * d7 + this.motionZ * d9 < 0.0D) {
+			double d17 = this.motionX * d7 + this.motionZ * d9;
+			if(d17 < 0.0D) {
 				d7 = -d7;
 				d9 = -d9;
 			}
@@ -163,29 +167,30 @@ public class EntityMinecart extends Entity implements IInventory {
 			double d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 			this.motionX = d15 * d7 / d11;
 			this.motionZ = d15 * d9 / d11;
+			double d21 = 0.0D;
 			double d19 = (double)i1 + 0.5D + (double)i35[0][0] * 0.5D;
-			double d21 = (double)i3 + 0.5D + (double)i35[0][2] * 0.5D;
+			double d22 = (double)i3 + 0.5D + (double)i35[0][2] * 0.5D;
 			double d23 = (double)i1 + 0.5D + (double)i35[1][0] * 0.5D;
 			double d25 = (double)i3 + 0.5D + (double)i35[1][2] * 0.5D;
 			d7 = d23 - d19;
-			d9 = d25 - d21;
-			double d17;
+			d9 = d25 - d22;
 			double d27;
 			double d29;
 			if(d7 == 0.0D) {
 				this.posX = (double)i1 + 0.5D;
-				d17 = this.posZ - (double)i3;
+				d21 = this.posZ - (double)i3;
 			} else if(d9 == 0.0D) {
 				this.posZ = (double)i3 + 0.5D;
-				d17 = this.posX - (double)i1;
+				d21 = this.posX - (double)i1;
 			} else {
 				d27 = this.posX - d19;
-				d29 = this.posZ - d21;
-				d17 = (d27 * d7 + d29 * d9) * 2.0D;
+				d29 = this.posZ - d22;
+				double d35 = (d27 * d7 + d29 * d9) * 2.0D;
+				d21 = d35;
 			}
 
-			this.posX = d19 + d7 * d17;
-			this.posZ = d21 + d9 * d17;
+			this.posX = d19 + d7 * d21;
+			this.posZ = d22 + d9 * d21;
 			this.setPosition(this.posX, this.posY + (double)this.yOffset, this.posZ);
 			d27 = this.motionX;
 			d29 = this.motionZ;
@@ -194,20 +199,20 @@ public class EntityMinecart extends Entity implements IInventory {
 				d29 *= 0.75D;
 			}
 
-			if(d27 < -0.4D) {
-				d27 = -0.4D;
+			if(d27 < -d4) {
+				d27 = -d4;
 			}
 
-			if(d27 > 0.4D) {
-				d27 = 0.4D;
+			if(d27 > d4) {
+				d27 = d4;
 			}
 
-			if(d29 < -0.4D) {
-				d29 = -0.4D;
+			if(d29 < -d4) {
+				d29 = -d4;
 			}
 
-			if(d29 > 0.4D) {
-				d29 = 0.4D;
+			if(d29 > d4) {
+				d29 = d4;
 			}
 
 			this.moveEntity(d27, 0.0D, d29);
@@ -227,10 +232,11 @@ public class EntityMinecart extends Entity implements IInventory {
 				this.motionZ *= (double)0.96F;
 			}
 
-			Vec3D vec3D31;
-			if((vec3D31 = this.getPos(this.posX, this.posY, this.posZ)) != null && vec3D4 != null) {
+			Vec3D vec3D31 = this.getPos(this.posX, this.posY, this.posZ);
+			if(vec3D31 != null && vec3D4 != null) {
 				double d32 = (vec3D4.yCoord - vec3D31.yCoord) * 0.05D;
-				if((d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ)) > 0.0D) {
+				d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+				if(d15 > 0.0D) {
 					this.motionX = this.motionX / d15 * (d15 + d32);
 					this.motionZ = this.motionZ / d15 * (d15 + d32);
 				}
@@ -246,20 +252,20 @@ public class EntityMinecart extends Entity implements IInventory {
                 this.motionZ = d15 * (double)(i33 - i3);
 			}
 		} else {
-			if(this.motionX < -0.4D) {
-				this.motionX = -0.4D;
+			if(this.motionX < -d4) {
+				this.motionX = -d4;
 			}
 
-			if(this.motionX > 0.4D) {
-				this.motionX = 0.4D;
+			if(this.motionX > d4) {
+				this.motionX = d4;
 			}
 
-			if(this.motionZ < -0.4D) {
-				this.motionZ = -0.4D;
+			if(this.motionZ < -d4) {
+				this.motionZ = -d4;
 			}
 
-			if(this.motionZ > 0.4D) {
-				this.motionZ = 0.4D;
+			if(this.motionZ > d4) {
+				this.motionZ = d4;
 			}
 
 			if(this.onGround) {
@@ -299,15 +305,12 @@ public class EntityMinecart extends Entity implements IInventory {
             this.isInReverse = !this.isInReverse;
         }
 
-        float f39 = this.rotationPitch;
-        float f40 = this.rotationYaw;
-        super.rotationYaw = f40;
-        super.rotationPitch = f39;
-        List list41;
-        if((list41 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F))) != null && list41.size() > 0) {
+        this.setRotation(this.rotationYaw, this.rotationPitch);
+        List list41 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+        if(list41 != null && list41.size() > 0) {
             for(int i42 = 0; i42 < list41.size(); ++i42) {
-                Entity entity8;
-                if((entity8 = (Entity)list41.get(i42)) != this.riddenByEntity && entity8.canBePushed() && entity8 instanceof EntityMinecart) {
+                Entity entity8 = (Entity)list41.get(i42);
+                if(entity8 != this.riddenByEntity && entity8.canBePushed() && entity8 instanceof EntityMinecart) {
                     entity8.applyEntityCollision(this);
                 }
             }
@@ -319,7 +322,7 @@ public class EntityMinecart extends Entity implements IInventory {
 
 	}
 
-	public final Vec3D getPosOffset(double x, double y, double z, double offsetMultiplier) {
+	public Vec3D getPosOffset(double x, double y, double z, double offsetMultiplier) {
 		int i9 = MathHelper.floor_double(x);
 		int i10 = MathHelper.floor_double(y);
 		int i11 = MathHelper.floor_double(z);
@@ -334,18 +337,18 @@ public class EntityMinecart extends Entity implements IInventory {
 				y = (double)(i10 + 1);
 			}
 
-			int[][] i20;
-			double d14 = (double)((i20 = matrix[i12])[1][0] - i20[0][0]);
-			double d16 = (double)(i20[1][2] - i20[0][2]);
+			int[][] i13 = matrix[i12];
+			double d14 = (double)(i13[1][0] - i13[0][0]);
+			double d16 = (double)(i13[1][2] - i13[0][2]);
 			double d18 = Math.sqrt(d14 * d14 + d16 * d16);
 			d14 /= d18;
 			d16 /= d18;
 			x += d14 * offsetMultiplier;
 			z += d16 * offsetMultiplier;
-			if(i20[0][1] != 0 && MathHelper.floor_double(x) - i9 == i20[0][0] && MathHelper.floor_double(z) - i11 == i20[0][2]) {
-				y += (double)i20[0][1];
-			} else if(i20[1][1] != 0 && MathHelper.floor_double(x) - i9 == i20[1][0] && MathHelper.floor_double(z) - i11 == i20[1][2]) {
-				y += (double)i20[1][1];
+			if(i13[0][1] != 0 && MathHelper.floor_double(x) - i9 == i13[0][0] && MathHelper.floor_double(z) - i11 == i13[0][2]) {
+				y += (double)i13[0][1];
+			} else if(i13[1][1] != 0 && MathHelper.floor_double(x) - i9 == i13[1][0] && MathHelper.floor_double(z) - i11 == i13[1][2]) {
+				y += (double)i13[1][1];
 			}
 
 			return this.getPos(x, y, z);
@@ -354,35 +357,43 @@ public class EntityMinecart extends Entity implements IInventory {
 		}
 	}
 
-	public final Vec3D getPos(double x, double y, double z) {
+	public Vec3D getPos(double x, double y, double z) {
 		int i7 = MathHelper.floor_double(x);
-		int i38 = MathHelper.floor_double(y);
-		int i4 = MathHelper.floor_double(z);
-		if(this.worldObj.getBlockId(i7, i38 - 1, i4) == Block.minecartTrack.blockID) {
-			--i38;
+		int i8 = MathHelper.floor_double(y);
+		int i9 = MathHelper.floor_double(z);
+		if(this.worldObj.getBlockId(i7, i8 - 1, i9) == Block.minecartTrack.blockID) {
+			--i8;
 		}
 
-		if(this.worldObj.getBlockId(i7, i38, i4) == Block.minecartTrack.blockID) {
-			int i8 = this.worldObj.getBlockMetadata(i7, i38, i4);
-			int[][] i39 = matrix[i8];
-			double d14 = (double)i7 + 0.5D + (double)i39[0][0] * 0.5D;
-			double d16 = (double)i38 + 0.5D + (double)i39[0][1] * 0.5D;
-			double d18 = (double)i4 + 0.5D + (double)i39[0][2] * 0.5D;
-			double d20 = (double)i7 + 0.5D + (double)i39[1][0] * 0.5D;
-			double d22 = (double)i38 + 0.5D + (double)i39[1][1] * 0.5D;
-			double d24 = (double)i4 + 0.5D + (double)i39[1][2] * 0.5D;
+		if(this.worldObj.getBlockId(i7, i8, i9) == Block.minecartTrack.blockID) {
+			int i10 = this.worldObj.getBlockMetadata(i7, i8, i9);
+			y = (double)i8;
+			if(i10 >= 2 && i10 <= 5) {
+				y = (double)(i8 + 1);
+			}
+
+			int[][] i11 = matrix[i10];
+			double d12 = 0.0D;
+			double d14 = (double)i7 + 0.5D + (double)i11[0][0] * 0.5D;
+			double d16 = (double)i8 + 0.5D + (double)i11[0][1] * 0.5D;
+			double d18 = (double)i9 + 0.5D + (double)i11[0][2] * 0.5D;
+			double d20 = (double)i7 + 0.5D + (double)i11[1][0] * 0.5D;
+			double d22 = (double)i8 + 0.5D + (double)i11[1][1] * 0.5D;
+			double d24 = (double)i9 + 0.5D + (double)i11[1][2] * 0.5D;
 			double d26 = d20 - d14;
 			double d28 = (d22 - d16) * 2.0D;
 			double d30 = d24 - d18;
-			double d12;
 			if(d26 == 0.0D) {
-				d12 = z - (double)i4;
+				x = (double)i7 + 0.5D;
+				d12 = z - (double)i9;
 			} else if(d30 == 0.0D) {
+				z = (double)i9 + 0.5D;
 				d12 = x - (double)i7;
 			} else {
 				double d32 = x - d14;
 				double d34 = z - d18;
-				d12 = (d32 * d26 + d34 * d30) * 2.0D;
+				double d36 = (d32 * d26 + d34 * d30) * 2.0D;
+				d12 = d36;
 			}
 
 			x = d14 + d26 * d12;
@@ -402,13 +413,13 @@ public class EntityMinecart extends Entity implements IInventory {
 		}
 	}
 
-	protected final void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
+	protected void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
 		NBTTagList nBTTagList2 = new NBTTagList();
 
 		for(int i3 = 0; i3 < this.cargoItems.length; ++i3) {
 			if(this.cargoItems[i3] != null) {
-				NBTTagCompound nBTTagCompound4;
-				(nBTTagCompound4 = new NBTTagCompound()).setByte("Slot", (byte)i3);
+				NBTTagCompound nBTTagCompound4 = new NBTTagCompound();
+				nBTTagCompound4.setByte("Slot", (byte)i3);
 				this.cargoItems[i3].writeToNBT(nBTTagCompound4);
 				nBTTagList2.setTag(nBTTagCompound4);
 			}
@@ -417,31 +428,31 @@ public class EntityMinecart extends Entity implements IInventory {
 		nBTTagCompound1.setTag("Items", nBTTagList2);
 	}
 
-	protected final void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
-		NBTTagList nBTTagList5 = nBTTagCompound1.getTagList("Items");
-		this.cargoItems = new ItemStack[27];
+	protected void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
+		NBTTagList nBTTagList2 = nBTTagCompound1.getTagList("Items");
+		this.cargoItems = new ItemStack[this.getSizeInventory()];
 
-		for(int i2 = 0; i2 < nBTTagList5.tagCount(); ++i2) {
-			NBTTagCompound nBTTagCompound3;
-			int i4;
-			if((i4 = (nBTTagCompound3 = (NBTTagCompound)nBTTagList5.tagAt(i2)).getByte("Slot") & 255) >= 0 && i4 < this.cargoItems.length) {
-				this.cargoItems[i4] = new ItemStack(nBTTagCompound3);
+		for(int i3 = 0; i3 < nBTTagList2.tagCount(); ++i3) {
+			NBTTagCompound nBTTagCompound4 = (NBTTagCompound)nBTTagList2.tagAt(i3);
+			int i5 = nBTTagCompound4.getByte("Slot") & 255;
+			if(i5 >= 0 && i5 < this.cargoItems.length) {
+				this.cargoItems[i5] = new ItemStack(nBTTagCompound4);
 			}
 		}
 
 	}
 
-	public final void applyEntityCollision(Entity entity1) {
+	public void applyEntityCollision(Entity entity1) {
 		if(entity1 != this.riddenByEntity) {
 			double d2 = entity1.posX - this.posX;
 			double d4 = entity1.posZ - this.posZ;
-			double d6;
-			if((d6 = d2 * d2 + d4 * d4) >= 9.999999747378752E-5D) {
+			double d6 = d2 * d2 + d4 * d4;
+			if(d6 >= 9.999999747378752E-5D) {
 				d6 = (double)MathHelper.sqrt_double(d6);
 				d2 /= d6;
 				d4 /= d6;
-				double d8;
-				if((d8 = 1.0D / d6) > 1.0D) {
+				double d8 = 1.0D / d6;
+				if(d8 > 1.0D) {
 					d8 = 1.0D;
 				}
 
@@ -449,6 +460,8 @@ public class EntityMinecart extends Entity implements IInventory {
 				d4 *= d8;
 				d2 *= (double)0.1F;
 				d4 *= (double)0.1F;
+				d2 *= (double)(1.0F - this.entityCollisionReduction);
+				d4 *= (double)(1.0F - this.entityCollisionReduction);
 				d2 *= 0.5D;
 				d4 *= 0.5D;
 				if(entity1 instanceof EntityMinecart) {
@@ -458,25 +471,24 @@ public class EntityMinecart extends Entity implements IInventory {
 					this.addVelocity(d10 - d2, 0.0D, d12 - d4);
 					entity1.motionX = entity1.motionZ = 0.0D;
 					entity1.addVelocity(d10 + d2, 0.0D, d12 + d4);
-					return;
+				} else {
+					this.addVelocity(-d2, 0.0D, -d4);
+					entity1.addVelocity(d2 / 4.0D, 0.0D, d4 / 4.0D);
 				}
-
-				this.addVelocity(-d2, 0.0D, -d4);
-				entity1.addVelocity(d2 / 4.0D, 0.0D, d4 / 4.0D);
 			}
 
 		}
 	}
 
-	public final int getSizeInventory() {
+	public int getSizeInventory() {
 		return 27;
 	}
 
-	public final ItemStack getStackInSlot(int i1) {
+	public ItemStack getStackInSlot(int i1) {
 		return this.cargoItems[i1];
 	}
 
-	public final ItemStack decrStackSize(int i1, int i2) {
+	public ItemStack decrStackSize(int i1, int i2) {
 		if(this.cargoItems[i1] != null) {
 			ItemStack itemStack3;
 			if(this.cargoItems[i1].stackSize <= i2) {
@@ -496,26 +508,26 @@ public class EntityMinecart extends Entity implements IInventory {
 		}
 	}
 
-	public final void setInventorySlotContents(int i1, ItemStack itemStack2) {
+	public void setInventorySlotContents(int i1, ItemStack itemStack2) {
 		this.cargoItems[i1] = itemStack2;
-		if(itemStack2 != null && itemStack2.stackSize > 64) {
-			itemStack2.stackSize = 64;
+		if(itemStack2 != null && itemStack2.stackSize > this.getInventoryStackLimit()) {
+			itemStack2.stackSize = this.getInventoryStackLimit();
 		}
 
 	}
 
-	public final String getInvName() {
+	public String getInvName() {
 		return "Minecart";
 	}
 
-	public final int getInventoryStackLimit() {
+	public int getInventoryStackLimit() {
 		return 64;
 	}
 
-	public final void onInventoryChanged() {
+	public void onInventoryChanged() {
 	}
 
-    public final boolean interact(EntityPlayer entityPlayer) {
+    public boolean interact(EntityPlayer entityPlayer) {
         entityPlayer.mountEntity(this);
         return true;
     }

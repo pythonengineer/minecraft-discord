@@ -6,43 +6,43 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.world.block.Block;
 
-public final class RenderTNTPrimed extends Render {
-	private RenderBlocks renderBlocks = new RenderBlocks();
+public class RenderTNTPrimed extends Render {
+	private RenderBlocks blockRenderer = new RenderBlocks();
 
 	public RenderTNTPrimed() {
 		this.shadowSize = 0.5F;
 	}
 
-	public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
-		EntityTNTPrimed entityTNTPrimed10001 = (EntityTNTPrimed)entity;
-		double d12 = x;
-		EntityTNTPrimed x1 = entityTNTPrimed10001;
+	public void doRender(EntityTNTPrimed entity, double x, double y, double z, float yaw, float partialTicks) {
 		GL11.glPushMatrix();
-		GL11.glTranslatef((float)d12, (float)y, (float)z);
-		float y1;
-		if((float)x1.fuse - partialTicks + 1.0F < 10.0F) {
-			if((y1 = 1.0F - ((float)x1.fuse - partialTicks + 1.0F) / 10.0F) < 0.0F) {
-				y1 = 0.0F;
+		GL11.glTranslatef((float)x, (float)y, (float)z);
+		float f10;
+		if((float)entity.fuse - partialTicks + 1.0F < 10.0F) {
+			f10 = 1.0F - ((float)entity.fuse - partialTicks + 1.0F) / 10.0F;
+			if(f10 < 0.0F) {
+				f10 = 0.0F;
 			}
 
-			if(y1 > 1.0F) {
-				y1 = 1.0F;
+			if(f10 > 1.0F) {
+				f10 = 1.0F;
 			}
 
-			y1 = (y1 *= y1) * y1;
-			GL11.glScalef(y1 = 1.0F + y1 * 0.3F, y1, y1);
+			f10 *= f10;
+			f10 *= f10;
+			float f11 = 1.0F + f10 * 0.3F;
+			GL11.glScalef(f11, f11, f11);
 		}
 
-		y1 = (1.0F - ((float)x1.fuse - partialTicks + 1.0F) / 100.0F) * 0.8F;
+		f10 = (1.0F - ((float)entity.fuse - partialTicks + 1.0F) / 100.0F) * 0.8F;
 		this.loadTexture("/terrain.png");
-		this.renderBlocks.renderBlockOnInventory(Block.tnt);
-		if(x1.fuse / 5 % 2 == 0) {
+		this.blockRenderer.renderBlockOnInventory(Block.tnt);
+		if(entity.fuse / 5 % 2 == 0) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, y1);
-			this.renderBlocks.renderBlockOnInventory(Block.tnt);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, f10);
+			this.blockRenderer.renderBlockOnInventory(Block.tnt);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glEnable(GL11.GL_LIGHTING);
@@ -51,4 +51,8 @@ public final class RenderTNTPrimed extends Render {
 
 		GL11.glPopMatrix();
 	}
+
+    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
+        this.doRender((EntityTNTPrimed)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    }
 }

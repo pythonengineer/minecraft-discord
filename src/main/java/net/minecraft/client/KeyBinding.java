@@ -1,6 +1,6 @@
 package net.minecraft.client;
 
-public final class KeyBinding {
+public class KeyBinding {
     public String keyDescription;
     public int keyCode;
 

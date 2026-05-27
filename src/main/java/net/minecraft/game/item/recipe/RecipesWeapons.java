@@ -4,17 +4,17 @@ import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 
-public final class RecipesWeapons {
-	private String[][] recipePattenrs = new String[][]{{"X", "X", "#"}};
+public class RecipesWeapons {
+	private String[][] recipePatterns = new String[][]{{"X", "X", "#"}};
 	private Object[][] recipeItems = new Object[][]{{Block.planks, Block.cobblestone, Item.ingotIron, Item.diamond, Item.ingotGold}, {Item.swordWood, Item.swordStone, Item.swordSteel, Item.swordDiamond, Item.swordGold}};
 
-	public final void addRecipe(CraftingManager craftingManager) {
+	public void addRecipe(CraftingManager craftingManager) {
 		for(int i2 = 0; i2 < this.recipeItems[0].length; ++i2) {
 			Object object3 = this.recipeItems[0][i2];
 
 			for(int i4 = 0; i4 < this.recipeItems.length - 1; ++i4) {
 				Item item5 = (Item)this.recipeItems[i4 + 1][i2];
-				craftingManager.addRecipe(new ItemStack(item5), new Object[]{this.recipePattenrs[i4], '#', Item.stick, 'X', object3});
+				craftingManager.addRecipe(new ItemStack(item5), new Object[]{this.recipePatterns[i4], '#', Item.stick, 'X', object3});
 			}
 		}
 

@@ -2,22 +2,24 @@ package net.minecraft.game.item.recipe;
 
 import net.minecraft.game.item.ItemStack;
 
-public final class CraftingRecipe {
-    private int recipeWidth;
-    private int recipeHeight;
-    private int[] recipeItems;
-    private ItemStack recipeOutput;
+public class CraftingRecipe {
+    private int width;
+    private int height;
+    private int[] ingredientMap;
+    private ItemStack resultStack;
+    public final int resultId;
 
     public CraftingRecipe(int width, int height, int[] items, ItemStack output) {
-        this.recipeWidth = width;
-        this.recipeHeight = height;
-        this.recipeItems = items;
-        this.recipeOutput = output;
+        this.resultId = output.itemID;
+        this.width = width;
+        this.height = height;
+        this.ingredientMap = items;
+        this.resultStack = output;
     }
 
-    public final boolean matches(int[] items) {
-        for(int i2 = 0; i2 <= 3 - this.recipeWidth; ++i2) {
-            for(int i3 = 0; i3 <= 3 - this.recipeHeight; ++i3) {
+    public boolean matchRecipe(int[] items) {
+        for(int i2 = 0; i2 <= 3 - this.width; ++i2) {
+            for(int i3 = 0; i3 <= 3 - this.height; ++i3) {
                 if(this.checkMatch(items, i2, i3, true)) {
                     return true;
                 }
@@ -37,11 +39,11 @@ public final class CraftingRecipe {
                 int i7 = i5 - width;
                 int i8 = i6 - height;
                 int i9 = -1;
-                if(i7 >= 0 && i8 >= 0 && i7 < this.recipeWidth && i8 < this.recipeHeight) {
+                if(i7 >= 0 && i8 >= 0 && i7 < this.width && i8 < this.height) {
                     if(offsetRecipe) {
-                        i9 = this.recipeItems[this.recipeWidth - i7 - 1 + i8 * this.recipeWidth];
+                        i9 = this.ingredientMap[this.width - i7 - 1 + i8 * this.width];
                     } else {
-                        i9 = this.recipeItems[i7 + i8 * this.recipeWidth];
+                        i9 = this.ingredientMap[i7 + i8 * this.width];
                     }
                 }
 
@@ -54,11 +56,11 @@ public final class CraftingRecipe {
         return true;
     }
 
-    public final ItemStack getCraftingResult() {
-        return new ItemStack(this.recipeOutput.itemID, this.recipeOutput.stackSize);
+    public ItemStack createResult(int[] i1) {
+        return new ItemStack(this.resultStack.itemID, this.resultStack.stackSize);
     }
 
-    public final int getRecipeSize() {
-        return this.recipeWidth * this.recipeHeight;
+    public int getRecipeSize() {
+        return this.width * this.height;
     }
 }

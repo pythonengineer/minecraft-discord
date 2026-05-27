@@ -9,15 +9,15 @@ import net.minecraft.game.item.ItemStack;
 public class TileEntityChest extends TileEntity implements IInventory {
 	private ItemStack[] chestContents = new ItemStack[36];
 
-	public final int getSizeInventory() {
+	public int getSizeInventory() {
 		return 27;
 	}
 
-	public final ItemStack getStackInSlot(int slot) {
+	public ItemStack getStackInSlot(int slot) {
 		return this.chestContents[slot];
 	}
 
-	public final ItemStack decrStackSize(int slot, int decrementAmount) {
+	public ItemStack decrStackSize(int slot, int decrementAmount) {
 		if(this.chestContents[slot] != null) {
 			ItemStack decrementAmount1;
 			if(this.chestContents[slot].stackSize <= decrementAmount) {
@@ -37,19 +37,19 @@ public class TileEntityChest extends TileEntity implements IInventory {
 		}
 	}
 
-	public final void setInventorySlotContents(int slot, ItemStack stack) {
+	public void setInventorySlotContents(int slot, ItemStack stack) {
 		this.chestContents[slot] = stack;
-		if(stack != null && stack.stackSize > 64) {
-			stack.stackSize = 64;
+		if(stack != null && stack.stackSize > this.getInventoryStackLimit()) {
+			stack.stackSize = this.getInventoryStackLimit();
 		}
 
 	}
 
-	public final String getInvName() {
+	public String getInvName() {
 		return "Chest";
 	}
 
-	public final void readFromNBT(NBTTagCompound compoundTag) {
+	public void readFromNBT(NBTTagCompound compoundTag) {
 		super.readFromNBT(compoundTag);
 		NBTTagList nBTTagList5 = compoundTag.getTagList("Items");
 		this.chestContents = new ItemStack[27];
@@ -64,7 +64,7 @@ public class TileEntityChest extends TileEntity implements IInventory {
 
 	}
 
-	public final void writeToNBT(NBTTagCompound compoundTag) {
+	public void writeToNBT(NBTTagCompound compoundTag) {
 		super.writeToNBT(compoundTag);
 		NBTTagList nBTTagList2 = new NBTTagList();
 
@@ -80,7 +80,7 @@ public class TileEntityChest extends TileEntity implements IInventory {
 		compoundTag.setTag("Items", nBTTagList2);
 	}
 
-	public final int getInventoryStackLimit() {
+	public int getInventoryStackLimit() {
 		return 64;
 	}
 }

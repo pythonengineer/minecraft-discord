@@ -15,6 +15,12 @@ public class PlayerController {
 		this.mc = mc;
 	}
 
+    public void init() {
+    }
+
+    public void onWorldChange(World world) {
+    }
+
 	public void clickBlock(int x, int y, int z) {
 		this.sendBlockRemoved(x, y, z);
 	}
@@ -26,15 +32,7 @@ public class PlayerController {
 		int i6 = world4.getBlockMetadata(x, y, z);
 		boolean z7 = world4.setBlockWithNotify(x, y, z, 0);
 		if(block5 != null && z7) {
-			SoundManager soundManager10000 = this.mc.sndManager;
-			String string10001 = block5.stepSound.getBreakSound();
-			float f10002 = (float)x + 0.5F;
-			float f10003 = (float)y + 0.5F;
-			float f10004 = (float)z + 0.5F;
-			StepSound stepSound8 = block5.stepSound;
-			float f10005 = (block5.stepSound.stepSoundVolume + 1.0F) / 2.0F;
-			stepSound8 = block5.stepSound;
-			soundManager10000.playSound(string10001, f10002, f10003, f10004, f10005, block5.stepSound.stepSoundPitch * 0.8F);
+            this.mc.sndManager.playSound(block5.stepSound.getBreakSound(), (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, (block5.stepSound.getVolume() + 1.0F) / 2.0F, block5.stepSound.getPitch() * 0.8F);
 			block5.onBlockDestroyedByPlayer(world4, x, y, z, i6);
 		}
 

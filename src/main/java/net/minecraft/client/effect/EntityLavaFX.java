@@ -3,7 +3,7 @@ package net.minecraft.client.effect;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.world.World;
 
-public final class EntityLavaFX extends EntityFX {
+public class EntityLavaFX extends EntityFX {
 	private float lavaParticleScale;
 
 	public EntityLavaFX(World world, double posX, double posY, double posZ) {
@@ -20,17 +20,17 @@ public final class EntityLavaFX extends EntityFX {
 		this.particleTextureIndex = 49;
 	}
 
-	public final float getBrightness(float partialTicks) {
+	public float getBrightness(float partialTicks) {
 		return 1.0F;
 	}
 
-	public final void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		float f8 = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge;
 		this.particleScale = this.lavaParticleScale * (1.0F - f8 * f8);
 		super.renderParticle(tessellator, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;

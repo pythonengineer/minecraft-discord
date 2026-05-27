@@ -3,7 +3,7 @@ package net.minecraft.client.effect;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.world.World;
 
-public final class EntityFlameFX extends EntityFX {
+public class EntityFlameFX extends EntityFX {
 	private float flameScale;
 
 	public EntityFlameFX(World world, double posX, double posY, double posZ, double speedX, double speedY, double speedZ) {
@@ -24,15 +24,15 @@ public final class EntityFlameFX extends EntityFX {
 		this.particleTextureIndex = 48;
 	}
 
-	public final void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		float f8 = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge;
 		this.particleScale = this.flameScale * (1.0F - f8 * f8 * 0.5F);
 		super.renderParticle(tessellator, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
 
-	public final float getBrightness(float partialTicks) {
-		float f2;
-		if((f2 = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge) < 0.0F) {
+	public float getBrightness(float partialTicks) {
+		float f2 = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge;
+		if(f2 < 0.0F) {
 			f2 = 0.0F;
 		}
 
@@ -43,7 +43,7 @@ public final class EntityFlameFX extends EntityFX {
 		return super.getBrightness(partialTicks) * f2 + (1.0F - f2);
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;

@@ -3,22 +3,26 @@ package net.minecraft.game.world.block;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
-public final class BlockStationary extends BlockFluid {
+public class BlockStationary extends BlockFluid {
 	protected BlockStationary(int i1, Material material2) {
 		super(i1, material2);
 		this.setTickOnLoad(false);
 	}
 
-    public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+    public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
         super.onNeighborBlockChange(world, x, y, z, blockID);
         if(world.getBlockId(x, y, z) == this.blockID) {
-            int i6 = world.getBlockMetadata(x, y, z);
-            world.editingBlocks = true;
-            world.setBlockAndMetadata(x, y, z, this.blockID - 1, i6);
-            world.markBlocksDirty(x, y, z, x, y, z);
-            world.scheduleBlockUpdate(x, y, z, this.blockID - 1);
-            world.editingBlocks = false;
+            this.updateTick(world, x, y, z);
         }
 
+    }
+
+    private void updateTick(World world, int x, int y, int z) {
+        int i5 = world.getBlockMetadata(x, y, z);
+        world.editingBlocks = true;
+        world.setBlockAndMetadata(x, y, z, this.blockID - 1, i5);
+        world.markBlocksDirty(x, y, z, x, y, z);
+        world.scheduleBlockUpdate(x, y, z, this.blockID - 1);
+        world.editingBlocks = false;
     }
 }

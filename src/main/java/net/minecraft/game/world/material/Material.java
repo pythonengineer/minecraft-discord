@@ -17,6 +17,7 @@ public class Material {
     public static final Material circuits = new MaterialLogic();
     public static final Material glass = new Material();
     public static final Material tnt = new Material();
+    public static final Material unused = new Material();
 
     public boolean getIsLiquid() {
         return false;

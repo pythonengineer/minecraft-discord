@@ -3,17 +3,17 @@ package net.minecraft.client.render.texture;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.world.block.Block;
 
-public final class TextureLavaFX extends TextureFX {
-	private float[] red = new float[256];
-	private float[] green = new float[256];
-	private float[] blue = new float[256];
-	private float[] alpha = new float[256];
+public class TextureLavaFX extends TextureFX {
+	protected float[] red = new float[256];
+	protected float[] green = new float[256];
+	protected float[] blue = new float[256];
+	protected float[] alpha = new float[256];
 
 	public TextureLavaFX() {
 		super(Block.lavaMoving.blockIndexInTexture);
 	}
 
-	public final void onTick() {
+	public void onTick() {
 		int i1;
 		int i2;
 		float f3;
@@ -54,7 +54,8 @@ public final class TextureLavaFX extends TextureFX {
 		this.red = f10;
 
 		for(i2 = 0; i2 < 256; ++i2) {
-			if((f3 = this.red[i2] * 2.0F) > 1.0F) {
+			f3 = this.red[i2] * 2.0F;
+			if(f3 > 1.0F) {
 				f3 = 1.0F;
 			}
 

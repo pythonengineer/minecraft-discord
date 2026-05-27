@@ -5,30 +5,21 @@ import com.mojang.nbt.NBTTagCompound;
 
 import net.lax1dude.eaglercraft.EaglerZLIB;
 
+import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class CompressedStreamTools {
-    public final Exception excep;
-
-    public CompressedStreamTools(String string1, Exception exception2) {
-        this.excep = exception2;
-    }
-
-    public static NBTTagCompound read(InputStream inputStream0) throws IOException {
+    public static NBTTagCompound readCompressed(InputStream inputStream0) throws IOException {
         DataInputStream dataInputStream4 = new DataInputStream(EaglerZLIB.newGZIPInputStream(inputStream0));
 
         NBTTagCompound nBTTagCompound5;
         try {
-            NBTBase nBTBase1;
-            if(!((nBTBase1 = NBTBase.readNamedTag(dataInputStream4)) instanceof NBTTagCompound)) {
-                throw new IOException("Root tag must be a named compound tag");
-            }
-
-            nBTTagCompound5 = (NBTTagCompound)nBTBase1;
+            nBTTagCompound5 = read(dataInputStream4);
         } finally {
             dataInputStream4.close();
         }
@@ -40,10 +31,23 @@ public class CompressedStreamTools {
         DataOutputStream dataOutputStream5 = new DataOutputStream(EaglerZLIB.newGZIPOutputStream(outputStream1));
 
         try {
-            NBTBase.writeNamedTag(nbtcomptag, dataOutputStream5);
+            write(nbtcomptag, dataOutputStream5);
         } finally {
             dataOutputStream5.close();
         }
 
+    }
+
+    public static NBTTagCompound read(DataInput dataInput0) throws IOException {
+        NBTBase nBTBase1 = NBTBase.readNamedTag(dataInput0);
+        if(nBTBase1 instanceof NBTTagCompound) {
+            return (NBTTagCompound)nBTBase1;
+        } else {
+            throw new IOException("Root tag must be a named compound tag");
+        }
+    }
+
+    public static void write(NBTTagCompound nBTTagCompound0, DataOutput dataOutput1) throws IOException {
+        NBTBase.writeNamedTag(nBTTagCompound0, dataOutput1);
     }
 }

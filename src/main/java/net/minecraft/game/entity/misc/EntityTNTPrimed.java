@@ -31,11 +31,11 @@ public class EntityTNTPrimed extends Entity {
 		this.prevPosZ = (double)z;
 	}
 
-	public final boolean canBeCollidedWith() {
+	public boolean canBeCollidedWith() {
 		return !this.isDead;
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
@@ -52,17 +52,23 @@ public class EntityTNTPrimed extends Entity {
 
 		if(this.fuse-- <= 0) {
             this.setEntityDead();
-			this.worldObj.doExplosion((Entity)null, this.posX, this.posY, this.posZ, 4.0F);
+			this.createExplosion();
 		} else {
 			this.worldObj.spawnParticle("smoke", this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
 		}
+
 	}
 
-	protected final void writeEntityToNBT(NBTTagCompound compoundTag) {
+	private void createExplosion() {
+		float f1 = 4.0F;
+		this.worldObj.createExplosion((Entity)null, this.posX, this.posY, this.posZ, f1);
+	}
+
+	protected void writeEntityToNBT(NBTTagCompound compoundTag) {
 		compoundTag.setByte("Fuse", (byte)this.fuse);
 	}
 
-	protected final void readEntityFromNBT(NBTTagCompound compoundTag) {
+	protected void readEntityFromNBT(NBTTagCompound compoundTag) {
 		this.fuse = compoundTag.getByte("Fuse");
 	}
 }

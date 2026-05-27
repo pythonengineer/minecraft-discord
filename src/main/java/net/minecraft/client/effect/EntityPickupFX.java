@@ -8,7 +8,7 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.world.World;
 
-public final class EntityPickupFX extends EntityFX {
+public class EntityPickupFX extends EntityFX {
 	private Entity entityToPickUp;
 	private EntityLiving entityPickingUp;
 	private int age = 0;
@@ -16,15 +16,16 @@ public final class EntityPickupFX extends EntityFX {
 	private float yOffs;
 
 	public EntityPickupFX(World world, Entity entity, EntityLiving livingEntity, float yOffset) {
-		super(world, entity.posX, entity.posY, entity.posZ, entity.motionZ, entity.motionY, entity.motionX);
+		super(world, entity.posX, entity.posY, entity.posZ, entity.motionX, entity.motionY, entity.motionZ);
 		this.entityToPickUp = entity;
 		this.entityPickingUp = livingEntity;
 		this.maxAge = 3;
-		this.yOffs = -0.5F;
+		this.yOffs = yOffset;
 	}
 
-	public final void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		float tessellator1 = (tessellator1 = ((float)this.age + partialTicks) / (float)this.maxAge) * tessellator1;
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+		float tessellator1 = ((float)this.age + partialTicks) / (float)this.maxAge;
+		tessellator1 *= tessellator1;
 		double d9 = this.entityToPickUp.posX;
 		double d11 = this.entityToPickUp.posY;
 		double d13 = this.entityToPickUp.posZ;
@@ -45,7 +46,7 @@ public final class EntityPickupFX extends EntityFX {
 		RenderManager.instance.renderEntityWithPosYaw(this.entityToPickUp, (double)((float)d21), (double)((float)d23), (double)((float)d25), this.entityToPickUp.rotationYaw, partialTicks);
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		++this.age;
 		if(this.age == this.maxAge) {
             this.setEntityDead();
@@ -53,7 +54,7 @@ public final class EntityPickupFX extends EntityFX {
 
 	}
 
-	public final int getFXLayer() {
+	public int getFXLayer() {
 		return 2;
 	}
 }

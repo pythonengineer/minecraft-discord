@@ -11,7 +11,7 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.material.Material;
 
-public final class ItemRenderer {
+public class ItemRenderer {
 	private Minecraft mc;
 	private ItemStack itemToRender = null;
 	private float equippedProgress = 0.0F;
@@ -24,7 +24,7 @@ public final class ItemRenderer {
 		this.mc = mc;
 	}
 
-    public final void renderItemInFirstPerson(float partialTicks) {
+    public void renderItemInFirstPerson(float partialTicks) {
         float f2 = this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks;
         GL11.glPushMatrix();
         GL11.glRotatef(this.mc.thePlayer.prevRotationPitch + (this.mc.thePlayer.rotationPitch - this.mc.thePlayer.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
@@ -68,14 +68,10 @@ public final class ItemRenderer {
                 }
 
                 Tessellator t = Tessellator.instance;
-                ItemStack itemStack = this.itemToRender;
-                f5 = (float)(itemStack.getItem().getIcon() % 16 << 4) / 256.0F;
-                itemStack = this.itemToRender;
-                partialTicks = (float)((itemStack.getItem().getIcon() % 16 << 4) + 16) / 256.0F;
-                itemStack = this.itemToRender;
-                f2 = (float)(itemStack.getItem().getIcon() / 16 << 4) / 256.0F;
-                itemStack = this.itemToRender;
-                f9 = (float)((itemStack.getItem().getIcon() / 16 << 4) + 16) / 256.0F;
+                f5 = (float)(this.itemToRender.getIconIndex() % 16 << 4) / 256.0F;
+                partialTicks = (float)((this.itemToRender.getIconIndex() % 16 << 4) + 16) / 256.0F;
+                f2 = (float)(this.itemToRender.getIconIndex() / 16 << 4) / 256.0F;
+                f9 = (float)((this.itemToRender.getIconIndex() / 16 << 4) + 16) / 256.0F;
                 GL11.glEnable(GL11.GL_RESCALE_NORMAL);
                 GL11.glTranslatef(0.0F, -0.3F, 0.0F);
                 GL11.glScalef(1.5F, 1.5F, 1.5F);
@@ -196,45 +192,15 @@ public final class ItemRenderer {
         RenderHelper.disableStandardItemLighting();
     }
 
-    public final void renderOverlays(float partialTicks) {
+    public void renderOverlays(float partialTicks) {
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         int i2;
         int i3;
-        Tessellator tessellator4;
         int i5;
-        float f6;
-        float f7;
-        float f9;
-        float f12;
         if(this.mc.thePlayer.fire > 0) {
             i2 = this.mc.renderEngine.getTexture("/terrain.png");
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, i2);
-            tessellator4 = Tessellator.instance;
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-            for(i2 = 0; i2 < 2; ++i2) {
-                GL11.glPushMatrix();
-                i5 = ((i3 = Block.fire.blockIndexInTexture + (i2 << 4)) & 15) << 4;
-                i3 &= 240;
-                f6 = (float)i5 / 256.0F;
-                f12 = ((float)i5 + 15.99F) / 256.0F;
-                f7 = (float)i3 / 256.0F;
-                f9 = ((float)i3 + 15.99F) / 256.0F;
-                GL11.glTranslatef((float)(-((i2 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
-                GL11.glRotatef((float)((i2 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
-                tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                tessellator4.addVertexWithUV(-0.5D, -0.5D, -0.5D, (double)f12, (double)f9);
-                tessellator4.addVertexWithUV(0.5D, -0.5D, -0.5D, (double)f6, (double)f9);
-                tessellator4.addVertexWithUV(0.5D, 0.5D, -0.5D, (double)f6, (double)f7);
-                tessellator4.addVertexWithUV(-0.5D, 0.5D, -0.5D, (double)f12, (double)f7);
-                tessellator4.draw();
-                GL11.glPopMatrix();
-            }
-
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDisable(GL11.GL_BLEND);
+            this.renderFireInFirstPerson(partialTicks);
         }
 
         if(this.mc.theWorld.playerEntity.isEntityInsideOpaqueBlock()) {
@@ -245,51 +211,89 @@ public final class ItemRenderer {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, i5);
             i2 = this.mc.theWorld.getBlockId(i2, i3, i10);
             if(Block.blocksList[i2] != null) {
-                i10 = Block.blocksList[i2].getBlockTextureFromSide(2);
-                Tessellator tessellator13 = Tessellator.instance;
-                this.mc.thePlayer.getBrightness(partialTicks);
-                GL11.glColor4f(0.1F, 0.1F, 0.1F, 0.5F);
-                GL11.glPushMatrix();
-                f9 = (float)(i10 % 16) / 256.0F - 0.0078125F;
-                float f8 = ((float)(i10 % 16) + 15.99F) / 256.0F + 0.0078125F;
-                f6 = (float)(i10 / 16) / 256.0F - 0.0078125F;
-                float f11 = ((float)(i10 / 16) + 15.99F) / 256.0F + 0.0078125F;
-                tessellator13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                tessellator13.addVertexWithUV(-1.0D, -1.0D, -0.5D, (double)f8, (double)f11);
-                tessellator13.addVertexWithUV(1.0D, -1.0D, -0.5D, (double)f9, (double)f11);
-                tessellator13.addVertexWithUV(1.0D, 1.0D, -0.5D, (double)f9, (double)f6);
-                tessellator13.addVertexWithUV(-1.0D, 1.0D, -0.5D, (double)f8, (double)f6);
-                tessellator13.draw();
-                GL11.glPopMatrix();
-                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                this.renderInsideOfBlock(partialTicks, Block.blocksList[i2].getBlockTextureFromSide(2));
             }
         }
 
         if(this.mc.thePlayer.isInsideOfMaterial(Material.water)) {
             i2 = this.mc.renderEngine.getTexture("/water.png");
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, i2);
-            tessellator4 = Tessellator.instance;
-            GL11.glColor4f(f12 = this.mc.thePlayer.getBrightness(partialTicks), f12, f12, 0.5F);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GL11.glPushMatrix();
-            f7 = -this.mc.thePlayer.rotationYaw / 64.0F;
-            f9 = this.mc.thePlayer.rotationPitch / 64.0F;
-            tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-            tessellator4.addVertexWithUV(-1.0D, -1.0D, -0.5D, (double)(f7 + 4.0F), (double)(f9 + 4.0F));
-            tessellator4.addVertexWithUV(1.0D, -1.0D, -0.5D, (double)(f7 + 0.0F), (double)(f9 + 4.0F));
-            tessellator4.addVertexWithUV(1.0D, 1.0D, -0.5D, (double)(f7 + 0.0F), (double)(f9 + 0.0F));
-            tessellator4.addVertexWithUV(-1.0D, 1.0D, -0.5D, (double)(f7 + 4.0F), (double)(f9 + 0.0F));
-            tessellator4.draw();
-            GL11.glPopMatrix();
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glDisable(GL11.GL_BLEND);
+            this.renderWarpedTextureOverlay(partialTicks);
         }
 
         GL11.glEnable(GL11.GL_ALPHA_TEST);
     }
 
-	public final void updateEquippedItem() {
+    private void renderInsideOfBlock(float partialTicks, int i2) {
+        Tessellator tessellator13 = Tessellator.instance;
+        this.mc.thePlayer.getBrightness(partialTicks);
+        GL11.glColor4f(0.1F, 0.1F, 0.1F, 0.5F);
+        GL11.glPushMatrix();
+        float f9 = (float)(i2 % 16) / 256.0F - 0.0078125F;
+        float f8 = ((float)(i2 % 16) + 15.99F) / 256.0F + 0.0078125F;
+        float f6 = (float)(i2 / 16) / 256.0F - 0.0078125F;
+        float f11 = ((float)(i2 / 16) + 15.99F) / 256.0F + 0.0078125F;
+        tessellator13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        tessellator13.addVertexWithUV(-1.0D, -1.0D, -0.5D, (double)f8, (double)f11);
+        tessellator13.addVertexWithUV(1.0D, -1.0D, -0.5D, (double)f9, (double)f11);
+        tessellator13.addVertexWithUV(1.0D, 1.0D, -0.5D, (double)f9, (double)f6);
+        tessellator13.addVertexWithUV(-1.0D, 1.0D, -0.5D, (double)f8, (double)f6);
+        tessellator13.draw();
+        GL11.glPopMatrix();
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    private void renderWarpedTextureOverlay(float partialTicks) {
+        Tessellator tessellator4 = Tessellator.instance;
+        float f12;
+        GL11.glColor4f(f12 = this.mc.thePlayer.getBrightness(partialTicks), f12, f12, 0.5F);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glPushMatrix();
+        float f7 = -this.mc.thePlayer.rotationYaw / 64.0F;
+        float f9 = this.mc.thePlayer.rotationPitch / 64.0F;
+        tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        tessellator4.addVertexWithUV(-1.0D, -1.0D, -0.5D, (double)(f7 + 4.0F), (double)(f9 + 4.0F));
+        tessellator4.addVertexWithUV(1.0D, -1.0D, -0.5D, (double)(f7 + 0.0F), (double)(f9 + 4.0F));
+        tessellator4.addVertexWithUV(1.0D, 1.0D, -0.5D, (double)(f7 + 0.0F), (double)(f9 + 0.0F));
+        tessellator4.addVertexWithUV(-1.0D, 1.0D, -0.5D, (double)(f7 + 4.0F), (double)(f9 + 0.0F));
+        tessellator4.draw();
+        GL11.glPopMatrix();
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
+
+    private void renderFireInFirstPerson(float partialTicks) {
+        Tessellator tessellator4 = Tessellator.instance;
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.9F);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        for(int i2 = 0; i2 < 2; ++i2) {
+            GL11.glPushMatrix();
+            int i3;
+            int i5 = ((i3 = Block.fire.blockIndexInTexture + (i2 << 4)) & 15) << 4;
+            i3 &= 240;
+            float f6 = (float)i5 / 256.0F;
+            float f12 = ((float)i5 + 15.99F) / 256.0F;
+            float f7 = (float)i3 / 256.0F;
+            float f9 = ((float)i3 + 15.99F) / 256.0F;
+            GL11.glTranslatef((float)(-((i2 << 1) - 1)) * 0.24F, -0.3F, 0.0F);
+            GL11.glRotatef((float)((i2 << 1) - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
+            tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+            tessellator4.addVertexWithUV(-0.5D, -0.5D, -0.5D, (double)f12, (double)f9);
+            tessellator4.addVertexWithUV(0.5D, -0.5D, -0.5D, (double)f6, (double)f9);
+            tessellator4.addVertexWithUV(0.5D, 0.5D, -0.5D, (double)f6, (double)f7);
+            tessellator4.addVertexWithUV(-0.5D, 0.5D, -0.5D, (double)f12, (double)f7);
+            tessellator4.draw();
+            GL11.glPopMatrix();
+        }
+
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
+
+	public void updateEquippedItem() {
 		this.prevEquippedProgress = this.equippedProgress;
 		if(this.itemSwingState) {
 			++this.swingProgress;
@@ -317,11 +321,11 @@ public final class ItemRenderer {
 
 	}
 
-	public final void resetEquippedProgress() {
+	public void resetEquippedProgress() {
 		this.equippedProgress = 0.0F;
 	}
 
-	public final void swing() {
+	public void swing() {
 		this.swingProgress = -1;
 		this.itemSwingState = true;
 	}

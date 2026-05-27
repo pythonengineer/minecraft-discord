@@ -6,12 +6,12 @@ import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
-public final class BlockFire extends Block {
+public class BlockFire extends Block {
 	private int[] chanceToEncourageFire = new int[256];
 	private int[] abilityToCatchFire = new int[256];
 
 	protected BlockFire(int blockID, int textureIndex) {
-		super(51, 31, Material.fire);
+		super(blockID, textureIndex, Material.fire);
 		this.setBurnRate(Block.planks.blockID, 5, 20);
 		this.setBurnRate(Block.wood.blockID, 5, 5);
 		this.setBurnRate(Block.leaves.blockID, 30, 60);
@@ -26,34 +26,34 @@ public final class BlockFire extends Block {
 		this.abilityToCatchFire[blockID] = catchFireAbility;
 	}
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 
-	public final boolean isOpaqueCube() {
+	public boolean isOpaqueCube() {
 		return false;
 	}
 
-	public final boolean renderAsNormalBlock() {
+	public boolean renderAsNormalBlock() {
 		return false;
 	}
 
-	public final int getRenderType() {
+	public int getRenderType() {
 		return 3;
 	}
 
-	public final int quantityDropped(EaglercraftRandom rand) {
+	public int quantityDropped(EaglercraftRandom rand) {
 		return 0;
 	}
 
-	public final int tickRate() {
+	public int tickRate() {
 		return 20;
 	}
 
-	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-		int i6;
-		if((i6 = world.getBlockMetadata(x, y, z)) < 15) {
-			world.setBlockMetadata(x, y, z, i6 + 1);
+	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		int i6 = world.getBlockMetadata(x, y, z);
+		if(i6 < 15) {
+			world.setBlockMetadataWithNotify(x, y, z, i6 + 1);
 			world.scheduleBlockUpdate(x, y, z, this.blockID);
 		}
 
@@ -73,30 +73,18 @@ public final class BlockFire extends Block {
 				this.tryToCatchBlockOnFire(world, x, y, z - 1, 300, rand);
 				this.tryToCatchBlockOnFire(world, x, y, z + 1, 300, rand);
 
-				for(i6 = x - 1; i6 <= x + 1; ++i6) {
-					for(int i7 = z - 1; i7 <= z + 1; ++i7) {
-						for(int i8 = y - 1; i8 <= y + 4; ++i8) {
-							if(i6 != x || i8 != y || i7 != z) {
-								int i9 = 100;
-								if(i8 > y + 1) {
-									i9 = 100 + (i8 - (y + 1)) * 100;
+				for(int i7 = x - 1; i7 <= x + 1; ++i7) {
+					for(int i8 = z - 1; i8 <= z + 1; ++i8) {
+						for(int i9 = y - 1; i9 <= y + 4; ++i9) {
+							if(i7 != x || i9 != y || i8 != z) {
+								int i10 = 100;
+								if(i9 > y + 1) {
+									i10 += (i9 - (y + 1)) * 100;
 								}
 
-								int i10000;
-								if(world.getBlockId(i6, i8, i7) != 0) {
-									i10000 = 0;
-								} else {
-									int i15 = this.getChanceToEncourageFire(world, i6 + 1, i8, i7, 0);
-									i15 = this.getChanceToEncourageFire(world, i6 - 1, i8, i7, i15);
-									i15 = this.getChanceToEncourageFire(world, i6, i8 - 1, i7, i15);
-									i15 = this.getChanceToEncourageFire(world, i6, i8 + 1, i7, i15);
-									i15 = this.getChanceToEncourageFire(world, i6, i8, i7 - 1, i15);
-									i10000 = this.getChanceToEncourageFire(world, i6, i8, i7 + 1, i15);
-								}
-
-								int i10 = i10000;
-								if(i10000 > 0 && rand.nextInt(i9) <= i10) {
-									world.setBlockWithNotify(i6, i8, i7, this.blockID);
+								int i11 = this.getChanceOfNeighborsEncouragingFire(world, i7, i9, i8);
+								if(i11 > 0 && rand.nextInt(i10) <= i11) {
+									world.setBlockWithNotify(i7, i9, i8, this.blockID);
 								}
 							}
 						}
@@ -110,14 +98,14 @@ public final class BlockFire extends Block {
 	private void tryToCatchBlockOnFire(World world, int x, int y, int z, int catchFireAbility, EaglercraftRandom rand) {
 		int i7 = this.abilityToCatchFire[world.getBlockId(x, y, z)];
 		if(rand.nextInt(catchFireAbility) < i7) {
-			boolean catchFireAbility1 = world.getBlockId(x, y, z) == Block.tnt.blockID;
+			boolean z8 = world.getBlockId(x, y, z) == Block.tnt.blockID;
 			if(rand.nextInt(2) == 0) {
 				world.setBlockWithNotify(x, y, z, this.blockID);
 			} else {
 				world.setBlockWithNotify(x, y, z, 0);
 			}
 
-			if(catchFireAbility1) {
+			if(z8) {
 				Block.tnt.onBlockDestroyedByPlayer(world, x, y, z, 0);
 			}
 		}
@@ -128,30 +116,45 @@ public final class BlockFire extends Block {
 		return this.canBlockCatchFire(world, x + 1, y, z) ? true : (this.canBlockCatchFire(world, x - 1, y, z) ? true : (this.canBlockCatchFire(world, x, y - 1, z) ? true : (this.canBlockCatchFire(world, x, y + 1, z) ? true : (this.canBlockCatchFire(world, x, y, z - 1) ? true : this.canBlockCatchFire(world, x, y, z + 1)))));
 	}
 
-	public final boolean isCollidable() {
+	private int getChanceOfNeighborsEncouragingFire(World world, int x, int y, int z) {
+		byte b5 = 0;
+		if(world.getBlockId(x, y, z) != 0) {
+			return 0;
+		} else {
+			int i6 = this.getChanceToEncourageFire(world, x + 1, y, z, b5);
+			i6 = this.getChanceToEncourageFire(world, x - 1, y, z, i6);
+			i6 = this.getChanceToEncourageFire(world, x, y - 1, z, i6);
+			i6 = this.getChanceToEncourageFire(world, x, y + 1, z, i6);
+			i6 = this.getChanceToEncourageFire(world, x, y, z - 1, i6);
+			i6 = this.getChanceToEncourageFire(world, x, y, z + 1, i6);
+			return i6;
+		}
+	}
+
+	public boolean isCollidable() {
 		return false;
 	}
 
-	public final boolean canBlockCatchFire(IBlockAccess iBlockAccess, int x, int y, int z) {
+	public boolean canBlockCatchFire(IBlockAccess iBlockAccess, int x, int y, int z) {
 		return this.chanceToEncourageFire[iBlockAccess.getBlockId(x, y, z)] > 0;
 	}
 
-	private int getChanceToEncourageFire(World world, int x, int y, int z, int fireEncourageChance) {
-		int world1;
-		return (world1 = this.chanceToEncourageFire[world.getBlockId(x, y, z)]) > fireEncourageChance ? world1 : fireEncourageChance;
+	public int getChanceToEncourageFire(World world, int x, int y, int z, int fireEncourageChance) {
+		int i6 = this.chanceToEncourageFire[world.getBlockId(x, y, z)];
+		return i6 > fireEncourageChance ? i6 : fireEncourageChance;
 	}
 
-	public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
+	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
 		return world.isBlockNormalCube(x, y - 1, z) || this.canNeighborCatchFire(world, x, y, z);
 	}
 
-	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+	public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
 		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborCatchFire(world, x, y, z)) {
 			world.setBlockWithNotify(x, y, z, 0);
 		}
 	}
 
-	public final void onBlockAdded(World world, int x, int y, int z) {
+	public void onBlockAdded(World world, int x, int y, int z) {
 		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborCatchFire(world, x, y, z)) {
 			world.setBlockWithNotify(x, y, z, 0);
 		} else {
@@ -159,7 +162,7 @@ public final class BlockFire extends Block {
 		}
 	}
 
-	public final void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+	public void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
 		if(rand.nextInt(24) == 0) {
 			world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "fire.fire", 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
 		}

@@ -2,8 +2,8 @@ package net.minecraft.client.model;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public final class ModelSpider extends ModelBase {
-    private ModelRenderer spiderHead = new ModelRenderer(32, 4);
+public class ModelSpider extends ModelBase {
+    private ModelRenderer spiderHead;
     private ModelRenderer spiderNeck;
     private ModelRenderer spiderBody;
     private ModelRenderer spiderLeg1;
@@ -16,6 +16,7 @@ public final class ModelSpider extends ModelBase {
     private ModelRenderer spiderLeg8;
 
     public ModelSpider() {
+        this.spiderHead = new ModelRenderer(32, 4);
         this.spiderHead.addBox(-4.0F, -4.0F, -8.0F, 8, 8, 8, 0.0F);
         this.spiderHead.setRotationPoint(0.0F, 15.0F, -3.0F);
         this.spiderNeck = new ModelRenderer(0, 0);
@@ -50,22 +51,22 @@ public final class ModelSpider extends ModelBase {
         this.spiderLeg8.setRotationPoint(4.0F, 15.0F, -1.0F);
     }
 
-    public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
-        this.spiderHead.render(0.0625F);
-        this.spiderNeck.render(0.0625F);
-        this.spiderBody.render(0.0625F);
-        this.spiderLeg1.render(0.0625F);
-        this.spiderLeg2.render(0.0625F);
-        this.spiderLeg3.render(0.0625F);
-        this.spiderLeg4.render(0.0625F);
-        this.spiderLeg5.render(0.0625F);
-        this.spiderLeg6.render(0.0625F);
-        this.spiderLeg7.render(0.0625F);
-        this.spiderLeg8.render(0.0625F);
+        this.spiderHead.render(scale);
+        this.spiderNeck.render(scale);
+        this.spiderBody.render(scale);
+        this.spiderLeg1.render(scale);
+        this.spiderLeg2.render(scale);
+        this.spiderLeg3.render(scale);
+        this.spiderLeg4.render(scale);
+        this.spiderLeg5.render(scale);
+        this.spiderLeg6.render(scale);
+        this.spiderLeg7.render(scale);
+        this.spiderLeg8.render(scale);
     }
 
-    public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
         this.spiderHead.rotateAngleY = netHeadYaw / 57.295776F;
         this.spiderHead.rotateAngleX = headPitch / 57.295776F;
         this.spiderLeg1.rotateAngleZ = -0.7853982F;

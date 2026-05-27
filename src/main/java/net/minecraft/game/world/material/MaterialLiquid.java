@@ -1,11 +1,11 @@
 package net.minecraft.game.world.material;
 
-public final class MaterialLiquid extends Material {
-    public final boolean getIsLiquid() {
+public class MaterialLiquid extends Material {
+    public boolean getIsLiquid() {
         return true;
     }
 
-    public final boolean isSolid() {
+    public boolean isSolid() {
         return false;
     }
 }

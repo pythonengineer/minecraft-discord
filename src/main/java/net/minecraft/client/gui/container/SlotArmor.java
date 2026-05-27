@@ -4,19 +4,21 @@ import net.minecraft.game.IInventory;
 import net.minecraft.game.item.ItemArmor;
 import net.minecraft.game.item.ItemStack;
 
-final class SlotArmor extends Slot {
-    private int armorType;
+class SlotArmor extends Slot {
+    final int armorType;
+    final GuiInventory guiInventory;
 
     SlotArmor(GuiInventory inventoryGui, GuiContainer container, IInventory inventory, int slot, int x, int y, int armorType) {
-        super(container, inventory, slot, 8, y);
+        super(container, inventory, slot, x, y);
+        this.guiInventory = inventoryGui;
         this.armorType = armorType;
     }
 
-    public final boolean isItemValid(ItemStack stack) {
+    public boolean isItemValid(ItemStack stack) {
         return stack.getItem() instanceof ItemArmor ? ((ItemArmor)stack.getItem()).armorType == this.armorType : false;
     }
 
-    public final int getBackgroundIconIndex() {
-        return 15 + (this.armorType << 4);
+    public int getBackgroundIconIndex() {
+        return 15 + this.armorType * 16;
     }
 }

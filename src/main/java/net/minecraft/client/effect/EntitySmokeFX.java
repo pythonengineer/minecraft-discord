@@ -3,7 +3,7 @@ package net.minecraft.client.effect;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.world.World;
 
-public final class EntitySmokeFX extends EntityFX {
+public class EntitySmokeFX extends EntityFX {
 	private float smokeParticleScale;
 
 	public EntitySmokeFX(World world, double posX, double posY, double posZ) {
@@ -24,9 +24,9 @@ public final class EntitySmokeFX extends EntityFX {
 		this.noClip = false;
 	}
 
-	public final void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
-		float f8;
-		if((f8 = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge * 32.0F) < 0.0F) {
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+		float f8 = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge * 32.0F;
+		if(f8 < 0.0F) {
 			f8 = 0.0F;
 		}
 
@@ -38,7 +38,7 @@ public final class EntitySmokeFX extends EntityFX {
 		super.renderParticle(tessellator, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;

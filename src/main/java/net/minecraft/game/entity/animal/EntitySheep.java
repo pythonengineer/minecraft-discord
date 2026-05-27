@@ -17,15 +17,14 @@ public class EntitySheep extends EntityAnimal {
 		this.setSize(0.9F, 1.3F);
 	}
 
-	public final boolean attackEntityFrom(Entity entity, int damage) {
+	public boolean attackEntityFrom(Entity entity, int damage) {
 		if(!this.sheared && entity instanceof EntityLiving) {
 			this.sheared = true;
 			int i3 = 1 + this.rand.nextInt(3);
 
 			for(int i4 = 0; i4 < i3; ++i4) {
-				EntityItem entityItem5;
-				EntityItem entityItem10000 = entityItem5 = this.entityDropItem(Block.cloth.blockID, 1, 1.0F);
-				entityItem10000.motionY += (double)(this.rand.nextFloat() * 0.05F);
+				EntityItem entityItem5 = this.entityDropItem(Block.cloth.blockID, 1, 1.0F);
+				entityItem5.motionY += (double)(this.rand.nextFloat() * 0.05F);
 				entityItem5.motionX += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
 				entityItem5.motionZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
 			}
@@ -34,25 +33,25 @@ public class EntitySheep extends EntityAnimal {
 		return super.attackEntityFrom(entity, damage);
 	}
 
-	public final void writeEntityToNBT(NBTTagCompound compoundTag) {
+	public void writeEntityToNBT(NBTTagCompound compoundTag) {
 		super.writeEntityToNBT(compoundTag);
 		compoundTag.setBoolean("Sheared", this.sheared);
 	}
 
-	public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+	public void readEntityFromNBT(NBTTagCompound compoundTag) {
 		super.readEntityFromNBT(compoundTag);
 		this.sheared = compoundTag.getBoolean("Sheared");
 	}
 
-	protected final String getLivingSound() {
+	protected String getLivingSound() {
 		return "mob.sheep";
 	}
 
-	protected final String getHurtSound() {
+	protected String getHurtSound() {
 		return "mob.sheep";
 	}
 
-	protected final String getDeathSound() {
+	protected String getDeathSound() {
 		return "mob.sheep";
 	}
 }

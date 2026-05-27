@@ -4,8 +4,8 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
-public final class WorldGenTrees extends WorldGenerator {
-	public final boolean generate(World world, EaglercraftRandom rand, int x, int y, int z) {
+public class WorldGenTrees extends WorldGenerator {
+	public boolean generate(World world, EaglercraftRandom rand, int x, int y, int z) {
 		int i6 = rand.nextInt(3) + 4;
 		boolean z7 = true;
 		if(y > 0 && y + i6 + 1 <= 128) {

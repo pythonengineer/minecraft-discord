@@ -1,7 +1,7 @@
 package net.minecraft.client.model;
 
-public final class ModelMinecart extends ModelBase {
-    private ModelRenderer[] sideModels = new ModelRenderer[7];
+public class ModelMinecart extends ModelBase {
+    public ModelRenderer[] sideModels = new ModelRenderer[7];
 
     public ModelMinecart() {
         this.sideModels[0] = new ModelRenderer(0, 10);
@@ -29,7 +29,7 @@ public final class ModelMinecart extends ModelBase {
         this.sideModels[5].rotateAngleX = -1.5707964F;
     }
 
-    public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.sideModels[5].rotationPointY = 4.0F - ageInTicks;
 
         for(int i7 = 0; i7 < 6; ++i7) {
@@ -38,6 +38,6 @@ public final class ModelMinecart extends ModelBase {
 
     }
 
-    public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
     }
 }

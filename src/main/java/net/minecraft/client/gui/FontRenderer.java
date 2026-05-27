@@ -9,7 +9,7 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.Tessellator;
 
-public final class FontRenderer {
+public class FontRenderer {
 	private int[] charWidth = new int[256];
 	private int fontTextureName = 0;
 	private int fontDisplayLists;
@@ -57,7 +57,7 @@ public final class FontRenderer {
         }
 
         this.fontTextureName = renderEngine.getTexture(fontTextureLocation);
-        this.fontDisplayLists = GL11.glGenLists(288);
+        this.fontDisplayLists = GLAllocation.generateDisplayLists(288);
         Tessellator tessellator18 = Tessellator.instance;
 
         for(i6 = 0; i6 < 256; ++i6) {
@@ -101,16 +101,16 @@ public final class FontRenderer {
 
 	}
 
-    public final void drawStringWithShadow(String message, int x, int y, int color) {
+    public void drawStringWithShadow(String message, int x, int y, int color) {
         this.renderString(message, x + 1, y + 1, color, true);
         this.drawString(message, x, y, color);
     }
 
-    public final void drawString(String message, int x, int y, int color) {
+    public void drawString(String message, int x, int y, int color) {
         this.renderString(message, x, y, color, false);
     }
 
-    private void renderString(String message, int x, int y, int color, boolean dropShadow) {
+    public void renderString(String message, int x, int y, int color, boolean dropShadow) {
         if(message != null) {
             if(dropShadow) {
                 color = (color & 16579836) >> 2;
@@ -154,7 +154,7 @@ public final class FontRenderer {
         }
     }
 
-    public final int getStringWidth(String message) {
+    public int getStringWidth(String message) {
         if(message == null) {
             return 0;
         } else {

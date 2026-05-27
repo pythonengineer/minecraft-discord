@@ -10,18 +10,18 @@ import net.lax1dude.eaglercraft.internal.EnumPlatformOS;
 import net.minecraft.client.GameSettings;
 import net.minecraft.game.entity.EntityLiving;
 
-public final class SoundManager {
+public class SoundManager {
     private EaglercraftSoundManager sndManager;
     private SoundPool soundPoolSounds = new SoundPool();
     private SoundPool soundPoolMusic = new SoundPool();
     private GameSettings options;
 
-    public final void loadSoundSettings(GameSettings options) {
+    public void loadSoundSettings(GameSettings options) {
         this.options = options;
         this.sndManager = new EaglercraftSoundManager();
     }
 
-    public final void registerSounds() {
+    public void registerSounds() {
         InputStream stream = EagRuntime.getResourceStream("/assets/sounds.txt");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String file;
@@ -41,23 +41,23 @@ public final class SoundManager {
         }
     }
 
-    public final void onSoundOptionsChanged() {
+    public void onSoundOptionsChanged() {
         if(!this.options.music) {
             this.sndManager.stopAllStatic();
         }
 
     }
 
-    public final void closeMinecraft() {
+    public void closeMinecraft() {
         this.sndManager.stopAllSounds();
     }
 
-    public final void addSound(String soundName, String soundFile) {
+    public void addSound(String soundName, String soundFile) {
         EagRuntime.getRequiredResourceBytes(soundName);
         this.soundPoolSounds.addSound(this.sndManager, soundFile, soundName);
     }
 
-    public final void addMusic(String musicName, String musicFile) {
+    public void addMusic(String musicName, String musicFile) {
         if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE && this.options.music) {
             EagRuntime.getRequiredResourceBytes(musicFile);
         }
@@ -65,18 +65,18 @@ public final class SoundManager {
         this.soundPoolMusic.addSound(this.sndManager, musicName, musicFile);
     }
 
-    public final SoundPoolEntry play(SoundPoolEntry sound) {
+    public SoundPoolEntry play(SoundPoolEntry sound) {
         this.sndManager.playSound(sound);
         return sound;
     }
 
-    public final void setListener(EntityLiving livingEntity, float partialTicks) {
+    public void setListener(EntityLiving livingEntity, float partialTicks) {
         if(this.options.sound) {
             this.sndManager.setListener(livingEntity, partialTicks);
         }
     }
 
-    public final void playSound(String soundName, float x, float y, float z, float volume, float pitch) {
+    public void playSound(String soundName, float x, float y, float z, float volume, float pitch) {
         if(this.options.sound) {
             SoundPoolEntry entry = this.soundPoolSounds.getRandomSoundFromSoundPool(soundName);
             if(entry != null && volume > 0.0F) {
@@ -86,7 +86,7 @@ public final class SoundManager {
         }
     }
 
-    public final void playSoundFX(String fxSoundName, float volume, float pitch) {
+    public void playSoundFX(String fxSoundName, float volume, float pitch) {
         if(this.options.sound) {
             SoundPoolEntry entry = this.soundPoolSounds.getRandomSoundFromSoundPool(fxSoundName);
             if(entry != null) {

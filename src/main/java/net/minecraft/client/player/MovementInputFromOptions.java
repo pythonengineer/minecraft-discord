@@ -1,8 +1,9 @@
 package net.minecraft.client.player;
 
 import net.minecraft.client.GameSettings;
+import net.minecraft.game.entity.player.EntityPlayer;
 
-public final class MovementInputFromOptions extends MovementInput {
+public class MovementInputFromOptions extends MovementInput {
     private boolean[] movementKeyStates = new boolean[10];
     private GameSettings gameSettings;
 
@@ -10,7 +11,7 @@ public final class MovementInputFromOptions extends MovementInput {
         this.gameSettings = gameSettings;
     }
 
-    public final void checkKeyForMovementInput(int keyState, boolean isMovementInput) {
+    public void checkKeyForMovementInput(int keyState, boolean isMovementInput) {
         byte b3 = -1;
         if(keyState == this.gameSettings.keyBindForward.keyCode) {
             b3 = 0;
@@ -38,14 +39,14 @@ public final class MovementInputFromOptions extends MovementInput {
 
     }
 
-    public final void resetKeyState() {
+    public void resetKeyState() {
         for(int i1 = 0; i1 < 10; ++i1) {
             this.movementKeyStates[i1] = false;
         }
 
     }
 
-    public final void updatePlayerMoveState() {
+    public void updatePlayerMoveState(EntityPlayer player) {
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;
         if(this.movementKeyStates[0]) {

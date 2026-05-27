@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public final class NBTTagByte extends NBTBase {
+public class NBTTagByte extends NBTBase {
 	public byte byteValue;
 
 	public NBTTagByte() {
@@ -14,19 +14,19 @@ public final class NBTTagByte extends NBTBase {
 		this.byteValue = byteValue;
 	}
 
-	final void writeTagContents(DataOutput dataOutput) throws IOException {
+	void writeTagContents(DataOutput dataOutput) throws IOException {
 		dataOutput.writeByte(this.byteValue);
 	}
 
-	final void readTagContents(DataInput dataInput) throws IOException {
+	void readTagContents(DataInput dataInput) throws IOException {
 		this.byteValue = dataInput.readByte();
 	}
 
-	public final byte getType() {
+	public byte getType() {
 		return (byte)1;
 	}
 
-	public final String toString() {
+	public String toString() {
 		return "" + this.byteValue;
 	}
 }

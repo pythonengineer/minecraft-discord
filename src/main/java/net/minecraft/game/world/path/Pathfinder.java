@@ -8,171 +8,173 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.material.Material;
 
-public final class Pathfinder {
+public class Pathfinder {
 	private IBlockAccess worldMap;
 	private Path path = new Path();
 	private Map pointMap = new HashMap();
 	private PathPoint[] pathOptions = new PathPoint[32];
 
-	public Pathfinder(IBlockAccess iBlockAccess) {
-		this.worldMap = iBlockAccess;
+	public Pathfinder(IBlockAccess iBlockAccess1) {
+		this.worldMap = iBlockAccess1;
 	}
 
-	public final PathEntity createEntityPathTo(Entity entity1, Entity entity2, float distance) {
-		return this.createEntityPathTo(entity1, entity2.posX, entity2.boundingBox.minY, entity2.posZ, distance);
+	public PathEntity createEntityPathTo(Entity entity1, Entity entity2, float f3) {
+		return this.createEntityPathTo(entity1, entity2.posX, entity2.boundingBox.minY, entity2.posZ, f3);
 	}
 
-	public final PathEntity createEntityPathTo(Entity entity, int x, int y, int z, float distance) {
-		return this.createEntityPathTo(entity, (double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), distance);
+	public PathEntity createEntityPathTo(Entity entity1, int i2, int i3, int i4, float f5) {
+		return this.createEntityPathTo(entity1, (double)((float)i2 + 0.5F), (double)((float)i3 + 0.5F), (double)((float)i4 + 0.5F), f5);
 	}
 
-	private PathEntity createEntityPathTo(Entity entity, double x, double y, double z, float distance) {
+	private PathEntity createEntityPathTo(Entity entity1, double d2, double d4, double d6, float f8) {
 		this.path.clearPath();
 		this.pointMap.clear();
-		PathPoint object9 = this.openPoint(MathHelper.floor_double(entity.boundingBox.minX), MathHelper.floor_double(entity.boundingBox.minY), MathHelper.floor_double(entity.boundingBox.minZ));
-		PathPoint pathPoint21 = this.openPoint(MathHelper.floor_double(x - (double)(entity.width / 2.0F)), MathHelper.floor_double(y), MathHelper.floor_double(z - (double)(entity.width / 2.0F)));
-		PathPoint pathPoint3 = new PathPoint(MathHelper.floor_float(entity.width + 1.0F), MathHelper.floor_float(entity.height + 1.0F), MathHelper.floor_float(entity.width + 1.0F));
-		float f24 = distance;
-		PathPoint pathPoint5 = pathPoint3;
-		PathPoint pathPoint23 = pathPoint21;
-		Entity entity22 = entity;
-		Pathfinder pathfinder20 = this;
-		((PathPoint)object9).totalPathDistance = 0.0F;
-		((PathPoint)object9).distanceToNext = ((PathPoint)object9).distanceTo(pathPoint21);
-		((PathPoint)object9).distanceToTarget = ((PathPoint)object9).distanceToNext;
+		PathPoint pathPoint9 = this.openPoint(MathHelper.floor_double(entity1.boundingBox.minX), MathHelper.floor_double(entity1.boundingBox.minY), MathHelper.floor_double(entity1.boundingBox.minZ));
+		PathPoint pathPoint10 = this.openPoint(MathHelper.floor_double(d2 - (double)(entity1.width / 2.0F)), MathHelper.floor_double(d4), MathHelper.floor_double(d6 - (double)(entity1.width / 2.0F)));
+		PathPoint pathPoint11 = new PathPoint(MathHelper.floor_float(entity1.width + 1.0F), MathHelper.floor_float(entity1.height + 1.0F), MathHelper.floor_float(entity1.width + 1.0F));
+		PathEntity pathEntity12 = this.addToPath(entity1, pathPoint9, pathPoint10, pathPoint11, f8);
+		return pathEntity12;
+	}
+
+	private PathEntity addToPath(Entity entity1, PathPoint pathPoint2, PathPoint pathPoint3, PathPoint pathPoint4, float f5) {
+		pathPoint2.totalPathDistance = 0.0F;
+		pathPoint2.distanceToNext = pathPoint2.distanceTo(pathPoint3);
+		pathPoint2.distanceToTarget = pathPoint2.distanceToNext;
 		this.path.clearPath();
-		this.path.addPoint((PathPoint)object9);
-		Object object7 = object9;
+		this.path.addPoint(pathPoint2);
+		PathPoint pathPoint6 = pathPoint2;
 
-		PathEntity pathEntity10000;
-		while(true) {
-			if(pathfinder20.path.isPathEmpty()) {
-				pathEntity10000 = object7 == object9 ? null : createEntityPath((PathPoint)object7);
-				break;
+		while(!this.path.isPathEmpty()) {
+			PathPoint pathPoint7 = this.path.dequeue();
+			if(pathPoint7.hash == pathPoint3.hash) {
+				return this.createEntityPath(pathPoint2, pathPoint3);
 			}
 
-			PathPoint pathPoint25;
-			if((pathPoint25 = pathfinder20.path.dequeue()).hash == pathPoint23.hash) {
-				pathEntity10000 = createEntityPath(pathPoint23);
-				break;
+			if(pathPoint7.distanceTo(pathPoint3) < pathPoint6.distanceTo(pathPoint3)) {
+				pathPoint6 = pathPoint7;
 			}
 
-			if(pathPoint25.distanceTo(pathPoint23) < ((PathPoint)object7).distanceTo(pathPoint23)) {
-				object7 = pathPoint25;
-			}
+			pathPoint7.isFirst = true;
+			int i8 = this.findPathOptions(entity1, pathPoint7, pathPoint4, pathPoint3, f5);
 
-			pathPoint25.isFirst = true;
-			int object15 = 0;
-			byte b16 = 0;
-			if(pathfinder20.getVerticalOffset(pathPoint25.xCoord, pathPoint25.yCoord + 1, pathPoint25.zCoord, pathPoint5) > 0) {
-				b16 = 1;
-			}
-
-			PathPoint pathPoint17 = pathfinder20.getSafePoint(entity22, pathPoint25.xCoord, pathPoint25.yCoord, pathPoint25.zCoord + 1, pathPoint5, b16);
-			PathPoint pathPoint18 = pathfinder20.getSafePoint(entity22, pathPoint25.xCoord - 1, pathPoint25.yCoord, pathPoint25.zCoord, pathPoint5, b16);
-			PathPoint pathPoint19 = pathfinder20.getSafePoint(entity22, pathPoint25.xCoord + 1, pathPoint25.yCoord, pathPoint25.zCoord, pathPoint5, b16);
-			PathPoint pathPoint10 = pathfinder20.getSafePoint(entity22, pathPoint25.xCoord, pathPoint25.yCoord, pathPoint25.zCoord - 1, pathPoint5, b16);
-			if(pathPoint17 != null && !pathPoint17.isFirst && pathPoint17.distanceTo(pathPoint23) < f24) {
-				++object15;
-				pathfinder20.pathOptions[0] = pathPoint17;
-			}
-
-			if(pathPoint18 != null && !pathPoint18.isFirst && pathPoint18.distanceTo(pathPoint23) < f24) {
-				pathfinder20.pathOptions[object15++] = pathPoint18;
-			}
-
-			if(pathPoint19 != null && !pathPoint19.isFirst && pathPoint19.distanceTo(pathPoint23) < f24) {
-				pathfinder20.pathOptions[object15++] = pathPoint19;
-			}
-
-			if(pathPoint10 != null && !pathPoint10.isFirst && pathPoint10.distanceTo(pathPoint23) < f24) {
-				pathfinder20.pathOptions[object15++] = pathPoint10;
-			}
-
-			for(int i26 = 0; i26 < object15; ++i26) {
-				PathPoint pathPoint11 = pathfinder20.pathOptions[i26];
-				float f12 = pathPoint25.totalPathDistance + pathPoint25.distanceTo(pathPoint11);
-				if(!pathPoint11.isAssigned() || f12 < pathPoint11.totalPathDistance) {
-					pathPoint11.previous = pathPoint25;
-					pathPoint11.totalPathDistance = f12;
-					pathPoint11.distanceToNext = pathPoint11.distanceTo(pathPoint23);
-					if(pathPoint11.isAssigned()) {
-						pathfinder20.path.changeDistance(pathPoint11, pathPoint11.totalPathDistance + pathPoint11.distanceToNext);
+			for(int i9 = 0; i9 < i8; ++i9) {
+				PathPoint pathPoint10 = this.pathOptions[i9];
+				float f11 = pathPoint7.totalPathDistance + pathPoint7.distanceTo(pathPoint10);
+				if(!pathPoint10.isAssigned() || f11 < pathPoint10.totalPathDistance) {
+					pathPoint10.previous = pathPoint7;
+					pathPoint10.totalPathDistance = f11;
+					pathPoint10.distanceToNext = pathPoint10.distanceTo(pathPoint3);
+					if(pathPoint10.isAssigned()) {
+						this.path.changeDistance(pathPoint10, pathPoint10.totalPathDistance + pathPoint10.distanceToNext);
 					} else {
-						pathPoint11.distanceToTarget = pathPoint11.totalPathDistance + pathPoint11.distanceToNext;
-						pathfinder20.path.addPoint(pathPoint11);
+						pathPoint10.distanceToTarget = pathPoint10.totalPathDistance + pathPoint10.distanceToNext;
+						this.path.addPoint(pathPoint10);
 					}
 				}
 			}
 		}
 
-		return pathEntity10000;
+		if(pathPoint6 == pathPoint2) {
+			return null;
+		} else {
+			return this.createEntityPath(pathPoint2, pathPoint6);
+		}
 	}
 
-	private PathPoint getSafePoint(Entity entity, int x, int y, int z, PathPoint pathPoint, int offsetY) {
-		PathPoint pathPoint8 = null;
-		if(this.getVerticalOffset(x, y, z, pathPoint) > 0) {
-			pathPoint8 = this.openPoint(x, y, z);
+	private int findPathOptions(Entity entity1, PathPoint pathPoint2, PathPoint pathPoint3, PathPoint pathPoint4, float f5) {
+		int i6 = 0;
+		byte b7 = 0;
+		if(this.getVerticalOffset(entity1, pathPoint2.xCoord, pathPoint2.yCoord + 1, pathPoint2.zCoord, pathPoint3) > 0) {
+			b7 = 1;
 		}
 
-		if(pathPoint8 == null && this.getVerticalOffset(x, y + offsetY, z, pathPoint) > 0) {
-			pathPoint8 = this.openPoint(x, y + offsetY, z);
+		PathPoint pathPoint8 = this.getSafePoint(entity1, pathPoint2.xCoord, pathPoint2.yCoord, pathPoint2.zCoord + 1, pathPoint3, b7);
+		PathPoint pathPoint9 = this.getSafePoint(entity1, pathPoint2.xCoord - 1, pathPoint2.yCoord, pathPoint2.zCoord, pathPoint3, b7);
+		PathPoint pathPoint10 = this.getSafePoint(entity1, pathPoint2.xCoord + 1, pathPoint2.yCoord, pathPoint2.zCoord, pathPoint3, b7);
+		PathPoint pathPoint11 = this.getSafePoint(entity1, pathPoint2.xCoord, pathPoint2.yCoord, pathPoint2.zCoord - 1, pathPoint3, b7);
+		if(pathPoint8 != null && !pathPoint8.isFirst && pathPoint8.distanceTo(pathPoint4) < f5) {
+			this.pathOptions[i6++] = pathPoint8;
 		}
 
-		if(pathPoint8 != null) {
-			offsetY = 0;
+		if(pathPoint9 != null && !pathPoint9.isFirst && pathPoint9.distanceTo(pathPoint4) < f5) {
+			this.pathOptions[i6++] = pathPoint9;
+		}
+
+		if(pathPoint10 != null && !pathPoint10.isFirst && pathPoint10.distanceTo(pathPoint4) < f5) {
+			this.pathOptions[i6++] = pathPoint10;
+		}
+
+		if(pathPoint11 != null && !pathPoint11.isFirst && pathPoint11.distanceTo(pathPoint4) < f5) {
+			this.pathOptions[i6++] = pathPoint11;
+		}
+
+		return i6;
+	}
+
+	private PathPoint getSafePoint(Entity entity1, int i2, int i3, int i4, PathPoint pathPoint5, int i6) {
+		PathPoint pathPoint7 = null;
+		if(this.getVerticalOffset(entity1, i2, i3, i4, pathPoint5) > 0) {
+			pathPoint7 = this.openPoint(i2, i3, i4);
+		}
+
+		if(pathPoint7 == null && this.getVerticalOffset(entity1, i2, i3 + i6, i4, pathPoint5) > 0) {
+			pathPoint7 = this.openPoint(i2, i3 + i6, i4);
+		}
+
+		if(pathPoint7 != null) {
+			int i8 = 0;
+			int i9 = 0;
 
 			while(true) {
-				int i7;
-				if(y <= 0 || (i7 = this.getVerticalOffset(x, y - 1, z, pathPoint)) <= 0) {
-                    if(y > 0) {
-                        pathPoint8 = this.openPoint(x, y, z);
+				if(i3 <= 0 || (i9 = this.getVerticalOffset(entity1, i2, i3 - 1, i4, pathPoint5)) <= 0) {
+                    if(i3 > 0) {
+                        pathPoint7 = this.openPoint(i2, i3, i4);
                     }
 
-					Material material9;
-					if((material9 = this.worldMap.getBlockMaterial(x, y - 1, z)) == Material.water || material9 == Material.lava) {
+					Material material10 = this.worldMap.getBlockMaterial(i2, i3 - 1, i4);
+					if(material10 == Material.water || material10 == Material.lava) {
 						return null;
 					}
 					break;
 				}
 
-				if(i7 < 0) {
+				if(i9 < 0) {
 					return null;
 				}
 
-				++offsetY;
-				if(offsetY >= 4) {
+				++i8;
+				if(i8 >= 4) {
 					return null;
 				}
 
-				--y;
+				--i3;
 			}
 		}
 
-		return pathPoint8;
+		return pathPoint7;
 	}
 
-	private final PathPoint openPoint(int x, int y, int z) {
-		int i4 = x | y << 10 | z << 20;
-		PathPoint pathPoint5;
-		if((pathPoint5 = (PathPoint)this.pointMap.get(i4)) == null) {
-			pathPoint5 = new PathPoint(x, y, z);
+	private final PathPoint openPoint(int i1, int i2, int i3) {
+		int i4 = i1 | i2 << 10 | i3 << 20;
+		PathPoint pathPoint5 = (PathPoint)this.pointMap.get(i4);
+		if(pathPoint5 == null) {
+			pathPoint5 = new PathPoint(i1, i2, i3);
 			this.pointMap.put(i4, pathPoint5);
 		}
 
 		return pathPoint5;
 	}
 
-	private int getVerticalOffset(int x, int y, int z, PathPoint pathPoint) {
-		for(int i5 = x; i5 < x + pathPoint.xCoord; ++i5) {
-			for(int i6 = y; i6 < y + pathPoint.yCoord; ++i6) {
-				for(int i7 = z; i7 < z + pathPoint.zCoord; ++i7) {
-					Material material8;
-					if((material8 = this.worldMap.getBlockMaterial(x, y, z)).getIsSolid()) {
+	private int getVerticalOffset(Entity entity1, int i2, int i3, int i4, PathPoint pathPoint5) {
+		for(int i6 = i2; i6 < i2 + pathPoint5.xCoord; ++i6) {
+			for(int i7 = i3; i7 < i3 + pathPoint5.yCoord; ++i7) {
+				for(int i8 = i4; i8 < i4 + pathPoint5.zCoord; ++i8) {
+					Material material9 = this.worldMap.getBlockMaterial(i2, i3, i4);
+					if(material9.getIsSolid()) {
 						return 0;
 					}
 
-					if(material8 == Material.water || material8 == Material.lava) {
+					if(material9 == Material.water || material9 == Material.lava) {
 						return -1;
 					}
 				}
@@ -182,23 +184,23 @@ public final class Pathfinder {
 		return 1;
 	}
 
-	private static PathEntity createEntityPath(PathPoint pathPoint) {
-		int i1 = 1;
+	private PathEntity createEntityPath(PathPoint pathPoint1, PathPoint pathPoint2) {
+		int i3 = 1;
 
-		PathPoint pathPoint2;
-		for(pathPoint2 = pathPoint; pathPoint2.previous != null; pathPoint2 = pathPoint2.previous) {
-			++i1;
+		PathPoint pathPoint4;
+		for(pathPoint4 = pathPoint2; pathPoint4.previous != null; pathPoint4 = pathPoint4.previous) {
+			++i3;
 		}
 
-		PathPoint[] pathPoint3 = new PathPoint[i1];
-		pathPoint2 = pathPoint;
-		--i1;
+		PathPoint[] pathPoint5 = new PathPoint[i3];
+		pathPoint4 = pathPoint2;
+		--i3;
 
-		for(pathPoint3[i1] = pathPoint; pathPoint2.previous != null; pathPoint3[i1] = pathPoint2) {
-			pathPoint2 = pathPoint2.previous;
-			--i1;
+		for(pathPoint5[i3] = pathPoint2; pathPoint4.previous != null; pathPoint5[i3] = pathPoint4) {
+			pathPoint4 = pathPoint4.previous;
+			--i3;
 		}
 
-		return new PathEntity(pathPoint3);
+		return new PathEntity(pathPoint5);
 	}
 }

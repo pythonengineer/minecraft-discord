@@ -10,7 +10,7 @@ import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.EaglerOutputStream;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 
-public final class GameSettings {
+public class GameSettings {
     private static final String[] GUI_SCALES = new String[]{"AUTO", "SMALL",
             "NORMAL", "LARGE" };
     private static final String[] RENDER_DISTANCES = new String[]{"FAR", "NORMAL", "SHORT", "TINY"};
@@ -48,16 +48,16 @@ public final class GameSettings {
         this.loadOptions();
     }
 
-    public final String getKeyBindingDescription(int keyBindIndex) {
+    public String getKeyBindingDescription(int keyBindIndex) {
         return this.keyBindings[keyBindIndex].keyDescription + ": " + Keyboard.getKeyName(this.keyBindings[keyBindIndex].keyCode);
     }
 
-    public final void setKeyBinding(int keyBindIndex, int keyBinding) {
+    public void setKeyBinding(int keyBindIndex, int keyBinding) {
         this.keyBindings[keyBindIndex].keyCode = keyBinding;
         this.saveOptions();
     }
 
-    public final void setOptionValue(int keyBindIndex, int value) {
+    public void setOptionValue(int keyBindIndex, int value) {
         if(keyBindIndex == 0) {
             this.music = !this.music;
             this.mc.sndManager.onSoundOptionsChanged();
@@ -109,7 +109,7 @@ public final class GameSettings {
         this.saveOptions();
     }
 
-    public final String getKeyBinding(int keyBindIndex) {
+    public String getKeyBinding(int keyBindIndex) {
         return keyBindIndex == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (keyBindIndex == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (keyBindIndex == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (keyBindIndex == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (keyBindIndex == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (keyBindIndex == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (keyBindIndex == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (keyBindIndex == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (keyBindIndex == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (keyBindIndex == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : (keyBindIndex == 10 ? "Graphics: " + (this.fancyGraphics ? "FANCY" : "FAST") : ""))))))))));
     }
 
@@ -182,7 +182,7 @@ public final class GameSettings {
         }
     }
 
-    public final void saveOptions() {
+    public void saveOptions() {
         try {
             EaglerOutputStream bao = new EaglerOutputStream();
             PrintWriter printWriter1 = new PrintWriter(new OutputStreamWriter(bao));

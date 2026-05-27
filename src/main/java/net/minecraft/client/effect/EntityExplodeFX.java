@@ -3,7 +3,7 @@ package net.minecraft.client.effect;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.world.World;
 
-public final class EntityExplodeFX extends EntityFX {
+public class EntityExplodeFX extends EntityFX {
 	public EntityExplodeFX(World world1, double d2, double d4, double d6, double d8, double d10, double d12) {
 		super(world1, d2, d4, d6, d8, d10, d12);
 		this.motionX = d8 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.05F);
@@ -14,11 +14,11 @@ public final class EntityExplodeFX extends EntityFX {
 		this.particleMaxAge = (int)(16.0D / ((double)this.rand.nextFloat() * 0.8D + 0.2D)) + 2;
 	}
 
-	public final void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		super.renderParticle(tessellator, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;

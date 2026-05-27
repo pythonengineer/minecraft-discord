@@ -6,7 +6,7 @@ public class TileEntitySign extends TileEntity {
     public String[] signText = new String[]{"", "", "", ""};
     public int lineBeingEdited = -1;
 
-    public final void writeToNBT(NBTTagCompound compoundTag) {
+    public void writeToNBT(NBTTagCompound compoundTag) {
         super.writeToNBT(compoundTag);
         compoundTag.setString("Text1", this.signText[0]);
         compoundTag.setString("Text2", this.signText[1]);
@@ -14,7 +14,7 @@ public class TileEntitySign extends TileEntity {
         compoundTag.setString("Text4", this.signText[3]);
     }
 
-    public final void readFromNBT(NBTTagCompound compoundTag) {
+    public void readFromNBT(NBTTagCompound compoundTag) {
         super.readFromNBT(compoundTag);
 
         for(int i2 = 0; i2 < 4; ++i2) {

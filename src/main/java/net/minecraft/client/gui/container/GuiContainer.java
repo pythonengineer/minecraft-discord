@@ -19,6 +19,7 @@ import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
+import net.minecraft.game.IInventory;
 import net.minecraft.game.item.ItemStack;
 
 public abstract class GuiContainer extends GuiScreen {
@@ -68,7 +69,7 @@ public abstract class GuiContainer extends GuiScreen {
         this.drawDefaultBackground();
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
-        this.drawGuiContainerBackgroundLayer();
+        this.drawGuiContainerBackgroundLayer(partialTicks);
         GL11.glPushMatrix();
         GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
@@ -119,8 +120,8 @@ public abstract class GuiContainer extends GuiScreen {
                 int var8 = slot6.getBackgroundIconIndex();
                 if(var8 >= 0) {
                     GL11.glDisable(GL11.GL_LIGHTING);
-                    RenderEngine.bindTexture(this.mc.renderEngine.getTexture("/gui/items.png"));
-                    this.drawTexturedModalRect(i10, i11, var8 % 16 << 4, var8 / 16 << 4, 16, 16);
+                    this.mc.renderEngine.bindTexture(this.mc.renderEngine.getTexture("/gui/items.png"));
+                    this.drawTexturedModalRect(i10, i11, var8 % 16 * 16, var8 / 16 * 16, 16, 16);
                     GL11.glEnable(GL11.GL_LIGHTING);
                     flag1 = true;
                 }
@@ -195,9 +196,30 @@ public abstract class GuiContainer extends GuiScreen {
     protected void drawGuiContainerForegroundLayer() {
     }
 
-    protected abstract void drawGuiContainerBackgroundLayer();
+    protected abstract void drawGuiContainerBackgroundLayer(float f1);
 
-    protected final void keyTyped(char typedChar, int keyCode) {
+    private void drawSlotInventory(Slot slot1) {
+        IInventory iInventory2 = slot1.inventory;
+        int i3 = slot1.slotIndex;
+        int i4 = slot1.xDisplayPosition;
+        int i5 = slot1.yDisplayPosition;
+        ItemStack itemStack6 = iInventory2.getStackInSlot(i3);
+        if(itemStack6 == null) {
+            int i7 = slot1.getBackgroundIconIndex();
+            if(i7 >= 0) {
+                GL11.glDisable(GL11.GL_LIGHTING);
+                this.mc.renderEngine.bindTexture(this.mc.renderEngine.getTexture("/gui/items.png"));
+                this.drawTexturedModalRect(i4, i5, i7 % 16 * 16, i7 / 16 * 16, 16, 16);
+                GL11.glEnable(GL11.GL_LIGHTING);
+                return;
+            }
+        }
+
+        itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemStack6, i4, i5);
+        itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemStack6, i4, i5);
+    }
+
+    protected void keyTyped(char typedChar, int keyCode) {
         if(keyCode == 1 || keyCode == this.mc.gameSettings.keyBindInventory.keyCode) {
             this.mc.displayGuiScreen((GuiScreen)null);
         }
@@ -211,10 +233,10 @@ public abstract class GuiContainer extends GuiScreen {
 
     }
 
-    public void onCraftMatrixChanged() {
+    public void onCraftMatrixChanged(IInventory iInventory1) {
     }
 
-    public final boolean doesGuiPauseGame() {
+    public boolean doesGuiPauseGame() {
         return false;
     }
 
@@ -792,25 +814,14 @@ public abstract class GuiContainer extends GuiScreen {
     }
 
     private Slot getSlotAtPosition(int x, int y) {
-        GuiContainer guiContainer5 = this;
-        int i7 = 0;
-        Slot slot10000;
-        while(true) {
-            if(i7 >= guiContainer5.inventorySlots.size()) {
-                slot10000 = null;
-                break;
+        for(int i3 = 0; i3 < this.inventorySlots.size(); ++i3) {
+            Slot slot4 = (Slot)this.inventorySlots.get(i3);
+            if(slot4.getIsMouseOverSlot(x, y)) {
+                return slot4;
             }
-
-            Slot slot8 = (Slot)guiContainer5.inventorySlots.get(i7);
-            if(slot8.getIsMouseOverSlot(x, y)) {
-                slot10000 = slot8;
-                break;
-            }
-
-            ++i7;
         }
 
-        return slot10000;
+        return null;
     }
 
     public static int func_94534_d(int parInt1, int parInt2) {

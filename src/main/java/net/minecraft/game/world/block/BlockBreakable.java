@@ -11,12 +11,12 @@ public class BlockBreakable extends Block {
 		this.localFlag = flag;
 	}
 
-	public final boolean isOpaqueCube() {
+	public boolean isOpaqueCube() {
 		return false;
 	}
 
-	public final boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
-		int i6 = iBlockAccess.getBlockId(x, y, z);
-		return !this.localFlag && i6 == this.blockID ? false : super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata);
+	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
+		int i6 = blockAccess.getBlockId(x, y, z);
+		return !this.localFlag && i6 == this.blockID ? false : super.shouldSideBeRendered(blockAccess, x, y, z, metadata);
 	}
 }

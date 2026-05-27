@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
-public final class WorldGenMinable extends WorldGenerator {
+public class WorldGenMinable extends WorldGenerator {
 	private int minableBlockId;
 	private int numberOfBlocks;
 
@@ -14,7 +14,7 @@ public final class WorldGenMinable extends WorldGenerator {
 		this.numberOfBlocks = numberOfBlocks;
 	}
 
-	public final boolean generate(World world, EaglercraftRandom rand, int x, int y, int z) {
+	public boolean generate(World world, EaglercraftRandom rand, int x, int y, int z) {
 		float f6 = rand.nextFloat() * (float)Math.PI;
 		double d7 = (double)((float)(x + 8) + MathHelper.sin(f6) * (float)this.numberOfBlocks / 8.0F);
 		double d9 = (double)((float)(x + 8) - MathHelper.sin(f6) * (float)this.numberOfBlocks / 8.0F);

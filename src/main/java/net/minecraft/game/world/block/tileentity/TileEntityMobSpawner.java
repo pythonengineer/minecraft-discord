@@ -2,7 +2,6 @@ package net.minecraft.game.world.block.tileentity;
 
 import com.mojang.nbt.NBTTagCompound;
 
-import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityList;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.physics.AxisAlignedBB;
@@ -17,18 +16,14 @@ public class TileEntityMobSpawner extends TileEntity {
         this.delay = 20;
     }
 
-    public final void updateEntity() {
+    public boolean anyPlayerInRange() {
+        double d1 = this.worldObj.playerEntity.getDistanceSq((double)this.xCoord, (double)this.yCoord, (double)this.zCoord);
+        return d1 <= 256.0D;
+    }
+
+    public void updateEntity() {
         this.prevYaw = this.yaw;
-        double d10001 = (double)this.xCoord;
-        double d10002 = (double)this.yCoord;
-        double d25 = (double)this.zCoord;
-        double d23 = d10002;
-        double d21 = d10001;
-        Entity entity1 = this.worldObj.playerEntity;
-        double d27 = this.worldObj.playerEntity.posX - d21;
-        double d29 = entity1.posY - d23;
-        double d31 = entity1.posZ - d25;
-        if(d27 * d27 + d29 * d29 + d31 * d31 <= 256.0D) {
+        if(this.anyPlayerInRange()) {
             double d33 = (double)((float)this.xCoord + this.worldObj.rand.nextFloat());
             double d3 = (double)((float)this.yCoord + this.worldObj.rand.nextFloat());
             double d5 = (double)((float)this.zCoord + this.worldObj.rand.nextFloat());
@@ -88,13 +83,13 @@ public class TileEntityMobSpawner extends TileEntity {
         this.delay = 200 + this.worldObj.rand.nextInt(600);
     }
 
-    public final void readFromNBT(NBTTagCompound nBTTagCompound1) {
+    public void readFromNBT(NBTTagCompound nBTTagCompound1) {
         super.readFromNBT(nBTTagCompound1);
         this.mobID = nBTTagCompound1.getString("EntityId");
         this.delay = nBTTagCompound1.getShort("Delay");
     }
 
-    public final void writeToNBT(NBTTagCompound nBTTagCompound1) {
+    public void writeToNBT(NBTTagCompound nBTTagCompound1) {
         super.writeToNBT(nBTTagCompound1);
         nBTTagCompound1.setString("EntityId", this.mobID);
         nBTTagCompound1.setShort("Delay", (short)this.delay);

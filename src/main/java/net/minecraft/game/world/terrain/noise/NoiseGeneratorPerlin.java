@@ -2,7 +2,7 @@ package net.minecraft.game.world.terrain.noise;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
-public final class NoiseGeneratorPerlin extends NoiseGenerator {
+public class NoiseGeneratorPerlin extends NoiseGenerator {
     private int[] permutations;
     private double xCoord;
     private double yCoord;
@@ -79,15 +79,11 @@ public final class NoiseGeneratorPerlin extends NoiseGenerator {
         return ((permutation & 1) == 0 ? d8 : -d8) + ((permutation & 2) == 0 ? d10 : -d10);
     }
 
-    public final double generateNoise(double x, double y) {
+    public double generateNoise(double x, double y) {
         return this.generateNoise(x, y, 0.0D);
     }
 
-    public final double generateNoiseD(double x, double y, double z) {
-        return this.generateNoise(x, y, z);
-    }
-
-    public final void populateNoiseArray(double[] octaves, int x, int y, int z, int sizeX, int sizeY, int sizeZ, double coordScaleX, double coordScaleY, double coordScaleZ, double noiseScale) {
+    public void populateNoiseArray(double[] octaves, double x, double y, double z, int sizeX, int sizeY, int sizeZ, double coordScaleX, double coordScaleY, double coordScaleZ, double noiseScale) {
         int i16 = 0;
         double d17 = 1.0D / noiseScale;
         int i61 = -1;

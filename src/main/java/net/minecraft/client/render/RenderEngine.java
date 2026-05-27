@@ -28,7 +28,7 @@ public class RenderEngine {
         this.options = options;
     }
 
-	public final int getTexture(String textureName) {
+	public int getTexture(String textureName) {
 		Integer integer2 = (Integer)this.textureMap.get(textureName);
 		if(integer2 != null) {
 			return integer2.intValue();
@@ -54,6 +54,15 @@ public class RenderEngine {
 			}
 		}
 	}
+
+    public int allocateAndSetupTexture(ImageData image) {
+        this.singleIntBuffer.clear();
+        GLAllocation.generateDisplayLists(this.singleIntBuffer);
+        int i2 = this.singleIntBuffer.get(0);
+        this.setupTexture(image, i2);
+        this.textureContentsMap.put(i2, image);
+        return i2;
+    }
 
 	private void setupTexture(ImageData image, int bindedTextureID) {
 		GL11.glBindTexture(bindedTextureID);
@@ -97,7 +106,15 @@ public class RenderEngine {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, bindedTextureID, i3, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
 	}
 
-    public final int getTextureForDownloadableImage(String url, String textureName) {
+    public void deleteTexture(int tex) {
+        this.textureContentsMap.remove(tex);
+        this.singleIntBuffer.clear();
+        this.singleIntBuffer.put(tex);
+        this.singleIntBuffer.flip();
+        GL11.glDeleteTextures(this.singleIntBuffer);
+    }
+
+    public int getTextureForDownloadableImage(String url, String textureName) {
         ThreadDownloadImageData url1 = (ThreadDownloadImageData)this.urlToImageDataMap.get(url);
         if(url1 != null && url1.image != null && !url1.textureSetupComplete) {
             if(url1.textureName < 0) {
@@ -118,7 +135,7 @@ public class RenderEngine {
         return url1 != null && url1.textureName >= 0 ? url1.textureName : this.getTexture(textureName);
     }
 
-    public final ThreadDownloadImageData obtainImageData(String url, ImageBufferDownload imageBufferDownloader) {
+    public ThreadDownloadImageData obtainImageData(String url, ImageBuffer imageBufferDownloader) {
         ThreadDownloadImageData threadDownloadImageData = (ThreadDownloadImageData)this.urlToImageDataMap.get(url);
         if(threadDownloadImageData == null) {
             this.urlToImageDataMap.put(url, new ThreadDownloadImageData(url, imageBufferDownloader));
@@ -129,18 +146,13 @@ public class RenderEngine {
         return threadDownloadImageData;
     }
 
-    public final void releaseImageData(String url) {
+    public void releaseImageData(String url) {
         ThreadDownloadImageData threadDownloadImageData = (ThreadDownloadImageData)this.urlToImageDataMap.get(url);
         if(threadDownloadImageData != null) {
             --threadDownloadImageData.referenceCount;
             if(threadDownloadImageData.referenceCount == 0) {
                 if(threadDownloadImageData.textureName >= 0) {
-                    int i3 = threadDownloadImageData.textureName;
-                    this.textureContentsMap.remove(Integer.valueOf(i3));
-                    this.singleIntBuffer.clear();
-                    this.singleIntBuffer.put(i3);
-                    this.singleIntBuffer.flip();
-                    GL11.glDeleteTextures(this.singleIntBuffer);
+                    this.deleteTexture(threadDownloadImageData.textureName);
                 }
 
                 this.urlToImageDataMap.remove(url);
@@ -149,12 +161,12 @@ public class RenderEngine {
 
     }
 
-	public final void registerTextureFX(TextureFX fxTexture) {
+	public void registerTextureFX(TextureFX fxTexture) {
 		this.textureList.add(fxTexture);
         fxTexture.onTick();
     }
 
-    public final void updateDynamicTextures() {
+    public void updateDynamicTextures() {
         int i1;
         TextureFX textureFX;
         for(i1 = 0; i1 < this.textureList.size(); ++i1) {
@@ -173,12 +185,19 @@ public class RenderEngine {
         }
 
         for(i1 = 0; i1 < this.textureList.size(); ++i1) {
-            this.textureList.get(i1);
+            textureFX = (TextureFX)this.textureList.get(i1);
+            if(textureFX.textureId > 0) {
+                this.imageData.clear();
+                this.imageData.put(textureFX.imageData);
+                this.imageData.position(0).limit(textureFX.imageData.length);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureFX.textureId);
+                GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.imageData);
+            }
         }
 
     }
 
-    public final void refreshTextures() {
+    public void refreshTextures() {
         Iterator iterator1 = this.textureContentsMap.keySet().iterator();
 
         int i2;
@@ -217,7 +236,7 @@ public class RenderEngine {
 
     }
 
-    public static void bindTexture(int bindedTextureID) {
+    public void bindTexture(int bindedTextureID) {
         if(bindedTextureID >= 0) {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, bindedTextureID);
         }

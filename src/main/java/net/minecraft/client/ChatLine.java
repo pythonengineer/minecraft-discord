@@ -1,6 +1,6 @@
 package net.minecraft.client;
 
-public final class ChatLine {
+public class ChatLine {
     public String message;
     public int updateCounter;
 

@@ -5,77 +5,80 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.GLAllocation;
 
-public final class ClippingHelperImplementation extends ClippingHelper {
+public class ClippingHelperImplementation extends ClippingHelper {
 	private static ClippingHelperImplementation instance = new ClippingHelperImplementation();
 	private FloatBuffer projectionMatrixBuffer = GLAllocation.createFloatBuffer(16);
 	private FloatBuffer modelviewMatrixBuffer = GLAllocation.createFloatBuffer(16);
 	private FloatBuffer floatBuffer = GLAllocation.createFloatBuffer(16);
 
 	public static ClippingHelper getInstance() {
-		ClippingHelperImplementation clippingHelperImplementation0 = instance;
-		instance.projectionMatrixBuffer.clear();
-		clippingHelperImplementation0.modelviewMatrixBuffer.clear();
-		clippingHelperImplementation0.floatBuffer.clear();
-		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, clippingHelperImplementation0.projectionMatrixBuffer);
-		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, clippingHelperImplementation0.modelviewMatrixBuffer);
-		clippingHelperImplementation0.projectionMatrixBuffer.flip().limit(16);
-		clippingHelperImplementation0.projectionMatrixBuffer.get(clippingHelperImplementation0.projectionMatrix);
-		clippingHelperImplementation0.modelviewMatrixBuffer.flip().limit(16);
-		clippingHelperImplementation0.modelviewMatrixBuffer.get(clippingHelperImplementation0.modelviewMatrix);
-		clippingHelperImplementation0.clippingMatrix[0] = clippingHelperImplementation0.modelviewMatrix[0] * clippingHelperImplementation0.projectionMatrix[0] + clippingHelperImplementation0.modelviewMatrix[1] * clippingHelperImplementation0.projectionMatrix[4] + clippingHelperImplementation0.modelviewMatrix[2] * clippingHelperImplementation0.projectionMatrix[8] + clippingHelperImplementation0.modelviewMatrix[3] * clippingHelperImplementation0.projectionMatrix[12];
-		clippingHelperImplementation0.clippingMatrix[1] = clippingHelperImplementation0.modelviewMatrix[0] * clippingHelperImplementation0.projectionMatrix[1] + clippingHelperImplementation0.modelviewMatrix[1] * clippingHelperImplementation0.projectionMatrix[5] + clippingHelperImplementation0.modelviewMatrix[2] * clippingHelperImplementation0.projectionMatrix[9] + clippingHelperImplementation0.modelviewMatrix[3] * clippingHelperImplementation0.projectionMatrix[13];
-		clippingHelperImplementation0.clippingMatrix[2] = clippingHelperImplementation0.modelviewMatrix[0] * clippingHelperImplementation0.projectionMatrix[2] + clippingHelperImplementation0.modelviewMatrix[1] * clippingHelperImplementation0.projectionMatrix[6] + clippingHelperImplementation0.modelviewMatrix[2] * clippingHelperImplementation0.projectionMatrix[10] + clippingHelperImplementation0.modelviewMatrix[3] * clippingHelperImplementation0.projectionMatrix[14];
-		clippingHelperImplementation0.clippingMatrix[3] = clippingHelperImplementation0.modelviewMatrix[0] * clippingHelperImplementation0.projectionMatrix[3] + clippingHelperImplementation0.modelviewMatrix[1] * clippingHelperImplementation0.projectionMatrix[7] + clippingHelperImplementation0.modelviewMatrix[2] * clippingHelperImplementation0.projectionMatrix[11] + clippingHelperImplementation0.modelviewMatrix[3] * clippingHelperImplementation0.projectionMatrix[15];
-		clippingHelperImplementation0.clippingMatrix[4] = clippingHelperImplementation0.modelviewMatrix[4] * clippingHelperImplementation0.projectionMatrix[0] + clippingHelperImplementation0.modelviewMatrix[5] * clippingHelperImplementation0.projectionMatrix[4] + clippingHelperImplementation0.modelviewMatrix[6] * clippingHelperImplementation0.projectionMatrix[8] + clippingHelperImplementation0.modelviewMatrix[7] * clippingHelperImplementation0.projectionMatrix[12];
-		clippingHelperImplementation0.clippingMatrix[5] = clippingHelperImplementation0.modelviewMatrix[4] * clippingHelperImplementation0.projectionMatrix[1] + clippingHelperImplementation0.modelviewMatrix[5] * clippingHelperImplementation0.projectionMatrix[5] + clippingHelperImplementation0.modelviewMatrix[6] * clippingHelperImplementation0.projectionMatrix[9] + clippingHelperImplementation0.modelviewMatrix[7] * clippingHelperImplementation0.projectionMatrix[13];
-		clippingHelperImplementation0.clippingMatrix[6] = clippingHelperImplementation0.modelviewMatrix[4] * clippingHelperImplementation0.projectionMatrix[2] + clippingHelperImplementation0.modelviewMatrix[5] * clippingHelperImplementation0.projectionMatrix[6] + clippingHelperImplementation0.modelviewMatrix[6] * clippingHelperImplementation0.projectionMatrix[10] + clippingHelperImplementation0.modelviewMatrix[7] * clippingHelperImplementation0.projectionMatrix[14];
-		clippingHelperImplementation0.clippingMatrix[7] = clippingHelperImplementation0.modelviewMatrix[4] * clippingHelperImplementation0.projectionMatrix[3] + clippingHelperImplementation0.modelviewMatrix[5] * clippingHelperImplementation0.projectionMatrix[7] + clippingHelperImplementation0.modelviewMatrix[6] * clippingHelperImplementation0.projectionMatrix[11] + clippingHelperImplementation0.modelviewMatrix[7] * clippingHelperImplementation0.projectionMatrix[15];
-		clippingHelperImplementation0.clippingMatrix[8] = clippingHelperImplementation0.modelviewMatrix[8] * clippingHelperImplementation0.projectionMatrix[0] + clippingHelperImplementation0.modelviewMatrix[9] * clippingHelperImplementation0.projectionMatrix[4] + clippingHelperImplementation0.modelviewMatrix[10] * clippingHelperImplementation0.projectionMatrix[8] + clippingHelperImplementation0.modelviewMatrix[11] * clippingHelperImplementation0.projectionMatrix[12];
-		clippingHelperImplementation0.clippingMatrix[9] = clippingHelperImplementation0.modelviewMatrix[8] * clippingHelperImplementation0.projectionMatrix[1] + clippingHelperImplementation0.modelviewMatrix[9] * clippingHelperImplementation0.projectionMatrix[5] + clippingHelperImplementation0.modelviewMatrix[10] * clippingHelperImplementation0.projectionMatrix[9] + clippingHelperImplementation0.modelviewMatrix[11] * clippingHelperImplementation0.projectionMatrix[13];
-		clippingHelperImplementation0.clippingMatrix[10] = clippingHelperImplementation0.modelviewMatrix[8] * clippingHelperImplementation0.projectionMatrix[2] + clippingHelperImplementation0.modelviewMatrix[9] * clippingHelperImplementation0.projectionMatrix[6] + clippingHelperImplementation0.modelviewMatrix[10] * clippingHelperImplementation0.projectionMatrix[10] + clippingHelperImplementation0.modelviewMatrix[11] * clippingHelperImplementation0.projectionMatrix[14];
-		clippingHelperImplementation0.clippingMatrix[11] = clippingHelperImplementation0.modelviewMatrix[8] * clippingHelperImplementation0.projectionMatrix[3] + clippingHelperImplementation0.modelviewMatrix[9] * clippingHelperImplementation0.projectionMatrix[7] + clippingHelperImplementation0.modelviewMatrix[10] * clippingHelperImplementation0.projectionMatrix[11] + clippingHelperImplementation0.modelviewMatrix[11] * clippingHelperImplementation0.projectionMatrix[15];
-		clippingHelperImplementation0.clippingMatrix[12] = clippingHelperImplementation0.modelviewMatrix[12] * clippingHelperImplementation0.projectionMatrix[0] + clippingHelperImplementation0.modelviewMatrix[13] * clippingHelperImplementation0.projectionMatrix[4] + clippingHelperImplementation0.modelviewMatrix[14] * clippingHelperImplementation0.projectionMatrix[8] + clippingHelperImplementation0.modelviewMatrix[15] * clippingHelperImplementation0.projectionMatrix[12];
-		clippingHelperImplementation0.clippingMatrix[13] = clippingHelperImplementation0.modelviewMatrix[12] * clippingHelperImplementation0.projectionMatrix[1] + clippingHelperImplementation0.modelviewMatrix[13] * clippingHelperImplementation0.projectionMatrix[5] + clippingHelperImplementation0.modelviewMatrix[14] * clippingHelperImplementation0.projectionMatrix[9] + clippingHelperImplementation0.modelviewMatrix[15] * clippingHelperImplementation0.projectionMatrix[13];
-		clippingHelperImplementation0.clippingMatrix[14] = clippingHelperImplementation0.modelviewMatrix[12] * clippingHelperImplementation0.projectionMatrix[2] + clippingHelperImplementation0.modelviewMatrix[13] * clippingHelperImplementation0.projectionMatrix[6] + clippingHelperImplementation0.modelviewMatrix[14] * clippingHelperImplementation0.projectionMatrix[10] + clippingHelperImplementation0.modelviewMatrix[15] * clippingHelperImplementation0.projectionMatrix[14];
-		clippingHelperImplementation0.clippingMatrix[15] = clippingHelperImplementation0.modelviewMatrix[12] * clippingHelperImplementation0.projectionMatrix[3] + clippingHelperImplementation0.modelviewMatrix[13] * clippingHelperImplementation0.projectionMatrix[7] + clippingHelperImplementation0.modelviewMatrix[14] * clippingHelperImplementation0.projectionMatrix[11] + clippingHelperImplementation0.modelviewMatrix[15] * clippingHelperImplementation0.projectionMatrix[15];
-		clippingHelperImplementation0.frustum[0][0] = clippingHelperImplementation0.clippingMatrix[3] - clippingHelperImplementation0.clippingMatrix[0];
-		clippingHelperImplementation0.frustum[0][1] = clippingHelperImplementation0.clippingMatrix[7] - clippingHelperImplementation0.clippingMatrix[4];
-		clippingHelperImplementation0.frustum[0][2] = clippingHelperImplementation0.clippingMatrix[11] - clippingHelperImplementation0.clippingMatrix[8];
-		clippingHelperImplementation0.frustum[0][3] = clippingHelperImplementation0.clippingMatrix[15] - clippingHelperImplementation0.clippingMatrix[12];
-		normalize(clippingHelperImplementation0.frustum, 0);
-		clippingHelperImplementation0.frustum[1][0] = clippingHelperImplementation0.clippingMatrix[3] + clippingHelperImplementation0.clippingMatrix[0];
-		clippingHelperImplementation0.frustum[1][1] = clippingHelperImplementation0.clippingMatrix[7] + clippingHelperImplementation0.clippingMatrix[4];
-		clippingHelperImplementation0.frustum[1][2] = clippingHelperImplementation0.clippingMatrix[11] + clippingHelperImplementation0.clippingMatrix[8];
-		clippingHelperImplementation0.frustum[1][3] = clippingHelperImplementation0.clippingMatrix[15] + clippingHelperImplementation0.clippingMatrix[12];
-		normalize(clippingHelperImplementation0.frustum, 1);
-		clippingHelperImplementation0.frustum[2][0] = clippingHelperImplementation0.clippingMatrix[3] + clippingHelperImplementation0.clippingMatrix[1];
-		clippingHelperImplementation0.frustum[2][1] = clippingHelperImplementation0.clippingMatrix[7] + clippingHelperImplementation0.clippingMatrix[5];
-		clippingHelperImplementation0.frustum[2][2] = clippingHelperImplementation0.clippingMatrix[11] + clippingHelperImplementation0.clippingMatrix[9];
-		clippingHelperImplementation0.frustum[2][3] = clippingHelperImplementation0.clippingMatrix[15] + clippingHelperImplementation0.clippingMatrix[13];
-		normalize(clippingHelperImplementation0.frustum, 2);
-		clippingHelperImplementation0.frustum[3][0] = clippingHelperImplementation0.clippingMatrix[3] - clippingHelperImplementation0.clippingMatrix[1];
-		clippingHelperImplementation0.frustum[3][1] = clippingHelperImplementation0.clippingMatrix[7] - clippingHelperImplementation0.clippingMatrix[5];
-		clippingHelperImplementation0.frustum[3][2] = clippingHelperImplementation0.clippingMatrix[11] - clippingHelperImplementation0.clippingMatrix[9];
-		clippingHelperImplementation0.frustum[3][3] = clippingHelperImplementation0.clippingMatrix[15] - clippingHelperImplementation0.clippingMatrix[13];
-		normalize(clippingHelperImplementation0.frustum, 3);
-		clippingHelperImplementation0.frustum[4][0] = clippingHelperImplementation0.clippingMatrix[3] - clippingHelperImplementation0.clippingMatrix[2];
-		clippingHelperImplementation0.frustum[4][1] = clippingHelperImplementation0.clippingMatrix[7] - clippingHelperImplementation0.clippingMatrix[6];
-		clippingHelperImplementation0.frustum[4][2] = clippingHelperImplementation0.clippingMatrix[11] - clippingHelperImplementation0.clippingMatrix[10];
-		clippingHelperImplementation0.frustum[4][3] = clippingHelperImplementation0.clippingMatrix[15] - clippingHelperImplementation0.clippingMatrix[14];
-		normalize(clippingHelperImplementation0.frustum, 4);
-		clippingHelperImplementation0.frustum[5][0] = clippingHelperImplementation0.clippingMatrix[3] + clippingHelperImplementation0.clippingMatrix[2];
-		clippingHelperImplementation0.frustum[5][1] = clippingHelperImplementation0.clippingMatrix[7] + clippingHelperImplementation0.clippingMatrix[6];
-		clippingHelperImplementation0.frustum[5][2] = clippingHelperImplementation0.clippingMatrix[11] + clippingHelperImplementation0.clippingMatrix[10];
-		clippingHelperImplementation0.frustum[5][3] = clippingHelperImplementation0.clippingMatrix[15] + clippingHelperImplementation0.clippingMatrix[14];
-		normalize(clippingHelperImplementation0.frustum, 5);
+        instance.init();
 		return instance;
 	}
 
-	private static void normalize(float[][] values, int index) {
+	private void normalize(float[][] values, int index) {
 		float f2 = MathHelper.sqrt_float(values[index][0] * values[index][0] + values[index][1] * values[index][1] + values[index][2] * values[index][2]);
 		values[index][0] /= f2;
 		values[index][1] /= f2;
 		values[index][2] /= f2;
 		values[index][3] /= f2;
 	}
+
+    private void init() {
+        this.projectionMatrixBuffer.clear();
+        this.modelviewMatrixBuffer.clear();
+        this.floatBuffer.clear();
+        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, this.projectionMatrixBuffer);
+        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, this.modelviewMatrixBuffer);
+        this.projectionMatrixBuffer.flip().limit(16);
+        this.projectionMatrixBuffer.get(this.projectionMatrix);
+        this.modelviewMatrixBuffer.flip().limit(16);
+        this.modelviewMatrixBuffer.get(this.modelviewMatrix);
+        this.clippingMatrix[0] = this.modelviewMatrix[0] * this.projectionMatrix[0] + this.modelviewMatrix[1] * this.projectionMatrix[4] + this.modelviewMatrix[2] * this.projectionMatrix[8] + this.modelviewMatrix[3] * this.projectionMatrix[12];
+        this.clippingMatrix[1] = this.modelviewMatrix[0] * this.projectionMatrix[1] + this.modelviewMatrix[1] * this.projectionMatrix[5] + this.modelviewMatrix[2] * this.projectionMatrix[9] + this.modelviewMatrix[3] * this.projectionMatrix[13];
+        this.clippingMatrix[2] = this.modelviewMatrix[0] * this.projectionMatrix[2] + this.modelviewMatrix[1] * this.projectionMatrix[6] + this.modelviewMatrix[2] * this.projectionMatrix[10] + this.modelviewMatrix[3] * this.projectionMatrix[14];
+        this.clippingMatrix[3] = this.modelviewMatrix[0] * this.projectionMatrix[3] + this.modelviewMatrix[1] * this.projectionMatrix[7] + this.modelviewMatrix[2] * this.projectionMatrix[11] + this.modelviewMatrix[3] * this.projectionMatrix[15];
+        this.clippingMatrix[4] = this.modelviewMatrix[4] * this.projectionMatrix[0] + this.modelviewMatrix[5] * this.projectionMatrix[4] + this.modelviewMatrix[6] * this.projectionMatrix[8] + this.modelviewMatrix[7] * this.projectionMatrix[12];
+        this.clippingMatrix[5] = this.modelviewMatrix[4] * this.projectionMatrix[1] + this.modelviewMatrix[5] * this.projectionMatrix[5] + this.modelviewMatrix[6] * this.projectionMatrix[9] + this.modelviewMatrix[7] * this.projectionMatrix[13];
+        this.clippingMatrix[6] = this.modelviewMatrix[4] * this.projectionMatrix[2] + this.modelviewMatrix[5] * this.projectionMatrix[6] + this.modelviewMatrix[6] * this.projectionMatrix[10] + this.modelviewMatrix[7] * this.projectionMatrix[14];
+        this.clippingMatrix[7] = this.modelviewMatrix[4] * this.projectionMatrix[3] + this.modelviewMatrix[5] * this.projectionMatrix[7] + this.modelviewMatrix[6] * this.projectionMatrix[11] + this.modelviewMatrix[7] * this.projectionMatrix[15];
+        this.clippingMatrix[8] = this.modelviewMatrix[8] * this.projectionMatrix[0] + this.modelviewMatrix[9] * this.projectionMatrix[4] + this.modelviewMatrix[10] * this.projectionMatrix[8] + this.modelviewMatrix[11] * this.projectionMatrix[12];
+        this.clippingMatrix[9] = this.modelviewMatrix[8] * this.projectionMatrix[1] + this.modelviewMatrix[9] * this.projectionMatrix[5] + this.modelviewMatrix[10] * this.projectionMatrix[9] + this.modelviewMatrix[11] * this.projectionMatrix[13];
+        this.clippingMatrix[10] = this.modelviewMatrix[8] * this.projectionMatrix[2] + this.modelviewMatrix[9] * this.projectionMatrix[6] + this.modelviewMatrix[10] * this.projectionMatrix[10] + this.modelviewMatrix[11] * this.projectionMatrix[14];
+        this.clippingMatrix[11] = this.modelviewMatrix[8] * this.projectionMatrix[3] + this.modelviewMatrix[9] * this.projectionMatrix[7] + this.modelviewMatrix[10] * this.projectionMatrix[11] + this.modelviewMatrix[11] * this.projectionMatrix[15];
+        this.clippingMatrix[12] = this.modelviewMatrix[12] * this.projectionMatrix[0] + this.modelviewMatrix[13] * this.projectionMatrix[4] + this.modelviewMatrix[14] * this.projectionMatrix[8] + this.modelviewMatrix[15] * this.projectionMatrix[12];
+        this.clippingMatrix[13] = this.modelviewMatrix[12] * this.projectionMatrix[1] + this.modelviewMatrix[13] * this.projectionMatrix[5] + this.modelviewMatrix[14] * this.projectionMatrix[9] + this.modelviewMatrix[15] * this.projectionMatrix[13];
+        this.clippingMatrix[14] = this.modelviewMatrix[12] * this.projectionMatrix[2] + this.modelviewMatrix[13] * this.projectionMatrix[6] + this.modelviewMatrix[14] * this.projectionMatrix[10] + this.modelviewMatrix[15] * this.projectionMatrix[14];
+        this.clippingMatrix[15] = this.modelviewMatrix[12] * this.projectionMatrix[3] + this.modelviewMatrix[13] * this.projectionMatrix[7] + this.modelviewMatrix[14] * this.projectionMatrix[11] + this.modelviewMatrix[15] * this.projectionMatrix[15];
+        this.frustum[0][0] = this.clippingMatrix[3] - this.clippingMatrix[0];
+        this.frustum[0][1] = this.clippingMatrix[7] - this.clippingMatrix[4];
+        this.frustum[0][2] = this.clippingMatrix[11] - this.clippingMatrix[8];
+        this.frustum[0][3] = this.clippingMatrix[15] - this.clippingMatrix[12];
+        this.normalize(this.frustum, 0);
+        this.frustum[1][0] = this.clippingMatrix[3] + this.clippingMatrix[0];
+        this.frustum[1][1] = this.clippingMatrix[7] + this.clippingMatrix[4];
+        this.frustum[1][2] = this.clippingMatrix[11] + this.clippingMatrix[8];
+        this.frustum[1][3] = this.clippingMatrix[15] + this.clippingMatrix[12];
+        this.normalize(this.frustum, 1);
+        this.frustum[2][0] = this.clippingMatrix[3] + this.clippingMatrix[1];
+        this.frustum[2][1] = this.clippingMatrix[7] + this.clippingMatrix[5];
+        this.frustum[2][2] = this.clippingMatrix[11] + this.clippingMatrix[9];
+        this.frustum[2][3] = this.clippingMatrix[15] + this.clippingMatrix[13];
+        this.normalize(this.frustum, 2);
+        this.frustum[3][0] = this.clippingMatrix[3] - this.clippingMatrix[1];
+        this.frustum[3][1] = this.clippingMatrix[7] - this.clippingMatrix[5];
+        this.frustum[3][2] = this.clippingMatrix[11] - this.clippingMatrix[9];
+        this.frustum[3][3] = this.clippingMatrix[15] - this.clippingMatrix[13];
+        this.normalize(this.frustum, 3);
+        this.frustum[4][0] = this.clippingMatrix[3] - this.clippingMatrix[2];
+        this.frustum[4][1] = this.clippingMatrix[7] - this.clippingMatrix[6];
+        this.frustum[4][2] = this.clippingMatrix[11] - this.clippingMatrix[10];
+        this.frustum[4][3] = this.clippingMatrix[15] - this.clippingMatrix[14];
+        this.normalize(this.frustum, 4);
+        this.frustum[5][0] = this.clippingMatrix[3] + this.clippingMatrix[2];
+        this.frustum[5][1] = this.clippingMatrix[7] + this.clippingMatrix[6];
+        this.frustum[5][2] = this.clippingMatrix[11] + this.clippingMatrix[10];
+        this.frustum[5][3] = this.clippingMatrix[15] + this.clippingMatrix[14];
+        this.normalize(this.frustum, 5);
+    }
 }

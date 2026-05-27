@@ -1,19 +1,17 @@
 package net.minecraft.client.model;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
-import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.GLAllocation;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.game.physics.Vec3D;
 
-public final class ModelRenderer {
+public class ModelRenderer {
 	private PositionTextureVertex[] corners;
 	private TexturedQuad[] faces;
 	private int textureOffsetX;
 	private int textureOffsetY;
-	private float rotationPointX;
+	public float rotationPointX;
 	public float rotationPointY;
-	private float rotationPointZ;
+	public float rotationPointZ;
 	public float rotateAngleX;
 	public float rotateAngleY;
 	public float rotateAngleZ;
@@ -21,14 +19,14 @@ public final class ModelRenderer {
 	private int displayList = 0;
 	public boolean mirror = false;
 	public boolean showModel = true;
-	private boolean isHidden = false;
+	public boolean isHidden = false;
 
 	public ModelRenderer(int u, int v) {
 		this.textureOffsetX = u;
 		this.textureOffsetY = v;
 	}
 
-	public final void addBox(float offsetX, float offsetY, float offsetZ, int width, int height, int depth, float scaleFactor) {
+	public void addBox(float offsetX, float offsetY, float offsetZ, int width, int height, int depth, float scaleFactor) {
 		this.corners = new PositionTextureVertex[8];
 		this.faces = new TexturedQuad[6];
 		float f8 = offsetX + (float)width;
@@ -70,82 +68,66 @@ public final class ModelRenderer {
 		this.faces[5] = new TexturedQuad(new PositionTextureVertex[]{positionTextureVertex13, positionTextureVertex15, positionTextureVertex21, positionTextureVertex14}, this.textureOffsetX + depth + width + depth, this.textureOffsetY + depth, this.textureOffsetX + depth + width + depth + width, this.textureOffsetY + depth + height);
 		if(this.mirror) {
 			for(int i16 = 0; i16 < this.faces.length; ++i16) {
-				TexturedQuad texturedQuad17;
-				PositionTextureVertex[] positionTextureVertex19 = new PositionTextureVertex[(texturedQuad17 = this.faces[i16]).vertexPositions.length];
-
-				for(width = 0; width < texturedQuad17.vertexPositions.length; ++width) {
-					positionTextureVertex19[width] = texturedQuad17.vertexPositions[texturedQuad17.vertexPositions.length - width - 1];
-				}
-
-				texturedQuad17.vertexPositions = positionTextureVertex19;
+                this.faces[i16].flipFace();
 			}
 		}
 
 	}
 
-	public final void setRotationPoint(float rotX, float rotY, float rotZ) {
+	public void setRotationPoint(float rotX, float rotY, float rotZ) {
 		this.rotationPointX = rotX;
 		this.rotationPointY = rotY;
 		this.rotationPointZ = rotZ;
 	}
 
-	public final void render(float partialTicks) {
-		if(this.showModel) {
-			if(!this.compiled) {
-				float f3 = partialTicks;
-				ModelRenderer modelRenderer2 = this;
-				this.displayList = GLAllocation.generateDisplayLists(1);
-				GL11.glNewList(this.displayList, GL11.GL_COMPILE);
-				Tessellator tessellator4 = Tessellator.instance;
+	public void render(float partialTicks) {
+        if(!this.isHidden) {
+    		if(this.showModel) {
+    			if(!this.compiled) {
+                    this.compileDisplayList(partialTicks);
+    			}
 
-				for(int i5 = 0; i5 < modelRenderer2.faces.length; ++i5) {
-					TexturedQuad texturedQuad10000 = modelRenderer2.faces[i5];
-					float f8 = f3;
-					Tessellator tessellator7 = tessellator4;
-					TexturedQuad texturedQuad6 = texturedQuad10000;
-                    Vec3D vec3D9 = texturedQuad10000.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[0].vector3D);
-                    vec3D9 = texturedQuad6.vertexPositions[1].vector3D.subtract(texturedQuad6.vertexPositions[2].vector3D).crossProduct(vec3D9).normalize();
-                    tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                    tessellator4.setNormal((float)vec3D9.xCoord, (float)vec3D9.yCoord, (float)vec3D9.zCoord);
+    			if(this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
+    				if(this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F) {
+    					GL11.glCallList(this.displayList);
+    				} else {
+    					GL11.glTranslatef(this.rotationPointX * partialTicks, this.rotationPointY * partialTicks, this.rotationPointZ * partialTicks);
+    					GL11.glCallList(this.displayList);
+    					GL11.glTranslatef(-this.rotationPointX * partialTicks, -this.rotationPointY * partialTicks, -this.rotationPointZ * partialTicks);
+    				}
+    			} else {
+    				GL11.glPushMatrix();
+    				GL11.glTranslatef(this.rotationPointX * partialTicks, this.rotationPointY * partialTicks, this.rotationPointZ * partialTicks);
+    				if(this.rotateAngleZ != 0.0F) {
+    					GL11.glRotatef(this.rotateAngleZ * 57.295776F, 0.0F, 0.0F, 1.0F);
+    				}
 
-                    for(int i11 = 0; i11 < 4; ++i11) {
-                        PositionTextureVertex positionTextureVertex12 = texturedQuad6.vertexPositions[i11];
-                        tessellator7.addVertexWithUV((double)((float)positionTextureVertex12.vector3D.xCoord * f8), (double)((float)positionTextureVertex12.vector3D.yCoord * f8), (double)((float)positionTextureVertex12.vector3D.zCoord * f8), (double)positionTextureVertex12.texturePositionX, (double)positionTextureVertex12.texturePositionY);
-                    }
+    				if(this.rotateAngleY != 0.0F) {
+    					GL11.glRotatef(this.rotateAngleY * 57.295776F, 0.0F, 1.0F, 0.0F);
+    				}
 
-                    tessellator7.draw();
-				}
+    				if(this.rotateAngleX != 0.0F) {
+    					GL11.glRotatef(this.rotateAngleX * 57.295776F, 1.0F, 0.0F, 0.0F);
+    				}
 
-				GL11.glEndList();
-				modelRenderer2.compiled = true;
-			}
+    				GL11.glCallList(this.displayList);
+    				GL11.glPopMatrix();
+    			}
 
-			if(this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
-				if(this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F) {
-					GL11.glCallList(this.displayList);
-				} else {
-					GL11.glTranslatef(this.rotationPointX * partialTicks, this.rotationPointY * partialTicks, this.rotationPointZ * partialTicks);
-					GL11.glCallList(this.displayList);
-					GL11.glTranslatef(-this.rotationPointX * partialTicks, -this.rotationPointY * partialTicks, -this.rotationPointZ * partialTicks);
-				}
-			} else {
-				GL11.glPushMatrix();
-				GL11.glTranslatef(this.rotationPointX * partialTicks, this.rotationPointY * partialTicks, this.rotationPointZ * partialTicks);
-				if(this.rotateAngleZ != 0.0F) {
-					GL11.glRotatef(this.rotateAngleZ * 57.295776F, 0.0F, 0.0F, 1.0F);
-				}
-
-				if(this.rotateAngleY != 0.0F) {
-					GL11.glRotatef(this.rotateAngleY * 57.295776F, 0.0F, 1.0F, 0.0F);
-				}
-
-				if(this.rotateAngleX != 0.0F) {
-					GL11.glRotatef(this.rotateAngleX * 57.295776F, 1.0F, 0.0F, 0.0F);
-				}
-
-				GL11.glCallList(this.displayList);
-				GL11.glPopMatrix();
-			}
-		}
+    		}
+        }
 	}
+
+    private void compileDisplayList(float partialTicks) {
+        this.displayList = GLAllocation.generateDisplayLists(1);
+        GL11.glNewList(this.displayList, GL11.GL_COMPILE);
+        Tessellator tessellator2 = Tessellator.instance;
+
+        for(int i3 = 0; i3 < this.faces.length; ++i3) {
+            this.faces[i3].draw(tessellator2, partialTicks);
+        }
+
+        GL11.glEndList();
+        this.compiled = true;
+    }
 }

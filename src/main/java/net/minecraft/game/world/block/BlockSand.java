@@ -12,36 +12,45 @@ public class BlockSand extends Block {
 		super(blockID, textureIndex, Material.sand);
 	}
 
-	public final void onBlockAdded(World world1, int x, int y, int z) {
-		world1.scheduleBlockUpdate(x, y, z, this.blockID);
+	public void onBlockAdded(World world, int x, int y, int z) {
+		world.scheduleBlockUpdate(x, y, z, this.blockID);
 	}
 
-	public final void onNeighborBlockChange(World world1, int x, int y, int z, int blockID) {
-		world1.scheduleBlockUpdate(x, y, z, this.blockID);
+	public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		world.scheduleBlockUpdate(x, y, z, this.blockID);
 	}
 
-    public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-        int i12 = z;
-        z = y;
-        y = x;
-        World world11 = world;
-        int i8 = z - 1;
-        int i6;
-        Material material13;
-        if(((i6 = world.getBlockId(y, i8, i12)) == 0 ? true : (i6 == Block.fire.blockID ? true : ((material13 = Block.blocksList[i6].blockMaterial) == Material.water ? true : material13 == Material.lava))) && z >= 0) {
-            EntityFallingSand entityFallingSand10 = new EntityFallingSand(world, (float)y + 0.5F, (float)z + 0.5F, (float)i12 + 0.5F, this.blockID);
+    public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+        this.tryToFall(world, x, y, z);
+    }
+
+    private void tryToFall(World world, int x, int y, int z) {
+        if(canFallBelow(world, x, y - 1, z) && y >= 0) {
+            EntityFallingSand entityFallingSand8 = new EntityFallingSand(world, (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, this.blockID);
             if(fallInstantly) {
-                while(!entityFallingSand10.isDead) {
-                    entityFallingSand10.onUpdate();
+                while(!entityFallingSand8.isDead) {
+                    entityFallingSand8.onUpdate();
                 }
             } else {
-                world11.spawnEntityInWorld(entityFallingSand10);
+                world.spawnEntityInWorld(entityFallingSand8);
             }
         }
 
     }
 
-	public final int tickRate() {
+	public int tickRate() {
 		return 3;
+	}
+
+	public static boolean canFallBelow(World world, int xCoord, int yCoord, int zCoord) {
+		int i4 = world.getBlockId(xCoord, yCoord, zCoord);
+		if(i4 == 0) {
+			return true;
+		} else if(i4 == Block.fire.blockID) {
+			return true;
+		} else {
+			Material material5 = Block.blocksList[i4].blockMaterial;
+			return material5 == Material.water ? true : material5 == Material.lava;
+		}
 	}
 }

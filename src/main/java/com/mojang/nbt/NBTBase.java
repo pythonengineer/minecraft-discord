@@ -13,11 +13,11 @@ public abstract class NBTBase {
 
 	public abstract byte getType();
 
-	public final String getKey() {
+	public String getKey() {
 		return this.key == null ? "" : this.key;
 	}
 
-	public final NBTBase setKey(String key) {
+	public NBTBase setKey(String key) {
 		this.key = key;
 		return this;
 	}
@@ -73,4 +73,33 @@ public abstract class NBTBase {
 			return null;
 		}
 	}
+
+    public static String getTagName(byte b0) {
+        switch(b0) {
+        case 0:
+            return "TAG_End";
+        case 1:
+            return "TAG_Byte";
+        case 2:
+            return "TAG_Short";
+        case 3:
+            return "TAG_Int";
+        case 4:
+            return "TAG_Long";
+        case 5:
+            return "TAG_Float";
+        case 6:
+            return "TAG_Double";
+        case 7:
+            return "TAG_Byte_Array";
+        case 8:
+            return "TAG_String";
+        case 9:
+            return "TAG_List";
+        case 10:
+            return "TAG_Compound";
+        default:
+            return "UNKNOWN";
+        }
+    }
 }

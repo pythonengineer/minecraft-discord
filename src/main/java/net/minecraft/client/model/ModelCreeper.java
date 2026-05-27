@@ -2,16 +2,17 @@ package net.minecraft.client.model;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public final class ModelCreeper extends ModelBase {
-    private ModelRenderer head = new ModelRenderer(0, 0);
-    private ModelRenderer headwear;
-    private ModelRenderer body;
-    private ModelRenderer leg1;
-    private ModelRenderer leg2;
-    private ModelRenderer leg3;
-    private ModelRenderer leg4;
+public class ModelCreeper extends ModelBase {
+    public ModelRenderer head;
+    public ModelRenderer headwear;
+    public ModelRenderer body;
+    public ModelRenderer leg1;
+    public ModelRenderer leg2;
+    public ModelRenderer leg3;
+    public ModelRenderer leg4;
 
     public ModelCreeper() {
+        this.head = new ModelRenderer(0, 0);
         this.head.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
         this.head.setRotationPoint(0.0F, 4.0F, 0.0F);
         this.headwear = new ModelRenderer(32, 0);
@@ -34,7 +35,7 @@ public final class ModelCreeper extends ModelBase {
         this.leg4.setRotationPoint(2.0F, 16.0F, -4.0F);
     }
 
-    public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
         this.head.render(0.0625F);
         this.body.render(0.0625F);
@@ -44,7 +45,7 @@ public final class ModelCreeper extends ModelBase {
         this.leg4.render(0.0625F);
     }
 
-    public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
         this.head.rotateAngleY = netHeadYaw / 57.295776F;
         this.head.rotateAngleX = headPitch / 57.295776F;
         this.leg1.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;

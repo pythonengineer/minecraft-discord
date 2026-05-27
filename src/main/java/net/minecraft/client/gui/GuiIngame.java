@@ -14,7 +14,6 @@ import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
 import net.minecraft.client.ChatLine;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.RenderHelper;
-import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.gui.container.GuiInventory;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.entity.RenderItem;
@@ -22,19 +21,21 @@ import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.material.Material;
 
-public final class GuiIngame extends Gui {
+public class GuiIngame extends Gui {
     private static RenderItem itemRenderer = new RenderItem();
     private List chatMessageList = new ArrayList();
 	private EaglercraftRandom rand = new EaglercraftRandom();
 	private Minecraft mc;
+	public String testMessage = null;
     private int updateCounter = 0;
-    private float prevVignetteBrightness = 1.0F;
+	public float damageGuiPartialTime;
+    float prevVignetteBrightness = 1.0F;
 
 	public GuiIngame(Minecraft mc) {
 		this.mc = mc;
 	}
 
-	public final void renderGameOverlay(float partialTicks) {
+	public void renderGameOverlay(float partialTicks) {
         int scaledWidth = this.mc.scaledResolution.getScaledWidth();
         int scaledHeight = this.mc.scaledResolution.getScaledHeight();
 
@@ -44,32 +45,7 @@ public final class GuiIngame extends Gui {
 
         GL11.glEnable(GL11.GL_BLEND);
         if(this.mc.gameSettings.fancyGraphics) {
-            float f5 = this.mc.thePlayer.getBrightness(partialTicks);
-            if((f5 = 1.0F - f5) < 0.0F) {
-                f5 = 0.0F;
-            }
-
-            if(f5 > 1.0F) {
-                f5 = 1.0F;
-            }
-
-            this.prevVignetteBrightness = (float)((double)this.prevVignetteBrightness + (double)(f5 - this.prevVignetteBrightness) * 0.01D);
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glDepthMask(false);
-            GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE_MINUS_SRC_COLOR);
-            GL11.glColor4f(this.prevVignetteBrightness, this.prevVignetteBrightness, this.prevVignetteBrightness, 1.0F);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/misc/vignette.png"));
-            Tessellator tessellator9 = Tessellator.instance;
-            Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-            tessellator9.addVertexWithUV(0.0D, (double)scaledHeight, -90.0D, 0.0D, 1.0D);
-            tessellator9.addVertexWithUV((double)scaledWidth, (double)scaledHeight, -90.0D, 1.0D, 1.0D);
-            tessellator9.addVertexWithUV((double)scaledWidth, 0.0D, -90.0D, 1.0D, 0.0D);
-            tessellator9.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
-            tessellator9.draw();
-            GL11.glDepthMask(true);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            this.renderVignette(this.mc.thePlayer.getBrightness(partialTicks), scaledWidth, scaledHeight);
         }
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -108,8 +84,7 @@ public final class GuiIngame extends Gui {
         int i10;
         int i12;
         if(this.mc.playerController.shouldDrawHUD()) {
-            EntityPlayerSP entityPlayerSP = this.mc.thePlayer;
-            i10 = entityPlayerSP.inventory.getTotalArmorValue();
+            i10 = this.mc.thePlayer.getPlayerArmorValue();
 
             int i11;
             int i13;
@@ -184,25 +159,7 @@ public final class GuiIngame extends Gui {
         for(i10 = 0; i10 < 9; ++i10) {
             int i26 = scaledWidth / 2 - 90 + i10 * 20 + 2;
             int i20 = scaledHeight - 16 - 3;
-            
-            ItemStack itemStack23;
-            if((itemStack23 = this.mc.thePlayer.inventory.mainInventory[i10]) != null) {
-                float f24;
-                if((f24 = (float)itemStack23.animationsToGo - partialTicks) > 0.0F) {
-                    GL11.glPushMatrix();
-                    float f25 = 1.0F + f24 / 5.0F;
-                    GL11.glTranslatef((float)(i26 + 8), (float)(i20 + 12), 0.0F);
-                    GL11.glScalef(1.0F / f25, (f25 + 1.0F) / 2.0F, 1.0F);
-                    GL11.glTranslatef((float)(-(i26 + 8)), (float)(-(i20 + 12)), 0.0F);
-                }
-
-                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemStack23, i26, i20);
-                if(f24 > 0.0F) {
-                    GL11.glPopMatrix();
-                }
-
-                itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, itemStack23, i26, i20);
-            }
+            this.renderInventorySlot(i10, i26, i20, partialTicks);
         }
 
 		RenderHelper.disableStandardItemLighting();
@@ -238,7 +195,57 @@ public final class GuiIngame extends Gui {
 
 	}
 
-    public final void updateTick() {
+    private void renderVignette(float partialTicks, int scaledWidth, int scaledHeight) {
+        float f5 = this.mc.thePlayer.getBrightness(partialTicks);
+        if((f5 = 1.0F - f5) < 0.0F) {
+            f5 = 0.0F;
+        }
+
+        if(f5 > 1.0F) {
+            f5 = 1.0F;
+        }
+
+        this.prevVignetteBrightness = (float)((double)this.prevVignetteBrightness + (double)(f5 - this.prevVignetteBrightness) * 0.01D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(false);
+        GL11.glBlendFunc(GL11.GL_ZERO, GL11.GL_ONE_MINUS_SRC_COLOR);
+        GL11.glColor4f(this.prevVignetteBrightness, this.prevVignetteBrightness, this.prevVignetteBrightness, 1.0F);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/misc/vignette.png"));
+        Tessellator tessellator9 = Tessellator.instance;
+        Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        tessellator9.addVertexWithUV(0.0D, (double)scaledHeight, -90.0D, 0.0D, 1.0D);
+        tessellator9.addVertexWithUV((double)scaledWidth, (double)scaledHeight, -90.0D, 1.0D, 1.0D);
+        tessellator9.addVertexWithUV((double)scaledWidth, 0.0D, -90.0D, 1.0D, 0.0D);
+        tessellator9.addVertexWithUV(0.0D, 0.0D, -90.0D, 0.0D, 0.0D);
+        tessellator9.draw();
+        GL11.glDepthMask(true);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    private void renderInventorySlot(int i1, int i2, int i3, float f4) {
+        ItemStack itemStack5 = this.mc.thePlayer.inventory.mainInventory[i1];
+        if(itemStack5 != null) {
+            float f6 = (float)itemStack5.animationsToGo - f4;
+            if(f6 > 0.0F) {
+                GL11.glPushMatrix();
+                float f7 = 1.0F + f6 / 5.0F;
+                GL11.glTranslatef((float)(i2 + 8), (float)(i3 + 12), 0.0F);
+                GL11.glScalef(1.0F / f7, (f7 + 1.0F) / 2.0F, 1.0F);
+                GL11.glTranslatef((float)(-(i2 + 8)), (float)(-(i3 + 12)), 0.0F);
+            }
+
+            itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemStack5, i2, i3);
+            if(f6 > 0.0F) {
+                GL11.glPopMatrix();
+            }
+
+            itemRenderer.renderItemOverlayIntoGUI(this.mc.fontRenderer, itemStack5, i2, i3);
+        }
+    }
+
+    public void updateTick() {
         ++this.updateCounter;
 
         for(int i1 = 0; i1 < this.chatMessageList.size(); ++i1) {

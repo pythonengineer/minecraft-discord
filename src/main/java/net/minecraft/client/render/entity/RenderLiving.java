@@ -8,14 +8,14 @@ import net.minecraft.game.entity.EntityLiving;
 
 public class RenderLiving extends Render {
 	protected ModelBase mainModel;
-	private ModelBase renderPassModel;
+	protected ModelBase renderPassModel;
 
 	public RenderLiving(ModelBase baseModel, float shadowSize) {
 		this.mainModel = baseModel;
 		this.shadowSize = shadowSize;
 	}
 
-	public final void setRenderPassModel(ModelBase renderPassModel) {
+	public void setRenderPassModel(ModelBase renderPassModel) {
 		this.renderPassModel = renderPassModel;
 	}
 
@@ -32,7 +32,9 @@ public class RenderLiving extends Render {
 			GL11.glRotatef(180.0F - f8, 0.0F, 1.0F, 0.0F);
 			float f3;
 			if(entityLiving1.deathTime > 0) {
-				if((f3 = MathHelper.sqrt_float(((float)entityLiving1.deathTime + f9 - 1.0F) / 20.0F * 1.6F)) > 1.0F) {
+				f3 = ((float)entityLiving1.deathTime + f9 - 1.0F) / 20.0F * 1.6F;
+				f3 = MathHelper.sqrt_float(f3);
+				if(f3 > 1.0F) {
 					f3 = 1.0F;
 				}
 
@@ -62,8 +64,8 @@ public class RenderLiving extends Render {
 			}
 
 			float f16 = entityLiving1.getBrightness(f9);
-			int i17;
-			if((i17 = this.getColorMultiplier(entityLiving1, f16, f9)) >>> 24 > 0 || entityLiving1.hurtTime > 0 || entityLiving1.deathTime > 0) {
+			int i17 = this.getColorMultiplier(entityLiving1, f16, f9);
+			if((i17 >> 24 & 255) > 0 || entityLiving1.hurtTime > 0 || entityLiving1.deathTime > 0) {
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glDisable(GL11.GL_ALPHA_TEST);
 				GL11.glEnable(GL11.GL_BLEND);
@@ -81,17 +83,17 @@ public class RenderLiving extends Render {
 					}
 				}
 
-				if(i17 >>> 24 > 0) {
+				if((i17 >> 24 & 255) > 0) {
 					float f19 = (float)(i17 >> 16 & 255) / 255.0F;
-					f16 = (float)(i17 >> 8 & 255) / 255.0F;
-					f9 = (float)(i17 & 255) / 255.0F;
-					float f18 = (float)(i17 >>> 24) / 255.0F;
-					GL11.glColor4f(f19, f16, f9, f18);
+					float f20 = (float)(i17 >> 8 & 255) / 255.0F;
+					float f21 = (float)(i17 & 255) / 255.0F;
+					float f22 = (float)(i17 >> 24 & 255) / 255.0F;
+					GL11.glColor4f(f19, f20, f21, f22);
                     this.mainModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 
 					for(int i12 = 0; i12 < 4; ++i12) {
 						if(this.shouldRenderPass(entityLiving1, i12)) {
-							GL11.glColor4f(f19, f16, f9, f18);
+							GL11.glColor4f(f19, f20, f21, f22);
                             this.renderPassModel.render(f15, f3, f14, f10 - f8, f11, 0.0625F);
 						}
 					}

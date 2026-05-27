@@ -6,16 +6,40 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.Tessellator;
 
-public class LoadingScreenRenderer {
+public class LoadingScreenRenderer implements IProgressUpdate {
     private String currentlyDisplayedProgress = "";
     private Minecraft mc;
     private String currentlyDisplayedText = "";
     private long systemTime = EagRuntime.currentTimeMillis();
     private boolean printText = false;
 
-    public void displayProgressMessage() {
+    public LoadingScreenRenderer(Minecraft minecraft) {
+        this.mc = minecraft;
+    }
+
+    public void printText(String string1) {
+        this.printText = false;
+        this.drawScreen(string1);
+    }
+
+    public void displayProgressMessage(String string1) {
         this.printText = true;
         this.drawScreen(this.currentlyDisplayedText);
+    }
+
+    private void drawScreen(String title) {
+        if(this.mc.running) {
+            this.currentlyDisplayedText = title;
+            int i2 = this.mc.scaledResolution.getScaledWidth();
+            int title2 = this.mc.scaledResolution.getScaledHeight();
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glOrtho(0.0D, (double)i2, (double)title2, 0.0D, 100.0D, 300.0D);
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            GL11.glTranslatef(0.0F, 0.0F, -200.0F);
+        }
     }
 
     public void displayLoadingString(String loadingString) {
@@ -80,30 +104,6 @@ public class LoadingScreenRenderer {
                 } catch (Exception exception7) {
                 }
             }
-        }
-    }
-
-    public LoadingScreenRenderer(Minecraft minecraft) {
-        this.mc = minecraft;
-    }
-
-    public final void printText(String string1) {
-        this.printText = false;
-        this.drawScreen(string1);
-    }
-
-    private void drawScreen(String title) {
-        if(this.mc.running) {
-            this.currentlyDisplayedText = title;
-            int i2 = this.mc.scaledResolution.getScaledWidth();
-            int title2 = this.mc.scaledResolution.getScaledHeight();
-            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-            GL11.glMatrixMode(GL11.GL_PROJECTION);
-            GL11.glLoadIdentity();
-            GL11.glOrtho(0.0D, (double)i2, (double)title2, 0.0D, 100.0D, 300.0D);
-            GL11.glMatrixMode(GL11.GL_MODELVIEW);
-            GL11.glLoadIdentity();
-            GL11.glTranslatef(0.0F, 0.0F, -200.0F);
         }
     }
 }

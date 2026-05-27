@@ -26,7 +26,7 @@ public class TextureGearsFX extends TextureFX {
         }
 	}
 
-	public final void onTick() {
+	public void onTick() {
 		this.gearRotation = this.gearRotation + this.gearRotationDir & 63;
 		float f1 = MathHelper.sin((float)this.gearRotation / 64.0F * (float)Math.PI * 2.0F);
 		float f2 = MathHelper.cos((float)this.gearRotation / 64.0F * (float)Math.PI * 2.0F);
@@ -42,7 +42,8 @@ public class TextureGearsFX extends TextureFX {
 				int i12 = 0;
 				if(i11 >= 0 && i10 >= 0 && i11 < 32 && i10 < 32) {
 					i12 = this.gearColor[i11 + (i10 << 5)];
-					if((i10 = this.gearMiddleColor[i3 + (i4 << 4)]) >>> 24 > 128) {
+					i10 = this.gearMiddleColor[i3 + (i4 << 4)];
+					if(i10 >>> 24 > 128) {
 						i12 = i10;
 					}
 				}

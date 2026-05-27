@@ -10,7 +10,7 @@ import net.minecraft.game.item.ItemArmor;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.item.recipe.CraftingManager;
 
-public final class GuiInventory extends GuiContainer {
+public class GuiInventory extends GuiContainer {
     private InventoryCrafting craftMatrix = new InventoryCrafting(this, 2, 2);
     private IInventory craftResult = new InventoryCraftResult();
     private float xSize_lo;
@@ -44,7 +44,7 @@ public final class GuiInventory extends GuiContainer {
 
 	}
 
-	public final void onGuiClosed() {
+	public void onGuiClosed() {
 		super.onGuiClosed();
 
         for(int i1 = 0; i1 < this.craftMatrix.getSizeInventory(); ++i1) {
@@ -56,7 +56,7 @@ public final class GuiInventory extends GuiContainer {
 
 	}
 
-	public final void onCraftMatrixChanged() {
+	public void onCraftMatrixChanged(IInventory iInventory1) {
 		int[] i1 = new int[9];
 
 		for(int i2 = 0; i2 < 3; ++i2) {
@@ -76,24 +76,24 @@ public final class GuiInventory extends GuiContainer {
         this.craftResult.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(i1));
     }
 
-	protected final void drawGuiContainerForegroundLayer() {
+	protected void drawGuiContainerForegroundLayer() {
 		this.fontRenderer.drawString("Crafting", 86, 16, 4210752);
 	}
 
-    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.xSize_lo = (float)mouseX;
         this.ySize_lo = (float)mouseY;
     }
 
-	protected final void drawGuiContainerBackgroundLayer() {
+	protected void drawGuiContainerBackgroundLayer(float f1) {
 		int i1 = this.mc.renderEngine.getTexture("/gui/inventory.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderEngine.bindTexture(i1);
+		this.mc.renderEngine.bindTexture(i1);
 		i1 = (this.width - this.xSize) / 2;
 		int i2 = (this.height - this.ySize) / 2;
 		this.drawTexturedModalRect(i1, i2, 0, 0, this.xSize, this.ySize);
-        GL11.glEnable(GL11.GL_NORMALIZE);
+        GL11.glEnable(GL11.GL_RESCALE_NORMAL);
         GL11.glEnable(GL11.GL_COLOR_MATERIAL);
         GL11.glPushMatrix();
         GL11.glTranslatef((float)(i1 + 51), (float)(i2 + 75), 50.0F);
@@ -118,7 +118,7 @@ public final class GuiInventory extends GuiContainer {
         this.mc.thePlayer.rotationPitch = f5;
         GL11.glPopMatrix();
         RenderHelper.disableStandardItemLighting();
-        GL11.glDisable(GL11.GL_NORMALIZE);
+        GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 	}
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {

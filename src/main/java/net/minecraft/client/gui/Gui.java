@@ -27,7 +27,7 @@ public class Gui {
         GL11.glDisable(GL11.GL_BLEND);
     }
 
-    protected static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
+    protected void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
         float f6 = (float)(startColor >>> 24) / 255.0F;
         float f7 = (float)(startColor >> 16 & 255) / 255.0F;
         float f8 = (float)(startColor >> 8 & 255) / 255.0F;
@@ -54,15 +54,15 @@ public class Gui {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
-    public static void drawCenteredString(FontRenderer fontRenderer, String message, int x, int y, int color) {
+    public void drawCenteredString(FontRenderer fontRenderer, String message, int x, int y, int color) {
         fontRenderer.drawStringWithShadow(message, x - fontRenderer.getStringWidth(message) / 2, y, color);
     }
 
-    public static void drawString(FontRenderer fontRenderer, String message, int x, int y, int color) {
+    public void drawString(FontRenderer fontRenderer, String message, int x, int y, int color) {
         fontRenderer.drawStringWithShadow(message, x, y, color);
     }
 
-    public final void drawTexturedModalRect(int x, int y, int u, int v, int width, int height) {
+    public void drawTexturedModalRect(int x, int y, int u, int v, int width, int height) {
         Tessellator tessellator7 = Tessellator.instance;
         Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
         tessellator7.addVertexWithUV((double)x, (double)(y + height), (double)this.zLevel, (double)((float)u * 0.00390625F), (double)((float)(v + height) * 0.00390625F));

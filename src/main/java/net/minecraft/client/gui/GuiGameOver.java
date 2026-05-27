@@ -5,8 +5,8 @@ import net.minecraft.client.GuiMainMenu;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.world.World;
 
-public final class GuiGameOver extends GuiScreen {
-	public final void initGui() {
+public class GuiGameOver extends GuiScreen {
+	public void initGui() {
 		this.controlList.clear();
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, "Respawn"));
 		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, "Title menu"));
@@ -16,10 +16,10 @@ public final class GuiGameOver extends GuiScreen {
 
 	}
 
-	protected final void keyTyped(char typedChar, int keyCode) {
+	protected void keyTyped(char typedChar, int keyCode) {
 	}
 
-	protected final void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) {
 		if(button.id == 1) {
 			this.mc.respawn();
 			this.mc.displayGuiScreen((GuiScreen)null);
@@ -32,20 +32,17 @@ public final class GuiGameOver extends GuiScreen {
 
 	}
 
-	public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+		this.drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
 		GL11.glPushMatrix();
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
-		drawCenteredString(this.fontRenderer, "Game over!", this.width / 2 / 2, 30, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, "Game over!", this.width / 2 / 2, 30, 0xFFFFFF);
 		GL11.glPopMatrix();
-		FontRenderer fontRenderer10000 = this.fontRenderer;
-		StringBuilder stringBuilder10001 = (new StringBuilder()).append("Score: &e");
-		EntityPlayerSP entityPlayerSP4 = this.mc.thePlayer;
-		drawCenteredString(fontRenderer10000, stringBuilder10001.append(this.mc.thePlayer.score).toString(), this.width / 2, 100, 0xFFFFFF);
+        this.drawCenteredString(this.fontRenderer, "Score: &e" + this.mc.thePlayer.getScore(), this.width / 2, 100, 0xFFFFFF);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
-	public final boolean doesGuiPauseGame() {
+	public boolean doesGuiPauseGame() {
 		return false;
 	}
 }

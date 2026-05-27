@@ -12,13 +12,24 @@ import net.minecraft.game.world.material.Material;
 
 public class EntityLiving extends Entity {
 	public int heartsHalvesLife = 20;
+	public float unusedRotationPitch2;
+	public float unusedFloat;
+	public float unusedRotationPitch;
 	public float renderYawOffset = 0.0F;
 	public float prevRenderYawOffset = 0.0F;
-	private float prevRidingRotUnused;
-	private float rotationUnused;
+	protected float ridingRotUnused;
+	protected float prevRidingRotUnused;
+	protected float rotationUnused;
+	protected float prevRotationUnused;
+	protected boolean unusedBool1 = true;
 	protected String texture = "/char.png";
-	private int scoreValue = 0;
-	public int health;
+	protected boolean unusedBool2 = true;
+	protected float unusedRotation = 0.0F;
+	protected String entityType = null;
+	protected float unusedFloat1 = 1.0F;
+	protected int scoreValue = 0;
+	protected float unusedFloat2 = 0.0F;
+	public int health = 10;
 	public int prevHealth;
 	private int livingSoundTime;
 	public int hurtTime;
@@ -28,42 +39,40 @@ public class EntityLiving extends Entity {
 	public int attackTime = 0;
 	public float prevCameraPitch;
 	public float cameraPitch;
+	protected boolean dead = false;
+	public int unusedInt = -1;
+	public float unusedFloat4 = (float)(Math.random() * (double)0.9F + (double)0.1F);
 	public float prevLimbYaw;
 	public float limbYaw;
 	public float limbSwing;
-	protected int entityAge;
+	protected int entityAge = 0;
 	protected float moveStrafing;
 	protected float moveForward;
-	private float randomYawVelocity;
-	protected boolean isJumping;
-	private float defaultPitch;
-	protected float moveSpeed;
+	protected float randomYawVelocity;
+	protected boolean isJumping = false;
+	protected float defaultPitch = 0.0F;
+	protected float moveSpeed = 0.7F;
 
 	public EntityLiving(World world1) {
 		super(world1);
-		Math.random();
-		this.entityAge = 0;
-		this.isJumping = false;
-		this.defaultPitch = 0.0F;
-		this.moveSpeed = 0.7F;
-		this.health = 10;
 		this.preventEntitySpawning = true;
-		Math.random();
+		this.unusedRotationPitch = (float)(Math.random() + 1.0D) * 0.01F;
 		this.setPosition(this.posX, this.posY, this.posZ);
-		Math.random();
+		this.unusedRotationPitch2 = (float)Math.random() * 12398.0F;
 		this.rotationYaw = (float)(Math.random() * (double)(float)Math.PI * 2.0D);
+		this.unusedFloat = 1.0F;
 		this.stepHeight = 0.5F;
 	}
 
-	public final String getTexture() {
+	public String getTexture() {
 		return this.texture;
 	}
 
-	public final boolean canBeCollidedWith() {
+	public boolean canBeCollidedWith() {
 		return !this.isDead;
 	}
 
-	public final boolean canBePushed() {
+	public boolean canBePushed() {
 		return !this.isDead;
 	}
 
@@ -71,7 +80,7 @@ public class EntityLiving extends Entity {
 		return this.height * 0.85F;
 	}
 
-    public final void onEntityUpdate() {
+    public void onEntityUpdate() {
         super.onEntityUpdate();
 		if(this.rand.nextInt(1000) < this.livingSoundTime++) {
 			this.livingSoundTime = -80;
@@ -122,6 +131,7 @@ public class EntityLiving extends Entity {
 		if(this.health <= 0) {
 			++this.deathTime;
 			if(this.deathTime > 20) {
+				this.onEntityDeath();
                 this.setEntityDead();
 
                 for(i9 = 0; i9 < 20; ++i9) {
@@ -133,12 +143,13 @@ public class EntityLiving extends Entity {
 			}
 		}
 
+		this.prevRotationUnused = this.rotationUnused;
 		this.prevRenderYawOffset = this.renderYawOffset;
 		this.prevRotationYaw = this.rotationYaw;
 		this.prevRotationPitch = this.rotationPitch;
     }
 
-    public final void spawnExplosionParticle() {
+    public void spawnExplosionParticle() {
         for(int i1 = 0; i1 < 20; ++i1) {
             double d2 = this.rand.nextGaussian() * 0.02D;
             double d4 = this.rand.nextGaussian() * 0.02D;
@@ -150,6 +161,7 @@ public class EntityLiving extends Entity {
 
     public void updateRidden() {
         super.updateRidden();
+        this.ridingRotUnused = this.prevRidingRotUnused;
         this.prevRidingRotUnused = 0.0F;
     }
 
@@ -161,6 +173,7 @@ public class EntityLiving extends Entity {
         float f5 = MathHelper.sqrt_double(d11 * d11 + d14 * d14);
         float f16 = this.renderYawOffset;
         float f7 = 0.0F;
+        this.ridingRotUnused = this.prevRidingRotUnused;
         float f8 = 0.0F;
         if(f5 > 0.05F) {
             f8 = 1.0F;
@@ -233,11 +246,11 @@ public class EntityLiving extends Entity {
 		this.rotationUnused += f7;
 	}
 
-	public final void setSize(float width, float height) {
+	protected void setSize(float width, float height) {
 		super.setSize(width, height);
 	}
 
-	public final void heal(int healAmount) {
+	public void heal(int healAmount) {
 		if(this.health > 0) {
 			this.health += healAmount;
 			if(this.health > 20) {
@@ -277,17 +290,7 @@ public class EntityLiving extends Entity {
                 }
 
 				this.attackedAtYaw = (float)(Math.atan2(d5, d3) * 180.0D / (double)(float)Math.PI) - this.rotationYaw;
-				double d8 = d3;
-				float f12 = MathHelper.sqrt_double(d3 * d3 + d5 * d5);
-				this.motionX /= 2.0D;
-				this.motionY /= 2.0D;
-				this.motionZ /= 2.0D;
-				this.motionX -= d8 / (double)f12 * (double)0.4F;
-				this.motionY += (double)0.4F;
-				this.motionZ -= d5 / (double)f12 * (double)0.4F;
-				if(this.motionY > (double)0.4F) {
-					this.motionY = (double)0.4F;
-				}
+				this.knockBack(entity, damage, d3, d5);
 			} else {
 				this.attackedAtYaw = (float)((int)(Math.random() * 2.0D) * 180);
 			}
@@ -315,13 +318,33 @@ public class EntityLiving extends Entity {
 		return "random.hurt";
 	}
 
-	public void onDeath(Entity entity) {
-		int i4;
-		if((i4 = this.getDropItemId()) > 0) {
-			int i2 = this.rand.nextInt(3);
+	public void knockBack(Entity entity, int i2, double d3, double d5) {
+		float f7 = MathHelper.sqrt_double(d3 * d3 + d5 * d5);
+		float f8 = 0.4F;
+		this.motionX /= 2.0D;
+		this.motionY /= 2.0D;
+		this.motionZ /= 2.0D;
+		this.motionX -= d3 / (double)f7 * (double)f8;
+		this.motionY += (double)0.4F;
+		this.motionZ -= d5 / (double)f7 * (double)f8;
+		if(this.motionY > (double)0.4F) {
+			this.motionY = (double)0.4F;
+		}
 
-			for(int i3 = 0; i3 < i2; ++i3) {
-				this.dropItem(i4, 1);
+	}
+
+	public void onDeath(Entity entity) {
+		if(this.scoreValue > 0 && entity != null) {
+			entity.addToPlayerScore(this, this.scoreValue);
+		}
+
+		this.dead = true;
+		int i2 = this.getDropItemId();
+		if(i2 > 0) {
+			int i3 = this.rand.nextInt(3);
+
+			for(int i4 = 0; i4 < i3; ++i4) {
+				this.dropItem(i2, 1);
 			}
 		}
 
@@ -331,19 +354,80 @@ public class EntityLiving extends Entity {
 		return 0;
 	}
 
-	protected final void fall(float fallDistance) {
+	protected void fall(float fallDistance) {
 		int fallDistance1;
 		if((fallDistance1 = (int)Math.ceil((double)(fallDistance - 3.0F))) > 0) {
 			this.attackEntityFrom((Entity)null, fallDistance1);
 			if((fallDistance1 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY - (double)0.2F - (double)this.yOffset), MathHelper.floor_double(this.posZ))) > 0) {
 				StepSound fallDistance2 = Block.blocksList[fallDistance1].stepSound;
-				this.worldObj.playSoundAtEntity(this, fallDistance2.getStepSound(), fallDistance2.stepSoundVolume * 0.5F, fallDistance2.stepSoundPitch * 0.75F);
+				this.worldObj.playSoundAtEntity(this, fallDistance2.getStepSound(), fallDistance2.getVolume() * 0.5F, fallDistance2.getPitch() * 0.75F);
 			}
 		}
 
 	}
 
-	private boolean isOnLadder() {
+	public void moveEntityWithHeading(float f1, float f2) {
+		double d3;
+		if(this.handleWaterMovement()) {
+			d3 = this.posY;
+			this.moveFlying(f1, f2, 0.02F);
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
+			this.motionX *= (double)0.8F;
+			this.motionY *= (double)0.8F;
+			this.motionZ *= (double)0.8F;
+			this.motionY -= 0.02D;
+			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + d3, this.motionZ)) {
+				this.motionY = (double)0.3F;
+			}
+		} else if(this.handleLavaMovement()) {
+			d3 = this.posY;
+			this.moveFlying(f1, f2, 0.02F);
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
+			this.motionX *= 0.5D;
+			this.motionY *= 0.5D;
+			this.motionZ *= 0.5D;
+			this.motionY -= 0.02D;
+			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + d3, this.motionZ)) {
+				this.motionY = (double)0.3F;
+			}
+		} else {
+			this.moveFlying(f1, f2, this.onGround ? 0.1F : 0.02F);
+			if(this.isOnLadder()) {
+				this.fallDistance = 0.0F;
+				if(this.motionY < -0.15D) {
+					this.motionY = -0.15D;
+				}
+			}
+
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
+			if(this.isCollidedHorizontally && this.isOnLadder()) {
+				this.motionY = 0.2D;
+			}
+
+			this.motionX *= (double)0.91F;
+			this.motionY *= (double)0.98F;
+			this.motionZ *= (double)0.91F;
+			this.motionY -= 0.08D;
+			if(this.onGround) {
+				float f8 = 0.6F;
+				this.motionX *= (double)f8;
+				this.motionZ *= (double)f8;
+			}
+		}
+
+		this.prevLimbYaw = this.limbYaw;
+		d3 = this.posX - this.prevPosX;
+		double d5 = this.posZ - this.prevPosZ;
+		float f7 = MathHelper.sqrt_double(d3 * d3 + d5 * d5) * 4.0F;
+		if(f7 > 1.0F) {
+			f7 = 1.0F;
+		}
+
+		this.limbYaw += (f7 - this.limbYaw) * 0.4F;
+		this.limbSwing += this.limbYaw;
+	}
+
+	public boolean isOnLadder() {
 		int i1 = MathHelper.floor_double(this.posX);
 		int i2 = MathHelper.floor_double(this.boundingBox.minY);
 		int i3 = MathHelper.floor_double(this.posZ);
@@ -368,7 +452,7 @@ public class EntityLiving extends Entity {
 		this.attackTime = compoundTag.getShort("AttackTime");
 	}
 
-	public final boolean isEntityAlive() {
+	public boolean isEntityAlive() {
 		return !this.isDead && this.health > 0;
 	}
 
@@ -410,81 +494,28 @@ public class EntityLiving extends Entity {
 			} else if(z3) {
 				this.motionY += (double)0.04F;
 			} else if(this.onGround) {
-				this.motionY = (double)0.42F;
+				this.jump();
 			}
 		}
 
 		this.moveStrafing *= 0.98F;
 		this.moveForward *= 0.98F;
 		this.randomYawVelocity *= 0.9F;
-		float f19 = this.moveForward;
-		float f18 = this.moveStrafing;
-		double d13;
-		if(this.handleWaterMovement()) {
-			d13 = this.posY;
-			this.moveFlying(f18, f19, 0.02F);
-			this.moveEntity(this.motionX, this.motionY, this.motionZ);
-			this.motionX *= (double)0.8F;
-			this.motionY *= (double)0.8F;
-			this.motionZ *= (double)0.8F;
-			this.motionY -= 0.02D;
-			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + d13, this.motionZ)) {
-				this.motionY = (double)0.3F;
-			}
-		} else if(this.handleLavaMovement()) {
-			d13 = this.posY;
-			this.moveFlying(f18, f19, 0.02F);
-			this.moveEntity(this.motionX, this.motionY, this.motionZ);
-			this.motionX *= 0.5D;
-			this.motionY *= 0.5D;
-			this.motionZ *= 0.5D;
-			this.motionY -= 0.02D;
-			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + d13, this.motionZ)) {
-				this.motionY = (double)0.3F;
-			}
-		} else {
-			this.moveFlying(f18, f19, this.onGround ? 0.1F : 0.02F);
-			if(this.isOnLadder()) {
-				this.fallDistance = 0.0F;
-				if(this.motionY < -0.15D) {
-					this.motionY = -0.15D;
-				}
-			}
-
-			this.moveEntity(this.motionX, this.motionY, this.motionZ);
-			if(this.isCollidedHorizontally && this.isOnLadder()) {
-				this.motionY = 0.2D;
-			}
-
-			this.motionX *= (double)0.91F;
-			this.motionY *= (double)0.98F;
-			this.motionZ *= (double)0.91F;
-			this.motionY -= 0.08D;
-			if(this.onGround) {
-				this.motionX *= (double)0.6F;
-				this.motionZ *= (double)0.6F;
-			}
-		}
-
-		this.prevLimbYaw = this.limbYaw;
-		d13 = this.posX - this.prevPosX;
-		double d15 = this.posZ - this.prevPosZ;
-		if((f18 = MathHelper.sqrt_double(d13 * d13 + d15 * d15) * 4.0F) > 1.0F) {
-			f18 = 1.0F;
-		}
-
-		this.limbYaw += (f18 - this.limbYaw) * 0.4F;
-		this.limbSwing += this.limbYaw;
-		List list20;
-		if((list20 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F))) != null && list20.size() > 0) {
-			for(int i5 = 0; i5 < list20.size(); ++i5) {
-				Entity entity21;
-				if((entity21 = (Entity)list20.get(i5)).canBePushed()) {
-					entity21.applyEntityCollision(this);
+		this.moveEntityWithHeading(this.moveStrafing, this.moveForward);
+		List list11 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+		if(list11 != null && list11.size() > 0) {
+			for(int i5 = 0; i5 < list11.size(); ++i5) {
+				Entity entity12 = (Entity)list11.get(i5);
+				if(entity12.canBePushed()) {
+					entity12.applyEntityCollision(this);
 				}
 			}
 		}
 
+	}
+
+	protected void jump() {
+		this.motionY = (double)0.42F;
 	}
 
 	protected void updatePlayerActionState() {
@@ -499,7 +530,7 @@ public class EntityLiving extends Entity {
 		}
 
 		this.rotationYaw += this.randomYawVelocity;
-		this.rotationPitch = 0.0F;
+		this.rotationPitch = this.defaultPitch;
 		boolean z1 = this.handleWaterMovement();
 		boolean z2 = this.handleLavaMovement();
 		if(z1 || z2) {
@@ -508,12 +539,15 @@ public class EntityLiving extends Entity {
 
 	}
 
+	public void onEntityDeath() {
+	}
+
 	public boolean getCanSpawnHere(double x, double y, double z) {
 		this.setPosition(x, y + (double)(this.height / 2.0F), z);
 		return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
 	}
 
-    protected final void kill() {
+    protected void kill() {
         this.attackEntityFrom((Entity)null, 4);
     }
 }

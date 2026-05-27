@@ -1,6 +1,6 @@
 package net.minecraft.client.model;
 
-public final class ModelSkeleton extends ModelZombie {
+public class ModelSkeleton extends ModelZombie {
     public ModelSkeleton() {
         this.bipedRightArm = new ModelRenderer(40, 16);
         this.bipedRightArm.addBox(-1.0F, -2.0F, -1.0F, 2, 12, 2, 0.0F);

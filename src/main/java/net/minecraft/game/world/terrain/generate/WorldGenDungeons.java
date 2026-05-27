@@ -9,8 +9,8 @@ import net.minecraft.game.world.block.tileentity.TileEntityChest;
 import net.minecraft.game.world.block.tileentity.TileEntityMobSpawner;
 import net.minecraft.game.world.material.Material;
 
-public final class WorldGenDungeons extends WorldGenerator {
-    public final boolean generate(World world1, EaglercraftRandom random2, int i3, int i4, int i5) {
+public class WorldGenDungeons extends WorldGenerator {
+    public boolean generate(World world1, EaglercraftRandom random2, int i3, int i4, int i5) {
         int i6 = random2.nextInt(2) + 2;
         int i7 = random2.nextInt(2) + 2;
         int i8 = 0;
@@ -90,8 +90,8 @@ public final class WorldGenDungeons extends WorldGenerator {
                                     continue label159;
                                 }
 
-                                ItemStack itemStack15;
-                                if((itemStack15 = (i14 = random2.nextInt(10)) == 0 ? new ItemStack(Item.saddle) : (i14 == 1 ? new ItemStack(Item.ingotIron, random2.nextInt(4) + 1) : (i14 == 2 ? new ItemStack(Item.bread) : (i14 == 3 ? new ItemStack(Item.wheat, random2.nextInt(4) + 1) : (i14 == 4 ? new ItemStack(Item.gunpowder, random2.nextInt(4) + 1) : (i14 == 5 ? new ItemStack(Item.silk, random2.nextInt(4) + 1) : (i14 == 6 ? new ItemStack(Item.bucketEmpty) : (i14 == 7 && random2.nextInt(100) == 0 ? new ItemStack(Item.appleGold) : null)))))))) != null) {
+                                ItemStack itemStack15 = this.pickCheckLootItem(random2);
+                                if(itemStack15 != null) {
                                     tileEntityChest13.setInventorySlotContents(random2.nextInt(27), itemStack15);
                                 }
 
@@ -103,10 +103,21 @@ public final class WorldGenDungeons extends WorldGenerator {
             }
 
             world1.setBlockWithNotify(i3, i4, i5, Block.mobSpawner.blockID);
-            ((TileEntityMobSpawner)world1.getBlockTileEntity(i3, i4, i5)).mobID = (i14 = random2.nextInt(4)) == 0 ? "Skeleton" : (i14 == 1 ? "Zombie" : (i14 == 2 ? "Zombie" : (i14 == 3 ? "Spider" : "")));
+            TileEntityMobSpawner tileEntityMobSpawner19 = (TileEntityMobSpawner)world1.getBlockTileEntity(i3, i4, i5);
+            tileEntityMobSpawner19.mobID = this.pickMobSpawner(random2);
             return true;
         } else {
             return false;
         }
+    }
+
+    private ItemStack pickCheckLootItem(EaglercraftRandom rand) {
+        int i2 = rand.nextInt(10);
+        return i2 == 0 ? new ItemStack(Item.saddle) : (i2 == 1 ? new ItemStack(Item.ingotIron, rand.nextInt(4) + 1) : (i2 == 2 ? new ItemStack(Item.bread) : (i2 == 3 ? new ItemStack(Item.wheat, rand.nextInt(4) + 1) : (i2 == 4 ? new ItemStack(Item.gunpowder, rand.nextInt(4) + 1) : (i2 == 5 ? new ItemStack(Item.silk, rand.nextInt(4) + 1) : (i2 == 6 ? new ItemStack(Item.bucketEmpty) : (i2 == 7 && rand.nextInt(100) == 0 ? new ItemStack(Item.appleGold) : null)))))));
+    }
+
+    private String pickMobSpawner(EaglercraftRandom rand) {
+        int i2 = rand.nextInt(4);
+        return i2 == 0 ? "Skeleton" : (i2 == 1 ? "Zombie" : (i2 == 2 ? "Zombie" : (i2 == 3 ? "Spider" : "")));
     }
 }

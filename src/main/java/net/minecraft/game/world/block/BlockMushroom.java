@@ -2,24 +2,18 @@ package net.minecraft.game.world.block;
 
 import net.minecraft.game.world.World;
 
-public final class BlockMushroom extends BlockFlower {
+public class BlockMushroom extends BlockFlower {
     protected BlockMushroom(int i1, int i2) {
         super(i1, i2);
-        this.setBlockBounds(0.3F, 0.0F, 0.3F, 0.7F, 0.4F, 0.7F);
+        float f3 = 0.2F;
+        this.setBlockBounds(0.5F - f3, 0.0F, 0.5F - f3, 0.5F + f3, f3 * 2.0F, 0.5F + f3);
     }
 
-    protected final boolean canThisPlantGrowOnThisBlockID(int blockID) {
+    protected boolean canThisPlantGrowOnThisBlockID(int blockID) {
         return Block.opaqueCubeLookup[blockID];
     }
 
-    public final boolean canBlockStay(World world, int x, int y, int z) {
-        if(world.getBlockLightValue(x, y, z) <= 13) {
-            x = world.getBlockId(x, y - 1, z);
-            if(Block.opaqueCubeLookup[x]) {
-                return true;
-            }
-        }
-
-        return false;
+    public boolean canBlockStay(World world, int x, int y, int z) {
+        return world.getBlockLightValue(x, y, z) <= 13 && this.canThisPlantGrowOnThisBlockID(world.getBlockId(x, y - 1, z));
     }
 }

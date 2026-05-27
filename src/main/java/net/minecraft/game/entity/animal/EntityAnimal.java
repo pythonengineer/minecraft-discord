@@ -12,7 +12,7 @@ public abstract class EntityAnimal extends EntityCreature {
 		super(world1);
 	}
 
-	protected final float getBlockPathWeight(int x, int y, int z) {
+	protected float getBlockPathWeight(int x, int y, int z) {
 		return this.worldObj.getBlockId(x, y - 1, z) == Block.grass.blockID ? 10.0F : this.worldObj.getBrightness(x, y, z) - 0.5F;
 	}
 
@@ -24,7 +24,7 @@ public abstract class EntityAnimal extends EntityCreature {
 		super.readEntityFromNBT(compoundTag);
 	}
 
-	public final boolean getCanSpawnHere(double x, double y, double z) {
+	public boolean getCanSpawnHere(double x, double y, double z) {
 		return this.worldObj.getBlockLightValue(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) > 8 && super.getCanSpawnHere(x, y, z);
 	}
 }

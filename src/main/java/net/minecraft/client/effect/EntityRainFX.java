@@ -21,11 +21,11 @@ public class EntityRainFX extends EntityFX {
 		this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.2D));
 	}
 
-	public final void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+	public void renderParticle(Tessellator tessellator, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
 		super.renderParticle(tessellator, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
@@ -47,8 +47,8 @@ public class EntityRainFX extends EntityFX {
 			this.motionZ *= (double)0.7F;
 		}
 
-		Material material1;
-		if((material1 = this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))).getIsLiquid() || material1.isSolid()) {
+		Material material1 = this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ));
+		if(material1.getIsLiquid() || material1.isSolid()) {
 			double d2 = (double)((float)(MathHelper.floor_double(this.posY) + 1) - BlockFluid.getPercentAir(this.worldObj.getBlockMetadata(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))));
 			if(this.posY < d2) {
 	            this.setEntityDead();

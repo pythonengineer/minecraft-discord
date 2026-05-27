@@ -2,7 +2,7 @@ package net.minecraft.game;
 
 import net.minecraft.game.item.ItemStack;
 
-public final class InventoryLargeChest implements IInventory {
+public class InventoryLargeChest implements IInventory {
     private String name;
     private IInventory upperChest;
     private IInventory lowerChest;
@@ -13,23 +13,23 @@ public final class InventoryLargeChest implements IInventory {
         this.lowerChest = lowerChestInventory;
     }
 
-    public final int getSizeInventory() {
+    public int getSizeInventory() {
         return this.upperChest.getSizeInventory() + this.lowerChest.getSizeInventory();
     }
 
-    public final String getInvName() {
+    public String getInvName() {
         return this.name;
     }
 
-    public final ItemStack getStackInSlot(int slot) {
+    public ItemStack getStackInSlot(int slot) {
         return slot >= this.upperChest.getSizeInventory() ? this.lowerChest.getStackInSlot(slot - this.upperChest.getSizeInventory()) : this.upperChest.getStackInSlot(slot);
     }
 
-    public final ItemStack decrStackSize(int slot, int decrementAmount) {
+    public ItemStack decrStackSize(int slot, int decrementAmount) {
         return slot >= this.upperChest.getSizeInventory() ? this.lowerChest.decrStackSize(slot - this.upperChest.getSizeInventory(), decrementAmount) : this.upperChest.decrStackSize(slot, decrementAmount);
     }
 
-    public final void setInventorySlotContents(int slot, ItemStack stack) {
+    public void setInventorySlotContents(int slot, ItemStack stack) {
         if(slot >= this.upperChest.getSizeInventory()) {
             this.lowerChest.setInventorySlotContents(slot - this.upperChest.getSizeInventory(), stack);
         } else {
@@ -37,11 +37,11 @@ public final class InventoryLargeChest implements IInventory {
         }
     }
 
-    public final int getInventoryStackLimit() {
+    public int getInventoryStackLimit() {
         return this.upperChest.getInventoryStackLimit();
     }
 
-    public final void onInventoryChanged() {
+    public void onInventoryChanged() {
         this.upperChest.onInventoryChanged();
         this.lowerChest.onInventoryChanged();
     }

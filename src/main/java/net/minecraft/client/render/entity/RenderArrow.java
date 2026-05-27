@@ -7,19 +7,19 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.projectile.EntityArrow;
 
-public final class RenderArrow extends Render {
-	public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
-		EntityArrow entityArrow19 = (EntityArrow)entity;
+public class RenderArrow extends Render {
+	public void doRender(EntityArrow arrow, double x, double y, double z, float yaw, float partialTicks) {
 		this.loadTexture("/item/arrows.png");
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
-		GL11.glRotatef(entityArrow19.prevRotationYaw + (entityArrow19.rotationYaw - entityArrow19.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(entityArrow19.prevRotationPitch + (entityArrow19.rotationPitch - entityArrow19.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
+		GL11.glRotatef(arrow.prevRotationYaw + (arrow.rotationYaw - arrow.prevRotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(arrow.prevRotationPitch + (arrow.rotationPitch - arrow.prevRotationPitch) * partialTicks, 0.0F, 0.0F, 1.0F);
 		Tessellator tessellator18 = Tessellator.instance;
 		GL11.glEnable(GL11.GL_RESCALE_NORMAL);
-		float f20;
-		if((f20 = (float)entityArrow19.arrowShake - partialTicks) > 0.0F) {
-			GL11.glRotatef(-MathHelper.sin(f20 * 3.0F) * f20, 0.0F, 0.0F, 1.0F);
+		float f20 = (float)arrow.arrowShake - partialTicks;
+		if(f20 > 0.0F) {
+			float f22 = -MathHelper.sin(f20 * 3.0F) * f20;
+			GL11.glRotatef(f22, 0.0F, 0.0F, 1.0F);
 		}
 
 		GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
@@ -54,4 +54,8 @@ public final class RenderArrow extends Render {
 		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();
 	}
+
+    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
+        this.doRender((EntityArrow)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    }
 }

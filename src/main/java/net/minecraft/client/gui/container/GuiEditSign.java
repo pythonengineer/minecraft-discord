@@ -7,8 +7,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.render.tileentity.TileEntityRenderer;
 import net.minecraft.game.world.block.tileentity.TileEntitySign;
 
-public final class GuiEditSign extends GuiScreen {
-    private String screenTitle = "Edit sign message:";
+public class GuiEditSign extends GuiScreen {
+    protected String screenTitle = "Edit sign message:";
     private TileEntitySign entitySign;
     private int updateCounter;
     private int editLine = 0;
@@ -17,21 +17,21 @@ public final class GuiEditSign extends GuiScreen {
         this.entitySign = signTileEntity;
     }
 
-    public final void initGui() {
+    public void initGui() {
         this.controlList.clear();
         Keyboard.enableRepeatEvents(true);
         this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Done"));
     }
 
-    public final void onGuiClosed() {
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
     }
 
-    public final void updateScreen() {
+    public void updateScreen() {
         ++this.updateCounter;
     }
 
-    protected final void actionPerformed(GuiButton button) {
+    protected void actionPerformed(GuiButton button) {
         if(button.enabled) {
             if(button.id == 0) {
                 this.entitySign.onInventoryChanged();
@@ -41,7 +41,7 @@ public final class GuiEditSign extends GuiScreen {
         }
     }
 
-    protected final void keyTyped(char typedChar, int keyCode) {
+    protected void keyTyped(char typedChar, int keyCode) {
         if(keyCode == 200) {
             this.editLine = this.editLine - 1 & 3;
         }
@@ -60,9 +60,9 @@ public final class GuiEditSign extends GuiScreen {
 
     }
 
-    public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
-        drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 0xFFFFFF);
+        this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 0xFFFFFF);
         GL11.glPushMatrix();
         GL11.glTranslatef((float)(this.width / 2), (float)(this.height / 2), 50.0F);
         GL11.glScalef(-60.0F, -60.0F, -60.0F);

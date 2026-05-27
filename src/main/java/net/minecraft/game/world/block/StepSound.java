@@ -1,7 +1,7 @@
 package net.minecraft.game.world.block;
 
 public class StepSound {
-    private String stepSoundName;
+    public final String stepSoundName;
     public final float stepSoundVolume;
     public final float stepSoundPitch;
 
@@ -11,11 +11,19 @@ public class StepSound {
         this.stepSoundPitch = pitch;
     }
 
+    public float getVolume() {
+        return this.stepSoundVolume;
+    }
+
+    public float getPitch() {
+        return this.stepSoundPitch;
+    }
+
     public String getBreakSound() {
         return "step." + this.stepSoundName;
     }
 
-    public final String getStepSound() {
+    public String getStepSound() {
         return "step." + this.stepSoundName;
     }
 }

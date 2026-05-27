@@ -7,7 +7,7 @@ import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.tileentity.TileEntityFurnace;
 
-public final class GuiFurnace extends GuiContainer {
+public class GuiFurnace extends GuiContainer {
     private TileEntityFurnace furnaceInventory;
 
     public GuiFurnace(InventoryPlayer playerInventory, TileEntityFurnace furnaceTileEntity) {
@@ -29,15 +29,15 @@ public final class GuiFurnace extends GuiContainer {
 
     }
 
-    protected final void drawGuiContainerForegroundLayer() {
+    protected void drawGuiContainerForegroundLayer() {
         this.fontRenderer.drawString("Furnace", 60, 6, 4210752);
         this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
     }
 
-    protected final void drawGuiContainerBackgroundLayer() {
+    protected void drawGuiContainerBackgroundLayer(float f1) {
         int i1 = this.mc.renderEngine.getTexture("/gui/furnace.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderEngine.bindTexture(i1);
+        this.mc.renderEngine.bindTexture(i1);
         i1 = (this.width - this.xSize) / 2;
         int i2 = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i1, i2, 0, 0, this.xSize, this.ySize);

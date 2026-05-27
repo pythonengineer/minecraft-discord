@@ -2,34 +2,35 @@ package net.minecraft.game.world.chunk;
 
 import java.io.IOException;
 
-import net.minecraft.client.LoadingScreenRenderer;
+import net.minecraft.client.IProgressUpdate;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.chunk.loader.IChunkLoader;
 
-public final class ChunkProviderIso implements IChunkProvider {
+public class ChunkProviderIso implements IChunkProvider {
 	private Chunk[] chunks = new Chunk[256];
 	private World worldObj;
 	private IChunkLoader chunkLoader;
-	private byte[] blocks = new byte[32768];
+	byte[] blocks = new byte[32768];
 
 	public ChunkProviderIso(World world1, IChunkLoader iChunkLoader2) {
 		this.worldObj = world1;
 		this.chunkLoader = iChunkLoader2;
 	}
 
-	public final boolean chunkExists(int i1, int i2) {
-		int i3 = i1 & 15 | (i2 & 15) << 4;
+	public boolean chunkExists(int i1, int i2) {
+		int i3 = i1 & 15 | (i2 & 15) * 16;
 		return this.chunks[i3] != null && this.chunks[i3].isAtLocation(i1, i2);
 	}
 
-	public final Chunk provideChunk(int i1, int i2) {
-		int i3 = i1 & 15 | (i2 & 15) << 4;
+	public Chunk provideChunk(int i1, int i2) {
+		int i3 = i1 & 15 | (i2 & 15) * 16;
 
 		try {
 			if(!this.chunkExists(i1, i2)) {
-				Chunk chunk4;
-				if((chunk4 = this.getChunkAt(i1, i2)) == null) {
-					(chunk4 = new Chunk(this.worldObj, this.blocks, i1, i2)).isChunkRendered = true;
+				Chunk chunk4 = this.getChunkAt(i1, i2);
+				if(chunk4 == null) {
+					chunk4 = new Chunk(this.worldObj, this.blocks, i1, i2);
+					chunk4.isChunkRendered = true;
 					chunk4.neverSave = true;
 				}
 
@@ -46,20 +47,24 @@ public final class ChunkProviderIso implements IChunkProvider {
 	private synchronized Chunk getChunkAt(int i1, int i2) {
 		try {
 			return this.chunkLoader.loadChunk(this.worldObj, i1, i2);
-		} catch (IOException iOException3) {
-			iOException3.printStackTrace();
+		} catch (IOException iOException4) {
+			iOException4.printStackTrace();
 			return null;
 		}
 	}
 
-	public final void populate(IChunkProvider iChunkProvider1, int i2, int i3) {
+	public void populate(IChunkProvider iChunkProvider1, int i2, int i3) {
 	}
 
-	public final boolean saveChunks(boolean z1, LoadingScreenRenderer loadingScreen) {
+	public boolean saveChunks(boolean flag, IProgressUpdate loadingScreen) {
 		return true;
 	}
 
-	public final boolean canSave() {
+	public boolean unload100OldestChunks() {
+		return false;
+	}
+
+	public boolean canSave() {
 		return false;
 	}
 }

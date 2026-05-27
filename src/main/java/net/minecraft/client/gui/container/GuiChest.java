@@ -6,7 +6,7 @@ import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
 
-public final class GuiChest extends GuiContainer {
+public class GuiChest extends GuiContainer {
     private IInventory upperChestInventory;
     private IInventory lowerChestInventory;
     private int inventoryRows = 0;
@@ -39,15 +39,15 @@ public final class GuiChest extends GuiContainer {
 
     }
 
-    protected final void drawGuiContainerForegroundLayer() {
+    protected void drawGuiContainerForegroundLayer() {
         this.fontRenderer.drawString(this.lowerChestInventory.getInvName(), 8, 6, 4210752);
         this.fontRenderer.drawString(this.upperChestInventory.getInvName(), 8, this.ySize - 96 + 2, 4210752);
     }
 
-    protected final void drawGuiContainerBackgroundLayer() {
+    protected void drawGuiContainerBackgroundLayer(float f1) {
         int i1 = this.mc.renderEngine.getTexture("/gui/container.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderEngine.bindTexture(i1);
+        this.mc.renderEngine.bindTexture(i1);
         i1 = (this.width - this.xSize) / 2;
         int i2 = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i1, i2, 0, 0, this.xSize, this.inventoryRows * 18 + 17);

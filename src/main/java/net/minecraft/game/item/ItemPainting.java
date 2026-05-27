@@ -4,35 +4,35 @@ import net.minecraft.game.entity.EntityPainting;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 
-public final class ItemPainting extends Item {
+public class ItemPainting extends Item {
 	public ItemPainting(int i1) {
-		super(65);
+		super(i1);
 		this.maxDamage = 64;
 	}
 
-	public final boolean onItemUse(ItemStack stack, EntityPlayer playerEntity, World world, int x, int y, int z, int side) {
-		if(side == 0) {
+	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int xCoord, int yCoord, int zCoord, int i7) {
+		if(i7 == 0) {
 			return false;
-		} else if(side == 1) {
+		} else if(i7 == 1) {
 			return false;
 		} else {
 			byte b8 = 0;
-			if(side == 4) {
+			if(i7 == 4) {
 				b8 = 1;
 			}
 
-			if(side == 3) {
+			if(i7 == 3) {
 				b8 = 2;
 			}
 
-			if(side == 5) {
+			if(i7 == 5) {
 				b8 = 3;
 			}
 
-			EntityPainting entityPainting9;
-			if((entityPainting9 = new EntityPainting(world, x, y, z, b8)).onValidSurface()) {
-				world.spawnEntityInWorld(entityPainting9);
-				--stack.stackSize;
+			EntityPainting entityPainting9 = new EntityPainting(world3, xCoord, yCoord, zCoord, b8);
+			if(entityPainting9.onValidSurface()) {
+				world3.spawnEntityInWorld(entityPainting9);
+				--itemStack1.stackSize;
 			}
 
 			return true;

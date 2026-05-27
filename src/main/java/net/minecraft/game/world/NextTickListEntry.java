@@ -1,6 +1,6 @@
 package net.minecraft.game.world;
 
-public final class NextTickListEntry implements Comparable {
+public class NextTickListEntry implements Comparable {
     private static long nextTickEntryID = 0L;
     public int xCoord;
     public int yCoord;
@@ -16,26 +16,29 @@ public final class NextTickListEntry implements Comparable {
         this.blockID = blockID;
     }
 
-    public final boolean equals(Object nextTickListEntry) {
-        if(nextTickListEntry instanceof NextTickListEntry) {
-            NextTickListEntry nextTickListEntry1 = (NextTickListEntry)nextTickListEntry;
-            return this.xCoord == nextTickListEntry1.xCoord && this.yCoord == nextTickListEntry1.yCoord && this.zCoord == nextTickListEntry1.zCoord && this.blockID == nextTickListEntry1.blockID;
-        } else {
+    public boolean equals(Object object1) {
+        if(!(object1 instanceof NextTickListEntry)) {
             return false;
+        } else {
+            NextTickListEntry nextTickListEntry2 = (NextTickListEntry)object1;
+            return this.xCoord == nextTickListEntry2.xCoord && this.yCoord == nextTickListEntry2.yCoord && this.zCoord == nextTickListEntry2.zCoord && this.blockID == nextTickListEntry2.blockID;
         }
     }
 
-    public final int hashCode() {
-        return ((this.xCoord << 7 << 10) + (this.zCoord << 7) + this.yCoord << 8) + this.blockID;
+    public int hashCode() {
+        return (this.xCoord * 128 * 1024 + this.zCoord * 128 + this.yCoord) * 256 + this.blockID;
     }
 
-    public final NextTickListEntry setScheduledTime(long scheduledTime) {
+    public NextTickListEntry setScheduledTime(long scheduledTime) {
         this.scheduledTime = scheduledTime;
         return this;
     }
 
-    public final int compareTo(Object nextTickListEntry) {
-        NextTickListEntry nextTickListEntry2 = (NextTickListEntry)nextTickListEntry;
-        return this.scheduledTime < nextTickListEntry2.scheduledTime ? -1 : (this.scheduledTime > nextTickListEntry2.scheduledTime ? 1 : (this.tickEntryID < nextTickListEntry2.tickEntryID ? -1 : (this.tickEntryID > nextTickListEntry2.tickEntryID ? 1 : 0)));
+    public int a(NextTickListEntry nextTickListEntry1) {
+        return this.scheduledTime < nextTickListEntry1.scheduledTime ? -1 : (this.scheduledTime > nextTickListEntry1.scheduledTime ? 1 : (this.tickEntryID < nextTickListEntry1.tickEntryID ? -1 : (this.tickEntryID > nextTickListEntry1.tickEntryID ? 1 : 0)));
+    }
+
+    public int compareTo(Object object1) {
+        return this.a((NextTickListEntry)object1);
     }
 }

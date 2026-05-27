@@ -68,7 +68,7 @@ public class GuiScreen extends Gui {
     protected void actionPerformed(GuiButton button) {
 	}
 
-    public final void setWorldAndResolution(Minecraft mc, int width, int height) {
+    public void setWorldAndResolution(Minecraft mc, int width, int height) {
         this.mc = mc;
         this.fontRenderer = mc.fontRenderer;
         this.width = width;
@@ -80,7 +80,7 @@ public class GuiScreen extends Gui {
 	public void initGui() {
 	}
 
-    public final void handleInput() {
+    public void handleInput() {
         boolean noTouch = true;
 
         while(Touch.next()) {
@@ -98,7 +98,7 @@ public class GuiScreen extends Gui {
 
     }
 
-	public final void handleMouseInput() {
+	public void handleMouseInput() {
         float f = getEaglerScale();
         int i = applyEaglerScale(f, Mouse.getEventX() * this.width / this.mc.displayWidth, this.width);
         int j = applyEaglerScale(f, this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1,
@@ -127,7 +127,7 @@ public class GuiScreen extends Gui {
 
 	}
 
-	public final void handleKeyboardInput() {
+	public void handleKeyboardInput() {
 		if(Keyboard.getEventKeyState()) {
             if(Keyboard.getEventKey() == Keyboard.KEY_F11) {
                 this.mc.toggleFullscreen();
@@ -145,22 +145,26 @@ public class GuiScreen extends Gui {
     public void onGuiClosed() {
 	}
 
-    public final void drawDefaultBackground() {
-        boolean z1 = false;
+    public void drawDefaultBackground() {
+        this.drawWorldBackground(0);
+    }
+
+    public void drawWorldBackground(int i1) {
         if(this.mc.theWorld != null) {
-            drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454656);
+            this.drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454656);
         } else {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_FOG);
             Tessellator tessellator2 = Tessellator.instance;
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/dirt.png"));
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            float f3 = 32.0F;
             tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
             tessellator2.setColorOpaque_I(4210752);
-            tessellator2.addVertexWithUV(0.0D, (double)this.height, 0.0D, 0.0D, (double)((float)this.height / 32.0F));
-            tessellator2.addVertexWithUV((double)this.width, (double)this.height, 0.0D, (double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F));
-            tessellator2.addVertexWithUV((double)this.width, 0.0D, 0.0D, (double)((float)this.width / 32.0F), 0.0D);
-            tessellator2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+            tessellator2.addVertexWithUV(0.0D, (double)this.height, 0.0D, 0.0D, (double)((float)this.height / f3 + (float)i1));
+            tessellator2.addVertexWithUV((double)this.width, (double)this.height, 0.0D, (double)((float)this.width / f3), (double)((float)this.height / f3 + (float)i1));
+            tessellator2.addVertexWithUV((double)this.width, 0.0D, 0.0D, (double)((float)this.width / f3), (double)(0 + i1));
+            tessellator2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, (double)(0 + i1));
             tessellator2.draw();
         }
     }

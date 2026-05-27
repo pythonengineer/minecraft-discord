@@ -16,14 +16,15 @@ public class EntityMob extends EntityCreature {
 	}
 
 	public void onLivingUpdate() {
-		if(this.getBrightness(1.0F) > 0.5F) {
+		float f1 = this.getBrightness(1.0F);
+		if(f1 > 0.5F) {
 			this.entityAge += 2;
 		}
 
 		super.onLivingUpdate();
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		super.onUpdate();
 		if(this.worldObj.difficultySetting == 0) {
             this.setEntityDead();
@@ -32,10 +33,12 @@ public class EntityMob extends EntityCreature {
 	}
 
 	protected Entity findPlayerToAttack() {
-		return this.worldObj.playerEntity.getDistanceSqToEntity(this) < 256.0D && this.canEntityBeSeen(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
+		double d1 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
+		double d3 = 16.0D;
+		return d1 < d3 * d3 && this.canEntityBeSeen(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
 	}
 
-	public final boolean attackEntityFrom(Entity entity, int damage) {
+	public boolean attackEntityFrom(Entity entity, int damage) {
 		if(super.attackEntityFrom(entity, damage)) {
 			if(entity != this) {
 				this.playerToAttack = entity;
@@ -67,7 +70,8 @@ public class EntityMob extends EntityCreature {
 		super.readEntityFromNBT(compoundTag);
 	}
 
-	public final boolean getCanSpawnHere(double x, double y, double z) {
-		return this.worldObj.getBlockLightValue(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) <= this.rand.nextInt(8) && super.getCanSpawnHere(x, y, z);
+	public boolean getCanSpawnHere(double x, double y, double z) {
+		int i7 = this.worldObj.getBlockLightValue(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+		return i7 <= this.rand.nextInt(8) && super.getCanSpawnHere(x, y, z);
 	}
 }

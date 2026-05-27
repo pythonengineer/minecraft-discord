@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.IBlockAccess;
@@ -11,12 +12,14 @@ public abstract class BlockFluid extends Block {
     protected int fluidType = 1;
 
     protected BlockFluid(int i1, Material material2) {
-        super(i1, ((material2 == Material.lava ? 14 : 12) << 4) + 13, material2);
+        super(i1, (material2 == Material.lava ? 14 : 12) * 16 + 13, material2);
+        float f3 = 0.0F;
+        float f4 = 0.0F;
         if(material2 == Material.lava) {
             this.fluidType = 2;
         }
 
-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+        this.setBlockBounds(0.0F + f4, 0.0F + f3, 0.0F + f4, 1.0F + f4, 1.0F + f3, 1.0F + f4);
         this.setTickOnLoad(true);
     }
 
@@ -28,15 +31,15 @@ public abstract class BlockFluid extends Block {
         return (float)(fluidHeight + 1) / 9.0F;
     }
 
-    public final int getBlockTextureFromSide(int side) {
+    public int getBlockTextureFromSide(int side) {
         return side != 0 && side != 1 ? this.blockIndexInTexture + 1 : this.blockIndexInTexture;
     }
 
-    protected final int getFlowDecay(World world, int x, int y, int z) {
+    protected int getFlowDecay(World world, int x, int y, int z) {
         return world.getBlockMaterial(x, y, z) != this.blockMaterial ? -1 : world.getBlockMetadata(x, y, z);
     }
 
-    private int getEffectiveFlowDecay(IBlockAccess iBlockAccess, int x, int y, int z) {
+    protected int getEffectiveFlowDecay(IBlockAccess iBlockAccess, int x, int y, int z) {
         if(iBlockAccess.getBlockMaterial(x, y, z) != this.blockMaterial) {
             return -1;
         } else {
@@ -49,35 +52,35 @@ public abstract class BlockFluid extends Block {
         }
     }
 
-    public final boolean renderAsNormalBlock() {
+    public boolean renderAsNormalBlock() {
         return false;
     }
 
-    public final boolean isOpaqueCube() {
+    public boolean isOpaqueCube() {
         return false;
     }
 
-    public final boolean canCollideCheck(int metadata, boolean flag) {
+    public boolean canCollideCheck(int metadata, boolean flag) {
         return flag && metadata == 0;
     }
 
-    public final boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
+    public boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
         return iBlockAccess.getBlockMaterial(x, y, z) == this.blockMaterial ? false : (metadata == 1 ? true : super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata));
     }
 
-    public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
         return null;
     }
 
-    public final int getRenderType() {
+    public int getRenderType() {
         return 4;
     }
 
-    public final int idDropped(int metadata, EaglercraftRandom rand) {
+    public int idDropped(int metadata, EaglercraftRandom rand) {
         return 0;
     }
 
-    public final int quantityDropped(EaglercraftRandom rand) {
+    public int quantityDropped(EaglercraftRandom rand) {
         return 0;
     }
 
@@ -158,18 +161,18 @@ public abstract class BlockFluid extends Block {
         return vec3D5.normalize();
     }
 
-    public final void velocityToAddToEntity(World world, int x, int y, int z, Vec3D velocityVector) {
+    public void velocityToAddToEntity(World world, int x, int y, int z, Entity entity, Vec3D velocityVector) {
         Vec3D world1 = this.getFlowVector(world, x, y, z);
         velocityVector.xCoord += world1.xCoord;
         velocityVector.yCoord += world1.yCoord;
         velocityVector.zCoord += world1.zCoord;
     }
 
-    public final int tickRate() {
+    public int tickRate() {
         return this.blockMaterial == Material.water ? 5 : (this.blockMaterial == Material.lava ? 30 : 0);
     }
 
-    public final float getBlockBrightness(IBlockAccess iBlockAccess, int x, int y, int z) {
+    public float getBlockBrightness(IBlockAccess iBlockAccess, int x, int y, int z) {
         float f5 = iBlockAccess.getBrightness(x, y, z);
         float world1 = iBlockAccess.getBrightness(x, y + 1, z);
         return f5 > world1 ? f5 : world1;
@@ -179,11 +182,11 @@ public abstract class BlockFluid extends Block {
         super.updateTick(world, x, y, z, rand);
     }
 
-    public final int getRenderBlockPass() {
+    public int getRenderBlockPass() {
         return this.blockMaterial == Material.water ? 1 : 0;
     }
 
-    public final void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+    public void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
         int i6;
         if(this.blockMaterial == Material.water && rand.nextInt(64) == 0 && (i6 = world.getBlockMetadata(x, y, z)) > 0 && i6 < 8) {
             world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.water", rand.nextFloat() * 0.25F + 0.75F, rand.nextFloat() + 0.5F);
@@ -223,7 +226,7 @@ public abstract class BlockFluid extends Block {
         if(world.getBlockId(x, y, z) == this.blockID) {
             if(this.blockMaterial == Material.lava) {
                 boolean z5 = false;
-                if(world.getBlockMaterial(x, y, z - 1) == Material.water) {
+                if(z5 || world.getBlockMaterial(x, y, z - 1) == Material.water) {
                     z5 = true;
                 }
 
@@ -251,14 +254,14 @@ public abstract class BlockFluid extends Block {
                         world.setBlockWithNotify(x, y, z, Block.cobblestone.blockID);
                     }
 
-                    triggerLavaMixEffects(world, x, y, z);
+                    this.triggerLavaMixEffects(world, x, y, z);
                 }
             }
 
         }
     }
 
-    protected static void triggerLavaMixEffects(World world, int x, int y, int z) {
+    protected void triggerLavaMixEffects(World world, int x, int y, int z) {
         world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "random.fizz", 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
 
         for(int i4 = 0; i4 < 8; ++i4) {

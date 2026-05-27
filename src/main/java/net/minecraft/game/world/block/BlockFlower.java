@@ -10,10 +10,11 @@ public class BlockFlower extends Block {
 		super(blockID, Material.plants);
 		this.blockIndexInTexture = textureIndex;
 		this.setTickOnLoad(true);
-		this.setBlockBounds(0.3F, 0.0F, 0.3F, 0.7F, 0.6F, 0.7F);
+		float f3 = 0.2F;
+		this.setBlockBounds(0.5F - f3, 0.0F, 0.5F - f3, 0.5F + f3, f3 * 3.0F, 0.5F + f3);
 	}
 
-	public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
+	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
 		return this.canThisPlantGrowOnThisBlockID(world.getBlockId(x, y - 1, z));
 	}
 
@@ -21,7 +22,7 @@ public class BlockFlower extends Block {
 		return blockID == Block.grass.blockID || blockID == Block.dirt.blockID || blockID == Block.tilledField.blockID;
 	}
 
-	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+	public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
 		super.onNeighborBlockChange(world, x, y, z, blockID);
 		this.checkFlowerChange(world, x, y, z);
 	}
@@ -30,7 +31,7 @@ public class BlockFlower extends Block {
 		this.checkFlowerChange(world, x, y, z);
 	}
 
-	private void checkFlowerChange(World world, int x, int y, int z) {
+	protected void checkFlowerChange(World world, int x, int y, int z) {
 		if(!this.canBlockStay(world, x, y, z)) {
 			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
 			world.setBlockWithNotify(x, y, z, 0);
@@ -42,15 +43,15 @@ public class BlockFlower extends Block {
 		return (world.getBlockLightValue(x, y, z) >= 8 || world.canBlockSeeTheSky(x, y, z)) && this.canThisPlantGrowOnThisBlockID(world.getBlockId(x, y - 1, z));
 	}
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 
-	public final boolean isOpaqueCube() {
+	public boolean isOpaqueCube() {
 		return false;
 	}
 
-	public final boolean renderAsNormalBlock() {
+	public boolean renderAsNormalBlock() {
 		return false;
 	}
 

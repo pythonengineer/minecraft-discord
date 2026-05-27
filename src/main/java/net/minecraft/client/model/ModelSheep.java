@@ -1,6 +1,6 @@
 package net.minecraft.client.model;
 
-public final class ModelSheep extends ModelQuadruped {
+public class ModelSheep extends ModelQuadruped {
     public ModelSheep() {
         super(12, 0.0F);
         this.head = new ModelRenderer(0, 0);

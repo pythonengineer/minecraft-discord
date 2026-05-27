@@ -20,7 +20,7 @@ import net.minecraft.game.entity.monster.EntityZombie;
 import net.minecraft.game.entity.projectile.EntityArrow;
 import net.minecraft.game.world.World;
 
-public final class EntityList {
+public class EntityList {
     private static Map<String, Class<? extends Entity>> stringToClassMapping = Maps.newHashMap();
     private static final Map<String, EntityConstructor<? extends Entity>> stringToConstructorMapping = Maps
             .newHashMap();

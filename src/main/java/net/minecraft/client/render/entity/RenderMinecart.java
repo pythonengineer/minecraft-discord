@@ -10,66 +10,69 @@ import net.minecraft.game.entity.misc.EntityMinecart;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.block.Block;
 
-public final class RenderMinecart extends Render {
-	private ModelBase modelMinecart;
+public class RenderMinecart extends Render {
+	protected ModelBase modelMinecart;
 
 	public RenderMinecart() {
 		this.shadowSize = 0.5F;
 		this.modelMinecart = new ModelMinecart();
 	}
 
-	public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
-		EntityMinecart entityMinecart10001 = (EntityMinecart)entity;
-		float f3 = yaw;
-		double d16 = z;
-		double d14 = y;
-		double d12 = x;
-		EntityMinecart entityMinecart26 = entityMinecart10001;
+	public void doRender(EntityMinecart entity, double x, double y, double z, float yaw, float partialTicks) {
 		GL11.glPushMatrix();
-		double d20 = entityMinecart26.lastTickPosX + (entityMinecart26.posX - entityMinecart26.lastTickPosX) * (double)partialTicks;
-		double d22 = entityMinecart26.lastTickPosY + (entityMinecart26.posY - entityMinecart26.lastTickPosY) * (double)partialTicks;
-		double d24 = entityMinecart26.lastTickPosZ + (entityMinecart26.posZ - entityMinecart26.lastTickPosZ) * (double)partialTicks;
-		Vec3D vec3D5 = entityMinecart26.getPos(d20, d22, d24);
-		float f27 = entityMinecart26.prevRotationPitch + (entityMinecart26.rotationPitch - entityMinecart26.prevRotationPitch) * partialTicks;
-		if(vec3D5 != null) {
-			Vec3D vec3D7 = entityMinecart26.getPosOffset(d20, d22, d24, (double)0.3F);
-			Vec3D vec3D29 = entityMinecart26.getPosOffset(d20, d22, d24, -0.30000001192092896D);
-			if(vec3D7 == null) {
-				vec3D7 = vec3D5;
+		double d10 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
+		double d12 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
+		double d14 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
+		double d16 = (double)0.3F;
+		Vec3D vec3D18 = entity.getPos(d10, d12, d14);
+		float f19 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+		if(vec3D18 != null) {
+			Vec3D vec3D20 = entity.getPosOffset(d10, d12, d14, d16);
+			Vec3D vec3D21 = entity.getPosOffset(d10, d12, d14, -d16);
+			if(vec3D20 == null) {
+				vec3D20 = vec3D18;
 			}
 
-			if(vec3D29 == null) {
-				vec3D29 = vec3D5;
+			if(vec3D21 == null) {
+				vec3D21 = vec3D18;
 			}
 
-			d12 += vec3D5.xCoord - d20;
-			d14 = y + ((vec3D7.yCoord + vec3D29.yCoord) / 2.0D - d22);
-			d16 += vec3D5.zCoord - d24;
-            if((vec3D5 = vec3D29.addVector(-vec3D7.xCoord, -vec3D7.yCoord, -vec3D7.zCoord)).lengthVector() != 0.0D) {
-                f3 = (float)(Math.atan2((vec3D5 = vec3D5.normalize()).zCoord, vec3D5.xCoord) * 180.0D / Math.PI);
-				f27 = (float)(Math.atan(vec3D5.yCoord) * 73.0D);
+			x += vec3D18.xCoord - d10;
+			y += (vec3D20.yCoord + vec3D21.yCoord) / 2.0D - d12;
+			z += vec3D18.zCoord - d14;
+			Vec3D vec3D22 = vec3D21.addVector(-vec3D20.xCoord, -vec3D20.yCoord, -vec3D20.zCoord);
+			if(vec3D22.lengthVector() != 0.0D) {
+				vec3D22 = vec3D22.normalize();
+				yaw = (float)(Math.atan2(vec3D22.zCoord, vec3D22.xCoord) * 180.0D / Math.PI);
+				f19 = (float)(Math.atan(vec3D22.yCoord) * 73.0D);
 			}
 		}
 
-		GL11.glTranslatef((float)d12, (float)d14, (float)d16);
-        GL11.glRotatef(180.0F - f3, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-f27, 0.0F, 0.0F, 1.0F);
-		float f28 = (float)entityMinecart26.timeSinceHit - partialTicks;
-		if((yaw = (float)entityMinecart26.damageTaken - partialTicks) < 0.0F) {
-			yaw = 0.0F;
+		GL11.glTranslatef((float)x, (float)y, (float)z);
+		GL11.glRotatef(180.0F - yaw, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(-f19, 0.0F, 0.0F, 1.0F);
+		float f23 = (float)entity.timeSinceHit - partialTicks;
+		float f24 = (float)entity.damageTaken - partialTicks;
+		if(f24 < 0.0F) {
+			f24 = 0.0F;
 		}
 
-		if(f28 > 0.0F) {
-			GL11.glRotatef(MathHelper.sin(f28) * f28 * yaw / 10.0F * (float)entityMinecart26.forwardDirection, 1.0F, 0.0F, 0.0F);
+		if(f23 > 0.0F) {
+			GL11.glRotatef(MathHelper.sin(f23) * f23 * f24 / 10.0F * (float)entity.forwardDirection, 1.0F, 0.0F, 0.0F);
 		}
 
 		this.loadTexture("/terrain.png");
-		GL11.glScalef(0.75F, 0.75F, 0.75F);
+		float f25 = 0.75F;
+		GL11.glScalef(f25, f25, f25);
 		(new RenderBlocks()).renderBlockOnInventory(Block.chest);
-		GL11.glScalef(1.3333334F, 1.3333334F, 1.3333334F);
+		GL11.glScalef(1.0F / f25, 1.0F / f25, 1.0F / f25);
 		this.loadTexture("/item/cart.png");
 		GL11.glScalef(-1.0F, -1.0F, 1.0F);
 		this.modelMinecart.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GL11.glPopMatrix();
 	}
+
+    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
+        this.doRender((EntityMinecart)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    }
 }

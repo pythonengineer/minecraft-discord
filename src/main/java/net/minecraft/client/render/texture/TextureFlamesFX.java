@@ -2,15 +2,15 @@ package net.minecraft.client.render.texture;
 
 import net.minecraft.game.world.block.Block;
 
-public final class TextureFlamesFX extends TextureFX {
-    private float[] currentFireFrame = new float[320];
-    private float[] lastFireFrame = new float[320];
+public class TextureFlamesFX extends TextureFX {
+    protected float[] currentFireFrame = new float[320];
+    protected float[] lastFireFrame = new float[320];
 
     public TextureFlamesFX(int i1) {
         super(Block.fire.blockIndexInTexture + (i1 << 4));
     }
 
-    public final void onTick() {
+    public void onTick() {
         int i1;
         int i2;
         int i3;
@@ -43,8 +43,8 @@ public final class TextureFlamesFX extends TextureFX {
         this.currentFireFrame = f9;
 
         for(i2 = 0; i2 < 256; ++i2) {
-            float f10;
-            if((f10 = this.currentFireFrame[i2] * 1.8F) > 1.0F) {
+            float f10 = this.currentFireFrame[i2] * 1.8F;
+            if(f10 > 1.0F) {
                 f10 = 1.0F;
             }
 

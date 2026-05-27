@@ -1,6 +1,6 @@
 package net.minecraft.game.world;
 
-public final class ChunkPosition {
+public class ChunkPosition {
     public final int x;
     public final int y;
     public final int z;
@@ -11,12 +11,16 @@ public final class ChunkPosition {
         this.z = z;
     }
 
-    public final boolean equals(Object chunkPos) {
-        ChunkPosition chunkPos1;
-        return chunkPos instanceof ChunkPosition ? (chunkPos1 = (ChunkPosition)chunkPos).x == this.x && chunkPos1.y == this.y && chunkPos1.z == this.z : false;
+    public boolean equals(Object object1) {
+        if(!(object1 instanceof ChunkPosition)) {
+            return false;
+        } else {
+            ChunkPosition chunkPosition2 = (ChunkPosition)object1;
+            return chunkPosition2.x == this.x && chunkPosition2.y == this.y && chunkPosition2.z == this.z;
+        }
     }
 
-    public final int hashCode() {
+    public int hashCode() {
         return this.x * 8976890 + this.y * 981131 + this.z;
     }
 }

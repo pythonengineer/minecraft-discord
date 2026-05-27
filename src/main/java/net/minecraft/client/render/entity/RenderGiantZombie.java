@@ -3,15 +3,21 @@ package net.minecraft.client.render.entity;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.monster.EntityGiantZombie;
 
-public final class RenderGiantZombie extends RenderLiving {
-	private float scale = 6.0F;
+public class RenderGiantZombie extends RenderLiving {
+	private float scale;
 
 	public RenderGiantZombie(ModelBase baseModel, float width, float height) {
-		super(baseModel, 3.0F);
+		super(baseModel, width * height);
+		this.scale = height;
 	}
 
-	protected final void preRenderCallback(EntityLiving livingEntity, float partialTicks) {
+	protected void preRenderCallback(EntityGiantZombie livingEntity, float partialTicks) {
 		GL11.glScalef(this.scale, this.scale, this.scale);
 	}
+
+    protected void preRenderCallback(EntityLiving entityLiving, float partialTicks) {
+        this.preRenderCallback((EntityGiantZombie)entityLiving, partialTicks);
+    }
 }

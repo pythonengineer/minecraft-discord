@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class NBTTagList extends NBTBase {
+public class NBTTagList extends NBTBase {
 	private List tagList = new ArrayList();
 	private byte tagType;
 
-	final void writeTagContents(DataOutput dataOutput) throws IOException {
+	void writeTagContents(DataOutput dataOutput) throws IOException {
 		if(this.tagList.size() > 0) {
 			this.tagType = ((NBTBase)this.tagList.get(0)).getType();
 		} else {
@@ -26,7 +26,7 @@ public final class NBTTagList extends NBTBase {
 
 	}
 
-	final void readTagContents(DataInput dataInput) throws IOException {
+	void readTagContents(DataInput dataInput) throws IOException {
 		this.tagType = dataInput.readByte();
 		int i2 = dataInput.readInt();
 		this.tagList = new ArrayList();
@@ -39,65 +39,24 @@ public final class NBTTagList extends NBTBase {
 
 	}
 
-	public final byte getType() {
+	public byte getType() {
 		return (byte)9;
 	}
 
-	public final String toString() {
-		StringBuilder stringBuilder10000 = (new StringBuilder()).append("").append(this.tagList.size()).append(" entries of type ");
-		byte b1 = this.tagType;
-		String string10001;
-		switch(this.tagType) {
-		case 0:
-			string10001 = "TAG_End";
-			break;
-		case 1:
-			string10001 = "TAG_Byte";
-			break;
-		case 2:
-			string10001 = "TAG_Short";
-			break;
-		case 3:
-			string10001 = "TAG_Int";
-			break;
-		case 4:
-			string10001 = "TAG_Long";
-			break;
-		case 5:
-			string10001 = "TAG_Float";
-			break;
-		case 6:
-			string10001 = "TAG_Double";
-			break;
-		case 7:
-			string10001 = "TAG_Byte_Array";
-			break;
-		case 8:
-			string10001 = "TAG_String";
-			break;
-		case 9:
-			string10001 = "TAG_List";
-			break;
-		case 10:
-			string10001 = "TAG_Compound";
-			break;
-		default:
-			string10001 = "UNKNOWN";
-		}
+    public String toString() {
+        return "" + this.tagList.size() + " entries of type " + NBTBase.getTagName(this.tagType);
+    }
 
-		return stringBuilder10000.append(string10001).toString();
-	}
-
-	public final void setTag(NBTBase baseTag) {
+	public void setTag(NBTBase baseTag) {
 		this.tagType = baseTag.getType();
 		this.tagList.add(baseTag);
 	}
 
-	public final NBTBase tagAt(int index) {
+	public NBTBase tagAt(int index) {
 		return (NBTBase)this.tagList.get(index);
 	}
 
-	public final int tagCount() {
+	public int tagCount() {
 		return this.tagList.size();
 	}
 }

@@ -37,7 +37,7 @@ public class EntityItem extends Entity {
 		this.yOffset = this.height / 2.0F;
 	}
 
-	public final void onUpdate() {
+	public void onUpdate() {
 		super.onUpdate();
 		if(this.delayBeforeCanPickup > 0) {
 			--this.delayBeforeCanPickup;
@@ -54,81 +54,8 @@ public class EntityItem extends Entity {
 			this.worldObj.playSoundAtEntity(this, "random.fizz", 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
 		}
 
-		double d6 = this.posZ;
-		double d4 = this.posY;
-		double d2 = this.posX;
-		int i8 = MathHelper.floor_double(d2);
-		int i9 = MathHelper.floor_double(d4);
-		int i10 = MathHelper.floor_double(d6);
-		double d11 = d2 - (double)i8;
-		double d13 = d4 - (double)i9;
-		double d15 = d6 - (double)i10;
-		if(Block.opaqueCubeLookup[this.worldObj.getBlockId(i8, i9, i10)]) {
-			boolean z26 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i8 - 1, i9, i10)];
-			boolean z3 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i8 + 1, i9, i10)];
-			boolean z28 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i8, i9 - 1, i10)];
-			boolean z5 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i8, i9 + 1, i10)];
-			boolean z29 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i8, i9, i10 - 1)];
-			boolean z7 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i8, i9, i10 + 1)];
-			byte b30 = -1;
-			double d24 = 9999.0D;
-			if(z26 && d11 < 9999.0D) {
-				d24 = d11;
-				b30 = 0;
-			}
-
-			if(z3 && 1.0D - d11 < d24) {
-				d24 = 1.0D - d11;
-				b30 = 1;
-			}
-
-			if(z28 && d13 < d24) {
-				d24 = d13;
-				b30 = 2;
-			}
-
-			if(z5 && 1.0D - d13 < d24) {
-				d24 = 1.0D - d13;
-				b30 = 3;
-			}
-
-			if(z29 && d15 < d24) {
-				d24 = d15;
-				b30 = 4;
-			}
-
-			if(z7 && 1.0D - d15 < d24) {
-				b30 = 5;
-			}
-
-			float f27 = this.rand.nextFloat() * 0.2F + 0.1F;
-			if(b30 == 0) {
-				this.motionX = (double)(-f27);
-			}
-
-			if(b30 == 1) {
-				this.motionX = (double)f27;
-			}
-
-			if(b30 == 2) {
-				this.motionY = (double)(-f27);
-			}
-
-			if(b30 == 3) {
-				this.motionY = (double)f27;
-			}
-
-			if(b30 == 4) {
-				this.motionZ = (double)(-f27);
-			}
-
-			if(b30 == 5) {
-				this.motionZ = (double)f27;
-			}
-		}
-
-		boolean z10000 = false;
-        this.handleWaterMovement();
+		this.pushOutOfBlocks(this.posX, this.posY, this.posZ);
+		this.handleWaterMovement();
 		this.moveEntity(this.motionX, this.motionY, this.motionZ);
 		this.motionX *= (double)0.98F;
 		this.motionY *= (double)0.98F;
@@ -147,15 +74,90 @@ public class EntityItem extends Entity {
 
 	}
 
-    public final boolean handleWaterMovement() {
-        return this.worldObj.handleMaterialAcceleration(this.boundingBox, Material.water, this);
-    }
-
-	protected final void dealFireDamage(int damage) {
-		this.attackEntityFrom((Entity)null, 1);
+	public boolean handleWaterMovement() {
+		return this.worldObj.handleMaterialAcceleration(this.boundingBox, Material.water, this);
 	}
 
-	public final boolean attackEntityFrom(Entity entity, int damage) {
+	private boolean pushOutOfBlocks(double d1, double d3, double d5) {
+		int i7 = MathHelper.floor_double(d1);
+		int i8 = MathHelper.floor_double(d3);
+		int i9 = MathHelper.floor_double(d5);
+		double d10 = d1 - (double)i7;
+		double d12 = d3 - (double)i8;
+		double d14 = d5 - (double)i9;
+		if(Block.opaqueCubeLookup[this.worldObj.getBlockId(i7, i8, i9)]) {
+			boolean z16 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i7 - 1, i8, i9)];
+			boolean z17 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i7 + 1, i8, i9)];
+			boolean z18 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i7, i8 - 1, i9)];
+			boolean z19 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i7, i8 + 1, i9)];
+			boolean z20 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i7, i8, i9 - 1)];
+			boolean z21 = !Block.opaqueCubeLookup[this.worldObj.getBlockId(i7, i8, i9 + 1)];
+			byte b22 = -1;
+			double d23 = 9999.0D;
+			if(z16 && d10 < d23) {
+				d23 = d10;
+				b22 = 0;
+			}
+
+			if(z17 && 1.0D - d10 < d23) {
+				d23 = 1.0D - d10;
+				b22 = 1;
+			}
+
+			if(z18 && d12 < d23) {
+				d23 = d12;
+				b22 = 2;
+			}
+
+			if(z19 && 1.0D - d12 < d23) {
+				d23 = 1.0D - d12;
+				b22 = 3;
+			}
+
+			if(z20 && d14 < d23) {
+				d23 = d14;
+				b22 = 4;
+			}
+
+			if(z21 && 1.0D - d14 < d23) {
+				d23 = 1.0D - d14;
+				b22 = 5;
+			}
+
+			float f25 = this.rand.nextFloat() * 0.2F + 0.1F;
+			if(b22 == 0) {
+				this.motionX = (double)(-f25);
+			}
+
+			if(b22 == 1) {
+				this.motionX = (double)f25;
+			}
+
+			if(b22 == 2) {
+				this.motionY = (double)(-f25);
+			}
+
+			if(b22 == 3) {
+				this.motionY = (double)f25;
+			}
+
+			if(b22 == 4) {
+				this.motionZ = (double)(-f25);
+			}
+
+			if(b22 == 5) {
+				this.motionZ = (double)f25;
+			}
+		}
+
+		return false;
+	}
+
+	protected void dealFireDamage(int damage) {
+		this.attackEntityFrom((Entity)null, damage);
+	}
+
+	public boolean attackEntityFrom(Entity entity, int damage) {
 		this.health -= damage;
 		if(this.health <= 0) {
             this.setEntityDead();
@@ -164,20 +166,20 @@ public class EntityItem extends Entity {
 		return false;
 	}
 
-	public final void writeEntityToNBT(NBTTagCompound compoundTag) {
-		compoundTag.setShort("Health", (byte)this.health);
+	public void writeEntityToNBT(NBTTagCompound compoundTag) {
+		compoundTag.setShort("Health", (short)((byte)this.health));
 		compoundTag.setShort("Age", (short)this.age);
 		compoundTag.setCompoundTag("Item", this.item.writeToNBT(new NBTTagCompound()));
 	}
 
-	public final void readEntityFromNBT(NBTTagCompound compoundTag) {
+	public void readEntityFromNBT(NBTTagCompound compoundTag) {
 		this.health = compoundTag.getShort("Health") & 255;
 		this.age = compoundTag.getShort("Age");
-		compoundTag = compoundTag.getCompoundTag("Item");
-		this.item = new ItemStack(compoundTag);
+		NBTTagCompound nBTTagCompound2 = compoundTag.getCompoundTag("Item");
+		this.item = new ItemStack(nBTTagCompound2);
 	}
 
-	public final void onCollideWithPlayer(EntityPlayer playerEntity) {
+	public void onCollideWithPlayer(EntityPlayer playerEntity) {
 		if(this.delayBeforeCanPickup == 0 && playerEntity.inventory.addItemStackToInventory(this.item)) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			playerEntity.onItemPickup(this);

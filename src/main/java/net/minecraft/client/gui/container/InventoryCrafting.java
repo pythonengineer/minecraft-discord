@@ -3,7 +3,7 @@ package net.minecraft.client.gui.container;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.item.ItemStack;
 
-public final class InventoryCrafting implements IInventory {
+public class InventoryCrafting implements IInventory {
 	private ItemStack[] stackList;
 	private int gridSize;
 	private GuiContainer craftingInventory;
@@ -14,25 +14,25 @@ public final class InventoryCrafting implements IInventory {
         this.craftingInventory = container;
     }
 
-	public final int getSizeInventory() {
+	public int getSizeInventory() {
 		return this.gridSize;
 	}
 
-    public final ItemStack getStackInSlot(int slot) {
+    public ItemStack getStackInSlot(int slot) {
         return this.stackList[slot];
     }
 
-	public final String getInvName() {
+	public String getInvName() {
 		return "Crafting";
 	}
 
-    public final ItemStack decrStackSize(int slot, int decrementAmount) {
+    public ItemStack decrStackSize(int slot, int decrementAmount) {
         if(this.stackList[slot] != null) {
             ItemStack decrementAmount1;
             if(this.stackList[slot].stackSize <= decrementAmount) {
                 decrementAmount1 = this.stackList[slot];
                 this.stackList[slot] = null;
-                this.craftingInventory.onCraftMatrixChanged();
+                this.craftingInventory.onCraftMatrixChanged(this);
                 return decrementAmount1;
             } else {
                 decrementAmount1 = this.stackList[slot].splitStack(decrementAmount);
@@ -40,7 +40,7 @@ public final class InventoryCrafting implements IInventory {
                     this.stackList[slot] = null;
                 }
 
-                this.craftingInventory.onCraftMatrixChanged();
+                this.craftingInventory.onCraftMatrixChanged(this);
                 return decrementAmount1;
             }
         } else {
@@ -48,15 +48,15 @@ public final class InventoryCrafting implements IInventory {
         }
     }
 
-    public final void setInventorySlotContents(int slot, ItemStack stack) {
+    public void setInventorySlotContents(int slot, ItemStack stack) {
         this.stackList[slot] = stack;
-        this.craftingInventory.onCraftMatrixChanged();
+        this.craftingInventory.onCraftMatrixChanged(this);
     }
 
-	public final int getInventoryStackLimit() {
+	public int getInventoryStackLimit() {
 		return 64;
 	}
 
-    public final void onInventoryChanged() {
+    public void onInventoryChanged() {
     }
 }

@@ -8,6 +8,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.render.camera.Frustrum;
+import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.client.render.tileentity.TileEntityRenderer;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
@@ -18,7 +19,7 @@ import net.minecraft.game.world.block.BlockContainer;
 import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.chunk.Chunk;
 
-public final class WorldRenderer {
+public class WorldRenderer {
 	private World worldObj;
 	private int glRenderList = -1;
 	private static Tessellator tessellator = Tessellator.instance;
@@ -40,8 +41,10 @@ public final class WorldRenderer {
 	private int posXPlus;
 	private int posYPlus;
 	private int posZPlus;
+    public float rendererRadius;
 	public boolean needsUpdate;
 	private AxisAlignedBB rendererBoundingBox;
+    public int chunkIndex;
 	public boolean isVisible = true;
 	public boolean isWaitingOnOcclusionQuery;
 	public int glOcclusionQuery;
@@ -54,14 +57,14 @@ public final class WorldRenderer {
 		this.worldObj = world;
         this.tileEntities = tileEntities;
 		this.sizeWidth = this.sizeHeight = this.sizeDepth = 16;
-		MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth));
+		this.rendererRadius = MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth));
 		this.glRenderList = glRenderList;
 		this.posX = -999;
 		this.setPosition(x, y, z);
 		this.needsUpdate = false;
 	}
 
-	public final void setPosition(int x, int y, int z) {
+	public void setPosition(int x, int y, int z) {
 		if(x != this.posX || y != this.posY || z != this.posZ) {
 			this.setDontDraw();
 			this.posX = x;
@@ -76,45 +79,21 @@ public final class WorldRenderer {
 			this.posXMinus = x - this.posXClip;
 			this.posYMinus = y - this.posYClip;
 			this.posZMinus = z - this.posZClip;
+            float f4 = 2.0F;
             this.rendererBoundingBox = AxisAlignedBB.getBoundingBox((double)((float)x - 2.0F), (double)((float)y - 2.0F), (double)((float)z - 2.0F), (double)((float)(x + this.sizeWidth) + 2.0F), (double)((float)(y + this.sizeHeight) + 2.0F), (double)((float)(z + this.sizeDepth) + 2.0F));
             GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
-            AxisAlignedBB x1 = AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.posXClip - 2.0F), (double)((float)this.posYClip - 2.0F), (double)((float)this.posZClip - 2.0F), (double)((float)(this.posXClip + this.sizeWidth) + 2.0F), (double)((float)(this.posYClip + this.sizeHeight) + 2.0F), (double)((float)(this.posZClip + this.sizeDepth) + 2.0F));
-			Tessellator y1 = Tessellator.instance;
-			Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION);
-			y1.addVertex(x1.minX, x1.maxY, x1.minZ);
-			y1.addVertex(x1.maxX, x1.maxY, x1.minZ);
-			y1.addVertex(x1.maxX, x1.minY, x1.minZ);
-			y1.addVertex(x1.minX, x1.minY, x1.minZ);
-			y1.addVertex(x1.minX, x1.minY, x1.maxZ);
-			y1.addVertex(x1.maxX, x1.minY, x1.maxZ);
-			y1.addVertex(x1.maxX, x1.maxY, x1.maxZ);
-			y1.addVertex(x1.minX, x1.maxY, x1.maxZ);
-			y1.addVertex(x1.minX, x1.minY, x1.minZ);
-			y1.addVertex(x1.maxX, x1.minY, x1.minZ);
-			y1.addVertex(x1.maxX, x1.minY, x1.maxZ);
-			y1.addVertex(x1.minX, x1.minY, x1.maxZ);
-			y1.addVertex(x1.minX, x1.maxY, x1.maxZ);
-			y1.addVertex(x1.maxX, x1.maxY, x1.maxZ);
-			y1.addVertex(x1.maxX, x1.maxY, x1.minZ);
-			y1.addVertex(x1.minX, x1.maxY, x1.minZ);
-			y1.addVertex(x1.minX, x1.minY, x1.maxZ);
-			y1.addVertex(x1.minX, x1.maxY, x1.maxZ);
-			y1.addVertex(x1.minX, x1.maxY, x1.minZ);
-			y1.addVertex(x1.minX, x1.minY, x1.minZ);
-			y1.addVertex(x1.maxX, x1.minY, x1.minZ);
-			y1.addVertex(x1.maxX, x1.maxY, x1.minZ);
-			y1.addVertex(x1.maxX, x1.maxY, x1.maxZ);
-			y1.addVertex(x1.maxX, x1.minY, x1.maxZ);
-			y1.draw();
+            RenderItem.renderAABB(AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.posXClip - f4), (double)((float)this.posYClip - f4), (double)((float)this.posZClip - f4), (double)((float)(this.posXClip + this.sizeWidth) + f4), (double)((float)(this.posYClip + this.sizeHeight) + f4), (double)((float)(this.posZClip + this.sizeDepth) + f4)));
 			GL11.glEndList();
-			this.needsUpdate = true;
+            this.markDirty();
 		}
 	}
 
-	public final boolean updateRenderer() {
-        if(!this.needsUpdate) {
-            return true;
-        } else {
+    private void setupGLTranslation() {
+        GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
+    }
+
+	public void updateRenderer() {
+        if(this.needsUpdate) {
 			++chunksUpdated;
 			int i1 = this.posX;
 			int i2 = this.posY;
@@ -128,10 +107,11 @@ public final class WorldRenderer {
 			}
 
 			Chunk.isLit = false;
-            HashSet hashSet19;
-            (hashSet19 = new HashSet()).addAll(this.tileEntityRenderers);
+            HashSet hashSet19 = new HashSet();
+            hashSet19.addAll(this.tileEntityRenderers);
 			this.tileEntityRenderers.clear();
-            ChunkCache chunkCache18 = new ChunkCache(this.worldObj, i1 - 1, i3 - 1, i4 + 1, i6 + 1);
+            byte b8 = 1;
+            ChunkCache chunkCache18 = new ChunkCache(this.worldObj, i1 - b8, i2 - b8, i3 - b8, i4 + b8, i5 + b8, i6 + b8);
             RenderBlocks renderBlocks8 = new RenderBlocks(chunkCache18);
 
             for(int i9 = 0; i9 < 2; ++i9) {
@@ -142,13 +122,13 @@ public final class WorldRenderer {
                 for(int i13 = i2; i13 < i5; ++i13) {
                     for(int i14 = i3; i14 < i6; ++i14) {
                         for(int i15 = i1; i15 < i4; ++i15) {
-                            int i16;
-                            if((i16 = chunkCache18.getBlockId(i15, i13, i14)) > 0) {
+                            int i16 = chunkCache18.getBlockId(i15, i13, i14);
+                            if(i16 > 0) {
                                 if(!z12) {
                                     z12 = true;
                                     GL11.glNewList(this.glRenderList + i9, GL11.GL_COMPILE);
                                     GL11.glPushMatrix();
-                                    GL11.glTranslatef((float)this.posXClip, (float)this.posYClip, (float)this.posZClip);
+                                    this.setupGLTranslation();
                                     GL11.glTranslatef((float)(-this.sizeDepth) / 2.0F, (float)(-this.sizeHeight) / 2.0F, (float)(-this.sizeDepth) / 2.0F);
                                     GL11.glScalef(1.000001F, 1.000001F, 1.000001F);
                                     GL11.glTranslatef((float)this.sizeDepth / 2.0F, (float)this.sizeHeight / 2.0F, (float)this.sizeDepth / 2.0F);
@@ -163,10 +143,11 @@ public final class WorldRenderer {
                                     }
                                 }
 
-                                Block block19;
-                                if((i16 = (block19 = Block.blocksList[i16]).getRenderBlockPass()) != i9) {
+                                Block block19 = Block.blocksList[i16];
+                                int i20 = block19.getRenderBlockPass();
+                                if(i20 != i9) {
                                     z10 = true;
-                                } else if(i16 == i9) {
+                                } else if(i20 == i9) {
                                     z11 |= renderBlocks8.renderBlockByRenderType(block19, i15, i13, i14);
                                 }
                             }
@@ -192,19 +173,18 @@ public final class WorldRenderer {
                 }
             }
 
-            HashSet hashSet20;
-            (hashSet20 = new HashSet()).addAll(this.tileEntityRenderers);
+            HashSet hashSet20 = new HashSet();
+            hashSet20.addAll(this.tileEntityRenderers);
             hashSet20.removeAll(hashSet19);
             this.tileEntities.addAll(hashSet20);
             hashSet19.removeAll(this.tileEntityRenderers);
             this.tileEntities.removeAll(hashSet19);
             this.isChunkLit = Chunk.isLit;
             this.isInitialized = true;
-            return true;
 		}
 	}
 
-	public final float distanceToEntitySquared(Entity entity) {
+	public float distanceToEntitySquared(Entity entity) {
 		float f2 = (float)(entity.posX - (double)this.posXPlus);
 		float f3 = (float)(entity.posY - (double)this.posYPlus);
 		float entity1 = (float)(entity.posZ - (double)this.posZPlus);
@@ -220,28 +200,28 @@ public final class WorldRenderer {
         this.isInitialized = false;
 	}
 
-	public final void stopRendering() {
+	public void stopRendering() {
 		this.setDontDraw();
 		this.worldObj = null;
 	}
 
-	public final int getGLCallListForPass(int pass) {
+	public int getGLCallListForPass(int pass) {
 		return !this.isInFrustum ? -1 : (!this.skipRenderPass[pass] ? this.glRenderList + pass : -1);
 	}
 
-	public final void updateInFrustrum(Frustrum frustrum) {
+	public void updateInFrustrum(Frustrum frustrum) {
 		this.isInFrustum = frustrum.isBoundingBoxInFrustum(this.rendererBoundingBox);
 	}
 
-	public final void callOcclusionQueryList() {
+	public void callOcclusionQueryList() {
 		GL11.glCallList(this.glRenderList + 2);
 	}
 
-	public final boolean skipAllRenderPasses() {
+	public boolean skipAllRenderPasses() {
         return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
     }
 
-    public final void markDirty() {
+    public void markDirty() {
         this.needsUpdate = true;
     }
 }

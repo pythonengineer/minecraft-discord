@@ -3,7 +3,7 @@ package net.minecraft.game.item;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.material.Material;
 
-public final class ItemPickaxe extends ItemTool {
+public class ItemPickaxe extends ItemTool {
     private static Block[] blocksEffectiveAgainst = new Block[]{Block.cobblestone, Block.stairDouble, Block.stairSingle, Block.stone, Block.cobblestoneMossy, Block.oreIron, Block.blockSteel, Block.oreCoal, Block.blockGold, Block.oreGold, Block.oreDiamond, Block.blockDiamond};
     private int harvestLevel;
 
@@ -12,7 +12,7 @@ public final class ItemPickaxe extends ItemTool {
         this.harvestLevel = harvestLevel;
     }
 
-    public final boolean canHarvestBlock(Block block) {
-        return block == Block.obsidian ? this.harvestLevel == 3 : (block != Block.blockDiamond && block != Block.oreDiamond ? (block != Block.blockGold && block != Block.oreGold ? (block != Block.blockSteel && block != Block.oreIron ? (block.blockMaterial == Material.rock ? true : block.blockMaterial == Material.iron) : this.harvestLevel > 0) : this.harvestLevel >= 2) : this.harvestLevel >= 2);
+    public boolean canHarvestBlock(Block block) {
+        return block == Block.obsidian ? this.harvestLevel == 3 : (block != Block.blockDiamond && block != Block.oreDiamond ? (block != Block.blockGold && block != Block.oreGold ? (block != Block.blockSteel && block != Block.oreIron ? (block.blockMaterial == Material.rock ? true : block.blockMaterial == Material.iron) : this.harvestLevel >= 1) : this.harvestLevel >= 2) : this.harvestLevel >= 2);
     }
 }

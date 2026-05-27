@@ -6,25 +6,25 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.tileentity.TileEntitySign;
 
-public final class ItemSign extends Item {
+public class ItemSign extends Item {
 	public ItemSign(int i1) {
-		super(67);
+		super(i1);
 		this.maxDamage = 64;
 		this.maxStackSize = 1;
 	}
 
-	public final boolean onItemUse(ItemStack stack, EntityPlayer playerEntity, World world, int x, int y, int z, int side) {
-		if(side != 1) {
+	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int xCoord, int yCoord, int zCoord, int i7) {
+		if(i7 != 1) {
 			return false;
 		} else {
-			++y;
-			if(!Block.signStanding.canPlaceBlockAt(world, x, y, z)) {
+			++yCoord;
+			if(!Block.signStanding.canPlaceBlockAt(world3, xCoord, yCoord, zCoord)) {
 				return false;
 			} else {
-				world.setBlockWithNotify(x, y, z, Block.signStanding.blockID);
-				world.setBlockMetadata(x, y, z, MathHelper.floor_double((double)((playerEntity.rotationYaw + 180.0F) * 16.0F / 360.0F) - 0.5D) & 15);
-				--stack.stackSize;
-				playerEntity.displayGUIEditSign((TileEntitySign)world.getBlockTileEntity(x, y, z));
+				world3.setBlockWithNotify(xCoord, yCoord, zCoord, Block.signStanding.blockID);
+				world3.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, MathHelper.floor_double((double)((entityPlayer2.rotationYaw + 180.0F) * 16.0F / 360.0F) - 0.5D) & 15);
+				--itemStack1.stackSize;
+				entityPlayer2.displayGUIEditSign((TileEntitySign)world3.getBlockTileEntity(xCoord, yCoord, zCoord));
 				return true;
 			}
 		}

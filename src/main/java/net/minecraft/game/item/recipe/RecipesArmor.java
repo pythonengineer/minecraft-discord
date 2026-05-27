@@ -4,11 +4,11 @@ import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 
-public final class RecipesArmor {
+public class RecipesArmor {
 	private String[][] recipePatterns = new String[][]{{"XXX", "X X"}, {"X X", "XXX", "XXX"}, {"XXX", "X X", "X X"}, {"X X", "X X"}};
 	private Object[][] recipeItems = new Object[][]{{Block.cloth, Block.fire, Item.ingotIron, Item.diamond, Item.ingotGold}, {Item.helmetLeather, Item.helmetChain, Item.helmetSteel, Item.helmetDiamond, Item.helmetGold}, {Item.plateLeather, Item.plateChain, Item.plateSteel, Item.plateDiamond, Item.plateGold}, {Item.legsLeather, Item.legsChain, Item.legsSteel, Item.legsDiamond, Item.legsGold}, {Item.bootsLeather, Item.bootsChain, Item.bootsSteel, Item.bootsDiamond, Item.bootsGold}};
 
-	public final void addRecipes(CraftingManager craftingManager) {
+	public void addRecipes(CraftingManager craftingManager) {
 		for(int i2 = 0; i2 < this.recipeItems[0].length; ++i2) {
 			Object object3 = this.recipeItems[0][i2];
 

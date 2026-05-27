@@ -14,7 +14,7 @@ import net.minecraft.game.world.block.tileentity.TileEntityMobSpawner;
 import net.minecraft.game.world.block.tileentity.TileEntityMobSpawnerRenderer;
 import net.minecraft.game.world.block.tileentity.TileEntitySign;
 
-public final class TileEntityRenderer {
+public class TileEntityRenderer {
     private Map specialRendererMap = new HashMap();
     public static TileEntityRenderer instance = new TileEntityRenderer();
     private FontRenderer fontRenderer;
@@ -23,6 +23,9 @@ public final class TileEntityRenderer {
     public static double staticPlayerZ;
     public RenderEngine renderEngine;
     private World worldObj;
+    public EntityPlayer entityPlayer;
+    public float playerYaw;
+    public float playerPitch;
     private double playerX;
     private double playerY;
     private double playerZ;
@@ -39,8 +42,8 @@ public final class TileEntityRenderer {
     }
 
     private TileEntitySpecialRenderer getSpecialRendererForClass(Class tileEntityClass) {
-        TileEntitySpecialRenderer tileEntitySpecialRenderer2;
-        if((tileEntitySpecialRenderer2 = (TileEntitySpecialRenderer)this.specialRendererMap.get(tileEntityClass)) == null && tileEntityClass != TileEntity.class) {
+        TileEntitySpecialRenderer tileEntitySpecialRenderer2 = (TileEntitySpecialRenderer)this.specialRendererMap.get(tileEntityClass);
+        if(tileEntitySpecialRenderer2 == null && tileEntityClass != TileEntity.class) {
             tileEntitySpecialRenderer2 = this.getSpecialRendererForClass(tileEntityClass.getSuperclass());
             this.specialRendererMap.put(tileEntityClass, tileEntitySpecialRenderer2);
         }
@@ -48,7 +51,7 @@ public final class TileEntityRenderer {
         return tileEntitySpecialRenderer2;
     }
 
-    public final boolean hasSpecialRenderer(TileEntity tileEntity) {
+    public boolean hasSpecialRenderer(TileEntity tileEntity) {
         return this.getSpecialRendererForEntity(tileEntity) != null;
     }
 
@@ -56,33 +59,36 @@ public final class TileEntityRenderer {
         return this.getSpecialRendererForClass(tileEntity.getClass());
     }
 
-    public final void cacheActiveRenderInfo(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, float partialTicks) {
+    public void cacheActiveRenderInfo(World world, RenderEngine renderEngine, FontRenderer fontRenderer, EntityPlayer playerEntity, float partialTicks) {
         this.worldObj = world;
         this.renderEngine = renderEngine;
+        this.entityPlayer = playerEntity;
         this.fontRenderer = fontRenderer;
+        this.playerYaw = playerEntity.prevRotationYaw + (playerEntity.rotationYaw - playerEntity.prevRotationYaw) * partialTicks;
+        this.playerPitch = playerEntity.prevRotationPitch + (playerEntity.rotationPitch - playerEntity.prevRotationPitch) * partialTicks;
         this.playerX = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTicks;
         this.playerY = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTicks;
         this.playerZ = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTicks;
     }
 
-    public final void renderTileEntity(TileEntity tileEntity, float partialTicks) {
+    public void renderTileEntity(TileEntity tileEntity, float partialTicks) {
         if(tileEntity.getDistanceFrom(this.playerX, this.playerY, this.playerZ) < 4096.0D) {
-            float f3;
-            GL11.glColor3f(f3 = this.worldObj.getBrightness(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord), f3, f3);
+            float f3 = this.worldObj.getBrightness(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+            GL11.glColor3f(f3, f3, f3);
             this.renderTileEntityAt(tileEntity, (double)tileEntity.xCoord - staticPlayerX, (double)tileEntity.yCoord - staticPlayerY, (double)tileEntity.zCoord - staticPlayerZ, partialTicks);
         }
 
     }
 
-    public final void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks) {
-        TileEntitySpecialRenderer tileEntitySpecialRenderer9;
-        if((tileEntitySpecialRenderer9 = this.getSpecialRendererForEntity(tileEntity)) != null) {
+    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks) {
+        TileEntitySpecialRenderer tileEntitySpecialRenderer9 = this.getSpecialRendererForEntity(tileEntity);
+        if(tileEntitySpecialRenderer9 != null) {
             tileEntitySpecialRenderer9.renderTileEntityMobSpawner(tileEntity, x, y, z, partialTicks);
         }
 
     }
 
-    public final FontRenderer getFontRenderer() {
+    public FontRenderer getFontRenderer() {
         return this.fontRenderer;
     }
 }

@@ -2,7 +2,7 @@ package net.minecraft.game.world.terrain.noise;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
-public final class NoiseGeneratorOctaves extends NoiseGenerator {
+public class NoiseGeneratorOctaves extends NoiseGenerator {
     private NoiseGeneratorPerlin[] generatorCollection;
     private int octaves;
 
@@ -16,7 +16,7 @@ public final class NoiseGeneratorOctaves extends NoiseGenerator {
 
     }
 
-    public final double generateNoiseOctaves(double x, double y) {
+    public double generateNoiseOctaves(double x, double y) {
         double d5 = 0.0D;
         double d7 = 1.0D;
 
@@ -28,19 +28,7 @@ public final class NoiseGeneratorOctaves extends NoiseGenerator {
         return d5;
     }
 
-    public final double generateNoiseOctaves(double x, double y, double z) {
-        double d7 = 0.0D;
-        double d9 = 1.0D;
-
-        for(int i11 = 0; i11 < this.octaves; ++i11) {
-            d7 += this.generatorCollection[i11].generateNoiseD(x * d9, y * d9, z * d9) / d9;
-            d9 /= 2.0D;
-        }
-
-        return d7;
-    }
-
-    public final double[] generateNoiseOctaves(double[] octavesArray, int x, int y, int z, int sizeX, int sizeY, int sizeZ, double coordScaleX, double coordScaleY, double coordScaleZ) {
+    public double[] generateNoiseOctaves(double[] octavesArray, double x, double y, double z, int sizeX, int sizeY, int sizeZ, double coordScaleX, double coordScaleY, double coordScaleZ) {
         if(octavesArray == null) {
             octavesArray = new double[sizeX * sizeY * sizeZ];
         } else {

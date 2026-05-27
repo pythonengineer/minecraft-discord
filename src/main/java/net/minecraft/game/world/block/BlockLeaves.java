@@ -5,20 +5,23 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
-public final class BlockLeaves extends BlockLeavesBase {
-    private int leafTexIndex = 52;
+public class BlockLeaves extends BlockLeavesBase {
+    private int leafTexIndex;
 
 	protected BlockLeaves(int blockID, int textureIndex) {
-		super(18, 52, Material.leaves, false);
+		super(blockID, textureIndex, Material.leaves, false);
+		this.leafTexIndex = textureIndex;
 		this.setTickOnLoad(true);
 	}
 
-    public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+    public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
         if(!world.getBlockMaterial(x, y - 1, z).isSolid()) {
-            for(int i8 = x - 2; i8 <= x + 2; ++i8) {
-                for(int i6 = y - 1; i6 <= y + 1; ++i6) {
-                    for(int i7 = z - 2; i7 <= z + 2; ++i7) {
-                        if(world.getBlockId(i8, i6, i7) == Block.wood.blockID) {
+            byte b6 = 2;
+
+            for(int i7 = x - b6; i7 <= x + b6; ++i7) {
+                for(int i8 = y - 1; i8 <= y + 1; ++i8) {
+                    for(int i9 = z - b6; i9 <= z + b6; ++i9) {
+                        if(world.getBlockId(i7, i8, i9) == Block.wood.blockID) {
                             return;
                         }
                     }
@@ -30,24 +33,24 @@ public final class BlockLeaves extends BlockLeavesBase {
         }
     }
 
-	public final int quantityDropped(EaglercraftRandom rand) {
+	public int quantityDropped(EaglercraftRandom rand) {
 		return rand.nextInt(10) == 0 ? 1 : 0;
 	}
 
-	public final int idDropped(int metadata, EaglercraftRandom rand) {
+	public int idDropped(int metadata, EaglercraftRandom rand) {
 		return Block.sapling.blockID;
 	}
 
-    public final boolean isOpaqueCube() {
+    public boolean isOpaqueCube() {
         return !this.graphicsLevel;
     }
 
-    public final void setGraphicsLevel(boolean fancyGraphics) {
+    public void setGraphicsLevel(boolean fancyGraphics) {
         this.graphicsLevel = fancyGraphics;
         this.blockIndexInTexture = this.leafTexIndex + (fancyGraphics ? 0 : 1);
     }
 
-    public final void onEntityWalking(World world, int x, int y, int z, Entity entity) {
+    public void onEntityWalking(World world, int x, int y, int z, Entity entity) {
         super.onEntityWalking(world, x, y, z, entity);
     }
 }

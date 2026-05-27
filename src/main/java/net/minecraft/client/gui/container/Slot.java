@@ -18,7 +18,7 @@ public class Slot {
         this.yDisplayPosition = y;
     }
 
-    public final boolean getIsMouseOverSlot(int x, int y) {
+    public boolean getIsMouseOverSlot(int x, int y) {
         int i3 = (this.slotContainer.width - this.slotContainer.xSize) / 2;
         int i4 = (this.slotContainer.height - this.slotContainer.ySize) / 2;
         x -= i3;
@@ -46,7 +46,7 @@ public class Slot {
         return this.inventory.decrStackSize(this.slotIndex, i);
     }
 
-    public final void putStack(ItemStack stack) {
+    public void putStack(ItemStack stack) {
         this.inventory.setInventorySlotContents(this.slotIndex, stack);
         this.onSlotChanged();
     }
@@ -55,7 +55,7 @@ public class Slot {
         return -1;
     }
 
-    public final void onSlotChanged() {
+    public void onSlotChanged() {
         this.inventory.onInventoryChanged();
     }
 }

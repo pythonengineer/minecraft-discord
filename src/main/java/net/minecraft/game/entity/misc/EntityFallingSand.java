@@ -8,7 +8,7 @@ import net.minecraft.game.world.World;
 
 public class EntityFallingSand extends Entity {
     public int blockID;
-    private int fallTime = 0;
+    public int fallTime = 0;
 
     public EntityFallingSand(World world1) {
         super(world1);
@@ -30,11 +30,11 @@ public class EntityFallingSand extends Entity {
         this.prevPosZ = (double)z;
     }
 
-    public final boolean canBeCollidedWith() {
+    public boolean canBeCollidedWith() {
         return !this.isDead;
     }
 
-    public final void onUpdate() {
+    public void onUpdate() {
         if(this.blockID == 0) {
             this.setEntityDead();
         } else {
@@ -61,7 +61,6 @@ public class EntityFallingSand extends Entity {
                 this.setEntityDead();
                 if(!this.worldObj.canBlockBePlacedAt(this.blockID, i1, i2, i3, true) || !this.worldObj.setBlockWithNotify(i1, i2, i3, this.blockID)) {
                     this.dropItem(this.blockID, 1);
-                    return;
                 }
             } else if(this.fallTime > 100) {
                 this.dropItem(this.blockID, 1);
@@ -71,15 +70,15 @@ public class EntityFallingSand extends Entity {
         }
     }
 
-    protected final void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
+    protected void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
         nBTTagCompound1.setByte("Tile", (byte)this.blockID);
     }
 
-    protected final void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
+    protected void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
         this.blockID = nBTTagCompound1.getByte("Tile") & 255;
     }
 
-    public final World getWorld() {
+    public World getWorld() {
         return this.worldObj;
     }
 }

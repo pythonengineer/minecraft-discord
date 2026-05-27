@@ -13,7 +13,7 @@ public class GuiSelectWorld extends GuiScreen {
 		this.currentScreen = screen;
 	}
 
-	public final void initGui() {
+	public void initGui() {
 		for(int i2 = 0; i2 < 5; ++i2) {
 			NBTTagCompound nBTTagCompound3;
 			if((nBTTagCompound3 = World.getLevelData("World" + (i2 + 1))) == null) {
@@ -38,7 +38,7 @@ public class GuiSelectWorld extends GuiScreen {
 		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
 	}
 
-	protected final void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) {
 		if(button.enabled) {
 			if(button.id < 5) {
 				this.actionWorld(button.id + 1);
@@ -62,7 +62,7 @@ public class GuiSelectWorld extends GuiScreen {
 		}
 	}
 
-	public final void drawScreen(int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		this.drawDefaultBackground();
 		drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 0xFFFFFF);
 		super.drawScreen(mouseX, mouseY, partialTicks);

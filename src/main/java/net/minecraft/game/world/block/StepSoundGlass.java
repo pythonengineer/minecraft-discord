@@ -5,7 +5,7 @@ final class StepSoundGlass extends StepSound {
         super(string1, 1.0F, 1.0F);
     }
 
-    public final String getBreakSound() {
+    public String getBreakSound() {
         return "random.glass";
     }
 }

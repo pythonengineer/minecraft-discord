@@ -8,25 +8,26 @@ import net.minecraft.game.entity.misc.EntityFallingSand;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
-public final class RenderFallingSand extends Render {
+public class RenderFallingSand extends Render {
     private RenderBlocks sandRenderBlocks = new RenderBlocks();
 
     public RenderFallingSand() {
         this.shadowSize = 0.5F;
     }
 
-    public final void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
-        EntityFallingSand entityFallingSand10001 = (EntityFallingSand)entity;
-        double d12 = x;
-        EntityFallingSand x1 = entityFallingSand10001;
+    public void doRender(EntityFallingSand entity, double x, double y, double z, float yaw, float partialTicks) {
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)d12, (float)y, (float)z);
+        GL11.glTranslatef((float)x, (float)y, (float)z);
         this.loadTexture("/terrain.png");
-        Block block3 = Block.blocksList[x1.blockID];
-        World y1 = x1.getWorld();
+        Block block2 = Block.blocksList[entity.blockID];
+        World world3 = entity.getWorld();
         GL11.glDisable(GL11.GL_LIGHTING);
-        this.sandRenderBlocks.renderBlockFallingSand(block3, y1, MathHelper.floor_double(x1.posX), MathHelper.floor_double(x1.posY), MathHelper.floor_double(x1.posZ));
+        this.sandRenderBlocks.renderBlockFallingSand(block2, world3, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ));
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glPopMatrix();
+    }
+
+    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
+        this.doRender((EntityFallingSand)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
     }
 }

@@ -4,44 +4,45 @@ import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
-public final class ItemFlintAndSteel extends Item {
+public class ItemFlintAndSteel extends Item {
 	public ItemFlintAndSteel(int i1) {
-		super(3);
+		super(i1);
 		this.maxStackSize = 1;
 		this.maxDamage = 64;
 	}
 
-	public final boolean onItemUse(ItemStack stack, EntityPlayer playerEntity, World world, int x, int y, int z, int side) {
-		if(side == 0) {
-			--y;
+	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int xCoord, int yCoord, int zCoord, int i7) {
+		if(i7 == 0) {
+			--yCoord;
 		}
 
-		if(side == 1) {
-			++y;
+		if(i7 == 1) {
+			++yCoord;
 		}
 
-		if(side == 2) {
-			--z;
+		if(i7 == 2) {
+			--zCoord;
 		}
 
-		if(side == 3) {
-			++z;
+		if(i7 == 3) {
+			++zCoord;
 		}
 
-		if(side == 4) {
-			--x;
+		if(i7 == 4) {
+			--xCoord;
 		}
 
-		if(side == 5) {
-			++x;
+		if(i7 == 5) {
+			++xCoord;
 		}
 
-		if(world.getBlockId(x, y, z) == 0) {
-			world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "fire.ignite", 1.0F, rand.nextFloat() * 0.4F + 0.8F);
-			world.setBlockWithNotify(x, y, z, Block.fire.blockID);
+		int i8 = world3.getBlockId(xCoord, yCoord, zCoord);
+		if(i8 == 0) {
+			world3.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "fire.ignite", 1.0F, rand.nextFloat() * 0.4F + 0.8F);
+			world3.setBlockWithNotify(xCoord, yCoord, zCoord, Block.fire.blockID);
 		}
 
-		stack.damageItem(1);
+		itemStack1.damageItem(1);
 		return true;
 	}
 }

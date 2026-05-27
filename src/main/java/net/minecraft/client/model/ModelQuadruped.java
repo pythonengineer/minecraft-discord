@@ -30,7 +30,7 @@ public class ModelQuadruped extends ModelBase {
         this.leg4.setRotationPoint(3.0F, (float)(24 - height), -5.0F);
     }
 
-    public final void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625F);
         this.head.render(0.0625F);
         this.body.render(0.0625F);
@@ -40,9 +40,8 @@ public class ModelQuadruped extends ModelBase {
         this.leg4.render(0.0625F);
     }
 
-    public final void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
         this.head.rotateAngleY = netHeadYaw / 57.295776F;
-        this.head.rotateAngleX = headPitch / 57.295776F;
         this.body.rotateAngleX = (float)Math.PI / 2F;
         this.leg1.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
         this.leg2.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;

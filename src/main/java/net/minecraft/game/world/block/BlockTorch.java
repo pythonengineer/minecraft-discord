@@ -7,33 +7,33 @@ import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
-public final class BlockTorch extends Block {
+public class BlockTorch extends Block {
 	protected BlockTorch(int blockID, int textureIndex) {
-		super(50, 80, Material.circuits);
+		super(blockID, textureIndex, Material.circuits);
 		this.setTickOnLoad(true);
 	}
 
-	public final AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return null;
 	}
 
-	public final boolean isOpaqueCube() {
+	public boolean isOpaqueCube() {
 		return false;
 	}
 
-	public final boolean renderAsNormalBlock() {
+	public boolean renderAsNormalBlock() {
 		return false;
 	}
 
-	public final int getRenderType() {
+	public int getRenderType() {
 		return 2;
 	}
 
-	public final boolean canPlaceBlockAt(World world, int x, int y, int z) {
+	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
 		return world.isBlockNormalCube(x - 1, y, z) ? true : (world.isBlockNormalCube(x + 1, y, z) ? true : (world.isBlockNormalCube(x, y, z - 1) ? true : (world.isBlockNormalCube(x, y, z + 1) ? true : world.isBlockNormalCube(x, y - 1, z))));
 	}
 
-	public final void onBlockPlaced(World world, int x, int y, int z, int side) {
+	public void onBlockPlaced(World world, int x, int y, int z, int side) {
 		int i6 = world.getBlockMetadata(x, y, z);
 		if(side == 1 && world.isBlockNormalCube(x, y - 1, z)) {
 			i6 = 5;
@@ -55,10 +55,10 @@ public final class BlockTorch extends Block {
 			i6 = 1;
 		}
 
-		world.setBlockMetadata(x, y, z, i6);
+		world.setBlockMetadataWithNotify(x, y, z, i6);
 	}
 
-	public final void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
 		super.updateTick(world, x, y, z, rand);
 		if(world.getBlockMetadata(x, y, z) == 0) {
 			this.onBlockAdded(world, x, y, z);
@@ -66,47 +66,47 @@ public final class BlockTorch extends Block {
 
 	}
 
-	public final void onBlockAdded(World world, int x, int y, int z) {
+	public void onBlockAdded(World world, int x, int y, int z) {
 		if(world.isBlockNormalCube(x - 1, y, z)) {
-			world.setBlockMetadata(x, y, z, 1);
+			world.setBlockMetadataWithNotify(x, y, z, 1);
 		} else if(world.isBlockNormalCube(x + 1, y, z)) {
-			world.setBlockMetadata(x, y, z, 2);
+			world.setBlockMetadataWithNotify(x, y, z, 2);
 		} else if(world.isBlockNormalCube(x, y, z - 1)) {
-			world.setBlockMetadata(x, y, z, 3);
+			world.setBlockMetadataWithNotify(x, y, z, 3);
 		} else if(world.isBlockNormalCube(x, y, z + 1)) {
-			world.setBlockMetadata(x, y, z, 4);
+			world.setBlockMetadataWithNotify(x, y, z, 4);
 		} else if(world.isBlockNormalCube(x, y - 1, z)) {
-			world.setBlockMetadata(x, y, z, 5);
+			world.setBlockMetadataWithNotify(x, y, z, 5);
 		}
 
-		this.checkIfAttachedToBlock(world, x, y, z);
+		this.dropTorchIfCantStay(world, x, y, z);
 	}
 
-	public final void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
-		if(this.checkIfAttachedToBlock(world, x, y, z)) {
-			blockID = world.getBlockMetadata(x, y, z);
-			boolean z6 = false;
-			if(!world.isBlockNormalCube(x - 1, y, z) && blockID == 1) {
-				z6 = true;
+	public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+		if(this.dropTorchIfCantStay(world, x, y, z)) {
+			int i6 = world.getBlockMetadata(x, y, z);
+			boolean z7 = false;
+			if(!world.isBlockNormalCube(x - 1, y, z) && i6 == 1) {
+				z7 = true;
 			}
 
-			if(!world.isBlockNormalCube(x + 1, y, z) && blockID == 2) {
-				z6 = true;
+			if(!world.isBlockNormalCube(x + 1, y, z) && i6 == 2) {
+				z7 = true;
 			}
 
-			if(!world.isBlockNormalCube(x, y, z - 1) && blockID == 3) {
-				z6 = true;
+			if(!world.isBlockNormalCube(x, y, z - 1) && i6 == 3) {
+				z7 = true;
 			}
 
-			if(!world.isBlockNormalCube(x, y, z + 1) && blockID == 4) {
-				z6 = true;
+			if(!world.isBlockNormalCube(x, y, z + 1) && i6 == 4) {
+				z7 = true;
 			}
 
-			if(!world.isBlockNormalCube(x, y - 1, z) && blockID == 5) {
-				z6 = true;
+			if(!world.isBlockNormalCube(x, y - 1, z) && i6 == 5) {
+				z7 = true;
 			}
 
-			if(z6) {
+			if(z7) {
 				this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
 				world.setBlockWithNotify(x, y, z, 0);
 			}
@@ -114,7 +114,7 @@ public final class BlockTorch extends Block {
 
 	}
 
-	private boolean checkIfAttachedToBlock(World world, int x, int y, int z) {
+	private boolean dropTorchIfCantStay(World world, int x, int y, int z) {
 		if(!this.canPlaceBlockAt(world, x, y, z)) {
 			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
 			world.setBlockWithNotify(x, y, z, 0);
@@ -124,43 +124,48 @@ public final class BlockTorch extends Block {
 		}
 	}
 
-	public final MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {
-		int i7;
-		if((i7 = world.getBlockMetadata(x, y, z)) == 1) {
-			this.setBlockBounds(0.0F, 0.2F, 0.35F, 0.3F, 0.8F, 0.65F);
+	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {
+		int i7 = world.getBlockMetadata(x, y, z);
+		float f8 = 0.15F;
+		if(i7 == 1) {
+			this.setBlockBounds(0.0F, 0.2F, 0.5F - f8, f8 * 2.0F, 0.8F, 0.5F + f8);
 		} else if(i7 == 2) {
-			this.setBlockBounds(0.7F, 0.2F, 0.35F, 1.0F, 0.8F, 0.65F);
+			this.setBlockBounds(1.0F - f8 * 2.0F, 0.2F, 0.5F - f8, 1.0F, 0.8F, 0.5F + f8);
 		} else if(i7 == 3) {
-			this.setBlockBounds(0.35F, 0.2F, 0.0F, 0.65F, 0.8F, 0.3F);
+			this.setBlockBounds(0.5F - f8, 0.2F, 0.0F, 0.5F + f8, 0.8F, f8 * 2.0F);
 		} else if(i7 == 4) {
-			this.setBlockBounds(0.35F, 0.2F, 0.7F, 0.65F, 0.8F, 1.0F);
+			this.setBlockBounds(0.5F - f8, 0.2F, 1.0F - f8 * 2.0F, 0.5F + f8, 0.8F, 1.0F);
 		} else {
-			this.setBlockBounds(0.4F, 0.0F, 0.4F, 0.6F, 0.6F, 0.6F);
+			f8 = 0.1F;
+			this.setBlockBounds(0.5F - f8, 0.0F, 0.5F - f8, 0.5F + f8, 0.6F, 0.5F + f8);
 		}
 
 		return super.collisionRayTrace(world, x, y, z, vector1, vector2);
 	}
 
-	public final void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-		int rand1 = world.getBlockMetadata(x, y, z);
-		float x1 = (float)x + 0.5F;
-		float y1 = (float)y + 0.7F;
-		float z1 = (float)z + 0.5F;
-		if(rand1 == 1) {
-			world.spawnParticle("smoke", (double)(x1 - 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)(x1 - 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
-		} else if(rand1 == 2) {
-			world.spawnParticle("smoke", (double)(x1 + 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)(x1 + 0.27F), (double)(y1 + 0.22F), (double)z1, 0.0D, 0.0D, 0.0D);
-		} else if(rand1 == 3) {
-			world.spawnParticle("smoke", (double)x1, (double)(y1 + 0.22F), (double)(z1 - 0.27F), 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)x1, (double)(y1 + 0.22F), (double)(z1 - 0.27F), 0.0D, 0.0D, 0.0D);
-		} else if(rand1 == 4) {
-			world.spawnParticle("smoke", (double)x1, (double)(y1 + 0.22F), (double)(z1 + 0.27F), 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)x1, (double)(y1 + 0.22F), (double)(z1 + 0.27F), 0.0D, 0.0D, 0.0D);
+	public void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+		int i6 = world.getBlockMetadata(x, y, z);
+		float f7 = (float)x + 0.5F;
+		float f8 = (float)y + 0.7F;
+		float f9 = (float)z + 0.5F;
+		float f10 = 0.22F;
+		float f11 = 0.27F;
+		if(i6 == 1) {
+			world.spawnParticle("smoke", (double)(f7 - f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)(f7 - f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
+		} else if(i6 == 2) {
+			world.spawnParticle("smoke", (double)(f7 + f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)(f7 + f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
+		} else if(i6 == 3) {
+			world.spawnParticle("smoke", (double)f7, (double)(f8 + f10), (double)(f9 - f11), 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)f7, (double)(f8 + f10), (double)(f9 - f11), 0.0D, 0.0D, 0.0D);
+		} else if(i6 == 4) {
+			world.spawnParticle("smoke", (double)f7, (double)(f8 + f10), (double)(f9 + f11), 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)f7, (double)(f8 + f10), (double)(f9 + f11), 0.0D, 0.0D, 0.0D);
 		} else {
-			world.spawnParticle("smoke", (double)x1, (double)y1, (double)z1, 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)x1, (double)y1, (double)z1, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("smoke", (double)f7, (double)f8, (double)f9, 0.0D, 0.0D, 0.0D);
+			world.spawnParticle("flame", (double)f7, (double)f8, (double)f9, 0.0D, 0.0D, 0.0D);
 		}
+
 	}
 }

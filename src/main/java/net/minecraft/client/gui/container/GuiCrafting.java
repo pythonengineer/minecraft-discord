@@ -8,7 +8,7 @@ import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.item.recipe.CraftingManager;
 
-public final class GuiCrafting extends GuiContainer {
+public class GuiCrafting extends GuiContainer {
 	private InventoryCrafting craftingInventory = new InventoryCrafting(this, 3, 3);
 	private IInventory craftingResultInventory = new InventoryCraftResult();
 
@@ -35,7 +35,7 @@ public final class GuiCrafting extends GuiContainer {
 
 	}
 
-	public final void onGuiClosed() {
+	public void onGuiClosed() {
 		super.onGuiClosed();
 
 		for(int i1 = 0; i1 < 9; ++i1) {
@@ -47,7 +47,7 @@ public final class GuiCrafting extends GuiContainer {
 
 	}
 
-	public final void onCraftMatrixChanged() {
+	public void onCraftMatrixChanged(IInventory iInventory1) {
 		int[] i1 = new int[9];
 
 		for(int i2 = 0; i2 < 3; ++i2) {
@@ -65,15 +65,15 @@ public final class GuiCrafting extends GuiContainer {
 		this.craftingResultInventory.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(i1));
 	}
 
-	protected final void drawGuiContainerForegroundLayer() {
+	protected void drawGuiContainerForegroundLayer() {
 		this.fontRenderer.drawString("Crafting", 28, 6, 4210752);
 		this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
 	}
 
-	protected final void drawGuiContainerBackgroundLayer() {
+	protected void drawGuiContainerBackgroundLayer(float f1) {
 		int i1 = this.mc.renderEngine.getTexture("/gui/crafting.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderEngine.bindTexture(i1);
+        this.mc.renderEngine.bindTexture(i1);
 		i1 = (this.width - this.xSize) / 2;
 		int i2 = (this.height - this.ySize) / 2;
 		this.drawTexturedModalRect(i1, i2, 0, 0, this.xSize, this.ySize);

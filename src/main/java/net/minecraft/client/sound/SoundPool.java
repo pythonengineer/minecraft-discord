@@ -8,12 +8,12 @@ import java.util.Map;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.EaglercraftSoundManager;
 
-public final class SoundPool {
+public class SoundPool {
     private EaglercraftRandom rand = new EaglercraftRandom();
     private Map nameToSoundPoolEntriesMapping = new HashMap();
     public int numberOfSoundPoolEntries = 0;
 
-    public final SoundPoolEntry addSound(EaglercraftSoundManager mgr, String soundName, String soundFile) {
+    public SoundPoolEntry addSound(EaglercraftSoundManager mgr, String soundName, String soundFile) {
         try {
             String string3 = soundName;
 
@@ -35,7 +35,7 @@ public final class SoundPool {
         }
     }
 
-    public final SoundPoolEntry getRandomSoundFromSoundPool(String soundName) {
+    public SoundPoolEntry getRandomSoundFromSoundPool(String soundName) {
         List list2 = (List)this.nameToSoundPoolEntriesMapping.get(soundName);
         return list2 == null ? null : (SoundPoolEntry)list2.get(this.rand.nextInt(list2.size()));
     }

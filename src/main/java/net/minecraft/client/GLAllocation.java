@@ -9,7 +9,7 @@ import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
-public final class GLAllocation {
+public class GLAllocation {
     private static List displayLists = new ArrayList();
     private static List textureNames = new ArrayList();
     private static List c = new ArrayList();

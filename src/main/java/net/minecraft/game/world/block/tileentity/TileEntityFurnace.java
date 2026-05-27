@@ -6,8 +6,8 @@ import com.mojang.nbt.NBTTagList;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
-import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.BlockFurnace;
 import net.minecraft.game.world.material.Material;
 
 public class TileEntityFurnace extends TileEntity implements IInventory {
@@ -16,15 +16,15 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 	private int currentItemBurnTime = 0;
 	private int furnaceCookTime = 0;
 
-	public final int getSizeInventory() {
+	public int getSizeInventory() {
 		return this.furnaceItemStacks.length;
 	}
 
-	public final ItemStack getStackInSlot(int slot) {
+	public ItemStack getStackInSlot(int slot) {
 		return this.furnaceItemStacks[slot];
 	}
 
-	public final ItemStack decrStackSize(int slot, int decrementAmount) {
+	public ItemStack decrStackSize(int slot, int decrementAmount) {
 		if(this.furnaceItemStacks[slot] != null) {
 			ItemStack decrementAmount1;
 			if(this.furnaceItemStacks[slot].stackSize <= decrementAmount) {
@@ -44,19 +44,19 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		}
 	}
 
-	public final void setInventorySlotContents(int slot, ItemStack stack) {
+	public void setInventorySlotContents(int slot, ItemStack stack) {
 		this.furnaceItemStacks[slot] = stack;
-		if(stack != null && stack.stackSize > 64) {
-			stack.stackSize = 64;
+		if(stack != null && stack.stackSize > this.getInventoryStackLimit()) {
+			stack.stackSize = this.getInventoryStackLimit();
 		}
 
 	}
 
-	public final String getInvName() {
+	public String getInvName() {
 		return "Chest";
 	}
 
-	public final void readFromNBT(NBTTagCompound compoundTag) {
+	public void readFromNBT(NBTTagCompound compoundTag) {
 		super.readFromNBT(compoundTag);
 		NBTTagList nBTTagList2 = compoundTag.getTagList("Items");
 		this.furnaceItemStacks = new ItemStack[this.furnaceItemStacks.length];
@@ -74,7 +74,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		this.currentItemBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
 	}
 
-	public final void writeToNBT(NBTTagCompound compoundTag) {
+	public void writeToNBT(NBTTagCompound compoundTag) {
 		super.writeToNBT(compoundTag);
 		compoundTag.setShort("BurnTime", (short)this.furnaceBurnTime);
 		compoundTag.setShort("CookTime", (short)this.furnaceCookTime);
@@ -92,15 +92,15 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		compoundTag.setTag("Items", nBTTagList2);
 	}
 
-	public final int getInventoryStackLimit() {
+	public int getInventoryStackLimit() {
 		return 64;
 	}
 
-	public final int getCookProgressScaled(int scale) {
+	public int getCookProgressScaled(int scale) {
 		return this.furnaceCookTime * scale / 200;
 	}
 
-	public final int getBurnTimeRemainingScaled(int scale) {
+	public int getBurnTimeRemainingScaled(int scale) {
         if(this.currentItemBurnTime == 0) {
             this.currentItemBurnTime = 200;
         }
@@ -108,11 +108,11 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		return this.furnaceBurnTime * scale / this.currentItemBurnTime;
 	}
 
-	public final boolean isBurning() {
+	public boolean isBurning() {
 		return this.furnaceBurnTime > 0;
 	}
 
-	public final void updateEntity() {
+	public void updateEntity() {
 		boolean z1 = this.furnaceBurnTime > 0;
         boolean z2 = false;
 		if(this.furnaceBurnTime > 0) {
@@ -137,20 +137,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 			++this.furnaceCookTime;
 			if(this.furnaceCookTime == 200) {
 				this.furnaceCookTime = 0;
-				if(this.canSmelt()) {
-                    int i4 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
-                    if(this.furnaceItemStacks[2] == null) {
-                        this.furnaceItemStacks[2] = new ItemStack(i4, 1);
-                    } else if(this.furnaceItemStacks[2].itemID == i4) {
-						++this.furnaceItemStacks[2].stackSize;
-					}
-
-					--this.furnaceItemStacks[0].stackSize;
-					if(this.furnaceItemStacks[0].stackSize <= 0) {
-						this.furnaceItemStacks[0] = null;
-					}
-				}
-
+                this.smeltItem();
                 z2 = true;
 			}
 		} else {
@@ -159,22 +146,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 
         if(z1 != this.furnaceBurnTime > 0) {
             z2 = true;
-            boolean z10000 = this.furnaceBurnTime > 0;
-            int i6 = this.zCoord;
-            int i5 = this.yCoord;
-            int i9 = this.xCoord;
-            World world10 = this.worldObj;
-            boolean z3 = z10000;
-            int i7 = world10.getBlockMetadata(i9, i5, i6);
-            TileEntity tileEntity8 = world10.getBlockTileEntity(i9, i5, i6);
-            if(z3) {
-                world10.setBlockWithNotify(i9, i5, i6, Block.stoneOvenActive.blockID);
-            } else {
-                world10.setBlockWithNotify(i9, i5, i6, Block.stoneOvenIdle.blockID);
-            }
-
-            world10.setBlockMetadata(i9, i5, i6, i7);
-            world10.setBlockTileEntity(i9, i5, i6, tileEntity8);
+            BlockFurnace.updateFurnaceBlockState(this.furnaceBurnTime > 0, this.worldObj, this.xCoord, this.yCoord, this.zCoord);
         }
 
         if(z2) {
@@ -184,21 +156,45 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 	}
 
 	private boolean canSmelt() {
-		int i1;
-		ItemStack itemStack2;
-		return this.furnaceItemStacks[0] == null ? false : ((i1 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex)) < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != i1 ? false : (this.furnaceItemStacks[2].stackSize < 64 && this.furnaceItemStacks[2].stackSize < (itemStack2 = this.furnaceItemStacks[2]).getItem().getItemStackLimit() ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[i1].getItemStackLimit()))));
+        if(this.furnaceItemStacks[0] == null) {
+            return false;
+        } else {
+            int i1 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
+            return i1 < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != i1 ? false : (this.furnaceItemStacks[2].stackSize < this.getInventoryStackLimit() && this.furnaceItemStacks[2].stackSize < this.furnaceItemStacks[2].getMaxStackSize() ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[i1].getItemStackLimit())));
+        }
 	}
+
+    public void smeltItem() {
+        if(this.canSmelt()) {
+            int i1 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
+            if(this.furnaceItemStacks[2] == null) {
+                this.furnaceItemStacks[2] = new ItemStack(i1, 1);
+            } else if(this.furnaceItemStacks[2].itemID == i1) {
+                ++this.furnaceItemStacks[2].stackSize;
+            }
+
+            --this.furnaceItemStacks[0].stackSize;
+            if(this.furnaceItemStacks[0].stackSize <= 0) {
+                this.furnaceItemStacks[0] = null;
+            }
+
+        }
+    }
 
 	public static int getSmeltingResult(int shiftedIndex) {
 		return shiftedIndex == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (shiftedIndex == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (shiftedIndex == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (shiftedIndex == Block.sand.blockID ? Block.glass.blockID : (shiftedIndex == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (shiftedIndex == Block.cobblestone.blockID ? Block.stone.blockID : -1)))));
 	}
 
 	private static int getItemBurnTime(ItemStack stack) {
-		int stack1;
-		return stack == null ? 0 : ((stack1 = stack.getItem().shiftedIndex) < 256 && Block.blocksList[stack1].blockMaterial == Material.wood ? 300 : (stack1 == Item.stick.shiftedIndex ? 100 : (stack1 == Item.coal.shiftedIndex ? 1600 : 0)));
+        if(stack == null) {
+            return 0;
+        } else {
+            int i2 = stack.getItem().shiftedIndex;
+            return i2 < 256 && Block.blocksList[i2].blockMaterial == Material.wood ? 300 : (i2 == Item.stick.shiftedIndex ? 100 : (i2 == Item.coal.shiftedIndex ? 1600 : 0));
+        }
 	}
 
-	public final void onInventoryChanged() {
+	public void onInventoryChanged() {
 		this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
 	}
 

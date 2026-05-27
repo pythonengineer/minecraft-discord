@@ -2,7 +2,7 @@ package net.minecraft.client.render;
 
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
-public class ImageBufferDownload {
+public class ImageBufferDownload implements ImageBuffer {
     private int[] imageData;
     private int imageWidth;
     private int imageHeight;
@@ -19,15 +19,40 @@ public class ImageBufferDownload {
             this.setAreaOpaque(0, 0, 32, 16);
             this.setAreaTransparent(32, 0, 64, 32);
             this.setAreaOpaque(0, 16, 64, 32);
+            boolean z4 = false;
+
+            int i5;
+            int i6;
+            int i7;
+            for(i5 = 32; i5 < 64; ++i5) {
+                for(i6 = 0; i6 < 16; ++i6) {
+                    i7 = this.imageData[i5 + i6 * 64];
+                    if((i7 >> 24 & 255) < 128) {
+                        z4 = true;
+                    }
+                }
+            }
+
+            if(!z4) {
+                for(i5 = 32; i5 < 64; ++i5) {
+                    for(i6 = 0; i6 < 16; ++i6) {
+                        i7 = this.imageData[i5 + i6 * 64];
+                        if((i7 >> 24 & 255) < 128) {
+                            z4 = true;
+                        }
+                    }
+                }
+            }
+
             return bufferedImage2;
         }
     }
 
     private void setAreaTransparent(int minX, int minY, int maxX, int maxY) {
-        if(!this.hasTransparency(32, 0, 64, 32)) {
-            for(minX = 32; minX < 64; ++minX) {
-                for(minY = 0; minY < 32; ++minY) {
-                    this.imageData[minX + minY * this.imageWidth] &= 0xFFFFFF;
+        if(!this.hasTransparency(minX, minY, maxX, maxY)) {
+            for(int x = minX; x < maxX; ++x) {
+                for(int y = minY; y < maxY; ++y) {
+                    this.imageData[x + y * this.imageWidth] &= 0xFFFFFF;
                 }
             }
 
@@ -35,18 +60,19 @@ public class ImageBufferDownload {
     }
 
     private void setAreaOpaque(int minX, int minY, int maxX, int maxY) {
-        for(minX = 0; minX < maxX; ++minX) {
-            for(int i5 = minY; i5 < maxY; ++i5) {
-                this.imageData[minX + i5 * this.imageWidth] |= 0xFF000000;
+        for(int x = minX; x < maxX; ++x) {
+            for(int y = minY; y < maxY; ++y) {
+                this.imageData[x + y * this.imageWidth] |= 0xFF000000;
             }
         }
 
     }
 
-    boolean hasTransparency(int i1, int i2, int i3, int i4) {
-        for(i1 = i1; i1 < i3; ++i1) {
-            for(int i5 = i2; i5 < i4; ++i5) {
-                if(this.imageData[i1 + i5 * this.imageWidth] >>> 24 < 128) {
+    private boolean hasTransparency(int minX, int minY, int maxX, int maxY) {
+        for(int x = minX; x < maxX; ++x) {
+            for(int y = minY; y < maxY; ++y) {
+                int i7 = this.imageData[x + y * this.imageWidth];
+                if((i7 >> 24 & 255) < 128) {
                     return true;
                 }
             }
