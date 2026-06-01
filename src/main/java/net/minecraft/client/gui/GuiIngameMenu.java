@@ -18,7 +18,7 @@ public class GuiIngameMenu extends GuiScreen {
 
 	protected void actionPerformed(GuiButton button) {
 		if(button.id == 0) {
-			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
+			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.options));
 		}
 
 		if(button.id == 1) {

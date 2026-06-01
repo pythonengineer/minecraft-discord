@@ -17,7 +17,7 @@ public class CraftingRecipe {
         this.resultStack = output;
     }
 
-    public boolean matchRecipe(int[] items) {
+    public boolean matches(int[] items) {
         for(int i2 = 0; i2 <= 3 - this.width; ++i2) {
             for(int i3 = 0; i3 <= 3 - this.height; ++i3) {
                 if(this.checkMatch(items, i2, i3, true)) {
@@ -56,7 +56,7 @@ public class CraftingRecipe {
         return true;
     }
 
-    public ItemStack createResult(int[] i1) {
+    public ItemStack getCraftingResult(int[] i1) {
         return new ItemStack(this.resultStack.itemID, this.resultStack.stackSize);
     }
 

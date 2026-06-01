@@ -79,11 +79,11 @@ public class BlockTorch extends Block {
 			world.setBlockMetadataWithNotify(x, y, z, 5);
 		}
 
-		this.dropTorchIfCantStay(world, x, y, z);
+		this.checkIfAttachedToBlock(world, x, y, z);
 	}
 
 	public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
-		if(this.dropTorchIfCantStay(world, x, y, z)) {
+		if(this.checkIfAttachedToBlock(world, x, y, z)) {
 			int i6 = world.getBlockMetadata(x, y, z);
 			boolean z7 = false;
 			if(!world.isBlockNormalCube(x - 1, y, z) && i6 == 1) {
@@ -114,7 +114,7 @@ public class BlockTorch extends Block {
 
 	}
 
-	private boolean dropTorchIfCantStay(World world, int x, int y, int z) {
+	private boolean checkIfAttachedToBlock(World world, int x, int y, int z) {
 		if(!this.canPlaceBlockAt(world, x, y, z)) {
 			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
 			world.setBlockWithNotify(x, y, z, 0);
@@ -125,7 +125,7 @@ public class BlockTorch extends Block {
 	}
 
 	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {
-		int i7 = world.getBlockMetadata(x, y, z);
+		int i7 = world.getBlockMetadata(x, y, z) & 7;
 		float f8 = 0.15F;
 		if(i7 == 1) {
 			this.setBlockBounds(0.0F, 0.2F, 0.5F - f8, f8 * 2.0F, 0.8F, 0.5F + f8);

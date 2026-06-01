@@ -11,11 +11,11 @@ public class EntitySorter implements Comparator {
 		this.comparedEntity = entity;
 	}
 
-    public int compare(WorldRenderer worldRenderer1, WorldRenderer worldRenderer2) {
+    public int sortByDistanceToEntity(WorldRenderer worldRenderer1, WorldRenderer worldRenderer2) {
         return worldRenderer1.distanceToEntitySquared(this.comparedEntity) < worldRenderer2.distanceToEntitySquared(this.comparedEntity) ? -1 : 1;
     }
 
     public int compare(Object object1, Object object2) {
-        return this.compare((WorldRenderer)object1, (WorldRenderer)object2);
+        return this.sortByDistanceToEntity((WorldRenderer)object1, (WorldRenderer)object2);
     }
 }

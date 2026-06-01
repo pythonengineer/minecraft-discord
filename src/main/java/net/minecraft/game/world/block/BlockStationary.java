@@ -12,12 +12,12 @@ public class BlockStationary extends BlockFluid {
     public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
         super.onNeighborBlockChange(world, x, y, z, blockID);
         if(world.getBlockId(x, y, z) == this.blockID) {
-            this.updateTick(world, x, y, z);
+            this.setNotStationary(world, x, y, z);
         }
 
     }
 
-    private void updateTick(World world, int x, int y, int z) {
+    private void setNotStationary(World world, int x, int y, int z) {
         int i5 = world.getBlockMetadata(x, y, z);
         world.editingBlocks = true;
         world.setBlockAndMetadata(x, y, z, this.blockID - 1, i5);

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.block.Block;
 
 public class TileEntity {
 	private static Map nameToClassMap = new HashMap();
@@ -79,6 +80,10 @@ public class TileEntity {
         double d9 = (double)this.yCoord + 0.5D - y;
         double d11 = (double)this.zCoord + 0.5D - z;
         return d7 * d7 + d9 * d9 + d11 * d11;
+    }
+
+    public Block getBlockType() {
+        return Block.blocksList[this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord)];
     }
 
 	static {

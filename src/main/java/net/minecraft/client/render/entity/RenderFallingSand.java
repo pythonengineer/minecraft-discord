@@ -15,7 +15,7 @@ public class RenderFallingSand extends Render {
         this.shadowSize = 0.5F;
     }
 
-    public void doRender(EntityFallingSand entity, double x, double y, double z, float yaw, float partialTicks) {
+    public void doRenderFallingSand(EntityFallingSand entity, double x, double y, double z, float yaw, float partialTicks) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float)x, (float)y, (float)z);
         this.loadTexture("/terrain.png");
@@ -27,7 +27,7 @@ public class RenderFallingSand extends Render {
         GL11.glPopMatrix();
     }
 
-    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
-        this.doRender((EntityFallingSand)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+        this.doRenderFallingSand((EntityFallingSand)entity, x, y, z, yaw, partialTicks);
     }
 }

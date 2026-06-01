@@ -62,7 +62,7 @@ public class GuiFurnace extends GuiContainer {
                     return null;
                 }
             } else if (i != 1 && i != 0) {
-                if (TileEntityFurnace.getSmeltingResult(itemstack1.itemID) != -1) {
+                if (TileEntityFurnace.getCookedItem(itemstack1.itemID) != -1) {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
                         return null;
                     }

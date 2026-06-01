@@ -18,7 +18,7 @@ public class RenderMinecart extends Render {
 		this.modelMinecart = new ModelMinecart();
 	}
 
-	public void doRender(EntityMinecart entity, double x, double y, double z, float yaw, float partialTicks) {
+	public void renderMinecart(EntityMinecart entity, double x, double y, double z, float yaw, float partialTicks) {
 		GL11.glPushMatrix();
 		double d10 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
 		double d12 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
@@ -72,7 +72,7 @@ public class RenderMinecart extends Render {
 		GL11.glPopMatrix();
 	}
 
-    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
-        this.doRender((EntityMinecart)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+        this.renderMinecart((EntityMinecart)entity, x, y, z, yaw, partialTicks);
     }
 }

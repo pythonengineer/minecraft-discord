@@ -14,7 +14,7 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.block.Block;
 
 public class RenderItem extends Render {
-    private RenderBlocks renderBlocks = new RenderBlocks();
+    private RenderBlocks itemRenderBlocks = new RenderBlocks();
     private EaglercraftRandom random = new EaglercraftRandom();
 
     public RenderItem() {
@@ -22,7 +22,7 @@ public class RenderItem extends Render {
         this.shadowOpaque = 0.75F;
     }
 
-    public void doRender(EntityItem entity, double x, double y, double z, float yaw, float partialTicks) {
+    public void doRenderItem(EntityItem entity, double x, double y, double z, float yaw, float partialTicks) {
         this.random.setSeed(187L);
         ItemStack itemStack2 = entity.item;
         GL11.glPushMatrix();
@@ -46,7 +46,7 @@ public class RenderItem extends Render {
         float f6;
         float f7;
         float f8;
-        if(itemStack2.itemID < 256 && Block.blocksList[itemStack2.itemID].getRenderType() == 0) {
+        if(itemStack2.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[itemStack2.itemID].getRenderType())) {
             GL11.glRotatef(f4, 0.0F, 1.0F, 0.0F);
             this.loadTexture("/terrain.png");
             float scale = 0.25F;
@@ -65,7 +65,7 @@ public class RenderItem extends Render {
                     GL11.glTranslatef(f6, f7, f8);
                 }
 
-                this.renderBlocks.renderBlockOnInventory(Block.blocksList[itemStack2.itemID]);
+                this.itemRenderBlocks.renderBlockOnInventory(Block.blocksList[itemStack2.itemID]);
                 GL11.glPopMatrix();
             }
         } else {
@@ -110,7 +110,7 @@ public class RenderItem extends Render {
 
     public void renderItemIntoGUI(RenderEngine renderEngine, ItemStack stack, int x, int y) {
         if(stack != null) {
-            if(stack.itemID < 256 && Block.blocksList[stack.itemID].getRenderType() == 0) {
+            if(stack.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[stack.itemID].getRenderType())) {
                 int itemID = stack.itemID;
                 renderEngine.bindTexture(renderEngine.getTexture("/terrain.png"));
                 Block block3 = Block.blocksList[itemID];
@@ -121,7 +121,7 @@ public class RenderItem extends Render {
                 GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                this.renderBlocks.renderBlockOnInventory(block3);
+                this.itemRenderBlocks.renderBlockOnInventory(block3);
                 GL11.glPopMatrix();
             } else if(stack.getIconIndex() >= 0) {
                 GL11.glDisable(GL11.GL_LIGHTING);
@@ -131,7 +131,7 @@ public class RenderItem extends Render {
                     renderEngine.bindTexture(renderEngine.getTexture("/gui/items.png"));
                 }
 
-                this.renderTexturedQuad(x, y, stack.getIconIndex() % 16 * 16, stack.getIconIndex() / 16 * 16, 16, 16);
+                this.renderIcon(x, y, stack.getIconIndex() % 16 * 16, stack.getIconIndex() / 16 * 16, 16, 16);
                 GL11.glEnable(GL11.GL_LIGHTING);
             }
 
@@ -187,7 +187,7 @@ public class RenderItem extends Render {
         tessellator.draw();
     }
 
-    public void renderTexturedQuad(int x, int y, int u, int v, int i5, int i6) {
+    public void renderIcon(int x, int y, int u, int v, int i5, int i6) {
         float f7 = 0.0F;
         float f8 = 0.00390625F;
         float f9 = 0.00390625F;
@@ -200,7 +200,7 @@ public class RenderItem extends Render {
         tessellator10.draw();
     }
 
-    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
-        this.doRender((EntityItem)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+        this.doRenderItem((EntityItem)entity, x, y, z, yaw, partialTicks);
     }
 }

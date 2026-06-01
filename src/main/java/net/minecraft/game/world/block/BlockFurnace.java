@@ -17,6 +17,10 @@ public class BlockFurnace extends BlockContainer {
 		this.blockIndexInTexture = 45;
 	}
 
+    public int idDropped(int blockID, EaglercraftRandom rand) {
+        return Block.stoneOvenIdle.blockID;
+    }
+
     public void onBlockAdded(World world, int x, int y, int z) {
         super.onBlockAdded(world, x, y, z);
         this.setDefaultDirection(world, x, y, z);

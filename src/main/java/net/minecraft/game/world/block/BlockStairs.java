@@ -14,10 +14,10 @@ public class BlockStairs extends Block {
     private Block modelBlock;
 
     protected BlockStairs(int blockid, Block block) {
-        super(blockid, block.blockIndexInTexture, block.blockMaterial);
+        super(blockid, block.blockIndexInTexture, block.material);
         this.modelBlock = block;
-        this.setHardness(block.blockHardness);
-        this.setResistance(block.blockResistance / 3.0F);
+        this.setHardness(block.hardness);
+        this.setResistance(block.resistance / 3.0F);
         this.setStepSound(block.stepSound);
     }
 

@@ -49,7 +49,7 @@ public class BlockSand extends Block {
 		} else if(i4 == Block.fire.blockID) {
 			return true;
 		} else {
-			Material material5 = Block.blocksList[i4].blockMaterial;
+			Material material5 = Block.blocksList[i4].material;
 			return material5 == Material.water ? true : material5 == Material.lava;
 		}
 	}

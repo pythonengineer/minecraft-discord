@@ -23,7 +23,7 @@ public abstract class BlockFluid extends Block {
         this.setTickOnLoad(true);
     }
 
-    public static float getPercentAir(int fluidHeight) {
+    public static float getFluidHeightPercent(int fluidHeight) {
         if(fluidHeight >= 8) {
             fluidHeight = 0;
         }
@@ -36,11 +36,11 @@ public abstract class BlockFluid extends Block {
     }
 
     protected int getFlowDecay(World world, int x, int y, int z) {
-        return world.getBlockMaterial(x, y, z) != this.blockMaterial ? -1 : world.getBlockMetadata(x, y, z);
+        return world.getBlockMaterial(x, y, z) != this.material ? -1 : world.getBlockMetadata(x, y, z);
     }
 
     protected int getEffectiveFlowDecay(IBlockAccess iBlockAccess, int x, int y, int z) {
-        if(iBlockAccess.getBlockMaterial(x, y, z) != this.blockMaterial) {
+        if(iBlockAccess.getBlockMaterial(x, y, z) != this.material) {
             return -1;
         } else {
             int world1;
@@ -65,7 +65,7 @@ public abstract class BlockFluid extends Block {
     }
 
     public boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
-        return iBlockAccess.getBlockMaterial(x, y, z) == this.blockMaterial ? false : (metadata == 1 ? true : super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata));
+        return iBlockAccess.getBlockMaterial(x, y, z) == this.material ? false : (metadata == 1 ? true : super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata));
     }
 
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
@@ -169,7 +169,7 @@ public abstract class BlockFluid extends Block {
     }
 
     public int tickRate() {
-        return this.blockMaterial == Material.water ? 5 : (this.blockMaterial == Material.lava ? 30 : 0);
+        return this.material == Material.water ? 5 : (this.material == Material.lava ? 30 : 0);
     }
 
     public float getBlockBrightness(IBlockAccess iBlockAccess, int x, int y, int z) {
@@ -183,16 +183,16 @@ public abstract class BlockFluid extends Block {
     }
 
     public int getRenderBlockPass() {
-        return this.blockMaterial == Material.water ? 1 : 0;
+        return this.material == Material.water ? 1 : 0;
     }
 
     public void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
         int i6;
-        if(this.blockMaterial == Material.water && rand.nextInt(64) == 0 && (i6 = world.getBlockMetadata(x, y, z)) > 0 && i6 < 8) {
+        if(this.material == Material.water && rand.nextInt(64) == 0 && (i6 = world.getBlockMetadata(x, y, z)) > 0 && i6 < 8) {
             world.playSoundEffect((double)((float)x + 0.5F), (double)((float)y + 0.5F), (double)((float)z + 0.5F), "liquid.water", rand.nextFloat() * 0.25F + 0.75F, rand.nextFloat() + 0.5F);
         }
 
-        if(this.blockMaterial == Material.lava && world.getBlockMaterial(x, y + 1, z) == Material.air && !world.isBlockNormalCube(x, y + 1, z) && rand.nextInt(100) == 0) {
+        if(this.material == Material.lava && world.getBlockMaterial(x, y + 1, z) == Material.air && !world.isBlockNormalCube(x, y + 1, z) && rand.nextInt(100) == 0) {
             double d12 = (double)((float)x + rand.nextFloat());
             double d8 = (double)y + this.maxY;
             double d10 = (double)((float)z + rand.nextFloat());
@@ -224,7 +224,7 @@ public abstract class BlockFluid extends Block {
 
     private void checkForHarden(World world, int x, int y, int z) {
         if(world.getBlockId(x, y, z) == this.blockID) {
-            if(this.blockMaterial == Material.lava) {
+            if(this.material == Material.lava) {
                 boolean z5 = false;
                 if(z5 || world.getBlockMaterial(x, y, z - 1) == Material.water) {
                     z5 = true;

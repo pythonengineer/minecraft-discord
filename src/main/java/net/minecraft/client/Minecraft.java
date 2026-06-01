@@ -7,7 +7,6 @@ import net.lax1dude.eaglercraft.crash.CrashReport;
 import net.lax1dude.eaglercraft.internal.EnumPlatformType;
 import net.lax1dude.eaglercraft.internal.ContextLostError;
 import net.lax1dude.eaglercraft.internal.PlatformRuntime;
-import net.lax1dude.eaglercraft.lwjgl.BufferUtils;
 import net.lax1dude.eaglercraft.lwjgl.LWJGLException;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
@@ -40,16 +39,12 @@ import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.texture.TextureFlamesFX;
-import net.minecraft.client.render.texture.TextureGearsFX;
 import net.minecraft.client.render.texture.TextureLavaFX;
 import net.minecraft.client.render.texture.TextureLavaFlowFX;
 import net.minecraft.client.render.texture.TextureWaterFX;
 import net.minecraft.client.render.texture.TextureWaterFlowFX;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.game.entity.Entity;
-import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.InventoryPlayer;
-import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
@@ -80,14 +75,16 @@ public class Minecraft implements Runnable {
 	public EntityRenderer entityRenderer = new EntityRenderer(this);
 	private int ticksRan = 0;
 	private int leftClickCounter = 0;
-	public String objectMouseOverString = null;
+    public String loadMapUser = null;
+    public int loadMapID = 0;
 	public GuiIngame ingameGUI;
     public boolean skipRenderWorld = false;
 	public ModelBiped playerModelBiped = new ModelBiped(0.0F);
 	public MovingObjectPosition objectMouseOver;
-    public GameSettings gameSettings;
+    public GameSettings options;
     public SoundManager sndManager;
-    private static long[] tickTimes = new long[512];
+    public MouseHelper mouseHelper;
+    private static long[] frameTimes = new long[512];
     private static int numRecordedFrameTimes = 0;
     private TextureWaterFX textureWaterFX;
     private TextureLavaFX textureLavaFX;
@@ -120,8 +117,8 @@ public class Minecraft implements Runnable {
 		this.displayWidth = width;
 		this.displayHeight = height;
 		this.fullscreen = fullscreen;
-        this.gameSettings = new GameSettings(this);
-        this.sndManager.loadSoundSettings(this.gameSettings);
+        this.options = new GameSettings(this);
+        this.sndManager.loadSoundSettings(this.options);
         this.sndManager.registerSounds();
 	}
 
@@ -149,7 +146,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Infdev");
+        Display.setTitle("Minecraft Alpha v1.0.1_01");
 
         try {
             Display.create();
@@ -166,11 +163,12 @@ public class Minecraft implements Runnable {
         }
 
 
-        this.renderEngine = new RenderEngine(this.gameSettings);
-        this.fontRenderer = new FontRenderer(this.gameSettings, "/default.png", this.renderEngine);
+        this.renderEngine = new RenderEngine(this.options);
+        this.fontRenderer = new FontRenderer(this.options, "/default.png", this.renderEngine);
         this.loadScreen();
         Keyboard.create();
         Mouse.create();
+        this.mouseHelper = new MouseHelper();
         Display.update();
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -192,8 +190,6 @@ public class Minecraft implements Runnable {
         this.renderEngine.registerTextureFX(new TextureLavaFlowFX());
         this.renderEngine.registerTextureFX(new TextureFlamesFX(0));
         this.renderEngine.registerTextureFX(new TextureFlamesFX(1));
-        this.renderEngine.registerTextureFX(new TextureGearsFX(0));
-        this.renderEngine.registerTextureFX(new TextureGearsFX(1));
         this.renderGlobal = new RenderGlobal(this, this.renderEngine);
         GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
 
@@ -317,7 +313,7 @@ public class Minecraft implements Runnable {
                 Display.checkContextLost();
 
                 PointerInputAbstraction.runGameLoop();
-                this.gameSettings.touchscreen = PointerInputAbstraction.isTouchMode();
+                this.options.touchscreen = PointerInputAbstraction.isTouchMode();
 
                 for(int i26 = 0; i26 < this.timer.elapsedTicks; ++i26) {
                     ++this.ticksRan;
@@ -365,7 +361,7 @@ public class Minecraft implements Runnable {
                 Thread.yield();
                 this.updateDisplay();
 
-                if(this.gameSettings.limitFramerate) {
+                if(this.options.limitFramerate) {
                     Thread.sleep(5L);
                 }
 
@@ -398,7 +394,7 @@ public class Minecraft implements Runnable {
         }
 
         long j1 = EagRuntime.nanoTime();
-        tickTimes[numRecordedFrameTimes++ & tickTimes.length - 1] = j1 - this.prevFrameTime;
+        frameTimes[numRecordedFrameTimes++ & frameTimes.length - 1] = j1 - this.prevFrameTime;
         this.prevFrameTime = j1;
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -414,32 +410,32 @@ public class Minecraft implements Runnable {
         tessellator13.setColorOpaque_I(0x20200000);
         tessellator13.addVertex(0.0D, (double)(this.displayHeight - 100), 0.0D);
         tessellator13.addVertex(0.0D, (double)this.displayHeight, 0.0D);
-        tessellator13.addVertex((double)tickTimes.length, (double)this.displayHeight, 0.0D);
-        tessellator13.addVertex((double)tickTimes.length, (double)(this.displayHeight - 100), 0.0D);
+        tessellator13.addVertex((double)frameTimes.length, (double)this.displayHeight, 0.0D);
+        tessellator13.addVertex((double)frameTimes.length, (double)(this.displayHeight - 100), 0.0D);
         tessellator13.draw();
         long j4 = 0L;
 
         int i2;
-        for(i2 = 0; i2 < tickTimes.length; ++i2) {
-            j4 += tickTimes[i2];
+        for(i2 = 0; i2 < frameTimes.length; ++i2) {
+            j4 += frameTimes[i2];
         }
 
-        i2 = (int)(j4 / 200000L / (long)tickTimes.length);
+        i2 = (int)(j4 / 200000L / (long)frameTimes.length);
         tessellator13.startDrawing(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
         tessellator13.setColorOpaque_I(0x20400000);
         tessellator13.addVertex(0.0D, (double)(this.displayHeight - i2), 0.0D);
         tessellator13.addVertex(0.0D, (double)this.displayHeight, 0.0D);
-        tessellator13.addVertex((double)tickTimes.length, (double)this.displayHeight, 0.0D);
-        tessellator13.addVertex((double)tickTimes.length, (double)(this.displayHeight - i2), 0.0D);
+        tessellator13.addVertex((double)frameTimes.length, (double)this.displayHeight, 0.0D);
+        tessellator13.addVertex((double)frameTimes.length, (double)(this.displayHeight - i2), 0.0D);
         tessellator13.draw();
         tessellator13.startDrawing(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
 
-        for(i2 = 0; i2 < tickTimes.length; ++i2) {
+        for(i2 = 0; i2 < frameTimes.length; ++i2) {
             int i3;
             int i14;
-            int i5 = (i5 = (i14 = (i14 = (i3 = (i2 - numRecordedFrameTimes & tickTimes.length - 1) * 255 / tickTimes.length) * i3 / 255) * i14 / 255) * i14 / 255) * i5 / 255;
+            int i5 = (i5 = (i14 = (i14 = (i3 = (i2 - numRecordedFrameTimes & frameTimes.length - 1) * 255 / frameTimes.length) * i3 / 255) * i14 / 255) * i14 / 255) * i5 / 255;
             tessellator13.setColorOpaque_I(i5 + 0xFF000000 + (i14 << 8) + (i3 << 16));
-            long j11 = tickTimes[i2] / 200000L;
+            long j11 = frameTimes[i2] / 200000L;
             tessellator13.addVertex((double)((float)i2 + 0.5F), (double)((float)((long)this.displayHeight - j11) + 0.5F), 0.0D);
             tessellator13.addVertex((double)((float)i2 + 0.5F), (double)((float)this.displayHeight + 0.5F), 0.0D);
         }
@@ -556,7 +552,7 @@ public class Minecraft implements Runnable {
             if(!this.inGameHasFocus) {
                 this.inGameHasFocus = true;
                 if (!touch && mouseGrabSupported) {
-                    Mouse.setGrabbed(true);
+                    this.mouseHelper.grabMouseCursor();
                 }
                 this.displayGuiScreen((GuiScreen) null);
                 this.mouseTicksRan = this.ticksRan + 10000;
@@ -572,7 +568,7 @@ public class Minecraft implements Runnable {
 
             this.inGameHasFocus = false;
             if (!PointerInputAbstraction.isTouchMode() && mouseGrabSupported) {
-                Mouse.setGrabbed(false);
+                this.mouseHelper.ungrabMouseCursor();
             }
         }
     }
@@ -889,15 +885,15 @@ public class Minecraft implements Runnable {
                             }
 
                             if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
-                                this.gameSettings.thirdPersonView = !this.gameSettings.thirdPersonView;
+                                this.options.thirdPersonView = !this.options.thirdPersonView;
                                 this.isRaining = !this.isRaining;
                             }
 
-                            if(Keyboard.getEventKey() == this.gameSettings.keyBindInventory.keyCode) {
+                            if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
                                 this.displayGuiScreen(new GuiInventory(this.thePlayer.inventory));
                             }
 
-                            if(Keyboard.getEventKey() == this.gameSettings.keyBindDrop.keyCode) {
+                            if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
                                 this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1), false);
                             }
                         }
@@ -908,8 +904,8 @@ public class Minecraft implements Runnable {
                             }
                         }
 
-                        if(Keyboard.getEventKey() == this.gameSettings.keyBindToggleFog.keyCode) {
-                            this.gameSettings.setOptionValue(4, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
+                        if(Keyboard.getEventKey() == this.options.keyBindToggleFog.keyCode) {
+                            this.options.setOptionValue(4, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
                         }
                     }
                 }
@@ -960,7 +956,7 @@ public class Minecraft implements Runnable {
 		}
 
         if(this.theWorld != null) {
-            this.theWorld.difficultySetting = this.gameSettings.difficulty;
+            this.theWorld.difficultySetting = this.options.difficulty;
             if(!this.isGamePaused) {
                 this.entityRenderer.updateRenderer();
             }
@@ -1037,7 +1033,7 @@ public class Minecraft implements Runnable {
                 this.playerController.flipPlayer(this.thePlayer);
             }
 
-            this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
+            this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
             if(this.renderGlobal != null) {
                 this.renderGlobal.changeWorld(world);
             }
@@ -1138,7 +1134,7 @@ public class Minecraft implements Runnable {
             this.theWorld.spawnPlayerWithLoadedChunks();
         }
 
-        this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
+        this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
         this.playerController.onRespawn(this.thePlayer);
         this.preloadWorld("Respawning");
     }

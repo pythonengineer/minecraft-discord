@@ -44,7 +44,7 @@ public class GuiIngame extends Gui {
         onBeginHotbarDraw();
 
         GL11.glEnable(GL11.GL_BLEND);
-        if(this.mc.gameSettings.fancyGraphics) {
+        if(this.mc.options.fancyGraphics) {
             this.renderVignette(this.mc.thePlayer.getBrightness(partialTicks), scaledWidth, scaledHeight);
         }
 
@@ -176,13 +176,13 @@ public class GuiIngame extends Gui {
 
         onBeginTouchGUI();
 
-        if(this.mc.gameSettings.showFPS) {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
+        if(this.mc.options.showFPS) {
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.1_01 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoRenders(), 2, 12, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.getEntityDebug(), 2, 22, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 0xFFFFFF);
         } else {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Infdev", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.1_01", 2, 2, 0xFFFFFF);
         }
 
         onEndTouchGUI();

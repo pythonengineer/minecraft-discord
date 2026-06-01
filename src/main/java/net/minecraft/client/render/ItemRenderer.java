@@ -57,7 +57,7 @@ public class ItemRenderer {
             }
 
             GL11.glScalef(0.4F, 0.4F, 0.4F);
-            if(this.itemToRender.itemID < 256 && Block.blocksList[this.itemToRender.itemID].getRenderType() == 0) {
+            if(this.itemToRender.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[this.itemToRender.itemID].getRenderType())) {
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
                 this.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[this.itemToRender.itemID]);
             } else {

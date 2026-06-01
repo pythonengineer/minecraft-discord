@@ -19,7 +19,7 @@ public class RenderLiving extends Render {
 		this.renderPassModel = renderPassModel;
 	}
 
-	public void renderLiving(EntityLiving entityLiving1, double d2, double d4, double d6, float f8, float f9) {
+	public void doRenderLiving(EntityLiving entityLiving1, double d2, double d4, double d6, float f8, float f9) {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_CULL_FACE);
 
@@ -38,7 +38,7 @@ public class RenderLiving extends Render {
 					f3 = 1.0F;
 				}
 
-				GL11.glRotatef(f3 * this.getMaxDeathRotation(entityLiving1), 0.0F, 0.0F, 1.0F);
+				GL11.glRotatef(f3 * this.getDeathMaxRotation(entityLiving1), 0.0F, 0.0F, 1.0F);
 			}
 
             GL11.glEnable(GL11.GL_RESCALE_NORMAL);
@@ -118,7 +118,7 @@ public class RenderLiving extends Render {
 		return false;
 	}
 
-	protected float getMaxDeathRotation(EntityLiving livingEntity) {
+	protected float getDeathMaxRotation(EntityLiving livingEntity) {
 		return 90.0F;
 	}
 
@@ -130,6 +130,6 @@ public class RenderLiving extends Render {
 	}
 
 	public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
-		this.renderLiving((EntityLiving)entity, x, y, z, yaw, partialTicks);
+		this.doRenderLiving((EntityLiving)entity, x, y, z, yaw, partialTicks);
 	}
 }

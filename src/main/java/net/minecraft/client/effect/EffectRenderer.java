@@ -16,7 +16,7 @@ import net.minecraft.game.world.block.Block;
 public class EffectRenderer {
 	protected World worldObj;
 	private List[] fxLayers = new List[3];
-	private RenderEngine renderer;
+	private RenderEngine renderEngine;
 	private EaglercraftRandom rand = new EaglercraftRandom();
 
 	public EffectRenderer(World world, RenderEngine renderEngine) {
@@ -24,7 +24,7 @@ public class EffectRenderer {
 			this.worldObj = world;
 		}
 
-		this.renderer = renderEngine;
+		this.renderEngine = renderEngine;
 
 		for(int i3 = 0; i3 < 3; ++i3) {
 			this.fxLayers[i3] = new ArrayList();
@@ -64,11 +64,11 @@ public class EffectRenderer {
 			if(this.fxLayers[i11].size() != 0) {
 				int i8 = 0;
 				if(i11 == 0) {
-					i8 = this.renderer.getTexture("/particles.png");
+					i8 = this.renderEngine.getTexture("/particles.png");
 				}
 
 				if(i11 == 1) {
-					i8 = this.renderer.getTexture("/terrain.png");
+					i8 = this.renderEngine.getTexture("/terrain.png");
 				}
 
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, i8);

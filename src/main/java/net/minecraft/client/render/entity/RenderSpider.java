@@ -11,11 +11,11 @@ public class RenderSpider extends RenderLiving {
 		this.setRenderPassModel(new ModelSpider());
 	}
 
-	protected float getMaxDeathRotation(EntitySpider spider) {
+	protected float setSpiderDeathMaxRotation(EntitySpider spider) {
 		return 180.0F;
 	}
 
-	protected boolean shouldRenderPass(EntitySpider spider, int flag) {
+	protected boolean setSpiderEyeBrightness(EntitySpider spider, int flag) {
 		if(flag != 0) {
 			return false;
 		} else {
@@ -29,11 +29,11 @@ public class RenderSpider extends RenderLiving {
 		}
 	}
 
-    protected float getMaxDeathRotation(EntityLiving eVar) {
-        return this.getMaxDeathRotation((EntitySpider)eVar);
+    protected float getDeathMaxRotation(EntityLiving eVar) {
+        return this.setSpiderDeathMaxRotation((EntitySpider)eVar);
     }
 
     protected boolean shouldRenderPass(EntityLiving eVar, int flag) {
-        return this.shouldRenderPass((EntitySpider)eVar, flag);
+        return this.setSpiderEyeBrightness((EntitySpider)eVar, flag);
     }
 }

@@ -114,7 +114,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 
     }
 
-    public void replaceBlocks(int chunkX, int chunkZ, byte[] chunkData) {
+    public void replaceSurfaceBlocks(int chunkX, int chunkZ, byte[] chunkData) {
         byte b4 = 64;
         double d5 = 8.0D / 256D;
         this.sandNoise = this.noiseGen4.generateNoiseOctaves(this.sandNoise, (double)(chunkX * 16), (double)(chunkZ * 16), 0.0D, 16, 16, 1, d5, d5, 1.0D);
@@ -190,7 +190,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
         byte[] b3 = new byte[32768];
         Chunk chunk4 = new Chunk(this.worldObj, b3, chunkX, chunkZ);
         this.generateTerrain(chunkX, chunkZ, b3);
-        this.replaceBlocks(chunkX, chunkZ, b3);
+        this.replaceSurfaceBlocks(chunkX, chunkZ, b3);
         this.generateCaves(chunkX, chunkZ, b3);
         chunk4.generateHeightMap();
         return chunk4;
@@ -536,18 +536,25 @@ public class ChunkProviderGenerate implements IChunkProvider {
             (new WorldGenMinable(Block.oreIron.blockID, 8)).generate(this.worldObj, this.rand, i13, i14, i15);
         }
 
-        if(this.rand.nextInt(1) == 0) {
-            i12 = i4 + this.rand.nextInt(16);
-            i13 = this.rand.nextInt(32);
-            i14 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Block.oreGold.blockID, 8)).generate(this.worldObj, this.rand, i12, i13, i14);
+        for(i12 = 0; i12 < 2; ++i12) {
+            i13 = i4 + this.rand.nextInt(16);
+            i14 = this.rand.nextInt(32);
+            i15 = i5 + this.rand.nextInt(16);
+            (new WorldGenMinable(Block.oreGold.blockID, 8)).generate(this.worldObj, this.rand, i13, i14, i15);
         }
 
-        if(this.rand.nextInt(4) == 0) {
-            i12 = i4 + this.rand.nextInt(16);
-            i13 = this.rand.nextInt(16);
-            i14 = i5 + this.rand.nextInt(16);
-            (new WorldGenMinable(Block.oreDiamond.blockID, 8)).generate(this.worldObj, this.rand, i12, i13, i14);
+        for(i12 = 0; i12 < 8; ++i12) {
+            i13 = i4 + this.rand.nextInt(16);
+            i14 = this.rand.nextInt(16);
+            i15 = i5 + this.rand.nextInt(16);
+            (new WorldGenMinable(Block.oreRedstone.blockID, 7)).generate(this.worldObj, this.rand, i13, i14, i15);
+        }
+
+        for(i12 = 0; i12 < 1; ++i12) {
+            i13 = i4 + this.rand.nextInt(16);
+            i14 = this.rand.nextInt(16);
+            i15 = i5 + this.rand.nextInt(16);
+            (new WorldGenMinable(Block.oreDiamond.blockID, 7)).generate(this.worldObj, this.rand, i13, i14, i15);
         }
 
         d10 = 0.5D;

@@ -22,7 +22,7 @@ public class GLAllocation {
         return i1;
     }
 
-    public static synchronized void generateDisplayLists(IntBuffer intBuffer0) {
+    public static synchronized void generateTextureNames(IntBuffer intBuffer0) {
         GL11.glGenTextures(intBuffer0);
 
         for(int i1 = intBuffer0.position(); i1 < intBuffer0.limit(); ++i1) {
@@ -37,7 +37,7 @@ public class GLAllocation {
         }
 
         IntBuffer intBuffer2;
-        (intBuffer2 = createIntBuffer(textureNames.size())).flip();
+        (intBuffer2 = createDirectIntBuffer(textureNames.size())).flip();
         GL11.glDeleteTextures(intBuffer2);
 
         for(int i1 = 0; i1 < textureNames.size(); ++i1) {
@@ -56,11 +56,11 @@ public class GLAllocation {
         return EagRuntime.allocateByteBuffer(capacity);
     }
 
-    public static IntBuffer createIntBuffer(int capacity) {
+    public static IntBuffer createDirectIntBuffer(int capacity) {
         return EagRuntime.allocateIntBuffer(capacity);
     }
 
-    public static FloatBuffer createFloatBuffer(int capacity) {
+    public static FloatBuffer createDirectFloatBuffer(int capacity) {
         return EagRuntime.allocateFloatBuffer(capacity);
     }
 }

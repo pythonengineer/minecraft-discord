@@ -5,6 +5,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.render.tileentity.TileEntityRenderer;
+import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.tileentity.TileEntitySign;
 
 public class GuiEditSign extends GuiScreen {
@@ -65,13 +66,36 @@ public class GuiEditSign extends GuiScreen {
         this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 0xFFFFFF);
         GL11.glPushMatrix();
         GL11.glTranslatef((float)(this.width / 2), (float)(this.height / 2), 50.0F);
-        GL11.glScalef(-60.0F, -60.0F, -60.0F);
+        float f4 = 93.75F;
+        GL11.glScalef(-f4, -f4, -f4);
         GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
+        Block block5 = this.entitySign.getBlockType();
+        if(block5 == Block.signStanding) {
+            float f6 = (float)(this.entitySign.getBlockMetadata() * 360) / 16.0F;
+            GL11.glRotatef(f6, 0.0F, 1.0F, 0.0F);
+        } else {
+            int i8 = this.entitySign.getBlockMetadata();
+            float f7 = 0.0F;
+            if(i8 == 2) {
+                f7 = 180.0F;
+            }
+
+            if(i8 == 4) {
+                f7 = 90.0F;
+            }
+
+            if(i8 == 5) {
+                f7 = -90.0F;
+            }
+
+            GL11.glRotatef(f7, 0.0F, 1.0F, 0.0F);
+            GL11.glTranslatef(0.0F, 0.3125F, 0.0F);
+        }
+
         if(this.updateCounter / 6 % 2 == 0) {
             this.entitySign.lineBeingEdited = this.editLine;
         }
 
-        GL11.glRotatef((float)(this.entitySign.getBlockMetadata() * 360) / 16.0F, 0.0F, 1.0F, 0.0F);
         TileEntityRenderer.instance.renderTileEntityAt(this.entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
         this.entitySign.lineBeingEdited = -1;
         GL11.glPopMatrix();

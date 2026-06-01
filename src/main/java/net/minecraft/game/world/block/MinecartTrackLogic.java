@@ -74,6 +74,10 @@ class MinecartTrackLogic {
 
     }
 
+    private boolean isMinecartTrack(int i1, int i2, int i3) {
+        return this.worldObj.getBlockId(i1, i2, i3) == this.minecartTrack.blockID ? true : (this.worldObj.getBlockId(i1, i2 + 1, i3) == this.minecartTrack.blockID ? true : this.worldObj.getBlockId(i1, i2 - 1, i3) == this.minecartTrack.blockID);
+    }
+
     private MinecartTrackLogic getMinecartTrackLogic(ChunkPosition chunkPosition1) {
         return this.worldObj.getBlockId(chunkPosition1.x, chunkPosition1.y, chunkPosition1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPosition1.x, chunkPosition1.y, chunkPosition1.z) : (this.worldObj.getBlockId(chunkPosition1.x, chunkPosition1.y + 1, chunkPosition1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPosition1.x, chunkPosition1.y + 1, chunkPosition1.z) : (this.worldObj.getBlockId(chunkPosition1.x, chunkPosition1.y - 1, chunkPosition1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPosition1.x, chunkPosition1.y - 1, chunkPosition1.z) : null));
     }
@@ -100,7 +104,28 @@ class MinecartTrackLogic {
         return false;
     }
 
-    private boolean handleKeyPress(MinecartTrackLogic minecartTrackLogic1) {
+    private int getAdjacentTracks() {
+        int i1 = 0;
+        if(this.isMinecartTrack(this.trackX, this.trackY, this.trackZ - 1)) {
+            ++i1;
+        }
+
+        if(this.isMinecartTrack(this.trackX, this.trackY, this.trackZ + 1)) {
+            ++i1;
+        }
+
+        if(this.isMinecartTrack(this.trackX - 1, this.trackY, this.trackZ)) {
+            ++i1;
+        }
+
+        if(this.isMinecartTrack(this.trackX + 1, this.trackY, this.trackZ)) {
+            ++i1;
+        }
+
+        return i1;
+    }
+
+    private boolean canConnectTo(MinecartTrackLogic minecartTrackLogic1) {
         if(this.isConnectedTo(minecartTrackLogic1)) {
             return true;
         } else if(this.connectedTracks.size() == 2) {
@@ -177,77 +202,125 @@ class MinecartTrackLogic {
             return false;
         } else {
             minecartTrackLogic4.refreshConnectedTracks();
-            return minecartTrackLogic4.handleKeyPress(this);
+            return minecartTrackLogic4.canConnectTo(this);
         }
     }
 
-    public void place() {
-        boolean z1 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ - 1);
-        boolean z2 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ + 1);
-        boolean z3 = this.canConnectFrom(this.trackX - 1, this.trackY, this.trackZ);
-        boolean z4 = this.canConnectFrom(this.trackX + 1, this.trackY, this.trackZ);
-        byte b5 = -1;
-        if(z1 || z2) {
-            b5 = 0;
+    public void place(boolean z1) {
+        boolean z2 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ - 1);
+        boolean z3 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ + 1);
+        boolean z4 = this.canConnectFrom(this.trackX - 1, this.trackY, this.trackZ);
+        boolean z5 = this.canConnectFrom(this.trackX + 1, this.trackY, this.trackZ);
+        byte b6 = -1;
+        if((z2 || z3) && !z4 && !z5) {
+            b6 = 0;
         }
 
-        if(z3 || z4) {
-            b5 = 1;
+        if((z4 || z5) && !z2 && !z3) {
+            b6 = 1;
         }
 
-        if(z2 && z4 && !z1 && !z3) {
-            b5 = 6;
+        if(z3 && z5 && !z2 && !z4) {
+            b6 = 6;
         }
 
-        if(z2 && z3 && !z1 && !z4) {
-            b5 = 7;
+        if(z3 && z4 && !z2 && !z5) {
+            b6 = 7;
         }
 
-        if(z1 && z3 && !z2 && !z4) {
-            b5 = 8;
+        if(z2 && z4 && !z3 && !z5) {
+            b6 = 8;
         }
 
-        if(z1 && z4 && !z2 && !z3) {
-            b5 = 9;
+        if(z2 && z5 && !z3 && !z4) {
+            b6 = 9;
         }
 
-        if(b5 == 0) {
-            if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ - 1) == this.minecartTrack.blockID) {
-                b5 = 4;
+        if(b6 == -1) {
+            if(z2 || z3) {
+                b6 = 0;
             }
 
-            if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ + 1) == this.minecartTrack.blockID) {
-                b5 = 5;
-            }
-        }
-
-        if(b5 == 1) {
-            if(this.worldObj.getBlockId(this.trackX + 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
-                b5 = 2;
+            if(z4 || z5) {
+                b6 = 1;
             }
 
-            if(this.worldObj.getBlockId(this.trackX - 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
-                b5 = 3;
-            }
-        }
+            if(z1) {
+                if(z3 && z5) {
+                    b6 = 6;
+                }
 
-        if(b5 < 0) {
-            b5 = 0;
-        }
+                if(z4 && z3) {
+                    b6 = 7;
+                }
 
-        this.trackMetadata = b5;
-        this.calculateConnectedTracks();
-        this.worldObj.setBlockMetadataWithNotify(this.trackX, this.trackY, this.trackZ, b5);
+                if(z5 && z2) {
+                    b6 = 9;
+                }
 
-        for(int i6 = 0; i6 < this.connectedTracks.size(); ++i6) {
-            MinecartTrackLogic minecartTrackLogic7 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(i6));
-            if(minecartTrackLogic7 != null) {
-                minecartTrackLogic7.refreshConnectedTracks();
-                if(minecartTrackLogic7.handleKeyPress(this)) {
-                    minecartTrackLogic7.connectToNeighbor(this);
+                if(z2 && z4) {
+                    b6 = 8;
+                }
+            } else {
+                if(z2 && z4) {
+                    b6 = 8;
+                }
+
+                if(z5 && z2) {
+                    b6 = 9;
+                }
+
+                if(z4 && z3) {
+                    b6 = 7;
+                }
+
+                if(z3 && z5) {
+                    b6 = 6;
                 }
             }
         }
 
+        if(b6 == 0) {
+            if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ - 1) == this.minecartTrack.blockID) {
+                b6 = 4;
+            }
+
+            if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ + 1) == this.minecartTrack.blockID) {
+                b6 = 5;
+            }
+        }
+
+        if(b6 == 1) {
+            if(this.worldObj.getBlockId(this.trackX + 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
+                b6 = 2;
+            }
+
+            if(this.worldObj.getBlockId(this.trackX - 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
+                b6 = 3;
+            }
+        }
+
+        if(b6 < 0) {
+            b6 = 0;
+        }
+
+        this.trackMetadata = b6;
+        this.calculateConnectedTracks();
+        this.worldObj.setBlockMetadataWithNotify(this.trackX, this.trackY, this.trackZ, b6);
+
+        for(int i7 = 0; i7 < this.connectedTracks.size(); ++i7) {
+            MinecartTrackLogic minecartTrackLogic8 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(i7));
+            if(minecartTrackLogic8 != null) {
+                minecartTrackLogic8.refreshConnectedTracks();
+                if(minecartTrackLogic8.canConnectTo(this)) {
+                    minecartTrackLogic8.connectToNeighbor(this);
+                }
+            }
+        }
+
+    }
+
+    static int getNAdjacentTracks(MinecartTrackLogic minecartTrackLogic0) {
+        return minecartTrackLogic0.getAdjacentTracks();
     }
 }

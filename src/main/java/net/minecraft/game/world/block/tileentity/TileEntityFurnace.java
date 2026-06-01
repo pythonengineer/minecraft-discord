@@ -159,14 +159,14 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
         if(this.furnaceItemStacks[0] == null) {
             return false;
         } else {
-            int i1 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
+            int i1 = getCookedItem(this.furnaceItemStacks[0].getItem().shiftedIndex);
             return i1 < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != i1 ? false : (this.furnaceItemStacks[2].stackSize < this.getInventoryStackLimit() && this.furnaceItemStacks[2].stackSize < this.furnaceItemStacks[2].getMaxStackSize() ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[i1].getItemStackLimit())));
         }
 	}
 
     public void smeltItem() {
         if(this.canSmelt()) {
-            int i1 = getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
+            int i1 = getCookedItem(this.furnaceItemStacks[0].getItem().shiftedIndex);
             if(this.furnaceItemStacks[2] == null) {
                 this.furnaceItemStacks[2] = new ItemStack(i1, 1);
             } else if(this.furnaceItemStacks[2].itemID == i1) {
@@ -181,7 +181,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
         }
     }
 
-	public static int getSmeltingResult(int shiftedIndex) {
+	public static int getCookedItem(int shiftedIndex) {
 		return shiftedIndex == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (shiftedIndex == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (shiftedIndex == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (shiftedIndex == Block.sand.blockID ? Block.glass.blockID : (shiftedIndex == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (shiftedIndex == Block.cobblestone.blockID ? Block.stone.blockID : -1)))));
 	}
 
@@ -190,7 +190,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
             return 0;
         } else {
             int i2 = stack.getItem().shiftedIndex;
-            return i2 < 256 && Block.blocksList[i2].blockMaterial == Material.wood ? 300 : (i2 == Item.stick.shiftedIndex ? 100 : (i2 == Item.coal.shiftedIndex ? 1600 : 0));
+            return i2 < 256 && Block.blocksList[i2].material == Material.wood ? 300 : (i2 == Item.stick.shiftedIndex ? 100 : (i2 == Item.coal.shiftedIndex ? 1600 : 0));
         }
 	}
 

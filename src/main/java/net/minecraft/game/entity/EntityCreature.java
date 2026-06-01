@@ -7,37 +7,37 @@ import net.minecraft.game.world.path.PathEntity;
 
 public class EntityCreature extends EntityLiving {
 	private PathEntity pathToEntity;
-	protected Entity playerToAttack;
+	protected Entity entityToAttack;
 	protected boolean hasAttacked = false;
 
 	public EntityCreature(World world1) {
 		super(world1);
 	}
 
-	protected boolean canEntityBeSeen(Entity entity) {
+	protected boolean updateEntityActionState(Entity entity) {
 		return this.worldObj.rayTraceBlocks(Vec3D.createVector(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), Vec3D.createVector(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
 	}
 
-	protected void updatePlayerActionState() {
+	protected void updateEntityActionState() {
 		this.hasAttacked = false;
 		float f1 = 16.0F;
-		if(this.playerToAttack == null) {
-			this.playerToAttack = this.findPlayerToAttack();
-			if(this.playerToAttack != null) {
-				this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, f1);
+		if(this.entityToAttack == null) {
+			this.entityToAttack = this.findPlayerToAttack();
+			if(this.entityToAttack != null) {
+				this.pathToEntity = this.worldObj.getPathToEntity(this, this.entityToAttack, f1);
 			}
-		} else if(!this.playerToAttack.isEntityAlive()) {
-			this.playerToAttack = null;
+		} else if(!this.entityToAttack.isEntityAlive()) {
+			this.entityToAttack = null;
 		} else {
-			float f2 = this.playerToAttack.getDistanceToEntity(this);
-			if(this.canEntityBeSeen(this.playerToAttack)) {
-				this.attackEntity(this.playerToAttack, f2);
+			float f2 = this.entityToAttack.getDistanceToEntity(this);
+			if(this.updateEntityActionState(this.entityToAttack)) {
+				this.attackEntity(this.entityToAttack, f2);
 			}
 		}
 
 		int i19;
-		if(!this.hasAttacked && this.playerToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
-			this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, f1);
+		if(!this.hasAttacked && this.entityToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
+			this.pathToEntity = this.worldObj.getPathToEntity(this, this.entityToAttack, f1);
 		} else if(this.pathToEntity == null || this.rand.nextInt(100) == 0) {
 			i19 = -1;
 			int i3 = -1;
@@ -86,9 +86,9 @@ public class EntityCreature extends EntityLiving {
 				double d11 = vec3D22.yCoord - (double)i19;
 				this.rotationYaw = (float)(Math.atan2(d25, d24) * 180.0D / (double)(float)Math.PI) - 90.0F;
 				this.moveForward = this.moveSpeed;
-				if(this.hasAttacked && this.playerToAttack != null) {
-					double d13 = this.playerToAttack.posX - this.posX;
-					double d15 = this.playerToAttack.posZ - this.posZ;
+				if(this.hasAttacked && this.entityToAttack != null) {
+					double d13 = this.entityToAttack.posX - this.posX;
+					double d15 = this.entityToAttack.posZ - this.posZ;
 					float f17 = this.rotationYaw;
 					this.rotationYaw = (float)(Math.atan2(d15, d13) * 180.0D / (double)(float)Math.PI) - 90.0F;
 					float f18 = (f17 - this.rotationYaw + 90.0F) * (float)Math.PI / 180.0F;
@@ -106,7 +106,7 @@ public class EntityCreature extends EntityLiving {
 			}
 
 		} else {
-			super.updatePlayerActionState();
+			super.updateEntityActionState();
 			this.pathToEntity = null;
 		}
 	}

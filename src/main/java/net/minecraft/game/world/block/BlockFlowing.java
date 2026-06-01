@@ -44,11 +44,11 @@ public class BlockFlowing extends BlockFluid {
 				}
 			}
 
-			if(this.numAdjacentSources >= 2 && this.blockMaterial == Material.water) {
+			if(this.numAdjacentSources >= 2 && this.material == Material.water) {
 				i9 = 0;
 			}
 
-			if(this.blockMaterial == Material.lava && i6 < 8 && i9 < 8 && i9 > i6 && rand.nextInt(4) != 0) {
+			if(this.material == Material.lava && i6 < 8 && i9 < 8 && i9 > i6 && rand.nextInt(4) != 0) {
 				i9 = i6;
 				z7 = false;
 			}
@@ -109,7 +109,7 @@ public class BlockFlowing extends BlockFluid {
 		if(this.liquidCanDisplaceBlock(world, x, y, z)) {
 			int i6 = world.getBlockId(x, y, z);
 			if(i6 > 0) {
-				if(this.blockMaterial == Material.lava) {
+				if(this.material == Material.lava) {
 					this.triggerLavaMixEffects(world, x, y, z);
 				} else {
 					Block.blocksList[i6].dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
@@ -144,7 +144,7 @@ public class BlockFlowing extends BlockFluid {
 					++i10;
 				}
 
-				if(!this.blockBlocksFlow(world, i9, y, i10) && (world.getBlockMaterial(i9, y, i10) != this.blockMaterial || world.getBlockMetadata(i9, y, i10) != 0)) {
+				if(!this.blockBlocksFlow(world, i9, y, i10) && (world.getBlockMaterial(i9, y, i10) != this.material || world.getBlockMetadata(i9, y, i10) != 0)) {
 					if(!this.blockBlocksFlow(world, i9, y - 1, i10)) {
 						return blocksTravelled;
 					}
@@ -185,7 +185,7 @@ public class BlockFlowing extends BlockFluid {
 				++i8;
 			}
 
-			if(!this.blockBlocksFlow(world, i6, y, i8) && (world.getBlockMaterial(i6, y, i8) != this.blockMaterial || world.getBlockMetadata(i6, y, i8) != 0)) {
+			if(!this.blockBlocksFlow(world, i6, y, i8) && (world.getBlockMaterial(i6, y, i8) != this.material || world.getBlockMetadata(i6, y, i8) != 0)) {
 				if(!this.blockBlocksFlow(world, i6, y - 1, i8)) {
 					this.flowCost[i5] = 0;
 				} else {
@@ -211,11 +211,11 @@ public class BlockFlowing extends BlockFluid {
 
 	private boolean blockBlocksFlow(World world, int x, int y, int z) {
 		int i5 = world.getBlockId(x, y, z);
-		if(i5 != Block.doorWood.blockID && i5 != Block.signStanding.blockID && i5 != Block.ladder.blockID) {
+		if(i5 != Block.doorWood.blockID && i5 != Block.doorSteel.blockID && i5 != Block.signStanding.blockID && i5 != Block.ladder.blockID) {
 			if(i5 == 0) {
 				return false;
 			} else {
-				Material material6 = Block.blocksList[i5].blockMaterial;
+				Material material6 = Block.blocksList[i5].material;
 				return material6.isSolid();
 			}
 		} else {
@@ -242,7 +242,7 @@ public class BlockFlowing extends BlockFluid {
 
 	private boolean liquidCanDisplaceBlock(World world, int x, int y, int z) {
 		Material material5 = world.getBlockMaterial(x, y, z);
-		return material5 == this.blockMaterial ? false : (material5 == Material.lava ? false : !this.blockBlocksFlow(world, x, y, z));
+		return material5 == this.material ? false : (material5 == Material.lava ? false : !this.blockBlocksFlow(world, x, y, z));
 	}
 
 	public void onBlockAdded(World world, int x, int y, int z) {

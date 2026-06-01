@@ -41,7 +41,7 @@ public class EntityPlayerSP extends EntityPlayer {
         }
     }
 
-    public void updatePlayerActionState() {
+    public void updateEntityActionState() {
         this.moveStrafing = this.movementInput.moveStrafe;
         this.moveForward = this.movementInput.moveForward;
         this.isJumping = this.movementInput.jump;
@@ -93,7 +93,7 @@ public class EntityPlayerSP extends EntityPlayer {
         return this.inventory.getCurrentItem();
     }
 
-    public void displayGUIInventory() {
+    public void destroyCurrentEquippedItem() {
         this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
     }
 
@@ -106,7 +106,7 @@ public class EntityPlayerSP extends EntityPlayer {
                 itemStack3.hitEntity((EntityLiving)entity1);
                 if(itemStack3.stackSize <= 0) {
                     itemStack3.onItemDestroyedByUse(this);
-                    this.displayGUIInventory();
+                    this.destroyCurrentEquippedItem();
                 }
             }
         }
@@ -128,7 +128,7 @@ public class EntityPlayerSP extends EntityPlayer {
                 itemStack2.useItemOnEntity((EntityLiving)entity1);
                 if(itemStack2.stackSize <= 0) {
                     itemStack2.onItemDestroyedByUse(this);
-                    this.displayGUIInventory();
+                    this.destroyCurrentEquippedItem();
                 }
             }
 

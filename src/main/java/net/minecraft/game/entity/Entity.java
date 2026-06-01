@@ -359,13 +359,31 @@ public abstract class Entity {
 				if(this.distanceWalkedModified > (float)this.nextStepDistance && i27 > 0) {
 					++this.nextStepDistance;
 					StepSound stepSound26 = Block.blocksList[i27].stepSound;
-					if(!Block.blocksList[i27].blockMaterial.getIsLiquid()) {
+					if(!Block.blocksList[i27].material.getIsLiquid()) {
 						this.worldObj.playSoundAtEntity(this, stepSound26.getStepSound(), stepSound26.getVolume() * 0.15F, stepSound26.getPitch());
 					}
 
 					Block.blocksList[i27].onEntityWalking(this.worldObj, i31, i25, i19, this);
 				}
 			}
+
+            int i36 = MathHelper.floor_double(this.boundingBox.minX);
+            int i25 = MathHelper.floor_double(this.boundingBox.minY);
+            int i38 = MathHelper.floor_double(this.boundingBox.minZ);
+            i27 = MathHelper.floor_double(this.boundingBox.maxX);
+            int i39 = MathHelper.floor_double(this.boundingBox.maxY);
+            int i29 = MathHelper.floor_double(this.boundingBox.maxZ);
+
+            for(int i30 = i36; i30 <= i27; ++i30) {
+                for(int i31 = i25; i31 <= i39; ++i31) {
+                    for(int i32 = i38; i32 <= i29; ++i32) {
+                        int i33 = this.worldObj.getBlockId(i30, i31, i32);
+                        if(i33 > 0) {
+                            Block.blocksList[i33].onEntityCollidedWithBlock(this.worldObj, i30, i31, i32, this);
+                        }
+                    }
+                }
+            }
 
 			this.ySize *= 0.4F;
 			boolean z32 = this.handleWaterMovement();
@@ -410,8 +428,8 @@ public abstract class Entity {
         int i5 = MathHelper.floor_float((float)MathHelper.floor_double(d2));
         int i6 = MathHelper.floor_double(this.posZ);
         int i7;
-        if((i7 = this.worldObj.getBlockId(i4, i5, i6)) != 0 && Block.blocksList[i7].blockMaterial == material) {
-            float material1 = BlockFluid.getPercentAir(this.worldObj.getBlockMetadata(i4, i5, i6)) - 0.11111111F;
+        if((i7 = this.worldObj.getBlockId(i4, i5, i6)) != 0 && Block.blocksList[i7].material == material) {
+            float material1 = BlockFluid.getFluidHeightPercent(this.worldObj.getBlockMetadata(i4, i5, i6)) - 0.11111111F;
             material1 = (float)(i5 + 1) - material1;
             return d2 < (double)material1;
         } else {
@@ -456,7 +474,7 @@ public abstract class Entity {
         this.worldObj = world;
     }
 
-	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+	public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
 		this.prevPosX = this.posX = x;
 		this.prevPosY = this.posY = y + (double)this.yOffset;
 		this.prevPosZ = this.posZ = z;
@@ -674,7 +692,7 @@ public abstract class Entity {
             this.motionY = 0.0D;
             this.motionZ = 0.0D;
             this.onUpdate();
-            this.setPosition(this.ridingEntity.posX, this.ridingEntity.posY + (double)this.yOffset + this.ridingEntity.getYOffset(), this.ridingEntity.posZ);
+            this.setPosition(this.ridingEntity.posX, this.ridingEntity.posY + (double)this.yOffset + this.ridingEntity.getMountedYOffset(), this.ridingEntity.posZ);
             this.entityRiderYawDelta += (double)(this.ridingEntity.rotationYaw - this.ridingEntity.prevRotationYaw);
 
             for(this.entityRiderPitchDelta += (double)(this.ridingEntity.rotationPitch - this.ridingEntity.prevRotationPitch); this.entityRiderYawDelta >= 180.0D; this.entityRiderYawDelta -= 360.0D) {
@@ -717,7 +735,7 @@ public abstract class Entity {
         }
     }
 
-    public double getYOffset() {
+    public double getMountedYOffset() {
         return (double)this.height * 0.75D;
     }
 

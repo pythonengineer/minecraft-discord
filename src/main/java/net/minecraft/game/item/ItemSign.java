@@ -13,20 +13,45 @@ public class ItemSign extends Item {
 		this.maxStackSize = 1;
 	}
 
-	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int xCoord, int yCoord, int zCoord, int i7) {
-		if(i7 != 1) {
-			return false;
-		} else {
-			++yCoord;
-			if(!Block.signStanding.canPlaceBlockAt(world3, xCoord, yCoord, zCoord)) {
-				return false;
-			} else {
-				world3.setBlockWithNotify(xCoord, yCoord, zCoord, Block.signStanding.blockID);
-				world3.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, MathHelper.floor_double((double)((entityPlayer2.rotationYaw + 180.0F) * 16.0F / 360.0F) - 0.5D) & 15);
-				--itemStack1.stackSize;
-				entityPlayer2.displayGUIEditSign((TileEntitySign)world3.getBlockTileEntity(xCoord, yCoord, zCoord));
-				return true;
-			}
-		}
-	}
+    public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int x, int y, int z, int i7) {
+        if(i7 == 0) {
+            return false;
+        } else if(!world3.getBlockMaterial(x, y, z).isSolid()) {
+            return false;
+        } else {
+            if(i7 == 1) {
+                ++y;
+            }
+
+            if(i7 == 2) {
+                --z;
+            }
+
+            if(i7 == 3) {
+                ++z;
+            }
+
+            if(i7 == 4) {
+                --x;
+            }
+
+            if(i7 == 5) {
+                ++x;
+            }
+
+            if(!Block.signStanding.canPlaceBlockAt(world3, x, y, z)) {
+                return false;
+            } else {
+                if(i7 == 1) {
+                    world3.setBlockAndMetadataWithNotify(x, y, z, Block.signStanding.blockID, MathHelper.floor_double((double)((entityPlayer2.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15);
+                } else {
+                    world3.setBlockAndMetadataWithNotify(x, y, z, Block.signWall.blockID, i7);
+                }
+
+                --itemStack1.stackSize;
+                entityPlayer2.displayGUIEditSign((TileEntitySign)world3.getBlockTileEntity(x, y, z));
+                return true;
+            }
+        }
+    }
 }

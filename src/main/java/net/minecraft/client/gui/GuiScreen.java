@@ -106,7 +106,7 @@ public class GuiScreen extends Gui {
         int k = Mouse.getEventButton();
         if (Mouse.getEventButtonState()) {
             PointerInputAbstraction.enterMouseModeHook();
-            if (this.mc.gameSettings.touchscreen && this.touchValue++ > 0) {
+            if (this.mc.options.touchscreen && this.touchValue++ > 0) {
                 return;
             }
 
@@ -114,7 +114,7 @@ public class GuiScreen extends Gui {
             this.lastMouseEvent = EagRuntime.currentTimeMillis();
             this.mouseClicked(i, j, this.eventButton);
         } else if (k != -1) {
-            if (this.mc.gameSettings.touchscreen && --this.touchValue > 0) {
+            if (this.mc.options.touchscreen && --this.touchValue > 0) {
                 return;
             }
 

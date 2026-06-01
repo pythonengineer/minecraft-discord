@@ -11,9 +11,9 @@ import net.minecraft.client.render.Tessellator;
 
 public class FontRenderer {
 	private int[] charWidth = new int[256];
-	private int fontTextureName = 0;
+	public int fontTextureName = 0;
 	private int fontDisplayLists;
-	private IntBuffer buffer = GLAllocation.createIntBuffer(1024);
+	private IntBuffer buffer = GLAllocation.createDirectIntBuffer(1024);
 
 	public FontRenderer(GameSettings gameSettings, String fontTextureLocation, RenderEngine renderEngine) {
 	    ImageData img;
@@ -56,7 +56,7 @@ public class FontRenderer {
             this.charWidth[i17] = i9;
         }
 
-        this.fontTextureName = renderEngine.getTexture(fontTextureLocation);
+        this.fontTextureName = renderEngine.allocateAndSetupTexture(img);
         this.fontDisplayLists = GLAllocation.generateDisplayLists(288);
         Tessellator tessellator18 = Tessellator.instance;
 
@@ -119,8 +119,13 @@ public class FontRenderer {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTextureName);
             float f6 = (float)(color >> 16 & 255) / 255.0F;
             float f7 = (float)(color >> 8 & 255) / 255.0F;
-            float f9 = (float)(color & 255) / 255.0F;
-            GL11.glColor4f(f6, f7, f9, 1.0F);
+            float f8 = (float)(color & 255) / 255.0F;
+            float f9 = (float)(color >> 24 & 255) / 255.0F;
+            if(f9 == 0.0F) {
+                f9 = 1.0F;
+            }
+
+            GL11.glColor4f(f6, f7, f8, f9);
             this.buffer.clear();
             GL11.glPushMatrix();
             GL11.glTranslatef((float)x, (float)y, 0.0F);

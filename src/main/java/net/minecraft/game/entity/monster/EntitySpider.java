@@ -31,7 +31,7 @@ public class EntitySpider extends EntityMob {
     protected void attackEntity(Entity entity, float damage) {
         float f3 = this.getBrightness(1.0F);
         if(f3 > 0.5F && this.rand.nextInt(100) == 0) {
-            this.playerToAttack = null;
+            this.entityToAttack = null;
         } else {
             if(damage > 2.0F && damage < 6.0F && this.rand.nextInt(10) == 0) {
                 if(this.onGround) {

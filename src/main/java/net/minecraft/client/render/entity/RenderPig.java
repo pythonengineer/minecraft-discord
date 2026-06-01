@@ -10,12 +10,12 @@ public class RenderPig extends RenderLiving {
         this.setRenderPassModel(modelBase2);
     }
 
-    protected boolean shouldRenderPass(EntityPig entity, int i2) {
+    protected boolean renderSaddledPig(EntityPig entity, int i2) {
         this.loadTexture("/mob/saddle.png");
         return i2 == 0 && entity.saddled;
     }
 
     protected boolean shouldRenderPass(EntityLiving eVar, int i) {
-        return this.shouldRenderPass((EntityPig)eVar, i);
+        return this.renderSaddledPig((EntityPig)eVar, i);
     }
 }

@@ -30,7 +30,7 @@ public class EntityPlayer extends EntityLiving {
 
 	public EntityPlayer(World world1) {
 		super(world1);
-		this.setPositionAndRotation((double)world1.spawnX + 0.5D, (double)world1.spawnY, (double)world1.spawnZ + 0.5D, 0.0F, 0.0F);
+		this.setLocationAndAngles((double)world1.spawnX + 0.5D, (double)world1.spawnY, (double)world1.spawnZ + 0.5D, 0.0F, 0.0F);
 		this.yOffset = 1.62F;
 		this.health = 20;
 		this.entityType = "humanoid";

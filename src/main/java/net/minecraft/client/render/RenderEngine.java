@@ -15,10 +15,11 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.render.texture.TextureFX;
 
 public class RenderEngine {
+    public static boolean useMipmaps = false;
     private HashMap textureMap = new HashMap();
     private HashMap textureContentsMap = new HashMap();
-    private IntBuffer singleIntBuffer = GLAllocation.createIntBuffer(1);
-    private ByteBuffer imageData = GLAllocation.createDirectByteBuffer(262144);
+    private IntBuffer singleIntBuffer = GLAllocation.createDirectIntBuffer(1);
+    private ByteBuffer imageData = GLAllocation.createDirectByteBuffer(1048576);
     private List textureList = new ArrayList();
     private Map urlToImageDataMap = new HashMap();
     private GameSettings options;
@@ -35,7 +36,7 @@ public class RenderEngine {
 		} else {
 			try {
 				this.singleIntBuffer.clear();
-				GLAllocation.generateDisplayLists(this.singleIntBuffer);
+				GLAllocation.generateTextureNames(this.singleIntBuffer);
 				int i4 = this.singleIntBuffer.get(0);
 				if(textureName.startsWith("##")) {
 					this.setupTexture(ImageData.loadImageFile("/assets" + textureName.substring(2)), i4);
@@ -57,7 +58,7 @@ public class RenderEngine {
 
     public int allocateAndSetupTexture(ImageData image) {
         this.singleIntBuffer.clear();
-        GLAllocation.generateDisplayLists(this.singleIntBuffer);
+        GLAllocation.generateTextureNames(this.singleIntBuffer);
         int i2 = this.singleIntBuffer.get(0);
         this.setupTexture(image, i2);
         this.textureContentsMap.put(i2, image);
@@ -66,8 +67,14 @@ public class RenderEngine {
 
 	private void setupTexture(ImageData image, int bindedTextureID) {
 		GL11.glBindTexture(bindedTextureID);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        if(useMipmaps) {
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        } else {
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+        }
+
         if(this.clampTexture) {
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
@@ -76,34 +83,63 @@ public class RenderEngine {
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
         }
 
-		bindedTextureID = image.getWidth();
-		int i3 = image.getHeight();
-		int[] i4 = new int[bindedTextureID * i3];
-		byte[] b5 = new byte[bindedTextureID * i3 << 2];
-		image.getRGB(0, 0, bindedTextureID, i3, i4, 0, bindedTextureID);
+		int i3 = image.getWidth();
+		int i4 = image.getHeight();
+		int[] i5 = new int[i3 * i4];
+		byte[] b6 = new byte[i3 * i4 << 2];
+		image.getRGB(0, 0, i3, i4, i5, 0, i3);
 
-		for(int var11 = 0; var11 < i4.length; ++var11) {
-			int a = i4[var11] >>> 24;
-			int b = i4[var11] >> 16 & 255;
-			int g = i4[var11] >> 8 & 255;
-			int r = i4[var11] & 255;
+        int i7;
+        int i8;
+        int i9;
+        int i10;
+        int i11;
+        int i12;
+        int i13;
+        int i14;
+		for(i7 = 0; i7 < i5.length; ++i7) {
+			int a = i5[i7] >>> 24;
+			int b = i5[i7] >> 16 & 255;
+			int g = i5[i7] >> 8 & 255;
+			int r = i5[i7] & 255;
 			if(this.options != null && this.options.anaglyph) {
-				int var10 = (r * 30 + g * 59 + b * 11) / 100;
+				i10 = (r * 30 + g * 59 + b * 11) / 100;
 				g = (r * 30 + g * 70) / 100;
 				b = (r * 30 + b * 70) / 100;
-				r = var10;
+				r = i10;
 			}
 
-			b5[var11 << 2] = (byte)r;
-			b5[(var11 << 2) + 1] = (byte)g;
-			b5[(var11 << 2) + 2] = (byte)b;
-			b5[(var11 << 2) + 3] = (byte)a;
+			b6[i7 << 2] = (byte)r;
+			b6[(i7 << 2) + 1] = (byte)g;
+			b6[(i7 << 2) + 2] = (byte)b;
+			b6[(i7 << 2) + 3] = (byte)a;
 		}
 
 		this.imageData.clear();
-		this.imageData.put(b5);
-		this.imageData.position(0).limit(b5.length);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, bindedTextureID, i3, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
+		this.imageData.put(b6);
+		this.imageData.position(0).limit(b6.length);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, i3, i4, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
+        if(useMipmaps) {
+            for(i7 = 1; i7 <= 4; ++i7) {
+                i8 = i3 >> i7 - 1;
+                i9 = i3 >> i7;
+                i10 = i4 >> i7;
+
+                for(i11 = 0; i11 < i9; ++i11) {
+                    for(i12 = 0; i12 < i10; ++i12) {
+                        i13 = this.imageData.getInt((i11 * 2 + 0 + (i12 * 2 + 0) * i8) * 4);
+                        i14 = this.imageData.getInt((i11 * 2 + 1 + (i12 * 2 + 0) * i8) * 4);
+                        int i15 = this.imageData.getInt((i11 * 2 + 1 + (i12 * 2 + 1) * i8) * 4);
+                        int i16 = this.imageData.getInt((i11 * 2 + 0 + (i12 * 2 + 1) * i8) * 4);
+                        int i17 = this.alphaBlend(this.alphaBlend(i13, i14), this.alphaBlend(i15, i16));
+                        this.imageData.putInt((i11 + i12 * i9) * 4, i17);
+                    }
+                }
+
+                GL11.glTexImage2D(GL11.GL_TEXTURE_2D, i7, GL11.GL_RGBA, i9, i10, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.imageData);
+            }
+        }
+
 	}
 
     public void deleteTexture(int tex) {
@@ -120,7 +156,7 @@ public class RenderEngine {
             if(url1.textureName < 0) {
                 ImageData bufferedImage = url1.image;
                 this.singleIntBuffer.clear();
-                GLAllocation.generateDisplayLists(this.singleIntBuffer);
+                GLAllocation.generateTextureNames(this.singleIntBuffer);
                 int i5 = this.singleIntBuffer.get(0);
                 this.setupTexture(bufferedImage, i5);
                 this.textureContentsMap.put(Integer.valueOf(i5), bufferedImage);
@@ -169,6 +205,16 @@ public class RenderEngine {
     public void updateDynamicTextures() {
         int i1;
         TextureFX textureFX;
+        int i3;
+        int i4;
+        int i5;
+        int i6;
+        int i7;
+        int i8;
+        int i9;
+        int i10;
+        int i11;
+        int i12;
         for(i1 = 0; i1 < this.textureList.size(); ++i1) {
             textureFX = (TextureFX)this.textureList.get(i1);
             textureFX.anaglyphEnabled = this.options.anaglyph;
@@ -177,9 +223,28 @@ public class RenderEngine {
             this.imageData.put(textureFX.imageData);
             this.imageData.position(0).limit(textureFX.imageData.length);
 
-            for(int i3 = 0; i3 < textureFX.tileSize; ++i3) {
-                for(int i4 = 0; i4 < textureFX.tileSize; ++i4) {
+            for(i3 = 0; i3 < textureFX.tileSize; ++i3) {
+                for(i4 = 0; i4 < textureFX.tileSize; ++i4) {
                     GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, (textureFX.iconIndex % 16 << 4) + (i3 << 4), (textureFX.iconIndex / 16 << 4) + (i4 << 4), 16, 16, 6408, 5121, this.imageData);
+                    if(useMipmaps) {
+                        for(i5 = 1; i5 <= 4; ++i5) {
+                            i6 = 16 >> i5 - 1;
+                            i7 = 16 >> i5;
+
+                            for(i8 = 0; i8 < i7; ++i8) {
+                                for(i9 = 0; i9 < i7; ++i9) {
+                                    i10 = this.imageData.getInt((i8 * 2 + 0 + (i9 * 2 + 0) * i6) * 4);
+                                    i11 = this.imageData.getInt((i8 * 2 + 1 + (i9 * 2 + 0) * i6) * 4);
+                                    i12 = this.imageData.getInt((i8 * 2 + 1 + (i9 * 2 + 1) * i6) * 4);
+                                    int i13 = this.imageData.getInt((i8 * 2 + 0 + (i9 * 2 + 1) * i6) * 4);
+                                    int i14 = this.averageColor(this.averageColor(i10, i11), this.averageColor(i12, i13));
+                                    this.imageData.putInt((i8 + i9 * i7) * 4, i14);
+                                }
+                            }
+
+                            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, i5, textureFX.iconIndex % 16 * i7, textureFX.iconIndex / 16 * i7, i7, i7, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.imageData);
+                        }
+                    }
                 }
             }
         }
@@ -192,9 +257,56 @@ public class RenderEngine {
                 this.imageData.position(0).limit(textureFX.imageData.length);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureFX.textureId);
                 GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.imageData);
+                if(useMipmaps) {
+                    for(i3 = 1; i3 <= 4; ++i3) {
+                        i4 = 16 >> i3 - 1;
+                        i5 = 16 >> i3;
+
+                        for(i6 = 0; i6 < i5; ++i6) {
+                            for(i7 = 0; i7 < i5; ++i7) {
+                                i8 = this.imageData.getInt((i6 * 2 + 0 + (i7 * 2 + 0) * i4) * 4);
+                                i9 = this.imageData.getInt((i6 * 2 + 1 + (i7 * 2 + 0) * i4) * 4);
+                                i10 = this.imageData.getInt((i6 * 2 + 1 + (i7 * 2 + 1) * i4) * 4);
+                                i11 = this.imageData.getInt((i6 * 2 + 0 + (i7 * 2 + 1) * i4) * 4);
+                                i12 = this.averageColor(this.averageColor(i8, i9), this.averageColor(i10, i11));
+                                this.imageData.putInt((i6 + i7 * i5) * 4, i12);
+                            }
+                        }
+
+                        GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, i3, 0, 0, i5, i5, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.imageData);
+                    }
+                }
             }
         }
 
+    }
+
+    private int averageColor(int i1, int i2) {
+        int i3 = (i1 & 0xFF000000) >> 24 & 255;
+        int i4 = (i2 & 0xFF000000) >> 24 & 255;
+        return (i3 + i4 >> 1 << 24) + ((i1 & 16711422) + (i2 & 16711422) >> 1);
+    }
+
+    private int alphaBlend(int i1, int i2) {
+        int i3 = (i1 & 0xFF000000) >> 24 & 255;
+        int i4 = (i2 & 0xFF000000) >> 24 & 255;
+        short s5 = 255;
+        if(i3 + i4 == 0) {
+            i3 = 1;
+            i4 = 1;
+            s5 = 0;
+        }
+
+        int i6 = (i1 >> 16 & 255) * i3;
+        int i7 = (i1 >> 8 & 255) * i3;
+        int i8 = (i1 & 255) * i3;
+        int i9 = (i2 >> 16 & 255) * i4;
+        int i10 = (i2 >> 8 & 255) * i4;
+        int i11 = (i2 & 255) * i4;
+        int i12 = (i6 + i9) / (i3 + i4);
+        int i13 = (i7 + i10) / (i3 + i4);
+        int i14 = (i8 + i11) / (i3 + i4);
+        return s5 << 24 | i12 << 16 | i13 << 8 | i14;
     }
 
     public void refreshTextures() {

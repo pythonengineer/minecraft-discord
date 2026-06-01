@@ -62,7 +62,7 @@ public class ItemStack {
 	}
 
 	public int getIconIndex() {
-		return this.getItem().getIconFromDamage(this);
+		return this.getItem().getIconIndex(this);
 	}
 
 	public boolean useItem(EntityPlayer entityPlayer, World world, int x, int y, int z, int side) {

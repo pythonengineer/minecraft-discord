@@ -8,7 +8,7 @@ import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.projectile.EntityArrow;
 
 public class RenderArrow extends Render {
-	public void doRender(EntityArrow arrow, double x, double y, double z, float yaw, float partialTicks) {
+	public void renderArrow(EntityArrow arrow, double x, double y, double z, float yaw, float partialTicks) {
 		this.loadTexture("/item/arrows.png");
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
@@ -55,7 +55,7 @@ public class RenderArrow extends Render {
 		GL11.glPopMatrix();
 	}
 
-    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
-        this.doRender((EntityArrow)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+        this.renderArrow((EntityArrow)entity, x, y, z, yaw, partialTicks);
     }
 }

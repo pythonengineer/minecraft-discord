@@ -483,7 +483,7 @@ public class EntityLiving extends Entity {
 			this.moveForward = 0.0F;
 			this.randomYawVelocity = 0.0F;
 		} else {
-			this.updatePlayerActionState();
+			this.updateEntityActionState();
 		}
 
 		boolean z17 = this.handleWaterMovement();
@@ -518,7 +518,7 @@ public class EntityLiving extends Entity {
 		this.motionY = (double)0.42F;
 	}
 
-	protected void updatePlayerActionState() {
+	protected void updateEntityActionState() {
 		if(this.rand.nextFloat() < 0.07F) {
 			this.moveStrafing = (this.rand.nextFloat() - 0.5F) * this.moveSpeed;
 			this.moveForward = this.rand.nextFloat() * this.moveSpeed;

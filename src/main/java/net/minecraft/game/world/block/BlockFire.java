@@ -12,16 +12,16 @@ public class BlockFire extends Block {
 
 	protected BlockFire(int blockID, int textureIndex) {
 		super(blockID, textureIndex, Material.fire);
-		this.setBurnRate(Block.planks.blockID, 5, 20);
-		this.setBurnRate(Block.wood.blockID, 5, 5);
-		this.setBurnRate(Block.leaves.blockID, 30, 60);
-		this.setBurnRate(Block.bookshelf.blockID, 30, 20);
-		this.setBurnRate(Block.tnt.blockID, 15, 100);
-        this.setBurnRate(Block.cloth.blockID, 30, 60);
+		this.initializeBlock(Block.planks.blockID, 5, 20);
+		this.initializeBlock(Block.wood.blockID, 5, 5);
+		this.initializeBlock(Block.leaves.blockID, 30, 60);
+		this.initializeBlock(Block.bookshelf.blockID, 30, 20);
+		this.initializeBlock(Block.tnt.blockID, 15, 100);
+        this.initializeBlock(Block.cloth.blockID, 30, 60);
 		this.setTickOnLoad(true);
 	}
 
-	private void setBurnRate(int blockID, int fireEncourageChance, int catchFireAbility) {
+	private void initializeBlock(int blockID, int fireEncourageChance, int catchFireAbility) {
 		this.chanceToEncourageFire[blockID] = fireEncourageChance;
 		this.abilityToCatchFire[blockID] = catchFireAbility;
 	}
@@ -57,7 +57,7 @@ public class BlockFire extends Block {
 			world.scheduleBlockUpdate(x, y, z, this.blockID);
 		}
 
-		if(!this.canNeighborCatchFire(world, x, y, z)) {
+		if(!this.canNeighborBurn(world, x, y, z)) {
 			if(!world.isBlockNormalCube(x, y - 1, z) || i6 > 3) {
 				world.setBlockWithNotify(x, y, z, 0);
 			}
@@ -112,7 +112,7 @@ public class BlockFire extends Block {
 
 	}
 
-	private boolean canNeighborCatchFire(World world, int x, int y, int z) {
+	private boolean canNeighborBurn(World world, int x, int y, int z) {
 		return this.canBlockCatchFire(world, x + 1, y, z) ? true : (this.canBlockCatchFire(world, x - 1, y, z) ? true : (this.canBlockCatchFire(world, x, y - 1, z) ? true : (this.canBlockCatchFire(world, x, y + 1, z) ? true : (this.canBlockCatchFire(world, x, y, z - 1) ? true : this.canBlockCatchFire(world, x, y, z + 1)))));
 	}
 
@@ -145,17 +145,17 @@ public class BlockFire extends Block {
 	}
 
 	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
-		return world.isBlockNormalCube(x, y - 1, z) || this.canNeighborCatchFire(world, x, y, z);
+		return world.isBlockNormalCube(x, y - 1, z) || this.canNeighborBurn(world, x, y, z);
 	}
 
 	public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
-		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborCatchFire(world, x, y, z)) {
+		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborBurn(world, x, y, z)) {
 			world.setBlockWithNotify(x, y, z, 0);
 		}
 	}
 
 	public void onBlockAdded(World world, int x, int y, int z) {
-		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborCatchFire(world, x, y, z)) {
+		if(!world.isBlockNormalCube(x, y - 1, z) && !this.canNeighborBurn(world, x, y, z)) {
 			world.setBlockWithNotify(x, y, z, 0);
 		} else {
 			world.scheduleBlockUpdate(x, y, z, this.blockID);

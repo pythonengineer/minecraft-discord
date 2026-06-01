@@ -13,7 +13,7 @@ public class RenderTNTPrimed extends Render {
 		this.shadowSize = 0.5F;
 	}
 
-	public void doRender(EntityTNTPrimed entity, double x, double y, double z, float yaw, float partialTicks) {
+	public void doRenderTNT(EntityTNTPrimed entity, double x, double y, double z, float yaw, float partialTicks) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		float f10;
@@ -52,7 +52,7 @@ public class RenderTNTPrimed extends Render {
 		GL11.glPopMatrix();
 	}
 
-    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
-        this.doRender((EntityTNTPrimed)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+        this.doRenderTNT((EntityTNTPrimed)entity, x, y, z, yaw, partialTicks);
     }
 }

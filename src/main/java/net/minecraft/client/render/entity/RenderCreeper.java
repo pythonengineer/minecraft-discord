@@ -11,7 +11,7 @@ public class RenderCreeper extends RenderLiving {
 		super(new ModelCreeper(), 0.5F);
 	}
 
-    protected void preRenderCallback(EntityCreeper creeper, float partialTicks) {
+    protected void updateCreeperScale(EntityCreeper creeper, float partialTicks) {
         float f4 = creeper.getCreeperFlashTime(partialTicks);
         float f5 = 1.0F + MathHelper.sin(f4 * 100.0F) * f4 * 0.01F;
         if(f4 < 0.0F) {
@@ -29,7 +29,7 @@ public class RenderCreeper extends RenderLiving {
         GL11.glScalef(f6, f7, f6);
     }
 
-	protected int getColorMultiplier(EntityCreeper creeper, float brightness, float partialTicks) {
+	protected int updateCreeperColorMultiplier(EntityCreeper creeper, float brightness, float partialTicks) {
 		float f5 = creeper.getCreeperFlashTime(partialTicks);
 		if((int)(f5 * 10.0F) % 2 == 0) {
 			return 0;
@@ -51,10 +51,10 @@ public class RenderCreeper extends RenderLiving {
 	}
 
     protected void preRenderCallback(EntityLiving livingEntity, float partialTicks) {
-        this.preRenderCallback((EntityCreeper)livingEntity, partialTicks);
+        this.updateCreeperScale((EntityCreeper)livingEntity, partialTicks);
     }
 
     protected int getColorMultiplier(EntityLiving livingEntity, float brightness, float partialTicks) {
-        return this.getColorMultiplier((EntityCreeper)livingEntity, brightness, partialTicks);
+        return this.updateCreeperColorMultiplier((EntityCreeper)livingEntity, brightness, partialTicks);
     }
 }

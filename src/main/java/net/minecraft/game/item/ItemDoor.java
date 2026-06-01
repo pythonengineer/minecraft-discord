@@ -4,61 +4,72 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.material.Material;
 
 public class ItemDoor extends Item {
-	public ItemDoor(int i1) {
+	private Material material;
+
+	public ItemDoor(int i1, Material material2) {
 		super(i1);
+		this.material = material2;
 		this.maxDamage = 64;
 		this.maxStackSize = 1;
 	}
 
-	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int xCoord, int yCoord, int zCoord, int i7) {
+	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world, int x, int y, int z, int i7) {
 		if(i7 != 1) {
 			return false;
 		} else {
-			++yCoord;
-			if(!Block.doorWood.canPlaceBlockAt(world3, xCoord, yCoord, zCoord)) {
+			++y;
+			Block block8;
+			if(this.material == Material.wood) {
+				block8 = Block.doorWood;
+			} else {
+				block8 = Block.doorSteel;
+			}
+
+			if(!block8.canPlaceBlockAt(world, x, y, z)) {
 				return false;
 			} else {
-				int i8 = MathHelper.floor_double((double)((entityPlayer2.rotationYaw + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3;
-				byte b9 = 0;
+				int i9 = MathHelper.floor_double((double)((entityPlayer2.rotationYaw + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3;
 				byte b10 = 0;
-				if(i8 == 0) {
-					b10 = 1;
+				byte b11 = 0;
+				if(i9 == 0) {
+					b11 = 1;
 				}
 
-				if(i8 == 1) {
-					b9 = -1;
-				}
-
-				if(i8 == 2) {
+				if(i9 == 1) {
 					b10 = -1;
 				}
 
-				if(i8 == 3) {
-					b9 = 1;
+				if(i9 == 2) {
+					b11 = -1;
 				}
 
-				int i11 = (world3.isBlockNormalCube(xCoord - b9, yCoord, zCoord - b10) ? 1 : 0) + (world3.isBlockNormalCube(xCoord - b9, yCoord + 1, zCoord - b10) ? 1 : 0);
-				int i12 = (world3.isBlockNormalCube(xCoord + b9, yCoord, zCoord + b10) ? 1 : 0) + (world3.isBlockNormalCube(xCoord + b9, yCoord + 1, zCoord + b10) ? 1 : 0);
-				boolean z13 = world3.getBlockId(xCoord - b9, yCoord, zCoord - b10) == Block.doorWood.blockID || world3.getBlockId(xCoord - b9, yCoord + 1, zCoord - b10) == Block.doorWood.blockID;
-				boolean z14 = world3.getBlockId(xCoord + b9, yCoord, zCoord + b10) == Block.doorWood.blockID || world3.getBlockId(xCoord + b9, yCoord + 1, zCoord + b10) == Block.doorWood.blockID;
-				boolean z15 = false;
-				if(z13 && !z14) {
-					z15 = true;
-				} else if(i12 > i11) {
-					z15 = true;
+				if(i9 == 3) {
+					b10 = 1;
 				}
 
-				if(z15) {
-					i8 = i8 - 1 & 3;
-					i8 += 4;
+				int i12 = (world.isBlockNormalCube(x - b10, y, z - b11) ? 1 : 0) + (world.isBlockNormalCube(x - b10, y + 1, z - b11) ? 1 : 0);
+				int i13 = (world.isBlockNormalCube(x + b10, y, z + b11) ? 1 : 0) + (world.isBlockNormalCube(x + b10, y + 1, z + b11) ? 1 : 0);
+				boolean z14 = world.getBlockId(x - b10, y, z - b11) == block8.blockID || world.getBlockId(x - b10, y + 1, z - b11) == block8.blockID;
+				boolean z15 = world.getBlockId(x + b10, y, z + b11) == block8.blockID || world.getBlockId(x + b10, y + 1, z + b11) == block8.blockID;
+				boolean z16 = false;
+				if(z14 && !z15) {
+					z16 = true;
+				} else if(i13 > i12) {
+					z16 = true;
 				}
 
-				world3.setBlockWithNotify(xCoord, yCoord, zCoord, Block.doorWood.blockID);
-				world3.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, i8);
-				world3.setBlockWithNotify(xCoord, yCoord + 1, zCoord, Block.doorWood.blockID);
-				world3.setBlockMetadataWithNotify(xCoord, yCoord + 1, zCoord, i8 + 8);
+				if(z16) {
+					i9 = i9 - 1 & 3;
+					i9 += 4;
+				}
+
+				world.setBlockWithNotify(x, y, z, block8.blockID);
+				world.setBlockMetadataWithNotify(x, y, z, i9);
+				world.setBlockWithNotify(x, y + 1, z, block8.blockID);
+				world.setBlockMetadataWithNotify(x, y + 1, z, i9 + 8);
 				--itemStack1.stackSize;
 				return true;
 			}

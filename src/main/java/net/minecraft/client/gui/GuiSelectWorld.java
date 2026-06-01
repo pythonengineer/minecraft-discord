@@ -5,12 +5,12 @@ import com.mojang.nbt.NBTTagCompound;
 import net.minecraft.game.world.World;
 
 public class GuiSelectWorld extends GuiScreen {
-	protected GuiScreen currentScreen;
+	protected GuiScreen parentScreen;
 	protected String screenTitle = "Select world";
 	private boolean selected = false;
 
 	public GuiSelectWorld(GuiScreen screen) {
-		this.currentScreen = screen;
+		this.parentScreen = screen;
 	}
 
 	public void initGui() {
@@ -29,7 +29,7 @@ public class GuiSelectWorld extends GuiScreen {
 		this.initButtons();
 	}
 
-	protected static String getSaveFileName(int worldIndex) {
+	protected static String getSaveName(int worldIndex) {
 		return World.getLevelData("World" + worldIndex) != null ? "World" + worldIndex : null;
 	}
 
@@ -41,19 +41,19 @@ public class GuiSelectWorld extends GuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		if(button.enabled) {
 			if(button.id < 5) {
-				this.actionWorld(button.id + 1);
+				this.selectWorld(button.id + 1);
 			} else if(button.id == 5) {
 				this.mc.displayGuiScreen(new GuiDeleteWorld(this));
 			} else {
 				if(button.id == 6) {
-					this.mc.displayGuiScreen(this.currentScreen);
+					this.mc.displayGuiScreen(this.parentScreen);
 				}
 
 			}
 		}
 	}
 
-	public void actionWorld(int worldIndex) {
+	public void selectWorld(int worldIndex) {
 		this.mc.displayGuiScreen((GuiScreen)null);
 		if(!this.selected) {
 			this.selected = true;

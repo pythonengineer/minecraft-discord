@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -32,7 +33,7 @@ public class RenderBlocks {
     public boolean renderBlockByRenderType(Block block, int x, int y, int z) {
         int i5 = block.getRenderType();
         block.setBlockBoundsBasedOnState(this.blockAccess, x, y, z);
-        return i5 == 0 ? this.renderStandardBlock(block, x, y, z) : (i5 == 4 ? this.renderBlockFluids(block, x, y, z) : (i5 == 1 ? this.renderBlockReed(block, x, y, z) : (i5 == 6 ? this.renderBlockCrops(block, x, y, z) : (i5 == 2 ? this.renderBlockTorch(block, x, y, z) : (i5 == 3 ? this.renderBlockFire(block, x, y, z) : (i5 == 5 ? this.renderBlockGears(block, x, y, z) : (i5 == 8 ? this.renderBlockLadder(block, x, y, z) : (i5 == 7 ? this.renderBlockDoor(block, x, y, z) : (i5 == 9 ? this.renderBlockMinecartTrack(block, x, y, z) : (i5 == 10 ? this.renderBlockStairs(block, x, y, z) : (i5 == 11 ? this.renderBlockFence(block, x, y, z) : false)))))))))));
+        return i5 == 0 ? this.renderStandardBlock(block, x, y, z) : (i5 == 4 ? this.renderBlockFluids(block, x, y, z) : (i5 == 1 ? this.renderBlockReed(block, x, y, z) : (i5 == 6 ? this.renderBlockCrops(block, x, y, z) : (i5 == 2 ? this.renderBlockTorch(block, x, y, z) : (i5 == 3 ? this.renderBlockFire(block, x, y, z) : (i5 == 5 ? this.renderBlockRedstoneWire(block, x, y, z) : (i5 == 8 ? this.renderBlockLadder(block, x, y, z) : (i5 == 7 ? this.renderBlockDoor(block, x, y, z) : (i5 == 9 ? this.renderBlockMinecartTrack(block, x, y, z) : (i5 == 10 ? this.renderBlockStairs(block, x, y, z) : (i5 == 11 ? this.renderBlockFence(block, x, y, z) : (i5 == 12 ? this.renderBlockLever(block, x, y, z) : false))))))))))));
     }
 
     public boolean renderBlockTorch(Block block, int x, int y, int z) {
@@ -57,6 +58,169 @@ public class RenderBlocks {
             this.renderTorchAtAngle(block, (double)x, (double)y + d12, (double)z + d10, 0.0D, d8);
         } else {
             this.renderTorchAtAngle(block, (double)x, (double)y, (double)z, 0.0D, 0.0D);
+        }
+
+        return true;
+    }
+
+    public boolean renderBlockLever(Block block, int x, int y, int z) {
+        int i5 = this.blockAccess.getBlockMetadata(x, y, z);
+        int i6 = i5 & 7;
+        boolean z7 = (i5 & 8) > 0;
+        Tessellator tessellator8 = Tessellator.instance;
+        boolean z9 = this.overrideBlockTexture >= 0;
+        if(!z9) {
+            this.overrideBlockTexture = Block.cobblestone.blockIndexInTexture;
+        }
+
+        float f10 = 0.25F;
+        float f11 = 0.1875F;
+        float f12 = 0.1875F;
+        if(i6 == 5) {
+            block.setBlockBounds(0.5F - f11, 0.0F, 0.5F - f10, 0.5F + f11, f12, 0.5F + f10);
+        } else if(i6 == 6) {
+            block.setBlockBounds(0.5F - f10, 0.0F, 0.5F - f11, 0.5F + f10, f12, 0.5F + f11);
+        } else if(i6 == 4) {
+            block.setBlockBounds(0.5F - f11, 0.5F - f10, 1.0F - f12, 0.5F + f11, 0.5F + f10, 1.0F);
+        } else if(i6 == 3) {
+            block.setBlockBounds(0.5F - f11, 0.5F - f10, 0.0F, 0.5F + f11, 0.5F + f10, f12);
+        } else if(i6 == 2) {
+            block.setBlockBounds(1.0F - f12, 0.5F - f10, 0.5F - f11, 1.0F, 0.5F + f10, 0.5F + f11);
+        } else if(i6 == 1) {
+            block.setBlockBounds(0.0F, 0.5F - f10, 0.5F - f11, f12, 0.5F + f10, 0.5F + f11);
+        }
+
+        this.renderStandardBlock(block, x, y, z);
+        if(!z9) {
+            this.overrideBlockTexture = -1;
+        }
+
+        float f13 = block.getBlockBrightness(this.blockAccess, x, y, z);
+        if(Block.lightValue[block.blockID] > 0) {
+            f13 = 1.0F;
+        }
+
+        tessellator8.setColorOpaque_F(f13, f13, f13);
+        int i14 = block.getBlockTextureFromSide(0);
+        if(this.overrideBlockTexture >= 0) {
+            i14 = this.overrideBlockTexture;
+        }
+
+        int i15 = (i14 & 15) << 4;
+        int i16 = i14 & 240;
+        float f17 = (float)i15 / 256.0F;
+        float f18 = ((float)i15 + 15.99F) / 256.0F;
+        float f19 = (float)i16 / 256.0F;
+        float f20 = ((float)i16 + 15.99F) / 256.0F;
+        Vec3D[] vec3D21 = new Vec3D[8];
+        float f22 = 0.0625F;
+        float f23 = 0.0625F;
+        float f24 = 0.625F;
+        vec3D21[0] = Vec3D.createVector((double)(-f22), 0.0D, (double)(-f23));
+        vec3D21[1] = Vec3D.createVector((double)f22, 0.0D, (double)(-f23));
+        vec3D21[2] = Vec3D.createVector((double)f22, 0.0D, (double)f23);
+        vec3D21[3] = Vec3D.createVector((double)(-f22), 0.0D, (double)f23);
+        vec3D21[4] = Vec3D.createVector((double)(-f22), (double)f24, (double)(-f23));
+        vec3D21[5] = Vec3D.createVector((double)f22, (double)f24, (double)(-f23));
+        vec3D21[6] = Vec3D.createVector((double)f22, (double)f24, (double)f23);
+        vec3D21[7] = Vec3D.createVector((double)(-f22), (double)f24, (double)f23);
+
+        for(int i25 = 0; i25 < 8; ++i25) {
+            if(z7) {
+                vec3D21[i25].zCoord -= 0.0625D;
+                vec3D21[i25].rotateAroundX((float)Math.PI / 4.5F);
+            } else {
+                vec3D21[i25].zCoord += 0.0625D;
+                vec3D21[i25].rotateAroundX(-0.69813174F);
+            }
+
+            if(i6 == 6) {
+                vec3D21[i25].rotateAroundY((float)Math.PI / 2F);
+            }
+
+            if(i6 < 5) {
+                vec3D21[i25].yCoord -= 0.375D;
+                vec3D21[i25].rotateAroundX((float)Math.PI / 2F);
+                if(i6 == 4) {
+                    vec3D21[i25].rotateAroundY(0.0F);
+                }
+
+                if(i6 == 3) {
+                    vec3D21[i25].rotateAroundY((float)Math.PI);
+                }
+
+                if(i6 == 2) {
+                    vec3D21[i25].rotateAroundY((float)Math.PI / 2F);
+                }
+
+                if(i6 == 1) {
+                    vec3D21[i25].rotateAroundY(-1.5707964F);
+                }
+
+                vec3D21[i25].xCoord += (double)x + 0.5D;
+                vec3D21[i25].yCoord += (double)((float)y + 0.5F);
+                vec3D21[i25].zCoord += (double)z + 0.5D;
+            } else {
+                vec3D21[i25].xCoord += (double)x + 0.5D;
+                vec3D21[i25].yCoord += (double)((float)y + 0.125F);
+                vec3D21[i25].zCoord += (double)z + 0.5D;
+            }
+        }
+
+        Vec3D vec3D30 = null;
+        Vec3D vec3D26 = null;
+        Vec3D vec3D27 = null;
+        Vec3D vec3D28 = null;
+
+        for(int i29 = 0; i29 < 6; ++i29) {
+            if(i29 == 0) {
+                f17 = (float)(i15 + 7) / 256.0F;
+                f18 = ((float)(i15 + 9) - 0.01F) / 256.0F;
+                f19 = (float)(i16 + 6) / 256.0F;
+                f20 = ((float)(i16 + 8) - 0.01F) / 256.0F;
+            } else if(i29 == 2) {
+                f17 = (float)(i15 + 7) / 256.0F;
+                f18 = ((float)(i15 + 9) - 0.01F) / 256.0F;
+                f19 = (float)(i16 + 6) / 256.0F;
+                f20 = ((float)(i16 + 16) - 0.01F) / 256.0F;
+            }
+
+            if(i29 == 0) {
+                vec3D30 = vec3D21[0];
+                vec3D26 = vec3D21[1];
+                vec3D27 = vec3D21[2];
+                vec3D28 = vec3D21[3];
+            } else if(i29 == 1) {
+                vec3D30 = vec3D21[7];
+                vec3D26 = vec3D21[6];
+                vec3D27 = vec3D21[5];
+                vec3D28 = vec3D21[4];
+            } else if(i29 == 2) {
+                vec3D30 = vec3D21[1];
+                vec3D26 = vec3D21[0];
+                vec3D27 = vec3D21[4];
+                vec3D28 = vec3D21[5];
+            } else if(i29 == 3) {
+                vec3D30 = vec3D21[2];
+                vec3D26 = vec3D21[1];
+                vec3D27 = vec3D21[5];
+                vec3D28 = vec3D21[6];
+            } else if(i29 == 4) {
+                vec3D30 = vec3D21[3];
+                vec3D26 = vec3D21[2];
+                vec3D27 = vec3D21[6];
+                vec3D28 = vec3D21[7];
+            } else if(i29 == 5) {
+                vec3D30 = vec3D21[0];
+                vec3D26 = vec3D21[3];
+                vec3D27 = vec3D21[7];
+                vec3D28 = vec3D21[4];
+            }
+
+            tessellator8.addVertexWithUV(vec3D30.xCoord, vec3D30.yCoord, vec3D30.zCoord, (double)f17, (double)f20);
+            tessellator8.addVertexWithUV(vec3D26.xCoord, vec3D26.yCoord, vec3D26.zCoord, (double)f18, (double)f20);
+            tessellator8.addVertexWithUV(vec3D27.xCoord, vec3D27.yCoord, vec3D27.zCoord, (double)f18, (double)f19);
+            tessellator8.addVertexWithUV(vec3D28.xCoord, vec3D28.yCoord, vec3D28.zCoord, (double)f17, (double)f19);
         }
 
         return true;
@@ -250,59 +414,149 @@ public class RenderBlocks {
         return true;
     }
 
-    public boolean renderBlockGears(Block block, int x, int y, int z) {
+    public boolean renderBlockRedstoneWire(Block block, int x, int y, int z) {
         Tessellator tessellator5 = Tessellator.instance;
-        int i6 = block.getBlockTextureFromSide(0);
+        int i6 = block.getBlockTextureFromSideAndMetadata(0, this.blockAccess.getBlockMetadata(x, y, z));
         if(this.overrideBlockTexture >= 0) {
             i6 = this.overrideBlockTexture;
         }
 
         float f7 = block.getBlockBrightness(this.blockAccess, x, y, z);
         tessellator5.setColorOpaque_F(f7, f7, f7);
-        int i8 = ((i6 & 15) << 4) + 16;
-        int i9 = (i6 & 15) << 4;
-        int i10 = i6 & 240;
-        if((x + y + z & 1) == 1) {
-            i8 = (i6 & 15) << 4;
-            i9 = ((i6 & 15) << 4) + 16;
+        int i8 = (i6 & 15) << 4;
+        int i9 = i6 & 240;
+        double d10 = (double)((float)i8 / 256.0F);
+        double d12 = (double)(((float)i8 + 15.99F) / 256.0F);
+        double d14 = (double)((float)i9 / 256.0F);
+        double d16 = (double)(((float)i9 + 15.99F) / 256.0F);
+        float f18 = 0.0F;
+        float f19 = 0.03125F;
+        boolean z20 = this.blockAccess.getBlockId(x - 1, y, z) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x - 1, y, z) && this.blockAccess.getBlockId(x - 1, y - 1, z) == Block.redstoneWire.blockID;
+        boolean z21 = this.blockAccess.getBlockId(x + 1, y, z) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x + 1, y, z) && this.blockAccess.getBlockId(x + 1, y - 1, z) == Block.redstoneWire.blockID;
+        boolean z22 = this.blockAccess.getBlockId(x, y, z - 1) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x, y, z - 1) && this.blockAccess.getBlockId(x, y - 1, z - 1) == Block.redstoneWire.blockID;
+        boolean z23 = this.blockAccess.getBlockId(x, y, z + 1) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x, y, z + 1) && this.blockAccess.getBlockId(x, y - 1, z + 1) == Block.redstoneWire.blockID;
+        if(this.blockAccess.isBlockNormalCube(x - 1, y, z) && this.blockAccess.getBlockId(x - 1, y + 1, z) == Block.redstoneWire.blockID) {
+            z20 = true;
         }
 
-        double d11 = (double)((float)i8 / 256.0F);
-        double d13 = (double)(((float)i8 + 15.99F) / 256.0F);
-        double d15 = (double)((float)i10 / 256.0F);
-        double d17 = (double)(((float)i10 + 15.99F) / 256.0F);
-        double d19 = (double)((float)i9 / 256.0F);
-        double d21 = (double)(((float)i9 + 15.99F) / 256.0F);
-        double d23 = (double)((float)i10 / 256.0F);
-        double d25 = (double)(((float)i10 + 15.99F) / 256.0F);
-        float f27 = 0.125F;
-        float f28 = 0.05F;
-        if(this.blockAccess.isBlockNormalCube(x - 1, y, z)) {
-            tessellator5.addVertexWithUV((double)((float)x + f28), (double)((float)(y + 1) + f27), (double)((float)(z + 1) + f27), d11, d15);
-            tessellator5.addVertexWithUV((double)((float)x + f28), (double)((float)(y + 0) - f27), (double)((float)(z + 1) + f27), d11, d17);
-            tessellator5.addVertexWithUV((double)((float)x + f28), (double)((float)(y + 0) - f27), (double)((float)(z + 0) - f27), d13, d17);
-            tessellator5.addVertexWithUV((double)((float)x + f28), (double)((float)(y + 1) + f27), (double)((float)(z + 0) - f27), d13, d15);
+        if(this.blockAccess.isBlockNormalCube(x + 1, y, z) && this.blockAccess.getBlockId(x + 1, y + 1, z) == Block.redstoneWire.blockID) {
+            z21 = true;
         }
 
-        if(this.blockAccess.isBlockNormalCube(x + 1, y, z)) {
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f28), (double)((float)(y + 0) - f27), (double)((float)(z + 1) + f27), d13, d17);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f28), (double)((float)(y + 1) + f27), (double)((float)(z + 1) + f27), d13, d15);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f28), (double)((float)(y + 1) + f27), (double)((float)(z + 0) - f27), d11, d15);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f28), (double)((float)(y + 0) - f27), (double)((float)(z + 0) - f27), d11, d17);
+        if(this.blockAccess.isBlockNormalCube(x, y, z - 1) && this.blockAccess.getBlockId(x, y + 1, z - 1) == Block.redstoneWire.blockID) {
+            z22 = true;
         }
 
-        if(this.blockAccess.isBlockNormalCube(x, y, z - 1)) {
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f27), (double)((float)(y + 0) - f27), (double)((float)z + f28), d21, d25);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f27), (double)((float)(y + 1) + f27), (double)((float)z + f28), d21, d23);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f27), (double)((float)(y + 1) + f27), (double)((float)z + f28), d19, d23);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f27), (double)((float)(y + 0) - f27), (double)((float)z + f28), d19, d25);
+        if(this.blockAccess.isBlockNormalCube(x, y, z + 1) && this.blockAccess.getBlockId(x, y + 1, z + 1) == Block.redstoneWire.blockID) {
+            z23 = true;
         }
 
-        if(this.blockAccess.isBlockNormalCube(x, y, z + 1)) {
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f27), (double)((float)(y + 1) + f27), (double)((float)(z + 1) - f28), d19, d23);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f27), (double)((float)(y + 0) - f27), (double)((float)(z + 1) - f28), d19, d25);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f27), (double)((float)(y + 0) - f27), (double)((float)(z + 1) - f28), d21, d25);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f27), (double)((float)(y + 1) + f27), (double)((float)(z + 1) - f28), d21, d23);
+        float f24 = 0.3125F;
+        float f25 = (float)(x + 0);
+        float f26 = (float)(x + 1);
+        float f27 = (float)(z + 0);
+        float f28 = (float)(z + 1);
+        byte b29 = 0;
+        if((z20 || z21) && !z22 && !z23) {
+            b29 = 1;
+        }
+
+        if((z22 || z23) && !z21 && !z20) {
+            b29 = 2;
+        }
+
+        if(b29 != 0) {
+            d10 = (double)((float)(i8 + 16) / 256.0F);
+            d12 = (double)(((float)(i8 + 16) + 15.99F) / 256.0F);
+            d14 = (double)((float)i9 / 256.0F);
+            d16 = (double)(((float)i9 + 15.99F) / 256.0F);
+        }
+
+        if(b29 == 0) {
+            if(z21 || z22 || z23 || z20) {
+                if(!z20) {
+                    f25 += f24;
+                }
+
+                if(!z20) {
+                    d10 += (double)(f24 / 16.0F);
+                }
+
+                if(!z21) {
+                    f26 -= f24;
+                }
+
+                if(!z21) {
+                    d12 -= (double)(f24 / 16.0F);
+                }
+
+                if(!z22) {
+                    f27 += f24;
+                }
+
+                if(!z22) {
+                    d14 += (double)(f24 / 16.0F);
+                }
+
+                if(!z23) {
+                    f28 -= f24;
+                }
+
+                if(!z23) {
+                    d16 -= (double)(f24 / 16.0F);
+                }
+            }
+
+            tessellator5.addVertexWithUV((double)(f26 + f18), (double)((float)y + f19), (double)(f28 + f18), d12, d16);
+            tessellator5.addVertexWithUV((double)(f26 + f18), (double)((float)y + f19), (double)(f27 - f18), d12, d14);
+            tessellator5.addVertexWithUV((double)(f25 - f18), (double)((float)y + f19), (double)(f27 - f18), d10, d14);
+            tessellator5.addVertexWithUV((double)(f25 - f18), (double)((float)y + f19), (double)(f28 + f18), d10, d16);
+        }
+
+        if(b29 == 1) {
+            tessellator5.addVertexWithUV((double)(f26 + f18), (double)((float)y + f19), (double)(f28 + f18), d12, d16);
+            tessellator5.addVertexWithUV((double)(f26 + f18), (double)((float)y + f19), (double)(f27 - f18), d12, d14);
+            tessellator5.addVertexWithUV((double)(f25 - f18), (double)((float)y + f19), (double)(f27 - f18), d10, d14);
+            tessellator5.addVertexWithUV((double)(f25 - f18), (double)((float)y + f19), (double)(f28 + f18), d10, d16);
+        }
+
+        if(b29 == 2) {
+            tessellator5.addVertexWithUV((double)(f26 + f18), (double)((float)y + f19), (double)(f28 + f18), d12, d16);
+            tessellator5.addVertexWithUV((double)(f26 + f18), (double)((float)y + f19), (double)(f27 - f18), d10, d16);
+            tessellator5.addVertexWithUV((double)(f25 - f18), (double)((float)y + f19), (double)(f27 - f18), d10, d14);
+            tessellator5.addVertexWithUV((double)(f25 - f18), (double)((float)y + f19), (double)(f28 + f18), d12, d14);
+        }
+
+        d10 = (double)((float)(i8 + 16) / 256.0F);
+        d12 = (double)(((float)(i8 + 16) + 15.99F) / 256.0F);
+        d14 = (double)((float)i9 / 256.0F);
+        d16 = (double)(((float)i9 + 15.99F) / 256.0F);
+        if(this.blockAccess.isBlockNormalCube(x - 1, y, z) && this.blockAccess.getBlockId(x - 1, y + 1, z) == Block.redstoneWire.blockID) {
+            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 1) + f18), (double)((float)(z + 1) + f18), d12, d14);
+            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 0) - f18), (double)((float)(z + 1) + f18), d10, d14);
+            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 0) - f18), (double)((float)(z + 0) - f18), d10, d16);
+            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 1) + f18), (double)((float)(z + 0) - f18), d12, d16);
+        }
+
+        if(this.blockAccess.isBlockNormalCube(x + 1, y, z) && this.blockAccess.getBlockId(x + 1, y + 1, z) == Block.redstoneWire.blockID) {
+            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 0) - f18), (double)((float)(z + 1) + f18), d10, d16);
+            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 1) + f18), (double)((float)(z + 1) + f18), d12, d16);
+            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 1) + f18), (double)((float)(z + 0) - f18), d12, d14);
+            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 0) - f18), (double)((float)(z + 0) - f18), d10, d14);
+        }
+
+        if(this.blockAccess.isBlockNormalCube(x, y, z - 1) && this.blockAccess.getBlockId(x, y + 1, z - 1) == Block.redstoneWire.blockID) {
+            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 0) - f18), (double)((float)z + f19), d10, d16);
+            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 1) + f18), (double)((float)z + f19), d12, d16);
+            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 1) + f18), (double)((float)z + f19), d12, d14);
+            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 0) - f18), (double)((float)z + f19), d10, d14);
+        }
+
+        if(this.blockAccess.isBlockNormalCube(x, y, z + 1) && this.blockAccess.getBlockId(x, y + 1, z + 1) == Block.redstoneWire.blockID) {
+            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 1) + f18), (double)((float)(z + 1) - f19), d12, d14);
+            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 0) - f18), (double)((float)(z + 1) - f19), d10, d14);
+            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 0) - f18), (double)((float)(z + 1) - f19), d10, d16);
+            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 1) + f18), (double)((float)(z + 1) - f19), d12, d16);
         }
 
         return true;
@@ -592,7 +846,7 @@ public class RenderBlocks {
             float f13 = 0.6F;
             double d14 = 0.0D;
             double d16 = 1.0D;
-            Material material18 = block.blockMaterial;
+            Material material18 = block.material;
             int i19 = this.blockAccess.getBlockMetadata(x, y, z);
             float f20 = this.getFluidHeight(x, y, z, material18);
             float f21 = this.getFluidHeight(x, y, z + 1, material18);
@@ -741,11 +995,11 @@ public class RenderBlocks {
                 }
             } else {
                 if((i8 = this.blockAccess.getBlockMetadata(i8, y, i9)) >= 8 || i8 == 0) {
-                    f6 += BlockFluid.getPercentAir(i8) * 10.0F;
+                    f6 += BlockFluid.getFluidHeightPercent(i8) * 10.0F;
                     i5 += 10;
                 }
 
-                f6 += BlockFluid.getPercentAir(i8);
+                f6 += BlockFluid.getFluidHeightPercent(i8);
                 ++i5;
             }
         }
@@ -798,7 +1052,7 @@ public class RenderBlocks {
     }
 
     public boolean renderStandardBlock(Block block, int x, int y, int z) {
-        int i5 = block.getRenderColor(this.blockAccess, x, y, z);
+        int i5 = block.colorMultiplier(this.blockAccess, x, y, z);
         float f6 = (float)(i5 >> 16 & 255) / 255.0F;
         float f7 = (float)(i5 >> 8 & 255) / 255.0F;
         float f8 = (float)(i5 & 255) / 255.0F;
@@ -828,10 +1082,6 @@ public class RenderBlocks {
         float f27;
         if(this.renderAllFaces || block.shouldSideBeRendered(this.blockAccess, x, y - 1, z, 0)) {
             f27 = block.getBlockBrightness(this.blockAccess, x, y - 1, z);
-            if(Block.lightValue[block.blockID] > 0) {
-                f27 = 1.0F;
-            }
-
             tessellator8.setColorOpaque_F(f14 * f27, f18 * f27, f22 * f27);
             this.renderBottomFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 0));
             z9 = true;
@@ -839,12 +1089,8 @@ public class RenderBlocks {
 
         if(this.renderAllFaces || block.shouldSideBeRendered(this.blockAccess, x, y + 1, z, 1)) {
             f27 = block.getBlockBrightness(this.blockAccess, x, y + 1, z);
-            if(block.maxY != 1.0D && !block.blockMaterial.getIsLiquid()) {
+            if(block.maxY != 1.0D && !block.material.getIsLiquid()) {
                 f27 = f26;
-            }
-
-            if(Block.lightValue[block.blockID] > 0) {
-                f27 = 1.0F;
             }
 
             tessellator8.setColorOpaque_F(f15 * f27, f19 * f27, f23 * f27);
@@ -858,10 +1104,6 @@ public class RenderBlocks {
                 f27 = f26;
             }
 
-            if(Block.lightValue[block.blockID] > 0) {
-                f27 = 1.0F;
-            }
-
             tessellator8.setColorOpaque_F(f16 * f27, f20 * f27, f24 * f27);
             this.renderEastFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 2));
             z9 = true;
@@ -871,10 +1113,6 @@ public class RenderBlocks {
             f27 = block.getBlockBrightness(this.blockAccess, x, y, z + 1);
             if(block.maxZ < 1.0D) {
                 f27 = f26;
-            }
-
-            if(Block.lightValue[block.blockID] > 0) {
-                f27 = 1.0F;
             }
 
             tessellator8.setColorOpaque_F(f16 * f27, f20 * f27, f24 * f27);
@@ -888,10 +1126,6 @@ public class RenderBlocks {
                 f27 = f26;
             }
 
-            if(Block.lightValue[block.blockID] > 0) {
-                f27 = 1.0F;
-            }
-
             tessellator8.setColorOpaque_F(f17 * f27, f21 * f27, f25 * f27);
             this.renderNorthFace(block, (double)x, (double)y, (double)z, block.getBlockTexture(this.blockAccess, x, y, z, 4));
             z9 = true;
@@ -901,10 +1135,6 @@ public class RenderBlocks {
             f27 = block.getBlockBrightness(this.blockAccess, x + 1, y, z);
             if(block.maxX < 1.0D) {
                 f27 = f26;
-            }
-
-            if(Block.lightValue[block.blockID] > 0) {
-                f27 = 1.0F;
             }
 
             tessellator8.setColorOpaque_F(f17 * f27, f21 * f27, f25 * f27);
@@ -1334,8 +1564,9 @@ public class RenderBlocks {
 
 	public void renderBlockOnInventory(Block block) {
 		Tessellator tessellator2 = Tessellator.instance;
-		int i3;
-		if((i3 = block.getRenderType()) == 0) {
+		int i3 = block.getRenderType();
+		if(i3 == 0) {
+            block.setBlockBoundsForItemRender();
 			GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
 			tessellator2.setNormal(0.0F, -1.0F, 0.0F);
@@ -1372,14 +1603,55 @@ public class RenderBlocks {
 			tessellator2.setNormal(0.0F, -1.0F, 0.0F);
 			this.renderBlockCropsImpl(block, -1, -0.5D, -0.5D, -0.5D);
 			tessellator2.draw();
-		} else {
-			if(i3 == 2) {
-				tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-				tessellator2.setNormal(0.0F, -1.0F, 0.0F);
-				this.renderTorchAtAngle(block, -0.5D, -0.5D, -0.5D, 0.0D, 0.0D);
-				tessellator2.draw();
-			}
+		} else if(i3 == 2) {
+			tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+			tessellator2.setNormal(0.0F, -1.0F, 0.0F);
+			this.renderTorchAtAngle(block, -0.5D, -0.5D, -0.5D, 0.0D, 0.0D);
+			tessellator2.draw();
+        } else if(i3 == 10) {
+            for(int i5 = 0; i5 < 2; ++i5) {
+                if(i5 == 0) {
+                    block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.5F);
+                }
 
-		}
-	}
+                if(i5 == 1) {
+                    block.setBlockBounds(0.0F, 0.0F, 0.5F, 1.0F, 0.5F, 1.0F);
+                }
+
+                GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+                tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                tessellator2.setNormal(0.0F, -1.0F, 0.0F);
+                this.renderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(0));
+                tessellator2.draw();
+                tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                tessellator2.setNormal(0.0F, 1.0F, 0.0F);
+                this.renderTopFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(1));
+                tessellator2.draw();
+                tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                tessellator2.setNormal(0.0F, 0.0F, -1.0F);
+                this.renderEastFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(2));
+                tessellator2.draw();
+                tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                tessellator2.setNormal(0.0F, 0.0F, 1.0F);
+                this.renderWestFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(3));
+                tessellator2.draw();
+                tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                tessellator2.setNormal(-1.0F, 0.0F, 0.0F);
+                this.renderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(4));
+                tessellator2.draw();
+                tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+                tessellator2.setNormal(1.0F, 0.0F, 0.0F);
+                this.renderSouthFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(5));
+                tessellator2.draw();
+                GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+            }
+
+            block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+        }
+
+    }
+
+    public static boolean renderItemIn3d(int renderType) {
+        return renderType == 0 ? true : renderType == 10;
+    }
 }

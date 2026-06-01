@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import java.util.List;
 
+import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
@@ -30,17 +31,15 @@ import net.minecraft.game.world.material.Material;
 
 public class EntityRenderer {
     private Minecraft mc;
-    private boolean displayActive = false;
     private float farPlaneDistance = 0.0F;
     public ItemRenderer itemRenderer;
     private int rendererUpdateCount;
     private Entity pointedEntity = null;
-    private int mouseDX;
-    private int mouseDY;
+    private long prevFrameTime = EagRuntime.currentTimeMillis();
     private EaglercraftRandom random = new EaglercraftRandom();
     private volatile int unusedInt1 = 0;
     private volatile int unusedInt2 = 0;
-    private FloatBuffer fogColorBuffer = GLAllocation.createFloatBuffer(16);
+    private FloatBuffer fogColorBuffer = GLAllocation.createDirectFloatBuffer(16);
     private float fogColorRed;
     private float fogColorGreen;
     private float fogColorBlue;
@@ -55,7 +54,7 @@ public class EntityRenderer {
     public void updateRenderer() {
         this.prevFogColor = this.fogColor;
         float f1 = this.mc.theWorld.getBrightness(MathHelper.floor_double(this.mc.thePlayer.posX), MathHelper.floor_double(this.mc.thePlayer.posY), MathHelper.floor_double(this.mc.thePlayer.posZ));
-        float f2 = (float)(3 - this.mc.gameSettings.renderDistance) / 3.0F;
+        float f2 = (float)(3 - this.mc.options.renderDistance) / 3.0F;
         f1 = f1 * (1.0F - f2) + f2;
         this.fogColor += (f1 - this.fogColor) * 0.1F;
         ++this.rendererUpdateCount;
@@ -171,7 +170,7 @@ public class EntityRenderer {
     }
 
     private void setupViewBobbing(float partialTicks) {
-        if(!this.mc.gameSettings.thirdPersonView) {
+        if(!this.mc.options.thirdPersonView) {
             EntityPlayerSP entityPlayerSP2 = this.mc.thePlayer;
             float f3 = entityPlayerSP2.distanceWalkedModified - entityPlayerSP2.prevDistanceWalkedModified;
             float f4 = entityPlayerSP2.distanceWalkedModified + f3 * partialTicks;
@@ -189,7 +188,7 @@ public class EntityRenderer {
         double d3 = entityPlayerSP2.prevPosX + (entityPlayerSP2.posX - entityPlayerSP2.prevPosX) * (double)partialTicks;
         double d5 = entityPlayerSP2.prevPosY + (entityPlayerSP2.posY - entityPlayerSP2.prevPosY) * (double)partialTicks;
         double d7 = entityPlayerSP2.prevPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.prevPosZ) * (double)partialTicks;
-        if(this.mc.gameSettings.thirdPersonView) {
+        if(this.mc.options.thirdPersonView) {
             double d9 = 4.0D;
             double d11 = (double)(-MathHelper.sin(entityPlayerSP2.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(entityPlayerSP2.rotationPitch / 180.0F * (float)Math.PI)) * d9;
             double d13 = (double)(MathHelper.cos(entityPlayerSP2.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(entityPlayerSP2.rotationPitch / 180.0F * (float)Math.PI)) * d9;
@@ -221,23 +220,23 @@ public class EntityRenderer {
     }
 
     private void setupCameraTransform(float partialTicks, int anaglyphPass) {
-        this.farPlaneDistance = (float)(256 >> this.mc.gameSettings.renderDistance);
+        this.farPlaneDistance = (float)(256 >> this.mc.options.renderDistance);
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
         float f3 = 0.07F;
-        if(this.mc.gameSettings.anaglyph) {
+        if(this.mc.options.anaglyph) {
             GL11.glTranslatef((float)(-(anaglyphPass * 2 - 1)) * f3, 0.0F, 0.0F);
         }
 
         GLU.gluPerspective(this.getFOVModifier(partialTicks), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
-        if(this.mc.gameSettings.anaglyph) {
+        if(this.mc.options.anaglyph) {
             GL11.glTranslatef((float)(anaglyphPass * 2 - 1) * 0.1F, 0.0F, 0.0F);
         }
 
         this.hurtCameraEffect(partialTicks);
-        if(this.mc.gameSettings.viewBobbing) {
+        if(this.mc.options.viewBobbing) {
             this.setupViewBobbing(partialTicks);
         }
 
@@ -246,56 +245,48 @@ public class EntityRenderer {
 
     private void renderHand(float partialTicks, int anaglyphPass) {
         GL11.glLoadIdentity();
-        if(this.mc.gameSettings.anaglyph) {
+        if(this.mc.options.anaglyph) {
             GL11.glTranslatef((float)(anaglyphPass * 2 - 1) * 0.1F, 0.0F, 0.0F);
         }
 
         GL11.glPushMatrix();
         this.hurtCameraEffect(partialTicks);
-        if(this.mc.gameSettings.viewBobbing) {
+        if(this.mc.options.viewBobbing) {
             this.setupViewBobbing(partialTicks);
         }
 
-        if(!this.mc.gameSettings.thirdPersonView) {
+        if(!this.mc.options.thirdPersonView) {
             this.itemRenderer.renderItemInFirstPerson(partialTicks);
         }
 
         GL11.glPopMatrix();
-        if(!this.mc.gameSettings.thirdPersonView) {
+        if(!this.mc.options.thirdPersonView) {
             this.itemRenderer.renderOverlays(partialTicks);
             this.hurtCameraEffect(partialTicks);
         }
 
-        if(this.mc.gameSettings.viewBobbing) {
+        if(this.mc.options.viewBobbing) {
             this.setupViewBobbing(partialTicks);
         }
 
     }
 
     public void updateCameraAndRender(float partialTicks) {
-        if(this.displayActive && !Display.isActive()) {
-            this.mc.displayInGameMenu();
+        if(!Display.isActive()) {
+            if(EagRuntime.currentTimeMillis() - this.prevFrameTime > 500L) {
+                this.mc.displayInGameMenu();
+            }
+        } else {
+            this.prevFrameTime = EagRuntime.currentTimeMillis();
         }
 
-        this.displayActive = Display.isActive();
         if(this.mc.inGameHasFocus) {
-            int i5 = PointerInputAbstraction.getDX();
-            int i6 = PointerInputAbstraction.getDY();
+            this.mc.mouseHelper.mouseXYChange();
+            int i5 = this.mc.mouseHelper.deltaX;
+            int i6 = this.mc.mouseHelper.deltaY;
             byte b4 = 1;
-            if(this.mc.gameSettings.invertMouse) {
+            if(this.mc.options.invertMouse) {
                 b4 = -1;
-            }
-
-            if(this.mouseDX != 0) {
-                System.out.println("xxo: " + 0 + ", " + this.mouseDX + ": " + this.mouseDX + ", xo: " + i5);
-            }
-
-            if(this.mouseDX != 0) {
-                this.mouseDX = 0;
-            }
-
-            if(this.mouseDY != 0) {
-                this.mouseDY = 0;
             }
 
             this.mc.thePlayer.setAngles((float)i5, (float)(i6 * b4));
@@ -356,7 +347,7 @@ public class EntityRenderer {
         double d9 = entityPlayerSP2.lastTickPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.lastTickPosZ) * (double)partialTicks;
 
         for(int i11 = 0; i11 < 2; ++i11) {
-            if(this.mc.gameSettings.anaglyph) {
+            if(this.mc.options.anaglyph) {
                 if(i11 == 0) {
                     GL11.glColorMask(false, true, true, false);
                 } else {
@@ -370,7 +361,7 @@ public class EntityRenderer {
             GL11.glEnable(GL11.GL_CULL_FACE);
             this.setupCameraTransform(partialTicks, i11);
             ClippingHelperImplementation.getInstance();
-            if(this.mc.gameSettings.renderDistance < 2) {
+            if(this.mc.options.renderDistance < 2) {
                 this.setupFog(-1);
                 renderGlobal3.renderSky(partialTicks);
             }
@@ -379,7 +370,7 @@ public class EntityRenderer {
             this.setupFog(1);
             Frustrum frustrum12 = new Frustrum();
             frustrum12.setPosition(d5, d7, d9);
-            this.mc.renderGlobal.clipRenderersByFrustrum(frustrum12, partialTicks);
+            this.mc.renderGlobal.clipRenderersByFrustum(frustrum12, partialTicks);
             this.mc.renderGlobal.updateRenderers(entityPlayerSP2, false);
             this.setupFog(0);
             GL11.glEnable(GL11.GL_FOG);
@@ -404,11 +395,11 @@ public class EntityRenderer {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-            if(this.mc.gameSettings.fancyGraphics) {
+            if(this.mc.options.fancyGraphics) {
                 GL11.glColorMask(false, false, false, false);
                 int i13 = renderGlobal3.sortAndRender(entityPlayerSP2, 1, (double)partialTicks);
                 GL11.glColorMask(true, true, true, true);
-                if(this.mc.gameSettings.anaglyph) {
+                if(this.mc.options.anaglyph) {
                     if(i11 == 0) {
                         GL11.glColorMask(false, true, true, false);
                     } else {
@@ -449,7 +440,7 @@ public class EntityRenderer {
             this.setupFog(1);
             GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
             this.renderHand(partialTicks, i11);
-            if(!this.mc.gameSettings.anaglyph) {
+            if(!this.mc.options.anaglyph) {
                 return;
             }
         }
@@ -547,7 +538,7 @@ public class EntityRenderer {
     private void updateFogColor(float partialTicks) {
         World world2 = this.mc.theWorld;
         EntityPlayerSP entityPlayerSP3 = this.mc.thePlayer;
-        float f4 = 1.0F / (float)(4 - this.mc.gameSettings.renderDistance);
+        float f4 = 1.0F / (float)(4 - this.mc.options.renderDistance);
         f4 = 1.0F - (float)Math.pow((double)f4, 0.25D);
         Vec3D vec3D5 = world2.getSkyColor(partialTicks);
         float f6 = (float)vec3D5.xCoord;
@@ -574,7 +565,7 @@ public class EntityRenderer {
         this.fogColorRed *= f10;
         this.fogColorGreen *= f10;
         this.fogColorBlue *= f10;
-        if(this.mc.gameSettings.anaglyph) {
+        if(this.mc.options.anaglyph) {
             float f11 = (this.fogColorRed * 30.0F + this.fogColorGreen * 59.0F + this.fogColorBlue * 11.0F) / 100.0F;
             float f12 = (this.fogColorRed * 30.0F + this.fogColorGreen * 70.0F) / 100.0F;
             float f13 = (this.fogColorRed * 30.0F + this.fogColorBlue * 70.0F) / 100.0F;

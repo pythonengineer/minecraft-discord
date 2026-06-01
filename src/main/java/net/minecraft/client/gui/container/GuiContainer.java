@@ -136,7 +136,7 @@ public abstract class GuiContainer extends GuiScreen {
                 itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, itemstack, i10, i11, s);
             }
 
-            if(!this.mc.gameSettings.touchscreen && slot6.getIsMouseOverSlot(mouseX, mouseY)) {
+            if(!this.mc.options.touchscreen && slot6.getIsMouseOverSlot(mouseX, mouseY)) {
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
                 int i7 = slot6.xDisplayPosition;
@@ -220,7 +220,7 @@ public abstract class GuiContainer extends GuiScreen {
     }
 
     protected void keyTyped(char typedChar, int keyCode) {
-        if(keyCode == 1 || keyCode == this.mc.gameSettings.keyBindInventory.keyCode) {
+        if(keyCode == 1 || keyCode == this.mc.options.keyBindInventory.keyCode) {
             this.mc.displayGuiScreen((GuiScreen)null);
         }
 
@@ -659,7 +659,7 @@ public abstract class GuiContainer extends GuiScreen {
             }
 
             if (l != -1) {
-                if (this.mc.gameSettings.touchscreen) {
+                if (this.mc.options.touchscreen) {
                     if (slot != null && slot.getHasStack()) {
                         this.clickedSlot = slot;
                         this.draggedStack = null;
@@ -752,7 +752,7 @@ public abstract class GuiContainer extends GuiScreen {
                 return;
             }
 
-            if (this.clickedSlot != null && this.mc.gameSettings.touchscreen) {
+            if (this.clickedSlot != null && this.mc.options.touchscreen) {
                 if (k == 0 || k == 1) {
                     if (this.draggedStack == null && slot != this.clickedSlot) {
                         this.draggedStack = this.clickedSlot.getStack();

@@ -6,7 +6,7 @@ import net.minecraft.game.world.material.Material;
 
 public class BlockGrass extends Block {
 	protected BlockGrass(int blockID) {
-		super(blockID, Material.ground);
+		super(blockID, Material.grass);
 		this.blockIndexInTexture = 3;
 		this.setTickOnLoad(true);
 	}

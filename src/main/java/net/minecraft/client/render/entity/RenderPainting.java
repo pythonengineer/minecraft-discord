@@ -12,7 +12,7 @@ import net.minecraft.game.entity.EnumArt;
 public class RenderPainting extends Render {
 	private EaglercraftRandom rand = new EaglercraftRandom();
 
-	public void doRender(EntityPainting entity, double x, double y, double z, float yaw, float partialTicks) {
+	public void renderThePainting(EntityPainting entity, double x, double y, double z, float yaw, float partialTicks) {
 		this.rand.setSeed(187L);
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)x, (float)y, (float)z);
@@ -103,7 +103,7 @@ public class RenderPainting extends Render {
         GL11.glColor3f(f7, f7, f7);
     }
 
-    public void doRender(Entity entityLiving, double xCoord, double sqrt_double, double yCoord, float f8, float f9) {
-        this.doRender((EntityPainting)entityLiving, xCoord, sqrt_double, yCoord, f8, f9);
+    public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+        this.renderThePainting((EntityPainting)entity, x, y, z, yaw, partialTicks);
     }
 }

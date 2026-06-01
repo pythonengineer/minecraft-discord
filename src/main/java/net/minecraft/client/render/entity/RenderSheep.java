@@ -10,12 +10,12 @@ public class RenderSheep extends RenderLiving {
 		this.setRenderPassModel(renderPassModel);
 	}
 
-	protected boolean shouldRenderPass(EntitySheep sheep, int flag) {
+	protected boolean renderFur(EntitySheep sheep, int flag) {
 		this.loadTexture("/mob/sheep_fur.png");
 		return flag == 0 && !sheep.sheared;
 	}
 
     protected boolean shouldRenderPass(EntityLiving eVar, int flag) {
-        return this.shouldRenderPass((EntitySheep)eVar, flag);
+        return this.renderFur((EntitySheep)eVar, flag);
     }
 }

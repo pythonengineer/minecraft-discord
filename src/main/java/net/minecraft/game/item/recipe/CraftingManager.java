@@ -18,7 +18,7 @@ public class CraftingManager {
 
     private CraftingManager() {
         (new RecipesTools()).addRecipes(this);
-        (new RecipesWeapons()).addRecipe(this);
+        (new RecipesWeapons()).addRecipes(this);
         (new RecipesIngots()).addRecipes(this);
         (new RecipesFood()).addRecipes(this);
         (new RecipesCrafting()).addRecipes(this);
@@ -27,14 +27,15 @@ public class CraftingManager {
         this.addRecipe(new ItemStack(Block.tnt, 1), new Object[]{"X#X", "#X#", "X#X", 'X', Item.gunpowder, '#', Block.sand});
         this.addRecipe(new ItemStack(Block.stairSingle, 3), new Object[]{"###", '#', Block.cobblestone});
         this.addRecipe(new ItemStack(Block.ladder, 1), new Object[]{"# #", "###", "# #", '#', Item.stick});
-        this.addRecipe(new ItemStack(Item.door, 1), new Object[]{"##", "##", "##", '#', Block.planks});
+        this.addRecipe(new ItemStack(Item.doorWood, 1), new Object[]{"##", "##", "##", '#', Block.planks});
+        this.addRecipe(new ItemStack(Item.doorSteel, 1), new Object[]{"##", "##", "##", '#', Item.ingotIron});
         this.addRecipe(new ItemStack(Item.sign, 1), new Object[]{"###", "###", " X ", '#', Block.planks, 'X', Item.stick});
         this.addRecipe(new ItemStack(Block.planks, 4), new Object[]{"#", '#', Block.wood});
         this.addRecipe(new ItemStack(Item.stick, 4), new Object[]{"#", "#", '#', Block.planks});
         this.addRecipe(new ItemStack(Block.torch, 4), new Object[]{"X", "#", 'X', Item.coal, '#', Item.stick});
         this.addRecipe(new ItemStack(Item.bowlEmpty, 4), new Object[]{"# #", " # ", '#', Block.planks});
         this.addRecipe(new ItemStack(Block.minecartTrack, 16), new Object[]{"X X", "X#X", "X X", 'X', Item.ingotIron, '#', Item.stick});
-        this.addRecipe(new ItemStack(Item.minecart, 1), new Object[]{"# #", "###", '#', Item.ingotIron});
+        this.addRecipe(new ItemStack(Item.minecartEmpty, 1), new Object[]{"# #", "###", '#', Item.ingotIron});
         this.addRecipe(new ItemStack(Item.bucketEmpty, 1), new Object[]{"# #", " # ", '#', Item.ingotIron});
         this.addRecipe(new ItemStack(Item.striker, 1), new Object[]{"A ", " B", 'A', Item.ingotIron, 'B', Item.flint});
         this.addRecipe(new ItemStack(Item.bread, 1), new Object[]{"###", '#', Item.wheat});
@@ -42,6 +43,11 @@ public class CraftingManager {
         this.addRecipe(new ItemStack(Block.stairCompactStone, 4), new Object[]{"#  ", "## ", "###", '#', Block.cobblestone});
         this.addRecipe(new ItemStack(Item.painting, 1), new Object[]{"###", "#X#", "###", '#', Item.stick, 'X', Block.cloth});
         this.addRecipe(new ItemStack(Item.appleGold, 1), new Object[]{"###", "#X#", "###", '#', Block.blockGold, 'X', Item.appleRed});
+        this.addRecipe(new ItemStack(Block.lever, 1), new Object[]{"X", "#", '#', Block.cobblestone, 'X', Item.stick});
+        this.addRecipe(new ItemStack(Block.torchRedstoneActive, 1), new Object[]{"X", "#", '#', Item.stick, 'X', Item.redstone});
+        this.addRecipe(new ItemStack(Block.button, 1), new Object[]{"#", "#", '#', Block.stone});
+        this.addRecipe(new ItemStack(Block.pressurePlateStone, 1), new Object[]{"###", '#', Block.stone});
+        this.addRecipe(new ItemStack(Block.pressurePlateWood, 1), new Object[]{"###", '#', Block.planks});
         Collections.sort(this.recipes, new RecipeSorter(this));
         System.out.println(this.recipes.size() + " recipes");
     }
@@ -100,8 +106,8 @@ public class CraftingManager {
     public ItemStack findMatchingRecipe(int[] ids) {
         for(int i2 = 0; i2 < this.recipes.size(); ++i2) {
             CraftingRecipe craftingRecipe3 = (CraftingRecipe)this.recipes.get(i2);
-            if(craftingRecipe3.matchRecipe(ids)) {
-                return craftingRecipe3.createResult(ids);
+            if(craftingRecipe3.matches(ids)) {
+                return craftingRecipe3.getCraftingResult(ids);
             }
         }
 

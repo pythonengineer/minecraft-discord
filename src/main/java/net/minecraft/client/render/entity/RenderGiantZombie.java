@@ -13,11 +13,11 @@ public class RenderGiantZombie extends RenderLiving {
 		this.scale = height;
 	}
 
-	protected void preRenderCallback(EntityGiantZombie livingEntity, float partialTicks) {
+	protected void preRenderScale(EntityGiantZombie livingEntity, float partialTicks) {
 		GL11.glScalef(this.scale, this.scale, this.scale);
 	}
 
     protected void preRenderCallback(EntityLiving entityLiving, float partialTicks) {
-        this.preRenderCallback((EntityGiantZombie)entityLiving, partialTicks);
+        this.preRenderScale((EntityGiantZombie)entityLiving, partialTicks);
     }
 }

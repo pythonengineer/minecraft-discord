@@ -14,7 +14,7 @@ public class GameSettings {
     private static final String[] GUI_SCALES = new String[]{"AUTO", "SMALL",
             "NORMAL", "LARGE" };
     private static final String[] RENDER_DISTANCES = new String[]{"FAR", "NORMAL", "SHORT", "TINY"};
-    private static final String[] DIFFICULTIES = new String[]{"Peaceful", "Easy", "Normal", "Hard"};
+    private static final String[] DIFFICULTY_LEVELS = new String[]{"Peaceful", "Easy", "Normal", "Hard"};
     public boolean music = true;
     public boolean sound = true;
     public boolean invertMouse = false;
@@ -35,9 +35,9 @@ public class GameSettings {
     public KeyBinding keyBindDrop = new KeyBinding("Drop", Keyboard.KEY_Q);
     private KeyBinding keyBindChat = new KeyBinding("Chat", Keyboard.KEY_T);
     public KeyBinding keyBindToggleFog = new KeyBinding("Toggle fog", Keyboard.KEY_F);
-    public KeyBinding keyBindSave = new KeyBinding("Save location", Keyboard.KEY_RETURN);
-    public KeyBinding keyBindLoad = new KeyBinding("Load location", Keyboard.KEY_R);
-    public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSave, this.keyBindLoad};
+    public KeyBinding keyBindSavePos = new KeyBinding("Save location", Keyboard.KEY_RETURN);
+    public KeyBinding keyBindLoadPos = new KeyBinding("Load location", Keyboard.KEY_R);
+    public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSavePos, this.keyBindLoadPos};
     private Minecraft mc;
     public int numberOfOptions = 11;
     public int difficulty = 2;
@@ -109,8 +109,8 @@ public class GameSettings {
         this.saveOptions();
     }
 
-    public String getKeyBinding(int keyBindIndex) {
-        return keyBindIndex == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (keyBindIndex == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (keyBindIndex == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (keyBindIndex == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (keyBindIndex == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (keyBindIndex == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (keyBindIndex == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (keyBindIndex == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (keyBindIndex == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (keyBindIndex == 9 ? "Difficulty: " + DIFFICULTIES[this.difficulty] : (keyBindIndex == 10 ? "Graphics: " + (this.fancyGraphics ? "FANCY" : "FAST") : ""))))))))));
+    public String getOptionDisplayString(int keyBindIndex) {
+        return keyBindIndex == 0 ? "Music: " + (this.music ? "ON" : "OFF") : (keyBindIndex == 1 ? "Sound: " + (this.sound ? "ON" : "OFF") : (keyBindIndex == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (keyBindIndex == 3 ? "Show FPS: " + (this.showFPS ? "ON" : "OFF") : (keyBindIndex == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (keyBindIndex == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (keyBindIndex == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (keyBindIndex == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (keyBindIndex == 8 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : (keyBindIndex == 9 ? "Difficulty: " + DIFFICULTY_LEVELS[this.difficulty] : (keyBindIndex == 10 ? "Graphics: " + (this.fancyGraphics ? "FANCY" : "FAST") : ""))))))))));
     }
 
     private void loadOptions() {

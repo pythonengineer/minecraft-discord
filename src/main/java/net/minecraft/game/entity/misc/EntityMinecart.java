@@ -60,7 +60,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.prevPosZ = z;
 	}
 
-    public double getYOffset() {
+    public double getMountedYOffset() {
         return (double)this.height * 0.2D;
     }
 
@@ -69,7 +69,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.timeSinceHit = 10;
 		this.damageTaken += i2 * 10;
 		if(this.damageTaken > 40) {
-			this.entityDropItem(Item.minecart.shiftedIndex, 1, 0.0F);
+			this.entityDropItem(Item.minecartEmpty.shiftedIndex, 1, 0.0F);
 			this.setEntityDead();
 		}
 

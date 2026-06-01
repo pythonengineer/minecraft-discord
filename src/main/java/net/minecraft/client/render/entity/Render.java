@@ -16,7 +16,7 @@ import net.minecraft.game.world.block.Block;
 public abstract class Render {
 	protected RenderManager renderManager;
     private ModelBase modelBase = new ModelBiped();
-    private RenderBlocks renderBlocksVar = new RenderBlocks();
+    private RenderBlocks renderBlocks = new RenderBlocks();
     protected float shadowSize = 0.0F;
     protected float shadowOpaque = 1.0F;
 

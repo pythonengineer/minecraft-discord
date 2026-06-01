@@ -2490,7 +2490,7 @@ public class PlatformInput {
     }
 
     public static void setTitle(String title) {
-        options = Minecraft.minecraft.gameSettings;
+        options = Minecraft.minecraft.options;
     }
 
     public static void setSize(int width, int height) {

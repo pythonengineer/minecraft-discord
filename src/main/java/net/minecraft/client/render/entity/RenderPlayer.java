@@ -18,7 +18,7 @@ public class RenderPlayer extends RenderLiving {
 		super(new ModelBiped(0.0F), 0.5F);
 	}
 
-    protected boolean shouldRenderPass(EntityPlayer player, int flag) {
+    protected boolean setArmorModel(EntityPlayer player, int flag) {
         ItemStack itemStack4 = player.inventory.armorItemInSlot[3 - flag];
         if(itemStack4 != null) {
             Item item5 = itemStack4.getItem();
@@ -42,7 +42,7 @@ public class RenderPlayer extends RenderLiving {
     }
 
 	private void renderPlayer(EntityPlayer playerEntity, double x, double y, double z, float yaw, float partialTicks) {
-		super.renderLiving(playerEntity, x, y - (double)playerEntity.yOffset, z, yaw, partialTicks);
+		super.doRenderLiving(playerEntity, x, y - (double)playerEntity.yOffset, z, yaw, partialTicks);
 	}
 
 	public void drawFirstPersonHand() {
@@ -50,11 +50,11 @@ public class RenderPlayer extends RenderLiving {
 	}
 
     protected boolean shouldRenderPass(EntityLiving livingEntity, int flag) {
-        return this.shouldRenderPass((EntityPlayer)livingEntity, flag);
+        return this.setArmorModel((EntityPlayer)livingEntity, flag);
     }
 
-	public void renderLiving(EntityLiving entityLiving1, double d2, double d4, double d6, float f8, float f9) {
-		this.renderPlayer((EntityPlayer)entityLiving1, d2, d4, d6, f8, f9);
+	public void doRenderLiving(EntityLiving entityLiving, double x, double y, double z, float yaw, float partialTicks) {
+		this.renderPlayer((EntityPlayer)entityLiving, x, y, z, yaw, partialTicks);
 	}
 
 	public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {

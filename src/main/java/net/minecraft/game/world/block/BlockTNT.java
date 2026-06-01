@@ -14,6 +14,14 @@ public class BlockTNT extends Block {
 		return side == 0 ? this.blockIndexInTexture + 2 : (side == 1 ? this.blockIndexInTexture + 1 : this.blockIndexInTexture);
 	}
 
+    public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
+        if(blockID > 0 && Block.blocksList[blockID].canProvidePower() && world.isBlockIndirectlyGettingPowered(x, y, z)) {
+            this.onBlockDestroyedByPlayer(world, x, y, z, 0);
+            world.setBlockWithNotify(x, y, z, 0);
+        }
+
+    }
+
 	public int quantityDropped(EaglercraftRandom rand) {
 		return 0;
 	}

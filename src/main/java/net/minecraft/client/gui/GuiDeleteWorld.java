@@ -12,9 +12,9 @@ public class GuiDeleteWorld extends GuiSelectWorld {
         this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
     }
 
-    public void actionWorld(int worldIndex) {
+    public void selectWorld(int worldIndex) {
         String string2;
-        if((string2 = getSaveFileName(worldIndex)) != null) {
+        if((string2 = getSaveName(worldIndex)) != null) {
             this.mc.displayGuiScreen(new GuiYesNo(this, "Are you sure you want to delete this world?", "\'" + string2 + "\' will be lost forever!", worldIndex));
         }
 
@@ -22,9 +22,9 @@ public class GuiDeleteWorld extends GuiSelectWorld {
 
     public void deleteWorld(boolean shouldDelete, int worldIndex) {
         if(shouldDelete) {
-            World.deleteWorld(this.getSaveFileName(worldIndex));
+            World.deleteWorld(this.getSaveName(worldIndex));
         }
 
-        this.mc.displayGuiScreen(this.currentScreen);
+        this.mc.displayGuiScreen(this.parentScreen);
     }
 }

@@ -24,7 +24,7 @@ public class BlockCrops extends BlockFlower {
         if(world.getBlockLightValue(x, y + 1, z) >= 9) {
             int i6 = world.getBlockMetadata(x, y, z);
             if(i6 < 7) {
-                float f7 = this.updateTick(world, x, y, z);
+                float f7 = this.getGrowthRate(world, x, y, z);
                 if(rand.nextInt((int)(100.0F / f7)) == 0) {
                     ++i6;
                     world.setBlockMetadataWithNotify(x, y, z, i6);
@@ -34,7 +34,7 @@ public class BlockCrops extends BlockFlower {
 
     }
 
-    private float updateTick(World world, int x, int y, int z) {
+    private float getGrowthRate(World world, int x, int y, int z) {
 		float f12 = 1.0F;
 		int i13 = world.getBlockId(x, y, z - 1);
 		int i14 = world.getBlockId(x, y, z + 1);

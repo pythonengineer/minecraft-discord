@@ -11,7 +11,7 @@ public class RenderList {
     private float playerPosX;
     private float playerPosY;
     private float playerPosZ;
-    private IntBuffer buffer = GLAllocation.createIntBuffer(65536);
+    private IntBuffer buffer = GLAllocation.createDirectIntBuffer(65536);
     private boolean render = false;
     private boolean isCached = false;
 

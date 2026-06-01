@@ -48,12 +48,30 @@ public class ChunkLoader implements IChunkLoader {
         return !file6.exists() && !this.createIfNecessary ? null : file6;
     }
 
-    public Chunk loadChunk(World world1, int i2, int i3) {
-        VFile2 file4 = this.chunkFileForXZ(i2, i3);
+    public Chunk loadChunk(World world, int x, int z) {
+        VFile2 file4 = this.chunkFileForXZ(x, z);
         if(file4 != null && file4.exists()) {
             try (InputStream fis = file4.getInputStream()) {
                 NBTTagCompound nBTTagCompound6 = CompressedStreamTools.readCompressed(fis);
-                return loadChunkIntoWorldFromCompound(world1, nBTTagCompound6.getCompoundTag("Level"));
+                if(!nBTTagCompound6.hasKey("Level")) {
+                    System.out.println("Chunk file at " + x + "," + z + " is missing level data, skipping");
+                    return null;
+                }
+
+                if(!nBTTagCompound6.getCompoundTag("Level").hasKey("Blocks")) {
+                    System.out.println("Chunk file at " + x + "," + z + " is missing block data, skipping");
+                    return null;
+                }
+
+                Chunk chunk7 = loadChunkIntoWorldFromCompound(world, nBTTagCompound6.getCompoundTag("Level"));
+                if(!chunk7.isAtLocation(x, z)) {
+                    System.out.println("Chunk file at " + x + "," + z + " is in the wrong location; relocating. (Expected " + x + ", " + z + ", got " + chunk7.xPosition + ", " + chunk7.zPosition + ")");
+                    nBTTagCompound6.setInteger("xPos", x);
+                    nBTTagCompound6.setInteger("zPos", z);
+                    chunk7 = loadChunkIntoWorldFromCompound(world, nBTTagCompound6.getCompoundTag("Level"));
+                }
+
+                return chunk7;
             } catch (IOException exception7) {
                 exception7.printStackTrace();
             }

@@ -20,7 +20,7 @@ public class EntityArrow extends Entity {
 	private int yTile = -1;
 	private int zTile = -1;
 	private int inTile = 0;
-	private boolean inGround = false;
+	private boolean inData = false;
 	public int arrowShake = 0;
 	private EntityLiving shootingEntity;
 	private int ticksInGround;
@@ -35,7 +35,7 @@ public class EntityArrow extends Entity {
 		super(world);
 		this.shootingEntity = livingEntity;
 		this.setSize(0.5F, 0.5F);
-		this.setPositionAndRotation(livingEntity.posX, livingEntity.posY, livingEntity.posZ, livingEntity.rotationYaw, livingEntity.rotationPitch);
+		this.setLocationAndAngles(livingEntity.posX, livingEntity.posY, livingEntity.posZ, livingEntity.rotationYaw, livingEntity.rotationPitch);
 		this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
 		this.posY -= (double)0.1F;
 		this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
@@ -73,7 +73,7 @@ public class EntityArrow extends Entity {
 			--this.arrowShake;
 		}
 
-		if(this.inGround) {
+		if(this.inData) {
 			int i1 = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile);
 			if(i1 == this.inTile) {
 				++this.ticksInGround;
@@ -84,7 +84,7 @@ public class EntityArrow extends Entity {
 				return;
 			}
 
-			this.inGround = false;
+			this.inData = false;
 			this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionY *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
@@ -155,7 +155,7 @@ public class EntityArrow extends Entity {
 				this.posY -= this.motionY / (double)f16 * (double)0.05F;
 				this.posZ -= this.motionZ / (double)f16 * (double)0.05F;
 				this.worldObj.playSoundAtEntity(this, "random.drr", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-				this.inGround = true;
+				this.inData = true;
 				this.arrowShake = 7;
 			}
 		}
@@ -207,7 +207,7 @@ public class EntityArrow extends Entity {
 		compoundTag.setShort("zTile", (short)this.zTile);
 		compoundTag.setByte("inTile", (byte)this.inTile);
 		compoundTag.setByte("shake", (byte)this.arrowShake);
-		compoundTag.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+		compoundTag.setByte("inGround", (byte)(this.inData ? 1 : 0));
 	}
 
 	public void readEntityFromNBT(NBTTagCompound compoundTag) {
@@ -216,11 +216,11 @@ public class EntityArrow extends Entity {
 		this.zTile = compoundTag.getShort("zTile");
 		this.inTile = compoundTag.getByte("inTile") & 255;
 		this.arrowShake = compoundTag.getByte("shake") & 255;
-		this.inGround = compoundTag.getByte("inGround") == 1;
+		this.inData = compoundTag.getByte("inGround") == 1;
 	}
 
 	public void onCollideWithPlayer(EntityPlayer playerEntity) {
-		if(this.inGround && this.shootingEntity == playerEntity && this.arrowShake <= 0 && playerEntity.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+		if(this.inData && this.shootingEntity == playerEntity && this.arrowShake <= 0 && playerEntity.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			playerEntity.onItemPickup(this);
 			this.setEntityDead();

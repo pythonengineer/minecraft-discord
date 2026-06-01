@@ -19,7 +19,7 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
         GL11.glTranslatef((float)d11 + 0.5F, (float)d4, (float)d6 + 0.5F);
         Entity entity18;
         if((entity18 = (Entity)this.entityHashMap.get(spawner.mobID)) == null) {
-            entity18 = EntityList.createEntityInWorld(spawner.mobID, (World)null);
+            entity18 = EntityList.createEntityByName(spawner.mobID, (World)null);
             this.entityHashMap.put(spawner.mobID, entity18);
         }
 
@@ -36,7 +36,7 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    public void renderTileEntityMobSpawner(TileEntity tileEntity1, double d2, double d4, double d6, float f8) {
+    public void renderTileEntityAt(TileEntity tileEntity1, double d2, double d4, double d6, float f8) {
         this.renderTileEntityMobSpawner((TileEntityMobSpawner)tileEntity1, d2, d4, d6, f8);
     }
 }

@@ -134,4 +134,26 @@ public class Vec3D {
     public String toString() {
         return "(" + this.xCoord + ", " + this.yCoord + ", " + this.zCoord + ")";
     }
+
+    public void rotateAroundX(float f1) {
+        float f2 = MathHelper.cos(f1);
+        float f3 = MathHelper.sin(f1);
+        double d4 = this.xCoord;
+        double d6 = this.yCoord * (double)f2 + this.zCoord * (double)f3;
+        double d8 = this.zCoord * (double)f2 - this.yCoord * (double)f3;
+        this.xCoord = d4;
+        this.yCoord = d6;
+        this.zCoord = d8;
+    }
+
+    public void rotateAroundY(float f1) {
+        float f2 = MathHelper.cos(f1);
+        float f3 = MathHelper.sin(f1);
+        double d4 = this.xCoord * (double)f2 + this.zCoord * (double)f3;
+        double d6 = this.yCoord;
+        double d8 = this.zCoord * (double)f2 - this.xCoord * (double)f3;
+        this.xCoord = d4;
+        this.yCoord = d6;
+        this.zCoord = d8;
+    }
 }

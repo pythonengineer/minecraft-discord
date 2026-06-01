@@ -11,9 +11,13 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public class BlockDoor extends Block {
-    protected BlockDoor(int blockID) {
-        super(blockID, Material.wood);
+    protected BlockDoor(int blockID, Material material) {
+        super(blockID, material);
         this.blockIndexInTexture = 97;
+        if(material == Material.iron) {
+            ++this.blockIndexInTexture;
+        }
+
         float f2 = 0.5F;
         float f3 = 1.0F;
         this.setBlockBounds(0.5F - f2, 0.0F, 0.5F - f2, 0.5F + f2, f3, 0.5F + f2);
@@ -91,27 +95,57 @@ public class BlockDoor extends Block {
     }
 
     public boolean blockActivated(World world, int x, int y, int z, EntityPlayer playerEntity) {
+        if(this.material == Material.iron) {
+            return true;
+        } else {
+            int i6 = world.getBlockMetadata(x, y, z);
+            if((i6 & 8) != 0) {
+                if(world.getBlockId(x, y - 1, z) == this.blockID) {
+                    this.blockActivated(world, x, y - 1, z, playerEntity);
+                }
+
+                return true;
+            } else {
+                if(world.getBlockId(x, y + 1, z) == this.blockID) {
+                    world.setBlockMetadataWithNotify(x, y + 1, z, (i6 ^ 4) + 8);
+                }
+
+                world.setBlockMetadataWithNotify(x, y, z, i6 ^ 4);
+                world.markBlocksDirty(x, y - 1, z, x, y, z);
+                if(Math.random() < 0.5D) {
+                    world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_open", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
+                } else {
+                    world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_close", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
+                }
+
+                return true;
+            }
+        }
+    }
+
+    public void onPoweredBlockChange(World world, int x, int y, int z, boolean z5) {
         int i6 = world.getBlockMetadata(x, y, z);
         if((i6 & 8) != 0) {
             if(world.getBlockId(x, y - 1, z) == this.blockID) {
-                this.blockActivated(world, x, y - 1, z, playerEntity);
+                this.onPoweredBlockChange(world, x, y - 1, z, z5);
             }
 
-            return true;
         } else {
-            if(world.getBlockId(x, y + 1, z) == this.blockID) {
-                world.setBlockMetadataWithNotify(x, y + 1, z, (i6 ^ 4) + 8);
-            }
+            boolean z7 = (world.getBlockMetadata(x, y, z) & 4) > 0;
+            if(z7 != z5) {
+                if(world.getBlockId(x, y + 1, z) == this.blockID) {
+                    world.setBlockMetadataWithNotify(x, y + 1, z, (i6 ^ 4) + 8);
+                }
 
-            world.setBlockMetadataWithNotify(x, y, z, i6 ^ 4);
-            world.markBlocksDirty(x, y - 1, z, x, y, z);
-            if(Math.random() < 0.5D) {
-                world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_open", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
-            } else {
-                world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_close", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
-            }
+                world.setBlockMetadataWithNotify(x, y, z, i6 ^ 4);
+                world.markBlocksDirty(x, y - 1, z, x, y, z);
+                if(Math.random() < 0.5D) {
+                    world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_open", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
+                } else {
+                    world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.door_close", 1.0F, world.rand.nextFloat() * 0.1F + 0.9F);
+                }
 
-            return true;
+            }
         }
     }
 
@@ -120,6 +154,10 @@ public class BlockDoor extends Block {
         if((i6 & 8) != 0) {
             if(world.getBlockId(x, y - 1, z) != this.blockID) {
                 world.setBlockWithNotify(x, y, z, 0);
+            }
+
+            if(blockID > 0 && Block.blocksList[blockID].canProvidePower()) {
+                this.onNeighborBlockChange(world, x, y - 1, z, blockID);
             }
         } else {
             boolean z7 = false;
@@ -138,13 +176,16 @@ public class BlockDoor extends Block {
 
             if(z7) {
                 this.dropBlockAsItem(world, x, y, z, i6);
+            } else if(blockID > 0 && Block.blocksList[blockID].canProvidePower()) {
+                boolean z8 = world.isBlockIndirectlyGettingPowered(x, y, z) || world.isBlockIndirectlyGettingPowered(x, y + 1, z);
+                this.onPoweredBlockChange(world, x, y, z, z8);
             }
         }
 
     }
 
     public int idDropped(int metadata, EaglercraftRandom rand) {
-        return (metadata & 8) != 0 ? 0 : Item.door.shiftedIndex;
+        return (metadata & 8) != 0 ? 0 : (this.material == Material.iron ? Item.doorSteel.shiftedIndex : Item.doorWood.shiftedIndex);
     }
 
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {

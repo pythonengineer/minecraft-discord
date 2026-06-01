@@ -7,9 +7,9 @@ import net.minecraft.client.GLAllocation;
 
 public class ClippingHelperImplementation extends ClippingHelper {
 	private static ClippingHelperImplementation instance = new ClippingHelperImplementation();
-	private FloatBuffer projectionMatrixBuffer = GLAllocation.createFloatBuffer(16);
-	private FloatBuffer modelviewMatrixBuffer = GLAllocation.createFloatBuffer(16);
-	private FloatBuffer floatBuffer = GLAllocation.createFloatBuffer(16);
+	private FloatBuffer projectionMatrixBuffer = GLAllocation.createDirectFloatBuffer(16);
+	private FloatBuffer modelviewMatrixBuffer = GLAllocation.createDirectFloatBuffer(16);
+	private FloatBuffer floatBuffer = GLAllocation.createDirectFloatBuffer(16);
 
 	public static ClippingHelper getInstance() {
         instance.init();

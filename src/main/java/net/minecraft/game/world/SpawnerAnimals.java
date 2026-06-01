@@ -89,7 +89,7 @@ public class SpawnerAnimals {
 							return i3;
 						}
 
-						entityLiving29.setPositionAndRotation((double)f17, (double)f18, (double)f19, world.rand.nextFloat() * 360.0F, 0.0F);
+						entityLiving29.setLocationAndAngles((double)f17, (double)f18, (double)f19, world.rand.nextFloat() * 360.0F, 0.0F);
 						if(entityLiving29.getCanSpawnHere((double)f17, (double)f18, (double)f19)) {
 							++i3;
 							world.spawnEntityInWorld(entityLiving29);

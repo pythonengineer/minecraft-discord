@@ -345,7 +345,7 @@ public class World implements IBlockAccess {
 
 	public Material getBlockMaterial(int x, int y, int z) {
 		int i4 = this.getBlockId(x, y, z);
-		return i4 == 0 ? Material.air : Block.blocksList[i4].blockMaterial;
+		return i4 == 0 ? Material.air : Block.blocksList[i4].material;
 	}
 
 	public int getBlockMetadata(int x, int y, int z) {
@@ -725,18 +725,10 @@ public class World implements IBlockAccess {
                     int i31 = this.getBlockId(i7, i8, i9);
                     int i12 = this.getBlockMetadata(i7, i8, i9);
                     Block block33 = Block.blocksList[i31];
-                    MovingObjectPosition movingObjectPosition32;
-                    if(i31 > 0 && block33.canCollideCheck(i12, flag) && (movingObjectPosition32 = block33.collisionRayTrace(this, i7, i8, i9, vector1, vector2)) != null) {
-                        return movingObjectPosition32;
-                    }
-
-                    i31 = this.getBlockId(i7, i8 - 1, i9);
-                    i12 = this.getBlockMetadata(i7, i8 - 1, i9);
-                    block33 = Block.blocksList[i31];
                     if(i31 > 0 && block33.canCollideCheck(i12, flag)) {
-                        movingObjectPosition32 = block33.collisionRayTrace(this, i7, i8 - 1, i9, vector1, vector2);
-                        if(movingObjectPosition32 != null) {
-                            return movingObjectPosition32;
+                        MovingObjectPosition movingObjectPosition34 = block33.collisionRayTrace(this, i7, i8, i9, vector1, vector2);
+                        if(movingObjectPosition34 != null) {
+                            return movingObjectPosition34;
                         }
                     }
                 }
@@ -1035,7 +1027,6 @@ public class World implements IBlockAccess {
 
     private void updateEntity(Entity entity) {
         int i2 = MathHelper.floor_double(entity.posX);
-        int i3 = MathHelper.floor_double(entity.posY);
         int i4 = MathHelper.floor_double(entity.posZ);
         if(this.checkChunksExist(i2 - 16, 0, i4 - 16, i2 + 16, 128, i4 + 16)) {
             entity.lastTickPosX = entity.posX;
@@ -1044,7 +1035,7 @@ public class World implements IBlockAccess {
             entity.prevRotationYaw = entity.rotationYaw;
             entity.prevRotationPitch = entity.rotationPitch;
             i2 = MathHelper.floor_double(entity.posX / 16.0D);
-            i3 = MathHelper.floor_double(entity.posY / 16.0D);
+            int i3 = MathHelper.floor_double(entity.posY / 16.0D);
             i4 = MathHelper.floor_double(entity.posZ / 16.0D);
             if(entity.ridingEntity != null) {
                 entity.updateRidden();
@@ -1135,7 +1126,7 @@ public class World implements IBlockAccess {
 			for(i2 = i4; i2 < i5; ++i2) {
 				for(int i8 = i6; i8 < i7; ++i8) {
 					Block block9;
-					if((block9 = Block.blocksList[this.getBlockId(i10, i2, i8)]) != null && block9.blockMaterial.getIsLiquid()) {
+					if((block9 = Block.blocksList[this.getBlockId(i10, i2, i8)]) != null && block9.material.getIsLiquid()) {
 						return true;
 					}
 				}
@@ -1181,8 +1172,8 @@ public class World implements IBlockAccess {
             for(int i11 = i6; i11 < i7; ++i11) {
                 for(int i12 = i8; i12 < i18; ++i12) {
                     Block block13;
-                    if((block13 = Block.blocksList[this.getBlockId(i4, i11, i12)]) != null && block13.blockMaterial == material) {
-                        double d16 = (double)((float)(i11 + 1) - BlockFluid.getPercentAir(this.getBlockMetadata(i4, i11, i12)));
+                    if((block13 = Block.blocksList[this.getBlockId(i4, i11, i12)]) != null && block13.material == material) {
+                        double d16 = (double)((float)(i11 + 1) - BlockFluid.getFluidHeightPercent(this.getBlockMetadata(i4, i11, i12)));
                         if((double)i7 >= d16) {
                             z9 = true;
                             block13.velocityToAddToEntity(this, i4, i11, i12, entity, vec3D10);
@@ -1214,7 +1205,7 @@ public class World implements IBlockAccess {
 			for(int i8 = i5; i8 < i6; ++i8) {
 				for(int i9 = i7; i9 < i11; ++i9) {
 					Block block10;
-					if((block10 = Block.blocksList[this.getBlockId(i3, i8, i9)]) != null && block10.blockMaterial == material) {
+					if((block10 = Block.blocksList[this.getBlockId(i3, i8, i9)]) != null && block10.material == material) {
 						return true;
 					}
 				}
@@ -1578,6 +1569,28 @@ public class World implements IBlockAccess {
         int i15 = i8 + i9;
         ChunkCache chunkCache16 = new ChunkCache(this, i10, i11, i12, i13, i14, i15);
         return (new Pathfinder(chunkCache16)).createEntityPathTo(entity, xCoord, yCoord, zCoord, f5);
+    }
+
+    public boolean isBlockProvidingPowerTo(int x, int y, int z, int side) {
+        int i5 = this.getBlockId(x, y, z);
+        return i5 == 0 ? false : Block.blocksList[i5].isIndirectlyPoweringTo(this, x, y, z, side);
+    }
+
+    public boolean isBlockGettingPowered(int x, int y, int z) {
+        return this.isBlockProvidingPowerTo(x, y - 1, z, 0) ? true : (this.isBlockProvidingPowerTo(x, y + 1, z, 1) ? true : (this.isBlockProvidingPowerTo(x, y, z - 1, 2) ? true : (this.isBlockProvidingPowerTo(x, y, z + 1, 3) ? true : (this.isBlockProvidingPowerTo(x - 1, y, z, 4) ? true : this.isBlockProvidingPowerTo(x + 1, y, z, 5)))));
+    }
+
+    public boolean isBlockIndirectlyProvidingPowerTo(int x, int y, int z, int side) {
+        if(this.isBlockNormalCube(x, y, z)) {
+            return this.isBlockGettingPowered(x, y, z);
+        } else {
+            int i5 = this.getBlockId(x, y, z);
+            return i5 == 0 ? false : Block.blocksList[i5].isPoweringTo(this, x, y, z, side);
+        }
+    }
+
+    public boolean isBlockIndirectlyGettingPowered(int x, int y, int z) {
+        return this.isBlockIndirectlyProvidingPowerTo(x, y - 1, z, 0) ? true : (this.isBlockIndirectlyProvidingPowerTo(x, y + 1, z, 1) ? true : (this.isBlockIndirectlyProvidingPowerTo(x, y, z - 1, 2) ? true : (this.isBlockIndirectlyProvidingPowerTo(x, y, z + 1, 3) ? true : (this.isBlockIndirectlyProvidingPowerTo(x - 1, y, z, 4) ? true : this.isBlockIndirectlyProvidingPowerTo(x + 1, y, z, 5)))));
     }
 
 	static {

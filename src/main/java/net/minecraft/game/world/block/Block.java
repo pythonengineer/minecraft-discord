@@ -3,6 +3,7 @@ package net.minecraft.game.world.block;
 import java.util.ArrayList;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.EnumMobType;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
@@ -87,7 +88,7 @@ public class Block {
     public static final Block mobSpawner = (new BlockMobSpawner(52, 65)).setHardness(5.0F).setStepSound(soundMetalFootstep);
     public static final Block stairCompactWood = new BlockStairs(53, planks);
     public static final Block chest = (new BlockChest(54)).setHardness(2.5F).setStepSound(soundWoodFootstep);
-    public static final Block cog = (new BlockGears(55, 62)).setHardness(0.5F).setStepSound(soundMetalFootstep);
+    public static final Block redstoneWire = (new BlockRedstoneWire(55, 84)).setHardness(0.0F).setStepSound(soundPowderFootstep);
     public static final Block oreDiamond = (new BlockOre(56, 50)).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep);
     public static final Block blockDiamond = (new BlockOreBlock(57, 40)).setHardness(5.0F).setResistance(10.0F).setStepSound(soundMetalFootstep);
     public static final Block workbench = (new BlockWorkbench(58)).setHardness(2.5F).setStepSound(soundWoodFootstep);
@@ -95,15 +96,25 @@ public class Block {
     public static final Block tilledField = (new BlockFarmland(60)).setHardness(0.6F).setStepSound(soundGravelFootstep);
     public static final Block stoneOvenIdle = (new BlockFurnace(61, false)).setHardness(3.5F).setStepSound(soundStoneFootstep);
     public static final Block stoneOvenActive = (new BlockFurnace(62, true)).setHardness(3.5F).setStepSound(soundStoneFootstep).setLightValue(0.875F);
-    public static final Block signStanding = (new BlockSign(63, TileEntitySign.class, Item.sign.shiftedIndex)).setHardness(1.0F).setStepSound(soundWoodFootstep);
-    public static final Block doorWood = (new BlockDoor(64)).setHardness(3.0F).setStepSound(soundWoodFootstep);
+    public static final Block signStanding = (new BlockSign(63, TileEntitySign.class, Item.sign.shiftedIndex, true)).setHardness(1.0F).setStepSound(soundWoodFootstep);
+    public static final Block doorWood = (new BlockDoor(64, Material.wood)).setHardness(3.0F).setStepSound(soundWoodFootstep);
     public static final Block ladder = (new BlockLadder(65, 83)).setHardness(0.4F).setStepSound(soundWoodFootstep);
-    public static final Block minecartTrack = (new BlockMinecartTrack(66, 128)).setHardness(1.0F).setStepSound(soundMetalFootstep);
+    public static final Block minecartTrack = (new BlockMinecartTrack(66, 128)).setHardness(0.7F).setStepSound(soundMetalFootstep);
     public static final Block stairCompactStone = new BlockStairs(67, cobblestone);
+    public static final Block signWall = (new BlockSign(68, TileEntitySign.class, Item.sign.shiftedIndex, false)).setHardness(1.0F).setStepSound(soundWoodFootstep);
+    public static final Block lever = (new BlockLever(69, 96)).setHardness(0.5F).setStepSound(soundWoodFootstep);
+    public static final Block pressurePlateStone = (new BlockPressurePlate(70, stone.blockIndexInTexture, EnumMobType.mobs)).setHardness(0.5F).setStepSound(soundStoneFootstep);
+    public static final Block doorSteel = (new BlockDoor(71, Material.iron)).setHardness(5.0F).setStepSound(soundMetalFootstep);
+    public static final Block pressurePlateWood = (new BlockPressurePlate(72, planks.blockIndexInTexture, EnumMobType.everything)).setHardness(0.5F).setStepSound(soundWoodFootstep);
+    public static final Block oreRedstone = (new BlockRedstoneOre(73, 51, false)).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep);
+    public static final Block oreRedstoneGlowing = (new BlockRedstoneOre(74, 51, true)).setLightValue(0.625F).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep);
+    public static final Block torchRedstoneIdle = (new BlockRedstoneTorch(75, 115, false)).setHardness(0.0F).setStepSound(soundWoodFootstep);
+    public static final Block torchRedstoneActive = (new BlockRedstoneTorch(76, 99, true)).setHardness(0.0F).setLightValue(0.5F).setStepSound(soundWoodFootstep);
+    public static final Block button = (new BlockButton(77, stone.blockIndexInTexture)).setHardness(0.5F).setStepSound(soundStoneFootstep);
     public int blockIndexInTexture;
     public final int blockID;
-    protected float blockHardness;
-    protected float blockResistance;
+    protected float hardness;
+    protected float resistance;
     public double minX;
     public double minY;
     public double minZ;
@@ -112,7 +123,7 @@ public class Block {
     public double maxZ;
     public StepSound stepSound;
     public float blockParticleGravity;
-    public final Material blockMaterial;
+    public final Material material;
 
     protected Block(int blockID, Material material) {
         this.stepSound = soundPowderFootstep;
@@ -120,7 +131,7 @@ public class Block {
         if(blocksList[blockID] != null) {
             throw new IllegalArgumentException("Slot " + blockID + " is already occupied by " + blocksList[blockID] + " when adding " + this);
         } else {
-            this.blockMaterial = material;
+            this.material = material;
             blocksList[blockID] = this;
             this.blockID = blockID;
             this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -151,7 +162,7 @@ public class Block {
     }
 
     protected Block setResistance(float resistance) {
-        this.blockResistance = resistance * 3.0F;
+        this.resistance = resistance * 3.0F;
         return this;
     }
 
@@ -168,9 +179,9 @@ public class Block {
     }
 
     protected Block setHardness(float hardness) {
-        this.blockHardness = hardness;
-        if(this.blockResistance < hardness * 5.0F) {
-            this.blockResistance = hardness * 5.0F;
+        this.hardness = hardness;
+        if(this.resistance < hardness * 5.0F) {
+            this.resistance = hardness * 5.0F;
         }
 
         return this;
@@ -268,7 +279,7 @@ public class Block {
     }
 
     public float blockStrength(EntityPlayer entityPlayer) {
-        return this.blockHardness < 0.0F ? 0.0F : (!entityPlayer.canHarvestBlock(this) ? 1.0F / this.blockHardness / 100.0F : entityPlayer.getCurrentPlayerStrVsBlock(this) / this.blockHardness / 30.0F);
+        return this.hardness < 0.0F ? 0.0F : (!entityPlayer.canHarvestBlock(this) ? 1.0F / this.hardness / 100.0F : entityPlayer.getCurrentPlayerStrVsBlock(this) / this.hardness / 30.0F);
     }
 
     public void dropBlockAsItem(World world, int x, int y, int z, int metadata) {
@@ -296,10 +307,11 @@ public class Block {
     }
 
     public float getExplosionResistance(Entity entity) {
-        return this.blockResistance / 5.0F;
+        return this.resistance / 5.0F;
     }
 
     public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3D vector1, Vec3D vector2) {
+        this.setBlockBoundsBasedOnState(world, x, y, z);
         vector1 = vector1.addVector((double)(-x), (double)(-y), (double)(-z));
         vector2 = vector2.addVector((double)(-x), (double)(-y), (double)(-z));
         Vec3D vec3D7 = vector1.getIntermediateWithXValue(vector2, this.minX);
@@ -409,7 +421,8 @@ public class Block {
     }
 
     public boolean canPlaceBlockAt(World world, int x, int y, int z) {
-        return true;
+        int i5 = world.getBlockId(x, y, z);
+        return i5 == 0 || blocksList[i5].material.getIsLiquid();
     }
 
     public boolean blockActivated(World world, int x, int y, int z, EntityPlayer playerEntity) {
@@ -431,8 +444,26 @@ public class Block {
     public void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess, int x, int y, int z) {
     }
 
-    public int getRenderColor(IBlockAccess blockAccess, int x, int y, int z) {
+    public int colorMultiplier(IBlockAccess blockAccess, int x, int y, int z) {
         return 0xFFFFFF;
+    }
+
+    public boolean isPoweringTo(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
+        return false;
+    }
+
+    public boolean canProvidePower() {
+        return false;
+    }
+
+    public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
+    }
+
+    public boolean isIndirectlyPoweringTo(World world, int x, int y, int z, int side) {
+        return false;
+    }
+
+    public void setBlockBoundsForItemRender() {
     }
 
     static {

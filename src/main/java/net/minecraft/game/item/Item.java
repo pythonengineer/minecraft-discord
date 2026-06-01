@@ -6,6 +6,7 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.material.Material;
 
 public class Item {
 	protected static EaglercraftRandom rand = new EaglercraftRandom();
@@ -78,12 +79,14 @@ public class Item {
 	public static Item painting = (new ItemPainting(65)).setIconIndex(26);
 	public static Item appleGold = (new ItemFood(66, 42)).setIconIndex(11);
 	public static Item sign = (new ItemSign(67)).setIconIndex(42);
-	public static Item door = (new ItemDoor(68)).setIconIndex(43);
+    public static Item doorWood = (new ItemDoor(68, Material.wood)).setIconIndex(43);
 	public static Item bucketEmpty = (new ItemBucket(69, 0)).setIconIndex(74);
 	public static Item bucketWater = (new ItemBucket(70, Block.waterMoving.blockID)).setIconIndex(75);
 	public static Item bucketLava = (new ItemBucket(71, Block.lavaMoving.blockID)).setIconIndex(76);
-	public static Item minecart = (new ItemMinecart(72)).setIconIndex(135);
+    public static Item minecartEmpty = (new ItemMinecart(72)).setIconIndex(135);
 	public static Item saddle = (new ItemSaddle(73)).setIconIndex(104);
+    public static Item doorSteel = (new ItemDoor(74, Material.iron)).setIconIndex(44);
+    public static Item redstone = (new ItemRedstone(75)).setIconIndex(56);
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
 	protected int maxDamage = 32;
@@ -103,7 +106,7 @@ public class Item {
 		return this;
 	}
 
-	public int getIconFromDamage(ItemStack itemStack) {
+	public int getIconIndex(ItemStack itemStack) {
 		return this.iconIndex;
 	}
 

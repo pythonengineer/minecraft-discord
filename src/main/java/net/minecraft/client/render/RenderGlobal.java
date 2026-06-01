@@ -11,6 +11,8 @@ import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.lax1dude.eaglercraft.vector.Matrix4f;
+import net.lax1dude.eaglercraft.vector.Vector4f;
 import net.minecraft.client.GLAllocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.effect.EntityBubbleFX;
@@ -65,7 +67,7 @@ public class RenderGlobal implements IWorldAccess {
     private int countEntitiesRendered;
     private int countEntitiesHidden;
     int[] dummyBuf50k = new int[50000];
-    IntBuffer occlusionResult = GLAllocation.createIntBuffer(64);
+    IntBuffer occlusionResult = GLAllocation.createDirectIntBuffer(64);
     private int renderersLoaded;
     private int renderersBeingClipped;
     private int renderersBeingOccluded;
@@ -88,7 +90,7 @@ public class RenderGlobal implements IWorldAccess {
         this.occlusionEnabled = mc.getOpenGlCapsChecker().checkARBOcclusion();
         if(this.occlusionEnabled) {
             this.occlusionResult.clear();
-            this.glOcclusionQueryBase = GLAllocation.createIntBuffer(262144);
+            this.glOcclusionQueryBase = GLAllocation.createDirectIntBuffer(262144);
             this.glOcclusionQueryBase.clear();
             this.glOcclusionQueryBase.position(0);
             this.glOcclusionQueryBase.limit(262144);
@@ -201,8 +203,8 @@ public class RenderGlobal implements IWorldAccess {
     }
 
     public void loadRenderers() {
-        Block.leaves.setGraphicsLevel(this.mc.gameSettings.fancyGraphics);
-        this.renderDistance = this.mc.gameSettings.renderDistance;
+        Block.leaves.setGraphicsLevel(this.mc.options.fancyGraphics);
+        this.renderDistance = this.mc.options.renderDistance;
         int i1;
         if(this.worldRenderers != null) {
             for(i1 = 0; i1 < this.worldRenderers.length; ++i1) {
@@ -268,7 +270,7 @@ public class RenderGlobal implements IWorldAccess {
 
     public void renderEntities(Vec3D lookVector, ICamera frustrum, float partialTicks) {
         TileEntityRenderer.instance.cacheActiveRenderInfo(this.theWorld, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, partialTicks);
-        RenderManager.instance.cacheActiveRenderInfo(this.theWorld, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, this.mc.gameSettings, partialTicks);
+        RenderManager.instance.cacheActiveRenderInfo(this.theWorld, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, this.mc.options, partialTicks);
         this.countEntitiesTotal = 0;
         this.countEntitiesRendered = 0;
         this.countEntitiesHidden = 0;
@@ -285,7 +287,7 @@ public class RenderGlobal implements IWorldAccess {
         int i5;
         for(i5 = 0; i5 < list30.size(); ++i5) {
             Entity entity6 = (Entity)list30.get(i5);
-            if(entity6.isInRangeToRenderVec3D(lookVector) && frustrum.isBoundingBoxInFrustum(entity6.boundingBox) && (entity6 != this.theWorld.playerEntity || this.mc.gameSettings.thirdPersonView)) {
+            if(entity6.isInRangeToRenderVec3D(lookVector) && frustrum.isBoundingBoxInFrustum(entity6.boundingBox) && (entity6 != this.theWorld.playerEntity || this.mc.options.thirdPersonView)) {
                 ++this.countEntitiesRendered;
                 RenderManager.instance.renderEntity(entity6, partialTicks);
             }
@@ -372,7 +374,7 @@ public class RenderGlobal implements IWorldAccess {
     }
 
     public int sortAndRender(EntityPlayer playerEntity, int callListId, double partialTime) {
-        if(this.mc.gameSettings.renderDistance != this.renderDistance) {
+        if(this.mc.options.renderDistance != this.renderDistance) {
             this.loadRenderers();
         }
 
@@ -402,7 +404,7 @@ public class RenderGlobal implements IWorldAccess {
         }
 
         int i21;
-        if(this.occlusionEnabled && !this.mc.gameSettings.anaglyph && callListId == 0) {
+        if(this.occlusionEnabled && !this.mc.options.anaglyph && callListId == 0) {
             int i22 = 16;
             this.checkOcclusionQueryResult(0, 16);
 
@@ -569,7 +571,7 @@ public class RenderGlobal implements IWorldAccess {
         float f3 = (float)(vec3D2 = this.theWorld.getSkyColor(partialTime)).xCoord;
         float f4 = (float)vec3D2.yCoord;
         float f6 = (float)vec3D2.zCoord;
-        if(this.mc.gameSettings.anaglyph) {
+        if(this.mc.options.anaglyph) {
             float f5 = (f3 * 30.0F + f4 * 59.0F + f6 * 11.0F) / 100.0F;
             f4 = (f3 * 30.0F + f4 * 70.0F) / 100.0F;
             f6 = (f3 * 30.0F + f6 * 70.0F) / 100.0F;
@@ -634,7 +636,7 @@ public class RenderGlobal implements IWorldAccess {
         float f7;
         float f9;
         int i34;
-        if(this.mc.gameSettings.fancyGraphics) {
+        if(this.mc.options.fancyGraphics) {
             this.renderCloudsFancy(partialTime);
         } else {
             GL11.glDisable(GL11.GL_CULL_FACE);
@@ -647,7 +649,7 @@ public class RenderGlobal implements IWorldAccess {
             f5 = (float)(vec3D4 = this.theWorld.getCloudColor(partialTime)).xCoord;
             f6 = (float)vec3D4.yCoord;
             float f31 = (float)vec3D4.zCoord;
-            if(this.mc.gameSettings.anaglyph) {
+            if(this.mc.options.anaglyph) {
                 f7 = (f5 * 30.0F + f6 * 59.0F + f31 * 11.0F) / 100.0F;
                 f9 = (f5 * 30.0F + f6 * 70.0F) / 100.0F;
                 float f10 = (f5 * 30.0F + f31 * 70.0F) / 100.0F;
@@ -708,7 +710,7 @@ public class RenderGlobal implements IWorldAccess {
         f5 = (float)(vec3D29 = this.theWorld.getCloudColor(partialTime)).xCoord;
         f6 = (float)vec3D29.yCoord;
         f2 = (float)vec3D29.zCoord;
-        if(this.mc.gameSettings.anaglyph) {
+        if(this.mc.options.anaglyph) {
             partialTime = (f5 * 30.0F + f6 * 59.0F + f2 * 11.0F) / 100.0F;
             f7 = (f5 * 30.0F + f6 * 70.0F) / 100.0F;
             f2 = (f5 * 30.0F + f2 * 70.0F) / 100.0F;
@@ -869,7 +871,12 @@ public class RenderGlobal implements IWorldAccess {
                 double d10 = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTime;
                 double d12 = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTime;
                 double d14 = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTime;
-                t.setTranslationD(-d10, -d12, -d14);
+                double yOffsetBug = 0.01;
+                if (blockPosition.blockY > playerEntity.posY) {
+                    yOffsetBug = -yOffsetBug;
+                }
+
+                t.setTranslationD(-d10, -d12 + yOffsetBug, -d14);
                 t.disableColor();
                 if(block == null) {
                     block = Block.stone;
@@ -927,12 +934,12 @@ public class RenderGlobal implements IWorldAccess {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
-            GL11.glLineWidth(2.0F);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glDepthMask(false);
             float f6 = 0.002F;
             blockId = this.theWorld.getBlockId(position.blockX, position.blockY, position.blockZ);
             if(blockId > 0) {
+                Block.blocksList[blockId].setBlockBoundsBasedOnState(this.theWorld, position.blockX, position.blockY, position.blockZ);
                 double d6 = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTime;
                 double d8 = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTime;
                 double d10 = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTime;
@@ -947,31 +954,117 @@ public class RenderGlobal implements IWorldAccess {
     }
 
     private void drawOutlinedBoundingBox(AxisAlignedBB axisAlignedBB) {
+        final float lineWidth = 2.0F;
+        final float halfWidth = lineWidth * 0.5F;
+
+        double minX = axisAlignedBB.minX;
+        double minY = axisAlignedBB.minY;
+        double minZ = axisAlignedBB.minZ;
+        double maxX = axisAlignedBB.maxX;
+        double maxY = axisAlignedBB.maxY;
+        double maxZ = axisAlignedBB.maxZ;
+
+        double[][] edges = new double[][] {
+            { minX, minY, minZ, maxX, minY, minZ },
+            { maxX, minY, minZ, maxX, minY, maxZ },
+            { maxX, minY, maxZ, minX, minY, maxZ },
+            { minX, minY, maxZ, minX, minY, minZ },
+            { minX, maxY, minZ, maxX, maxY, minZ },
+            { maxX, maxY, minZ, maxX, maxY, maxZ },
+            { maxX, maxY, maxZ, minX, maxY, maxZ },
+            { minX, maxY, maxZ, minX, maxY, minZ },
+            { minX, minY, minZ, minX, maxY, minZ },
+            { maxX, minY, minZ, maxX, maxY, minZ },
+            { maxX, minY, maxZ, maxX, maxY, maxZ },
+            { minX, minY, maxZ, minX, maxY, maxZ },
+        };
+
+        int[] vp = new int[4];
+        GL11.glGetInteger(GL11.GL_VIEWPORT, vp);
+        float vpW = (float) vp[2];
+        float vpH = (float) vp[3];
+        if (vpW <= 0.0F || vpH <= 0.0F) {
+            return;
+        }
+
+        Matrix4f mvp = Matrix4f.mul(GL11.getProjectionReference(), GL11.getModelViewReference(), null);
+
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+
+        GL11.glDisable(GL11.GL_CULL_FACE);
+
         Tessellator t = Tessellator.instance;
-        t.startDrawing(3, DefaultVertexFormats.POSITION);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
+        t.startDrawingQuads(DefaultVertexFormats.POSITION);
+
+        Vector4f p0 = new Vector4f();
+        Vector4f p1 = new Vector4f();
+
+        for (int i = 0; i < edges.length; ++i) {
+            double[] e = edges[i];
+            p0.set((float) e[0], (float) e[1], (float) e[2], 1.0F);
+            p1.set((float) e[3], (float) e[4], (float) e[5], 1.0F);
+            Matrix4f.transform(mvp, p0, p0);
+            Matrix4f.transform(mvp, p1, p1);
+
+            float d0 = p0.z + p0.w;
+            float d1 = p1.z + p1.w;
+            if (d0 < 0.0F && d1 < 0.0F) {
+                continue;
+            }
+            if (d0 < 0.0F) {
+                float ct = d0 / (d0 - d1);
+                p0.x = p0.x + ct * (p1.x - p0.x);
+                p0.y = p0.y + ct * (p1.y - p0.y);
+                p0.z = p0.z + ct * (p1.z - p0.z);
+                p0.w = p0.w + ct * (p1.w - p0.w);
+            } else if (d1 < 0.0F) {
+                float ct = d0 / (d0 - d1);
+                p1.x = p0.x + ct * (p1.x - p0.x);
+                p1.y = p0.y + ct * (p1.y - p0.y);
+                p1.z = p0.z + ct * (p1.z - p0.z);
+                p1.w = p0.w + ct * (p1.w - p0.w);
+            }
+
+            float invW0 = 1.0F / p0.w;
+            float invW1 = 1.0F / p1.w;
+            float ndc0x = p0.x * invW0;
+            float ndc0y = p0.y * invW0;
+            float ndc0z = p0.z * invW0;
+            float ndc1x = p1.x * invW1;
+            float ndc1y = p1.y * invW1;
+            float ndc1z = p1.z * invW1;
+
+            float dxScreen = (ndc1x - ndc0x) * vpW * 0.5F;
+            float dyScreen = (ndc1y - ndc0y) * vpH * 0.5F;
+            float lenScreen = (float) Math.sqrt(dxScreen * dxScreen + dyScreen * dyScreen);
+            if (lenScreen < 1.0e-6F) {
+                continue;
+            }
+            float invLen = 1.0F / lenScreen;
+            float perpScreenX = -dyScreen * invLen * halfWidth;
+            float perpScreenY = dxScreen * invLen * halfWidth;
+            float ndcOffX = perpScreenX * 2.0F / vpW;
+            float ndcOffY = perpScreenY * 2.0F / vpH;
+
+            t.addVertex(ndc0x - ndcOffX, ndc0y - ndcOffY, ndc0z);
+            t.addVertex(ndc0x + ndcOffX, ndc0y + ndcOffY, ndc0z);
+            t.addVertex(ndc1x + ndcOffX, ndc1y + ndcOffY, ndc1z);
+            t.addVertex(ndc1x - ndcOffX, ndc1y - ndcOffY, ndc1z);
+        }
+
         t.draw();
-        t.startDrawing(3, DefaultVertexFormats.POSITION);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-        t.draw();
-        t.startDrawing(1, DefaultVertexFormats.POSITION);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-        t.addVertex(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ);
-        t.addVertex(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ);
-        t.draw();
+
+        GL11.glEnable(GL11.GL_CULL_FACE);
+
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
     }
 
     public void markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
@@ -1021,7 +1114,7 @@ public class RenderGlobal implements IWorldAccess {
         this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1);
     }
 
-    public void clipRenderersByFrustrum(Frustrum frustrum, float partialTicks) {
+    public void clipRenderersByFrustum(Frustrum frustrum, float partialTicks) {
         for(int i2 = 0; i2 < this.worldRenderers.length; ++i2) {
             if(!this.worldRenderers[i2].skipAllRenderPasses() && (!this.worldRenderers[i2].isInFrustum || (i2 + this.frustumCheckOffset & 15) == 0)) {
                 this.worldRenderers[i2].updateInFrustrum(frustrum);

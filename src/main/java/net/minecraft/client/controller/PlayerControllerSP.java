@@ -50,7 +50,7 @@ public class PlayerControllerSP extends PlayerController {
             itemStack7.onDestroyBlock(i4, x, y, z);
             if(itemStack7.stackSize == 0) {
                 itemStack7.onItemDestroyedByUse(this.mc.thePlayer);
-                this.mc.thePlayer.displayGUIInventory();
+                this.mc.thePlayer.destroyCurrentEquippedItem();
             }
         }
 

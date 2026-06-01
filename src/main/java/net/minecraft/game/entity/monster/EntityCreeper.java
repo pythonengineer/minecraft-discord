@@ -9,7 +9,7 @@ import net.minecraft.game.world.World;
 public class EntityCreeper extends EntityMob {
 	int timeSinceIgnited;
 	int lastActiveTime;
-	int fuseTime = 30;
+	int fuseDuration = 30;
 	int creeperState = -1;
 
 	public EntityCreeper(World world1) {
@@ -25,7 +25,7 @@ public class EntityCreeper extends EntityMob {
 		super.readEntityFromNBT(compoundTag);
 	}
 
-	protected void updatePlayerActionState() {
+	protected void updateEntityActionState() {
 		this.lastActiveTime = this.timeSinceIgnited;
 		if(this.timeSinceIgnited > 0 && this.creeperState < 0) {
 			--this.timeSinceIgnited;
@@ -35,7 +35,7 @@ public class EntityCreeper extends EntityMob {
 			this.creeperState = 2;
 		}
 
-		super.updatePlayerActionState();
+		super.updateEntityActionState();
 		if(this.creeperState != 1) {
 			this.creeperState = -1;
 		}
@@ -50,7 +50,7 @@ public class EntityCreeper extends EntityMob {
 
 			this.creeperState = 1;
 			++this.timeSinceIgnited;
-			if(this.timeSinceIgnited == this.fuseTime) {
+			if(this.timeSinceIgnited == this.fuseDuration) {
 				this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
 	            this.setEntityDead();
 			}
@@ -61,7 +61,7 @@ public class EntityCreeper extends EntityMob {
 	}
 
 	public float getCreeperFlashTime(float partialTime) {
-		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * partialTime) / (float)(this.fuseTime - 2);
+		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * partialTime) / (float)(this.fuseDuration - 2);
 	}
 
 	protected int getDropItemId() {

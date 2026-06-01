@@ -35,13 +35,13 @@ public class EntityMob extends EntityCreature {
 	protected Entity findPlayerToAttack() {
 		double d1 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
 		double d3 = 16.0D;
-		return d1 < d3 * d3 && this.canEntityBeSeen(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
+		return d1 < d3 * d3 && this.updateEntityActionState(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
 	}
 
 	public boolean attackEntityFrom(Entity entity, int damage) {
 		if(super.attackEntityFrom(entity, damage)) {
 			if(entity != this) {
-				this.playerToAttack = entity;
+				this.entityToAttack = entity;
 			}
 
 			return true;

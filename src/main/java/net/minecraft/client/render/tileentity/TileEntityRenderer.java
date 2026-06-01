@@ -83,7 +83,7 @@ public class TileEntityRenderer {
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks) {
         TileEntitySpecialRenderer tileEntitySpecialRenderer9 = this.getSpecialRendererForEntity(tileEntity);
         if(tileEntitySpecialRenderer9 != null) {
-            tileEntitySpecialRenderer9.renderTileEntityMobSpawner(tileEntity, x, y, z, partialTicks);
+            tileEntitySpecialRenderer9.renderTileEntityAt(tileEntity, x, y, z, partialTicks);
         }
 
     }
