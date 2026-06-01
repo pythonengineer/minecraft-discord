@@ -45,7 +45,6 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 			int i4 = i2 & 31;
 			int i5 = i3 + i4 * 32;
 			if(!this.chunkExists(i1, i2)) {
-				BlockSand.fallInstantly = true;
 				if(this.chunks[i5] != null) {
                     this.chunks[i5].onChunkUnload();
 					this.saveChunk(this.chunks[i5]);
@@ -81,8 +80,6 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 				if(this.chunkExists(i1 - 1, i2 - 1) && !this.provideChunk(i1 - 1, i2 - 1).isTerrainPopulated && this.chunkExists(i1 - 1, i2 - 1) && this.chunkExists(i1, i2 - 1) && this.chunkExists(i1 - 1, i2)) {
 					this.populate(this, i1 - 1, i2 - 1);
 				}
-
-				BlockSand.fallInstantly = false;
 			}
 
 			this.lastQueriedChunkXPos = i1;

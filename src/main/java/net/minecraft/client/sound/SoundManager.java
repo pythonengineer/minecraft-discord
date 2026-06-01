@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import net.lax1dude.eaglercraft.EagRuntime;
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.EaglercraftSoundManager;
 import net.lax1dude.eaglercraft.internal.EnumPlatformOS;
 import net.minecraft.client.GameSettings;
@@ -15,6 +16,8 @@ public class SoundManager {
     private SoundPool soundPoolSounds = new SoundPool();
     private SoundPool soundPoolMusic = new SoundPool();
     private GameSettings options;
+    private EaglercraftRandom rand = new EaglercraftRandom();
+    private int ticksBeforeMusic = this.rand.nextInt(12000);
 
     public void loadSoundSettings(GameSettings options) {
         this.options = options;

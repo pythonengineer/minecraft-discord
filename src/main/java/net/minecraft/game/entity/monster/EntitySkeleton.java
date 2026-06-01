@@ -14,6 +14,18 @@ public class EntitySkeleton extends EntityMob {
 		this.texture = "/mob/skeleton.png";
 	}
 
+    protected String getLivingSound() {
+        return "mob.skeleton";
+    }
+
+    protected String getHurtSound() {
+        return "mob.skeletonhurt";
+    }
+
+    protected String getDeathSound() {
+        return "mob.skeletonhurt";
+    }
+
 	public void onLivingUpdate() {
 		if(this.worldObj.isDaytime()) {
 			float f1 = this.getBrightness(1.0F);

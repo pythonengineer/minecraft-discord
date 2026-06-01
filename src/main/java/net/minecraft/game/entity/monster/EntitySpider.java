@@ -18,14 +18,23 @@ public class EntitySpider extends EntityMob {
     protected Entity findPlayerToAttack() {
         float f1 = this.getBrightness(1.0F);
         if(f1 < 0.5F) {
-            double d2 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
-            double d4 = 16.0D;
-            if(d2 < d4 * d4) {
-                return this.worldObj.playerEntity;
-            }
+            double d2 = 16.0D;
+            return this.worldObj.getClosestPlayerToEntity(this, d2);
+        } else {
+            return null;
         }
+    }
 
-        return null;
+    protected String getLivingSound() {
+        return "mob.spider";
+    }
+
+    protected String getHurtSound() {
+        return "mob.spider";
+    }
+
+    protected String getDeathSound() {
+        return "mob.spiderdeath";
     }
 
     protected void attackEntity(Entity entity, float damage) {

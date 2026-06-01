@@ -21,10 +21,10 @@ public class PathEntity {
 		return this.pathIndex >= this.points.length;
 	}
 
-	public Vec3D getPosition(Entity entity1) {
-		float f2 = (float)this.points[this.pathIndex].xCoord + (float)((int)(entity1.width + 1.0F)) * 0.5F;
-		float f3 = (float)this.points[this.pathIndex].yCoord;
-		float f4 = (float)this.points[this.pathIndex].zCoord + (float)((int)(entity1.width + 1.0F)) * 0.5F;
-		return Vec3D.createVector((double)f2, (double)f3, (double)f4);
+	public Vec3D getPosition(Entity entity) {
+        double d2 = (double)this.points[this.pathIndex].xCoord + (double)((int)(entity.width + 1.0F)) * 0.5D;
+        double d4 = (double)this.points[this.pathIndex].yCoord;
+        double d6 = (double)this.points[this.pathIndex].zCoord + (double)((int)(entity.width + 1.0F)) * 0.5D;
+        return Vec3D.createVector(d2, d4, d6);
 	}
 }

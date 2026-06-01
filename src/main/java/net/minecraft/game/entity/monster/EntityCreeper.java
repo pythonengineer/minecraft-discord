@@ -42,6 +42,14 @@ public class EntityCreeper extends EntityMob {
 
 	}
 
+    protected String getHurtSound() {
+        return "mob.creeper";
+    }
+
+    protected String getDeathSound() {
+        return "mob.creeperdeath";
+    }
+
 	protected void attackEntity(Entity entity, float damage) {
 		if(this.creeperState <= 0 && damage < 3.0F || this.creeperState > 0 && damage < 7.0F) {
 			if(this.timeSinceIgnited == 0) {

@@ -11,6 +11,7 @@ import net.lax1dude.eaglercraft.EaglercraftSoundManager;
 public class SoundPool {
     private EaglercraftRandom rand = new EaglercraftRandom();
     private Map nameToSoundPoolEntriesMapping = new HashMap();
+    private List allSoundPoolEntries = new ArrayList();
     public int numberOfSoundPoolEntries = 0;
 
     public SoundPoolEntry addSound(EaglercraftSoundManager mgr, String soundName, String soundFile) {
@@ -27,6 +28,7 @@ public class SoundPool {
 
             SoundPoolEntry entry = new SoundPoolEntry(mgr, string3, soundFile);
             ((List)this.nameToSoundPoolEntriesMapping.get(soundName)).add(entry);
+            this.allSoundPoolEntries.add(entry);
             ++this.numberOfSoundPoolEntries;
             return entry;
         } catch (Exception e) {

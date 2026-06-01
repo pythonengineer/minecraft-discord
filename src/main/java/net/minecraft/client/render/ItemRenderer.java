@@ -203,7 +203,7 @@ public class ItemRenderer {
             this.renderFireInFirstPerson(partialTicks);
         }
 
-        if(this.mc.theWorld.playerEntity.isEntityInsideOpaqueBlock()) {
+        if(this.mc.thePlayer.isEntityInsideOpaqueBlock()) {
             i2 = MathHelper.floor_double(this.mc.thePlayer.posX);
             i3 = MathHelper.floor_double(this.mc.thePlayer.posY);
             int i10 = MathHelper.floor_double(this.mc.thePlayer.posZ);

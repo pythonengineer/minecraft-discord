@@ -49,16 +49,11 @@ public class EntityPlayer extends EntityLiving {
 		this.yOffset = 1.62F;
 		this.setSize(0.6F, 1.8F);
 		super.preparePlayerToSpawn();
-		if(this.worldObj != null) {
-			this.worldObj.playerEntity = this;
-		}
-
 		this.health = 20;
 		this.deathTime = 0;
 	}
 
 	public void onLivingUpdate() {
-		this.worldObj.playMusic(this.posX, this.posY, this.posZ, "calm", 0.0F);
 		if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 * 4 == 0) {
 			this.heal(1);
 		}

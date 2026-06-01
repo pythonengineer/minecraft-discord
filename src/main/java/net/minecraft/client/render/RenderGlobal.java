@@ -237,14 +237,11 @@ public class RenderGlobal implements IWorldAccess {
         }
 
         this.worldRenderersToUpdate.clear();
+        this.tileEntities.clear();
 
         for(i3 = 0; i3 < this.renderChunksWide; ++i3) {
             for(int i4 = 0; i4 < this.renderChunksTall; ++i4) {
                 for(int i5 = 0; i5 < this.renderChunksDeep; ++i5) {
-                    if(this.worldRenderers[(i5 * this.renderChunksTall + i4) * this.renderChunksWide + i3] != null) {
-                        this.tileEntities.removeAll(this.worldRenderers[(i5 * this.renderChunksTall + i4) * this.renderChunksWide + i3].tileEntityRenderers);
-                    }
-
                     this.worldRenderers[(i5 * this.renderChunksTall + i4) * this.renderChunksWide + i3] = new WorldRenderer(this.theWorld, this.tileEntities, i3 << 4, i4 << 4, i5 << 4, 16, this.glRenderListBase + i1);
                     if(this.occlusionEnabled) {
                         this.worldRenderers[(i5 * this.renderChunksTall + i4) * this.renderChunksWide + i3].glOcclusionQuery = this.glOcclusionQueryBase.get(i2);
@@ -263,9 +260,9 @@ public class RenderGlobal implements IWorldAccess {
         }
 
         if(this.theWorld != null) {
-            Entity entity6 = this.theWorld.playerEntity;
-            this.markRenderersForNewPosition(MathHelper.floor_double(entity6.posX), MathHelper.floor_double(entity6.posY), MathHelper.floor_double(entity6.posZ));
-            Arrays.sort(this.sortedWorldRenderers, new EntitySorter(entity6));
+            EntityPlayerSP entityPlayerSP7 = this.mc.thePlayer;
+            this.markRenderersForNewPosition(MathHelper.floor_double(entityPlayerSP7.posX), MathHelper.floor_double(entityPlayerSP7.posY), MathHelper.floor_double(entityPlayerSP7.posZ));
+            Arrays.sort(this.sortedWorldRenderers, new EntitySorter(entityPlayerSP7));
         }
     }
 
@@ -275,20 +272,20 @@ public class RenderGlobal implements IWorldAccess {
         this.countEntitiesTotal = 0;
         this.countEntitiesRendered = 0;
         this.countEntitiesHidden = 0;
-        Entity entity4 = this.theWorld.playerEntity;
-        RenderManager.renderPosX = entity4.lastTickPosX + (entity4.posX - entity4.lastTickPosX) * (double)partialTicks;
-        RenderManager.renderPosY = entity4.lastTickPosY + (entity4.posY - entity4.lastTickPosY) * (double)partialTicks;
-        RenderManager.renderPosZ = entity4.lastTickPosZ + (entity4.posZ - entity4.lastTickPosZ) * (double)partialTicks;
-        TileEntityRenderer.staticPlayerX = entity4.lastTickPosX + (entity4.posX - entity4.lastTickPosX) * (double)partialTicks;
-        TileEntityRenderer.staticPlayerY = entity4.lastTickPosY + (entity4.posY - entity4.lastTickPosY) * (double)partialTicks;
-        TileEntityRenderer.staticPlayerZ = entity4.lastTickPosZ + (entity4.posZ - entity4.lastTickPosZ) * (double)partialTicks;
+        EntityPlayerSP entityPlayerSP4 = this.mc.thePlayer;
+        RenderManager.renderPosX = entityPlayerSP4.lastTickPosX + (entityPlayerSP4.posX - entityPlayerSP4.lastTickPosX) * (double)partialTicks;
+        RenderManager.renderPosY = entityPlayerSP4.lastTickPosY + (entityPlayerSP4.posY - entityPlayerSP4.lastTickPosY) * (double)partialTicks;
+        RenderManager.renderPosZ = entityPlayerSP4.lastTickPosZ + (entityPlayerSP4.posZ - entityPlayerSP4.lastTickPosZ) * (double)partialTicks;
+        TileEntityRenderer.staticPlayerX = entityPlayerSP4.lastTickPosX + (entityPlayerSP4.posX - entityPlayerSP4.lastTickPosX) * (double)partialTicks;
+        TileEntityRenderer.staticPlayerY = entityPlayerSP4.lastTickPosY + (entityPlayerSP4.posY - entityPlayerSP4.lastTickPosY) * (double)partialTicks;
+        TileEntityRenderer.staticPlayerZ = entityPlayerSP4.lastTickPosZ + (entityPlayerSP4.posZ - entityPlayerSP4.lastTickPosZ) * (double)partialTicks;
         List list30 = this.theWorld.getLoadedEntityList();
         this.countEntitiesTotal = list30.size();
 
         int i5;
         for(i5 = 0; i5 < list30.size(); ++i5) {
             Entity entity6 = (Entity)list30.get(i5);
-            if(entity6.isInRangeToRenderVec3D(lookVector) && frustrum.isBoundingBoxInFrustum(entity6.boundingBox) && (entity6 != this.theWorld.playerEntity || this.mc.options.thirdPersonView)) {
+            if(entity6.isInRangeToRenderVec3D(lookVector) && frustrum.isBoundingBoxInFrustum(entity6.boundingBox) && (entity6 != this.mc.thePlayer || this.mc.options.thirdPersonView)) {
                 ++this.countEntitiesRendered;
                 RenderManager.instance.renderEntity(entity6, partialTicks);
             }
@@ -659,8 +656,8 @@ public class RenderGlobal implements IWorldAccess {
                 f31 = f10;
             }
 
-            double d37 = this.theWorld.playerEntity.prevPosX + (this.theWorld.playerEntity.posX - this.theWorld.playerEntity.prevPosX) * (double)partialTime + (double)(((float)this.cloudTickCounter + partialTime) * 0.03F);
-            double d11 = this.theWorld.playerEntity.prevPosZ + (this.theWorld.playerEntity.posZ - this.theWorld.playerEntity.prevPosZ) * (double)partialTime;
+            double d37 = this.mc.thePlayer.prevPosX + (this.mc.thePlayer.posX - this.mc.thePlayer.prevPosX) * (double)partialTime + (double)(((float)this.cloudTickCounter + partialTime) * 0.03F);
+            double d11 = this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * (double)partialTime;
             int i28 = MathHelper.floor_double(d37 / 2048.0D);
             int i36 = MathHelper.floor_double(d11 / 2048.0D);
             d37 -= (double)(i28 << 11);
@@ -697,8 +694,9 @@ public class RenderGlobal implements IWorldAccess {
         GL11.glDisable(GL11.GL_CULL_FACE);
         float f30 = (float)(this.mc.thePlayer.lastTickPosY + (this.mc.thePlayer.posY - this.mc.thePlayer.lastTickPosY) * (double)partialTime);
         Tessellator tessellator33 = Tessellator.instance;
-        double d24 = (this.theWorld.playerEntity.prevPosX + (this.theWorld.playerEntity.posX - this.theWorld.playerEntity.prevPosX) * (double)partialTime + (double)(((float)this.cloudTickCounter + partialTime) * 0.03F)) / 12.0D;
-        double d26 = (this.theWorld.playerEntity.prevPosZ + (this.theWorld.playerEntity.posZ - this.theWorld.playerEntity.prevPosZ) * (double)partialTime) / 12.0D + (double)0.33F;
+        float f4 = 12.0F;
+        double d24 = (this.mc.thePlayer.prevPosX + (this.mc.thePlayer.posX - this.mc.thePlayer.prevPosX) * (double)partialTime + (double)(((float)this.cloudTickCounter + partialTime) * 0.03F)) / (double)f4;
+        double d26 = (this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * (double)partialTime) / (double)f4 + (double)0.33F;
         f30 = 108.0F - f30 + 0.33F;
         i34 = MathHelper.floor_double(d24 / 2048.0D);
         int i35 = MathHelper.floor_double(d26 / 2048.0D);
@@ -1126,13 +1124,21 @@ public class RenderGlobal implements IWorldAccess {
     }
 
     public void playSound(String soundName, double x, double y, double z, float volume, float pitch) {
-        this.mc.sndManager.playSound(soundName, (float)x, (float)y, (float)z, volume, pitch);
+        float f10 = 16.0F;
+        if(volume > 1.0F) {
+            f10 *= volume;
+        }
+
+        if(this.mc.thePlayer.getDistanceSq(x, y, z) < (double)(f10 * f10)) {
+            this.mc.sndManager.playSound(soundName, (float)x, (float)y, (float)z, volume, pitch);
+        }
+
     }
 
     public void spawnParticle(String particleName, double x, double y, double z, double motionX, double motionY, double motionZ) {
-        double d14 = this.theWorld.playerEntity.posX - x;
-        double d16 = this.theWorld.playerEntity.posY - y;
-        double d18 = this.theWorld.playerEntity.posZ - z;
+        double d14 = this.mc.thePlayer.posX - x;
+        double d16 = this.mc.thePlayer.posY - y;
+        double d18 = this.mc.thePlayer.posZ - z;
         if(d14 * d14 + d16 * d16 + d18 * d18 <= 256.0D) {
             if(particleName == "bubble") {
                 this.mc.effectRenderer.addEffect(new EntityBubbleFX(this.theWorld, x, y, z, motionX, motionY, motionZ));

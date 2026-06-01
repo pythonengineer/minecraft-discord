@@ -14,9 +14,9 @@ class SpawnerMonsters extends SpawnerAnimals {
     }
 
     protected ChunkPosition getRandomSpawningPointInChunk(World world1, int i2, int i3) {
-        i2 = i2 + world1.rand.nextInt(256) - 128;
-        int i4 = world1.rand.nextInt(world1.rand.nextInt(world1.rand.nextInt(112) + 8) + 8);
-        int i5 = i3 + world1.rand.nextInt(256) - 128;
-        return new ChunkPosition(i2, i4, i5);
+        int i4 = i2 + world1.rand.nextInt(16);
+        int i5 = world1.rand.nextInt(world1.rand.nextInt(120) + 8);
+        int i6 = i3 + world1.rand.nextInt(16);
+        return new ChunkPosition(i4, i5, i6);
     }
 }

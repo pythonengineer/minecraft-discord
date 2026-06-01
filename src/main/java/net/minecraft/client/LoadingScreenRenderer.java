@@ -22,7 +22,7 @@ public class LoadingScreenRenderer implements IProgressUpdate {
         this.drawScreen(msg);
     }
 
-    public void displayProgressMessage(String string1) {
+    public void displayProgressMessage(String msg) {
         this.noError = true;
         this.drawScreen(this.currentlyDisplayedText);
     }

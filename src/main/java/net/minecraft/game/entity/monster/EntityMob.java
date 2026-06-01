@@ -5,6 +5,8 @@ import com.mojang.nbt.NBTTagCompound;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityCreature;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.world.EnumSkyBlock;
 import net.minecraft.game.world.World;
 
 public class EntityMob extends EntityCreature {
@@ -33,10 +35,9 @@ public class EntityMob extends EntityCreature {
 	}
 
 	protected Entity findPlayerToAttack() {
-		double d1 = this.worldObj.playerEntity.getDistanceSqToEntity(this);
-		double d3 = 16.0D;
-		return d1 < d3 * d3 && this.updateEntityActionState(this.worldObj.playerEntity) ? this.worldObj.playerEntity : null;
-	}
+        EntityPlayer entityPlayer1 = this.worldObj.getClosestPlayerToEntity(this, 16.0D);
+        return entityPlayer1 != null && this.updateEntityActionState(entityPlayer1) ? entityPlayer1 : null;
+    }
 
 	public boolean attackEntityFrom(Entity entity, int damage) {
 		if(super.attackEntityFrom(entity, damage)) {
@@ -71,7 +72,14 @@ public class EntityMob extends EntityCreature {
 	}
 
 	public boolean getCanSpawnHere(double x, double y, double z) {
-		int i7 = this.worldObj.getBlockLightValue(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
-		return i7 <= this.rand.nextInt(8) && super.getCanSpawnHere(x, y, z);
+        int i7 = MathHelper.floor_double(x);
+        int i8 = MathHelper.floor_double(y);
+        int i9 = MathHelper.floor_double(z);
+        if(this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, i7, i8, i9) > this.rand.nextInt(16)) {
+            return false;
+        } else {
+            int i10 = this.worldObj.getBlockLightValue(i7, i8, i9);
+            return i10 <= this.rand.nextInt(8) && super.getCanSpawnHere(x, y, z);
+        }
 	}
 }

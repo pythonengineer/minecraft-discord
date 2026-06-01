@@ -38,16 +38,16 @@ public class EntityCreature extends EntityLiving {
 		int i19;
 		if(!this.hasAttacked && this.entityToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
 			this.pathToEntity = this.worldObj.getPathToEntity(this, this.entityToAttack, f1);
-		} else if(this.pathToEntity == null || this.rand.nextInt(100) == 0) {
+        } else if(this.pathToEntity == null && this.rand.nextInt(100) == 0 || this.rand.nextInt(100) == 0) {
 			i19 = -1;
 			int i3 = -1;
 			int i4 = -1;
 			float f5 = -99999.0F;
 
 			for(int i6 = 0; i6 < 50; ++i6) {
-				int i7 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(11) - 5.0D);
-				int i8 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
-				int i9 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(11) - 5.0D);
+                int i7 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(13) - 6.0D);
+                int i8 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
+                int i9 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(13) - 6.0D);
 				float f10 = this.getBlockPathWeight(i7, i8, i9);
 				if(f10 > f5) {
 					f5 = f10;
@@ -58,52 +58,78 @@ public class EntityCreature extends EntityLiving {
 			}
 
 			if(i19 > 0) {
-				this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i19, i3, i4, f1);
+				this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i19, i3, i4, 10.0F);
 			}
 		}
 
-		i19 = MathHelper.floor_double(this.boundingBox.minY);
+		int i21 = MathHelper.floor_double(this.boundingBox.minY);
 		boolean z20 = this.handleWaterMovement();
 		boolean z21 = this.handleLavaMovement();
+        this.rotationPitch = 0.0F;
 		if(this.pathToEntity != null && this.rand.nextInt(100) != 0) {
-			Vec3D vec3D22 = this.pathToEntity.getPosition(this);
-			float f23 = this.width * 2.0F;
+            Vec3D vec3D24 = this.pathToEntity.getPosition(this);
+            double d25 = (double)(this.width * 2.0F);
 
-			while(vec3D22 != null && vec3D22.squareDistanceTo(this.posX, this.posY, this.posZ) < (double)(f23 * f23) && vec3D22.yCoord <= (double)i19) {
-				this.pathToEntity.incrementPathIndex();
-				if(this.pathToEntity.isFinished()) {
-					vec3D22 = null;
-					this.pathToEntity = null;
-				} else {
-					vec3D22 = this.pathToEntity.getPosition(this);
-				}
-			}
+            while(vec3D24 != null && vec3D24.squareDistanceTo(this.posX, vec3D24.yCoord, this.posZ) < d25 * d25) {
+                this.pathToEntity.incrementPathIndex();
+                if(this.pathToEntity.isFinished()) {
+                    vec3D24 = null;
+                    this.pathToEntity = null;
+                } else {
+                    vec3D24 = this.pathToEntity.getPosition(this);
+                }
+            }
 
-			this.isJumping = false;
-			if(vec3D22 != null) {
-				double d24 = vec3D22.xCoord - this.posX;
-				double d25 = vec3D22.zCoord - this.posZ;
-				double d11 = vec3D22.yCoord - (double)i19;
-				this.rotationYaw = (float)(Math.atan2(d25, d24) * 180.0D / (double)(float)Math.PI) - 90.0F;
-				this.moveForward = this.moveSpeed;
-				if(this.hasAttacked && this.entityToAttack != null) {
-					double d13 = this.entityToAttack.posX - this.posX;
-					double d15 = this.entityToAttack.posZ - this.posZ;
-					float f17 = this.rotationYaw;
-					this.rotationYaw = (float)(Math.atan2(d15, d13) * 180.0D / (double)(float)Math.PI) - 90.0F;
-					float f18 = (f17 - this.rotationYaw + 90.0F) * (float)Math.PI / 180.0F;
-					this.moveStrafing = -MathHelper.sin(f18) * this.moveForward * 1.0F;
-					this.moveForward = MathHelper.cos(f18) * this.moveForward * 1.0F;
-				}
+            this.isJumping = false;
+            if(vec3D24 != null) {
+                double d26 = vec3D24.xCoord - this.posX;
+                double d27 = vec3D24.zCoord - this.posZ;
+                double d12 = vec3D24.yCoord - (double)i21;
+                float f14 = (float)(Math.atan2(d27, d26) * 180.0D / (double)(float)Math.PI) - 90.0F;
+                float f15 = f14 - this.rotationYaw;
 
-				if(d11 != 0.0D) {
-					this.isJumping = true;
-				}
-			}
+                for(this.moveForward = this.moveSpeed; f15 < -180.0F; f15 += 360.0F) {
+                }
 
-			if(this.rand.nextFloat() < 0.8F && (z20 || z21)) {
-				this.isJumping = true;
-			}
+                while(f15 >= 180.0F) {
+                    f15 -= 360.0F;
+                }
+
+                if(f15 > 30.0F) {
+                    f15 = 30.0F;
+                }
+
+                if(f15 < -30.0F) {
+                    f15 = -30.0F;
+                }
+
+                this.rotationYaw += f15;
+                if(this.hasAttacked && this.entityToAttack != null) {
+                    double d16 = this.entityToAttack.posX - this.posX;
+                    double d18 = this.entityToAttack.posZ - this.posZ;
+                    float f20 = this.rotationYaw;
+                    this.rotationYaw = (float)(Math.atan2(d18, d16) * 180.0D / (double)(float)Math.PI) - 90.0F;
+                    f15 = (f20 - this.rotationYaw + 90.0F) * (float)Math.PI / 180.0F;
+                    this.moveStrafing = -MathHelper.sin(f15) * this.moveForward * 1.0F;
+                    this.moveForward = MathHelper.cos(f15) * this.moveForward * 1.0F;
+                }
+
+                if(d12 > 0.0D) {
+                    this.isJumping = true;
+                }
+            }
+
+            if(this.entityToAttack != null) {
+                this.faceEntity(this.entityToAttack, 30.0F);
+            }
+
+            if(this.isCollidedHorizontally) {
+                this.isJumping = true;
+            }
+
+            if(this.rand.nextFloat() < 0.8F && (z20 || z21)) {
+                this.isJumping = true;
+            }
 
 		} else {
 			super.updateEntityActionState();

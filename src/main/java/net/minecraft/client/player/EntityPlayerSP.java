@@ -25,14 +25,6 @@ public class EntityPlayerSP extends EntityPlayer {
     public EntityPlayerSP(Minecraft mc, World world, Session session) {
         super(world);
         this.mc = mc;
-        if(world != null) {
-            if(world.playerEntity != null) {
-                world.setEntityDead(world.playerEntity);
-            }
-
-            world.playerEntity = this;
-        }
-
         if(session != null && session.username != null && session.username.length() > 0) {
             this.skinUrl = session.username;
             this.username = session.username;

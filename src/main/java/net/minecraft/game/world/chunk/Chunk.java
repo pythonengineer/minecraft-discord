@@ -8,6 +8,7 @@ import java.util.Map;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
+import net.minecraft.game.world.ChunkPosition;
 import net.minecraft.game.world.EnumSkyBlock;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -354,13 +355,13 @@ public class Chunk {
 	}
 
 	public TileEntity getChunkBlockTileEntity(int x, int y, int z) {
-		int i4 = x + y * 1024 + z * 1024 * 1024;
-		TileEntity tileEntity5 = (TileEntity)this.chunkTileEntityMap.get(i4);
+        ChunkPosition chunkPosition4 = new ChunkPosition(x, y, z);
+		TileEntity tileEntity5 = (TileEntity)this.chunkTileEntityMap.get(chunkPosition4);
 		if(tileEntity5 == null) {
 			int i6 = this.getBlockID(x, y, z);
 			BlockContainer blockContainer7 = (BlockContainer)Block.blocksList[i6];
 			blockContainer7.onBlockAdded(this.worldObj, this.xPosition * 16 + x, y, this.zPosition * 16 + z);
-			tileEntity5 = (TileEntity)this.chunkTileEntityMap.get(i4);
+			tileEntity5 = (TileEntity)this.chunkTileEntityMap.get(chunkPosition4);
 		}
 
 		return tileEntity5;
@@ -374,31 +375,31 @@ public class Chunk {
 	}
 
 	public void setChunkBlockTileEntity(int x, int y, int z, TileEntity tileEntity) {
-		int i5 = x + y * 1024 + z * 1024 * 1024;
+        ChunkPosition chunkPosition5 = new ChunkPosition(x, y, z);
 		tileEntity.worldObj = this.worldObj;
 		tileEntity.xCoord = this.xPosition * 16 + x;
 		tileEntity.yCoord = y;
 		tileEntity.zCoord = this.zPosition * 16 + z;
 		if(this.getBlockID(x, y, z) != 0 && Block.blocksList[this.getBlockID(x, y, z)] instanceof BlockContainer) {
 			if(this.isChunkLoaded) {
-				if(this.chunkTileEntityMap.get(i5) != null) {
-					this.worldObj.loadedTileEntityList.remove(this.chunkTileEntityMap.get(i5));
+				if(this.chunkTileEntityMap.get(chunkPosition5) != null) {
+					this.worldObj.loadedTileEntityList.remove(this.chunkTileEntityMap.get(chunkPosition5));
 				}
 
 				this.worldObj.loadedTileEntityList.add(tileEntity);
 			}
 
-			this.chunkTileEntityMap.put(i5, tileEntity);
+			this.chunkTileEntityMap.put(chunkPosition5, tileEntity);
 		} else {
 			System.out.println("Attempted to place a tile entity where there was no entity tile!");
 		}
 	}
 
-	public void removeChunkBlockTileEntity(int i1, int i2, int i3) {
-		int i4 = i1 + i2 * 1024 + i3 * 1024 * 1024;
-		if(this.isChunkLoaded) {
-			this.worldObj.loadedTileEntityList.remove(this.chunkTileEntityMap.remove(i4));
-		}
+	public void removeChunkBlockTileEntity(int x, int y, int z) {
+        ChunkPosition chunkPosition4 = new ChunkPosition(x, y, z);
+        if(this.isChunkLoaded) {
+            this.worldObj.loadedTileEntityList.remove(this.chunkTileEntityMap.remove(chunkPosition4));
+        }
 
 	}
 

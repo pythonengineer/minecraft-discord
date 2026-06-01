@@ -7,11 +7,15 @@ import net.minecraft.game.world.block.Block;
 public class ItemSword extends Item {
     private int weaponDamage;
 
-    public ItemSword(int itemID, int damage) {
+    public ItemSword(int itemID, int strength) {
         super(itemID);
         this.maxStackSize = 1;
-        this.maxDamage = 32 << damage;
-        this.weaponDamage = 4 + damage * 2;
+        this.maxDamage = 32 << strength;
+        if(strength == 3) {
+            this.maxDamage *= 4;
+        }
+
+        this.weaponDamage = 4 + strength * 2;
     }
 
     public float getStrVsBlock(ItemStack itemStack, Block block) {

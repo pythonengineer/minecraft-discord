@@ -17,7 +17,7 @@ public class ItemTool extends Item {
         this.maxStackSize = 1;
         this.maxDamage = 32 << damage;
         if(damage == 3) {
-            this.maxDamage *= 2;
+            this.maxDamage *= 4;
         }
 
         this.efficiencyOnProperMaterial = (float)((damage + 1) * 2);

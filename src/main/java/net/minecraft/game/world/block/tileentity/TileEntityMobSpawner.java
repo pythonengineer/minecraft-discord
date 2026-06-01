@@ -17,8 +17,7 @@ public class TileEntityMobSpawner extends TileEntity {
     }
 
     public boolean anyPlayerInRange() {
-        double d1 = this.worldObj.playerEntity.getDistanceSq((double)this.xCoord, (double)this.yCoord, (double)this.zCoord);
-        return d1 <= 256.0D;
+        return this.worldObj.getClosestPlayer((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D, 16.0D) != null;
     }
 
     public void updateEntity() {

@@ -146,7 +146,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.2_02");
+        Display.setTitle("Minecraft Alpha v1.0.3");
 
         try {
             Display.create();
@@ -998,8 +998,6 @@ public class Minecraft implements Runnable {
         } else {
             this.changeWorld(world3, "Loading level");
         }
-
-        world3.saveWorld(false, (LoadingScreenRenderer)null);
     }
 
     public void changeWorld1(World world) {
@@ -1017,11 +1015,9 @@ public class Minecraft implements Runnable {
             world.fontRenderer = this.fontRenderer;
             if(!this.isMultiplayerWorld()) {
                 this.thePlayer = (EntityPlayerSP)world.createDebugPlayer(EntityPlayerSP.class);
-                world.playerEntity = this.thePlayer;
             } else if(this.thePlayer != null) {
                 this.thePlayer.preparePlayerToSpawn();
                 if(world != null) {
-                    world.playerEntity = this.thePlayer;
                     world.spawnEntityInWorld(this.thePlayer);
                 }
             }
@@ -1043,8 +1039,7 @@ public class Minecraft implements Runnable {
             }
 
             this.playerController.onRespawn(this.thePlayer);
-            world.playerEntity = this.thePlayer;
-            world.spawnPlayerWithLoadedChunks();
+            world.spawnPlayerWithLoadedChunks(this.thePlayer);
             if(world.isNewWorld) {
                 world.saveWorldIndirectly(this.loadingScreen);
             }
@@ -1057,20 +1052,22 @@ public class Minecraft implements Runnable {
     private void preloadWorld(String title) {
         this.loadingScreen.resetProgressAndMessage(title);
         this.loadingScreen.displayLoadingString("Building terrain");
-        int i6 = 0;
+        short s2 = 128;
+        int i3 = 0;
+        int i4 = s2 * 2 / 16 + 1;
+        i4 *= i4;
 
-        int i2;
-        for(i2 = -128; i2 <= 128; i2 += 16) {
-            int i3 = this.theWorld.spawnX;
-            int i4 = this.theWorld.spawnZ;
-            if(this.theWorld.playerEntity != null) {
-                i3 = (int)this.theWorld.playerEntity.posX;
-                i4 = (int)this.theWorld.playerEntity.posZ;
+        for(int i5 = -s2; i5 <= s2; i5 += 16) {
+            int i6 = this.theWorld.spawnX;
+            int i7 = this.theWorld.spawnZ;
+            if(this.thePlayer != null) {
+                i6 = (int)this.thePlayer.posX;
+                i7 = (int)this.thePlayer.posZ;
             }
 
-            for(int i5 = -128; i5 <= 128; i5 += 16) {
-                this.loadingScreen.setLoadingProgress(i6++ * 100 / 289);
-                this.theWorld.getBlockId(i3 + i2, 64, i4 + i5);
+            for(int i8 = -s2; i8 <= s2; i8 += 16) {
+                this.loadingScreen.setLoadingProgress(i3++ * 100 / i4);
+                this.theWorld.getBlockId(i6 + i5, 64, i7 + i8);
 
                 while(this.theWorld.updatingLighting()) {
                 }
@@ -1078,14 +1075,8 @@ public class Minecraft implements Runnable {
         }
 
         this.loadingScreen.displayLoadingString("Simulating world for a bit");
-        BlockSand.fallInstantly = true;
-
-        for(i2 = 0; i2 < 2000; ++i2) {
-            this.theWorld.tickUpdates(true);
-        }
-
+        boolean z9 = true;
         this.theWorld.dropOldChunks();
-        BlockSand.fallInstantly = false;
     }
 
     public void installResource(String resource, String resourceDir) {
@@ -1121,19 +1112,15 @@ public class Minecraft implements Runnable {
     }
 
     public void respawn() {
-        if(this.thePlayer != null && this.theWorld != null) {
+        this.theWorld.setSpawnLocation();
+        if(this.thePlayer != null) {
             this.theWorld.setEntityDead(this.thePlayer);
         }
 
-        this.theWorld.setSpawnLocation();
         this.thePlayer = new EntityPlayerSP(this, this.theWorld, this.session);
         this.thePlayer.preparePlayerToSpawn();
         this.playerController.flipPlayer(this.thePlayer);
-        if(this.theWorld != null) {
-            this.theWorld.playerEntity = this.thePlayer;
-            this.theWorld.spawnPlayerWithLoadedChunks();
-        }
-
+        this.theWorld.spawnPlayerWithLoadedChunks(this.thePlayer);
         this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
         this.playerController.onRespawn(this.thePlayer);
         this.preloadWorld("Respawning");

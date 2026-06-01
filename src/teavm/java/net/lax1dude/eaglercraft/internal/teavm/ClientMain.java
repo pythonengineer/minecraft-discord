@@ -304,7 +304,7 @@ public class ClientMain {
         }
 
         StringBuilder str = new StringBuilder();
-        str.append("minecraft.version = \"Alpha v1.0.2_02\"\n");
+        str.append("minecraft.version = \"Alpha v1.0.3\"\n");
         str.append('\n');
         str.append(addWebGLToCrash());
         str.append('\n');

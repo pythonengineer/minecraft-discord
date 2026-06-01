@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,6 +19,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.CompressedStreamTools;
 import net.minecraft.client.IProgressUpdate;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
@@ -25,6 +27,7 @@ import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockFluid;
 import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.chunk.Chunk;
+import net.minecraft.game.world.chunk.ChunkCoordIntPair;
 import net.minecraft.game.world.chunk.ChunkProviderLoadOrGenerate;
 import net.minecraft.game.world.chunk.IChunkProvider;
 import net.minecraft.game.world.chunk.loader.ChunkLoader;
@@ -49,7 +52,7 @@ public class World implements IBlockAccess {
 	protected int DIST_HASH_MAGIC;
     public boolean editingBlocks;
     public static float[] lightBrightnessTable = new float[16];
-	public Entity playerEntity;
+    public List playerEntities;
 	public int difficultySetting;
 	public Object fontRenderer;
 	public EaglercraftRandom rand;
@@ -65,6 +68,8 @@ public class World implements IBlockAccess {
 	public long sizeOnDisk;
 	public final String levelName;
     private ArrayList collidingBoundingBoxes;
+    private Set positionsToUpdate;
+    private int soundCounter;
     private List entitiesWithinAABBExcludingEntity;
 
 	public static NBTTagCompound getLevelData(String worldName) {
@@ -115,12 +120,15 @@ public class World implements IBlockAccess {
 		this.updateLCG = (new EaglercraftRandom()).nextInt();
 		this.DIST_HASH_MAGIC = 1013904223;
         this.editingBlocks = false;
+        this.playerEntities = new ArrayList();
 		this.rand = new EaglercraftRandom();
 		this.isNewWorld = false;
 		this.worldAccesses = new ArrayList();
 		this.randomSeed = 0L;
 		this.sizeOnDisk = 0L;
         this.collidingBoundingBoxes = new ArrayList();
+        this.positionsToUpdate = new HashSet();
+        this.soundCounter = this.rand.nextInt(12000);
         this.entitiesWithinAABBExcludingEntity = new ArrayList();
 		this.levelName = worldName;
 		this.saveDirectory = new VFile2("saves", worldName);
@@ -135,7 +143,9 @@ public class World implements IBlockAccess {
 				this.spawnZ = worldFile1.getInteger("SpawnZ");
 				this.worldTime = worldFile1.getLong("Time");
 				this.sizeOnDisk = worldFile1.getLong("SizeOnDisk");
-				this.nbtCompoundPlayer = worldFile1.getCompoundTag("Player");
+                if(worldFile1.hasKey("Player")) {
+                    this.nbtCompoundPlayer = worldFile1.getCompoundTag("Player");
+                }
 			} catch (IOException exception5) {
 				exception5.printStackTrace();
 			}
@@ -188,19 +198,19 @@ public class World implements IBlockAccess {
         return this.getBlockId(x, i3, z);
     }
 
-	public void spawnPlayerWithLoadedChunks() {
-		try {
-			if(this.nbtCompoundPlayer != null) {
-				this.playerEntity.readFromNBT(this.nbtCompoundPlayer);
-				this.nbtCompoundPlayer = null;
-			}
+    public void spawnPlayerWithLoadedChunks(EntityPlayer entityPlayer) {
+        try {
+            if(this.nbtCompoundPlayer != null) {
+                entityPlayer.readFromNBT(this.nbtCompoundPlayer);
+                this.nbtCompoundPlayer = null;
+            }
 
-			this.spawnEntityInWorld(this.playerEntity);
-		} catch (Exception exception2) {
-			exception2.printStackTrace();
-		}
-	}
+            this.spawnEntityInWorld(entityPlayer);
+        } catch (Exception exception3) {
+            exception3.printStackTrace();
+        }
 
+    }
     public void saveWorld(boolean saveWorldIndirectly, IProgressUpdate loadingScreen) {
         if(this.chunkProvider.canSave()) {
             if(loadingScreen != null) {
@@ -217,28 +227,34 @@ public class World implements IBlockAccess {
     }
 
     private void saveLevel() {
-        NBTTagCompound nBTTagCompound3;
-        (nBTTagCompound3 = new NBTTagCompound()).setLong("RandomSeed", this.randomSeed);
-        nBTTagCompound3.setInteger("SpawnX", this.spawnX);
-        nBTTagCompound3.setInteger("SpawnY", this.spawnY);
-        nBTTagCompound3.setInteger("SpawnZ", this.spawnZ);
-        nBTTagCompound3.setLong("Time", this.worldTime);
-        nBTTagCompound3.setLong("SizeOnDisk", this.sizeOnDisk);
-        nBTTagCompound3.setLong("LastPlayed", EagRuntime.currentTimeMillis());
-        NBTTagCompound nBTTagCompound4;
-        if(this.playerEntity != null) {
-            nBTTagCompound4 = new NBTTagCompound();
-            this.playerEntity.writeToNBT(nBTTagCompound4);
-            nBTTagCompound3.setCompoundTag("Player", nBTTagCompound4);
+        NBTTagCompound nBTTagCompound1 = new NBTTagCompound();
+        nBTTagCompound1.setLong("RandomSeed", this.randomSeed);
+        nBTTagCompound1.setInteger("SpawnX", this.spawnX);
+        nBTTagCompound1.setInteger("SpawnY", this.spawnY);
+        nBTTagCompound1.setInteger("SpawnZ", this.spawnZ);
+        nBTTagCompound1.setLong("Time", this.worldTime);
+        nBTTagCompound1.setLong("SizeOnDisk", this.sizeOnDisk);
+        nBTTagCompound1.setLong("LastPlayed", EagRuntime.currentTimeMillis());
+        EntityPlayer entityPlayer2 = null;
+        if(this.playerEntities.size() > 0) {
+            entityPlayer2 = (EntityPlayer)this.playerEntities.get(0);
         }
 
-        (nBTTagCompound4 = new NBTTagCompound()).setTag("Data", nBTTagCompound3);
+        NBTTagCompound nBTTagCompound3;
+        if(entityPlayer2 != null) {
+            nBTTagCompound3 = new NBTTagCompound();
+            entityPlayer2.writeToNBT(nBTTagCompound3);
+            nBTTagCompound1.setCompoundTag("Player", nBTTagCompound3);
+        }
+
+        nBTTagCompound3 = new NBTTagCompound();
+        nBTTagCompound3.setTag("Data", nBTTagCompound1);
 
         VFile2 file6 = new VFile2(this.saveDirectory, "level.dat_new");
         try (OutputStream fos = file6.getOutputStream()) {
             VFile2 file3 = new VFile2(this.saveDirectory, "level.dat_old");
             VFile2 file4 = new VFile2(this.saveDirectory, "level.dat");
-            CompressedStreamTools.writeCompressed(nBTTagCompound4, fos);
+            CompressedStreamTools.writeCompressed(nBTTagCompound3, fos);
             if(file3.exists()) {
                 file3.delete();
             }
@@ -744,40 +760,16 @@ public class World implements IBlockAccess {
 
 	public void playSoundAtEntity(Entity entity, String soundName, float volume, float pitch) {
 		for(int i5 = 0; i5 < this.worldAccesses.size(); ++i5) {
-			float f6 = 16.0F;
-			if(volume > 1.0F) {
-				f6 *= volume;
-			}
-
-			if(this.playerEntity.getDistanceSqToEntity(entity) < (double)(f6 * f6)) {
-				((IWorldAccess)this.worldAccesses.get(i5)).playSound(soundName, entity.posX, entity.posY - (double)entity.yOffset, entity.posZ, volume, pitch);
-			}
+			((IWorldAccess)this.worldAccesses.get(i5)).playSound(soundName, entity.posX, entity.posY - (double)entity.yOffset, entity.posZ, volume, pitch);
 		}
 
 	}
 
 	public void playSoundEffect(double x, double y, double z, String soundName, float volume, float pitch) {
-		try {
-			for(int i10 = 0; i10 < this.worldAccesses.size(); ++i10) {
-				float f11 = 16.0F;
-				if(volume > 1.0F) {
-					f11 *= volume;
-				}
-
-				double d12 = x - this.playerEntity.posX;
-				double d14 = y - this.playerEntity.posY;
-				double d16 = z - this.playerEntity.posZ;
-				if(d12 * d12 + d14 * d14 + d16 * d16 < (double)(f11 * f11)) {
-					((IWorldAccess)this.worldAccesses.get(i10)).playSound(soundName, x, y, z, volume, pitch);
-				}
-			}
-
-		} catch (Exception exception18) {
-			exception18.printStackTrace();
+		for(int i10 = 0; i10 < this.worldAccesses.size(); ++i10) {
+			((IWorldAccess)this.worldAccesses.get(i10)).playSound(soundName, x, y, z, volume, pitch);
 		}
-	}
 
-	public void playMusic(double d1, double d3, double d5, String string7, float f8) {
 	}
 
 	public void spawnParticle(String particleName, double x, double y, double z, double motionX, double motionY, double motionZ) {
@@ -787,25 +779,37 @@ public class World implements IBlockAccess {
 
 	}
 
-	public void spawnEntityInWorld(Entity entity) {
-		int i2 = MathHelper.floor_double(entity.posX / 16.0D);
-		int i3 = MathHelper.floor_double(entity.posZ / 16.0D);
-		if(this.chunkExists(i2, i3)) {
+    public void spawnEntityInWorld(Entity entity) {
+        int i2 = MathHelper.floor_double(entity.posX / 16.0D);
+        int i3 = MathHelper.floor_double(entity.posZ / 16.0D);
+        boolean z4 = false;
+        if(entity instanceof EntityPlayer) {
+            this.playerEntities.add((EntityPlayer)entity);
+            System.out.println("Player count: " + this.playerEntities.size());
+            z4 = true;
+        }
+
+        if(!z4 && !this.chunkExists(i2, i3)) {
+            System.out.println("Failed to add entity " + entity + " because the chunk wasn\'t loaded");
+        } else {
             this.getChunkFromChunkCoords(i2, i3).addEntity(entity);
             this.loadedEntityList.add(entity);
 
-            for(i2 = 0; i2 < this.worldAccesses.size(); ++i2) {
-                ((IWorldAccess)this.worldAccesses.get(i2)).obtainEntitySkin(entity);
+            for(int i5 = 0; i5 < this.worldAccesses.size(); ++i5) {
+                ((IWorldAccess)this.worldAccesses.get(i5)).obtainEntitySkin(entity);
             }
-		} else {
-            System.out.println("Failed to add entity " + entity);
-		}
+        }
 
-	}
+    }
 
-	public void setEntityDead(Entity entity) {
-		entity.setEntityDead();
-	}
+    public void setEntityDead(Entity entity) {
+        entity.setEntityDead();
+        if(entity instanceof EntityPlayer) {
+            this.playerEntities.remove((EntityPlayer)entity);
+        }
+
+        System.out.println("Player count: " + this.playerEntities.size());
+    }
 
 	public void addWorldAccess(IWorldAccess worldAccess) {
 		this.worldAccesses.add(worldAccess);
@@ -1284,10 +1288,6 @@ public class World implements IBlockAccess {
 		return "All: " + this.loadedEntityList.size();
 	}
 
-	public Entity getPlayerEntity() {
-		return this.playerEntity;
-	}
-
 	public TileEntity getBlockTileEntity(int x, int y, int z) {
 		Chunk chunk4;
 		return (chunk4 = this.getChunkFromChunkCoords(x >> 4, z >> 4)) != null ? chunk4.getChunkBlockTileEntity(x & 15, y, z & 15) : null;
@@ -1366,11 +1366,6 @@ public class World implements IBlockAccess {
 
     public void tick() {
         this.chunkProvider.unload100OldestChunks();
-        if(!this.loadedEntityList.contains(this.playerEntity) && this.playerEntity != null) {
-            System.out.println("DOHASDOSHIH!");
-            this.spawnEntityInWorld(this.playerEntity);
-        }
-
         int i1;
         if((i1 = this.calculateSkylightSubtracted(1.0F)) != this.skylightSubtracted) {
             this.skylightSubtracted = i1;
@@ -1390,31 +1385,76 @@ public class World implements IBlockAccess {
     }
 
     protected void updateBlocksAndPlayCaveSounds() {
-        int i1 = MathHelper.floor_double(this.playerEntity.posX);
-        int i2 = MathHelper.floor_double(this.playerEntity.posZ);
-        ChunkCache chunkCache3 = new ChunkCache(this, i1 - 64, 0, i2 - 64, i1 + 64, 128, i2 + 64);
+        this.positionsToUpdate.clear();
 
-        for(int i4 = 0; i4 < 8000; ++i4) {
-            this.updateLCG = this.updateLCG * 3 + this.DIST_HASH_MAGIC;
-            int i5;
-            int i6 = ((i5 = this.updateLCG >> 2) & 127) - 64 + i1;
-            int i7 = (i5 >> 8 & 127) - 64 + i2;
-            i5 = i5 >> 16 & 127;
-            int i8 = chunkCache3.getBlockId(i6, i5, i7);
-            if(Block.tickOnLoad[i8]) {
-                Block.blocksList[i8].updateTick(this, i6, i5, i7, this.rand);
+        int i3;
+        int i4;
+        int i6;
+        int i7;
+        for(int i1 = 0; i1 < this.playerEntities.size(); ++i1) {
+            EntityPlayer entityPlayer2 = (EntityPlayer)this.playerEntities.get(i1);
+            i3 = MathHelper.floor_double(entityPlayer2.posX / 16.0D);
+            i4 = MathHelper.floor_double(entityPlayer2.posZ / 16.0D);
+            byte b5 = 10;
+
+            for(i6 = -b5; i6 <= b5; ++i6) {
+                for(i7 = -b5; i7 <= b5; ++i7) {
+                    this.positionsToUpdate.add(new ChunkCoordIntPair(i6 + i3, i7 + i4));
+                }
             }
         }
 
-	}
+        if(this.soundCounter > 0) {
+            --this.soundCounter;
+        }
+
+        Iterator iterator12 = this.positionsToUpdate.iterator();
+
+        while(iterator12.hasNext()) {
+            ChunkCoordIntPair chunkCoordIntPair13 = (ChunkCoordIntPair)iterator12.next();
+            i3 = chunkCoordIntPair13.chunkXPos * 16;
+            i4 = chunkCoordIntPair13.chunkZPos * 16;
+            ChunkCache chunkCache14 = new ChunkCache(this, i3, 0, i4, i3 + 16, 128, i4 + 16);
+            int i8;
+            int i9;
+            int i10;
+            if(this.soundCounter == 0) {
+                i6 = this.updateLCG >> 2;
+                i7 = (i6 & 15) + i3;
+                i8 = (i6 >> 8 & 15) + i4;
+                i9 = i6 >> 16 & 127;
+                i10 = chunkCache14.getBlockId(i7, i9, i8);
+                if(i10 == 0 && this.getBlockLightValue(i7, i9, i8) <= this.rand.nextInt(8) && this.getSavedLightValue(EnumSkyBlock.Sky, i7, i9, i8) <= 0) {
+                    EntityPlayer entityPlayer11 = this.getClosestPlayer((double)i7 + 0.5D, (double)i9 + 0.5D, (double)i8 + 0.5D, 8.0D);
+                    if(entityPlayer11 != null && entityPlayer11.getDistanceSq((double)i7 + 0.5D, (double)i9 + 0.5D, (double)i8 + 0.5D) > 4.0D) {
+                        this.playSoundEffect((double)i7 + 0.5D, (double)i9 + 0.5D, (double)i8 + 0.5D, "ambient.cave.cave", 0.7F, 0.8F + this.rand.nextFloat() * 0.2F);
+                        this.soundCounter = this.rand.nextInt(12000) + 12000;
+                    }
+                }
+            }
+
+            for(i6 = 0; i6 < 100; ++i6) {
+                this.updateLCG = this.updateLCG * 3 + this.DIST_HASH_MAGIC;
+                i7 = this.updateLCG >> 2;
+                i8 = (i7 & 15) + i3;
+                i9 = (i7 >> 8 & 15) + i4;
+                i10 = i7 >> 16 & 127;
+                int i15 = chunkCache14.getBlockId(i8, i10, i9);
+                if(Block.tickOnLoad[i15]) {
+                    Block.blocksList[i15].updateTick(this, i8, i10, i9, this.rand);
+                }
+            }
+        }
+
+    }
 
     public boolean tickUpdates(boolean skipUpdate) {
         int i2;
         if((i2 = this.scheduledTickTreeSet.size()) != this.scheduledTickSet.size()) {
             throw new IllegalStateException("TickNextTick list out of synch");
         } else {
-            if(i2 > 500) {
-                i2 = 500;
+            if(i2 > 1000) {
+                i2 = 1000;
             }
 
             for(int i3 = 0; i3 < i2; ++i3) {
@@ -1549,7 +1589,7 @@ public class World implements IBlockAccess {
         int i4 = MathHelper.floor_double(entity.posX);
         int i5 = MathHelper.floor_double(entity.posY);
         int i6 = MathHelper.floor_double(entity.posZ);
-        int i7 = (int)(f3 + 32.0F);
+        int i7 = (int)(f3 + 16.0F);
         int i8 = i4 - i7;
         int i9 = i5 - i7;
         int i10 = i6 - i7;
@@ -1564,7 +1604,7 @@ public class World implements IBlockAccess {
         int i6 = MathHelper.floor_double(entity.posX);
         int i7 = MathHelper.floor_double(entity.posY);
         int i8 = MathHelper.floor_double(entity.posZ);
-        int i9 = (int)(f5 + 32.0F);
+        int i9 = (int)(f5 + 8.0F);
         int i10 = i6 - i9;
         int i11 = i7 - i9;
         int i12 = i8 - i9;
@@ -1595,6 +1635,26 @@ public class World implements IBlockAccess {
 
     public boolean isBlockIndirectlyGettingPowered(int x, int y, int z) {
         return this.isBlockIndirectlyProvidingPowerTo(x, y - 1, z, 0) ? true : (this.isBlockIndirectlyProvidingPowerTo(x, y + 1, z, 1) ? true : (this.isBlockIndirectlyProvidingPowerTo(x, y, z - 1, 2) ? true : (this.isBlockIndirectlyProvidingPowerTo(x, y, z + 1, 3) ? true : (this.isBlockIndirectlyProvidingPowerTo(x - 1, y, z, 4) ? true : this.isBlockIndirectlyProvidingPowerTo(x + 1, y, z, 5)))));
+    }
+
+    public EntityPlayer getClosestPlayerToEntity(Entity entity, double distance) {
+        return this.getClosestPlayer(entity.posX, entity.posY, entity.posZ, distance);
+    }
+
+    public EntityPlayer getClosestPlayer(double posX, double posY, double posZ, double d) {
+        double d9 = -1.0D;
+        EntityPlayer entityPlayer11 = null;
+
+        for(int i12 = 0; i12 < this.playerEntities.size(); ++i12) {
+            EntityPlayer entityPlayer13 = (EntityPlayer)this.playerEntities.get(i12);
+            double d14 = entityPlayer13.getDistanceSq(posX, posY, posZ);
+            if(d14 < d * d && (d9 == -1.0D || d14 < d9)) {
+                d9 = d14;
+                entityPlayer11 = entityPlayer13;
+            }
+        }
+
+        return entityPlayer11;
     }
 
 	static {

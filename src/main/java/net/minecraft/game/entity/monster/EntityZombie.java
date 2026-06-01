@@ -23,6 +23,18 @@ public class EntityZombie extends EntityMob {
 		super.onLivingUpdate();
 	}
 
+    protected String getLivingSound() {
+        return "mob.zombie";
+    }
+
+    protected String getHurtSound() {
+        return "mob.zombiehurt";
+    }
+
+    protected String getDeathSound() {
+        return "mob.zombiedeath";
+    }
+
 	protected int getDropItemId() {
 		return Item.feather.shiftedIndex;
 	}

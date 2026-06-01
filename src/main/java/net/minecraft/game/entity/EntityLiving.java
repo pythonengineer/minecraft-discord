@@ -5,6 +5,7 @@ import com.mojang.nbt.NBTTagCompound;
 import java.util.List;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.StepSound;
@@ -52,6 +53,8 @@ public class EntityLiving extends Entity {
 	protected boolean isJumping = false;
 	protected float defaultPitch = 0.0F;
 	protected float moveSpeed = 0.7F;
+    private Entity currentTarget;
+    private int numTicksToChaseTarget = 0;
 
 	public EntityLiving(World world1) {
 		super(world1);
@@ -195,7 +198,7 @@ public class EntityLiving extends Entity {
             f13 -= 360.0F;
         }
 
-        this.renderYawOffset += f13 * 0.1F;
+        this.renderYawOffset += f13 * 0.3F;
 
         for(f13 = this.rotationYaw - this.renderYawOffset; f13 < -180.0F; f13 += 360.0F) {
         }
@@ -214,7 +217,10 @@ public class EntityLiving extends Entity {
         }
 
         this.renderYawOffset = this.rotationYaw - f13;
-        this.renderYawOffset += f13 * 0.1F;
+        if(f13 * f13 > 2500.0F) {
+            this.renderYawOffset += f13 * 0.2F;
+        }
+
 		if(z12) {
 			f7 = -f7;
 		}
@@ -458,11 +464,11 @@ public class EntityLiving extends Entity {
 
 	public void onLivingUpdate() {
 		++this.entityAge;
-		Entity entity1;
-		if((entity1 = this.worldObj.getPlayerEntity()) != null) {
-			double d2 = entity1.posX - this.posX;
-			double d4 = entity1.posY - this.posY;
-			double d6 = entity1.posZ - this.posZ;
+        EntityPlayer entityPlayer1 = this.worldObj.getClosestPlayerToEntity(this, -1.0D);
+        if(entityPlayer1 != null) {
+			double d2 = entityPlayer1.posX - this.posX;
+			double d4 = entityPlayer1.posY - this.posY;
+			double d6 = entityPlayer1.posZ - this.posZ;
 			double d8;
 			if((d8 = d2 * d2 + d4 * d4 + d6 * d6) > 16384.0D) {
                 this.setEntityDead();
@@ -519,25 +525,78 @@ public class EntityLiving extends Entity {
 	}
 
 	protected void updateEntityActionState() {
-		if(this.rand.nextFloat() < 0.07F) {
-			this.moveStrafing = (this.rand.nextFloat() - 0.5F) * this.moveSpeed;
-			this.moveForward = this.rand.nextFloat() * this.moveSpeed;
-		}
+        this.moveStrafing = 0.0F;
+        this.moveForward = 0.0F;
+        float f1 = 8.0F;
+        if(this.rand.nextFloat() < 0.02F) {
+            EntityPlayer entityPlayer2 = this.worldObj.getClosestPlayerToEntity(this, (double)f1);
+            if(entityPlayer2 != null) {
+                this.currentTarget = entityPlayer2;
+                this.numTicksToChaseTarget = 10 + this.rand.nextInt(20);
+            } else {
+                this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 20.0F;
+            }
+        }
 
-		this.isJumping = this.rand.nextFloat() < 0.01F;
-		if(this.rand.nextFloat() < 0.04F) {
-			this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 60.0F;
-		}
+        if(this.currentTarget != null) {
+            this.faceEntity(this.currentTarget, 10.0F);
+            if(this.numTicksToChaseTarget-- <= 0 || this.currentTarget.isDead || this.currentTarget.getDistanceSqToEntity(this) > (double)(f1 * f1)) {
+                this.currentTarget = null;
+            }
+        } else {
+            if(this.rand.nextFloat() < 0.05F) {
+                this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 20.0F;
+            }
 
-		this.rotationYaw += this.randomYawVelocity;
-		this.rotationPitch = this.defaultPitch;
-		boolean z1 = this.handleWaterMovement();
-		boolean z2 = this.handleLavaMovement();
-		if(z1 || z2) {
-			this.isJumping = this.rand.nextFloat() < 0.8F;
-		}
+            this.rotationYaw += this.randomYawVelocity;
+            this.rotationPitch = this.defaultPitch;
+        }
+
+        boolean z4 = this.handleWaterMovement();
+        boolean z3 = this.handleLavaMovement();
+        if(z4 || z3) {
+            this.isJumping = this.rand.nextFloat() < 0.8F;
+        }
 
 	}
+
+    public void faceEntity(Entity entity, float f2) {
+        double d3 = entity.posX - this.posX;
+        double d7 = entity.posZ - this.posZ;
+        double d5;
+        if(entity instanceof EntityLiving) {
+            EntityLiving entityLiving9 = (EntityLiving)entity;
+            d5 = entityLiving9.posY + (double)entityLiving9.getEyeHeight() - (this.posY + (double)this.getEyeHeight());
+        } else {
+            d5 = (entity.boundingBox.minY + entity.boundingBox.maxY) / 2.0D - (this.posY + (double)this.getEyeHeight());
+        }
+
+        double d13 = (double)MathHelper.sqrt_double(d3 * d3 + d7 * d7);
+        float f11 = (float)(Math.atan2(d7, d3) * 180.0D / (double)(float)Math.PI) - 90.0F;
+        float f12 = (float)(Math.atan2(d5, d13) * 180.0D / (double)(float)Math.PI);
+        this.rotationPitch = this.updateRotation(this.rotationPitch, f12, f2);
+        this.rotationYaw = this.updateRotation(this.rotationYaw, f11, f2);
+    }
+
+    private float updateRotation(float f1, float f2, float f3) {
+        float f4;
+        for(f4 = f2 - f1; f4 < -180.0F; f4 += 360.0F) {
+        }
+
+        while(f4 >= 180.0F) {
+            f4 -= 360.0F;
+        }
+
+        if(f4 > f3) {
+            f4 = f3;
+        }
+
+        if(f4 < -f3) {
+            f4 = -f3;
+        }
+
+        return f1 + f4;
+    }
 
 	public void onEntityDeath() {
 	}

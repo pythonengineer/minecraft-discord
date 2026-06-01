@@ -117,39 +117,30 @@ public class Pathfinder {
 			pathPoint7 = this.openPoint(i2, i3, i4);
 		}
 
-		if(pathPoint7 == null && this.getVerticalOffset(entity1, i2, i3 + i6, i4, pathPoint5) > 0) {
-			pathPoint7 = this.openPoint(i2, i3 + i6, i4);
-		}
+        if(pathPoint7 == null && this.getVerticalOffset(entity1, i2, i3 + i6, i4, pathPoint5) > 0) {
+            pathPoint7 = this.openPoint(i2, i3 + i6, i4);
+            i3 += i6;
+        }
 
-		if(pathPoint7 != null) {
-			int i8 = 0;
-			int i9 = 0;
+        if(pathPoint7 != null) {
+            int i8 = 0;
 
-			while(true) {
-				if(i3 <= 0 || (i9 = this.getVerticalOffset(entity1, i2, i3 - 1, i4, pathPoint5)) <= 0) {
-                    if(i3 > 0) {
-                        pathPoint7 = this.openPoint(i2, i3, i4);
-                    }
+            int i10;
+            for(boolean z9 = false; i3 > 0 && (i10 = this.getVerticalOffset(entity1, i2, i3 - 1, i4, pathPoint5)) > 0; --i3) {
+                if(i10 < 0) {
+                    return null;
+                }
 
-					Material material10 = this.worldMap.getBlockMaterial(i2, i3 - 1, i4);
-					if(material10 == Material.water || material10 == Material.lava) {
-						return null;
-					}
-					break;
-				}
+                ++i8;
+                if(i8 >= 4) {
+                    return null;
+                }
+            }
 
-				if(i9 < 0) {
-					return null;
-				}
-
-				++i8;
-				if(i8 >= 4) {
-					return null;
-				}
-
-				--i3;
-			}
-		}
+            if(i3 > 0) {
+                pathPoint7 = this.openPoint(i2, i3, i4);
+            }
+        }
 
 		return pathPoint7;
 	}
