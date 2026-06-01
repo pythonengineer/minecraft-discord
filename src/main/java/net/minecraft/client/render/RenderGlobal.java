@@ -19,10 +19,11 @@ import net.minecraft.client.effect.EntityBubbleFX;
 import net.minecraft.client.effect.EntityExplodeFX;
 import net.minecraft.client.effect.EntityFlameFX;
 import net.minecraft.client.effect.EntityLavaFX;
+import net.minecraft.client.effect.EntityReddustFX;
 import net.minecraft.client.effect.EntitySmokeFX;
 import net.minecraft.client.effect.EntitySplashFX;
 import net.minecraft.client.player.EntityPlayerSP;
-import net.minecraft.client.render.camera.Frustrum;
+import net.minecraft.client.render.camera.Frustum;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.client.render.tileentity.TileEntityRenderer;
@@ -1114,10 +1115,10 @@ public class RenderGlobal implements IWorldAccess {
         this.markBlocksForUpdate(minX - 1, minY - 1, minZ - 1, maxX + 1, maxY + 1, maxZ + 1);
     }
 
-    public void clipRenderersByFrustum(Frustrum frustrum, float partialTicks) {
+    public void clipRenderersByFrustum(Frustum frustrum, float partialTicks) {
         for(int i2 = 0; i2 < this.worldRenderers.length; ++i2) {
             if(!this.worldRenderers[i2].skipAllRenderPasses() && (!this.worldRenderers[i2].isInFrustum || (i2 + this.frustumCheckOffset & 15) == 0)) {
-                this.worldRenderers[i2].updateInFrustrum(frustrum);
+                this.worldRenderers[i2].updateInFrustum(frustrum);
             }
         }
 
@@ -1143,14 +1144,12 @@ public class RenderGlobal implements IWorldAccess {
                 this.mc.effectRenderer.addEffect(new EntityFlameFX(this.theWorld, x, y, z, motionX, motionY, motionZ));
             } else if(particleName == "lava") {
                 this.mc.effectRenderer.addEffect(new EntityLavaFX(this.theWorld, x, y, z));
-            } else if(particleName == "splash") {
-                this.mc.effectRenderer.addEffect(new EntitySplashFX(this.theWorld, x, y, z, motionX, motionY, motionZ));
-            } else {
-                if(particleName == "largesmoke") {
-                    this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.theWorld, x, y, z, 2.5F));
-                }
-
+            } else if(particleName == "largesmoke") {
+                this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.theWorld, x, y, z, 2.5F));
+            } else if(particleName == "reddust") {
+                this.mc.effectRenderer.addEffect(new EntityReddustFX(this.theWorld, x, y, z));
             }
+
         }
     }
 

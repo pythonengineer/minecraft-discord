@@ -177,12 +177,12 @@ public class GuiIngame extends Gui {
         onBeginTouchGUI();
 
         if(this.mc.options.showFPS) {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.1_01 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.2_02 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoRenders(), 2, 12, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.getEntityDebug(), 2, 22, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 0xFFFFFF);
         } else {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.1_01", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.2_02", 2, 2, 0xFFFFFF);
         }
 
         onEndTouchGUI();
@@ -224,10 +224,10 @@ public class GuiIngame extends Gui {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
-    private void renderInventorySlot(int i1, int i2, int i3, float f4) {
+    private void renderInventorySlot(int i1, int i2, int i3, float partialTicks) {
         ItemStack itemStack5 = this.mc.thePlayer.inventory.mainInventory[i1];
         if(itemStack5 != null) {
-            float f6 = (float)itemStack5.animationsToGo - f4;
+            float f6 = (float)itemStack5.animationsToGo - partialTicks;
             if(f6 > 0.0F) {
                 GL11.glPushMatrix();
                 float f7 = 1.0F + f6 / 5.0F;

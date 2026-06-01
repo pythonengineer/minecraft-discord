@@ -15,14 +15,14 @@ class MinecartTrackLogic {
     private List connectedTracks;
     final BlockMinecartTrack minecartTrack;
 
-    public MinecartTrackLogic(BlockMinecartTrack blockMinecartTrack1, World world2, int i3, int i4, int i5) {
-        this.minecartTrack = blockMinecartTrack1;
+    public MinecartTrackLogic(BlockMinecartTrack minecartTrack, World world, int x, int y, int z) {
+        this.minecartTrack = minecartTrack;
         this.connectedTracks = new ArrayList();
-        this.worldObj = world2;
-        this.trackX = i3;
-        this.trackY = i4;
-        this.trackZ = i5;
-        this.trackMetadata = world2.getBlockMetadata(i3, i4, i5);
+        this.worldObj = world;
+        this.trackX = x;
+        this.trackY = y;
+        this.trackZ = z;
+        this.trackMetadata = world.getBlockMetadata(x, y, z);
         this.calculateConnectedTracks();
     }
 
@@ -74,18 +74,18 @@ class MinecartTrackLogic {
 
     }
 
-    private boolean isMinecartTrack(int i1, int i2, int i3) {
-        return this.worldObj.getBlockId(i1, i2, i3) == this.minecartTrack.blockID ? true : (this.worldObj.getBlockId(i1, i2 + 1, i3) == this.minecartTrack.blockID ? true : this.worldObj.getBlockId(i1, i2 - 1, i3) == this.minecartTrack.blockID);
+    private boolean isMinecartTrack(int x, int y, int z) {
+        return this.worldObj.getBlockId(x, y, z) == this.minecartTrack.blockID ? true : (this.worldObj.getBlockId(x, y + 1, z) == this.minecartTrack.blockID ? true : this.worldObj.getBlockId(x, y - 1, z) == this.minecartTrack.blockID);
     }
 
-    private MinecartTrackLogic getMinecartTrackLogic(ChunkPosition chunkPosition1) {
-        return this.worldObj.getBlockId(chunkPosition1.x, chunkPosition1.y, chunkPosition1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPosition1.x, chunkPosition1.y, chunkPosition1.z) : (this.worldObj.getBlockId(chunkPosition1.x, chunkPosition1.y + 1, chunkPosition1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPosition1.x, chunkPosition1.y + 1, chunkPosition1.z) : (this.worldObj.getBlockId(chunkPosition1.x, chunkPosition1.y - 1, chunkPosition1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPosition1.x, chunkPosition1.y - 1, chunkPosition1.z) : null));
+    private MinecartTrackLogic getMinecartTrackLogic(ChunkPosition chunkPos) {
+        return this.worldObj.getBlockId(chunkPos.x, chunkPos.y, chunkPos.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPos.x, chunkPos.y, chunkPos.z) : (this.worldObj.getBlockId(chunkPos.x, chunkPos.y + 1, chunkPos.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPos.x, chunkPos.y + 1, chunkPos.z) : (this.worldObj.getBlockId(chunkPos.x, chunkPos.y - 1, chunkPos.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, chunkPos.x, chunkPos.y - 1, chunkPos.z) : null));
     }
 
-    private boolean isConnectedTo(MinecartTrackLogic minecartTrackLogic1) {
+    private boolean isConnectedTo(MinecartTrackLogic minecartTrackLogic) {
         for(int i2 = 0; i2 < this.connectedTracks.size(); ++i2) {
             ChunkPosition chunkPosition3 = (ChunkPosition)this.connectedTracks.get(i2);
-            if(chunkPosition3.x == minecartTrackLogic1.trackX && chunkPosition3.z == minecartTrackLogic1.trackZ) {
+            if(chunkPosition3.x == minecartTrackLogic.trackX && chunkPosition3.z == minecartTrackLogic.trackZ) {
                 return true;
             }
         }
@@ -93,10 +93,10 @@ class MinecartTrackLogic {
         return false;
     }
 
-    private boolean isInTrack(int i1, int i2, int i3) {
+    private boolean isInTrack(int x, int y, int z) {
         for(int i4 = 0; i4 < this.connectedTracks.size(); ++i4) {
             ChunkPosition chunkPosition5 = (ChunkPosition)this.connectedTracks.get(i4);
-            if(chunkPosition5.x == i1 && chunkPosition5.z == i3) {
+            if(chunkPosition5.x == x && chunkPosition5.z == z) {
                 return true;
             }
         }
@@ -125,8 +125,8 @@ class MinecartTrackLogic {
         return i1;
     }
 
-    private boolean canConnectTo(MinecartTrackLogic minecartTrackLogic1) {
-        if(this.isConnectedTo(minecartTrackLogic1)) {
+    private boolean canConnectTo(MinecartTrackLogic minecartTrackLogic) {
+        if(this.isConnectedTo(minecartTrackLogic)) {
             return true;
         } else if(this.connectedTracks.size() == 2) {
             return false;
@@ -134,12 +134,12 @@ class MinecartTrackLogic {
             return true;
         } else {
             ChunkPosition chunkPosition2 = (ChunkPosition)this.connectedTracks.get(0);
-            return minecartTrackLogic1.trackY == this.trackY && chunkPosition2.y == this.trackY ? true : true;
+            return minecartTrackLogic.trackY == this.trackY && chunkPosition2.y == this.trackY ? true : true;
         }
     }
 
-    private void connectToNeighbor(MinecartTrackLogic minecartTrackLogic1) {
-        this.connectedTracks.add(new ChunkPosition(minecartTrackLogic1.trackX, minecartTrackLogic1.trackY, minecartTrackLogic1.trackZ));
+    private void connectToNeighbor(MinecartTrackLogic minecartTrackLogic) {
+        this.connectedTracks.add(new ChunkPosition(minecartTrackLogic.trackX, minecartTrackLogic.trackY, minecartTrackLogic.trackZ));
         boolean z2 = this.isInTrack(this.trackX, this.trackY, this.trackZ - 1);
         boolean z3 = this.isInTrack(this.trackX, this.trackY, this.trackZ + 1);
         boolean z4 = this.isInTrack(this.trackX - 1, this.trackY, this.trackZ);
@@ -196,8 +196,8 @@ class MinecartTrackLogic {
         this.worldObj.setBlockMetadataWithNotify(this.trackX, this.trackY, this.trackZ, b6);
     }
 
-    private boolean canConnectFrom(int i1, int i2, int i3) {
-        MinecartTrackLogic minecartTrackLogic4 = this.getMinecartTrackLogic(new ChunkPosition(i1, i2, i3));
+    private boolean canConnectFrom(int x, int y, int z) {
+        MinecartTrackLogic minecartTrackLogic4 = this.getMinecartTrackLogic(new ChunkPosition(x, y, z));
         if(minecartTrackLogic4 == null) {
             return false;
         } else {
@@ -206,7 +206,7 @@ class MinecartTrackLogic {
         }
     }
 
-    public void place(boolean z1) {
+    public void place(boolean powered) {
         boolean z2 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ - 1);
         boolean z3 = this.canConnectFrom(this.trackX, this.trackY, this.trackZ + 1);
         boolean z4 = this.canConnectFrom(this.trackX - 1, this.trackY, this.trackZ);
@@ -245,7 +245,7 @@ class MinecartTrackLogic {
                 b6 = 1;
             }
 
-            if(z1) {
+            if(powered) {
                 if(z3 && z5) {
                     b6 = 6;
                 }

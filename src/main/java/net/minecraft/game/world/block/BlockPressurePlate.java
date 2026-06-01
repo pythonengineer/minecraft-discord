@@ -15,9 +15,9 @@ import net.minecraft.game.world.material.Material;
 public class BlockPressurePlate extends Block {
     private EnumMobType triggerMobType;
 
-    protected BlockPressurePlate(int i1, int i2, EnumMobType enumMobType3) {
-        super(i1, i2, Material.rock);
-        this.triggerMobType = enumMobType3;
+    protected BlockPressurePlate(int id, int tex, EnumMobType triggerMobType) {
+        super(id, tex, Material.rock);
+        this.triggerMobType = triggerMobType;
         this.setTickOnLoad(true);
         float f4 = 0.0625F;
         this.setBlockBounds(f4, 0.0F, f4, 1.0F - f4, 0.03125F, 1.0F - f4);
@@ -65,27 +65,27 @@ public class BlockPressurePlate extends Block {
         }
     }
 
-    public void onEntityCollidedWithBlock(World world1, int i2, int i3, int i4, Entity entity5) {
-        if(world1.getBlockMetadata(i2, i3, i4) != 1) {
-            this.setStateIfMobInteractsWithPlate(world1, i2, i3, i4);
+    public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
+        if(world.getBlockMetadata(x, y, z) != 1) {
+            this.setStateIfMobInteractsWithPlate(world, x, y, z);
         }
     }
 
-    private void setStateIfMobInteractsWithPlate(World world1, int i2, int i3, int i4) {
-        boolean z5 = world1.getBlockMetadata(i2, i3, i4) == 1;
+    private void setStateIfMobInteractsWithPlate(World world, int x, int y, int z) {
+        boolean z5 = world.getBlockMetadata(x, y, z) == 1;
         boolean z6 = false;
         float f7 = 0.125F;
         List list8 = null;
         if(this.triggerMobType == EnumMobType.everything) {
-            list8 = world1.getEntitiesWithinAABBExcludingEntity((Entity)null, AxisAlignedBB.getBoundingBoxFromPool((double)((float)i2 + f7), (double)i3, (double)((float)i4 + f7), (double)((float)(i2 + 1) - f7), (double)i3 + 0.25D, (double)((float)(i4 + 1) - f7)));
+            list8 = world.getEntitiesWithinAABBExcludingEntity((Entity)null, AxisAlignedBB.getBoundingBoxFromPool((double)((float)x + f7), (double)y, (double)((float)z + f7), (double)((float)(x + 1) - f7), (double)y + 0.25D, (double)((float)(z + 1) - f7)));
         }
 
         if(this.triggerMobType == EnumMobType.mobs) {
-            list8 = world1.getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBoxFromPool((double)((float)i2 + f7), (double)i3, (double)((float)i4 + f7), (double)((float)(i2 + 1) - f7), (double)i3 + 0.25D, (double)((float)(i4 + 1) - f7)));
+            list8 = world.getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBoxFromPool((double)((float)x + f7), (double)y, (double)((float)z + f7), (double)((float)(x + 1) - f7), (double)y + 0.25D, (double)((float)(z + 1) - f7)));
         }
 
         if(this.triggerMobType == EnumMobType.players) {
-            list8 = world1.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBoxFromPool((double)((float)i2 + f7), (double)i3, (double)((float)i4 + f7), (double)((float)(i2 + 1) - f7), (double)i3 + 0.25D, (double)((float)(i4 + 1) - f7)));
+            list8 = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBoxFromPool((double)((float)x + f7), (double)y, (double)((float)z + f7), (double)((float)(x + 1) - f7), (double)y + 0.25D, (double)((float)(z + 1) - f7)));
         }
 
         if(list8.size() > 0) {
@@ -93,23 +93,23 @@ public class BlockPressurePlate extends Block {
         }
 
         if(z6 && !z5) {
-            world1.setBlockMetadataWithNotify(i2, i3, i4, 1);
-            world1.notifyBlocksOfNeighborChange(i2, i3, i4, this.blockID);
-            world1.notifyBlocksOfNeighborChange(i2, i3 - 1, i4, this.blockID);
-            world1.markBlocksDirty(i2, i3, i4, i2, i3, i4);
-            world1.playSoundEffect((double)i2 + 0.5D, (double)i3 + 0.1D, (double)i4 + 0.5D, "random.click", 0.3F, 0.6F);
+            world.setBlockMetadataWithNotify(x, y, z, 1);
+            world.notifyBlocksOfNeighborChange(x, y, z, this.blockID);
+            world.notifyBlocksOfNeighborChange(x, y - 1, z, this.blockID);
+            world.markBlocksDirty(x, y, z, x, y, z);
+            world.playSoundEffect((double)x + 0.5D, (double)y + 0.1D, (double)z + 0.5D, "random.click", 0.3F, 0.6F);
         }
 
         if(!z6 && z5) {
-            world1.setBlockMetadataWithNotify(i2, i3, i4, 0);
-            world1.notifyBlocksOfNeighborChange(i2, i3, i4, this.blockID);
-            world1.notifyBlocksOfNeighborChange(i2, i3 - 1, i4, this.blockID);
-            world1.markBlocksDirty(i2, i3, i4, i2, i3, i4);
-            world1.playSoundEffect((double)i2 + 0.5D, (double)i3 + 0.1D, (double)i4 + 0.5D, "random.click", 0.3F, 0.5F);
+            world.setBlockMetadataWithNotify(x, y, z, 0);
+            world.notifyBlocksOfNeighborChange(x, y, z, this.blockID);
+            world.notifyBlocksOfNeighborChange(x, y - 1, z, this.blockID);
+            world.markBlocksDirty(x, y, z, x, y, z);
+            world.playSoundEffect((double)x + 0.5D, (double)y + 0.1D, (double)z + 0.5D, "random.click", 0.3F, 0.5F);
         }
 
         if(z6) {
-            world1.scheduleBlockUpdate(i2, i3, i4, this.blockID);
+            world.scheduleBlockUpdate(x, y, z, this.blockID);
         }
 
     }

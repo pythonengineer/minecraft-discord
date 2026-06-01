@@ -43,7 +43,7 @@ public class PointerInputAbstraction {
     protected static boolean draggingNotTouching = false;
     protected static boolean touchMode = false;
 
-    public static void init(Minecraft mcIn) {
+    public static void initController(Minecraft mcIn) {
         mc = mcIn;
         oldMX = -1;
         oldMY = -1;

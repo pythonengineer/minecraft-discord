@@ -2,7 +2,7 @@ package net.minecraft.client.render.camera;
 
 import net.minecraft.game.physics.AxisAlignedBB;
 
-public class Frustrum implements ICamera {
+public class Frustum implements ICamera {
     private ClippingHelper clippingHelper = ClippingHelperImplementation.getInstance();
     private double xPosition;
     private double yPosition;

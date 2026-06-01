@@ -135,9 +135,9 @@ public class Vec3D {
         return "(" + this.xCoord + ", " + this.yCoord + ", " + this.zCoord + ")";
     }
 
-    public void rotateAroundX(float f1) {
-        float f2 = MathHelper.cos(f1);
-        float f3 = MathHelper.sin(f1);
+    public void rotateAroundX(float x) {
+        float f2 = MathHelper.cos(x);
+        float f3 = MathHelper.sin(x);
         double d4 = this.xCoord;
         double d6 = this.yCoord * (double)f2 + this.zCoord * (double)f3;
         double d8 = this.zCoord * (double)f2 - this.yCoord * (double)f3;
@@ -146,9 +146,9 @@ public class Vec3D {
         this.zCoord = d8;
     }
 
-    public void rotateAroundY(float f1) {
-        float f2 = MathHelper.cos(f1);
-        float f3 = MathHelper.sin(f1);
+    public void rotateAroundY(float y) {
+        float f2 = MathHelper.cos(y);
+        float f3 = MathHelper.sin(y);
         double d4 = this.xCoord * (double)f2 + this.zCoord * (double)f3;
         double d6 = this.yCoord;
         double d8 = this.zCoord * (double)f2 - this.xCoord * (double)f3;

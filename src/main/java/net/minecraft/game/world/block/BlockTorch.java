@@ -143,29 +143,29 @@ public class BlockTorch extends Block {
 		return super.collisionRayTrace(world, x, y, z, vector1, vector2);
 	}
 
-	public void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-		int i6 = world.getBlockMetadata(x, y, z);
-		float f7 = (float)x + 0.5F;
-		float f8 = (float)y + 0.7F;
-		float f9 = (float)z + 0.5F;
-		float f10 = 0.22F;
-		float f11 = 0.27F;
-		if(i6 == 1) {
-			world.spawnParticle("smoke", (double)(f7 - f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)(f7 - f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
-		} else if(i6 == 2) {
-			world.spawnParticle("smoke", (double)(f7 + f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)(f7 + f11), (double)(f8 + f10), (double)f9, 0.0D, 0.0D, 0.0D);
-		} else if(i6 == 3) {
-			world.spawnParticle("smoke", (double)f7, (double)(f8 + f10), (double)(f9 - f11), 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)f7, (double)(f8 + f10), (double)(f9 - f11), 0.0D, 0.0D, 0.0D);
-		} else if(i6 == 4) {
-			world.spawnParticle("smoke", (double)f7, (double)(f8 + f10), (double)(f9 + f11), 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)f7, (double)(f8 + f10), (double)(f9 + f11), 0.0D, 0.0D, 0.0D);
-		} else {
-			world.spawnParticle("smoke", (double)f7, (double)f8, (double)f9, 0.0D, 0.0D, 0.0D);
-			world.spawnParticle("flame", (double)f7, (double)f8, (double)f9, 0.0D, 0.0D, 0.0D);
-		}
+    public void randomDisplayTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+        int i6 = world.getBlockMetadata(x, y, z);
+        double d7 = (double)((float)x + 0.5F);
+        double d9 = (double)((float)y + 0.7F);
+        double d11 = (double)((float)z + 0.5F);
+        double d13 = (double)0.22F;
+        double d15 = (double)0.27F;
+        if(i6 == 1) {
+            world.spawnParticle("smoke", d7 - d15, d9 + d13, d11, 0.0D, 0.0D, 0.0D);
+            world.spawnParticle("flame", d7 - d15, d9 + d13, d11, 0.0D, 0.0D, 0.0D);
+        } else if(i6 == 2) {
+            world.spawnParticle("smoke", d7 + d15, d9 + d13, d11, 0.0D, 0.0D, 0.0D);
+            world.spawnParticle("flame", d7 + d15, d9 + d13, d11, 0.0D, 0.0D, 0.0D);
+        } else if(i6 == 3) {
+            world.spawnParticle("smoke", d7, d9 + d13, d11 - d15, 0.0D, 0.0D, 0.0D);
+            world.spawnParticle("flame", d7, d9 + d13, d11 - d15, 0.0D, 0.0D, 0.0D);
+        } else if(i6 == 4) {
+            world.spawnParticle("smoke", d7, d9 + d13, d11 + d15, 0.0D, 0.0D, 0.0D);
+            world.spawnParticle("flame", d7, d9 + d13, d11 + d15, 0.0D, 0.0D, 0.0D);
+        } else {
+            world.spawnParticle("smoke", d7, d9, d11, 0.0D, 0.0D, 0.0D);
+            world.spawnParticle("flame", d7, d9, d11, 0.0D, 0.0D, 0.0D);
+        }
 
-	}
+    }
 }

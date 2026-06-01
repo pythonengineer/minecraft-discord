@@ -49,7 +49,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
         this.mobSpawnerNoise = new NoiseGeneratorOctaves(this.rand, 8);
     }
 
-    public void generateTerrain(int chunkX, int chunkZ, byte[] chunkData) {
+    public void generateTerrain(int chunkX, int chunkZ, byte[] blocks) {
         byte b4 = 4;
         byte b5 = 64;
         int i6 = b4 + 1;
@@ -94,7 +94,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
                                     i51 = Block.stone.blockID;
                                 }
 
-                                chunkData[i42] = (byte)i51;
+                                blocks[i42] = (byte)i51;
                                 i42 += s43;
                                 d46 += d48;
                             }
@@ -192,7 +192,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
         this.generateTerrain(chunkX, chunkZ, b3);
         this.replaceSurfaceBlocks(chunkX, chunkZ, b3);
         this.generateCaves(chunkX, chunkZ, b3);
-        chunk4.generateHeightMap();
+        chunk4.generateSkylightMap();
         return chunk4;
     }
 

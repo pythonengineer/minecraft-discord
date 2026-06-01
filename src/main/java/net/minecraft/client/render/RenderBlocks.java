@@ -9,6 +9,7 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.BlockDoor;
 import net.minecraft.game.world.block.BlockFluid;
+import net.minecraft.game.world.block.BlockRedstoneWire;
 import net.minecraft.game.world.material.Material;
 
 public class RenderBlocks {
@@ -416,7 +417,7 @@ public class RenderBlocks {
 
     public boolean renderBlockRedstoneWire(Block block, int x, int y, int z) {
         Tessellator tessellator5 = Tessellator.instance;
-        int i6 = block.getBlockTextureFromSideAndMetadata(0, this.blockAccess.getBlockMetadata(x, y, z));
+        int i6 = block.getBlockTextureFromSideAndMetadata(1, this.blockAccess.getBlockMetadata(x, y, z));
         if(this.overrideBlockTexture >= 0) {
             i6 = this.overrideBlockTexture;
         }
@@ -431,24 +432,26 @@ public class RenderBlocks {
         double d16 = (double)(((float)i9 + 15.99F) / 256.0F);
         float f18 = 0.0F;
         float f19 = 0.03125F;
-        boolean z20 = this.blockAccess.getBlockId(x - 1, y, z) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x - 1, y, z) && this.blockAccess.getBlockId(x - 1, y - 1, z) == Block.redstoneWire.blockID;
-        boolean z21 = this.blockAccess.getBlockId(x + 1, y, z) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x + 1, y, z) && this.blockAccess.getBlockId(x + 1, y - 1, z) == Block.redstoneWire.blockID;
-        boolean z22 = this.blockAccess.getBlockId(x, y, z - 1) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x, y, z - 1) && this.blockAccess.getBlockId(x, y - 1, z - 1) == Block.redstoneWire.blockID;
-        boolean z23 = this.blockAccess.getBlockId(x, y, z + 1) == Block.redstoneWire.blockID || !this.blockAccess.isBlockNormalCube(x, y, z + 1) && this.blockAccess.getBlockId(x, y - 1, z + 1) == Block.redstoneWire.blockID;
-        if(this.blockAccess.isBlockNormalCube(x - 1, y, z) && this.blockAccess.getBlockId(x - 1, y + 1, z) == Block.redstoneWire.blockID) {
-            z20 = true;
-        }
+        boolean z20 = BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x - 1, y, z) || !this.blockAccess.isBlockNormalCube(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x - 1, y - 1, z);
+        boolean z21 = BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x + 1, y, z) || !this.blockAccess.isBlockNormalCube(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x + 1, y - 1, z);
+        boolean z22 = BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x, y, z - 1) || !this.blockAccess.isBlockNormalCube(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x, y - 1, z - 1);
+        boolean z23 = BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x, y, z + 1) || !this.blockAccess.isBlockNormalCube(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x, y - 1, z + 1);
+        if(!this.blockAccess.isBlockNormalCube(x, y + 1, z)) {
+            if(this.blockAccess.isBlockNormalCube(x - 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x - 1, y + 1, z)) {
+                z20 = true;
+            }
 
-        if(this.blockAccess.isBlockNormalCube(x + 1, y, z) && this.blockAccess.getBlockId(x + 1, y + 1, z) == Block.redstoneWire.blockID) {
-            z21 = true;
-        }
+            if(this.blockAccess.isBlockNormalCube(x + 1, y, z) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x + 1, y + 1, z)) {
+                z21 = true;
+            }
 
-        if(this.blockAccess.isBlockNormalCube(x, y, z - 1) && this.blockAccess.getBlockId(x, y + 1, z - 1) == Block.redstoneWire.blockID) {
-            z22 = true;
-        }
+            if(this.blockAccess.isBlockNormalCube(x, y, z - 1) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x, y + 1, z - 1)) {
+                z22 = true;
+            }
 
-        if(this.blockAccess.isBlockNormalCube(x, y, z + 1) && this.blockAccess.getBlockId(x, y + 1, z + 1) == Block.redstoneWire.blockID) {
-            z23 = true;
+            if(this.blockAccess.isBlockNormalCube(x, y, z + 1) && BlockRedstoneWire.isPowerProviderOrWire(this.blockAccess, x, y + 1, z + 1)) {
+                z23 = true;
+            }
         }
 
         float f24 = 0.3125F;
@@ -531,32 +534,34 @@ public class RenderBlocks {
         d12 = (double)(((float)(i8 + 16) + 15.99F) / 256.0F);
         d14 = (double)((float)i9 / 256.0F);
         d16 = (double)(((float)i9 + 15.99F) / 256.0F);
-        if(this.blockAccess.isBlockNormalCube(x - 1, y, z) && this.blockAccess.getBlockId(x - 1, y + 1, z) == Block.redstoneWire.blockID) {
-            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 1) + f18), (double)((float)(z + 1) + f18), d12, d14);
-            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 0) - f18), (double)((float)(z + 1) + f18), d10, d14);
-            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 0) - f18), (double)((float)(z + 0) - f18), d10, d16);
-            tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 1) + f18), (double)((float)(z + 0) - f18), d12, d16);
-        }
+        if(!this.blockAccess.isBlockNormalCube(x, y + 1, z)) {
+            if(this.blockAccess.isBlockNormalCube(x - 1, y, z) && this.blockAccess.getBlockId(x - 1, y + 1, z) == Block.redstoneWire.blockID) {
+                tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 1) + f18), (double)((float)(z + 1) + f18), d12, d14);
+                tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 0) - f18), (double)((float)(z + 1) + f18), d10, d14);
+                tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 0) - f18), (double)((float)(z + 0) - f18), d10, d16);
+                tessellator5.addVertexWithUV((double)((float)x + f19), (double)((float)(y + 1) + f18), (double)((float)(z + 0) - f18), d12, d16);
+            }
 
-        if(this.blockAccess.isBlockNormalCube(x + 1, y, z) && this.blockAccess.getBlockId(x + 1, y + 1, z) == Block.redstoneWire.blockID) {
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 0) - f18), (double)((float)(z + 1) + f18), d10, d16);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 1) + f18), (double)((float)(z + 1) + f18), d12, d16);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 1) + f18), (double)((float)(z + 0) - f18), d12, d14);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 0) - f18), (double)((float)(z + 0) - f18), d10, d14);
-        }
+            if(this.blockAccess.isBlockNormalCube(x + 1, y, z) && this.blockAccess.getBlockId(x + 1, y + 1, z) == Block.redstoneWire.blockID) {
+                tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 0) - f18), (double)((float)(z + 1) + f18), d10, d16);
+                tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 1) + f18), (double)((float)(z + 1) + f18), d12, d16);
+                tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 1) + f18), (double)((float)(z + 0) - f18), d12, d14);
+                tessellator5.addVertexWithUV((double)((float)(x + 1) - f19), (double)((float)(y + 0) - f18), (double)((float)(z + 0) - f18), d10, d14);
+            }
 
-        if(this.blockAccess.isBlockNormalCube(x, y, z - 1) && this.blockAccess.getBlockId(x, y + 1, z - 1) == Block.redstoneWire.blockID) {
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 0) - f18), (double)((float)z + f19), d10, d16);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 1) + f18), (double)((float)z + f19), d12, d16);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 1) + f18), (double)((float)z + f19), d12, d14);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 0) - f18), (double)((float)z + f19), d10, d14);
-        }
+            if(this.blockAccess.isBlockNormalCube(x, y, z - 1) && this.blockAccess.getBlockId(x, y + 1, z - 1) == Block.redstoneWire.blockID) {
+                tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 0) - f18), (double)((float)z + f19), d10, d16);
+                tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 1) + f18), (double)((float)z + f19), d12, d16);
+                tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 1) + f18), (double)((float)z + f19), d12, d14);
+                tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 0) - f18), (double)((float)z + f19), d10, d14);
+            }
 
-        if(this.blockAccess.isBlockNormalCube(x, y, z + 1) && this.blockAccess.getBlockId(x, y + 1, z + 1) == Block.redstoneWire.blockID) {
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 1) + f18), (double)((float)(z + 1) - f19), d12, d14);
-            tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 0) - f18), (double)((float)(z + 1) - f19), d10, d14);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 0) - f18), (double)((float)(z + 1) - f19), d10, d16);
-            tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 1) + f18), (double)((float)(z + 1) - f19), d12, d16);
+            if(this.blockAccess.isBlockNormalCube(x, y, z + 1) && this.blockAccess.getBlockId(x, y + 1, z + 1) == Block.redstoneWire.blockID) {
+                tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 1) + f18), (double)((float)(z + 1) - f19), d12, d14);
+                tessellator5.addVertexWithUV((double)((float)(x + 1) + f18), (double)((float)(y + 0) - f18), (double)((float)(z + 1) - f19), d10, d14);
+                tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 0) - f18), (double)((float)(z + 1) - f19), d10, d16);
+                tessellator5.addVertexWithUV((double)((float)(x + 0) - f18), (double)((float)(y + 1) + f18), (double)((float)(z + 1) - f19), d12, d16);
+            }
         }
 
         return true;

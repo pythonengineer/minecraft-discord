@@ -20,7 +20,7 @@ import net.minecraft.client.effect.EntityRainFX;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.render.camera.ClippingHelperImplementation;
-import net.minecraft.client.render.camera.Frustrum;
+import net.minecraft.client.render.camera.Frustum;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
@@ -368,7 +368,7 @@ public class EntityRenderer {
 
             GL11.glEnable(GL11.GL_FOG);
             this.setupFog(1);
-            Frustrum frustrum12 = new Frustrum();
+            Frustum frustrum12 = new Frustum();
             frustrum12.setPosition(d5, d7, d9);
             this.mc.renderGlobal.clipRenderersByFrustum(frustrum12, partialTicks);
             this.mc.renderGlobal.updateRenderers(entityPlayerSP2, false);
@@ -459,7 +459,7 @@ public class EntityRenderer {
         for(int i7 = 0; i7 < 50; ++i7) {
             int i8 = i3 + this.random.nextInt(b6 * 2 + 1) - b6;
             int i9 = i5 + this.random.nextInt(b6 * 2 + 1) - b6;
-            int i10 = world2.getTopSolidOrLiquidBlock(i8, i9);
+            int i10 = world2.getPrecipitationHeight(i8, i9);
             int i11 = world2.getBlockId(i8, i10 - 1, i9);
             if(i10 <= i4 + b6 && i10 >= i4 - b6) {
                 float f12 = this.random.nextFloat();
@@ -488,7 +488,7 @@ public class EntityRenderer {
 
         for(int i9 = i4 - b8; i9 <= i4 + b8; ++i9) {
             for(int i10 = i6 - b8; i10 <= i6 + b8; ++i10) {
-                int i11 = world3.getTopSolidOrLiquidBlock(i9, i10);
+                int i11 = world3.getPrecipitationHeight(i9, i10);
                 int i12 = i5 - b8;
                 int i13 = i5 + b8;
                 if(i12 < i11) {

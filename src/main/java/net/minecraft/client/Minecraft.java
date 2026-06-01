@@ -146,7 +146,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.1_01");
+        Display.setTitle("Minecraft Alpha v1.0.2_02");
 
         try {
             Display.create();
@@ -196,7 +196,7 @@ public class Minecraft implements Runnable {
         this.mouseGrabSupported = Mouse.isMouseGrabSupported();
         this.touchOverlayRenderer = new TouchOverlayRenderer();
         this.scaledResolution = new ScaledResolution(this);
-        PointerInputAbstraction.init(this);
+        PointerInputAbstraction.initController(this);
         this.displayGuiScreen(new GuiMainMenu());
         this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
 
@@ -1006,7 +1006,7 @@ public class Minecraft implements Runnable {
         this.changeWorld(world, "");
     }
 
-    public void changeWorld(World world, String worldName) {
+    public void changeWorld(World world, String title) {
         if(this.theWorld != null) {
             this.theWorld.saveWorldIndirectly(this.loadingScreen);
         }
@@ -1026,7 +1026,7 @@ public class Minecraft implements Runnable {
                 }
             }
 
-            this.preloadWorld(worldName);
+            this.preloadWorld(title);
             if(this.thePlayer == null) {
                 this.thePlayer = new EntityPlayerSP(this, world, this.session);
                 this.thePlayer.preparePlayerToSpawn();
@@ -1054,8 +1054,8 @@ public class Minecraft implements Runnable {
         this.systemTime = 0L;
 	}
 
-    private void preloadWorld(String worldName) {
-        this.loadingScreen.printText(worldName);
+    private void preloadWorld(String title) {
+        this.loadingScreen.resetProgressAndMessage(title);
         this.loadingScreen.displayLoadingString("Building terrain");
         int i6 = 0;
 

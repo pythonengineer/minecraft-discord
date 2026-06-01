@@ -11,19 +11,19 @@ public class LoadingScreenRenderer implements IProgressUpdate {
     private Minecraft mc;
     private String currentlyDisplayedText = "";
     private long systemTime = EagRuntime.currentTimeMillis();
-    private boolean printText = false;
+    private boolean noError = false;
 
     public LoadingScreenRenderer(Minecraft minecraft) {
         this.mc = minecraft;
     }
 
-    public void printText(String string1) {
-        this.printText = false;
-        this.drawScreen(string1);
+    public void resetProgressAndMessage(String msg) {
+        this.noError = false;
+        this.drawScreen(msg);
     }
 
     public void displayProgressMessage(String string1) {
-        this.printText = true;
+        this.noError = true;
         this.drawScreen(this.currentlyDisplayedText);
     }
 
@@ -42,16 +42,16 @@ public class LoadingScreenRenderer implements IProgressUpdate {
         }
     }
 
-    public void displayLoadingString(String loadingString) {
+    public void displayLoadingString(String string) {
         if(this.mc.running) {
             this.systemTime = 0L;
-            this.currentlyDisplayedProgress = loadingString;
+            this.currentlyDisplayedProgress = string;
             this.setLoadingProgress(-1);
             this.systemTime = 0L;
         }
     }
 
-    public void setLoadingProgress(int loadingProgress) {
+    public void setLoadingProgress(int progress) {
         if(this.mc.running) {
             long j2;
             if((j2 = EagRuntime.currentTimeMillis()) - this.systemTime >= 20L) {
@@ -76,7 +76,7 @@ public class LoadingScreenRenderer implements IProgressUpdate {
                 tessellator4.addVertexWithUV((double)i3, 0.0D, 0.0D, (double)((float)i3 / 32.0F), 0.0D);
                 tessellator4.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
                 tessellator4.draw();
-                if(loadingProgress >= 0) {
+                if(progress >= 0) {
                     i5 = i3 / 2 - 50;
                     int i6 = i9 / 2 + 16;
                     GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -89,8 +89,8 @@ public class LoadingScreenRenderer implements IProgressUpdate {
                     tessellator4.setColorOpaque_I(8454016);
                     tessellator4.addVertex((double)i5, (double)i6, 0.0D);
                     tessellator4.addVertex((double)i5, (double)(i6 + 2), 0.0D);
-                    tessellator4.addVertex((double)(i5 + loadingProgress), (double)(i6 + 2), 0.0D);
-                    tessellator4.addVertex((double)(i5 + loadingProgress), (double)i6, 0.0D);
+                    tessellator4.addVertex((double)(i5 + progress), (double)(i6 + 2), 0.0D);
+                    tessellator4.addVertex((double)(i5 + progress), (double)i6, 0.0D);
                     tessellator4.draw();
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }

@@ -45,7 +45,11 @@ public class BlockFlowing extends BlockFluid {
 			}
 
 			if(this.numAdjacentSources >= 2 && this.material == Material.water) {
-				i9 = 0;
+                if(world.isBlockNormalCube(x, y - 1, z)) {
+                    i9 = 0;
+                } else if(world.getBlockMaterial(x, y - 1, z) == this.material && world.getBlockMetadata(x, y, z) == 0) {
+                    i9 = 0;
+                }
 			}
 
 			if(this.material == Material.lava && i6 < 8 && i9 < 8 && i9 > i6 && rand.nextInt(4) != 0) {

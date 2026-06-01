@@ -36,6 +36,7 @@ public class EntityPlayerSP extends EntityPlayer {
         if(session != null && session.username != null && session.username.length() > 0) {
             this.skinUrl = session.username;
             this.username = session.username;
+            System.out.println("Loading texture " + this.skinUrl);
         } else {
             this.username = "";
         }

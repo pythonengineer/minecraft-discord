@@ -8,8 +8,8 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
 public class BlockButton extends Block {
-    protected BlockButton(int i1, int i2) {
-        super(i1, i2, Material.circuits);
+    protected BlockButton(int id, int tex) {
+        super(id, tex, Material.circuits);
         this.setTickOnLoad(true);
     }
 
@@ -37,9 +37,6 @@ public class BlockButton extends Block {
         int i6 = world1.getBlockMetadata(i2, i3, i4);
         int i7 = i6 & 8;
         i6 &= 7;
-        if(i5 == 1 && world1.isBlockNormalCube(i2, i3 - 1, i4)) {
-            i6 = 5 + world1.rand.nextInt(2);
-        }
 
         if(i5 == 2 && world1.isBlockNormalCube(i2, i3, i4 + 1)) {
             i6 = 4;
@@ -76,7 +73,7 @@ public class BlockButton extends Block {
 
     public void onNeighborBlockChange(World world1, int i2, int i3, int i4, int i5) {
         if(this.checkIfAttachedToBlock(world1, i2, i3, i4)) {
-            int i6 = world1.getBlockMetadata(i2, i3, i4);
+            int i6 = world1.getBlockMetadata(i2, i3, i4) & 7;
             boolean z7 = false;
             if(!world1.isBlockNormalCube(i2 - 1, i3, i4) && i6 == 1) {
                 z7 = true;
@@ -102,10 +99,10 @@ public class BlockButton extends Block {
 
     }
 
-    private boolean checkIfAttachedToBlock(World world1, int i2, int i3, int i4) {
-        if(!this.canPlaceBlockAt(world1, i2, i3, i4)) {
-            this.dropBlockAsItem(world1, i2, i3, i4, world1.getBlockMetadata(i2, i3, i4));
-            world1.setBlockWithNotify(i2, i3, i4, 0);
+    private boolean checkIfAttachedToBlock(World world, int x, int y, int z) {
+        if(!this.canPlaceBlockAt(world, x, y, z)) {
+            this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
+            world.setBlockWithNotify(x, y, z, 0);
             return false;
         } else {
             return true;

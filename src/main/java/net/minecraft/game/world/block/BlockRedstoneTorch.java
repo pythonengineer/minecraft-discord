@@ -11,16 +11,20 @@ public class BlockRedstoneTorch extends BlockTorch {
     private boolean torchActive = false;
     private static List torchUpdates = new ArrayList();
 
-    private boolean checkForBurnout(World world1, int i2, int i3, int i4, boolean z5) {
+    public int getBlockTextureFromSideAndMetadata(int side, int metadata) {
+        return side == 1 ? Block.redstoneWire.getBlockTextureFromSideAndMetadata(side, metadata) : super.getBlockTextureFromSideAndMetadata(side, metadata);
+    }
+
+    private boolean checkForBurnout(World world, int x, int y, int z, boolean z5) {
         if(z5) {
-            torchUpdates.add(new RedstoneUpdateInfo(i2, i3, i4, world1.worldTime));
+            torchUpdates.add(new RedstoneUpdateInfo(x, y, z, world.worldTime));
         }
 
         int i6 = 0;
 
         for(int i7 = 0; i7 < torchUpdates.size(); ++i7) {
             RedstoneUpdateInfo redstoneUpdateInfo8 = (RedstoneUpdateInfo)torchUpdates.get(i7);
-            if(redstoneUpdateInfo8.x == i2 && redstoneUpdateInfo8.y == i3 && redstoneUpdateInfo8.z == i4) {
+            if(redstoneUpdateInfo8.x == x && redstoneUpdateInfo8.y == y && redstoneUpdateInfo8.z == z) {
                 ++i6;
                 if(i6 >= 8) {
                     return true;
@@ -31,9 +35,9 @@ public class BlockRedstoneTorch extends BlockTorch {
         return false;
     }
 
-    protected BlockRedstoneTorch(int i1, int i2, boolean z3) {
-        super(i1, i2);
-        this.torchActive = z3;
+    protected BlockRedstoneTorch(int id, int tex, boolean torchActive) {
+        super(id, tex);
+        this.torchActive = torchActive;
         this.setTickOnLoad(true);
     }
 
@@ -78,9 +82,9 @@ public class BlockRedstoneTorch extends BlockTorch {
         }
     }
 
-    private boolean isIndirectlyPowered(World world1, int i2, int i3, int i4) {
-        int i5 = world1.getBlockMetadata(i2, i3, i4);
-        return i5 == 5 && world1.isBlockIndirectlyProvidingPowerTo(i2, i3 - 1, i4, 0) ? true : (i5 == 3 && world1.isBlockIndirectlyProvidingPowerTo(i2, i3, i4 - 1, 2) ? true : (i5 == 4 && world1.isBlockIndirectlyProvidingPowerTo(i2, i3, i4 + 1, 3) ? true : (i5 == 1 && world1.isBlockIndirectlyProvidingPowerTo(i2 - 1, i3, i4, 4) ? true : i5 == 2 && world1.isBlockIndirectlyProvidingPowerTo(i2 + 1, i3, i4, 5))));
+    private boolean isIndirectlyPowered(World world, int x, int y, int z) {
+        int i5 = world.getBlockMetadata(x, y, z);
+        return i5 == 5 && world.isBlockIndirectlyProvidingPowerTo(x, y - 1, z, 0) ? true : (i5 == 3 && world.isBlockIndirectlyProvidingPowerTo(x, y, z - 1, 2) ? true : (i5 == 4 && world.isBlockIndirectlyProvidingPowerTo(x, y, z + 1, 3) ? true : (i5 == 1 && world.isBlockIndirectlyProvidingPowerTo(x - 1, y, z, 4) ? true : i5 == 2 && world.isBlockIndirectlyProvidingPowerTo(x + 1, y, z, 5))));
     }
 
     public void updateTick(World world1, int i2, int i3, int i4, EaglercraftRandom random5) {
@@ -116,7 +120,7 @@ public class BlockRedstoneTorch extends BlockTorch {
     }
 
     public boolean isIndirectlyPoweringTo(World world1, int i2, int i3, int i4, int i5) {
-        return this.isPoweringTo(world1, i2, i3, i4, i5);
+        return i5 == 0 ? this.isPoweringTo(world1, i2, i3, i4, i5) : false;
     }
 
     public int idDropped(int i1, EaglercraftRandom random2) {
@@ -124,13 +128,29 @@ public class BlockRedstoneTorch extends BlockTorch {
     }
 
     public boolean canProvidePower() {
-        return this.torchActive;
+        return true;
     }
 
     public void randomDisplayTick(World world1, int i2, int i3, int i4, EaglercraftRandom random5) {
         if(this.torchActive) {
-            super.randomDisplayTick(world1, i2, i3, i4, random5);
-        }
+            int i6 = world1.getBlockMetadata(i2, i3, i4);
+            double d7 = (double)((float)i2 + 0.5F) + (double)(random5.nextFloat() - 0.5F) * 0.2D;
+            double d9 = (double)((float)i3 + 0.7F) + (double)(random5.nextFloat() - 0.5F) * 0.2D;
+            double d11 = (double)((float)i4 + 0.5F) + (double)(random5.nextFloat() - 0.5F) * 0.2D;
+            double d13 = (double)0.22F;
+            double d15 = (double)0.27F;
+            if(i6 == 1) {
+                world1.spawnParticle("reddust", d7 - d15, d9 + d13, d11, 0.0D, 0.0D, 0.0D);
+            } else if(i6 == 2) {
+                world1.spawnParticle("reddust", d7 + d15, d9 + d13, d11, 0.0D, 0.0D, 0.0D);
+            } else if(i6 == 3) {
+                world1.spawnParticle("reddust", d7, d9 + d13, d11 - d15, 0.0D, 0.0D, 0.0D);
+            } else if(i6 == 4) {
+                world1.spawnParticle("reddust", d7, d9 + d13, d11 + d15, 0.0D, 0.0D, 0.0D);
+            } else {
+                world1.spawnParticle("reddust", d7, d9, d11, 0.0D, 0.0D, 0.0D);
+            }
 
+        }
     }
 }

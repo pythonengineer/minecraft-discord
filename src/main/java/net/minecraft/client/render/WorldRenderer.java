@@ -7,7 +7,7 @@ import java.util.List;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
-import net.minecraft.client.render.camera.Frustrum;
+import net.minecraft.client.render.camera.Frustum;
 import net.minecraft.client.render.entity.RenderItem;
 import net.minecraft.client.render.tileentity.TileEntityRenderer;
 import net.minecraft.game.entity.Entity;
@@ -209,8 +209,8 @@ public class WorldRenderer {
 		return !this.isInFrustum ? -1 : (!this.skipRenderPass[pass] ? this.glRenderList + pass : -1);
 	}
 
-	public void updateInFrustrum(Frustrum frustrum) {
-		this.isInFrustum = frustrum.isBoundingBoxInFrustum(this.rendererBoundingBox);
+	public void updateInFrustum(Frustum frustum) {
+		this.isInFrustum = frustum.isBoundingBoxInFrustum(this.rendererBoundingBox);
 	}
 
 	public void callOcclusionQueryList() {

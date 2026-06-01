@@ -166,7 +166,7 @@ public class ChunkLoader implements IChunkLoader {
         if(chunk4.heightMap == null || !chunk4.skylightMap.isValid()) {
             chunk4.heightMap = new byte[256];
             chunk4.skylightMap = new NibbleArray(chunk4.blocks.length);
-            chunk4.generateHeightMap();
+            chunk4.generateSkylightMap();
         }
 
         if(!chunk4.blocklightMap.isValid()) {

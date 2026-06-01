@@ -45,8 +45,8 @@ public class World implements IBlockAccess {
 	private long fogColor;
 	private long cloudColor;
     public int skylightSubtracted;
-	private int updateLCG;
-	private int DIST_HASH_MAGIC;
+	protected int updateLCG;
+	protected int DIST_HASH_MAGIC;
     public boolean editingBlocks;
     public static float[] lightBrightnessTable = new float[16];
 	public Entity playerEntity;
@@ -413,7 +413,7 @@ public class World implements IBlockAccess {
         this.notifyBlocksOfNeighborChange(x, y, z, blockID);
     }
 
-	public void markBlockAsNeedsUpdate(int x, int z, int minY, int maxY) {
+	public void markBlocksDirtyVertical(int x, int z, int minY, int maxY) {
 		if(minY > maxY) {
 			int i5 = maxY;
 			maxY = minY;
@@ -554,7 +554,7 @@ public class World implements IBlockAccess {
 			}
 
 			if(this.getSavedLightValue(skyBlock, x, y, z) != lightValue) {
-				this.scheduleLightingUpdate(skyBlock, x, y, z, x, y, z);
+				this.scheduleLightingUpdate_do(skyBlock, x, y, z, x, y, z);
 			}
 
 		}
@@ -941,7 +941,7 @@ public class World implements IBlockAccess {
 		return Vec3D.createVector((double)f4, (double)f5, (double)f6);
 	}
 
-	public int getTopSolidOrLiquidBlock(int i1, int i2) {
+	public int getPrecipitationHeight(int i1, int i2) {
 		return 64;
 	}
 
@@ -1333,7 +1333,7 @@ public class World implements IBlockAccess {
         return false;
     }
 
-	public void scheduleLightingUpdate(EnumSkyBlock enumSkyBlock, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	public void scheduleLightingUpdate_do(EnumSkyBlock enumSkyBlock, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		int i8 = this.lightingToUpdate.size();
 		int i9 = 4;
 		if(i9 > i8) {
@@ -1386,7 +1386,11 @@ public class World implements IBlockAccess {
         }
 
         this.tickUpdates(false);
-        i1 = MathHelper.floor_double(this.playerEntity.posX);
+        this.updateBlocksAndPlayCaveSounds();
+    }
+
+    protected void updateBlocksAndPlayCaveSounds() {
+        int i1 = MathHelper.floor_double(this.playerEntity.posX);
         int i2 = MathHelper.floor_double(this.playerEntity.posZ);
         ChunkCache chunkCache3 = new ChunkCache(this, i1 - 64, 0, i2 - 64, i1 + 64, 128, i2 + 64);
 

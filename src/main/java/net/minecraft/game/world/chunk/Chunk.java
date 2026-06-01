@@ -73,7 +73,7 @@ public class Chunk {
 	public void doNothing() {
 	}
 
-	public void generateHeightMap() {
+	public void generateSkylightMap() {
 		int i1 = 127;
 
 		int i2;
@@ -112,9 +112,9 @@ public class Chunk {
 	private void checkSkylightNeighborHeight(int x, int z, int y) {
 		int i4 = this.worldObj.getHeightValue(x, z);
 		if(i4 > y) {
-			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, x, y, z, x, i4, z);
+			this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, x, y, z, x, i4, z);
 		} else if(i4 < y) {
-			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, x, i4, z, x, y, z);
+			this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, x, i4, z, x, y, z);
 		}
 
 		this.isModified = true;
@@ -132,7 +132,7 @@ public class Chunk {
 		}
 
 		if(i5 != i4) {
-			this.worldObj.markBlockAsNeedsUpdate(x, z, i5, i4);
+			this.worldObj.markBlocksDirtyVertical(x, z, i5, i4);
 			this.heightMap[z << 4 | x] = (byte)i5;
 			int i6;
 			int i7;
@@ -160,7 +160,7 @@ public class Chunk {
 					this.skylightMap.set(x, i8, z, 15);
 				}
 			} else {
-				this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i6, i4, i7, i6, i5, i7);
+				this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i6, i4, i7, i6, i5, i7);
 
 				for(i8 = i4; i8 < i5; ++i8) {
 					this.skylightMap.set(x, i8, z, 0);
@@ -188,7 +188,7 @@ public class Chunk {
 			}
 
 			if(i5 != i9) {
-				this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i6 - 1, i5, i7 - 1, i6 + 1, i9, i7 + 1);
+				this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i6 - 1, i5, i7 - 1, i6 + 1, i9, i7 + 1);
 			}
 
 			this.isModified = true;
@@ -222,8 +222,8 @@ public class Chunk {
                 this.relightBlock(x, y, z);
             }
 
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i9, y, i10, i9, y, i10);
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i9, y, i10, i9, y, i10);
+            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i9, y, i10, i9, y, i10);
+            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Block, i9, y, i10, i9, y, i10);
             this.updateSkylight_do(x, z);
             if(blockID != 0) {
                 Block.blocksList[blockID].onBlockAdded(this.worldObj, i9, y, i10);
@@ -257,8 +257,8 @@ public class Chunk {
                 this.relightBlock(x, y, z);
             }
 
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
-            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
+            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
+            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
             this.updateSkylight_do(x, z);
             if(blockID != 0) {
                 Block.blocksList[blockID].onBlockAdded(this.worldObj, i8, y, i9);
