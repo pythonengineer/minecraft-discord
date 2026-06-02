@@ -1,3 +1,16 @@
+ambient/cave/cave1.ogg
+ambient/cave/cave2.ogg
+ambient/cave/cave3.ogg
+ambient/cave/cave4.ogg
+ambient/cave/cave5.ogg
+ambient/cave/cave6.ogg
+ambient/cave/cave7.ogg
+ambient/cave/cave8.ogg
+ambient/cave/cave9.ogg
+ambient/cave/cave10.ogg
+ambient/cave/cave11.ogg
+ambient/cave/cave12.ogg
+ambient/cave/cave13.ogg
 fire/fire.ogg
 fire/ignite.ogg
 liquid/lava.ogg
