@@ -35,57 +35,58 @@ public class EntityCreature extends EntityLiving {
 			}
 		}
 
-		int i19;
-		if(!this.hasAttacked && this.entityToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
-			this.pathToEntity = this.worldObj.getPathToEntity(this, this.entityToAttack, f1);
-        } else if(this.pathToEntity == null && this.rand.nextInt(100) == 0 || this.rand.nextInt(100) == 0) {
-			i19 = -1;
-			int i3 = -1;
-			int i4 = -1;
-			float f5 = -99999.0F;
+        if(!this.hasAttacked && this.entityToAttack != null && (this.pathToEntity == null || this.rand.nextInt(20) == 0)) {
+            this.pathToEntity = this.worldObj.getPathToEntity(this, this.entityToAttack, f1);
+        } else if(this.pathToEntity == null && this.rand.nextInt(80) == 0 || this.rand.nextInt(80) == 0) {
+            boolean z21 = false;
+            int i3 = -1;
+            int i4 = -1;
+            int i5 = -1;
+            float f6 = -99999.0F;
 
-			for(int i6 = 0; i6 < 50; ++i6) {
-                int i7 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(13) - 6.0D);
-                int i8 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
-                int i9 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(13) - 6.0D);
-				float f10 = this.getBlockPathWeight(i7, i8, i9);
-				if(f10 > f5) {
-					f5 = f10;
-					i19 = i7;
-					i3 = i8;
-					i4 = i9;
-				}
-			}
+            for(int i7 = 0; i7 < 10; ++i7) {
+                int i8 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(13) - 6.0D);
+                int i9 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
+                int i10 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(13) - 6.0D);
+                float f11 = this.getBlockPathWeight(i8, i9, i10);
+                if(f11 > f6) {
+                    f6 = f11;
+                    i3 = i8;
+                    i4 = i9;
+                    i5 = i10;
+                    z21 = true;
+                }
+            }
 
-			if(i19 > 0) {
-				this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i19, i3, i4, 10.0F);
-			}
-		}
+            if(z21) {
+                this.pathToEntity = this.worldObj.getEntityPathToXYZ(this, i3, i4, i5, 10.0F);
+            }
+        }
 
-		int i21 = MathHelper.floor_double(this.boundingBox.minY);
-		boolean z20 = this.handleWaterMovement();
-		boolean z21 = this.handleLavaMovement();
+        int i22 = MathHelper.floor_double(this.boundingBox.minY);
+        boolean z23 = this.handleWaterMovement();
+        boolean z24 = this.handleLavaMovement();
         this.rotationPitch = 0.0F;
-		if(this.pathToEntity != null && this.rand.nextInt(100) != 0) {
-            Vec3D vec3D24 = this.pathToEntity.getPosition(this);
-            double d25 = (double)(this.width * 2.0F);
+        if(this.pathToEntity != null && this.rand.nextInt(100) != 0) {
+            Vec3D vec3D25 = this.pathToEntity.getPosition(this);
+            double d26 = (double)(this.width * 2.0F);
 
-            while(vec3D24 != null && vec3D24.squareDistanceTo(this.posX, vec3D24.yCoord, this.posZ) < d25 * d25) {
+            while(vec3D25 != null && vec3D25.squareDistanceTo(this.posX, vec3D25.yCoord, this.posZ) < d26 * d26) {
                 this.pathToEntity.incrementPathIndex();
                 if(this.pathToEntity.isFinished()) {
-                    vec3D24 = null;
+                    vec3D25 = null;
                     this.pathToEntity = null;
                 } else {
-                    vec3D24 = this.pathToEntity.getPosition(this);
+                    vec3D25 = this.pathToEntity.getPosition(this);
                 }
             }
 
             this.isJumping = false;
-            if(vec3D24 != null) {
-                double d26 = vec3D24.xCoord - this.posX;
-                double d27 = vec3D24.zCoord - this.posZ;
-                double d12 = vec3D24.yCoord - (double)i21;
-                float f14 = (float)(Math.atan2(d27, d26) * 180.0D / (double)(float)Math.PI) - 90.0F;
+            if(vec3D25 != null) {
+                double d27 = vec3D25.xCoord - this.posX;
+                double d28 = vec3D25.zCoord - this.posZ;
+                double d12 = vec3D25.yCoord - (double)i22;
+                float f14 = (float)(Math.atan2(d28, d27) * 180.0D / (double)(float)Math.PI) - 90.0F;
                 float f15 = f14 - this.rotationYaw;
 
                 for(this.moveForward = this.moveSpeed; f15 < -180.0F; f15 += 360.0F) {
@@ -127,7 +128,7 @@ public class EntityCreature extends EntityLiving {
                 this.isJumping = true;
             }
 
-            if(this.rand.nextFloat() < 0.8F && (z20 || z21)) {
+            if(this.rand.nextFloat() < 0.8F && (z23 || z24)) {
                 this.isJumping = true;
             }
 

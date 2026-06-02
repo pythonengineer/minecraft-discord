@@ -33,9 +33,9 @@ public class BlockRedstoneOre extends Block {
 		super.onEntityWalking(world1, i2, i3, i4, entity5);
 	}
 
-	public boolean blockActivated(World world1, int i2, int i3, int i4, EntityPlayer entityPlayer5) {
-		this.glow(world1, i2, i3, i4);
-		return super.blockActivated(world1, i2, i3, i4, entityPlayer5);
+    public boolean blockActivated(World worldObj, int x, int y, int z, EntityPlayer entityPlayer) {
+        this.glow(worldObj, x, y, z);
+        return super.blockActivated(worldObj, x, y, z, entityPlayer);
 	}
 
 	private void glow(World world, int x, int y, int z) {

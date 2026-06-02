@@ -44,6 +44,7 @@ public class World implements IBlockAccess {
     private Set scheduledTickSet;
 	public List loadedTileEntityList;
 	public long worldTime;
+    public boolean snowCovered;
 	private long skyColor;
 	private long fogColor;
 	private long cloudColor;
@@ -113,6 +114,7 @@ public class World implements IBlockAccess {
         this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.worldTime = 0L;
+        this.snowCovered = false;
         this.skyColor = 8961023L;
         this.fogColor = 12638463L;
 		this.cloudColor = 16777215L;
@@ -143,12 +145,15 @@ public class World implements IBlockAccess {
 				this.spawnZ = worldFile1.getInteger("SpawnZ");
 				this.worldTime = worldFile1.getLong("Time");
 				this.sizeOnDisk = worldFile1.getLong("SizeOnDisk");
+                this.snowCovered = worldFile1.getBoolean("SnowCovered");
                 if(worldFile1.hasKey("Player")) {
                     this.nbtCompoundPlayer = worldFile1.getCompoundTag("Player");
                 }
 			} catch (IOException exception5) {
 				exception5.printStackTrace();
 			}
+        } else {
+            this.snowCovered = this.rand.nextInt(4) == 0;
 		}
 
         boolean worldFile2 = false;
@@ -234,6 +239,7 @@ public class World implements IBlockAccess {
         nBTTagCompound1.setInteger("SpawnZ", this.spawnZ);
         nBTTagCompound1.setLong("Time", this.worldTime);
         nBTTagCompound1.setLong("SizeOnDisk", this.sizeOnDisk);
+        nBTTagCompound1.setBoolean("SnowCovered", this.snowCovered);
         nBTTagCompound1.setLong("LastPlayed", EagRuntime.currentTimeMillis());
         EntityPlayer entityPlayer2 = null;
         if(this.playerEntities.size() > 0) {
@@ -945,9 +951,9 @@ public class World implements IBlockAccess {
 		return Vec3D.createVector((double)f4, (double)f5, (double)f6);
 	}
 
-	public int getPrecipitationHeight(int i1, int i2) {
-		return 64;
-	}
+    public int getPrecipitationHeight(int x, int z) {
+        return this.getChunkFromBlockCoords(x, z).getHeightValue(x & 15, z & 15);
+    }
 
 	public float getStarBrightness(float partialTicks) {
 		float f2 = this.getCelestialAngle(partialTicks);
@@ -1395,7 +1401,7 @@ public class World implements IBlockAccess {
             EntityPlayer entityPlayer2 = (EntityPlayer)this.playerEntities.get(i1);
             i3 = MathHelper.floor_double(entityPlayer2.posX / 16.0D);
             i4 = MathHelper.floor_double(entityPlayer2.posZ / 16.0D);
-            byte b5 = 10;
+            byte b5 = 9;
 
             for(i6 = -b5; i6 <= b5; ++i6) {
                 for(i7 = -b5; i7 <= b5; ++i7) {
@@ -1414,34 +1420,55 @@ public class World implements IBlockAccess {
             ChunkCoordIntPair chunkCoordIntPair13 = (ChunkCoordIntPair)iterator12.next();
             i3 = chunkCoordIntPair13.chunkXPos * 16;
             i4 = chunkCoordIntPair13.chunkZPos * 16;
-            ChunkCache chunkCache14 = new ChunkCache(this, i3, 0, i4, i3 + 16, 128, i4 + 16);
+            Chunk chunk14 = this.getChunkFromChunkCoords(chunkCoordIntPair13.chunkXPos, chunkCoordIntPair13.chunkZPos);
             int i8;
             int i9;
             int i10;
             if(this.soundCounter == 0) {
+                this.updateLCG = this.updateLCG * 3 + this.DIST_HASH_MAGIC;
                 i6 = this.updateLCG >> 2;
-                i7 = (i6 & 15) + i3;
-                i8 = (i6 >> 8 & 15) + i4;
+                i7 = i6 & 15;
+                i8 = i6 >> 8 & 15;
                 i9 = i6 >> 16 & 127;
-                i10 = chunkCache14.getBlockId(i7, i9, i8);
+                i10 = chunk14.getBlockID(i7, i9, i8);
+                i7 += i3;
+                i8 += i4;
                 if(i10 == 0 && this.getBlockLightValue(i7, i9, i8) <= this.rand.nextInt(8) && this.getSavedLightValue(EnumSkyBlock.Sky, i7, i9, i8) <= 0) {
                     EntityPlayer entityPlayer11 = this.getClosestPlayer((double)i7 + 0.5D, (double)i9 + 0.5D, (double)i8 + 0.5D, 8.0D);
                     if(entityPlayer11 != null && entityPlayer11.getDistanceSq((double)i7 + 0.5D, (double)i9 + 0.5D, (double)i8 + 0.5D) > 4.0D) {
                         this.playSoundEffect((double)i7 + 0.5D, (double)i9 + 0.5D, (double)i8 + 0.5D, "ambient.cave.cave", 0.7F, 0.8F + this.rand.nextFloat() * 0.2F);
-                        this.soundCounter = this.rand.nextInt(12000) + 12000;
+                        this.soundCounter = this.rand.nextInt(12000) + 6000;
                     }
                 }
             }
 
-            for(i6 = 0; i6 < 100; ++i6) {
+            if(this.snowCovered && this.rand.nextInt(4) == 0) {
+                this.updateLCG = this.updateLCG * 3 + this.DIST_HASH_MAGIC;
+                i6 = this.updateLCG >> 2;
+                i7 = i6 & 15;
+                i8 = i6 >> 8 & 15;
+                i9 = chunk14.getHeightValue(i7, i8);
+                if(chunk14.getSavedLightValue(EnumSkyBlock.Block, i7, i9, i8) < 10 && chunk14.getBlockID(i7, i9, i8) == 0) {
+                    i10 = chunk14.getBlockID(i7, i9 - 1, i8);
+                    if(i10 != 0 && i10 != Block.ice.blockID && Block.blocksList[i10].material.getIsSolid()) {
+                        this.setBlockWithNotify(i7 + i3, i9, i8 + i4, Block.snow.blockID);
+                    }
+
+                    if(i10 == Block.waterStill.blockID && chunk14.getBlockMetadata(i7, i9 - 1, i8) == 0) {
+                        this.setBlockWithNotify(i7 + i3, i9 - 1, i8 + i4, Block.ice.blockID);
+                    }
+                }
+            }
+
+            for(i6 = 0; i6 < 80; ++i6) {
                 this.updateLCG = this.updateLCG * 3 + this.DIST_HASH_MAGIC;
                 i7 = this.updateLCG >> 2;
-                i8 = (i7 & 15) + i3;
-                i9 = (i7 >> 8 & 15) + i4;
+                i8 = i7 & 15;
+                i9 = i7 >> 8 & 15;
                 i10 = i7 >> 16 & 127;
-                int i15 = chunkCache14.getBlockId(i8, i10, i9);
+                int i15 = chunk14.getBlockID(i8, i10, i9);
                 if(Block.tickOnLoad[i15]) {
-                    Block.blocksList[i15].updateTick(this, i8, i10, i9, this.rand);
+                    Block.blocksList[i15].updateTick(this, i8 + i3, i10, i9 + i4, this.rand);
                 }
             }
         }
@@ -1641,14 +1668,14 @@ public class World implements IBlockAccess {
         return this.getClosestPlayer(entity.posX, entity.posY, entity.posZ, distance);
     }
 
-    public EntityPlayer getClosestPlayer(double posX, double posY, double posZ, double d) {
+    public EntityPlayer getClosestPlayer(double posX, double posY, double posZ, double distance) {
         double d9 = -1.0D;
         EntityPlayer entityPlayer11 = null;
 
         for(int i12 = 0; i12 < this.playerEntities.size(); ++i12) {
             EntityPlayer entityPlayer13 = (EntityPlayer)this.playerEntities.get(i12);
             double d14 = entityPlayer13.getDistanceSq(posX, posY, posZ);
-            if(d14 < d * d && (d9 == -1.0D || d14 < d9)) {
+            if((distance < 0.0D || d14 < distance * distance) && (d9 == -1.0D || d14 < d9)) {
                 d9 = d14;
                 entityPlayer11 = entityPlayer13;
             }

@@ -5,6 +5,10 @@ public class MaterialLiquid extends Material {
         return true;
     }
 
+    public boolean getIsSolid() {
+        return false;
+    }
+
     public boolean isSolid() {
         return false;
     }

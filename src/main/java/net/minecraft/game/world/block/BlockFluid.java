@@ -84,9 +84,9 @@ public abstract class BlockFluid extends Block {
         return 0;
     }
 
-    private Vec3D getFlowVector(IBlockAccess iBlockAccess, int x, int y, int z) {
+    private Vec3D getFlowVector(IBlockAccess blockAccess, int x, int y, int z) {
         Vec3D vec3D5 = Vec3D.createVector(0.0D, 0.0D, 0.0D);
-        int i6 = this.getEffectiveFlowDecay(iBlockAccess, x, y, z);
+        int i6 = this.getEffectiveFlowDecay(blockAccess, x, y, z);
 
         for(int i7 = 0; i7 < 4; ++i7) {
             int i8 = x;
@@ -108,10 +108,12 @@ public abstract class BlockFluid extends Block {
             }
 
             int i10;
-            if((i10 = this.getEffectiveFlowDecay(iBlockAccess, i8, y, i9)) < 0) {
-                if((i10 = this.getEffectiveFlowDecay(iBlockAccess, i8, y - 1, i9)) >= 0) {
-                    i10 -= i6 - 8;
-                    vec3D5 = vec3D5.addVector((double)((i8 - x) * i10), (double)(i10 * 0), (double)((i9 - z) * i10));
+            if((i10 = this.getEffectiveFlowDecay(blockAccess, i8, y, i9)) < 0) {
+                if(!blockAccess.getBlockMaterial(i8, y, i9).getIsSolid()) {
+                    if((i10 = this.getEffectiveFlowDecay(blockAccess, i8, y - 1, i9)) >= 0) {
+                        i10 -= i6 - 8;
+                        vec3D5 = vec3D5.addVector((double)((i8 - x) * i10), (double)(i10 * 0), (double)((i9 - z) * i10));
+                    }
                 }
             } else if(i10 >= 0) {
                 i10 -= i6;
@@ -119,37 +121,37 @@ public abstract class BlockFluid extends Block {
             }
         }
 
-        if(iBlockAccess.getBlockMetadata(x, y, z) >= 8) {
+        if(blockAccess.getBlockMetadata(x, y, z) >= 8) {
             boolean z11 = false;
-            if(this.shouldSideBeRendered(iBlockAccess, x, y, z - 1, 2)) {
+            if(this.shouldSideBeRendered(blockAccess, x, y, z - 1, 2)) {
                 z11 = true;
             }
 
-            if(z11 || this.shouldSideBeRendered(iBlockAccess, x, y, z + 1, 3)) {
+            if(z11 || this.shouldSideBeRendered(blockAccess, x, y, z + 1, 3)) {
                 z11 = true;
             }
 
-            if(z11 || this.shouldSideBeRendered(iBlockAccess, x - 1, y, z, 4)) {
+            if(z11 || this.shouldSideBeRendered(blockAccess, x - 1, y, z, 4)) {
                 z11 = true;
             }
 
-            if(z11 || this.shouldSideBeRendered(iBlockAccess, x + 1, y, z, 5)) {
+            if(z11 || this.shouldSideBeRendered(blockAccess, x + 1, y, z, 5)) {
                 z11 = true;
             }
 
-            if(z11 || this.shouldSideBeRendered(iBlockAccess, x, y + 1, z - 1, 2)) {
+            if(z11 || this.shouldSideBeRendered(blockAccess, x, y + 1, z - 1, 2)) {
                 z11 = true;
             }
 
-            if(z11 || this.shouldSideBeRendered(iBlockAccess, x, y + 1, z + 1, 3)) {
+            if(z11 || this.shouldSideBeRendered(blockAccess, x, y + 1, z + 1, 3)) {
                 z11 = true;
             }
 
-            if(z11 || this.shouldSideBeRendered(iBlockAccess, x - 1, y + 1, z, 4)) {
+            if(z11 || this.shouldSideBeRendered(blockAccess, x - 1, y + 1, z, 4)) {
                 z11 = true;
             }
 
-            if(z11 || this.shouldSideBeRendered(iBlockAccess, x + 1, y + 1, z, 5)) {
+            if(z11 || this.shouldSideBeRendered(blockAccess, x + 1, y + 1, z, 5)) {
                 z11 = true;
             }
 

@@ -18,6 +18,8 @@ public class Material {
     public static final Material glass = new Material();
     public static final Material tnt = new Material();
     public static final Material unused = new Material();
+    public static final Material ice = new Material();
+    public static final Material snow = new MaterialLogic();
 
     public boolean getIsLiquid() {
         return false;

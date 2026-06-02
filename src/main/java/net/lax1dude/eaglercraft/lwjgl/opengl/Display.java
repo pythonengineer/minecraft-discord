@@ -43,6 +43,7 @@ public class Display {
     }
 
     public static void swapBuffers() {
+        update();
     }
 
     public static int getWidth() {

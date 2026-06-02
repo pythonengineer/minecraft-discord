@@ -1567,6 +1567,33 @@ public class RenderBlocks {
 		tessellator9.addVertexWithUV(d20, d24, d28, d12, d16);
 	}
 
+    public void renderBlockAsItem(Block block, float f2) {
+        int i3 = block.getRenderType();
+        Tessellator tessellator4 = Tessellator.instance;
+        if(i3 == 0) {
+            block.setBlockBoundsForItemRender();
+            GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+            float f5 = 0.5F;
+            float f6 = 1.0F;
+            float f7 = 0.8F;
+            float f8 = 0.6F;
+            tessellator4.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+            tessellator4.setColorRGBA_F(f6, f6, f6, f2);
+            this.renderBottomFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(0));
+            tessellator4.setColorRGBA_F(f5, f5, f5, f2);
+            this.renderTopFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(1));
+            tessellator4.setColorRGBA_F(f7, f7, f7, f2);
+            this.renderEastFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(2));
+            this.renderWestFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(3));
+            tessellator4.setColorRGBA_F(f8, f8, f8, f2);
+            this.renderNorthFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(4));
+            this.renderSouthFace(block, 0.0D, 0.0D, 0.0D, block.getBlockTextureFromSide(5));
+            tessellator4.draw();
+            GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+        }
+
+    }
+
 	public void renderBlockOnInventory(Block block) {
 		Tessellator tessellator2 = Tessellator.instance;
 		int i3 = block.getRenderType();

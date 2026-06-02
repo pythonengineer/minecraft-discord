@@ -111,6 +111,8 @@ public class Block {
     public static final Block torchRedstoneIdle = (new BlockRedstoneTorch(75, 115, false)).setHardness(0.0F).setStepSound(soundWoodFootstep);
     public static final Block torchRedstoneActive = (new BlockRedstoneTorch(76, 99, true)).setHardness(0.0F).setLightValue(0.5F).setStepSound(soundWoodFootstep);
     public static final Block button = (new BlockButton(77, stone.blockIndexInTexture)).setHardness(0.5F).setStepSound(soundStoneFootstep);
+    public static final Block snow = (new BlockSnow(78, 66)).setHardness(0.1F).setStepSound(soundClothFootstep);
+    public static final Block ice = (new BlockIce(79, 67)).setHardness(0.1F).setLightOpacity(3).setStepSound(soundGlassFootstep);
     public int blockIndexInTexture;
     public final int blockID;
     protected float hardness;
@@ -124,10 +126,12 @@ public class Block {
     public StepSound stepSound;
     public float blockParticleGravity;
     public final Material material;
+    public float slipperiness;
 
     protected Block(int blockID, Material material) {
         this.stepSound = soundPowderFootstep;
         this.blockParticleGravity = 1.0F;
+        this.slipperiness = 0.6F;
         if(blocksList[blockID] != null) {
             throw new IllegalArgumentException("Slot " + blockID + " is already occupied by " + blocksList[blockID] + " when adding " + this);
         } else {

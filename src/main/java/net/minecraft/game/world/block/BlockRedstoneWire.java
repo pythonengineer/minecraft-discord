@@ -19,8 +19,8 @@ public class BlockRedstoneWire extends Block {
 		return this.blockIndexInTexture + (metadata > 0 ? 16 : 0);
 	}
 
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world1, int i2, int i3, int i4) {
-		return null;
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+        return null;
 	}
 
 	public boolean isOpaqueCube() {
@@ -252,39 +252,39 @@ public class BlockRedstoneWire extends Block {
 		return !this.wiresProvidePower ? false : this.isPoweringTo(world1, i2, i3, i4, i5);
 	}
 
-	public boolean isPoweringTo(IBlockAccess iBlockAccess1, int i2, int i3, int i4, int i5) {
-		if(!this.wiresProvidePower) {
-			return false;
-		} else if(iBlockAccess1.getBlockMetadata(i2, i3, i4) == 0) {
-			return false;
-		} else if(i5 == 1) {
-			return true;
-		} else {
-			boolean z6 = isPowerProviderOrWire(iBlockAccess1, i2 - 1, i3, i4) || !iBlockAccess1.isBlockNormalCube(i2 - 1, i3, i4) && isPowerProviderOrWire(iBlockAccess1, i2 - 1, i3 - 1, i4);
-			boolean z7 = isPowerProviderOrWire(iBlockAccess1, i2 + 1, i3, i4) || !iBlockAccess1.isBlockNormalCube(i2 + 1, i3, i4) && isPowerProviderOrWire(iBlockAccess1, i2 + 1, i3 - 1, i4);
-			boolean z8 = isPowerProviderOrWire(iBlockAccess1, i2, i3, i4 - 1) || !iBlockAccess1.isBlockNormalCube(i2, i3, i4 - 1) && isPowerProviderOrWire(iBlockAccess1, i2, i3 - 1, i4 - 1);
-			boolean z9 = isPowerProviderOrWire(iBlockAccess1, i2, i3, i4 + 1) || !iBlockAccess1.isBlockNormalCube(i2, i3, i4 + 1) && isPowerProviderOrWire(iBlockAccess1, i2, i3 - 1, i4 + 1);
-			if(!iBlockAccess1.isBlockNormalCube(i2, i3 + 1, i4)) {
-				if(iBlockAccess1.isBlockNormalCube(i2 - 1, i3, i4) && isPowerProviderOrWire(iBlockAccess1, i2 - 1, i3 + 1, i4)) {
-					z6 = true;
-				}
+    public boolean isPoweringTo(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
+        if(!this.wiresProvidePower) {
+            return false;
+        } else if(blockAccess.getBlockMetadata(x, y, z) == 0) {
+            return false;
+        } else if(metadata == 1) {
+            return true;
+        } else {
+            boolean z6 = isPowerProviderOrWire(blockAccess, x - 1, y, z) || !blockAccess.isBlockNormalCube(x - 1, y, z) && isPowerProviderOrWire(blockAccess, x - 1, y - 1, z);
+            boolean z7 = isPowerProviderOrWire(blockAccess, x + 1, y, z) || !blockAccess.isBlockNormalCube(x + 1, y, z) && isPowerProviderOrWire(blockAccess, x + 1, y - 1, z);
+            boolean z8 = isPowerProviderOrWire(blockAccess, x, y, z - 1) || !blockAccess.isBlockNormalCube(x, y, z - 1) && isPowerProviderOrWire(blockAccess, x, y - 1, z - 1);
+            boolean z9 = isPowerProviderOrWire(blockAccess, x, y, z + 1) || !blockAccess.isBlockNormalCube(x, y, z + 1) && isPowerProviderOrWire(blockAccess, x, y - 1, z + 1);
+            if(!blockAccess.isBlockNormalCube(x, y + 1, z)) {
+                if(blockAccess.isBlockNormalCube(x - 1, y, z) && isPowerProviderOrWire(blockAccess, x - 1, y + 1, z)) {
+                    z6 = true;
+                }
 
-				if(iBlockAccess1.isBlockNormalCube(i2 + 1, i3, i4) && isPowerProviderOrWire(iBlockAccess1, i2 + 1, i3 + 1, i4)) {
-					z7 = true;
-				}
+                if(blockAccess.isBlockNormalCube(x + 1, y, z) && isPowerProviderOrWire(blockAccess, x + 1, y + 1, z)) {
+                    z7 = true;
+                }
 
-				if(iBlockAccess1.isBlockNormalCube(i2, i3, i4 - 1) && isPowerProviderOrWire(iBlockAccess1, i2, i3 + 1, i4 - 1)) {
-					z8 = true;
-				}
+                if(blockAccess.isBlockNormalCube(x, y, z - 1) && isPowerProviderOrWire(blockAccess, x, y + 1, z - 1)) {
+                    z8 = true;
+                }
 
-				if(iBlockAccess1.isBlockNormalCube(i2, i3, i4 + 1) && isPowerProviderOrWire(iBlockAccess1, i2, i3 + 1, i4 + 1)) {
-					z9 = true;
-				}
-			}
+                if(blockAccess.isBlockNormalCube(x, y, z + 1) && isPowerProviderOrWire(blockAccess, x, y + 1, z + 1)) {
+                    z9 = true;
+                }
+            }
 
-			return !z8 && !z7 && !z6 && !z9 && i5 >= 2 && i5 <= 5 ? true : (i5 == 2 && z8 && !z6 && !z7 ? true : (i5 == 3 && z9 && !z6 && !z7 ? true : (i5 == 4 && z6 && !z8 && !z9 ? true : i5 == 5 && z7 && !z8 && !z9)));
-		}
-	}
+            return !z8 && !z7 && !z6 && !z9 && metadata >= 2 && metadata <= 5 ? true : (metadata == 2 && z8 && !z6 && !z7 ? true : (metadata == 3 && z9 && !z6 && !z7 ? true : (metadata == 4 && z6 && !z8 && !z9 ? true : metadata == 5 && z7 && !z8 && !z9)));
+        }
+    }
 
 	public boolean canProvidePower() {
 		return this.wiresProvidePower;

@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.material.Material;
 
@@ -11,9 +12,9 @@ public class BlockGrass extends Block {
 		this.setTickOnLoad(true);
 	}
 
-	public int getBlockTextureFromSide(int side) {
-		return side == 1 ? 0 : (side == 0 ? 2 : 3);
-	}
+    public int getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
+        return side == 1 ? 0 : (side == 0 ? 2 : (blockAccess.getBlockMaterial(x, y + 1, z) == Material.snow ? 68 : 3));
+    }
 
 	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
 		if(world.getBlockLightValue(x, y + 1, z) < 4 && world.getBlockMaterial(x, y + 1, z).getCanBlockGrass()) {

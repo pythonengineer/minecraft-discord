@@ -127,4 +127,8 @@ public class EntityPlayerSP extends EntityPlayer {
 
         }
     }
+
+    protected double getYOffset() {
+        return (double)(this.yOffset - 0.5F);
+    }
 }

@@ -425,8 +425,8 @@ public class EntityRenderer {
             }
 
             GL11.glDisable(GL11.GL_FOG);
-            if(this.mc.isRaining) {
-                this.renderRain(partialTicks);
+            if(this.mc.theWorld.snowCovered) {
+                this.renderSnow(partialTicks);
             }
 
             if(this.pointedEntity != null) {
@@ -449,30 +449,32 @@ public class EntityRenderer {
     }
 
     private void addRainParticles() {
-        EntityPlayerSP entityPlayerSP1 = this.mc.thePlayer;
-        World world2 = this.mc.theWorld;
-        int i3 = MathHelper.floor_double(entityPlayerSP1.posX);
-        int i4 = MathHelper.floor_double(entityPlayerSP1.posY);
-        int i5 = MathHelper.floor_double(entityPlayerSP1.posZ);
-        byte b6 = 4;
+        if(this.mc.options.fancyGraphics) {
+            EntityPlayerSP entityPlayerSP1 = this.mc.thePlayer;
+            World world2 = this.mc.theWorld;
+            int i3 = MathHelper.floor_double(entityPlayerSP1.posX);
+            int i4 = MathHelper.floor_double(entityPlayerSP1.posY);
+            int i5 = MathHelper.floor_double(entityPlayerSP1.posZ);
+            byte b6 = 16;
 
-        for(int i7 = 0; i7 < 50; ++i7) {
-            int i8 = i3 + this.random.nextInt(b6 * 2 + 1) - b6;
-            int i9 = i5 + this.random.nextInt(b6 * 2 + 1) - b6;
-            int i10 = world2.getPrecipitationHeight(i8, i9);
-            int i11 = world2.getBlockId(i8, i10 - 1, i9);
-            if(i10 <= i4 + b6 && i10 >= i4 - b6) {
-                float f12 = this.random.nextFloat();
-                float f13 = this.random.nextFloat();
-                if(i11 > 0) {
-                    this.mc.effectRenderer.addEffect(new EntityRainFX(world2, (double)((float)i8 + f12), (double)((float)i10 + 0.1F) - Block.blocksList[i11].minY, (double)((float)i9 + f13)));
+            for(int i7 = 0; i7 < 150; ++i7) {
+                int i8 = i3 + this.random.nextInt(b6) - this.random.nextInt(b6);
+                int i9 = i5 + this.random.nextInt(b6) - this.random.nextInt(b6);
+                int i10 = world2.getPrecipitationHeight(i8, i9);
+                int i11 = world2.getBlockId(i8, i10 - 1, i9);
+                if(i10 <= i4 + b6 && i10 >= i4 - b6) {
+                    float f12 = this.random.nextFloat();
+                    float f13 = this.random.nextFloat();
+                    if(i11 > 0) {
+                        this.mc.effectRenderer.addEffect(new EntityRainFX(world2, (double)((float)i8 + f12), (double)((float)i10 + 0.1F) - Block.blocksList[i11].minY, (double)((float)i9 + f13)));
+                    }
                 }
             }
-        }
 
+        }
     }
 
-    private void renderRain(float partialTicks) {
+    private void renderSnow(float renderPartialTick) {
         EntityPlayerSP entityPlayerSP2 = this.mc.thePlayer;
         World world3 = this.mc.theWorld;
         int i4 = MathHelper.floor_double(entityPlayerSP2.posX);
@@ -483,38 +485,51 @@ public class EntityRenderer {
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/rain.png"));
-        byte b8 = 5;
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/snow.png"));
+        double d8 = entityPlayerSP2.lastTickPosX + (entityPlayerSP2.posX - entityPlayerSP2.lastTickPosX) * (double)renderPartialTick;
+        double d10 = entityPlayerSP2.lastTickPosY + (entityPlayerSP2.posY - entityPlayerSP2.lastTickPosY) * (double)renderPartialTick;
+        double d12 = entityPlayerSP2.lastTickPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.lastTickPosZ) * (double)renderPartialTick;
+        byte b14 = 5;
+        if(this.mc.options.fancyGraphics) {
+            b14 = 10;
+        }
 
-        for(int i9 = i4 - b8; i9 <= i4 + b8; ++i9) {
-            for(int i10 = i6 - b8; i10 <= i6 + b8; ++i10) {
-                int i11 = world3.getPrecipitationHeight(i9, i10);
-                int i12 = i5 - b8;
-                int i13 = i5 + b8;
-                if(i12 < i11) {
-                    i12 = i11;
+        for(int i15 = i4 - b14; i15 <= i4 + b14; ++i15) {
+            for(int i16 = i6 - b14; i16 <= i6 + b14; ++i16) {
+                int i17 = world3.getPrecipitationHeight(i15, i16);
+                int i18 = i5 - b14;
+                int i19 = i5 + b14;
+                if(i18 < i17) {
+                    i18 = i17;
                 }
 
-                if(i13 < i11) {
-                    i13 = i11;
+                if(i19 < i17) {
+                    i19 = i17;
                 }
 
-                float f14 = 2.0F;
-                if(i12 != i13) {
-                    float f15 = ((float)((this.rendererUpdateCount + i9 * 3121 + i10 * 418711) % 32) + partialTicks) / 32.0F;
-                    double d16 = (double)((float)i9 + 0.5F) - entityPlayerSP2.posX;
-                    double d18 = (double)((float)i10 + 0.5F) - entityPlayerSP2.posZ;
-                    float f20 = MathHelper.sqrt_double(d16 * d16 + d18 * d18) / (float)b8;
-                    GL11.glColor4f(1.0F, 1.0F, 1.0F, (1.0F - f20 * f20) * 0.7F);
+                float f20 = 2.0F;
+                if(i18 != i19) {
+                    this.random.setSeed((long)(i15 * i15 * 3121 + i15 * 45238971 + i16 * i16 * 418711 + i16 * 13761));
+                    float f21 = (float)this.rendererUpdateCount + renderPartialTick;
+                    float f22 = ((float)(this.rendererUpdateCount & 255) + renderPartialTick) / 256.0F;
+                    float f23 = this.random.nextFloat() + f21 * 0.01F * (float)this.random.nextGaussian();
+                    float f24 = this.random.nextFloat() + f21 * (float)this.random.nextGaussian() * 0.001F;
+                    double d25 = (double)((float)i15 + 0.5F) - entityPlayerSP2.posX;
+                    double d27 = (double)((float)i16 + 0.5F) - entityPlayerSP2.posZ;
+                    float f29 = MathHelper.sqrt_double(d25 * d25 + d27 * d27) / (float)b14;
                     tessellator7.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
-                    tessellator7.addVertexWithUV((double)(i9 + 0), (double)i12, (double)(i10 + 0), (double)(0.0F * f14), (double)((float)i12 * f14 / 8.0F + f15 * f14));
-                    tessellator7.addVertexWithUV((double)(i9 + 1), (double)i12, (double)(i10 + 1), (double)(1.0F * f14), (double)((float)i12 * f14 / 8.0F + f15 * f14));
-                    tessellator7.addVertexWithUV((double)(i9 + 1), (double)i13, (double)(i10 + 1), (double)(1.0F * f14), (double)((float)i13 * f14 / 8.0F + f15 * f14));
-                    tessellator7.addVertexWithUV((double)(i9 + 0), (double)i13, (double)(i10 + 0), (double)(0.0F * f14), (double)((float)i13 * f14 / 8.0F + f15 * f14));
-                    tessellator7.addVertexWithUV((double)(i9 + 0), (double)i12, (double)(i10 + 1), (double)(0.0F * f14), (double)((float)i12 * f14 / 8.0F + f15 * f14));
-                    tessellator7.addVertexWithUV((double)(i9 + 1), (double)i12, (double)(i10 + 0), (double)(1.0F * f14), (double)((float)i12 * f14 / 8.0F + f15 * f14));
-                    tessellator7.addVertexWithUV((double)(i9 + 1), (double)i13, (double)(i10 + 0), (double)(1.0F * f14), (double)((float)i13 * f14 / 8.0F + f15 * f14));
-                    tessellator7.addVertexWithUV((double)(i9 + 0), (double)i13, (double)(i10 + 1), (double)(0.0F * f14), (double)((float)i13 * f14 / 8.0F + f15 * f14));
+                    float f30 = world3.getBrightness(i15, 128, i16);
+                    GL11.glColor4f(f30, f30, f30, (1.0F - f29 * f29) * 0.7F);
+                    tessellator7.setTranslationD(-d8 * 1.0D, -d10 * 1.0D, -d12 * 1.0D);
+                    tessellator7.addVertexWithUV((double)(i15 + 0), (double)i18, (double)(i16 + 0), (double)(0.0F * f20 + f23), (double)((float)i18 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.addVertexWithUV((double)(i15 + 1), (double)i18, (double)(i16 + 1), (double)(1.0F * f20 + f23), (double)((float)i18 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.addVertexWithUV((double)(i15 + 1), (double)i19, (double)(i16 + 1), (double)(1.0F * f20 + f23), (double)((float)i19 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.addVertexWithUV((double)(i15 + 0), (double)i19, (double)(i16 + 0), (double)(0.0F * f20 + f23), (double)((float)i19 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.addVertexWithUV((double)(i15 + 0), (double)i18, (double)(i16 + 1), (double)(0.0F * f20 + f23), (double)((float)i18 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.addVertexWithUV((double)(i15 + 1), (double)i18, (double)(i16 + 0), (double)(1.0F * f20 + f23), (double)((float)i18 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.addVertexWithUV((double)(i15 + 1), (double)i19, (double)(i16 + 0), (double)(1.0F * f20 + f23), (double)((float)i19 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.addVertexWithUV((double)(i15 + 0), (double)i19, (double)(i16 + 1), (double)(0.0F * f20 + f23), (double)((float)i19 * f20 / 8.0F + f22 * f20 + f24));
+                    tessellator7.setTranslationD(0.0D, 0.0D, 0.0D);
                     tessellator7.draw();
                 }
             }

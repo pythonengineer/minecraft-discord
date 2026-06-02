@@ -57,14 +57,21 @@ public class EntityItem extends Entity {
 		this.pushOutOfBlocks(this.posX, this.posY, this.posZ);
 		this.handleWaterMovement();
 		this.moveEntity(this.motionX, this.motionY, this.motionZ);
-		this.motionX *= (double)0.98F;
-		this.motionY *= (double)0.98F;
-		this.motionZ *= (double)0.98F;
-		if(this.onGround) {
-			this.motionX *= (double)0.7F;
-			this.motionZ *= (double)0.7F;
-			this.motionY *= -0.5D;
-		}
+        float f1 = 0.98F;
+        if(this.onGround) {
+            f1 = 0.58800006F;
+            int i2 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ));
+            if(i2 > 0) {
+                f1 = Block.blocksList[i2].slipperiness * 0.98F;
+            }
+        }
+
+        this.motionX *= (double)f1;
+        this.motionY *= (double)0.98F;
+        this.motionZ *= (double)f1;
+        if(this.onGround) {
+            this.motionY *= -0.5D;
+        }
 
 		++this.age2;
 		++this.age;

@@ -51,7 +51,6 @@ import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
-import net.minecraft.game.world.block.BlockSand;
 
 public class Minecraft implements Runnable {
 	public PlayerController playerController = new PlayerControllerSP(this);
@@ -146,7 +145,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.3");
+        Display.setTitle("Minecraft Alpha v1.0.4");
 
         try {
             Display.create();
@@ -165,11 +164,11 @@ public class Minecraft implements Runnable {
 
         this.renderEngine = new RenderEngine(this.options);
         this.fontRenderer = new FontRenderer(this.options, "/default.png", this.renderEngine);
-        this.loadScreen();
         Keyboard.create();
         Mouse.create();
         this.mouseHelper = new MouseHelper();
         Display.update();
+        this.loadScreen();
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glShadeModel(GL11.GL_SMOOTH);
@@ -217,23 +216,42 @@ public class Minecraft implements Runnable {
         GL11.glTranslatef(0.0F, 0.0F, -2000.0F);
         GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
         GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_FOG);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
         Tessellator tessellator13 = Tessellator.instance;
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/dirt.png"));
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_FOG);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/title/mojang.png"));
         tessellator13.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-        tessellator13.setColorOpaque_I(4210752);
-        tessellator13.addVertexWithUV(0.0D, (double)this.displayHeight, 0.0D, 0.0D, (double)((float)this.displayHeight / 32.0F));
-        tessellator13.addVertexWithUV((double)this.displayWidth, (double)this.displayHeight, 0.0D, (double)((float)this.displayWidth / 32.0F), (double)((float)this.displayHeight / 32.0F));
-        tessellator13.addVertexWithUV((double)this.displayWidth, 0.0D, 0.0D, (double)((float)this.displayWidth / 32.0F), 0.0D);
+        tessellator13.setColorOpaque_I(0xFFFFFF);
+        tessellator13.addVertexWithUV(0.0D, (double)this.displayHeight, 0.0D, 0.0D, 0.0D);
+        tessellator13.addVertexWithUV((double)this.displayWidth, (double)this.displayHeight, 0.0D, 0.0D, 0.0D);
+        tessellator13.addVertexWithUV((double)this.displayWidth, 0.0D, 0.0D, 0.0D, 0.0D);
         tessellator13.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
         tessellator13.draw();
+        short s5 = 256;
+        short s6 = 256;
+        int logoX = (i11 - s5) / 2;
+        int logoY = (i12 - s6) / 2;
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        tessellator13.setColorOpaque_I(0xFFFFFF);
+        this.scaledTessellator(logoX, logoY, 0, 0, s5, s6);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_FOG);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-        this.fontRenderer.drawStringWithShadow("Loading...", 8, this.displayHeight / 2 - 16, -1);
         Display.swapBuffers();
+    }
+
+    public void scaledTessellator(int i1, int i2, int i3, int i4, int i5, int i6) {
+        float f7 = 0.00390625F;
+        float f8 = 0.00390625F;
+        Tessellator tessellator9 = Tessellator.instance;
+        tessellator9.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
+        tessellator9.addVertexWithUV((double)(i1 + 0), (double)(i2 + i6), 0.0D, (double)((float)(i3 + 0) * f7), (double)((float)(i4 + i6) * f8));
+        tessellator9.addVertexWithUV((double)(i1 + i5), (double)(i2 + i6), 0.0D, (double)((float)(i3 + i5) * f7), (double)((float)(i4 + i6) * f8));
+        tessellator9.addVertexWithUV((double)(i1 + i5), (double)(i2 + 0), 0.0D, (double)((float)(i3 + i5) * f7), (double)((float)(i4 + 0) * f8));
+        tessellator9.addVertexWithUV((double)(i1 + 0), (double)(i2 + 0), 0.0D, (double)((float)(i3 + 0) * f7), (double)((float)(i4 + 0) * f8));
+        tessellator9.draw();
     }
 
 	public void displayGuiScreen(GuiScreen screen) {
@@ -302,7 +320,7 @@ public class Minecraft implements Runnable {
                     this.running = false;
                 }
 
-                if(this.isGamePaused) {
+                if(this.isGamePaused && this.theWorld != null) {
                     float f4 = this.timer.renderPartialTicks;
                     this.timer.updateTimer();
                     this.timer.renderPartialTicks = f4;
@@ -321,10 +339,6 @@ public class Minecraft implements Runnable {
                     if (i26 < this.timer.elapsedTicks - 1) {
                         PointerInputAbstraction.runGameLoop();
                     }
-                }
-
-                if(this.isGamePaused) {
-                    this.timer.renderPartialTicks = 1.0F;
                 }
 
                 GL11.optimize();

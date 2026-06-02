@@ -692,7 +692,7 @@ public abstract class Entity {
             this.motionY = 0.0D;
             this.motionZ = 0.0D;
             this.onUpdate();
-            this.setPosition(this.ridingEntity.posX, this.ridingEntity.posY + (double)this.yOffset + this.ridingEntity.getMountedYOffset(), this.ridingEntity.posZ);
+            this.setPosition(this.ridingEntity.posX, this.ridingEntity.posY + this.ridingEntity.getMountedYOffset() + this.getYOffset(), this.ridingEntity.posZ);
             this.entityRiderYawDelta += (double)(this.ridingEntity.rotationYaw - this.ridingEntity.prevRotationYaw);
 
             for(this.entityRiderPitchDelta += (double)(this.ridingEntity.rotationPitch - this.ridingEntity.prevRotationPitch); this.entityRiderYawDelta >= 180.0D; this.entityRiderYawDelta -= 360.0D) {
@@ -733,6 +733,10 @@ public abstract class Entity {
             this.rotationYaw = (float)((double)this.rotationYaw + d1);
             this.rotationPitch = (float)((double)this.rotationPitch + d3);
         }
+    }
+
+    protected double getYOffset() {
+        return (double)this.yOffset;
     }
 
     public double getMountedYOffset() {

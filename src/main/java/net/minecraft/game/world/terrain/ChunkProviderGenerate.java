@@ -5,8 +5,10 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.IProgressUpdate;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
+import net.minecraft.game.world.block.BlockSand;
 import net.minecraft.game.world.chunk.Chunk;
 import net.minecraft.game.world.chunk.IChunkProvider;
+import net.minecraft.game.world.material.Material;
 import net.minecraft.game.world.terrain.generate.WorldGenDungeons;
 import net.minecraft.game.world.terrain.generate.WorldGenFlowers;
 import net.minecraft.game.world.terrain.generate.WorldGenLiquids;
@@ -87,7 +89,11 @@ public class ChunkProviderGenerate implements IChunkProvider {
                             for(int i50 = 0; i50 < 4; ++i50) {
                                 int i51 = 0;
                                 if(i11 * 8 + i30 < b5) {
-                                    i51 = Block.waterStill.blockID;
+                                    if(this.worldObj.snowCovered && i11 * 8 + i30 >= b5 - 1) {
+                                        i51 = Block.ice.blockID;
+                                    } else {
+                                        i51 = Block.waterStill.blockID;
+                                    }
                                 }
 
                                 if(d46 > 0.0D) {
@@ -489,6 +495,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
     }
 
     public void populate(IChunkProvider chunkProvider, int chunkX, int chunkZ) {
+        BlockSand.fallInstantly = true;
         int i4 = chunkX * 16;
         int i5 = chunkZ * 16;
         this.rand.setSeed(this.worldObj.randomSeed);
@@ -619,6 +626,18 @@ public class ChunkProviderGenerate implements IChunkProvider {
             (new WorldGenLiquids(Block.lavaMoving.blockID)).generate(this.worldObj, this.rand, i15, i16, i17);
         }
 
+        if(this.worldObj.snowCovered) {
+            for(i14 = i4 + 8 + 0; i14 < i4 + 8 + 16; ++i14) {
+                for(i15 = i5 + 8 + 0; i15 < i5 + 8 + 16; ++i15) {
+                    i16 = this.worldObj.getPrecipitationHeight(i14, i15);
+                    if(i16 > 0 && i16 < 128 && this.worldObj.getBlockId(i14, i16, i15) == 0 && this.worldObj.getBlockMaterial(i14, i16 - 1, i15).getIsSolid() && this.worldObj.getBlockMaterial(i14, i16 - 1, i15) != Material.ice) {
+                        this.worldObj.setBlockWithNotify(i14, i16, i15, Block.snow.blockID);
+                    }
+                }
+            }
+        }
+
+        BlockSand.fallInstantly = false;
     }
 
     public boolean saveChunks(boolean flag, IProgressUpdate loadingScreen) {

@@ -27,7 +27,7 @@ public class PlayerControllerSP extends PlayerController {
     private float prevBlockDamage = 0.0F;
     private float blockDestroySoundCounter = 0.0F;
     private int blockHitWait = 0;
-    private SpawnerAnimals monsterSpawner = new SpawnerMonsters(this, 100, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
+    private SpawnerAnimals monsterSpawner = new SpawnerMonsters(this, 200, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
     private SpawnerAnimals animalSpawner = new SpawnerAnimals(20, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class});
 
     public PlayerControllerSP(Minecraft minecraft1) {

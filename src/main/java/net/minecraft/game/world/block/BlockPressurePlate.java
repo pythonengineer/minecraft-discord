@@ -27,7 +27,7 @@ public class BlockPressurePlate extends Block {
         return 20;
     }
 
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world1, int i2, int i3, int i4) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
         return null;
     }
 
@@ -135,8 +135,8 @@ public class BlockPressurePlate extends Block {
 
     }
 
-    public boolean isPoweringTo(IBlockAccess iBlockAccess1, int i2, int i3, int i4, int i5) {
-        return iBlockAccess1.getBlockMetadata(i2, i3, i4) > 0;
+    public boolean isPoweringTo(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
+        return blockAccess.getBlockMetadata(x, y, z) > 0;
     }
 
     public boolean isIndirectlyPoweringTo(World world1, int i2, int i3, int i4, int i5) {

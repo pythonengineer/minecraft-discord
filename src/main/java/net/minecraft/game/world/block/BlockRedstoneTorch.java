@@ -73,12 +73,12 @@ public class BlockRedstoneTorch extends BlockTorch {
 
     }
 
-    public boolean isPoweringTo(IBlockAccess iBlockAccess1, int i2, int i3, int i4, int i5) {
+    public boolean isPoweringTo(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
         if(!this.torchActive) {
             return false;
         } else {
-            int i6 = iBlockAccess1.getBlockMetadata(i2, i3, i4);
-            return i6 == 5 && i5 == 1 ? false : (i6 == 3 && i5 == 3 ? false : (i6 == 4 && i5 == 2 ? false : (i6 == 1 && i5 == 5 ? false : i6 != 2 || i5 != 4)));
+            int i6 = blockAccess.getBlockMetadata(x, y, z);
+            return i6 == 5 && metadata == 1 ? false : (i6 == 3 && metadata == 3 ? false : (i6 == 4 && metadata == 2 ? false : (i6 == 1 && metadata == 5 ? false : i6 != 2 || metadata != 4)));
         }
     }
 

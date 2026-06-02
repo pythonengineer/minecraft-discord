@@ -372,11 +372,11 @@ public class EntityLiving extends Entity {
 
 	}
 
-	public void moveEntityWithHeading(float f1, float f2) {
+	public void moveEntityWithHeading(float moveX, float moveZ) {
 		double d3;
 		if(this.handleWaterMovement()) {
 			d3 = this.posY;
-			this.moveFlying(f1, f2, 0.02F);
+			this.moveFlying(moveX, moveZ, 0.02F);
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= (double)0.8F;
 			this.motionY *= (double)0.8F;
@@ -387,7 +387,7 @@ public class EntityLiving extends Entity {
 			}
 		} else if(this.handleLavaMovement()) {
 			d3 = this.posY;
-			this.moveFlying(f1, f2, 0.02F);
+			this.moveFlying(moveX, moveZ, 0.02F);
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= 0.5D;
 			this.motionY *= 0.5D;
@@ -397,28 +397,42 @@ public class EntityLiving extends Entity {
 				this.motionY = (double)0.3F;
 			}
 		} else {
-			this.moveFlying(f1, f2, this.onGround ? 0.1F : 0.02F);
-			if(this.isOnLadder()) {
-				this.fallDistance = 0.0F;
-				if(this.motionY < -0.15D) {
-					this.motionY = -0.15D;
-				}
-			}
+            float f8 = 0.91F;
+            if(this.onGround) {
+                f8 = 0.54600006F;
+                int i4 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ));
+                if(i4 > 0) {
+                    f8 = Block.blocksList[i4].slipperiness * 0.91F;
+                }
+            }
 
-			this.moveEntity(this.motionX, this.motionY, this.motionZ);
-			if(this.isCollidedHorizontally && this.isOnLadder()) {
-				this.motionY = 0.2D;
-			}
+            float f9 = 0.16277136F / (f8 * f8 * f8);
+            this.moveFlying(moveX, moveZ, this.onGround ? 0.1F * f9 : 0.02F);
+            f8 = 0.91F;
+            if(this.onGround) {
+                f8 = 0.54600006F;
+                int i5 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ));
+                if(i5 > 0) {
+                    f8 = Block.blocksList[i5].slipperiness * 0.91F;
+                }
+            }
 
-			this.motionX *= (double)0.91F;
-			this.motionY *= (double)0.98F;
-			this.motionZ *= (double)0.91F;
-			this.motionY -= 0.08D;
-			if(this.onGround) {
-				float f8 = 0.6F;
-				this.motionX *= (double)f8;
-				this.motionZ *= (double)f8;
-			}
+            if(this.isOnLadder()) {
+                this.fallDistance = 0.0F;
+                if(this.motionY < -0.15D) {
+                    this.motionY = -0.15D;
+                }
+            }
+
+            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            if(this.isCollidedHorizontally && this.isOnLadder()) {
+                this.motionY = 0.2D;
+            }
+
+            this.motionY -= 0.08D;
+            this.motionY *= (double)0.98F;
+            this.motionX *= (double)f8;
+            this.motionZ *= (double)f8;
 		}
 
 		this.prevLimbYaw = this.limbYaw;

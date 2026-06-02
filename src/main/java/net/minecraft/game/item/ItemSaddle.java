@@ -10,18 +10,18 @@ public class ItemSaddle extends Item {
         this.maxDamage = 64;
     }
 
-    public void saddleEntity(ItemStack itemStack1, EntityLiving entityLiving2) {
-        if(entityLiving2 instanceof EntityPig) {
-            EntityPig entityPig3 = (EntityPig)entityLiving2;
+    public void saddleEntity(ItemStack itemStack, EntityLiving entityLiving) {
+        if(entityLiving instanceof EntityPig) {
+            EntityPig entityPig3 = (EntityPig)entityLiving;
             if(!entityPig3.saddled) {
                 entityPig3.saddled = true;
-                --itemStack1.stackSize;
+                --itemStack.stackSize;
             }
         }
 
     }
 
-    public void hitEntity(ItemStack itemStack1, EntityLiving entityLiving2) {
-        this.saddleEntity(itemStack1, entityLiving2);
+    public void hitEntity(ItemStack itemStack, EntityLiving entityLiving) {
+        this.saddleEntity(itemStack, entityLiving);
     }
 }

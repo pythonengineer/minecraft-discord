@@ -64,7 +64,6 @@ public class RenderMinecart extends Render {
 		this.loadTexture("/terrain.png");
 		float f25 = 0.75F;
 		GL11.glScalef(f25, f25, f25);
-		(new RenderBlocks()).renderBlockOnInventory(Block.chest);
 		GL11.glScalef(1.0F / f25, 1.0F / f25, 1.0F / f25);
 		this.loadTexture("/item/cart.png");
 		GL11.glScalef(-1.0F, -1.0F, 1.0F);

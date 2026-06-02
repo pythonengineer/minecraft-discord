@@ -22,6 +22,10 @@ public class RenderLiving extends Render {
 	public void doRenderLiving(EntityLiving entityLiving1, double d2, double d4, double d6, float f8, float f9) {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_CULL_FACE);
+        this.mainModel.isRiding = entityLiving1.ridingEntity != null;
+        if(this.renderPassModel != null) {
+            this.renderPassModel.isRiding = this.mainModel.isRiding;
+        }
 
 		try {
 			f8 = entityLiving1.prevRenderYawOffset + (entityLiving1.renderYawOffset - entityLiving1.prevRenderYawOffset) * f9;

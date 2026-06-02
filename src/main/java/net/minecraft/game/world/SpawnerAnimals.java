@@ -53,7 +53,7 @@ public class SpawnerAnimals {
             EntityPlayer entityPlayer5 = (EntityPlayer)world.playerEntities.get(i4);
             int i6 = MathHelper.floor_double(entityPlayer5.posX / 16.0D);
             i7 = MathHelper.floor_double(entityPlayer5.posZ / 16.0D);
-            byte b8 = 8;
+            byte b8 = 4;
 
             for(i9 = -b8; i9 <= b8; ++i9) {
                 for(i10 = -b8; i10 <= b8; ++i10) {
@@ -94,7 +94,7 @@ public class SpawnerAnimals {
                 int i15 = i11;
                 byte b16 = 6;
 
-                for(int i17 = 0; i17 < 3; ++i17) {
+                for(int i17 = 0; i17 < 2; ++i17) {
                     i13 += world.rand.nextInt(b16) - world.rand.nextInt(b16);
                     i14 += world.rand.nextInt(1) - world.rand.nextInt(1);
                     i15 += world.rand.nextInt(b16) - world.rand.nextInt(b16);
@@ -102,12 +102,12 @@ public class SpawnerAnimals {
                         float f18 = (float)i13 + 0.5F;
                         float f19 = (float)i14 + 1.0F;
                         float f20 = (float)i15 + 0.5F;
-                        if(world.getClosestPlayer((double)f18, (double)f19, (double)f20, 32.0D) == null) {
+                        if(world.getClosestPlayer((double)f18, (double)f19, (double)f20, 24.0D) == null) {
                             float f21 = f18 - (float)world.spawnX;
                             float f22 = f19 - (float)world.spawnY;
                             float f23 = f20 - (float)world.spawnZ;
                             float f24 = f21 * f21 + f22 * f22 + f23 * f23;
-                            if(f24 >= 1024.0F) {
+                            if(f24 >= 576.0F) {
                                 EntityLiving entityLiving29;
                                 try {
                                     entityLiving29 = (EntityLiving)EntityList.createEntityByClassUnsafe(this.entities[i7], world);

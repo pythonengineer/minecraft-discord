@@ -11,7 +11,7 @@ public class BlockLever extends Block {
         super(id, tex, Material.circuits);
     }
 
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world1, int i2, int i3, int i4) {
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
         return null;
     }
 
@@ -138,24 +138,24 @@ public class BlockLever extends Block {
         this.blockActivated(world1, i2, i3, i4, entityPlayer5);
     }
 
-    public boolean blockActivated(World world1, int i2, int i3, int i4, EntityPlayer entityPlayer5) {
-        int i6 = world1.getBlockMetadata(i2, i3, i4);
+    public boolean blockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer) {
+        int i6 = world.getBlockMetadata(x, y, z);
         int i7 = i6 & 7;
         int i8 = 8 - (i6 & 8);
-        world1.setBlockMetadataWithNotify(i2, i3, i4, i7 + i8);
-        world1.markBlocksDirty(i2, i3, i4, i2, i3, i4);
-        world1.playSoundEffect((double)i2 + 0.5D, (double)i3 + 0.5D, (double)i4 + 0.5D, "random.click", 0.3F, i8 > 0 ? 0.6F : 0.5F);
-        world1.notifyBlocksOfNeighborChange(i2, i3, i4, this.blockID);
+        world.setBlockMetadataWithNotify(x, y, z, i7 + i8);
+        world.markBlocksDirty(x, y, z, x, y, z);
+        world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.click", 0.3F, i8 > 0 ? 0.6F : 0.5F);
+        world.notifyBlocksOfNeighborChange(x, y, z, this.blockID);
         if(i7 == 1) {
-            world1.notifyBlocksOfNeighborChange(i2 - 1, i3, i4, this.blockID);
+            world.notifyBlocksOfNeighborChange(x - 1, y, z, this.blockID);
         } else if(i7 == 2) {
-            world1.notifyBlocksOfNeighborChange(i2 + 1, i3, i4, this.blockID);
+            world.notifyBlocksOfNeighborChange(x + 1, y, z, this.blockID);
         } else if(i7 == 3) {
-            world1.notifyBlocksOfNeighborChange(i2, i3, i4 - 1, this.blockID);
+            world.notifyBlocksOfNeighborChange(x, y, z - 1, this.blockID);
         } else if(i7 == 4) {
-            world1.notifyBlocksOfNeighborChange(i2, i3, i4 + 1, this.blockID);
+            world.notifyBlocksOfNeighborChange(x, y, z + 1, this.blockID);
         } else {
-            world1.notifyBlocksOfNeighborChange(i2, i3 - 1, i4, this.blockID);
+            world.notifyBlocksOfNeighborChange(x, y - 1, z, this.blockID);
         }
 
         return true;
@@ -182,8 +182,8 @@ public class BlockLever extends Block {
         super.onBlockRemoval(world1, i2, i3, i4);
     }
 
-    public boolean isPoweringTo(IBlockAccess iBlockAccess1, int i2, int i3, int i4, int i5) {
-        return (iBlockAccess1.getBlockMetadata(i2, i3, i4) & 8) > 0;
+    public boolean isPoweringTo(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
+        return (blockAccess.getBlockMetadata(x, y, z) & 8) > 0;
     }
 
     public boolean isIndirectlyPoweringTo(World world1, int i2, int i3, int i4, int i5) {

@@ -67,6 +67,17 @@ public class ModelBiped extends ModelBase {
         this.bipedLeftArm.rotateAngleZ = (MathHelper.cos(limbSwing * 0.2812F) - 1.0F) * limbSwingAmount;
         this.bipedRightLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
         this.bipedLeftLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.bipedRightLeg.rotateAngleY = 0.0F;
+        this.bipedLeftLeg.rotateAngleY = 0.0F;
+        if(this.isRiding) {
+            this.bipedRightArm.rotateAngleX += -0.62831855F;
+            this.bipedLeftArm.rotateAngleX += -0.62831855F;
+            this.bipedRightLeg.rotateAngleX = -1.2566371F;
+            this.bipedLeftLeg.rotateAngleX = -1.2566371F;
+            this.bipedRightLeg.rotateAngleY = 0.31415927F;
+            this.bipedLeftLeg.rotateAngleY = -0.31415927F;
+        }
+
         this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
         this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
         this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
