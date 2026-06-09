@@ -774,7 +774,7 @@ public abstract class Entity {
         if(this.ridingEntity == entity) {
             this.ridingEntity.riddenByEntity = null;
             this.ridingEntity = null;
-            this.setLocationAndAngles(entity.posX, entity.boundingBox.minY + (double)entity.yOffset, entity.posZ, this.rotationYaw, this.rotationPitch);
+            this.setLocationAndAngles(entity.posX, entity.boundingBox.minY + (double)entity.height, entity.posZ, this.rotationYaw, this.rotationPitch);
         } else {
             if(this.ridingEntity != null) {
                 this.ridingEntity.riddenByEntity = null;
