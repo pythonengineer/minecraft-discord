@@ -55,6 +55,6 @@ public class EntityPickupFX extends EntityFX {
 	}
 
 	public int getFXLayer() {
-		return 2;
+		return 3;
 	}
 }

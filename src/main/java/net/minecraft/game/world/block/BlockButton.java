@@ -204,26 +204,26 @@ public class BlockButton extends Block {
         return true;
     }
 
-    public void updateTick(World world1, int i2, int i3, int i4, EaglercraftRandom random5) {
-        int i6 = world1.getBlockMetadata(i2, i3, i4);
+    public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+        int i6 = world.getBlockMetadata(x, y, z);
         if((i6 & 8) != 0) {
-            world1.setBlockMetadataWithNotify(i2, i3, i4, i6 & 7);
-            world1.notifyBlocksOfNeighborChange(i2, i3, i4, this.blockID);
+            world.setBlockMetadataWithNotify(x, y, z, i6 & 7);
+            world.notifyBlocksOfNeighborChange(x, y, z, this.blockID);
             int i7 = i6 & 7;
             if(i7 == 1) {
-                world1.notifyBlocksOfNeighborChange(i2 - 1, i3, i4, this.blockID);
+                world.notifyBlocksOfNeighborChange(x - 1, y, z, this.blockID);
             } else if(i7 == 2) {
-                world1.notifyBlocksOfNeighborChange(i2 + 1, i3, i4, this.blockID);
+                world.notifyBlocksOfNeighborChange(x + 1, y, z, this.blockID);
             } else if(i7 == 3) {
-                world1.notifyBlocksOfNeighborChange(i2, i3, i4 - 1, this.blockID);
+                world.notifyBlocksOfNeighborChange(x, y, z - 1, this.blockID);
             } else if(i7 == 4) {
-                world1.notifyBlocksOfNeighborChange(i2, i3, i4 + 1, this.blockID);
+                world.notifyBlocksOfNeighborChange(x, y, z + 1, this.blockID);
             } else {
-                world1.notifyBlocksOfNeighborChange(i2, i3 - 1, i4, this.blockID);
+                world.notifyBlocksOfNeighborChange(x, y - 1, z, this.blockID);
             }
 
-            world1.playSoundEffect((double)i2 + 0.5D, (double)i3 + 0.5D, (double)i4 + 0.5D, "random.click", 0.3F, 0.5F);
-            world1.markBlocksDirty(i2, i3, i4, i2, i3, i4);
+            world.playSoundEffect((double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, "random.click", 0.3F, 0.5F);
+            world.markBlocksDirty(x, y, z, x, y, z);
         }
     }
 

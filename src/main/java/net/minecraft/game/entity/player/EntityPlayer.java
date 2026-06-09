@@ -25,13 +25,13 @@ public class EntityPlayer extends EntityLiving {
 	public int score = 0;
 	public float prevCameraYaw;
 	public float cameraYaw;
-	protected String username;
+	public String username;
 	private int damageRemainder = 0;
 
 	public EntityPlayer(World world1) {
 		super(world1);
+        this.yOffset = 1.62F;
 		this.setLocationAndAngles((double)world1.spawnX + 0.5D, (double)world1.spawnY, (double)world1.spawnZ + 0.5D, 0.0F, 0.0F);
-		this.yOffset = 1.62F;
 		this.health = 20;
 		this.entityType = "humanoid";
 		this.unusedRotation = 180.0F;
@@ -240,4 +240,16 @@ public class EntityPlayer extends EntityLiving {
 
 	public void interactWithEntity(Entity entity1) {
 	}
+
+    public ItemStack getCurrentEquippedItem() {
+        return this.inventory.getCurrentItem();
+    }
+
+    public void destroyCurrentEquippedItem() {
+        this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
+    }
+
+    protected double getYOffset() {
+        return (double)(this.yOffset - 0.5F);
+    }
 }

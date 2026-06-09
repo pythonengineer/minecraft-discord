@@ -80,10 +80,6 @@ public class BlockSign extends BlockContainer {
         }
     }
 
-    public boolean canPlaceBlockAt(World world, int x, int y, int z) {
-        return super.canPlaceBlockAt(world, x, y, z) && super.canPlaceBlockAt(world, x, y + 1, z);
-    }
-
     public int idDropped(int metadata, EaglercraftRandom rand) {
         return this.itemDropID;
     }

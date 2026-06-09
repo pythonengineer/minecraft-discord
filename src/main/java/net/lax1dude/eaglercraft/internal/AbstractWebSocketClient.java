@@ -1,11 +1,14 @@
 package net.lax1dude.eaglercraft.internal;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 
 /**
  * Copyright (c) 2024 lax1dude. All Rights Reserved.
@@ -260,5 +263,15 @@ public abstract class AbstractWebSocketClient implements IWebSocketClient {
                 buffer.put(frame.getByteArray());
             }
         }
+    }
+
+    @Override
+    public InputStream getInputStream() {
+        return new WebSocketInputStream(this);
+    }
+
+    @Override
+    public OutputStream getOutputStream() {
+        return new WebSocketOutputStream(this);
     }
 }

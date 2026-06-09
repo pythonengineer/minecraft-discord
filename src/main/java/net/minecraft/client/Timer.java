@@ -3,7 +3,7 @@ package net.minecraft.client;
 import net.lax1dude.eaglercraft.EagRuntime;
 
 public class Timer {
-    float ticksPerSecond;
+    public float ticksPerSecond;
     private double lastHRTime;
     public int elapsedTicks;
     public float renderPartialTicks;

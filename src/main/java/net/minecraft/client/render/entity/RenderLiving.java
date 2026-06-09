@@ -49,6 +49,7 @@ public class RenderLiving extends Render {
             GL11.glScalef(-1.0F, -1.0F, 1.0F);
             this.preRenderCallback(entityLiving1, f9);
             GL11.glTranslatef(0.0F, -1.5078125F, 0.0F);
+            this.renderEquippedItems(entityLiving1, f9);
 			f3 = entityLiving1.prevLimbYaw + (entityLiving1.limbYaw - entityLiving1.prevLimbYaw) * f9;
 			float f15 = entityLiving1.limbSwing - entityLiving1.limbYaw * (1.0F - f9);
 			if(f3 > 1.0F) {
@@ -117,6 +118,9 @@ public class RenderLiving extends Render {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
 	}
+
+    protected void renderEquippedItems(EntityLiving livingEntity, float partialTicks) {
+    }
 
 	protected boolean shouldRenderPass(EntityLiving livingEntity, int flag) {
 		return false;

@@ -13,15 +13,18 @@ import net.minecraft.client.model.ModelSheep;
 import net.minecraft.client.model.ModelSheepFur;
 import net.minecraft.client.model.ModelSkeleton;
 import net.minecraft.client.model.ModelZombie;
+import net.minecraft.client.render.ItemRenderer;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.EntityPainting;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
+import net.minecraft.game.entity.misc.EntityBoat;
 import net.minecraft.game.entity.misc.EntityFallingSand;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.misc.EntityMinecart;
+import net.minecraft.game.entity.misc.EntitySnowball;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.entity.monster.EntityCreeper;
 import net.minecraft.game.entity.monster.EntityGiantZombie;
@@ -40,6 +43,7 @@ public class RenderManager {
 	public static double renderPosY;
 	public static double renderPosZ;
 	public RenderEngine renderEngine;
+    public ItemRenderer itemRenderer;
 	public World worldObj;
 	public EntityPlayer player;
 	public float playerViewY;
@@ -62,10 +66,12 @@ public class RenderManager {
 		this.entityRenderMap.put(Entity.class, new RenderEntity());
 		this.entityRenderMap.put(EntityPainting.class, new RenderPainting());
 		this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
+        this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball());
 		this.entityRenderMap.put(EntityItem.class, new RenderItem());
 		this.entityRenderMap.put(EntityTNTPrimed.class, new RenderTNTPrimed());
         this.entityRenderMap.put(EntityFallingSand.class, new RenderFallingSand());
         this.entityRenderMap.put(EntityMinecart.class, new RenderMinecart());
+        this.entityRenderMap.put(EntityBoat.class, new RenderBoat());
 		Iterator iterator1 = this.entityRenderMap.values().iterator();
 
 		while(iterator1.hasNext()) {

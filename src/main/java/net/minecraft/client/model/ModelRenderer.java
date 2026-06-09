@@ -118,6 +118,36 @@ public class ModelRenderer {
         }
 	}
 
+    public void renderWithRotation(float partialTicks) {
+        if(!this.isHidden) {
+            if(this.showModel) {
+                if(!this.compiled) {
+                    this.compileDisplayList(partialTicks);
+                }
+
+                if(this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
+                    if(this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F) {
+                        GL11.glTranslatef(this.rotationPointX * partialTicks, this.rotationPointY * partialTicks, this.rotationPointZ * partialTicks);
+                    }
+                } else {
+                    GL11.glTranslatef(this.rotationPointX * partialTicks, this.rotationPointY * partialTicks, this.rotationPointZ * partialTicks);
+                    if(this.rotateAngleZ != 0.0F) {
+                        GL11.glRotatef(this.rotateAngleZ * 57.295776F, 0.0F, 0.0F, 1.0F);
+                    }
+
+                    if(this.rotateAngleY != 0.0F) {
+                        GL11.glRotatef(this.rotateAngleY * 57.295776F, 0.0F, 1.0F, 0.0F);
+                    }
+
+                    if(this.rotateAngleX != 0.0F) {
+                        GL11.glRotatef(this.rotateAngleX * 57.295776F, 1.0F, 0.0F, 0.0F);
+                    }
+                }
+
+            }
+        }
+    }
+
     private void compileDisplayList(float partialTicks) {
         this.displayList = GLAllocation.generateDisplayLists(1);
         GL11.glNewList(this.displayList, GL11.GL_COMPILE);

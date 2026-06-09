@@ -153,20 +153,25 @@ public class GuiScreen extends Gui {
         if(this.mc.theWorld != null) {
             this.drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454656);
         } else {
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_FOG);
-            Tessellator tessellator2 = Tessellator.instance;
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/dirt.png"));
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            float f3 = 32.0F;
-            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
-            tessellator2.setColorOpaque_I(4210752);
-            tessellator2.addVertexWithUV(0.0D, (double)this.height, 0.0D, 0.0D, (double)((float)this.height / f3 + (float)i1));
-            tessellator2.addVertexWithUV((double)this.width, (double)this.height, 0.0D, (double)((float)this.width / f3), (double)((float)this.height / f3 + (float)i1));
-            tessellator2.addVertexWithUV((double)this.width, 0.0D, 0.0D, (double)((float)this.width / f3), (double)(0 + i1));
-            tessellator2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, (double)(0 + i1));
-            tessellator2.draw();
+            this.drawBackground(i1);
         }
+
+    }
+
+    public void drawBackground(int i1) {
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_FOG);
+        Tessellator tessellator2 = Tessellator.instance;
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/dirt.png"));
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        float f3 = 32.0F;
+        tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_COLOR);
+        tessellator2.setColorOpaque_I(4210752);
+        tessellator2.addVertexWithUV(0.0D, (double)this.height, 0.0D, 0.0D, (double)((float)this.height / f3 + (float)i1));
+        tessellator2.addVertexWithUV((double)this.width, (double)this.height, 0.0D, (double)((float)this.width / f3), (double)((float)this.height / f3 + (float)i1));
+        tessellator2.addVertexWithUV((double)this.width, 0.0D, 0.0D, (double)((float)this.width / f3), (double)(0 + i1));
+        tessellator2.addVertexWithUV(0.0D, 0.0D, 0.0D, 0.0D, (double)(0 + i1));
+        tessellator2.draw();
     }
 
     public boolean doesGuiPauseGame() {

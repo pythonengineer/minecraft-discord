@@ -20,8 +20,8 @@ import net.minecraft.client.effect.EntityExplodeFX;
 import net.minecraft.client.effect.EntityFlameFX;
 import net.minecraft.client.effect.EntityLavaFX;
 import net.minecraft.client.effect.EntityReddustFX;
+import net.minecraft.client.effect.EntitySlimeFX;
 import net.minecraft.client.effect.EntitySmokeFX;
-import net.minecraft.client.effect.EntitySplashFX;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.render.camera.Frustum;
 import net.minecraft.client.render.camera.ICamera;
@@ -846,7 +846,6 @@ public class RenderGlobal implements IWorldAccess {
         return this.worldRenderersToUpdate.size() == 0;
     }
 
-
     public void drawBlockBreaking(EntityPlayer playerEntity, MovingObjectPosition blockPosition, int blockId, ItemStack stack, float partialTime) {
         Tessellator t = Tessellator.instance;
         GL11.glEnable(GL11.GL_BLEND);
@@ -864,7 +863,7 @@ public class RenderGlobal implements IWorldAccess {
                 i17 = this.theWorld.getBlockId(blockPosition.blockX, blockPosition.blockY, blockPosition.blockZ);
                 Block block = i17 > 0 ? Block.blocksList[i17] : null;
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
-                GL11.glPolygonOffset(-1.0F, -1.0F);
+                GL11.glPolygonOffset(-3.0F, -3.0F);
                 GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
                 t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX);
                 double d10 = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTime;
@@ -1154,6 +1153,8 @@ public class RenderGlobal implements IWorldAccess {
                 this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.theWorld, x, y, z, 2.5F));
             } else if(particleName == "reddust") {
                 this.mc.effectRenderer.addEffect(new EntityReddustFX(this.theWorld, x, y, z));
+            } else if(particleName == "snowballpoof") {
+                this.mc.effectRenderer.addEffect(new EntitySlimeFX(this.theWorld, x, y, z));
             }
 
         }

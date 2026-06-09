@@ -22,7 +22,11 @@ public class BlockIce extends BlockBreakable {
     }
 
     public void onBlockRemoval(World world1, int i2, int i3, int i4) {
-        world1.setBlockWithNotify(i2, i3, i4, Block.waterMoving.blockID);
+        Material material5 = world1.getBlockMaterial(i2, i3 - 1, i4);
+        if(material5.getIsSolid() || material5.getIsLiquid()) {
+            world1.setBlockWithNotify(i2, i3, i4, Block.waterMoving.blockID);
+        }
+
     }
 
     public int quantityDropped(EaglercraftRandom random1) {

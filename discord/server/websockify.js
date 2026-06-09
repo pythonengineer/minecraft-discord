@@ -69,27 +69,64 @@ const new_client = function (client, req) {
         end(client, target);
     });
 
+    let buffer = Buffer.alloc(0);
     client.on('message', function (msg) {
         try {
-            if (msg.readUint8(0) == 0) { // intercept LOGIN packet for token check
-                username = msg.toString('utf8', 2, 66).trimEnd();
-                let token = msg.toString('utf8', 66, 130).trimEnd();
-                if (!tokens.has(token)) {
-                    log('bad token auth');
-                    end(client, target);
-                } else {
-                    hasAuthed = true;
-                    log('client auth');
-                    target.write(msg);
-                }
-            } else if (!hasAuthed) {
-                log('sent packet before login');
-                end(client, target);
-            } else {
+            if (hasAuthed) {
                 target.write(msg);
+            } else {
+                const combinedBuffer = Buffer.concat([buffer, msg]);
+                let offset = 0;
+                while (offset < combinedBuffer.length) {
+                    if (combinedBuffer.length - offset < 9) {
+                        offset = 0;
+                        break;
+                    }
+
+                    const packetId = combinedBuffer.readUint8(offset);
+                    offset += 1;
+
+                    const protocol = combinedBuffer.readInt32BE(offset);
+                    offset += 4;
+
+                    const usernameLen = combinedBuffer.readUint16BE(offset);
+                    offset += 2;
+                    if (combinedBuffer.length - offset < usernameLen + 2) {
+                        offset = 0;
+                        break;
+                    }
+
+                    username = combinedBuffer.toString('utf8', offset, offset + usernameLen).trimEnd();
+                    offset += usernameLen;
+
+                    const tokenLen = combinedBuffer.readUint16BE(offset);
+                    offset += 2;
+                    if (combinedBuffer.length - offset < tokenLen) {
+                        offset = 0;
+                        break;
+                    }
+
+                    const token = combinedBuffer.toString('utf8', offset, offset + tokenLen).trimEnd();
+                    offset += tokenLen;
+                    if (packetId == 0) {
+                        if (!tokens.has(token)) {
+                            log('bad token auth');
+                            end(client, target);
+                        } else {
+                            hasAuthed = true;
+                            log('client auth');
+                            target.write(combinedBuffer.slice(0, offset));
+                        }
+                    } else {
+                        log('sent packet before login');
+                        end(client, target);
+                    }
+                }
+
+                buffer = combinedBuffer.slice(offset);
             }
         } catch (e) {
-            log('client auth error');
+            log('client auth error: ' + e);
             end(client, target);
         }
     });

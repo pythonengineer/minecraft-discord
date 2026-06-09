@@ -46,12 +46,12 @@ public class BlockRedstoneOre extends Block {
 
 	}
 
-	public void updateTick(World world1, int i2, int i3, int i4, EaglercraftRandom random5) {
-		if(this.blockID == Block.oreRedstoneGlowing.blockID) {
-			world1.setBlockWithNotify(i2, i3, i4, Block.oreRedstone.blockID);
-		}
+    public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+        if(this.blockID == Block.oreRedstoneGlowing.blockID) {
+            world.setBlockWithNotify(x, y, z, Block.oreRedstone.blockID);
+        }
 
-	}
+    }
 
 	public int idDropped(int i1, EaglercraftRandom random2) {
 		return Item.redstone.shiftedIndex;

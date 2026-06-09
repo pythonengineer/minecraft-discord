@@ -2,7 +2,9 @@ package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.terrain.generate.WorldGenBigTree;
 import net.minecraft.game.world.terrain.generate.WorldGenTrees;
+import net.minecraft.game.world.terrain.generate.WorldGenerator;
 
 public class BlockSapling extends BlockFlower {
 	protected BlockSapling(int i1, int i2) {
@@ -11,20 +13,24 @@ public class BlockSapling extends BlockFlower {
 		this.setBlockBounds(0.5F - f3, 0.0F, 0.5F - f3, 0.5F + f3, f3 * 2.0F, 0.5F + f3);
 	}
 
-	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-		super.updateTick(world, x, y, z, rand);
-		if(world.getBlockLightValue(x, y + 1, z) >= 9 && rand.nextInt(5) == 0) {
-			int i6 = world.getBlockMetadata(x, y, z);
-			if(i6 < 15) {
-				world.setBlockMetadataWithNotify(x, y, z, i6 + 1);
-			} else {
-				world.setBlock(x, y, z, 0);
-				WorldGenTrees worldGenTrees7 = new WorldGenTrees();
-				if(!worldGenTrees7.generate(world, rand, x, y, z)) {
-					world.setBlock(x, y, z, this.blockID);
-				}
-			}
-		}
+    public void updateTick(World worldObj, int x, int y, int z, EaglercraftRandom rand) {
+        super.updateTick(worldObj, x, y, z, rand);
+        if(worldObj.getBlockLightValue(x, y + 1, z) >= 9 && rand.nextInt(5) == 0) {
+            int i6 = worldObj.getBlockMetadata(x, y, z);
+            if(i6 < 15) {
+                worldObj.setBlockMetadataWithNotify(x, y, z, i6 + 1);
+            } else {
+                worldObj.setBlock(x, y, z, 0);
+                Object object7 = new WorldGenTrees();
+                if(rand.nextInt(10) == 0) {
+                    object7 = new WorldGenBigTree();
+                }
 
-	}
+                if(!((WorldGenerator)object7).generate(worldObj, rand, x, y, z)) {
+                    worldObj.setBlock(x, y, z, this.blockID);
+                }
+            }
+        }
+
+    }
 }

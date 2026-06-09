@@ -210,7 +210,7 @@ public class Chunk {
             int i9 = this.xPosition * 16 + x;
             int i10 = this.zPosition * 16 + z;
             this.blocks[x << 11 | z << 7 | y] = b6;
-            if(i8 != 0) {
+            if(i8 != 0 && !this.worldObj.multiplayerWorld) {
                 Block.blocksList[i8].onBlockRemoval(this.worldObj, i9, y, i10);
             }
 
@@ -261,7 +261,7 @@ public class Chunk {
             this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
             this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
             this.updateSkylight_do(x, z);
-            if(blockID != 0) {
+            if(blockID != 0 && !this.worldObj.multiplayerWorld) {
                 Block.blocksList[blockID].onBlockAdded(this.worldObj, i8, y, i9);
             }
 
@@ -477,5 +477,34 @@ public class Chunk {
 
     public boolean needsSaving(boolean z1) {
         return this.neverSave ? false : (this.hasEntities && this.worldObj.worldTime != this.lastSaveTime ? true : this.isModified);
+    }
+
+    public int setChunkData(byte[] b1, int minX, int i3, int minZ, int maxX, int i6, int maxZ, int i8) {
+        int i9;
+        int i10;
+        int i11;
+        int i12;
+        for(i9 = minX; i9 < maxX; ++i9) {
+            for(i10 = minZ; i10 < maxZ; ++i10) {
+                i11 = i9 << 11 | i10 << 7 | i3;
+
+                for(i12 = i3; i12 < i6; ++i12) {
+                    this.blocks[i11++] = b1[i8++];
+                }
+            }
+        }
+
+        for(i9 = minX; i9 < maxX; ++i9) {
+            for(i10 = minZ; i10 < maxZ; ++i10) {
+                i11 = (i9 << 11 | i10 << 7 | i3) >> 1;
+
+                for(i12 = i3; i12 < i6; i12 += 2) {
+                    this.data.data[i11++] = b1[i8++];
+                }
+            }
+        }
+
+        this.generateSkylightMap();
+        return i8;
     }
 }

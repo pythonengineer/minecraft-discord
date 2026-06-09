@@ -72,6 +72,7 @@ public class World implements IBlockAccess {
     private Set positionsToUpdate;
     private int soundCounter;
     private List entitiesWithinAABBExcludingEntity;
+    public boolean multiplayerWorld;
 
 	public static NBTTagCompound getLevelData(String worldName) {
 		VFile2 worldFile = new VFile2("saves");
@@ -102,9 +103,41 @@ public class World implements IBlockAccess {
 
 	}
 
-	public World(String worldName) {
-		this(worldName, (new EaglercraftRandom()).nextLong());
+	public World(VFile2 file, String name) {
+		this(name, (new EaglercraftRandom()).nextLong());
 	}
+
+    public World(String name) {
+        this.lightingToUpdate = new ArrayList();
+        this.loadedEntityList = new ArrayList();
+        this.unloadedEntityList = new ArrayList();
+        this.scheduledTickTreeSet = new TreeSet();
+        this.scheduledTickSet = new HashSet();
+        this.loadedTileEntityList = new ArrayList();
+        this.worldTime = 0L;
+        this.snowCovered = false;
+        this.skyColor = 8961023L;
+        this.fogColor = 12638463L;
+        this.cloudColor = 16777215L;
+        this.skylightSubtracted = 0;
+        this.updateLCG = (new EaglercraftRandom()).nextInt();
+        this.DIST_HASH_MAGIC = 1013904223;
+        this.editingBlocks = false;
+        this.playerEntities = new ArrayList();
+        this.rand = new EaglercraftRandom();
+        this.isNewWorld = false;
+        this.worldAccesses = new ArrayList();
+        this.randomSeed = 0L;
+        this.sizeOnDisk = 0L;
+        this.collidingBoundingBoxes = new ArrayList();
+        this.positionsToUpdate = new HashSet();
+        this.soundCounter = this.rand.nextInt(12000);
+        this.entitiesWithinAABBExcludingEntity = new ArrayList();
+        this.multiplayerWorld = false;
+        this.levelName = name;
+        this.chunkProvider = this.getChunkProvider(this.saveDirectory);
+        this.calculateInitialSkylight();
+    }
 
 	public World(String worldName, long seed) {
 		this.lightingToUpdate = new ArrayList();
@@ -132,6 +165,7 @@ public class World implements IBlockAccess {
         this.positionsToUpdate = new HashSet();
         this.soundCounter = this.rand.nextInt(12000);
         this.entitiesWithinAABBExcludingEntity = new ArrayList();
+        this.multiplayerWorld = false;
 		this.levelName = worldName;
 		this.saveDirectory = new VFile2("saves", worldName);
 		VFile2 worldFile = new VFile2(this.saveDirectory, "level.dat");
@@ -411,7 +445,7 @@ public class World implements IBlockAccess {
 
     public boolean setBlockWithNotify(int x, int y, int z, int blockID) {
         if(this.setBlock(x, y, z, blockID)) {
-            this.markBlockNeedsUpdate(x, y, z, blockID);
+            this.notifyBlockChange(x, y, z, blockID);
             return true;
         } else {
             return false;
@@ -420,18 +454,22 @@ public class World implements IBlockAccess {
 
     public boolean setBlockAndMetadataWithNotify(int x, int y, int z, int blockID, int metadata) {
         if(this.setBlockAndMetadata(x, y, z, blockID, metadata)) {
-            this.markBlockNeedsUpdate(x, y, z, blockID);
+            this.notifyBlockChange(x, y, z, blockID);
             return true;
         } else {
             return false;
         }
     }
 
-    private void markBlockNeedsUpdate(int x, int y, int z, int blockID) {
+    public void markBlockNeedsUpdate(int x, int y, int z) {
         for(int i5 = 0; i5 < this.worldAccesses.size(); ++i5) {
             ((IWorldAccess)this.worldAccesses.get(i5)).markBlockAndNeighborsNeedsUpdate(x, y, z);
         }
 
+    }
+
+    private void notifyBlockChange(int x, int y, int z, int blockID) {
+        this.markBlockNeedsUpdate(x, y, z);
         this.notifyBlocksOfNeighborChange(x, y, z, blockID);
     }
 
@@ -462,7 +500,7 @@ public class World implements IBlockAccess {
 	}
 
 	private void notifyBlockOfNeighborChange(int x, int y, int z, int blockID) {
-        if(!this.editingBlocks) {
+        if(!this.editingBlocks && !this.multiplayerWorld) {
             Block block5;
             if((block5 = Block.blocksList[this.getBlockId(x, y, z)]) != null) {
                 block5.onNeighborBlockChange(this, x, y, z, blockID);
@@ -951,6 +989,21 @@ public class World implements IBlockAccess {
 		return Vec3D.createVector((double)f4, (double)f5, (double)f6);
 	}
 
+    public int getTopSolidOrLiquidBlock(int x, int z) {
+        Chunk chunk3 = this.getChunkFromBlockCoords(x, z);
+        int i4 = 127;
+        x &= 15;
+
+        for(z &= 15; i4 > 0; --i4) {
+            int i5 = chunk3.getBlockID(x, i4, z);
+            if(i5 != 0 && (Block.blocksList[i5].material.getIsSolid() || Block.blocksList[i5].material.getIsLiquid())) {
+                return i4 + 1;
+            }
+        }
+
+        return -1;
+    }
+
     public int getPrecipitationHeight(int x, int z) {
         return this.getChunkFromBlockCoords(x, z).getHeightValue(x & 15, z & 15);
     }
@@ -985,12 +1038,20 @@ public class World implements IBlockAccess {
     }
 
     public void updateEntities() {
+        int i1;
+        for(i1 = 0; i1 < this.playerEntities.size(); ++i1) {
+            if(!this.loadedEntityList.contains(this.playerEntities.get(i1))) {
+                System.out.println("Reinserting player " + i1);
+                this.spawnEntityInWorld((Entity)this.playerEntities.get(i1));
+            }
+        }
+
         this.loadedEntityList.removeAll(this.unloadedEntityList);
 
-        int i1;
+        int i11;
         int i3;
-        for(i1 = 0; i1 < this.worldAccesses.size(); ++i1) {
-            IWorldAccess iWorldAccess2 = (IWorldAccess)this.worldAccesses.get(i1);
+        for(i11 = 0; i11 < this.worldAccesses.size(); ++i11) {
+            IWorldAccess iWorldAccess2 = (IWorldAccess)this.worldAccesses.get(i11);
 
             for(i3 = 0; i3 < this.unloadedEntityList.size(); ++i3) {
                 iWorldAccess2.releaseEntitySkin((Entity)this.unloadedEntityList.get(i3));
@@ -999,9 +1060,9 @@ public class World implements IBlockAccess {
 
         this.unloadedEntityList.clear();
 
-        for(i1 = 0; i1 < this.loadedEntityList.size(); ++i1) {
+        for(i11 = 0; i11 < this.loadedEntityList.size(); ++i11) {
             Entity entity5;
-            if((entity5 = (Entity)this.loadedEntityList.get(i1)).ridingEntity != null) {
+            if((entity5 = (Entity)this.loadedEntityList.get(i11)).ridingEntity != null) {
                 if(!entity5.ridingEntity.isDead && entity5.ridingEntity.riddenByEntity == entity5) {
                     continue;
                 }
@@ -1021,7 +1082,7 @@ public class World implements IBlockAccess {
                     this.getChunkFromChunkCoords(i3, i4).removeEntity(entity5);
                 }
 
-                this.loadedEntityList.remove(i1--);
+                this.loadedEntityList.remove(i11--);
 
                 for(i3 = 0; i3 < this.worldAccesses.size(); ++i3) {
                     ((IWorldAccess)this.worldAccesses.get(i3)).releaseEntitySkin(entity5);
@@ -1029,8 +1090,8 @@ public class World implements IBlockAccess {
             }
         }
 
-        for(i1 = 0; i1 < this.loadedTileEntityList.size(); ++i1) {
-            ((TileEntity)this.loadedTileEntityList.get(i1)).updateEntity();
+        for(i11 = 0; i11 < this.loadedTileEntityList.size(); ++i11) {
+            ((TileEntity)this.loadedTileEntityList.get(i11)).updateEntity();
         }
 
     }
@@ -1038,7 +1099,8 @@ public class World implements IBlockAccess {
     private void updateEntity(Entity entity) {
         int i2 = MathHelper.floor_double(entity.posX);
         int i4 = MathHelper.floor_double(entity.posZ);
-        if(this.checkChunksExist(i2 - 16, 0, i4 - 16, i2 + 16, 128, i4 + 16)) {
+        byte b4 = 2;
+        if(this.checkChunksExist(i2 - b4, 0, i4 - b4, i2 + b4, 128, i4 + b4)) {
             entity.lastTickPosX = entity.posX;
             entity.lastTickPosY = entity.posY;
             entity.lastTickPosZ = entity.posZ;
@@ -1225,6 +1287,36 @@ public class World implements IBlockAccess {
 		return false;
 	}
 
+    public boolean isAABBInMaterial(AxisAlignedBB aabb, Material material) {
+        int i3 = MathHelper.floor_double(aabb.minX);
+        int i4 = MathHelper.floor_double(aabb.maxX + 1.0D);
+        int i5 = MathHelper.floor_double(aabb.minY);
+        int i6 = MathHelper.floor_double(aabb.maxY + 1.0D);
+        int i7 = MathHelper.floor_double(aabb.minZ);
+        int i8 = MathHelper.floor_double(aabb.maxZ + 1.0D);
+
+        for(int i9 = i3; i9 < i4; ++i9) {
+            for(int i10 = i5; i10 < i6; ++i10) {
+                for(int i11 = i7; i11 < i8; ++i11) {
+                    Block block12 = Block.blocksList[this.getBlockId(i9, i10, i11)];
+                    if(block12 != null && block12.material == material) {
+                        int i13 = this.getBlockMetadata(i9, i10, i11);
+                        double d14 = (double)(i10 + 1);
+                        if(i13 < 8) {
+                            d14 = (double)(i10 + 1) - (double)i13 / 8.0D;
+                        }
+
+                        if(d14 >= aabb.minY) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
 	public void createExplosion(Entity entity, double d2, double d4, double d6, float f8) {
 		(new Explosion()).doExplosion(this, entity, d2, d4, d6, f8);
 	}
@@ -1325,7 +1417,7 @@ public class World implements IBlockAccess {
     }
 
     public boolean updatingLighting() {
-        int i1 = 100000;
+        int i1 = 10000;
 
         while(this.lightingToUpdate.size() > 0) {
             --i1;
@@ -1447,10 +1539,10 @@ public class World implements IBlockAccess {
                 i6 = this.updateLCG >> 2;
                 i7 = i6 & 15;
                 i8 = i6 >> 8 & 15;
-                i9 = chunk14.getHeightValue(i7, i8);
-                if(chunk14.getSavedLightValue(EnumSkyBlock.Block, i7, i9, i8) < 10 && chunk14.getBlockID(i7, i9, i8) == 0) {
+                i9 = this.getTopSolidOrLiquidBlock(i7 + i3, i8 + i4);
+                if(i9 >= 0 && i9 < 128 && chunk14.getSavedLightValue(EnumSkyBlock.Block, i7, i9, i8) < 10) {
                     i10 = chunk14.getBlockID(i7, i9 - 1, i8);
-                    if(i10 != 0 && i10 != Block.ice.blockID && Block.blocksList[i10].material.getIsSolid()) {
+                    if(chunk14.getBlockID(i7, i9, i8) == 0 && i10 != 0 && i10 != Block.ice.blockID && Block.blocksList[i10].material.getIsSolid()) {
                         this.setBlockWithNotify(i7 + i3, i9, i8 + i4, Block.snow.blockID);
                     }
 
@@ -1602,14 +1694,14 @@ public class World implements IBlockAccess {
 
     public boolean canBlockBePlacedAt(int blockID, int x, int y, int z, boolean ignoreBoundingBox) {
         int i6 = this.getBlockId(x, y, z);
-        Block block9 = Block.blocksList[i6];
-        Block block7;
-        AxisAlignedBB axisAlignedBB8 = (block7 = Block.blocksList[blockID]).getCollisionBoundingBoxFromPool(this, x, y, z);
+        Block block7 = Block.blocksList[i6];
+        Block block8 = Block.blocksList[blockID];
+        AxisAlignedBB axisAlignedBB9 = block8.getCollisionBoundingBoxFromPool(this, x, y, z);
         if(ignoreBoundingBox) {
-            axisAlignedBB8 = null;
+            axisAlignedBB9 = null;
         }
 
-        return (blockID > 0 && block9 == null || block9 == Block.waterMoving || block9 == Block.waterStill || block9 == Block.lavaMoving || block9 == Block.lavaStill || block9 == Block.fire) && (axisAlignedBB8 == null || this.checkIfAABBIsClear(axisAlignedBB8)) && block7.canPlaceBlockAt(this, x, y, z);
+        return block7 != Block.waterMoving && block7 != Block.waterStill && block7 != Block.lavaMoving && block7 != Block.lavaStill && block7 != Block.fire && block7 != Block.snow ? blockID > 0 && block7 == null && (axisAlignedBB9 == null || this.checkIfAABBIsClear(axisAlignedBB9)) && block8.canPlaceBlockAt(this, x, y, z) : true;
     }
 
     public PathEntity getPathToEntity(Entity entity, Entity entity2, float f3) {
@@ -1682,6 +1774,50 @@ public class World implements IBlockAccess {
         }
 
         return entityPlayer11;
+    }
+
+    public void setChunkData(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, byte[] blocks) {
+        int i8 = minX >> 4;
+        int i9 = minZ >> 4;
+        int i10 = minX + maxX - 1 >> 4;
+        int i11 = minZ + maxZ - 1 >> 4;
+        int i12 = 0;
+        int i13 = minY;
+        int i14 = minY + maxY;
+        if(minY < 0) {
+            i13 = 0;
+        }
+
+        if(i14 > 128) {
+            i14 = 128;
+        }
+
+        for(int i15 = i8; i15 <= i10; ++i15) {
+            int i16 = minX - i15 * 16;
+            int i17 = minX + maxX - i15 * 16;
+            if(i16 < 0) {
+                i16 = 0;
+            }
+
+            if(i17 > 16) {
+                i17 = 16;
+            }
+
+            for(int i18 = i9; i18 <= i11; ++i18) {
+                int i19 = minZ - i18 * 16;
+                int i20 = minZ + maxZ - i18 * 16;
+                if(i19 < 0) {
+                    i19 = 0;
+                }
+
+                if(i20 > 16) {
+                    i20 = 16;
+                }
+
+                i12 = this.getChunkFromChunkCoords(i15, i18).setChunkData(blocks, i16, i13, i19, i17, i14, i20, i12);
+            }
+        }
+
     }
 
 	static {

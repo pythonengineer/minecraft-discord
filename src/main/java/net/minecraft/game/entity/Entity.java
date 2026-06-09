@@ -21,6 +21,8 @@ import net.minecraft.game.world.block.StepSound;
 import net.minecraft.game.world.material.Material;
 
 public abstract class Entity {
+    private static int nextEntityID = 0;
+    public int entityID = nextEntityID++;
 	public boolean preventEntitySpawning = false;
     public Entity riddenByEntity;
     public Entity ridingEntity;
@@ -359,7 +361,10 @@ public abstract class Entity {
 				if(this.distanceWalkedModified > (float)this.nextStepDistance && i27 > 0) {
 					++this.nextStepDistance;
 					StepSound stepSound26 = Block.blocksList[i27].stepSound;
-					if(!Block.blocksList[i27].material.getIsLiquid()) {
+                    if(this.worldObj.getBlockId(i31, i25 + 1, i19) == Block.snow.blockID) {
+                        stepSound26 = Block.snow.stepSound;
+                        this.worldObj.playSoundAtEntity(this, stepSound26.getStepSound(), stepSound26.getVolume() * 0.15F, stepSound26.getPitch());
+                    } else if(!Block.blocksList[i27].material.getIsLiquid()) {
 						this.worldObj.playSoundAtEntity(this, stepSound26.getStepSound(), stepSound26.getVolume() * 0.15F, stepSound26.getPitch());
 					}
 
@@ -474,6 +479,24 @@ public abstract class Entity {
         this.worldObj = world;
     }
 
+    public void setPositionAndRotation(double posX, double posY, double posZ, float rotationYaw, float rotationPitch) {
+        this.prevPosX = this.posX = posX;
+        this.prevPosY = this.posY = posY;
+        this.prevPosZ = this.posZ = posZ;
+        this.rotationYaw = rotationYaw;
+        this.rotationPitch = rotationPitch;
+        double d9 = (double)(this.prevRotationYaw - rotationYaw);
+        if(d9 < -180.0D) {
+            this.prevRotationYaw += 360.0F;
+        }
+
+        if(d9 >= 180.0D) {
+            this.prevRotationYaw -= 360.0F;
+        }
+
+        this.setPosition(this.posX, this.posY, this.posZ);
+    }
+
 	public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
 		this.prevPosX = this.posX = x;
 		this.prevPosY = this.posY = y + (double)this.yOffset;
@@ -515,28 +538,30 @@ public abstract class Entity {
 	}
 
     public void applyEntityCollision(Entity entity) {
-        double d2 = entity.posX - this.posX;
-        double d4 = entity.posZ - this.posZ;
-        double d6;
-        if((d6 = MathHelper.abs_max(d2, d4)) >= (double)0.01F) {
-            d6 = (double)MathHelper.sqrt_double(d6);
-            d2 /= d6;
-            d4 /= d6;
-            double d8;
-            if((d8 = 1.0D / d6) > 1.0D) {
-                d8 = 1.0D;
+        if(entity.riddenByEntity != this && entity.ridingEntity != this) {
+            double d2 = entity.posX - this.posX;
+            double d4 = entity.posZ - this.posZ;
+            double d6;
+            if((d6 = MathHelper.abs_max(d2, d4)) >= (double)0.01F) {
+                d6 = (double)MathHelper.sqrt_double(d6);
+                d2 /= d6;
+                d4 /= d6;
+                double d8;
+                if((d8 = 1.0D / d6) > 1.0D) {
+                    d8 = 1.0D;
+                }
+
+                d2 *= d8;
+                d4 *= d8;
+                d2 *= (double)0.05F;
+                d4 *= (double)0.05F;
+                d2 *= (double)(1.0F - this.entityCollisionReduction);
+                d4 *= (double)(1.0F - this.entityCollisionReduction);
+                this.addVelocity(-d2, 0.0D, -d4);
+                entity.addVelocity(d2, 0.0D, d4);
             }
 
-            d2 *= d8;
-            d4 *= d8;
-            d2 *= (double)0.05F;
-            d4 *= (double)0.05F;
-            d2 *= (double)(1.0F - this.entityCollisionReduction);
-            d4 *= (double)(1.0F - this.entityCollisionReduction);
-            this.addVelocity(-d2, 0.0D, -d4);
-            entity.addVelocity(d2, 0.0D, d4);
         }
-
     }
 
     public void addVelocity(double motionX, double motionY, double motionZ) {
@@ -749,6 +774,7 @@ public abstract class Entity {
         if(this.ridingEntity == entity) {
             this.ridingEntity.riddenByEntity = null;
             this.ridingEntity = null;
+            this.setLocationAndAngles(entity.posX, entity.boundingBox.minY + (double)entity.yOffset, entity.posZ, this.rotationYaw, this.rotationPitch);
         } else {
             if(this.ridingEntity != null) {
                 this.ridingEntity.riddenByEntity = null;

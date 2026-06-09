@@ -64,8 +64,9 @@ public abstract class BlockFluid extends Block {
         return flag && metadata == 0;
     }
 
-    public boolean shouldSideBeRendered(IBlockAccess iBlockAccess, int x, int y, int z, int metadata) {
-        return iBlockAccess.getBlockMaterial(x, y, z) == this.material ? false : (metadata == 1 ? true : super.shouldSideBeRendered(iBlockAccess, x, y, z, metadata));
+    public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
+        Material material6 = blockAccess.getBlockMaterial(x, y, z);
+        return material6 == this.material ? false : (material6 == Material.ice ? false : (metadata == 1 ? true : super.shouldSideBeRendered(blockAccess, x, y, z, metadata)));
     }
 
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {

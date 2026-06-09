@@ -87,6 +87,8 @@ public class Item {
 	public static Item saddle = (new ItemSaddle(73)).setIconIndex(104);
     public static Item doorSteel = (new ItemDoor(74, Material.iron)).setIconIndex(44);
     public static Item redstone = (new ItemRedstone(75)).setIconIndex(56);
+    public static Item snowball = (new ItemSnowball(76)).setIconIndex(14);
+    public static Item boat = (new ItemBoat(77)).setIconIndex(136);
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
 	protected int maxDamage = 32;

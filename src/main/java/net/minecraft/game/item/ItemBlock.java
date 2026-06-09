@@ -14,29 +14,33 @@ public class ItemBlock extends Item {
 	}
 
 	public boolean onItemUse(ItemStack itemStack1, EntityPlayer entityPlayer2, World world3, int xCoord, int yCoord, int zCoord, int i7) {
-		if(i7 == 0) {
-			--yCoord;
-		}
+        if(world3.getBlockId(xCoord, yCoord, zCoord) == Block.snow.blockID) {
+            i7 = 0;
+        } else {
+            if(i7 == 0) {
+                --yCoord;
+            }
 
-		if(i7 == 1) {
-			++yCoord;
-		}
+            if(i7 == 1) {
+                ++yCoord;
+            }
 
-		if(i7 == 2) {
-			--zCoord;
-		}
+            if(i7 == 2) {
+                --zCoord;
+            }
 
-		if(i7 == 3) {
-			++zCoord;
-		}
+            if(i7 == 3) {
+                ++zCoord;
+            }
 
-		if(i7 == 4) {
-			--xCoord;
-		}
+            if(i7 == 4) {
+                --xCoord;
+            }
 
-		if(i7 == 5) {
-			++xCoord;
-		}
+            if(i7 == 5) {
+                ++xCoord;
+            }
+        }
 
 		if(itemStack1.stackSize == 0) {
 			return false;

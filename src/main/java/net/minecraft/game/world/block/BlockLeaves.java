@@ -14,28 +14,16 @@ public class BlockLeaves extends BlockLeavesBase {
 		this.setTickOnLoad(true);
 	}
 
-    public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
-        if(!world.getBlockMaterial(x, y - 1, z).isSolid()) {
-            byte b6 = 2;
-
-            for(int i7 = x - b6; i7 <= x + b6; ++i7) {
-                for(int i8 = y - 1; i8 <= y + 1; ++i8) {
-                    for(int i9 = z - b6; i9 <= z + b6; ++i9) {
-                        if(world.getBlockId(i7, i8, i9) == Block.wood.blockID) {
-                            return;
-                        }
-                    }
-                }
-            }
-
-            this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z));
-            world.setBlockWithNotify(x, y, z, 0);
-        }
+    public void onNeighborBlockChange(World world, int i2, int i3, int i4, int i5) {
+        super.onNeighborBlockChange(world, i2, i3, i4, i5);
     }
 
-	public int quantityDropped(EaglercraftRandom rand) {
-		return rand.nextInt(10) == 0 ? 1 : 0;
-	}
+    public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
+    }
+
+    public int quantityDropped(EaglercraftRandom rand) {
+        return rand.nextInt(20) == 0 ? 1 : 0;
+    }
 
 	public int idDropped(int metadata, EaglercraftRandom rand) {
 		return Block.sapling.blockID;

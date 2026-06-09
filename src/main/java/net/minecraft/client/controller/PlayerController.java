@@ -3,6 +3,7 @@ package net.minecraft.client.controller;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.StepSound;
@@ -64,4 +65,8 @@ public class PlayerController {
 
 	public void onRespawn(EntityPlayer playerEntity) {
 	}
+
+    public boolean onPlayerRightClick(EntityPlayer entityPlayer, World world, ItemStack itemStack, int x, int y, int z, int side) {
+        return itemStack.useItem(entityPlayer, world, x, y, z, side);
+    }
 }

@@ -82,14 +82,6 @@ public class EntityPlayerSP extends EntityPlayer {
         this.mc.displayGuiScreen(new GuiFurnace(this.inventory, furnaceTileEntity));
     }
 
-    public ItemStack getCurrentEquippedItem() {
-        return this.inventory.getCurrentItem();
-    }
-
-    public void destroyCurrentEquippedItem() {
-        this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
-    }
-
     public void attackEntity(Entity entity1) {
         int i2 = this.inventory.getDamageVsEntity(entity1);
         if(i2 > 0) {
@@ -126,9 +118,5 @@ public class EntityPlayerSP extends EntityPlayer {
             }
 
         }
-    }
-
-    protected double getYOffset() {
-        return (double)(this.yOffset - 0.5F);
     }
 }

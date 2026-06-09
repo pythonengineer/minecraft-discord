@@ -15,7 +15,7 @@ import net.minecraft.game.world.block.Block;
 
 public class EffectRenderer {
 	protected World worldObj;
-	private List[] fxLayers = new List[3];
+	private List[] fxLayers = new List[4];
 	private RenderEngine renderEngine;
 	private EaglercraftRandom rand = new EaglercraftRandom();
 
@@ -26,7 +26,7 @@ public class EffectRenderer {
 
 		this.renderEngine = renderEngine;
 
-		for(int i3 = 0; i3 < 3; ++i3) {
+		for(int i3 = 0; i3 < 4; ++i3) {
 			this.fxLayers[i3] = new ArrayList();
 		}
 
@@ -38,7 +38,7 @@ public class EffectRenderer {
 	}
 
 	public void updateEffects() {
-		for(int i1 = 0; i1 < 3; ++i1) {
+		for(int i1 = 0; i1 < 4; ++i1) {
 			for(int i2 = 0; i2 < this.fxLayers[i1].size(); ++i2) {
 				EntityFX entityFX3 = (EntityFX)this.fxLayers[i1].get(i2);
 				entityFX3.onUpdate();
@@ -60,7 +60,7 @@ public class EffectRenderer {
 		EntityFX.interpPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTime;
 		EntityFX.interpPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTime;
 
-		for(int i11 = 0; i11 < 2; ++i11) {
+		for(int i11 = 0; i11 < 3; ++i11) {
 			if(this.fxLayers[i11].size() != 0) {
 				int i8 = 0;
 				if(i11 == 0) {
@@ -70,6 +70,10 @@ public class EffectRenderer {
 				if(i11 == 1) {
 					i8 = this.renderEngine.getTexture("/terrain.png");
 				}
+
+                if(i11 == 2) {
+                    i8 = this.renderEngine.getTexture("/gui/items.png");
+                }
 
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, i8);
 				Tessellator tessellator12 = Tessellator.instance;
@@ -86,7 +90,7 @@ public class EffectRenderer {
 	}
 
 	public void renderLitParticles(Entity entity, float partialTime) {
-        byte b3 = 2;
+        byte b3 = 3;
 		if(this.fxLayers[b3].size() != 0) {
 			Tessellator tessellator2 = Tessellator.instance;
 
@@ -100,7 +104,7 @@ public class EffectRenderer {
 	public void clearEffects(World world) {
 		this.worldObj = world;
 
-		for(int i2 = 0; i2 < 3; ++i2) {
+		for(int i2 = 0; i2 < 4; ++i2) {
 			this.fxLayers[i2].clear();
 		}
 

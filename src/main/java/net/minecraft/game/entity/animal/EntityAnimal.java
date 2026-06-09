@@ -25,6 +25,9 @@ public abstract class EntityAnimal extends EntityCreature {
 	}
 
 	public boolean getCanSpawnHere(double x, double y, double z) {
-		return this.worldObj.getBlockLightValue(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)) > 8 && super.getCanSpawnHere(x, y, z);
-	}
+        int i7 = MathHelper.floor_double(x);
+        int i8 = MathHelper.floor_double(y);
+        int i9 = MathHelper.floor_double(z);
+        return this.worldObj.getBlockId(i7, i8 - 2, i9) == Block.grass.blockID && this.worldObj.getBlockLightValue(i7, i8, i9) > 8 && super.getCanSpawnHere(x, y, z);
+    }
 }

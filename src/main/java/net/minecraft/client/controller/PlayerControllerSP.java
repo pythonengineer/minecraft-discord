@@ -46,6 +46,7 @@ public class PlayerControllerSP extends PlayerController {
         int i5 = this.mc.theWorld.getBlockMetadata(x, y, z);
         boolean z6 = super.sendBlockRemoved(x, y, z);
         ItemStack itemStack7 = this.mc.thePlayer.getCurrentEquippedItem();
+        boolean z8 = this.mc.thePlayer.canHarvestBlock(Block.blocksList[i4]);
         if(itemStack7 != null) {
             itemStack7.onDestroyBlock(i4, x, y, z);
             if(itemStack7.stackSize == 0) {
@@ -54,8 +55,8 @@ public class PlayerControllerSP extends PlayerController {
             }
         }
 
-        if(z6 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[i4])) {
-            Block.blocksList[i4].dropBlockAsItem(this.mc.theWorld, x, y, z, i5);
+        if(z6 && z8) {
+            Block.blocksList[i4].harvestBlock(this.mc.theWorld, x, y, z, i5);
         }
 
         return z6;
@@ -82,7 +83,6 @@ public class PlayerControllerSP extends PlayerController {
         if(this.blockHitWait > 0) {
             --this.blockHitWait;
         } else {
-            super.sendBlockRemoving(x, y, z, blockID);
             if(x == this.curBlockX && y == this.curBlockY && z == this.curBlockZ) {
                 if((blockID = this.mc.theWorld.getBlockId(x, y, z)) != 0) {
                     Block block6 = Block.blocksList[blockID];

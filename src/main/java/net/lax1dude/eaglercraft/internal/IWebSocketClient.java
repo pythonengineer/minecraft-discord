@@ -1,8 +1,11 @@
 package net.lax1dude.eaglercraft.internal;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.List;
+
+import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 
 /**
  * Copyright (c) 2024 lax1dude. All Rights Reserved.
@@ -69,4 +72,8 @@ public interface IWebSocketClient {
     void setEnableStringFrames(boolean enable);
 
     void setEnableBinaryFrames(boolean enable);
+
+    InputStream getInputStream();
+
+    OutputStream getOutputStream();
 }

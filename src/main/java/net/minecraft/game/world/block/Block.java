@@ -112,7 +112,9 @@ public class Block {
     public static final Block torchRedstoneActive = (new BlockRedstoneTorch(76, 99, true)).setHardness(0.0F).setLightValue(0.5F).setStepSound(soundWoodFootstep);
     public static final Block button = (new BlockButton(77, stone.blockIndexInTexture)).setHardness(0.5F).setStepSound(soundStoneFootstep);
     public static final Block snow = (new BlockSnow(78, 66)).setHardness(0.1F).setStepSound(soundClothFootstep);
-    public static final Block ice = (new BlockIce(79, 67)).setHardness(0.1F).setLightOpacity(3).setStepSound(soundGlassFootstep);
+    public static final Block ice = (new BlockIce(79, 67)).setHardness(0.5F).setLightOpacity(3).setStepSound(soundGlassFootstep);
+    public static final Block blockSnow = (new BlockSnowBlock(80, 66)).setHardness(0.2F).setStepSound(soundClothFootstep);
+    public static final Block cactus = (new BlockCactus(81, 70)).setHardness(0.4F).setStepSound(soundClothFootstep);
     public int blockIndexInTexture;
     public final int blockID;
     protected float hardness;
@@ -468,6 +470,14 @@ public class Block {
     }
 
     public void setBlockBoundsForItemRender() {
+    }
+
+    public void harvestBlock(World world, int x, int y, int z, int metadata) {
+        this.dropBlockAsItem(world, x, y, z, metadata);
+    }
+
+    public boolean canBlockStay(World world, int x, int y, int z) {
+        return true;
     }
 
     static {

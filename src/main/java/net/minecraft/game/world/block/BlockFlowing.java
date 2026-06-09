@@ -17,6 +17,7 @@ public class BlockFlowing extends BlockFluid {
 		int i5 = world.getBlockMetadata(x, y, z);
         world.setBlockAndMetadata(x, y, z, this.blockID + 1, i5);
 		world.markBlocksDirty(x, y, z, x, y, z);
+        world.markBlockNeedsUpdate(x, y, z);
 	}
 
 	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {

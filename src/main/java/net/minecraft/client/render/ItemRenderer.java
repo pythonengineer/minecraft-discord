@@ -24,6 +24,114 @@ public class ItemRenderer {
 		this.mc = mc;
 	}
 
+    public void renderItem(ItemStack itemStack) {
+        GL11.glPushMatrix();
+        if(itemStack.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[itemStack.itemID].getRenderType())) {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+            this.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[itemStack.itemID]);
+        } else {
+            if(itemStack.itemID < 256) {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
+            } else {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/items.png"));
+            }
+
+            Tessellator tessellator2 = Tessellator.instance;
+            float f3 = (float)(itemStack.getIconIndex() % 16 * 16 + 0) / 256.0F;
+            float f4 = (float)(itemStack.getIconIndex() % 16 * 16 + 16) / 256.0F;
+            float f5 = (float)(itemStack.getIconIndex() / 16 * 16 + 0) / 256.0F;
+            float f6 = (float)(itemStack.getIconIndex() / 16 * 16 + 16) / 256.0F;
+            float f7 = 1.0F;
+            float f8 = 0.0F;
+            float f9 = 0.3F;
+            GL11.glEnable(GL11.GL_RESCALE_NORMAL);
+            GL11.glTranslatef(-f8, -f9, 0.0F);
+            float f10 = 1.5F;
+            GL11.glScalef(f10, f10, f10);
+            GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(335.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glTranslatef(-0.9375F, -0.0625F, 0.0F);
+            float f11 = 0.0625F;
+            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            tessellator2.setNormal(0.0F, 0.0F, 1.0F);
+            tessellator2.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)f4, (double)f6);
+            tessellator2.addVertexWithUV((double)f7, 0.0D, 0.0D, (double)f3, (double)f6);
+            tessellator2.addVertexWithUV((double)f7, 1.0D, 0.0D, (double)f3, (double)f5);
+            tessellator2.addVertexWithUV(0.0D, 1.0D, 0.0D, (double)f4, (double)f5);
+            tessellator2.draw();
+            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            tessellator2.setNormal(0.0F, 0.0F, -1.0F);
+            tessellator2.addVertexWithUV(0.0D, 1.0D, (double)(0.0F - f11), (double)f4, (double)f5);
+            tessellator2.addVertexWithUV((double)f7, 1.0D, (double)(0.0F - f11), (double)f3, (double)f5);
+            tessellator2.addVertexWithUV((double)f7, 0.0D, (double)(0.0F - f11), (double)f3, (double)f6);
+            tessellator2.addVertexWithUV(0.0D, 0.0D, (double)(0.0F - f11), (double)f4, (double)f6);
+            tessellator2.draw();
+            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            tessellator2.setNormal(-1.0F, 0.0F, 0.0F);
+
+            int i12;
+            float f13;
+            float f14;
+            float f15;
+            for(i12 = 0; i12 < 16; ++i12) {
+                f13 = (float)i12 / 16.0F;
+                f14 = f4 + (f3 - f4) * f13 - 0.001953125F;
+                f15 = f7 * f13;
+                tessellator2.addVertexWithUV((double)f15, 0.0D, (double)(0.0F - f11), (double)f14, (double)f6);
+                tessellator2.addVertexWithUV((double)f15, 0.0D, 0.0D, (double)f14, (double)f6);
+                tessellator2.addVertexWithUV((double)f15, 1.0D, 0.0D, (double)f14, (double)f5);
+                tessellator2.addVertexWithUV((double)f15, 1.0D, (double)(0.0F - f11), (double)f14, (double)f5);
+            }
+
+            tessellator2.draw();
+            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            tessellator2.setNormal(1.0F, 0.0F, 0.0F);
+
+            for(i12 = 0; i12 < 16; ++i12) {
+                f13 = (float)i12 / 16.0F;
+                f14 = f4 + (f3 - f4) * f13 - 0.001953125F;
+                f15 = f7 * f13 + 0.0625F;
+                tessellator2.addVertexWithUV((double)f15, 1.0D, (double)(0.0F - f11), (double)f14, (double)f5);
+                tessellator2.addVertexWithUV((double)f15, 1.0D, 0.0D, (double)f14, (double)f5);
+                tessellator2.addVertexWithUV((double)f15, 0.0D, 0.0D, (double)f14, (double)f6);
+                tessellator2.addVertexWithUV((double)f15, 0.0D, (double)(0.0F - f11), (double)f14, (double)f6);
+            }
+
+            tessellator2.draw();
+            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            tessellator2.setNormal(0.0F, 1.0F, 0.0F);
+
+            for(i12 = 0; i12 < 16; ++i12) {
+                f13 = (float)i12 / 16.0F;
+                f14 = f6 + (f5 - f6) * f13 - 0.001953125F;
+                f15 = f7 * f13 + 0.0625F;
+                tessellator2.addVertexWithUV(0.0D, (double)f15, 0.0D, (double)f4, (double)f14);
+                tessellator2.addVertexWithUV((double)f7, (double)f15, 0.0D, (double)f3, (double)f14);
+                tessellator2.addVertexWithUV((double)f7, (double)f15, (double)(0.0F - f11), (double)f3, (double)f14);
+                tessellator2.addVertexWithUV(0.0D, (double)f15, (double)(0.0F - f11), (double)f4, (double)f14);
+            }
+
+            tessellator2.draw();
+            tessellator2.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
+            tessellator2.setNormal(0.0F, -1.0F, 0.0F);
+
+            for(i12 = 0; i12 < 16; ++i12) {
+                f13 = (float)i12 / 16.0F;
+                f14 = f6 + (f5 - f6) * f13 - 0.001953125F;
+                f15 = f7 * f13;
+                tessellator2.addVertexWithUV((double)f7, (double)f15, 0.0D, (double)f3, (double)f14);
+                tessellator2.addVertexWithUV(0.0D, (double)f15, 0.0D, (double)f4, (double)f14);
+                tessellator2.addVertexWithUV(0.0D, (double)f15, (double)(0.0F - f11), (double)f4, (double)f14);
+                tessellator2.addVertexWithUV((double)f7, (double)f15, (double)(0.0F - f11), (double)f3, (double)f14);
+            }
+
+            tessellator2.draw();
+            GL11.glDisable(GL11.GL_RESCALE_NORMAL);
+        }
+
+        GL11.glPopMatrix();
+    }
+
     public void renderItemInFirstPerson(float partialTicks) {
         float f2 = this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks;
         GL11.glPushMatrix();
@@ -57,103 +165,7 @@ public class ItemRenderer {
             }
 
             GL11.glScalef(0.4F, 0.4F, 0.4F);
-            if(this.itemToRender.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[this.itemToRender.itemID].getRenderType())) {
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-                this.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[this.itemToRender.itemID]);
-            } else {
-                if(this.itemToRender.itemID < 256) {
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-                } else {
-                    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/items.png"));
-                }
-
-                Tessellator t = Tessellator.instance;
-                f5 = (float)(this.itemToRender.getIconIndex() % 16 << 4) / 256.0F;
-                partialTicks = (float)((this.itemToRender.getIconIndex() % 16 << 4) + 16) / 256.0F;
-                f2 = (float)(this.itemToRender.getIconIndex() / 16 << 4) / 256.0F;
-                f9 = (float)((this.itemToRender.getIconIndex() / 16 << 4) + 16) / 256.0F;
-                GL11.glEnable(GL11.GL_RESCALE_NORMAL);
-                GL11.glTranslatef(0.0F, -0.3F, 0.0F);
-                GL11.glScalef(1.5F, 1.5F, 1.5F);
-                GL11.glRotatef(50.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glRotatef(335.0F, 0.0F, 0.0F, 1.0F);
-                GL11.glTranslatef(-(15.0F / 16.0F), -(1.0F / 16.0F), 0.0F);
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                t.setNormal(0.0F, 0.0F, 1.0F);
-                t.addVertexWithUV(0.0D, 0.0D, 0.0D, (double)partialTicks, (double)f9);
-                t.addVertexWithUV(1.0D, 0.0D, 0.0D, (double)f5, (double)f9);
-                t.addVertexWithUV(1.0D, 1.0D, 0.0D, (double)f5, (double)f2);
-                t.addVertexWithUV(0.0D, 1.0D, 0.0D, (double)partialTicks, (double)f2);
-                t.draw();
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                t.setNormal(0.0F, 0.0F, -1.0F);
-                t.addVertexWithUV(0.0D, 1.0D, -0.0625D, (double)partialTicks, (double)f2);
-                t.addVertexWithUV(1.0D, 1.0D, -0.0625D, (double)f5, (double)f2);
-                t.addVertexWithUV(1.0D, 0.0D, -0.0625D, (double)f5, (double)f9);
-                t.addVertexWithUV(0.0D, 0.0D, -0.0625D, (double)partialTicks, (double)f9);
-                t.draw();
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                t.setNormal(-1.0F, 0.0F, 0.0F);
-
-                int i6;
-                float f7;
-                float f8;
-                for(i6 = 0; i6 < 16; ++i6) {
-                    f7 = (float)i6 / 16.0F;
-                    f8 = partialTicks + (f5 - partialTicks) * f7 - 0.001953125F;
-                    f7 *= 1.0F;
-                    t.addVertexWithUV((double)f7, 0.0D, -0.0625D, (double)f8, (double)f9);
-                    t.addVertexWithUV((double)f7, 0.0D, 0.0D, (double)f8, (double)f9);
-                    t.addVertexWithUV((double)f7, 1.0D, 0.0D, (double)f8, (double)f2);
-                    t.addVertexWithUV((double)f7, 1.0D, -0.0625D, (double)f8, (double)f2);
-                }
-
-                t.draw();
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                t.setNormal(1.0F, 0.0F, 0.0F);
-
-                for(i6 = 0; i6 < 16; ++i6) {
-                    f7 = (float)i6 / 16.0F;
-                    f8 = partialTicks + (f5 - partialTicks) * f7 - 0.001953125F;
-                    f7 = f7 * 1.0F + 1.0F / 16.0F;
-                    t.addVertexWithUV((double)f7, 1.0D, -0.0625D, (double)f8, (double)f2);
-                    t.addVertexWithUV((double)f7, 1.0D, 0.0D, (double)f8, (double)f2);
-                    t.addVertexWithUV((double)f7, 0.0D, 0.0D, (double)f8, (double)f9);
-                    t.addVertexWithUV((double)f7, 0.0D, -0.0625D, (double)f8, (double)f9);
-                }
-
-                t.draw();
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                t.setNormal(0.0F, 1.0F, 0.0F);
-
-                for(i6 = 0; i6 < 16; ++i6) {
-                    f7 = (float)i6 / 16.0F;
-                    f8 = f9 + (f2 - f9) * f7 - 0.001953125F;
-                    f7 = f7 * 1.0F + 1.0F / 16.0F;
-                    t.addVertexWithUV(0.0D, (double)f7, 0.0D, (double)partialTicks, (double)f8);
-                    t.addVertexWithUV(1.0D, (double)f7, 0.0D, (double)f5, (double)f8);
-                    t.addVertexWithUV(1.0D, (double)f7, -0.0625D, (double)f5, (double)f8);
-                    t.addVertexWithUV(0.0D, (double)f7, -0.0625D, (double)partialTicks, (double)f8);
-                }
-
-                t.draw();
-                t.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-                t.setNormal(0.0F, -1.0F, 0.0F);
-
-                for(i6 = 0; i6 < 16; ++i6) {
-                    f7 = (float)i6 / 16.0F;
-                    f8 = f9 + (f2 - f9) * f7 - 0.001953125F;
-                    f7 *= 1.0F;
-                    t.addVertexWithUV(1.0D, (double)f7, 0.0D, (double)f5, (double)f8);
-                    t.addVertexWithUV(0.0D, (double)f7, 0.0D, (double)partialTicks, (double)f8);
-                    t.addVertexWithUV(0.0D, (double)f7, -0.0625D, (double)partialTicks, (double)f8);
-                    t.addVertexWithUV(1.0D, (double)f7, -0.0625D, (double)f5, (double)f8);
-                }
-
-                t.draw();
-                GL11.glDisable(GL11.GL_RESCALE_NORMAL);
-            }
-
+            this.renderItem(this.itemToRender);
             GL11.glPopMatrix();
         } else {
             GL11.glPushMatrix();

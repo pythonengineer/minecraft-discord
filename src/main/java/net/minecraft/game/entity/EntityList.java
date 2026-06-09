@@ -7,9 +7,11 @@ import java.util.Map;
 import net.lax1dude.eaglercraft.minecraft.EntityConstructor;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
+import net.minecraft.game.entity.misc.EntityBoat;
 import net.minecraft.game.entity.misc.EntityFallingSand;
 import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.entity.misc.EntityMinecart;
+import net.minecraft.game.entity.misc.EntitySnowball;
 import net.minecraft.game.entity.misc.EntityTNTPrimed;
 import net.minecraft.game.entity.monster.EntityCreeper;
 import net.minecraft.game.entity.monster.EntityGiantZombie;
@@ -107,6 +109,7 @@ public class EntityList {
 
     static {
         addMapping(EntityArrow.class, EntityArrow::new, "Arrow");
+        addMapping(EntitySnowball.class, EntityArrow::new, "Snowball");
         addMapping(EntityItem.class, EntityItem::new, "Item");
         addMapping(EntityPainting.class, EntityPainting::new, "Painting");
         addMapping(EntityLiving.class, EntityLiving::new, "Mob");
@@ -121,5 +124,6 @@ public class EntityList {
         addMapping(EntityTNTPrimed.class, EntityTNTPrimed::new, "PrimedTnt");
         addMapping(EntityFallingSand.class, EntityFallingSand::new, "FallingSand");
         addMapping(EntityMinecart.class, EntityMinecart::new, "Minecart");
+        addMapping(EntityBoat.class, EntityBoat::new, "Boat");
     }
 }

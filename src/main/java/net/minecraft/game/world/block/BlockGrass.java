@@ -13,7 +13,14 @@ public class BlockGrass extends Block {
 	}
 
     public int getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
-        return side == 1 ? 0 : (side == 0 ? 2 : (blockAccess.getBlockMaterial(x, y + 1, z) == Material.snow ? 68 : 3));
+        if(side == 1) {
+            return 0;
+        } else if(side == 0) {
+            return 2;
+        } else {
+            Material material6 = blockAccess.getBlockMaterial(x, y + 1, z);
+            return material6 != Material.snow && material6 != Material.craftedSnow ? 3 : 68;
+        }
     }
 
 	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {

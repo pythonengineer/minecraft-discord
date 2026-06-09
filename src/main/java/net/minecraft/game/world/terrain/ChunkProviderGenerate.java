@@ -9,11 +9,14 @@ import net.minecraft.game.world.block.BlockSand;
 import net.minecraft.game.world.chunk.Chunk;
 import net.minecraft.game.world.chunk.IChunkProvider;
 import net.minecraft.game.world.material.Material;
+import net.minecraft.game.world.terrain.generate.WorldGenBigTree;
+import net.minecraft.game.world.terrain.generate.WorldGenCactus;
 import net.minecraft.game.world.terrain.generate.WorldGenDungeons;
 import net.minecraft.game.world.terrain.generate.WorldGenFlowers;
 import net.minecraft.game.world.terrain.generate.WorldGenLiquids;
 import net.minecraft.game.world.terrain.generate.WorldGenMinable;
 import net.minecraft.game.world.terrain.generate.WorldGenTrees;
+import net.minecraft.game.world.terrain.generate.WorldGenerator;
 import net.minecraft.game.world.terrain.noise.NoiseGeneratorOctaves;
 
 public class ChunkProviderGenerate implements IChunkProvider {
@@ -570,17 +573,21 @@ public class ChunkProviderGenerate implements IChunkProvider {
             i12 = 0;
         }
 
-        WorldGenTrees worldGenTrees18 = new WorldGenTrees();
         if(this.rand.nextInt(10) == 0) {
             ++i12;
+        }
+
+        Object object18 = new WorldGenTrees();
+        if(this.rand.nextInt(10) == 0) {
+            object18 = new WorldGenBigTree();
         }
 
         int i16;
         for(i14 = 0; i14 < i12; ++i14) {
             i15 = i4 + this.rand.nextInt(16) + 8;
             i16 = i5 + this.rand.nextInt(16) + 8;
-            worldGenTrees18.setScale(1.0D, 1.0D, 1.0D);
-            worldGenTrees18.generate(this.worldObj, this.rand, i15, this.worldObj.getHeightValue(i15, i16), i16);
+            ((WorldGenerator)object18).setScale(1.0D, 1.0D, 1.0D);
+            ((WorldGenerator)object18).generate(this.worldObj, this.rand, i15, this.worldObj.getHeightValue(i15, i16), i16);
         }
 
         int i17;
@@ -612,6 +619,13 @@ public class ChunkProviderGenerate implements IChunkProvider {
             (new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.worldObj, this.rand, i14, i15, i16);
         }
 
+        for(i14 = 0; i14 < 1; ++i14) {
+            i15 = i4 + this.rand.nextInt(16) + 8;
+            i16 = this.rand.nextInt(128);
+            i17 = i5 + this.rand.nextInt(16) + 8;
+            (new WorldGenCactus()).generate(this.worldObj, this.rand, i15, i16, i17);
+        }
+
         for(i14 = 0; i14 < 50; ++i14) {
             i15 = i4 + this.rand.nextInt(16) + 8;
             i16 = this.rand.nextInt(this.rand.nextInt(120) + 8);
@@ -629,7 +643,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
         if(this.worldObj.snowCovered) {
             for(i14 = i4 + 8 + 0; i14 < i4 + 8 + 16; ++i14) {
                 for(i15 = i5 + 8 + 0; i15 < i5 + 8 + 16; ++i15) {
-                    i16 = this.worldObj.getPrecipitationHeight(i14, i15);
+                    i16 = this.worldObj.getTopSolidOrLiquidBlock(i14, i15);
                     if(i16 > 0 && i16 < 128 && this.worldObj.getBlockId(i14, i16, i15) == 0 && this.worldObj.getBlockMaterial(i14, i16 - 1, i15).getIsSolid() && this.worldObj.getBlockMaterial(i14, i16 - 1, i15) != Material.ice) {
                         this.worldObj.setBlockWithNotify(i14, i16, i15, Block.snow.blockID);
                     }

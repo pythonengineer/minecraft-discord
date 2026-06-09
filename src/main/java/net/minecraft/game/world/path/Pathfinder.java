@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.net.MCHashTable;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.material.Material;
@@ -11,7 +12,7 @@ import net.minecraft.game.world.material.Material;
 public class Pathfinder {
 	private IBlockAccess worldMap;
 	private Path path = new Path();
-	private Map pointMap = new HashMap();
+	private MCHashTable pointMap = new MCHashTable();
 	private PathPoint[] pathOptions = new PathPoint[32];
 
 	public Pathfinder(IBlockAccess iBlockAccess1) {
@@ -28,7 +29,7 @@ public class Pathfinder {
 
 	private PathEntity createEntityPathTo(Entity entity1, double d2, double d4, double d6, float f8) {
 		this.path.clearPath();
-		this.pointMap.clear();
+		this.pointMap.clearMap();
 		PathPoint pathPoint9 = this.openPoint(MathHelper.floor_double(entity1.boundingBox.minX), MathHelper.floor_double(entity1.boundingBox.minY), MathHelper.floor_double(entity1.boundingBox.minZ));
 		PathPoint pathPoint10 = this.openPoint(MathHelper.floor_double(d2 - (double)(entity1.width / 2.0F)), MathHelper.floor_double(d4), MathHelper.floor_double(d6 - (double)(entity1.width / 2.0F)));
 		PathPoint pathPoint11 = new PathPoint(MathHelper.floor_float(entity1.width + 1.0F), MathHelper.floor_float(entity1.height + 1.0F), MathHelper.floor_float(entity1.width + 1.0F));
@@ -147,10 +148,10 @@ public class Pathfinder {
 
 	private final PathPoint openPoint(int i1, int i2, int i3) {
 		int i4 = i1 | i2 << 10 | i3 << 20;
-		PathPoint pathPoint5 = (PathPoint)this.pointMap.get(i4);
+		PathPoint pathPoint5 = (PathPoint)this.pointMap.lookup(i4);
 		if(pathPoint5 == null) {
 			pathPoint5 = new PathPoint(i1, i2, i3);
-			this.pointMap.put(i4, pathPoint5);
+			this.pointMap.addKey(i4, pathPoint5);
 		}
 
 		return pathPoint5;

@@ -31,13 +31,16 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.container.GuiInventory;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.net.GuiConnecting;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
+import net.minecraft.client.render.ItemRenderer;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.client.render.texture.TextureFlamesFX;
 import net.minecraft.client.render.texture.TextureLavaFX;
 import net.minecraft.client.render.texture.TextureLavaFlowFX;
@@ -85,9 +88,11 @@ public class Minecraft implements Runnable {
     public MouseHelper mouseHelper;
     private static long[] frameTimes = new long[512];
     private static int numRecordedFrameTimes = 0;
+    private String serverName;
+    private int serverPort;
     private TextureWaterFX textureWaterFX;
     private TextureLavaFX textureLavaFX;
-    volatile boolean running;
+    public volatile boolean running;
 	public String debug;
     private long prevFrameTime;
     public boolean inGameHasFocus;
@@ -125,6 +130,8 @@ public class Minecraft implements Runnable {
     }
 
     public void setServer(String string1, int i2) {
+        this.serverName = string1;
+        this.serverPort = i2;
     }
 
     public void startGame() {
@@ -145,7 +152,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.4");
+        Display.setTitle("Minecraft Alpha v1.0.6");
 
         try {
             Display.create();
@@ -161,7 +168,7 @@ public class Minecraft implements Runnable {
             Display.create();
         }
 
-
+        RenderManager.instance.itemRenderer = new ItemRenderer(this);
         this.renderEngine = new RenderEngine(this.options);
         this.fontRenderer = new FontRenderer(this.options, "/default.png", this.renderEngine);
         Keyboard.create();
@@ -196,11 +203,16 @@ public class Minecraft implements Runnable {
         this.touchOverlayRenderer = new TouchOverlayRenderer();
         this.scaledResolution = new ScaledResolution(this);
         PointerInputAbstraction.initController(this);
-        this.displayGuiScreen(new GuiMainMenu());
         this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
 
         this.ingameGUI = new GuiIngame(this);
         this.playerController.init();
+        if(this.serverName != null) {
+            this.displayGuiScreen(new GuiConnecting(this, this.serverName, this.serverPort));
+        } else {
+            this.displayGuiScreen(new GuiMainMenu());
+        }
+
     }
 
     private void loadScreen() {
@@ -395,6 +407,7 @@ public class Minecraft implements Runnable {
         } catch (ReportedException reportedexception) {
             this.displayCrashReport(reportedexception.getCrashReport());
         } catch (Throwable throwable1) {
+            this.theWorld = null;
             CrashReport crashreport1 = new CrashReport("Unexpected error", throwable1);
             this.displayCrashReport(crashreport1);
         } finally {
@@ -652,7 +665,7 @@ public class Minecraft implements Runnable {
                     }
 
                     int i9 = itemStack19.stackSize;
-                    if(itemStack19.useItem(this.thePlayer, this.theWorld, i11, i13, i14, i16)) {
+                    if(this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemStack19, i11, i13, i14, i16)) {
                         this.entityRenderer.itemRenderer.swing();
                     }
 
@@ -900,7 +913,6 @@ public class Minecraft implements Runnable {
 
                             if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
                                 this.options.thirdPersonView = !this.options.thirdPersonView;
-                                this.isRaining = !this.isRaining;
                             }
 
                             if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
@@ -983,11 +995,11 @@ public class Minecraft implements Runnable {
                 this.theWorld.updateEntities();
             }
 
-            if(!this.isGamePaused && !this.isMultiplayerWorld()) {
+            if(!this.isGamePaused || this.isMultiplayerWorld()) {
                 this.theWorld.tick();
             }
 
-            if(!this.isGamePaused) {
+            if(!this.isGamePaused && this.theWorld != null) {
                 this.theWorld.randomDisplayUpdates(MathHelper.floor_double(this.thePlayer.posX), MathHelper.floor_double(this.thePlayer.posY), MathHelper.floor_double(this.thePlayer.posZ));
             }
 
@@ -1000,13 +1012,13 @@ public class Minecraft implements Runnable {
     }
 
     public boolean isMultiplayerWorld() {
-        return false;
+        return this.theWorld != null && this.theWorld.multiplayerWorld;
     }
 
     public void startWorld(String worldName) {
         this.changeWorld((World)null, "");
         System.gc();
-        World world3 = new World(worldName);
+        World world3 = new World(null, worldName);
         if(world3.isNewWorld) {
             this.changeWorld(world3, "Generating level");
         } else {
@@ -1036,7 +1048,10 @@ public class Minecraft implements Runnable {
                 }
             }
 
-            this.preloadWorld(title);
+            if(!world.multiplayerWorld) {
+                this.preloadWorld(title);
+            }
+
             if(this.thePlayer == null) {
                 this.thePlayer = new EntityPlayerSP(this, world, this.session);
                 this.thePlayer.preparePlayerToSpawn();
@@ -1148,7 +1163,13 @@ public class Minecraft implements Runnable {
     public static void main(String[] args, String username, String server, int port, String mpPass) throws LWJGLException {
         PlatformRuntime.setThreadName("Client thread");
         minecraft = new Minecraft(854, 480, false);
-        minecraft.session = new Session(username, "");
+        if(username != null && username != null) {
+            minecraft.session = new Session(username, mpPass);
+        } else {
+            minecraft.session = new Session("Player" + EagRuntime.currentTimeMillis() % 1000L, mpPass);
+        }
+
+        minecraft.setServer(server, port);
         minecraft.run();
     }
 }
