@@ -18,6 +18,7 @@ import net.minecraft.game.entity.monster.EntityCreeper;
 import net.minecraft.game.entity.monster.EntityGiantZombie;
 import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.monster.EntitySkeleton;
+import net.minecraft.game.entity.monster.EntitySlime;
 import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
 import net.minecraft.game.entity.projectile.EntityArrow;
@@ -120,6 +121,7 @@ public class EntityList {
         addMapping(EntitySpider.class, EntitySpider::new, "Spider");
         addMapping(EntityGiantZombie.class, EntityGiantZombie::new, "Giant");
         addMapping(EntityZombie.class, EntityZombie::new, "Zombie");
+        addMapping(EntitySlime.class, EntitySlime::new, "Slime");
         addMapping(EntityPig.class, EntityPig::new, "Pig");
         addMapping(EntitySheep.class, EntitySheep::new, "Sheep");
         addMapping(EntityCow.class, EntityCow::new, "Cow");

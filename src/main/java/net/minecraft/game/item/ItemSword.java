@@ -33,4 +33,8 @@ public class ItemSword extends Item {
     public int getDamageVsEntity(Entity entity) {
         return this.weaponDamage;
     }
+
+    public boolean isFull3D() {
+        return true;
+    }
 }

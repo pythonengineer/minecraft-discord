@@ -11,10 +11,12 @@ import net.minecraft.game.world.chunk.IChunkProvider;
 import net.minecraft.game.world.material.Material;
 import net.minecraft.game.world.terrain.generate.WorldGenBigTree;
 import net.minecraft.game.world.terrain.generate.WorldGenCactus;
+import net.minecraft.game.world.terrain.generate.WorldGenClay;
 import net.minecraft.game.world.terrain.generate.WorldGenDungeons;
 import net.minecraft.game.world.terrain.generate.WorldGenFlowers;
 import net.minecraft.game.world.terrain.generate.WorldGenLiquids;
 import net.minecraft.game.world.terrain.generate.WorldGenMinable;
+import net.minecraft.game.world.terrain.generate.WorldGenReed;
 import net.minecraft.game.world.terrain.generate.WorldGenTrees;
 import net.minecraft.game.world.terrain.generate.WorldGenerator;
 import net.minecraft.game.world.terrain.noise.NoiseGeneratorOctaves;
@@ -518,6 +520,13 @@ public class ChunkProviderGenerate implements IChunkProvider {
             (new WorldGenDungeons()).generate(this.worldObj, this.rand, i13, i14, i15);
         }
 
+        for(i12 = 0; i12 < 10; ++i12) {
+            i13 = i4 + this.rand.nextInt(16);
+            i14 = this.rand.nextInt(128);
+            i15 = i5 + this.rand.nextInt(16);
+            (new WorldGenClay(32)).generate(this.worldObj, this.rand, i13, i14, i15);
+        }
+
         for(i12 = 0; i12 < 20; ++i12) {
             i13 = i4 + this.rand.nextInt(16);
             i14 = this.rand.nextInt(128);
@@ -617,6 +626,13 @@ public class ChunkProviderGenerate implements IChunkProvider {
             i15 = this.rand.nextInt(128);
             i16 = i5 + this.rand.nextInt(16) + 8;
             (new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.worldObj, this.rand, i14, i15, i16);
+        }
+
+        for(i14 = 0; i14 < 10; ++i14) {
+            i15 = i4 + this.rand.nextInt(16) + 8;
+            i16 = this.rand.nextInt(128);
+            i17 = i5 + this.rand.nextInt(16) + 8;
+            (new WorldGenReed()).generate(this.worldObj, this.rand, i15, i16, i17);
         }
 
         for(i14 = 0; i14 < 1; ++i14) {

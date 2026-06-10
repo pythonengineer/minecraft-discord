@@ -82,7 +82,7 @@ public class ItemBucket extends Item {
                         return new ItemStack(Item.bucketEmpty);
                     }
                 }
-            } else if(movingObjectPosition24.entityHit instanceof EntityCow) {
+            } else if(this.isFull == 0 && movingObjectPosition24.entityHit instanceof EntityCow) {
                 return new ItemStack(Item.bucketMilk);
             }
 

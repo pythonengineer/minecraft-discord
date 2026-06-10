@@ -89,7 +89,7 @@ public class EntityLiving extends Entity {
 			this.livingSoundTime = -80;
 			String string1;
 			if((string1 = this.getLivingSound()) != null) {
-				this.worldObj.playSoundAtEntity(this, string1, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+				this.worldObj.playSoundAtEntity(this, string1, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 			}
 		}
 
@@ -302,15 +302,19 @@ public class EntityLiving extends Entity {
 			}
 
 			if(this.health <= 0) {
-				this.worldObj.playSoundAtEntity(this, this.getDeathSound(), 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+				this.worldObj.playSoundAtEntity(this, this.getDeathSound(), this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 				this.onDeath(entity);
 			} else {
-				this.worldObj.playSoundAtEntity(this, this.getHurtSound(), 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+				this.worldObj.playSoundAtEntity(this, this.getHurtSound(), this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 			}
 
 			return true;
 		}
 	}
+
+    protected float getSoundVolume() {
+        return 1.0F;
+    }
 
 	protected String getLivingSound() {
 		return null;

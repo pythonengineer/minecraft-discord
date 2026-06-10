@@ -10,6 +10,8 @@ public class ModelBiped extends ModelBase {
     public ModelRenderer bipedLeftArm;
     public ModelRenderer bipedRightLeg;
     public ModelRenderer bipedLeftLeg;
+    public boolean heldItemLeft;
+    public boolean heldItemRight;
 
     public ModelBiped() {
         this(0.0F);
@@ -20,6 +22,8 @@ public class ModelBiped extends ModelBase {
     }
 
     public ModelBiped(float modelSize, float unused) {
+        this.heldItemLeft = false;
+        this.heldItemRight = false;
         this.bipedHead = new ModelRenderer(0, 0);
         this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, modelSize);
         this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -76,6 +80,14 @@ public class ModelBiped extends ModelBase {
             this.bipedLeftLeg.rotateAngleX = -1.2566371F;
             this.bipedRightLeg.rotateAngleY = 0.31415927F;
             this.bipedLeftLeg.rotateAngleY = -0.31415927F;
+        }
+
+        if(this.heldItemLeft) {
+            this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F - 0.31415927F;
+        }
+
+        if(this.heldItemRight) {
+            this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F - 0.31415927F;
         }
 
         this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;

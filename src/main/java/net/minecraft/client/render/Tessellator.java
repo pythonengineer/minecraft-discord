@@ -150,4 +150,10 @@ public class Tessellator {
         this.yOffset = y;
         this.zOffset = z;
     }
+
+    public void setTranslationF(float x, float y, float z) {
+        this.xOffset += (double)x;
+        this.yOffset += (double)y;
+        this.zOffset += (double)z;
+    }
 }

@@ -46,7 +46,11 @@ public class RenderPlayer extends RenderLiving {
     }
 
 	private void renderPlayer(EntityPlayer playerEntity, double x, double y, double z, float yaw, float partialTicks) {
+        ItemStack itemStack10 = playerEntity.inventory.getCurrentItem();
+        ModelBiped modelBiped11 = (ModelBiped)this.mainModel;
+        modelBiped11.heldItemRight = itemStack10 != null;
         super.doRenderLiving(playerEntity, x, y - (double)playerEntity.yOffset, z, yaw, partialTicks);
+        modelBiped11.heldItemRight = false;
         FontRenderer fontRenderer10 = this.getFontRendererFromRenderManager();
         float f11 = 1.6F;
         float f12 = 0.016666668F * f11;
@@ -80,17 +84,26 @@ public class RenderPlayer extends RenderLiving {
             GL11.glPushMatrix();
             this.modelBipedMain.bipedRightArm.renderWithRotation(0.0625F);
             GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
-            float f4 = 0.625F;
+            float f4;
             if(itemStack3.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[itemStack3.itemID].getRenderType())) {
+                f4 = 0.5F;
                 GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
                 f4 *= 0.75F;
                 GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glScalef(f4, -f4, f4);
-            } else {
+            } else if(Item.itemsList[itemStack3.itemID].isFull3D()) {
+                f4 = 0.625F;
                 GL11.glTranslatef(0.0F, 0.1875F, 0.0F);
                 GL11.glScalef(f4, -f4, f4);
                 GL11.glRotatef(-120.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+            } else {
+                f4 = 0.5F;
+                GL11.glTranslatef(-0.25F, 0.1875F, -0.1875F);
+                GL11.glScalef(f4, f4, f4);
+                GL11.glRotatef(10.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(-160.0F, 0.0F, 0.0F, 1.0F);
+                GL11.glRotatef(-50.0F, 0.0F, 1.0F, 0.0F);
             }
 
             this.renderManager.itemRenderer.renderItem(itemStack3);

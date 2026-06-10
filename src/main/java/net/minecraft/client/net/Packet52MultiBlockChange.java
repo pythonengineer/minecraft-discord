@@ -12,6 +12,10 @@ public class Packet52MultiBlockChange extends Packet {
 	public byte[] metadataArray;
 	public int size;
 
+    public Packet52MultiBlockChange() {
+        this.isChunkDataPacket = true;
+    }
+
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.xPosition = dataInputStream1.readInt();
 		this.zPosition = dataInputStream1.readInt();

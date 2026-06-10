@@ -2,7 +2,9 @@ package net.minecraft.game.entity.animal;
 
 import com.mojang.nbt.NBTTagCompound;
 
+import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
 
 public class EntityCow extends EntityAnimal {
@@ -34,7 +36,21 @@ public class EntityCow extends EntityAnimal {
         return "mob.cowhurt";
     }
 
+    protected float getSoundVolume() {
+        return 0.7F;
+    }
+
     protected int getDropItemId() {
         return Item.leather.shiftedIndex;
+    }
+
+    public boolean interact(EntityPlayer entityPlayer1) {
+        ItemStack itemStack2 = entityPlayer1.inventory.getCurrentItem();
+        if(itemStack2 != null && itemStack2.itemID == Item.bucketEmpty.shiftedIndex) {
+            entityPlayer1.inventory.setInventorySlotContents(entityPlayer1.inventory.currentItem, new ItemStack(Item.bucketMilk));
+            return true;
+        } else {
+            return false;
+        }
     }
 }

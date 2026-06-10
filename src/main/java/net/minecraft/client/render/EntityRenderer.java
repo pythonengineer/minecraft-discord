@@ -183,40 +183,47 @@ public class EntityRenderer {
         }
     }
 
-    private void orientCamera(float partialTicks) {
+    private void orientCamera(float renderPartialTick) {
         EntityPlayerSP entityPlayerSP2 = this.mc.thePlayer;
-        double d3 = entityPlayerSP2.prevPosX + (entityPlayerSP2.posX - entityPlayerSP2.prevPosX) * (double)partialTicks;
-        double d5 = entityPlayerSP2.prevPosY + (entityPlayerSP2.posY - entityPlayerSP2.prevPosY) * (double)partialTicks;
-        double d7 = entityPlayerSP2.prevPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.prevPosZ) * (double)partialTicks;
+        double d3 = entityPlayerSP2.prevPosX + (entityPlayerSP2.posX - entityPlayerSP2.prevPosX) * (double)renderPartialTick;
+        double d5 = entityPlayerSP2.prevPosY + (entityPlayerSP2.posY - entityPlayerSP2.prevPosY) * (double)renderPartialTick;
+        double d7 = entityPlayerSP2.prevPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.prevPosZ) * (double)renderPartialTick;
         if(this.mc.options.thirdPersonView) {
             double d9 = 4.0D;
-            double d11 = (double)(-MathHelper.sin(entityPlayerSP2.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(entityPlayerSP2.rotationPitch / 180.0F * (float)Math.PI)) * d9;
-            double d13 = (double)(MathHelper.cos(entityPlayerSP2.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(entityPlayerSP2.rotationPitch / 180.0F * (float)Math.PI)) * d9;
-            double d15 = (double)(-MathHelper.sin(entityPlayerSP2.rotationPitch / 180.0F * (float)Math.PI)) * d9;
+            float f10000 = entityPlayerSP2.prevRenderYawOffset + (entityPlayerSP2.renderYawOffset - entityPlayerSP2.prevRenderYawOffset) * renderPartialTick;
+            float f12 = entityPlayerSP2.rotationYaw - 10.0F;
+            float f13 = entityPlayerSP2.rotationPitch + 2.0F;
+            double d14 = (double)(-MathHelper.sin(f12 / 180.0F * (float)Math.PI) * MathHelper.cos(f13 / 180.0F * (float)Math.PI)) * d9;
+            double d16 = (double)(MathHelper.cos(f12 / 180.0F * (float)Math.PI) * MathHelper.cos(f13 / 180.0F * (float)Math.PI)) * d9;
+            double d18 = (double)(-MathHelper.sin(f13 / 180.0F * (float)Math.PI)) * d9;
 
-            for(int i17 = 0; i17 < 8; ++i17) {
-                float f18 = (float)((i17 & 1) * 2 - 1);
-                float f19 = (float)((i17 >> 1 & 1) * 2 - 1);
-                float f20 = (float)((i17 >> 2 & 1) * 2 - 1);
-                f18 *= 0.1F;
-                f19 *= 0.1F;
-                f20 *= 0.1F;
-                MovingObjectPosition movingObjectPosition21 = this.mc.theWorld.rayTraceBlocks(Vec3D.createVector(d3 + (double)f18, d5 + (double)f19, d7 + (double)f20), Vec3D.createVector(d3 - d11 + (double)f18 + (double)f20, d5 - d15 + (double)f19, d7 - d13 + (double)f20));
-                if(movingObjectPosition21 != null) {
-                    double d22 = movingObjectPosition21.hitVec.distanceTo(Vec3D.createVector(d3, d5, d7));
-                    if(d22 < d9) {
-                        d9 = d22;
+            for(int i20 = 0; i20 < 8; ++i20) {
+                float f21 = (float)((i20 & 1) * 2 - 1);
+                float f22 = (float)((i20 >> 1 & 1) * 2 - 1);
+                float f23 = (float)((i20 >> 2 & 1) * 2 - 1);
+                f21 *= 0.1F;
+                f22 *= 0.1F;
+                f23 *= 0.1F;
+                MovingObjectPosition movingObjectPosition24 = this.mc.theWorld.rayTraceBlocks(Vec3D.createVector(d3 + (double)f21, d5 + (double)f22, d7 + (double)f23), Vec3D.createVector(d3 - d14 + (double)f21 + (double)f23, d5 - d18 + (double)f22, d7 - d16 + (double)f23));
+                if(movingObjectPosition24 != null) {
+                    double d25 = movingObjectPosition24.hitVec.distanceTo(Vec3D.createVector(d3, d5, d7));
+                    if(d25 < d9) {
+                        d9 = d25;
                     }
                 }
             }
 
+            GL11.glRotatef(entityPlayerSP2.rotationPitch - f13, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(entityPlayerSP2.rotationYaw - f12, 0.0F, 1.0F, 0.0F);
             GL11.glTranslatef(0.0F, 0.0F, (float)(-d9));
+            GL11.glRotatef(f12 - entityPlayerSP2.rotationYaw, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(f13 - entityPlayerSP2.rotationPitch, 1.0F, 0.0F, 0.0F);
         } else {
             GL11.glTranslatef(0.0F, 0.0F, -0.1F);
         }
 
-        GL11.glRotatef(entityPlayerSP2.prevRotationPitch + (entityPlayerSP2.rotationPitch - entityPlayerSP2.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef(entityPlayerSP2.prevRotationYaw + (entityPlayerSP2.rotationYaw - entityPlayerSP2.prevRotationYaw) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(entityPlayerSP2.prevRotationPitch + (entityPlayerSP2.rotationPitch - entityPlayerSP2.prevRotationPitch) * renderPartialTick, 1.0F, 0.0F, 0.0F);
+        GL11.glRotatef(entityPlayerSP2.prevRotationYaw + (entityPlayerSP2.rotationYaw - entityPlayerSP2.prevRotationYaw) * renderPartialTick + 180.0F, 0.0F, 1.0F, 0.0F);
     }
 
     private void setupCameraTransform(float partialTicks, int anaglyphPass) {

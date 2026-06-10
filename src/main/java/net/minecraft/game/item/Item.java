@@ -91,6 +91,12 @@ public class Item {
     public static Item boat = (new ItemBoat(77)).setIconIndex(136);
     public static Item leather = (new Item(78)).setIconIndex(103);
     public static Item bucketMilk = (new Item(79)).setIconIndex(77);
+    public static Item brick = (new Item(80)).setIconIndex(22);
+    public static Item clay = (new Item(81)).setIconIndex(57);
+    public static Item reed = (new ItemReed(82, Block.reed)).setIconIndex(27);
+    public static Item paper = (new Item(83)).setIconIndex(58);
+    public static Item book = (new Item(84)).setIconIndex(59);
+    public static Item slimeBall = (new Item(85)).setIconIndex(30);
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
 	protected int maxDamage = 32;
@@ -150,6 +156,10 @@ public class Item {
 
 	public void saddleEntity(ItemStack itemStack, EntityLiving entityLiving) {
 	}
+
+    public boolean isFull3D() {
+        return false;
+    }
 
     public boolean shouldUseOnTouchEagler(ItemStack itemStack) {
         return false;

@@ -120,8 +120,8 @@ public abstract class Entity {
 		this.posY = y;
 		this.posZ = z;
 		float f7 = this.width / 2.0F;
-		float f8 = this.height / 2.0F;
-        this.boundingBox.setBounds(x - (double)f7, y  - (double)this.yOffset + (double)this.ySize, z - (double)f7, x + (double)f7, y - (double)this.yOffset + (double)this.ySize + (double)f8, z + (double)f7);
+		float f8 = this.height;
+        this.boundingBox.setBounds(x - (double)f7, y - (double)this.yOffset + (double)this.ySize, z - (double)f7, x + (double)f7, y - (double)this.yOffset + (double)this.ySize + (double)f8, z + (double)f7);
     }
 
 	public void setAngles(float yaw, float pitch) {

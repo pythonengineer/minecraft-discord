@@ -40,4 +40,8 @@ public class ItemHoe extends Item {
             return true;
         }
     }
+
+    public boolean isFull3D() {
+        return true;
+    }
 }

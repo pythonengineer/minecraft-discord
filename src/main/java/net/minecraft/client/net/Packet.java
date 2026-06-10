@@ -9,6 +9,7 @@ import java.util.Map;
 public abstract class Packet {
 	private static Map packetIdToClassMap = new HashMap();
 	private static Map packetClassToIdMap = new HashMap();
+    public boolean isChunkDataPacket = false;
 
 	static void addIdClassMapping(int id, Class packetClass) {
 		if(packetIdToClassMap.containsKey(id)) {
@@ -79,8 +80,8 @@ public abstract class Packet {
 		addIdClassMapping(22, Packet22Collect.class);
 		addIdClassMapping(29, Packet29DestroyEntity.class);
 		addIdClassMapping(30, Packet30Entity.class);
-		addIdClassMapping(31, Packet31RelEntityMove.class);
-		addIdClassMapping(32, Packet32RelEntityMove.class);
+        addIdClassMapping(31, Packet32RelEntityMove.class);
+        addIdClassMapping(32, Packet31RelEntityMove.class);
 		addIdClassMapping(33, Packet33RelEntityMoveLook.class);
 		addIdClassMapping(34, Packet34EntityTeleport.class);
 		addIdClassMapping(50, Packet50PreChunk.class);

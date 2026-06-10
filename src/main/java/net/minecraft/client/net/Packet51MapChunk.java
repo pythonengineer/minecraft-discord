@@ -16,6 +16,10 @@ public class Packet51MapChunk extends Packet {
 	public byte[] chunkData;
 	private int tempLength;
 
+    public Packet51MapChunk() {
+        this.isChunkDataPacket = true;
+    }
+
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.xPosition = dataInputStream1.readInt();
 		this.yPosition = dataInputStream1.readShort();

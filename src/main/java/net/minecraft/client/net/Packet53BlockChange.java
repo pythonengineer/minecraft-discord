@@ -11,6 +11,10 @@ public class Packet53BlockChange extends Packet {
 	public int type;
 	public int metadata;
 
+    public Packet53BlockChange() {
+        this.isChunkDataPacket = true;
+    }
+
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.xPosition = dataInputStream1.readInt();
 		this.yPosition = dataInputStream1.read();

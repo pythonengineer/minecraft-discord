@@ -26,6 +26,10 @@ public class ModelRenderer {
 		this.textureOffsetY = v;
 	}
 
+    public void addBox(float offsetX, float offsetY, float offsetZ, int width, int height, int depth) {
+        this.addBox(offsetX, offsetY, offsetZ, width, height, depth, 0.0F);
+    }
+
 	public void addBox(float offsetX, float offsetY, float offsetZ, int width, int height, int depth, float scaleFactor) {
 		this.corners = new PositionTextureVertex[8];
 		this.faces = new TexturedQuad[6];

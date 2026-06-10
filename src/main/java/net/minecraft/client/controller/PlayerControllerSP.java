@@ -10,6 +10,7 @@ import net.minecraft.game.entity.animal.EntitySheep;
 import net.minecraft.game.entity.monster.EntityCreeper;
 import net.minecraft.game.entity.monster.EntityMob;
 import net.minecraft.game.entity.monster.EntitySkeleton;
+import net.minecraft.game.entity.monster.EntitySlime;
 import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.monster.EntityZombie;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -28,7 +29,7 @@ public class PlayerControllerSP extends PlayerController {
     private float prevBlockDamage = 0.0F;
     private float blockDestroySoundCounter = 0.0F;
     private int blockHitWait = 0;
-    private SpawnerAnimals monsterSpawner = new SpawnerMonsters(this, 200, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
+    private SpawnerAnimals monsterSpawner = new SpawnerMonsters(this, 200, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class, EntitySlime.class});
     private SpawnerAnimals animalSpawner = new SpawnerAnimals(20, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class, EntityCow.class});
 
     public PlayerControllerSP(Minecraft minecraft1) {

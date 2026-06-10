@@ -1,6 +1,7 @@
 package net.minecraft.game.world.block;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.IBlockAccess;
 import net.minecraft.game.world.World;
@@ -9,10 +10,9 @@ import net.minecraft.game.world.material.Material;
 
 public class BlockSign extends BlockContainer {
     private Class signEntityClass;
-    private int itemDropID;
     private boolean isFreestanding;
 
-    protected BlockSign(int blockID, Class signEntityClas, int droppedItemID, boolean isFreestanding) {
+    protected BlockSign(int blockID, Class signEntityClas, boolean isFreestanding) {
         super(blockID, Material.wood);
         this.isFreestanding = isFreestanding;
         this.blockIndexInTexture = 4;
@@ -20,7 +20,6 @@ public class BlockSign extends BlockContainer {
         float f5 = 0.25F;
         float f6 = 1.0F;
         this.setBlockBounds(0.5F - f5, 0.0F, 0.5F - f5, 0.5F + f5, f6, 0.5F + f5);
-        this.itemDropID = droppedItemID;
     }
 
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
@@ -81,7 +80,7 @@ public class BlockSign extends BlockContainer {
     }
 
     public int idDropped(int metadata, EaglercraftRandom rand) {
-        return this.itemDropID;
+        return Item.sign.shiftedIndex;
     }
 
     public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {

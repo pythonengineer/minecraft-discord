@@ -22,6 +22,7 @@ public class Material {
     public static final Material snow = new MaterialLogic();
     public static final Material craftedSnow = new Material();
     public static final Material cactus = new Material();
+    public static final Material clay = new Material();
 
     public boolean getIsLiquid() {
         return false;

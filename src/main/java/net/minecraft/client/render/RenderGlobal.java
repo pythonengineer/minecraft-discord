@@ -528,7 +528,7 @@ public class RenderGlobal implements IWorldAccess {
         }
 
         EntityPlayerSP entityPlayerSP14 = this.mc.thePlayer;
-        double d16 = this.mc.thePlayer.lastTickPosX + (entityPlayerSP14.posX - entityPlayerSP14.lastTickPosX) * partialTime;
+        double d16 = entityPlayerSP14.lastTickPosX + (entityPlayerSP14.posX - entityPlayerSP14.lastTickPosX) * partialTime;
         double d10 = entityPlayerSP14.lastTickPosY + (entityPlayerSP14.posY - entityPlayerSP14.lastTickPosY) * partialTime;
         double d12 = entityPlayerSP14.lastTickPosZ + (entityPlayerSP14.posZ - entityPlayerSP14.lastTickPosZ) * partialTime;
         worldRendererId = 0;

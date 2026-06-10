@@ -182,7 +182,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
     }
 
 	public static int getCookedItem(int shiftedIndex) {
-		return shiftedIndex == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (shiftedIndex == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (shiftedIndex == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (shiftedIndex == Block.sand.blockID ? Block.glass.blockID : (shiftedIndex == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (shiftedIndex == Block.cobblestone.blockID ? Block.stone.blockID : -1)))));
+		return shiftedIndex == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (shiftedIndex == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (shiftedIndex == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (shiftedIndex == Block.sand.blockID ? Block.glass.blockID : (shiftedIndex == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (shiftedIndex == Block.cobblestone.blockID ? Block.stone.blockID : (shiftedIndex == Item.clay.shiftedIndex ? Item.brick.shiftedIndex : -1))))));
 	}
 
 	private static int getItemBurnTime(ItemStack stack) {

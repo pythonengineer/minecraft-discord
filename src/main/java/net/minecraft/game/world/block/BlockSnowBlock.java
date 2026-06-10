@@ -17,7 +17,7 @@ public class BlockSnowBlock extends Block {
     }
 
     public int quantityDropped(EaglercraftRandom random1) {
-        return 6;
+        return 4;
     }
 
     public void updateTick(World worldObj, int x, int y, int z, EaglercraftRandom rand) {

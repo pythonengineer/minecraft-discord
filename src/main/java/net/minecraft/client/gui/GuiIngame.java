@@ -177,12 +177,12 @@ public class GuiIngame extends Gui {
         onBeginTouchGUI();
 
         if(this.mc.options.showFPS) {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.10 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.11 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoRenders(), 2, 12, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.getEntityDebug(), 2, 22, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 0xFFFFFF);
         } else {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.10", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.11", 2, 2, 0xFFFFFF);
         }
 
         onEndTouchGUI();

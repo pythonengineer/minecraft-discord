@@ -10,15 +10,15 @@ import net.minecraft.game.world.World;
 
 public class EntityPickupFX extends EntityFX {
 	private Entity entityToPickUp;
-	private EntityLiving entityPickingUp;
+	private Entity entityPickingUp;
 	private int age = 0;
 	private int maxAge = 0;
 	private float yOffs;
 
-	public EntityPickupFX(World world, Entity entity, EntityLiving livingEntity, float yOffset) {
+	public EntityPickupFX(World world, Entity entity, Entity entityPickingUp, float yOffset) {
 		super(world, entity.posX, entity.posY, entity.posZ, entity.motionX, entity.motionY, entity.motionZ);
 		this.entityToPickUp = entity;
-		this.entityPickingUp = livingEntity;
+		this.entityPickingUp = entityPickingUp;
 		this.maxAge = 3;
 		this.yOffs = yOffset;
 	}

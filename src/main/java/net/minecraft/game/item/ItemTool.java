@@ -45,4 +45,8 @@ public class ItemTool extends Item {
     public int getDamageVsEntity(Entity entity) {
         return this.damageVsEntity;
     }
+
+    public boolean isFull3D() {
+        return true;
+    }
 }

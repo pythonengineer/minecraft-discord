@@ -153,7 +153,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.10");
+        Display.setTitle("Minecraft Alpha v1.0.11");
 
         try {
             Display.create();

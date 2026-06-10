@@ -76,14 +76,14 @@ public class NetClientHandler extends NetHandler {
         this.worldClient.addEntityToWorld(packet.entityId, entityItem8);
     }
 
-    public void handleNamedEntitySpawn(Packet20NamedEntitySpawn packet20NamedEntitySpawn1) {
-        double d2 = (double)packet20NamedEntitySpawn1.xPosition / 32.0D;
-        double d4 = (double)packet20NamedEntitySpawn1.yPosition / 32.0D;
-        double d6 = (double)packet20NamedEntitySpawn1.zPosition / 32.0D;
-        float f8 = (float)(packet20NamedEntitySpawn1.rotation * 360) / 256.0F;
-        float f9 = (float)(packet20NamedEntitySpawn1.pitch * 360) / 256.0F;
-        EntityOtherPlayerMP entityOtherPlayerMP10 = new EntityOtherPlayerMP(this.mc.theWorld, packet20NamedEntitySpawn1.name);
-        int i11 = packet20NamedEntitySpawn1.currentItem;
+    public void handleNamedEntitySpawn(Packet20NamedEntitySpawn packet) {
+        double d2 = (double)packet.xPosition / 32.0D;
+        double d4 = (double)packet.yPosition / 32.0D;
+        double d6 = (double)packet.zPosition / 32.0D;
+        float f8 = (float)(packet.rotation * 360) / 256.0F;
+        float f9 = (float)(packet.pitch * 360) / 256.0F;
+        EntityOtherPlayerMP entityOtherPlayerMP10 = new EntityOtherPlayerMP(this.mc.theWorld, packet.name);
+        int i11 = packet.currentItem;
         if(i11 == 0) {
             entityOtherPlayerMP10.inventory.mainInventory[entityOtherPlayerMP10.inventory.currentItem] = null;
         } else {
@@ -91,7 +91,7 @@ public class NetClientHandler extends NetHandler {
         }
 
         entityOtherPlayerMP10.setPositionAndRotation(d2, d4, d6, f8, f9);
-        this.worldClient.addEntityToWorld(packet20NamedEntitySpawn1.entityId, entityOtherPlayerMP10);
+        this.worldClient.addEntityToWorld(packet.entityId, entityOtherPlayerMP10);
     }
 
     public void handleEntityTeleport(Packet34EntityTeleport packet) {
@@ -138,19 +138,19 @@ public class NetClientHandler extends NetHandler {
 
     }
 
-    public void handlePreChunk(Packet50PreChunk packet50PreChunk1) {
-        this.worldClient.doPreChunk(packet50PreChunk1.xPosition, packet50PreChunk1.yPosition, packet50PreChunk1.mode);
+    public void handlePreChunk(Packet50PreChunk packet) {
+        this.worldClient.doPreChunk(packet.xPosition, packet.yPosition, packet.mode);
     }
 
-    public void handleMultiBlockChange(Packet52MultiBlockChange packet52MultiBlockChange1) {
-        Chunk chunk2 = this.worldClient.getChunkFromChunkCoords(packet52MultiBlockChange1.xPosition, packet52MultiBlockChange1.zPosition);
-        int i3 = packet52MultiBlockChange1.xPosition * 16;
-        int i4 = packet52MultiBlockChange1.zPosition * 16;
+    public void handleMultiBlockChange(Packet52MultiBlockChange packet) {
+        Chunk chunk2 = this.worldClient.getChunkFromChunkCoords(packet.xPosition, packet.zPosition);
+        int i3 = packet.xPosition * 16;
+        int i4 = packet.zPosition * 16;
 
-        for(int i5 = 0; i5 < packet52MultiBlockChange1.size; ++i5) {
-            short s6 = packet52MultiBlockChange1.coordinateArray[i5];
-            int i7 = packet52MultiBlockChange1.typeArray[i5] & 255;
-            byte b8 = packet52MultiBlockChange1.metadataArray[i5];
+        for(int i5 = 0; i5 < packet.size; ++i5) {
+            short s6 = packet.coordinateArray[i5];
+            int i7 = packet.typeArray[i5] & 255;
+            byte b8 = packet.metadataArray[i5];
             int i9 = s6 >> 12 & 15;
             int i10 = s6 >> 8 & 15;
             int i11 = s6 & 255;
@@ -170,11 +170,11 @@ public class NetClientHandler extends NetHandler {
         this.worldClient.handleBlockChange(packet53BlockChange1.xPosition, packet53BlockChange1.yPosition, packet53BlockChange1.zPosition, packet53BlockChange1.type, packet53BlockChange1.metadata);
     }
 
-    public void handleKickDisconnect(Packet255KickDisconnect packet255KickDisconnect1) {
+    public void handleKickDisconnect(Packet255KickDisconnect packet) {
         this.netManager.networkShutdown("Got kicked");
         this.disconnected = true;
         this.mc.changeWorld1((World)null);
-        this.mc.displayGuiScreen(new GuiConnectFailed("Disconnected by server", packet255KickDisconnect1.reason));
+        this.mc.displayGuiScreen(new GuiConnectFailed("Disconnected by server", packet.reason));
     }
 
     public void handleErrorMessage(String string1) {
@@ -191,17 +191,17 @@ public class NetClientHandler extends NetHandler {
         }
     }
 
-    public void handleCollect(Packet22Collect packet22Collect1) {
-        EntityItem entityItem2 = (EntityItem)this.worldClient.getEntityByID(packet22Collect1.collectedEntityId);
-        Object object3 = (EntityLiving)this.worldClient.getEntityByID(packet22Collect1.collectorEntityId);
+    public void handleCollect(Packet22Collect packet) {
+        EntityItem entityItem2 = (EntityItem)this.worldClient.getEntityByID(packet.collectedEntityId);
+        Object object3 = (EntityLiving)this.worldClient.getEntityByID(packet.collectorEntityId);
         if(object3 == null) {
             object3 = this.mc.thePlayer;
         }
 
         if(entityItem2 != null) {
             this.worldClient.playSoundAtEntity(entityItem2, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-            this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, entityItem2, (EntityLiving)object3, -0.5F));
-            this.worldClient.removeEntityFromWorld(packet22Collect1.collectedEntityId);
+            this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, entityItem2, (Entity)object3, -0.5F));
+            this.worldClient.removeEntityFromWorld(packet.collectedEntityId);
         }
 
     }

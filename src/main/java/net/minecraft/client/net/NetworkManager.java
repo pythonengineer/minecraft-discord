@@ -37,9 +37,14 @@ public class NetworkManager {
         this.writeThread.start();
     }
 
-    public void addToSendQueue(Packet packet1) {
+    public void addToSendQueue(Packet packet) {
         if(!this.isServerTerminating) {
-            this.dataPackets.add(packet1);
+            if(packet.isChunkDataPacket) {
+                this.chunkDataPackets.add(packet);
+            } else {
+                this.dataPackets.add(packet);
+            }
+
         }
     }
 

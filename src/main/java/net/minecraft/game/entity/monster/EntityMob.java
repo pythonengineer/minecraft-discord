@@ -9,7 +9,7 @@ import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.EnumSkyBlock;
 import net.minecraft.game.world.World;
 
-public class EntityMob extends EntityCreature {
+public class EntityMob extends EntityCreature implements IMobs {
 	protected int attackStrength = 2;
 
 	public EntityMob(World world1) {
