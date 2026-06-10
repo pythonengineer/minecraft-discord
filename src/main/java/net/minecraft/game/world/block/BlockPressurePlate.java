@@ -124,8 +124,8 @@ public class BlockPressurePlate extends Block {
         super.onBlockRemoval(world1, i2, i3, i4);
     }
 
-    public void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess1, int i2, int i3, int i4) {
-        boolean z5 = iBlockAccess1.getBlockMetadata(i2, i3, i4) == 1;
+    public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
+        boolean z5 = blockAccess.getBlockMetadata(x, y, z) == 1;
         float f6 = 0.0625F;
         if(z5) {
             this.setBlockBounds(f6, 0.0F, f6, 1.0F - f6, 0.03125F, 1.0F - f6);

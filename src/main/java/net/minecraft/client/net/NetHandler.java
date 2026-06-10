@@ -18,7 +18,7 @@ public class NetHandler {
         this.registerPacket(packet1Handshake1);
     }
 
-    public void handleFlying(Packet13PlayerLookMove packet) {
+    public void handleFlying(Packet10Flying packet) {
         this.registerPacket(packet);
     }
 
@@ -38,15 +38,15 @@ public class NetHandler {
         this.registerPacket(packet);
     }
 
-    public void handleNamedEntitySpawn(Packet24NamedEntitySpawn packet) {
+    public void handleNamedEntitySpawn(Packet20NamedEntitySpawn packet) {
         this.registerPacket(packet);
     }
 
-    public void handleEntity(Packet20Entity packet) {
+    public void handleEntity(Packet30Entity packet) {
         this.registerPacket(packet);
     }
 
-    public void handleEntityTeleport(Packet26EntityTeleport packet) {
+    public void handleEntityTeleport(Packet34EntityTeleport packet) {
         this.registerPacket(packet);
     }
 
@@ -58,7 +58,23 @@ public class NetHandler {
         this.registerPacket(packet);
     }
 
-    public void handleDestroyEntity(Packet25DestroyEntity packet) {
+    public void handleDestroyEntity(Packet29DestroyEntity packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handlePickupSpawn(Packet21PickupSpawn packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleCollect(Packet22Collect packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleChat(Packet3Chat packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleAddToInventory(Packet17AddToInventory packet) {
         this.registerPacket(packet);
     }
 }

@@ -4,10 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 public class Packet0KeepAlive extends Packet {
-    public int getPacketId() {
-        return 254;
-    }
-
     public void processPacket(NetHandler netHandler1) {
     }
 

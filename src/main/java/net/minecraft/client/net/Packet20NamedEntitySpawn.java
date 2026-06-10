@@ -8,7 +8,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
 
-public class Packet24NamedEntitySpawn extends Packet {
+public class Packet20NamedEntitySpawn extends Packet {
 	public int entityId;
 	public String name;
 	public int xPosition;
@@ -18,10 +18,10 @@ public class Packet24NamedEntitySpawn extends Packet {
 	public byte pitch;
 	public int currentItem;
 
-	public Packet24NamedEntitySpawn() {
+	public Packet20NamedEntitySpawn() {
 	}
 
-	public Packet24NamedEntitySpawn(EntityPlayer entityPlayer) {
+	public Packet20NamedEntitySpawn(EntityPlayer entityPlayer) {
 		this.entityId = entityPlayer.entityID;
 		this.name = entityPlayer.username;
 		this.xPosition = MathHelper.floor_double(entityPlayer.posX * 32.0D);
@@ -31,10 +31,6 @@ public class Packet24NamedEntitySpawn extends Packet {
 		this.pitch = (byte)((int)(entityPlayer.rotationPitch * 256.0F / 360.0F));
 		ItemStack itemStack2 = entityPlayer.inventory.getCurrentItem();
 		this.currentItem = itemStack2 == null ? 0 : itemStack2.itemID;
-	}
-
-	public int getPacketId() {
-		return 2;
 	}
 
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {

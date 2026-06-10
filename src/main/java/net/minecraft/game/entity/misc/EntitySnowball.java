@@ -210,9 +210,13 @@ public class EntitySnowball extends Entity {
     public void onCollideWithPlayer(EntityPlayer entityPlayer1) {
         if(this.inGround && this.thrower == entityPlayer1 && this.throwableShake <= 0 && entityPlayer1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
             this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-            entityPlayer1.onItemPickup(this);
+            entityPlayer1.onItemPickup(this, 1);
             this.setEntityDead();
         }
 
+    }
+
+    public float getShadowSize() {
+        return 0.0F;
     }
 }

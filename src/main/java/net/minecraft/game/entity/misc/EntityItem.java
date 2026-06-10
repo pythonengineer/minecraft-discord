@@ -187,11 +187,14 @@ public class EntityItem extends Entity {
 	}
 
 	public void onCollideWithPlayer(EntityPlayer playerEntity) {
-		if(this.delayBeforeCanPickup == 0 && playerEntity.inventory.addItemStackToInventory(this.item)) {
-			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			playerEntity.onItemPickup(this);
-            this.setEntityDead();
-		}
+        if(!this.worldObj.multiplayerWorld) {
+            int i2 = this.item.stackSize;
+            if(this.delayBeforeCanPickup == 0 && playerEntity.inventory.addItemStackToInventory(this.item)) {
+                this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                playerEntity.onItemPickup(this, i2);
+                this.setEntityDead();
+            }
 
+        }
 	}
 }

@@ -3,76 +3,90 @@ package net.minecraft.client.net;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Packet {
-    public static Packet getNewPacket(int i0) {
-        switch(i0) {
-        case 0:
-            return new Packet1Handshake();
-        case 1:
-            return new Packet13PlayerLookMove();
-        case 2:
-            return new Packet24NamedEntitySpawn();
-        case 3:
-            return new Packet25DestroyEntity();
-        case 9:
-            return new Packet50PreChunk();
-        case 10:
-            return new Packet51MapChunk();
-        case 11:
-            return new Packet52MultiBlockChange();
-        case 12:
-            return new Packet53BlockChange();
-        case 50:
-            return new Packet14BlockDig();
-        case 51:
-            return new Packet15Place();
-        case 52:
-            return new Packet16BlockItemSwitch();
-        case 100:
-            return new Packet23PickupSpawn();
-        case 101:
-            return new Packet21RelEntityMove();
-        case 102:
-            return new Packet22RelEntityMove();
-        case 103:
-            return new Packet20Entity();
-        case 104:
-            return new Packet26EntityTeleport();
-        case 254:
-            return new Packet0KeepAlive();
-        case 255:
-            return new Packet255KickDisconnect();
-        default:
-            return null;
-        }
-    }
+	private static Map packetIdToClassMap = new HashMap();
+	private static Map packetClassToIdMap = new HashMap();
 
-    public static Packet readPacket(DataInputStream dataInputStream0) throws IOException {
-        int i1 = dataInputStream0.read();
-        if(i1 == -1) {
-            return null;
-        } else {
-            Packet packet2 = getNewPacket(i1);
-            if(packet2 == null) {
-                throw new IOException("Bad packet id " + i1);
-            } else {
-                packet2.readPacketData(dataInputStream0);
-                return packet2;
-            }
-        }
-    }
+	static void addIdClassMapping(int id, Class packetClass) {
+		if(packetIdToClassMap.containsKey(id)) {
+			throw new IllegalArgumentException("Duplicate packet id:" + id);
+		} else if(packetClassToIdMap.containsKey(packetClass)) {
+			throw new IllegalArgumentException("Duplicate packet class:" + packetClass);
+		} else {
+			packetIdToClassMap.put(id, packetClass);
+			packetClassToIdMap.put(packetClass, id);
+		}
+	}
 
-    public static void writePacket(Packet packet0, DataOutputStream dataOutputStream1) throws IOException {
-        dataOutputStream1.write(packet0.getPacketId());
-        packet0.writePacket(dataOutputStream1);
-    }
+	public static Packet getNewPacket(int id) {
+		try {
+			Class class1 = (Class)packetIdToClassMap.get(id);
+			return class1 == null ? null : (Packet)class1.newInstance();
+		} catch (Exception exception2) {
+			exception2.printStackTrace();
+			System.out.println("Skipping packet with id " + id);
+			return null;
+		}
+	}
 
-    public abstract void readPacketData(DataInputStream dataInputStream1) throws IOException;
+	public final int getPacketId() throws IOException {
+		return ((Integer)packetClassToIdMap.get(this.getClass())).intValue();
+	}
 
-    public abstract void writePacket(DataOutputStream dataOutputStream1) throws IOException;
+	public static Packet readPacket(DataInputStream dataInputStream) throws IOException {
+		int i1 = dataInputStream.read();
+		if(i1 == -1) {
+			return null;
+		} else {
+			Packet packet2 = getNewPacket(i1);
+			if(packet2 == null) {
+				throw new IOException("Bad packet id " + i1);
+			} else {
+				packet2.readPacketData(dataInputStream);
+				return packet2;
+			}
+		}
+	}
 
-    public abstract int getPacketId() throws IOException;
+	public static void writePacket(Packet packet, DataOutputStream dataOutputStream) throws IOException {
+		dataOutputStream.write(packet.getPacketId());
+		packet.writePacket(dataOutputStream);
+	}
 
-    public abstract void processPacket(NetHandler netHandler1);
+	public abstract void readPacketData(DataInputStream dataInputStream1) throws IOException;
+
+	public abstract void writePacket(DataOutputStream dataOutputStream1) throws IOException;
+
+	public abstract void processPacket(NetHandler netHandler1);
+
+	static {
+		addIdClassMapping(0, Packet0KeepAlive.class);
+		addIdClassMapping(1, Packet1Handshake.class);
+		addIdClassMapping(3, Packet3Chat.class);
+		addIdClassMapping(10, Packet10Flying.class);
+		addIdClassMapping(11, Packet11PlayerPosition.class);
+		addIdClassMapping(12, Packet12PlayerLook.class);
+		addIdClassMapping(13, Packet13PlayerLookMove.class);
+		addIdClassMapping(14, Packet14BlockDig.class);
+		addIdClassMapping(15, Packet15Place.class);
+		addIdClassMapping(16, Packet16BlockItemSwitch.class);
+		addIdClassMapping(17, Packet17AddToInventory.class);
+		addIdClassMapping(20, Packet20NamedEntitySpawn.class);
+		addIdClassMapping(21, Packet21PickupSpawn.class);
+		addIdClassMapping(22, Packet22Collect.class);
+		addIdClassMapping(29, Packet29DestroyEntity.class);
+		addIdClassMapping(30, Packet30Entity.class);
+		addIdClassMapping(31, Packet31RelEntityMove.class);
+		addIdClassMapping(32, Packet32RelEntityMove.class);
+		addIdClassMapping(33, Packet33RelEntityMoveLook.class);
+		addIdClassMapping(34, Packet34EntityTeleport.class);
+		addIdClassMapping(50, Packet50PreChunk.class);
+		addIdClassMapping(51, Packet51MapChunk.class);
+		addIdClassMapping(52, Packet52MultiBlockChange.class);
+		addIdClassMapping(53, Packet53BlockChange.class);
+		addIdClassMapping(255, Packet255KickDisconnect.class);
+	}
 }

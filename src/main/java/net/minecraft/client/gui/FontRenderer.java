@@ -28,32 +28,39 @@ public class FontRenderer {
 		int[] i7 = new int[i5 * i6];
 		img.getRGB(0, 0, i5, i6, i7, 0, i5);
 
-        int i8;
+		int i8;
         int i9;
+        int i10;
         int i11;
-        int i13;
-        for(int i17 = 0; i17 < 128; ++i17) {
-            i6 = i17 % 16;
-            i8 = i17 / 16;
-            i9 = 0;
+        int i12;
+        int i15;
+        int i16;
+        for(i8 = 0; i8 < 256; ++i8) {
+            i9 = i8 % 16;
+            i10 = i8 / 16;
 
-            for(boolean z10 = false; i9 < 8 && !z10; ++i9) {
-                i11 = (i6 << 3) + i9;
-                z10 = true;
+            for(i11 = 7; i11 >= 0; --i11) {
+                i12 = i9 * 8 + i11;
+                boolean z13 = true;
 
-                for(int i12 = 0; i12 < 8 && z10; ++i12) {
-                    i13 = ((i8 << 3) + i12) * i5;
-                    if((i7[i11 + i13] & 255) > 128) {
-                        z10 = false;
+                for(int i14 = 0; i14 < 8 && z13; ++i14) {
+                    i15 = (i10 * 8 + i14) * i5;
+                    i16 = i7[i12 + i15] & 255;
+                    if(i16 > 0) {
+                        z13 = false;
                     }
+                }
+
+                if(!z13) {
+                    break;
                 }
             }
 
-            if(i17 == 32) {
-                i9 = 4;
+            if(i8 == 32) {
+                i11 = 2;
             }
 
-            this.charWidth[i17] = i9;
+            this.charWidth[i8] = i11 + 2;
         }
 
         this.fontTextureName = renderEngine.allocateAndSetupTexture(img);
@@ -81,9 +88,9 @@ public class FontRenderer {
             i11 = ((i6 & 4) >> 2) * 191 + i8;
             boolean z20 = i6 >= 16;
             if(gameSettings.anaglyph) {
-                i13 = (i11 * 30 + i19 * 59 + i9 * 11) / 100;
+                int i13 = (i11 * 30 + i19 * 59 + i9 * 11) / 100;
                 int i14 = (i11 * 30 + i19 * 70) / 100;
-                int i16 = (i11 * 30 + i9 * 70) / 100;
+                i16 = (i11 * 30 + i9 * 70) / 100;
                 i11 = i13;
                 i19 = i14;
                 i9 = i16;
@@ -112,12 +119,15 @@ public class FontRenderer {
 
     public void renderString(String message, int x, int y, int color, boolean dropShadow) {
         if(message != null) {
+            int i6;
             if(dropShadow) {
+                i6 = color & 0xFF000000;
                 color = (color & 16579836) >> 2;
+                color += i6;
             }
 
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTextureName);
-            float f6 = (float)(color >> 16 & 255) / 255.0F;
+            float f10 = (float)(color >> 16 & 255) / 255.0F;
             float f7 = (float)(color >> 8 & 255) / 255.0F;
             float f8 = (float)(color & 255) / 255.0F;
             float f9 = (float)(color >> 24 & 255) / 255.0F;
@@ -125,15 +135,16 @@ public class FontRenderer {
                 f9 = 1.0F;
             }
 
-            GL11.glColor4f(f6, f7, f8, f9);
+            GL11.glColor4f(f10, f7, f8, f9);
             this.buffer.clear();
             GL11.glPushMatrix();
             GL11.glTranslatef((float)x, (float)y, 0.0F);
 
-            for(int i10 = 0; i10 < message.length(); ++i10) {
-                for(; message.charAt(i10) == 38 && message.length() > i10 + 1; i10 += 2) {
-                    int i11;
-                    if((i11 = "0123456789abcdef".indexOf(message.charAt(i10 + 1))) < 0 || i11 > 15) {
+            for(i6 = 0; i6 < message.length(); ++i6) {
+                int i11;
+                for(; message.charAt(i6) == 167 && message.length() > i6 + 1; i6 += 2) {
+                    i11 = "0123456789abcdef".indexOf(message.charAt(i6 + 1));
+                    if(i11 < 0 || i11 > 15) {
                         i11 = 15;
                     }
 
@@ -145,7 +156,11 @@ public class FontRenderer {
                     }
                 }
 
-                this.buffer.put(this.fontDisplayLists + message.charAt(i10));
+                i11 = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(message.charAt(i6));
+                if(i11 >= 0) {
+                    this.buffer.put(this.fontDisplayLists + i11 + 32);
+                }
+
                 if(this.buffer.remaining() == 0) {
                     this.buffer.flip();
                     GL11.glCallLists(this.buffer);
@@ -166,10 +181,13 @@ public class FontRenderer {
             int i2 = 0;
 
             for(int i3 = 0; i3 < message.length(); ++i3) {
-                if(message.charAt(i3) == 38) {
+                if(message.charAt(i3) == 167) {
                     ++i3;
                 } else {
-                    i2 += this.charWidth[message.charAt(i3)];
+                    int i4 = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(message.charAt(i3));
+                    if(i4 >= 0) {
+                        i2 += this.charWidth[i4 + 32];
+                    }
                 }
             }
 

@@ -68,6 +68,7 @@ public class World implements IBlockAccess {
 	private NBTTagCompound nbtCompoundPlayer;
 	public long sizeOnDisk;
 	public final String levelName;
+    public boolean worldChunkLoadOverride;
     private ArrayList collidingBoundingBoxes;
     private Set positionsToUpdate;
     private int soundCounter;
@@ -198,12 +199,15 @@ public class World implements IBlockAccess {
 
         this.chunkProvider = this.getChunkProvider(this.saveDirectory);
         if(worldFile2) {
+            this.worldChunkLoadOverride = true;
             this.spawnX = 0;
             this.spawnY = 64;
 
             for(this.spawnZ = 0; !this.findSpawn(this.spawnX, this.spawnZ); this.spawnZ += this.rand.nextInt(64) - this.rand.nextInt(64)) {
                 this.spawnX += this.rand.nextInt(64) - this.rand.nextInt(64);
             }
+
+            this.worldChunkLoadOverride = false;
         }
 
         this.calculateInitialSkylight();
@@ -225,8 +229,9 @@ public class World implements IBlockAccess {
 
 	}
 
-	private boolean findSpawn(int i1, int i2) {
-		return this.getFirstUncoveredBlock(i1, i2) == Block.sand.blockID;
+	private boolean findSpawn(int x, int z) {
+        int i3 = this.getFirstUncoveredBlock(x, z);
+        return i3 == Block.sand.blockID;
 	}
 
     private int getFirstUncoveredBlock(int x, int z) {
@@ -468,7 +473,7 @@ public class World implements IBlockAccess {
 
     }
 
-    private void notifyBlockChange(int x, int y, int z, int blockID) {
+    protected void notifyBlockChange(int x, int y, int z, int blockID) {
         this.markBlockNeedsUpdate(x, y, z);
         this.notifyBlocksOfNeighborChange(x, y, z, blockID);
     }
@@ -614,7 +619,7 @@ public class World implements IBlockAccess {
 			}
 
 			if(this.getSavedLightValue(skyBlock, x, y, z) != lightValue) {
-				this.scheduleLightingUpdate_do(skyBlock, x, y, z, x, y, z);
+				this.scheduleLightingUpdate(skyBlock, x, y, z, x, y, z);
 			}
 
 		}
@@ -850,9 +855,8 @@ public class World implements IBlockAccess {
         entity.setEntityDead();
         if(entity instanceof EntityPlayer) {
             this.playerEntities.remove((EntityPlayer)entity);
+            System.out.println("Player count: " + this.playerEntities.size());
         }
-
-        System.out.println("Player count: " + this.playerEntities.size());
     }
 
 	public void addWorldAccess(IWorldAccess worldAccess) {
@@ -1038,60 +1042,63 @@ public class World implements IBlockAccess {
     }
 
     public void updateEntities() {
+        this.loadedEntityList.removeAll(this.unloadedEntityList);
+
         int i1;
-        for(i1 = 0; i1 < this.playerEntities.size(); ++i1) {
-            if(!this.loadedEntityList.contains(this.playerEntities.get(i1))) {
-                System.out.println("Reinserting player " + i1);
-                this.spawnEntityInWorld((Entity)this.playerEntities.get(i1));
+        Entity entity2;
+        int i3;
+        int i4;
+        for(i1 = 0; i1 < this.unloadedEntityList.size(); ++i1) {
+            entity2 = (Entity)this.unloadedEntityList.get(i1);
+            i3 = entity2.chunkCoordX;
+            i4 = entity2.chunkCoordZ;
+            if(entity2.addedToChunk && this.chunkExists(i3, i4)) {
+                this.getChunkFromChunkCoords(i3, i4).removeEntity(entity2);
             }
         }
 
-        this.loadedEntityList.removeAll(this.unloadedEntityList);
-
-        int i11;
-        int i3;
-        for(i11 = 0; i11 < this.worldAccesses.size(); ++i11) {
-            IWorldAccess iWorldAccess2 = (IWorldAccess)this.worldAccesses.get(i11);
+        for(i1 = 0; i1 < this.worldAccesses.size(); ++i1) {
+            IWorldAccess iWorldAccess6 = (IWorldAccess)this.worldAccesses.get(i1);
 
             for(i3 = 0; i3 < this.unloadedEntityList.size(); ++i3) {
-                iWorldAccess2.releaseEntitySkin((Entity)this.unloadedEntityList.get(i3));
+                iWorldAccess6.releaseEntitySkin((Entity)this.unloadedEntityList.get(i3));
             }
         }
 
         this.unloadedEntityList.clear();
 
-        for(i11 = 0; i11 < this.loadedEntityList.size(); ++i11) {
-            Entity entity5;
-            if((entity5 = (Entity)this.loadedEntityList.get(i11)).ridingEntity != null) {
-                if(!entity5.ridingEntity.isDead && entity5.ridingEntity.riddenByEntity == entity5) {
+        for(i1 = 0; i1 < this.loadedEntityList.size(); ++i1) {
+            entity2 = (Entity)this.loadedEntityList.get(i1);
+            if(entity2.ridingEntity != null) {
+                if(!entity2.ridingEntity.isDead && entity2.ridingEntity.riddenByEntity == entity2) {
                     continue;
                 }
 
-                entity5.ridingEntity.riddenByEntity = null;
-                entity5.ridingEntity = null;
+                entity2.ridingEntity.riddenByEntity = null;
+                entity2.ridingEntity = null;
             }
 
-            if(!entity5.isDead) {
-                this.updateEntity(entity5);
+            if(!entity2.isDead) {
+                this.updateEntity(entity2);
             }
 
-            if(entity5.isDead) {
-                i3 = MathHelper.floor_double(entity5.posX / 16.0D);
-                int i4 = MathHelper.floor_double(entity5.posZ / 16.0D);
-                if(this.chunkExists(i3, i4)) {
-                    this.getChunkFromChunkCoords(i3, i4).removeEntity(entity5);
+            if(entity2.isDead) {
+                i3 = entity2.chunkCoordX;
+                i4 = entity2.chunkCoordZ;
+                if(entity2.addedToChunk && this.chunkExists(i3, i4)) {
+                    this.getChunkFromChunkCoords(i3, i4).removeEntity(entity2);
                 }
 
-                this.loadedEntityList.remove(i11--);
+                this.loadedEntityList.remove(i1--);
 
-                for(i3 = 0; i3 < this.worldAccesses.size(); ++i3) {
-                    ((IWorldAccess)this.worldAccesses.get(i3)).releaseEntitySkin(entity5);
+                for(int i5 = 0; i5 < this.worldAccesses.size(); ++i5) {
+                    ((IWorldAccess)this.worldAccesses.get(i5)).releaseEntitySkin(entity2);
                 }
             }
         }
 
-        for(i11 = 0; i11 < this.loadedTileEntityList.size(); ++i11) {
-            ((TileEntity)this.loadedTileEntityList.get(i11)).updateEntity();
+        for(i1 = 0; i1 < this.loadedTileEntityList.size(); ++i1) {
+            ((TileEntity)this.loadedTileEntityList.get(i1)).updateEntity();
         }
 
     }
@@ -1099,16 +1106,13 @@ public class World implements IBlockAccess {
     private void updateEntity(Entity entity) {
         int i2 = MathHelper.floor_double(entity.posX);
         int i4 = MathHelper.floor_double(entity.posZ);
-        byte b4 = 2;
+        byte b4 = 1;
         if(this.checkChunksExist(i2 - b4, 0, i4 - b4, i2 + b4, 128, i4 + b4)) {
             entity.lastTickPosX = entity.posX;
             entity.lastTickPosY = entity.posY;
             entity.lastTickPosZ = entity.posZ;
             entity.prevRotationYaw = entity.rotationYaw;
             entity.prevRotationPitch = entity.rotationPitch;
-            i2 = MathHelper.floor_double(entity.posX / 16.0D);
-            int i3 = MathHelper.floor_double(entity.posY / 16.0D);
-            i4 = MathHelper.floor_double(entity.posZ / 16.0D);
             if(entity.ridingEntity != null) {
                 entity.updateRidden();
             } else {
@@ -1118,14 +1122,16 @@ public class World implements IBlockAccess {
             int i5 = MathHelper.floor_double(entity.posX / 16.0D);
             int i6 = MathHelper.floor_double(entity.posY / 16.0D);
             int i7 = MathHelper.floor_double(entity.posZ / 16.0D);
-            if(i2 != i5 || i3 != i6 || i4 != i7) {
-                if(this.chunkExists(i2, i4)) {
-                    this.getChunkFromChunkCoords(i2, i4).removeEntityAtIndex(entity, i3);
+            if(!entity.addedToChunk || entity.chunkCoordX != i5 || entity.chunkCoordY != i6 || entity.chunkCoordZ != i7) {
+                if(entity.addedToChunk && this.chunkExists(entity.chunkCoordX, entity.chunkCoordZ)) {
+                    this.getChunkFromChunkCoords(entity.chunkCoordX, entity.chunkCoordZ).removeEntityAtIndex(entity, entity.chunkCoordY);
                 }
 
                 if(this.chunkExists(i5, i7)) {
                     this.getChunkFromChunkCoords(i5, i7).addEntity(entity);
                 } else {
+                    entity.addedToChunk = false;
+                    System.out.println("Removing entity because it\'s not in a chunk!!");
                     entity.setEntityDead();
                 }
             }
@@ -1431,21 +1437,27 @@ public class World implements IBlockAccess {
         return false;
     }
 
-	public void scheduleLightingUpdate_do(EnumSkyBlock enumSkyBlock, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		int i8 = this.lightingToUpdate.size();
-		int i9 = 4;
-		if(i9 > i8) {
-			i9 = i8;
-		}
+    public void scheduleLightingUpdate(EnumSkyBlock skyBlock, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        this.scheduleLightingUpdate_do(skyBlock, minX, minY, minZ, maxX, maxY, maxZ, true);
+    }
 
-		for(int i10 = 0; i10 < i9; ++i10) {
-			MetadataChunkBlock metadataChunkBlock11 = (MetadataChunkBlock)this.lightingToUpdate.get(this.lightingToUpdate.size() - i10 - 1);
-			if(metadataChunkBlock11.skyBlock == enumSkyBlock && metadataChunkBlock11.getLightUpdated(minX, minY, minZ, maxX, maxY, maxZ)) {
-				return;
-			}
-		}
+    public void scheduleLightingUpdate_do(EnumSkyBlock skyBlock, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean update) {
+        int i9 = this.lightingToUpdate.size();
+        if(update) {
+            int i10 = 4;
+            if(i10 > i9) {
+                i10 = i9;
+            }
 
-		this.lightingToUpdate.add(new MetadataChunkBlock(enumSkyBlock, minX, minY, minZ, maxX, maxY, maxZ));
+            for(int i11 = 0; i11 < i10; ++i11) {
+                MetadataChunkBlock metadataChunkBlock12 = (MetadataChunkBlock)this.lightingToUpdate.get(this.lightingToUpdate.size() - i11 - 1);
+                if(metadataChunkBlock12.skyBlock == skyBlock && metadataChunkBlock12.getLightUpdated(minX, minY, minZ, maxX, maxY, maxZ)) {
+                    return;
+                }
+            }
+        }
+
+		this.lightingToUpdate.add(new MetadataChunkBlock(skyBlock, minX, minY, minZ, maxX, maxY, maxZ));
 		if(this.lightingToUpdate.size() > 100000) {
 			while(this.lightingToUpdate.size() > 50000) {
 				this.updatingLighting();
@@ -1815,6 +1827,7 @@ public class World implements IBlockAccess {
                 }
 
                 i12 = this.getChunkFromChunkCoords(i15, i18).setChunkData(blocks, i16, i13, i19, i17, i14, i20, i12);
+                this.markBlocksDirty(i15 * 16 + i16, i13, i18 * 16 + i19, i15 * 16 + i17, i14, i18 * 16 + i20);
             }
         }
 

@@ -31,31 +31,31 @@ public class BlockLever extends Block {
         return world1.isBlockNormalCube(i2 - 1, i3, i4) ? true : (world1.isBlockNormalCube(i2 + 1, i3, i4) ? true : (world1.isBlockNormalCube(i2, i3, i4 - 1) ? true : (world1.isBlockNormalCube(i2, i3, i4 + 1) ? true : world1.isBlockNormalCube(i2, i3 - 1, i4))));
     }
 
-    public void onBlockPlaced(World world1, int i2, int i3, int i4, int i5) {
-        int i6 = world1.getBlockMetadata(i2, i3, i4);
+    public void onBlockPlaced(World worldObj, int x, int y, int z, int metadata) {
+        int i6 = worldObj.getBlockMetadata(x, y, z);
         int i7 = i6 & 8;
         i6 &= 7;
-        if(i5 == 1 && world1.isBlockNormalCube(i2, i3 - 1, i4)) {
-            i6 = 5 + world1.rand.nextInt(2);
+        if(metadata == 1 && worldObj.isBlockNormalCube(x, y - 1, z)) {
+            i6 = 5 + worldObj.rand.nextInt(2);
         }
 
-        if(i5 == 2 && world1.isBlockNormalCube(i2, i3, i4 + 1)) {
+        if(metadata == 2 && worldObj.isBlockNormalCube(x, y, z + 1)) {
             i6 = 4;
         }
 
-        if(i5 == 3 && world1.isBlockNormalCube(i2, i3, i4 - 1)) {
+        if(metadata == 3 && worldObj.isBlockNormalCube(x, y, z - 1)) {
             i6 = 3;
         }
 
-        if(i5 == 4 && world1.isBlockNormalCube(i2 + 1, i3, i4)) {
+        if(metadata == 4 && worldObj.isBlockNormalCube(x + 1, y, z)) {
             i6 = 2;
         }
 
-        if(i5 == 5 && world1.isBlockNormalCube(i2 - 1, i3, i4)) {
+        if(metadata == 5 && worldObj.isBlockNormalCube(x - 1, y, z)) {
             i6 = 1;
         }
 
-        world1.setBlockMetadataWithNotify(i2, i3, i4, i6 + i7);
+        worldObj.setBlockMetadataWithNotify(x, y, z, i6 + i7);
     }
 
     public void onBlockAdded(World world1, int i2, int i3, int i4) {
@@ -116,8 +116,8 @@ public class BlockLever extends Block {
         }
     }
 
-    public void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess1, int i2, int i3, int i4) {
-        int i5 = iBlockAccess1.getBlockMetadata(i2, i3, i4) & 7;
+    public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
+        int i5 = blockAccess.getBlockMetadata(x, y, z) & 7;
         float f6 = 0.1875F;
         if(i5 == 1) {
             this.setBlockBounds(0.0F, 0.2F, 0.5F - f6, f6 * 2.0F, 0.8F, 0.5F + f6);
@@ -134,8 +134,8 @@ public class BlockLever extends Block {
 
     }
 
-    public void onBlockClicked(World world1, int i2, int i3, int i4, EntityPlayer entityPlayer5) {
-        this.blockActivated(world1, i2, i3, i4, entityPlayer5);
+    public void onBlockClicked(World worldObj, int x, int y, int z, EntityPlayer entityPlayer) {
+        this.blockActivated(worldObj, x, y, z, entityPlayer);
     }
 
     public boolean blockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer) {

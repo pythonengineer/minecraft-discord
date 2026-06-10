@@ -30,6 +30,7 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
             GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
             GL11.glTranslatef(0.0F, -0.4F, 0.0F);
             GL11.glScalef(0.4375F, 0.4375F, 0.4375F);
+            entity18.setLocationAndAngles(d2, d4, d6, 0.0F, 0.0F);
             RenderManager.instance.renderEntityWithPosYaw(entity18, 0.0D, 0.0D, 0.0D, 0.0F, f8);
         }
 

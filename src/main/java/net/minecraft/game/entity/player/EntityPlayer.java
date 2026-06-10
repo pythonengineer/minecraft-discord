@@ -53,6 +53,9 @@ public class EntityPlayer extends EntityLiving {
 		this.deathTime = 0;
 	}
 
+    protected void updateEntityActionState() {
+    }
+
 	public void onLivingUpdate() {
 		if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 * 4 == 0) {
 			this.heal(1);
@@ -146,9 +149,13 @@ public class EntityPlayer extends EntityLiving {
 				stack1.motionZ += Math.sin((double)f3) * (double)isRandom1;
 			}
 
-			this.worldObj.spawnEntityInWorld(stack1);
-		}
-	}
+            this.joinEntityItemWithWorld(stack1);
+        }
+    }
+
+    protected void joinEntityItemWithWorld(EntityItem entityItem) {
+        this.worldObj.spawnEntityInWorld(entityItem);
+    }
 
 	public float getCurrentPlayerStrVsBlock(Block block1) {
 		float f2 = this.inventory.getStrVsBlock(block1);
@@ -181,7 +188,7 @@ public class EntityPlayer extends EntityLiving {
 	public void displayWorkbenchGUI() {
 	}
 
-	public void onItemPickup(Entity entity) {
+	public void onItemPickup(Entity entity, int i2) {
 	}
 
 	protected float getEyeHeight() {
@@ -249,7 +256,7 @@ public class EntityPlayer extends EntityLiving {
         this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
     }
 
-    protected double getYOffset() {
+    public double getYOffset() {
         return (double)(this.yOffset - 0.5F);
     }
 }

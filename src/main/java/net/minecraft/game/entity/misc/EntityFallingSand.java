@@ -78,6 +78,10 @@ public class EntityFallingSand extends Entity {
         this.blockID = nBTTagCompound1.getByte("Tile") & 255;
     }
 
+    public float getShadowSize() {
+        return 0.0F;
+    }
+
     public World getWorld() {
         return this.worldObj;
     }

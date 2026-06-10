@@ -292,24 +292,26 @@ public class Block {
         this.dropBlockAsItemWithChance(world, x, y, z, metadata, 1.0F);
     }
 
-    public void dropBlockAsItemWithChance(World world, int x, int y, int z, int metadata, float chance) {
-        int i7 = this.quantityDropped(world.rand);
+    public void dropBlockAsItemWithChance(World worldObj, int x, int y, int z, int metadata, float chance) {
+        if(!worldObj.multiplayerWorld) {
+            int i7 = this.quantityDropped(worldObj.rand);
 
-        for(int i8 = 0; i8 < i7; ++i8) {
-            if(world.rand.nextFloat() <= chance) {
-                int i9 = this.idDropped(metadata, world.rand);
-                if(i9 > 0) {
-                    float f10 = 0.7F;
-                    double d11 = (double)(world.rand.nextFloat() * f10) + (double)(1.0F - f10) * 0.5D;
-                    double d13 = (double)(world.rand.nextFloat() * f10) + (double)(1.0F - f10) * 0.5D;
-                    double d15 = (double)(world.rand.nextFloat() * f10) + (double)(1.0F - f10) * 0.5D;
-                    EntityItem entityItem17 = new EntityItem(world, (double)x + d11, (double)y + d13, (double)z + d15, new ItemStack(i9));
-                    entityItem17.delayBeforeCanPickup = 10;
-                    world.spawnEntityInWorld(entityItem17);
+            for(int i8 = 0; i8 < i7; ++i8) {
+                if(worldObj.rand.nextFloat() <= chance) {
+                    int i9 = this.idDropped(metadata, worldObj.rand);
+                    if(i9 > 0) {
+                        float f10 = 0.7F;
+                        double d11 = (double)(worldObj.rand.nextFloat() * f10) + (double)(1.0F - f10) * 0.5D;
+                        double d13 = (double)(worldObj.rand.nextFloat() * f10) + (double)(1.0F - f10) * 0.5D;
+                        double d15 = (double)(worldObj.rand.nextFloat() * f10) + (double)(1.0F - f10) * 0.5D;
+                        EntityItem entityItem17 = new EntityItem(worldObj, (double)x + d11, (double)y + d13, (double)z + d15, new ItemStack(i9));
+                        entityItem17.delayBeforeCanPickup = 10;
+                        worldObj.spawnEntityInWorld(entityItem17);
+                    }
                 }
             }
-        }
 
+        }
     }
 
     public float getExplosionResistance(Entity entity) {

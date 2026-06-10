@@ -61,7 +61,7 @@ public class EntityMinecart extends Entity implements IInventory {
 	}
 
     public double getMountedYOffset() {
-        return (double)this.height * 0.2D;
+        return (double)this.height * 0.0D - (double)0.3F;
     }
 
 	public boolean attackEntityFrom(Entity entity1, int i2) {
@@ -441,6 +441,10 @@ public class EntityMinecart extends Entity implements IInventory {
 		}
 
 	}
+
+    public float getShadowSize() {
+        return 0.0F;
+    }
 
 	public void applyEntityCollision(Entity entity1) {
 		if(entity1 != this.riddenByEntity) {

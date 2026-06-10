@@ -4,6 +4,8 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.Touch;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.GuiMainMenu;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 
 /**
@@ -87,7 +89,7 @@ public enum EnumTouchControl {
                 Minecraft mc = Minecraft.minecraft;
                 if (mc.thePlayer != null) {
                     mc.setIngameFocus();
-                } else if(mc.currentScreen != null) {
+                } else if(mc.currentScreen != null && !(mc.currentScreen instanceof GuiMainMenu)) {
                     mc.displayGuiScreen(null);
                 }
             }
@@ -122,6 +124,7 @@ public enum EnumTouchControl {
 
     CHAT(EnumTouchControlPos.TOP, 18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            Minecraft.minecraft.displayGuiScreen(new GuiChat());
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -140,6 +143,8 @@ public enum EnumTouchControl {
 
     F5(EnumTouchControlPos.TOP, 90, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            Minecraft mc = Minecraft.minecraft;
+            mc.options.thirdPersonView = !mc.options.thirdPersonView;
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -167,6 +172,7 @@ public enum EnumTouchControl {
 
     PICK(EnumTouchControlPos.BOTTOM_RIGHT, 70, 125, 40, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            Minecraft.minecraft.clickMiddleMouseButton();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -413,12 +419,16 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                CHAT.setVisible(renderer, false);
+                if (Minecraft.minecraft.isMultiplayerWorld()) {
+                    CHAT.setVisible(renderer, true);
+                } else {
+                    CHAT.setVisible(renderer, false);
+                }
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
-                PICK.setVisible(renderer, false);
+                PICK.setVisible(renderer, true);
                 ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);
@@ -439,12 +449,16 @@ public enum EnumTouchControl {
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
                 PAUSE.setVisible(renderer, true);
-                CHAT.setVisible(renderer, false);
+                if (Minecraft.minecraft.isMultiplayerWorld()) {
+                    CHAT.setVisible(renderer, true);
+                } else {
+                    CHAT.setVisible(renderer, false);
+                }
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
-                PICK.setVisible(renderer, false);
+                PICK.setVisible(renderer, true);
                 ATTACK.setVisible(renderer, false);
                 MOB.setVisible(renderer, false);
                 FLY.setVisible(renderer, false);

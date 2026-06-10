@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.animal.EntityAnimal;
+import net.minecraft.game.entity.animal.EntityCow;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
 import net.minecraft.game.entity.monster.EntityCreeper;
@@ -28,7 +29,7 @@ public class PlayerControllerSP extends PlayerController {
     private float blockDestroySoundCounter = 0.0F;
     private int blockHitWait = 0;
     private SpawnerAnimals monsterSpawner = new SpawnerMonsters(this, 200, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class});
-    private SpawnerAnimals animalSpawner = new SpawnerAnimals(20, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class});
+    private SpawnerAnimals animalSpawner = new SpawnerAnimals(20, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class, EntityCow.class});
 
     public PlayerControllerSP(Minecraft minecraft1) {
         super(minecraft1);

@@ -1,6 +1,7 @@
 package net.minecraft.client.controller;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.net.EntityClientPlayerMP;
 import net.minecraft.client.net.NetClientHandler;
 import net.minecraft.client.net.Packet14BlockDig;
 import net.minecraft.client.net.Packet15Place;
@@ -160,5 +161,9 @@ public class PlayerControllerMP extends PlayerController {
         this.syncCurrentPlayItem();
         this.netClientHandler.addToSendQueue(new Packet15Place(itemStack.itemID, x, y, z, side));
         return super.onPlayerRightClick(entityPlayer, world, itemStack, x, y, z, side);
+    }
+
+    public EntityPlayer createPlayer(World world) {
+        return new EntityClientPlayerMP(this.mc, world, this.mc.session, this.netClientHandler);
     }
 }

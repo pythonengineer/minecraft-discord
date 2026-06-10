@@ -1,6 +1,7 @@
 package net.minecraft.client.render.entity;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.game.entity.Entity;
@@ -45,7 +46,32 @@ public class RenderPlayer extends RenderLiving {
     }
 
 	private void renderPlayer(EntityPlayer playerEntity, double x, double y, double z, float yaw, float partialTicks) {
-		super.doRenderLiving(playerEntity, x, y - (double)playerEntity.yOffset, z, yaw, partialTicks);
+        super.doRenderLiving(playerEntity, x, y - (double)playerEntity.yOffset, z, yaw, partialTicks);
+        FontRenderer fontRenderer10 = this.getFontRendererFromRenderManager();
+        float f11 = 1.6F;
+        float f12 = 0.016666668F * f11;
+        GL11.glPushMatrix();
+        GL11.glTranslatef((float)x + 0.0F, (float)y + 0.8F, (float)z + 0.07F * f11);
+        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+        float f13 = playerEntity.getDistanceToEntity(this.renderManager.player);
+        f12 = (float)((double)f12 * (Math.sqrt((double)f13) / 2.0D));
+        GL11.glScalef(-f12, -f12, f12);
+        String string14 = playerEntity.username;
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDepthMask(false);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        fontRenderer10.drawString(string14, -fontRenderer10.getStringWidth(string14) / 2, 0, 1073741824);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthMask(true);
+        fontRenderer10.drawString(string14, -fontRenderer10.getStringWidth(string14) / 2, 0, 0xFF000000);
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glPopMatrix();
 	}
 
     protected void renderSpecials(EntityPlayer playerEntity, float partialTicks) {

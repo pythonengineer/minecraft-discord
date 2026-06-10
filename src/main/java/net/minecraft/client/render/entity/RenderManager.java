@@ -8,6 +8,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelCow;
 import net.minecraft.client.model.ModelPig;
 import net.minecraft.client.model.ModelSheep;
 import net.minecraft.client.model.ModelSheepFur;
@@ -18,6 +19,7 @@ import net.minecraft.client.render.RenderEngine;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.EntityPainting;
+import net.minecraft.game.entity.animal.EntityCow;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
 import net.minecraft.game.entity.misc.EntityBoat;
@@ -56,7 +58,8 @@ public class RenderManager {
 	private RenderManager() {
 		this.entityRenderMap.put(EntitySpider.class, new RenderSpider());
         this.entityRenderMap.put(EntityPig.class, new RenderPig(new ModelPig(), new ModelPig(0.5F), 0.7F));
-		this.entityRenderMap.put(EntitySheep.class, new RenderSheep(new ModelSheep(), new ModelSheepFur(), 0.7F));
+        this.entityRenderMap.put(EntitySheep.class, new RenderSheep(new ModelSheep(), new ModelSheepFur(), 0.7F));
+        this.entityRenderMap.put(EntityCow.class, new RenderCow(new ModelCow(), 0.7F));
 		this.entityRenderMap.put(EntityCreeper.class, new RenderCreeper());
 		this.entityRenderMap.put(EntitySkeleton.class, new RenderLiving(new ModelSkeleton(), 0.5F));
 		this.entityRenderMap.put(EntityZombie.class, new RenderLiving(new ModelZombie(), 0.5F));
@@ -137,4 +140,8 @@ public class RenderManager {
 		double d11 = z - this.viewerPosZ;
 		return d7 * d7 + d9 * d9 + d11 * d11;
 	}
+
+    public FontRenderer getFontRenderer() {
+        return this.fontRenderer;
+    }
 }

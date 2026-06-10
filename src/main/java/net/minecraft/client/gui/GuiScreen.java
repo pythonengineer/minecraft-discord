@@ -151,7 +151,7 @@ public class GuiScreen extends Gui {
 
     public void drawWorldBackground(int i1) {
         if(this.mc.theWorld != null) {
-            this.drawGradientRect(0, 0, this.width, this.height, 1610941696, -1607454656);
+            this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
         } else {
             this.drawBackground(i1);
         }

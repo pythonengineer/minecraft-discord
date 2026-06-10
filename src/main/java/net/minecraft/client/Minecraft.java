@@ -23,6 +23,7 @@ import net.minecraft.client.controller.PlayerControllerCreative;
 import net.minecraft.client.controller.PlayerControllerSP;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
@@ -88,8 +89,8 @@ public class Minecraft implements Runnable {
     public MouseHelper mouseHelper;
     private static long[] frameTimes = new long[512];
     private static int numRecordedFrameTimes = 0;
-    private String serverName;
-    private int serverPort;
+    public String serverName;
+    public int serverPort;
     private TextureWaterFX textureWaterFX;
     private TextureLavaFX textureLavaFX;
     public volatile boolean running;
@@ -152,7 +153,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.6");
+        Display.setTitle("Minecraft Alpha v1.0.10");
 
         try {
             Display.create();
@@ -747,7 +748,7 @@ public class Minecraft implements Runnable {
         }
     }
 
-    private void clickMiddleMouseButton() {
+    public void clickMiddleMouseButton() {
         if(this.objectMouseOver != null) {
             int i1 = this.theWorld.getBlockId(this.objectMouseOver.blockX, this.objectMouseOver.blockY, this.objectMouseOver.blockZ);
             if(i1 == Block.grass.blockID) {
@@ -908,9 +909,6 @@ public class Minecraft implements Runnable {
                                 this.displayInGameMenu();
                             }
 
-                            if(this.playerController instanceof PlayerControllerCreative) {
-                            }
-
                             if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
                                 this.options.thirdPersonView = !this.options.thirdPersonView;
                             }
@@ -921,6 +919,10 @@ public class Minecraft implements Runnable {
 
                             if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
                                 this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1), false);
+                            }
+
+                            if(this.isMultiplayerWorld() && Keyboard.getEventKey() == this.options.keyBindChat.keyCode) {
+                                this.displayGuiScreen(new GuiChat());
                             }
                         }
 
@@ -1053,7 +1055,7 @@ public class Minecraft implements Runnable {
             }
 
             if(this.thePlayer == null) {
-                this.thePlayer = new EntityPlayerSP(this, world, this.session);
+                this.thePlayer = (EntityPlayerSP)this.playerController.createPlayer(world);
                 this.thePlayer.preparePlayerToSpawn();
                 this.playerController.flipPlayer(this.thePlayer);
             }
@@ -1072,6 +1074,8 @@ public class Minecraft implements Runnable {
             if(world.isNewWorld) {
                 world.saveWorldIndirectly(this.loadingScreen);
             }
+        } else {
+            this.thePlayer = null;
         }
 
 		System.gc();
@@ -1146,7 +1150,7 @@ public class Minecraft implements Runnable {
             this.theWorld.setEntityDead(this.thePlayer);
         }
 
-        this.thePlayer = new EntityPlayerSP(this, this.theWorld, this.session);
+        this.thePlayer = (EntityPlayerSP)this.playerController.createPlayer(this.theWorld);
         this.thePlayer.preparePlayerToSpawn();
         this.playerController.flipPlayer(this.thePlayer);
         this.theWorld.spawnPlayerWithLoadedChunks(this.thePlayer);

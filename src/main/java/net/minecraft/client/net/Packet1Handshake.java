@@ -18,10 +18,6 @@ public class Packet1Handshake extends Packet {
 		this.protocol = i3;
 	}
 
-	public int getPacketId() {
-		return 0;
-	}
-
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.protocol = dataInputStream1.readInt();
 		this.username = dataInputStream1.readUTF();

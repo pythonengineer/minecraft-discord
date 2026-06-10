@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.render.RenderBlocks;
@@ -81,7 +82,7 @@ public abstract class Render {
         GL11.glDepthMask(false);
         float f12 = this.shadowSize;
         double d13 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
-        double d15 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
+        double d15 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks + (double)entity.getShadowSize();
         double d17 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
         int i19 = MathHelper.floor_double(d13 - (double)f12);
         int i20 = MathHelper.floor_double(d13 + (double)f12);
@@ -100,7 +101,7 @@ public abstract class Render {
                 for(int i34 = i23; i34 <= i24; ++i34) {
                     int i35 = world11.getBlockId(i32, i33 - 1, i34);
                     if(i35 > 0 && world11.getBlockLightValue(i32, i33, i34) > 3) {
-                        this.renderShadowOnBlock(Block.blocksList[i35], x, y, z, i32, i33, i34, f8, f12, d25, d27, d29);
+                        this.renderShadowOnBlock(Block.blocksList[i35], x, y + (double)entity.getShadowSize(), z, i32, i33, i34, f8, f12, d25, d27 + (double)entity.getShadowSize(), d29);
                     }
                 }
             }
@@ -231,5 +232,9 @@ public abstract class Render {
             this.renderEntityOnFire(entity, x, y, z, partialTicks);
         }
 
+    }
+
+    public FontRenderer getFontRendererFromRenderManager() {
+        return this.renderManager.getFontRenderer();
     }
 }

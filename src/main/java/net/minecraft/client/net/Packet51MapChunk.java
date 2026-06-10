@@ -16,10 +16,6 @@ public class Packet51MapChunk extends Packet {
 	public byte[] chunkData;
 	private int tempLength;
 
-	public int getPacketId() {
-		return 10;
-	}
-
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.xPosition = dataInputStream1.readInt();
 		this.yPosition = dataInputStream1.readShort();
@@ -30,7 +26,7 @@ public class Packet51MapChunk extends Packet {
 		int i2 = dataInputStream1.readInt();
 		byte[] b3 = new byte[i2];
 		dataInputStream1.readFully(b3);
-		this.chunkData = new byte[this.xSize * this.ySize * this.zSize * 3 / 2];
+		this.chunkData = new byte[this.xSize * this.ySize * this.zSize * 5 / 2];
 		Inflater inflater4 = new Inflater();
 		inflater4.setInput(b3);
 

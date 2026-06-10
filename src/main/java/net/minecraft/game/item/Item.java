@@ -89,6 +89,8 @@ public class Item {
     public static Item redstone = (new ItemRedstone(75)).setIconIndex(56);
     public static Item snowball = (new ItemSnowball(76)).setIconIndex(14);
     public static Item boat = (new ItemBoat(77)).setIconIndex(136);
+    public static Item leather = (new Item(78)).setIconIndex(103);
+    public static Item bucketMilk = (new Item(79)).setIconIndex(77);
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
 	protected int maxDamage = 32;

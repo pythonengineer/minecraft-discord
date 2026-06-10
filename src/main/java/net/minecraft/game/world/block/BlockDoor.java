@@ -65,8 +65,8 @@ public class BlockDoor extends Block {
         return super.getCollisionBoundingBoxFromPool(world, x, y, z);
     }
 
-    public void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess, int x, int y, int z) {
-        this.setDoorRotation(this.getState(iBlockAccess.getBlockMetadata(x, y, z)));
+    public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
+        this.setDoorRotation(this.getState(blockAccess.getBlockMetadata(x, y, z)));
     }
 
     public void setDoorRotation(int metadataValue) {
@@ -90,8 +90,8 @@ public class BlockDoor extends Block {
 
     }
 
-    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer playerEntity) {
-        this.blockActivated(world, x, y, z, playerEntity);
+    public void onBlockClicked(World worldObj, int x, int y, int z, EntityPlayer playerEntity) {
+        this.blockActivated(worldObj, x, y, z, playerEntity);
     }
 
     public boolean blockActivated(World world, int x, int y, int z, EntityPlayer playerEntity) {

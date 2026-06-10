@@ -74,6 +74,27 @@ public class Chunk {
 	public void doNothing() {
 	}
 
+    public void generateHeightMap() {
+        int i1 = 127;
+
+        for(int i2 = 0; i2 < 16; ++i2) {
+            for(int i3 = 0; i3 < 16; ++i3) {
+                int i4 = 127;
+
+                for(int i5 = i2 << 11 | i3 << 7; i4 > 0 && Block.lightOpacity[this.blocks[i5 + i4 - 1]] == 0; --i4) {
+                }
+
+                this.heightMap[i3 << 4 | i2] = (byte)i4;
+                if(i4 < i1) {
+                    i1 = i4;
+                }
+            }
+        }
+
+        this.height = i1;
+        this.isModified = true;
+    }
+
 	public void generateSkylightMap() {
 		int i1 = 127;
 
@@ -113,88 +134,87 @@ public class Chunk {
 	private void checkSkylightNeighborHeight(int x, int z, int y) {
 		int i4 = this.worldObj.getHeightValue(x, z);
 		if(i4 > y) {
-			this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, x, y, z, x, i4, z);
+			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, x, y, z, x, i4, z);
 		} else if(i4 < y) {
-			this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, x, i4, z, x, y, z);
+			this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, x, i4, z, x, y, z);
 		}
 
 		this.isModified = true;
 	}
 
-	private void relightBlock(int x, int y, int z) {
-		int i4 = this.heightMap[z << 4 | x] & 255;
-		int i5 = i4;
-		if(y > i4) {
-			i5 = y;
-		}
+    private void relightBlock(int x, int y, int z) {
+        int i4 = this.heightMap[z << 4 | x] & 255;
+        int i5 = i4;
+        if(y > i4) {
+            i5 = y;
+        }
 
-		while(i5 > 0 && Block.lightOpacity[this.getBlockID(x, i5 - 1, z)] == 0) {
-			--i5;
-		}
+        for(int i6 = x << 11 | z << 7; i5 > 0 && Block.lightOpacity[this.blocks[i6 + i5 - 1]] == 0; --i5) {
+        }
 
-		if(i5 != i4) {
-			this.worldObj.markBlocksDirtyVertical(x, z, i5, i4);
-			this.heightMap[z << 4 | x] = (byte)i5;
-			int i6;
-			int i7;
-			int i8;
-			if(i5 < this.height) {
-				this.height = i5;
-			} else {
-				i6 = 127;
+        if(i5 != i4) {
+            this.worldObj.markBlocksDirtyVertical(x, z, i5, i4);
+            this.heightMap[z << 4 | x] = (byte)i5;
+            int i7;
+            int i8;
+            int i9;
+            if(i5 < this.height) {
+                this.height = i5;
+            } else {
+                i7 = 127;
 
-				for(i7 = 0; i7 < 16; ++i7) {
-					for(i8 = 0; i8 < 16; ++i8) {
-						if((this.heightMap[i8 << 4 | i7] & 255) < i6) {
-							i6 = this.heightMap[i8 << 4 | i7] & 255;
-						}
-					}
-				}
+                for(i8 = 0; i8 < 16; ++i8) {
+                    for(i9 = 0; i9 < 16; ++i9) {
+                        if((this.heightMap[i9 << 4 | i8] & 255) < i7) {
+                            i7 = this.heightMap[i9 << 4 | i8] & 255;
+                        }
+                    }
+                }
 
-				this.height = i6;
-			}
+                this.height = i7;
+            }
 
-			i6 = this.xPosition * 16 + x;
-			i7 = this.zPosition * 16 + z;
-			if(i5 < i4) {
-				for(i8 = i5; i8 < i4; ++i8) {
-					this.skylightMap.set(x, i8, z, 15);
-				}
-			} else {
-				this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i6, i4, i7, i6, i5, i7);
+            i7 = this.xPosition * 16 + x;
+            i8 = this.zPosition * 16 + z;
+            if(i5 < i4) {
+                for(i9 = i5; i9 < i4; ++i9) {
+                    this.skylightMap.set(x, i9, z, 15);
+                }
+            } else {
+                this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i7, i4, i8, i7, i5, i8);
 
-				for(i8 = i4; i8 < i5; ++i8) {
-					this.skylightMap.set(x, i8, z, 0);
-				}
-			}
+                for(i9 = i4; i9 < i5; ++i9) {
+                    this.skylightMap.set(x, i9, z, 0);
+                }
+            }
 
-			i8 = 15;
+            i9 = 15;
 
-			int i9;
-			for(i9 = i5; i5 > 0 && i8 > 0; this.skylightMap.set(x, i5, z, i8)) {
-				--i5;
-				int i10 = Block.lightOpacity[this.getBlockID(x, i5, z)];
-				if(i10 == 0) {
-					i10 = 1;
-				}
+            int i10;
+            for(i10 = i5; i5 > 0 && i9 > 0; this.skylightMap.set(x, i5, z, i9)) {
+                --i5;
+                int i11 = Block.lightOpacity[this.getBlockID(x, i5, z)];
+                if(i11 == 0) {
+                    i11 = 1;
+                }
 
-				i8 -= i10;
-				if(i8 < 0) {
-					i8 = 0;
-				}
-			}
+                i9 -= i11;
+                if(i9 < 0) {
+                    i9 = 0;
+                }
+            }
 
-			while(i5 > 0 && Block.lightOpacity[this.getBlockID(x, i5 - 1, z)] == 0) {
-				--i5;
-			}
+            while(i5 > 0 && Block.lightOpacity[this.getBlockID(x, i5 - 1, z)] == 0) {
+                --i5;
+            }
 
-			if(i5 != i9) {
-				this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i6 - 1, i5, i7 - 1, i6 + 1, i9, i7 + 1);
-			}
+            if(i5 != i10) {
+                this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i7 - 1, i5, i8 - 1, i7 + 1, i10, i8 + 1);
+            }
 
-			this.isModified = true;
-		}
-	}
+            this.isModified = true;
+        }
+    }
 
 	public int getBlockID(int x, int y, int z) {
 		return this.blocks[x << 11 | z << 7 | y];
@@ -223,8 +243,8 @@ public class Chunk {
                 this.relightBlock(x, y, z);
             }
 
-            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i9, y, i10, i9, y, i10);
-            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Block, i9, y, i10, i9, y, i10);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i9, y, i10, i9, y, i10);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i9, y, i10, i9, y, i10);
             this.updateSkylight_do(x, z);
             if(blockID != 0) {
                 Block.blocksList[blockID].onBlockAdded(this.worldObj, i9, y, i10);
@@ -258,8 +278,8 @@ public class Chunk {
                 this.relightBlock(x, y, z);
             }
 
-            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
-            this.worldObj.scheduleLightingUpdate_do(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Sky, i8, y, i9, i8, y, i9);
+            this.worldObj.scheduleLightingUpdate(EnumSkyBlock.Block, i8, y, i9, i8, y, i9);
             this.updateSkylight_do(x, z);
             if(blockID != 0 && !this.worldObj.multiplayerWorld) {
                 Block.blocksList[blockID].onBlockAdded(this.worldObj, i8, y, i9);
@@ -311,28 +331,35 @@ public class Chunk {
 		return i5;
 	}
 
-	public void addEntity(Entity entity) {
-        this.hasEntities = true;
-		int i2 = MathHelper.floor_double(entity.posX / 16.0D);
-		int i3 = MathHelper.floor_double(entity.posZ / 16.0D);
-		if(i2 != this.xPosition || i3 != this.zPosition) {
-			System.out.println("Wrong location! " + entity);
-		}
+    public void addEntity(Entity entity) {
+        if(!this.isChunkRendered) {
+            this.hasEntities = true;
+            int i2 = MathHelper.floor_double(entity.posX / 16.0D);
+            int i3 = MathHelper.floor_double(entity.posZ / 16.0D);
+            if(i2 != this.xPosition || i3 != this.zPosition) {
+                System.out.println("Wrong location! " + entity);
+            }
 
-		if((i2 = MathHelper.floor_double(entity.posY / 16.0D)) < 0) {
-			i2 = 0;
-		}
+            int i4 = MathHelper.floor_double(entity.posY / 16.0D);
+            if(i4 < 0) {
+                i4 = 0;
+            }
 
-		if(i2 >= this.entities.length) {
-			i2 = this.entities.length - 1;
-		}
+            if(i4 >= this.entities.length) {
+                i4 = this.entities.length - 1;
+            }
 
-		this.entities[i2].add(entity);
-	}
+            entity.addedToChunk = true;
+            entity.chunkCoordX = this.xPosition;
+            entity.chunkCoordY = i4;
+            entity.chunkCoordZ = this.zPosition;
+            this.entities[i4].add(entity);
+        }
+    }
 
-	public void removeEntity(Entity entity) {
-		this.removeEntityAtIndex(entity, MathHelper.floor_double(entity.posY / 16.0D));
-	}
+    public void removeEntity(Entity entity) {
+        this.removeEntityAtIndex(entity, entity.chunkCoordY);
+    }
 
 	public void removeEntityAtIndex(Entity entity, int entityID) {
 		if(entityID < 0) {
@@ -343,9 +370,9 @@ public class Chunk {
 			entityID = this.entities.length - 1;
 		}
 
-		if(!this.entities[entityID].contains(entity)) {
-			System.out.println("There\'s no such entity to remove: " + entity);
-		}
+        if(!this.entities[entityID].contains(entity)) {
+            System.out.println("There\'s no such entity to remove: " + entity + " @ " + this.xPosition + ", " + this.zPosition);
+        }
 
 		this.entities[entityID].remove(entity);
 	}
@@ -479,32 +506,49 @@ public class Chunk {
         return this.neverSave ? false : (this.hasEntities && this.worldObj.worldTime != this.lastSaveTime ? true : this.isModified);
     }
 
-    public int setChunkData(byte[] b1, int minX, int i3, int minZ, int maxX, int i6, int maxZ, int i8) {
+    public int setChunkData(byte[] blocks, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int size) {
         int i9;
         int i10;
         int i11;
         int i12;
         for(i9 = minX; i9 < maxX; ++i9) {
             for(i10 = minZ; i10 < maxZ; ++i10) {
-                i11 = i9 << 11 | i10 << 7 | i3;
+                i11 = i9 << 11 | i10 << 7 | minY;
+                i12 = maxY - minY;
+                System.arraycopy(blocks, size, this.blocks, i11, i12);
+                size += i12;
+            }
+        }
 
-                for(i12 = i3; i12 < i6; ++i12) {
-                    this.blocks[i11++] = b1[i8++];
-                }
+        this.generateHeightMap();
+
+        for(i9 = minX; i9 < maxX; ++i9) {
+            for(i10 = minZ; i10 < maxZ; ++i10) {
+                i11 = (i9 << 11 | i10 << 7 | minY) >> 1;
+                i12 = (maxY - minY) / 2;
+                System.arraycopy(blocks, size, this.data.data, i11, i12);
+                size += i12;
             }
         }
 
         for(i9 = minX; i9 < maxX; ++i9) {
             for(i10 = minZ; i10 < maxZ; ++i10) {
-                i11 = (i9 << 11 | i10 << 7 | i3) >> 1;
-
-                for(i12 = i3; i12 < i6; i12 += 2) {
-                    this.data.data[i11++] = b1[i8++];
-                }
+                i11 = (i9 << 11 | i10 << 7 | minY) >> 1;
+                i12 = (maxY - minY) / 2;
+                System.arraycopy(blocks, size, this.blocklightMap.data, i11, i12);
+                size += i12;
             }
         }
 
-        this.generateSkylightMap();
-        return i8;
+        for(i9 = minX; i9 < maxX; ++i9) {
+            for(i10 = minZ; i10 < maxZ; ++i10) {
+                i11 = (i9 << 11 | i10 << 7 | minY) >> 1;
+                i12 = (maxY - minY) / 2;
+                System.arraycopy(blocks, size, this.skylightMap.data, i11, i12);
+                size += i12;
+            }
+        }
+
+        return size;
     }
 }

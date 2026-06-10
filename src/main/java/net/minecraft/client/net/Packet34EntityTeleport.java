@@ -7,7 +7,7 @@ import java.io.IOException;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 
-public class Packet26EntityTeleport extends Packet {
+public class Packet34EntityTeleport extends Packet {
 	public int entityId;
 	public int xPosition;
 	public int yPosition;
@@ -15,20 +15,16 @@ public class Packet26EntityTeleport extends Packet {
 	public byte yaw;
 	public byte pitch;
 
-	public Packet26EntityTeleport() {
+	public Packet34EntityTeleport() {
 	}
 
-	public Packet26EntityTeleport(Entity entity1) {
-		this.entityId = entity1.entityID;
-		this.xPosition = MathHelper.floor_double(entity1.posX * 32.0D);
-		this.yPosition = MathHelper.floor_double(entity1.posY * 32.0D);
-		this.zPosition = MathHelper.floor_double(entity1.posZ * 32.0D);
-		this.yaw = (byte)((int)(entity1.rotationYaw * 256.0F / 360.0F));
-		this.pitch = (byte)((int)(entity1.rotationPitch * 256.0F / 360.0F));
-	}
-
-	public int getPacketId() {
-		return 104;
+	public Packet34EntityTeleport(Entity entity) {
+		this.entityId = entity.entityID;
+		this.xPosition = MathHelper.floor_double(entity.posX * 32.0D);
+		this.yPosition = MathHelper.floor_double(entity.posY * 32.0D);
+		this.zPosition = MathHelper.floor_double(entity.posZ * 32.0D);
+		this.yaw = (byte)((int)(entity.rotationYaw * 256.0F / 360.0F));
+		this.pitch = (byte)((int)(entity.rotationPitch * 256.0F / 360.0F));
 	}
 
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {

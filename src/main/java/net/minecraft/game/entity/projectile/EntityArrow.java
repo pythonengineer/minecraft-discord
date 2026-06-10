@@ -222,9 +222,13 @@ public class EntityArrow extends Entity {
 	public void onCollideWithPlayer(EntityPlayer playerEntity) {
 		if(this.inData && this.shootingEntity == playerEntity && this.arrowShake <= 0 && playerEntity.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			playerEntity.onItemPickup(this);
+			playerEntity.onItemPickup(this, 1);
 			this.setEntityDead();
 		}
 
 	}
+
+    public float getShadowSize() {
+        return 0.0F;
+    }
 }

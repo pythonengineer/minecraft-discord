@@ -17,8 +17,8 @@ public class BlockIce extends BlockBreakable {
         return 1;
     }
 
-    public boolean shouldSideBeRendered(IBlockAccess iBlockAccess1, int i2, int i3, int i4, int i5) {
-        return super.shouldSideBeRendered(iBlockAccess1, i2, i3, i4, 1 - i5);
+    public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+        return super.shouldSideBeRendered(blockAccess, x, y, z, 1 - side);
     }
 
     public void onBlockRemoval(World world1, int i2, int i3, int i4) {

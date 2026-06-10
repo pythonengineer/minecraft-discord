@@ -4,11 +4,14 @@ import net.minecraft.client.GuiMainMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.game.world.World;
 
 public class GuiConnecting extends GuiScreen {
     private NetClientHandler clientHandler;
+    private boolean cancelled = false;
 
     public GuiConnecting(Minecraft minecraft1, String string2, int i3) {
+        minecraft1.changeWorld1((World)null);
         (new ThreadConnectToServer(this, minecraft1, string2, i3)).start();
     }
 
@@ -29,6 +32,11 @@ public class GuiConnecting extends GuiScreen {
 
     protected void actionPerformed(GuiButton guiButton1) {
         if(guiButton1.id == 0) {
+            this.cancelled = true;
+            if(this.clientHandler != null) {
+                this.clientHandler.disconnect();
+            }
+
             this.mc.displayGuiScreen(new GuiMainMenu());
         }
 
@@ -49,6 +57,10 @@ public class GuiConnecting extends GuiScreen {
 
     static NetClientHandler setNetClientHandler(GuiConnecting guiConnecting0, NetClientHandler netClientHandler1) {
         return guiConnecting0.clientHandler = netClientHandler1;
+    }
+
+    static boolean isCancelled(GuiConnecting guiConnecting0) {
+        return guiConnecting0.cancelled;
     }
 
     static NetClientHandler getNetClientHandler(GuiConnecting guiConnecting0) {

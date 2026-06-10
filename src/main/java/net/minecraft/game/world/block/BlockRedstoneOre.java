@@ -23,10 +23,10 @@ public class BlockRedstoneOre extends Block {
 		return 30;
 	}
 
-	public void onBlockClicked(World world1, int i2, int i3, int i4, EntityPlayer entityPlayer5) {
-		this.glow(world1, i2, i3, i4);
-		super.onBlockClicked(world1, i2, i3, i4, entityPlayer5);
-	}
+    public void onBlockClicked(World worldObj, int x, int y, int z, EntityPlayer entityPlayer) {
+        this.glow(worldObj, x, y, z);
+        super.onBlockClicked(worldObj, x, y, z, entityPlayer);
+    }
 
 	public void onEntityWalking(World world1, int i2, int i3, int i4, Entity entity5) {
 		this.glow(world1, i2, i3, i4);

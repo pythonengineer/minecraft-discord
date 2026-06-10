@@ -42,8 +42,9 @@ public abstract class Entity {
 	public float prevRotationPitch;
     public final AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
 	public boolean onGround = false;
-	public boolean isCollidedHorizontally = false;
-	public boolean isCollided = false;
+    public boolean isCollidedHorizontally;
+    public boolean isCollidedVertically;
+    public boolean isCollided = false;
 	public boolean surfaceCollision = true;
 	public boolean isDead = false;
 	public float yOffset = 0.0F;
@@ -74,6 +75,10 @@ public abstract class Entity {
 	public String skinUrl;
     private double entityRiderPitchDelta;
     private double entityRiderYawDelta;
+    public boolean addedToChunk = false;
+    public int chunkCoordX;
+    public int chunkCoordY;
+    public int chunkCoordZ;
 
 	public Entity(World world) {
 		this.worldObj = world;
@@ -116,8 +121,8 @@ public abstract class Entity {
 		this.posZ = z;
 		float f7 = this.width / 2.0F;
 		float f8 = this.height / 2.0F;
-        this.boundingBox.setBounds(x - (double)f7, y - (double)f8, z - (double)f7, x + (double)f7, y + (double)f8, z + (double)f7);
-	}
+        this.boundingBox.setBounds(x - (double)f7, y  - (double)this.yOffset + (double)this.ySize, z - (double)f7, x + (double)f7, y - (double)this.yOffset + (double)this.ySize + (double)f8, z + (double)f7);
+    }
 
 	public void setAngles(float yaw, float pitch) {
 		float f3 = this.rotationPitch;
@@ -326,9 +331,10 @@ public abstract class Entity {
 			this.posX = (this.boundingBox.minX + this.boundingBox.maxX) / 2.0D;
 			this.posY = this.boundingBox.minY + (double)this.yOffset - (double)this.ySize;
 			this.posZ = (this.boundingBox.minZ + this.boundingBox.maxZ) / 2.0D;
-			this.isCollidedHorizontally = d11 != x || d15 != z;
-			this.onGround = d13 != y && d13 < 0.0D;
-			this.isCollided = this.isCollidedHorizontally || d13 != y;
+            this.isCollidedHorizontally = d11 != x || d15 != z;
+            this.isCollidedVertically = d13 != y;
+            this.onGround = d13 != y && d13 < 0.0D;
+            this.isCollided = this.isCollidedHorizontally || this.isCollidedVertically;
 			if(this.onGround) {
 				if(this.fallDistance > 0.0F) {
 					this.fall(this.fallDistance);
@@ -679,6 +685,10 @@ public abstract class Entity {
 		return nBTTagList2;
 	}
 
+    public float getShadowSize() {
+        return this.height / 2.0F;
+    }
+
 	public EntityItem dropItem(int itemID, int offset) {
 		return this.entityDropItem(itemID, offset, 0.0F);
 	}
@@ -717,7 +727,7 @@ public abstract class Entity {
             this.motionY = 0.0D;
             this.motionZ = 0.0D;
             this.onUpdate();
-            this.setPosition(this.ridingEntity.posX, this.ridingEntity.posY + this.ridingEntity.getMountedYOffset() + this.getYOffset(), this.ridingEntity.posZ);
+            this.ridingEntity.updateRiderPosition();
             this.entityRiderYawDelta += (double)(this.ridingEntity.rotationYaw - this.ridingEntity.prevRotationYaw);
 
             for(this.entityRiderPitchDelta += (double)(this.ridingEntity.rotationPitch - this.ridingEntity.prevRotationPitch); this.entityRiderYawDelta >= 180.0D; this.entityRiderYawDelta -= 360.0D) {
@@ -760,7 +770,11 @@ public abstract class Entity {
         }
     }
 
-    protected double getYOffset() {
+    protected void updateRiderPosition() {
+        this.riddenByEntity.setPosition(this.posX, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ);
+    }
+
+    public double getYOffset() {
         return (double)this.yOffset;
     }
 
@@ -774,7 +788,7 @@ public abstract class Entity {
         if(this.ridingEntity == entity) {
             this.ridingEntity.riddenByEntity = null;
             this.ridingEntity = null;
-            this.setLocationAndAngles(entity.posX, entity.boundingBox.minY + (double)entity.yOffset, entity.posZ, this.rotationYaw, this.rotationPitch);
+            this.setLocationAndAngles(entity.posX, entity.boundingBox.minY + (double)entity.height, entity.posZ, this.rotationYaw, this.rotationPitch);
         } else {
             if(this.ridingEntity != null) {
                 this.ridingEntity.riddenByEntity = null;
@@ -787,5 +801,8 @@ public abstract class Entity {
             this.ridingEntity = entity;
             entity.riddenByEntity = this;
         }
+    }
+
+    public void setPositionAndRotation(double x, double y, double z, float rotationYaw, float rotationPitch, int newPosRotationIncrements) {
     }
 }

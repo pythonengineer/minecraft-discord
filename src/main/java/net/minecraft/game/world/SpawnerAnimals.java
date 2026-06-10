@@ -28,7 +28,7 @@ public class SpawnerAnimals {
 	public void onUpdate(World world) {
 		int i2 = world.countEntities(this.entityType);
 		if(i2 < this.maxSpawns) {
-			for(int i3 = 0; i3 < 10; ++i3) {
+			for(int i3 = 0; i3 < 3; ++i3) {
 				this.performSpawning(world, 1, (IProgressUpdate)null);
 			}
 		}
@@ -100,7 +100,7 @@ public class SpawnerAnimals {
                     i15 += world.rand.nextInt(b16) - world.rand.nextInt(b16);
                     if(world.isBlockNormalCube(i13, i14 - 1, i15) && !world.isBlockNormalCube(i13, i14, i15) && !world.getBlockMaterial(i13, i14, i15).getIsLiquid() && !world.isBlockNormalCube(i13, i14 + 1, i15)) {
                         float f18 = (float)i13 + 0.5F;
-                        float f19 = (float)i14 + 1.0F;
+                        float f19 = (float)i14;
                         float f20 = (float)i15 + 0.5F;
                         if(world.getClosestPlayer((double)f18, (double)f19, (double)f20, 24.0D) == null) {
                             float f21 = f18 - (float)world.spawnX;
@@ -117,7 +117,7 @@ public class SpawnerAnimals {
                                 }
 
                                 entityLiving29.setLocationAndAngles((double)f18, (double)f19, (double)f20, world.rand.nextFloat() * 360.0F, 0.0F);
-                                if(entityLiving29.getCanSpawnHere((double)f18, (double)f19, (double)f20)) {
+                                if(entityLiving29.getCanSpawnHere()) {
                                     ++i4;
                                     world.spawnEntityInWorld(entityLiving29);
                                 }

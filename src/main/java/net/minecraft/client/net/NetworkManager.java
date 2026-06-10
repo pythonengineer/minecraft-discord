@@ -81,8 +81,9 @@ public class NetworkManager {
 
     }
 
-    private void onNetworkError(Exception exception1) {
-        this.networkShutdown("Internal exception: " + exception1.toString());
+    private void onNetworkError(Exception exception) {
+        exception.printStackTrace();
+        this.networkShutdown("Internal exception: " + exception.toString());
     }
 
     public void networkShutdown(String reason) {

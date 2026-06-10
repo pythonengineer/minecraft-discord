@@ -22,10 +22,6 @@ public class Packet14BlockDig extends Packet {
 		this.face = side;
 	}
 
-	public int getPacketId() {
-		return 50;
-	}
-
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.status = dataInputStream1.read();
 		this.xPosition = dataInputStream1.readInt();

@@ -10,13 +10,9 @@ public class Packet255KickDisconnect extends Packet {
 	public Packet255KickDisconnect() {
 	}
 
-	public Packet255KickDisconnect(String string1) {
-		this.reason = string1;
-	}
-
-	public int getPacketId() {
-		return 255;
-	}
+    public Packet255KickDisconnect(String reason) {
+        this.reason = reason;
+    }
 
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.reason = dataInputStream1.readUTF();

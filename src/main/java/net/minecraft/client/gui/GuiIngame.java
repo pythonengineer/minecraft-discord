@@ -177,22 +177,54 @@ public class GuiIngame extends Gui {
         onBeginTouchGUI();
 
         if(this.mc.options.showFPS) {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.6 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.10 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoRenders(), 2, 12, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.getEntityDebug(), 2, 22, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 0xFFFFFF);
         } else {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.6", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.10", 2, 2, 0xFFFFFF);
         }
 
         onEndTouchGUI();
 
-        for(i7 = 0; i7 < this.chatMessageList.size() && i7 < 10; ++i7) {
-            if(((ChatLine)this.chatMessageList.get(i7)).updateCounter < 200) {
-                this.mc.fontRenderer.drawStringWithShadow(((ChatLine)this.chatMessageList.get(i7)).message, 2, scaledHeight - 8 - i7 * 9 - 20, 16777215);
+        byte b23 = 10;
+        boolean z24 = false;
+        if(this.mc.currentScreen instanceof GuiChat) {
+            b23 = 20;
+            z24 = true;
+        }
+
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+
+        for(int i15 = 0; i15 < this.chatMessageList.size() && i15 < b23; ++i15) {
+            if(((ChatLine)this.chatMessageList.get(i15)).updateCounter < 200 || z24) {
+                double d28 = (double)((ChatLine)this.chatMessageList.get(i15)).updateCounter / 200.0D;
+                d28 = 1.0D - d28;
+                d28 *= 5.0D;
+                if(d28 < 0.0D) {
+                    d28 = 0.0D;
+                }
+
+                if(d28 > 1.0D) {
+                    d28 = 1.0D;
+                }
+
+                d28 *= d28;
+                int i18 = (int)(255.0D * d28);
+                if(z24) {
+                    i18 = 255;
+                }
+
+                if(i18 > 0) {
+                    this.mc.fontRenderer.drawStringWithShadow(((ChatLine)this.chatMessageList.get(i15)).message, 2, scaledHeight - 24 - i15 * 9 - 20, 0xFFFFFF + (i18 << 24));
+                }
             }
         }
 
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
 	}
 
     private void renderVignette(float partialTicks, int scaledWidth, int scaledHeight) {
@@ -250,6 +282,15 @@ public class GuiIngame extends Gui {
 
         for(int i1 = 0; i1 < this.chatMessageList.size(); ++i1) {
             ++((ChatLine)this.chatMessageList.get(i1)).updateCounter;
+        }
+
+    }
+
+    public void addChatMessage(String string1) {
+        this.chatMessageList.add(0, new ChatLine(string1));
+
+        while(this.chatMessageList.size() > 50) {
+            this.chatMessageList.remove(this.chatMessageList.size() - 1);
         }
 
     }

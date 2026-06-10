@@ -15,6 +15,13 @@ fire/fire.ogg
 fire/ignite.ogg
 liquid/lava.ogg
 liquid/water.ogg
+mob/cow1.ogg
+mob/cow2.ogg
+mob/cow3.ogg
+mob/cow4.ogg
+mob/cowhurt1.ogg
+mob/cowhurt2.ogg
+mob/cowhurt3.ogg
 mob/creeper1.ogg
 mob/creeper2.ogg
 mob/creeper3.ogg

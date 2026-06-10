@@ -30,9 +30,9 @@ public class BlockCactus extends Block {
         }
     }
 
-    public void onBlockClicked(World world1, int i2, int i3, int i4, EntityPlayer entityPlayer5) {
-        entityPlayer5.attackEntityFrom((Entity)null, 1);
-        super.onBlockClicked(world1, i2, i3, i4, entityPlayer5);
+    public void onBlockClicked(World worldObj, int x, int y, int z, EntityPlayer entityPlayer) {
+        entityPlayer.attackEntityFrom((Entity)null, 1);
+        super.onBlockClicked(worldObj, x, y, z, entityPlayer);
     }
 
     public void onEntityWalking(World world1, int i2, int i3, int i4, Entity entity5) {

@@ -71,15 +71,15 @@ public class EntityMob extends EntityCreature {
 		super.readEntityFromNBT(compoundTag);
 	}
 
-	public boolean getCanSpawnHere(double x, double y, double z) {
-        int i7 = MathHelper.floor_double(x);
-        int i8 = MathHelper.floor_double(y);
-        int i9 = MathHelper.floor_double(z);
-        if(this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, i7, i8, i9) > this.rand.nextInt(16)) {
+    public boolean getCanSpawnHere() {
+        int i1 = MathHelper.floor_double(this.posX);
+        int i2 = MathHelper.floor_double(this.boundingBox.minY);
+        int i3 = MathHelper.floor_double(this.posZ);
+        if(this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, i1, i2, i3) > this.rand.nextInt(32)) {
             return false;
         } else {
-            int i10 = this.worldObj.getBlockLightValue(i7, i8, i9);
-            return i10 <= this.rand.nextInt(8) && super.getCanSpawnHere(x, y, z);
+            int i4 = this.worldObj.getBlockLightValue(i1, i2, i3);
+            return i4 <= this.rand.nextInt(8) && super.getCanSpawnHere();
         }
-	}
+    }
 }

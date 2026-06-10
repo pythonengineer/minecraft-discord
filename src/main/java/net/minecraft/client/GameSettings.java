@@ -33,11 +33,9 @@ public class GameSettings {
     public KeyBinding keyBindJump = new KeyBinding("Jump", Keyboard.KEY_SPACE);
     public KeyBinding keyBindInventory = new KeyBinding("Inventory", Keyboard.KEY_I);
     public KeyBinding keyBindDrop = new KeyBinding("Drop", Keyboard.KEY_Q);
-    private KeyBinding keyBindChat = new KeyBinding("Chat", Keyboard.KEY_T);
+    public KeyBinding keyBindChat = new KeyBinding("Chat", Keyboard.KEY_T);
     public KeyBinding keyBindToggleFog = new KeyBinding("Toggle fog", Keyboard.KEY_F);
-    public KeyBinding keyBindSavePos = new KeyBinding("Save location", Keyboard.KEY_RETURN);
-    public KeyBinding keyBindLoadPos = new KeyBinding("Load location", Keyboard.KEY_R);
-    public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog, this.keyBindSavePos, this.keyBindLoadPos};
+    public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog};
     private Minecraft mc;
     public int numberOfOptions = 11;
     public int difficulty = 2;

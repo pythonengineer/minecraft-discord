@@ -108,7 +108,7 @@ const new_client = function (client, req) {
 
                     const token = combinedBuffer.toString('utf8', offset, offset + tokenLen).trimEnd();
                     offset += tokenLen;
-                    if (packetId == 0) {
+                    if (packetId == 1) {
                         if (!tokens.has(token)) {
                             log('bad token auth');
                             end(client, target);
@@ -118,7 +118,7 @@ const new_client = function (client, req) {
                             target.write(combinedBuffer.slice(0, offset));
                         }
                     } else {
-                        log('sent packet before login');
+                        log('sent packet ' + packetId + ' before login');
                         end(client, target);
                     }
                 }

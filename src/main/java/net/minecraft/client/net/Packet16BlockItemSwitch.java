@@ -16,10 +16,6 @@ public class Packet16BlockItemSwitch extends Packet {
 		this.id = id;
 	}
 
-	public int getPacketId() {
-		return 52;
-	}
-
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.entityId = dataInputStream1.readInt();
 		this.id = dataInputStream1.readShort();

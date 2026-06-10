@@ -7,22 +7,22 @@ import net.minecraft.client.render.Tessellator;
 public class Gui {
 	protected float zLevel = 0.0F;
 
-    protected static void drawRect(int var0, int var1, int var2, int var3, int var4) {
-        float var5 = (float)(var4 >>> 24) / 255.0F;
-        float var6 = (float)(var4 >> 16 & 255) / 255.0F;
-        float var7 = (float)(var4 >> 8 & 255) / 255.0F;
-        float var9 = (float)(var4 & 255) / 255.0F;
-        Tessellator var8 = Tessellator.instance;
+    protected void drawRect(int i1, int i2, int i3, int i4, int i5) {
+        float f6 = (float)(i5 >> 24 & 255) / 255.0F;
+        float f7 = (float)(i5 >> 16 & 255) / 255.0F;
+        float f8 = (float)(i5 >> 8 & 255) / 255.0F;
+        float f9 = (float)(i5 & 255) / 255.0F;
+        Tessellator tessellator10 = Tessellator.instance;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glColor4f(var6, var7, var9, var5);
-        var8.startDrawingQuads(DefaultVertexFormats.POSITION);
-        var8.addVertex((double)var0, (double)var3, 0.0D);
-        var8.addVertex((double)var2, (double)var3, 0.0D);
-        var8.addVertex((double)var2, (double)var1, 0.0D);
-        var8.addVertex((double)var0, (double)var1, 0.0D);
-        var8.draw();
+        GL11.glColor4f(f7, f8, f9, f6);
+        tessellator10.startDrawingQuads(DefaultVertexFormats.POSITION);
+        tessellator10.addVertex((double)i1, (double)i4, 0.0D);
+        tessellator10.addVertex((double)i3, (double)i4, 0.0D);
+        tessellator10.addVertex((double)i3, (double)i2, 0.0D);
+        tessellator10.addVertex((double)i1, (double)i2, 0.0D);
+        tessellator10.draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
     }
@@ -40,6 +40,7 @@ public class Gui {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
         Tessellator tessellator12 = Tessellator.instance;
         Tessellator.instance.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
         tessellator12.setColorRGBA_F(f7, f8, startColor1, f6);
@@ -49,6 +50,7 @@ public class Gui {
         tessellator12.addVertex((double)left, (double)bottom, 0.0D);
         tessellator12.addVertex((double)right, (double)bottom, 0.0D);
         tessellator12.draw();
+        GL11.glShadeModel(GL11.GL_FLAT);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL11.GL_TEXTURE_2D);

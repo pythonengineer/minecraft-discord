@@ -149,7 +149,10 @@ public class EntityCreature extends EntityLiving {
 		return null;
 	}
 
-	public boolean getCanSpawnHere(double x, double y, double z) {
-		return super.getCanSpawnHere(x, y, z) && this.getBlockPathWeight((int)x, (int)y, (int)z) >= 0.0F;
-	}
+    public boolean getCanSpawnHere() {
+        int i1 = MathHelper.floor_double(this.posX);
+        int i2 = MathHelper.floor_double(this.boundingBox.minY);
+        int i3 = MathHelper.floor_double(this.posZ);
+        return super.getCanSpawnHere() && this.getBlockPathWeight(i1, i2, i3) >= 0.0F;
+    }
 }

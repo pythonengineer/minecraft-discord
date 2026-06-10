@@ -477,26 +477,6 @@ public class EntityLiving extends Entity {
 	}
 
 	public void onLivingUpdate() {
-		++this.entityAge;
-        EntityPlayer entityPlayer1 = this.worldObj.getClosestPlayerToEntity(this, -1.0D);
-        if(entityPlayer1 != null) {
-			double d2 = entityPlayer1.posX - this.posX;
-			double d4 = entityPlayer1.posY - this.posY;
-			double d6 = entityPlayer1.posZ - this.posZ;
-			double d8;
-			if((d8 = d2 * d2 + d4 * d4 + d6 * d6) > 16384.0D) {
-                this.setEntityDead();
-			}
-
-			if(this.entityAge > 600 && this.rand.nextInt(800) == 0) {
-				if(d8 < 1024.0D) {
-					this.entityAge = 0;
-				} else {
-	                this.setEntityDead();
-				}
-			}
-		}
-
 		if(this.health <= 0) {
 			this.isJumping = false;
 			this.moveStrafing = 0.0F;
@@ -539,6 +519,25 @@ public class EntityLiving extends Entity {
 	}
 
 	protected void updateEntityActionState() {
+        ++this.entityAge;
+        EntityPlayer entityPlayer1 = this.worldObj.getClosestPlayerToEntity(this, -1.0D);
+        if(entityPlayer1 != null) {
+            double d2 = entityPlayer1.posX - this.posX;
+            double d4 = entityPlayer1.posY - this.posY;
+            double d6 = entityPlayer1.posZ - this.posZ;
+            double d8;
+            if((d8 = d2 * d2 + d4 * d4 + d6 * d6) > 16384.0D) {
+                this.setEntityDead();
+            }
+
+            if(this.entityAge > 600 && this.rand.nextInt(800) == 0) {
+                if(d8 < 1024.0D) {
+                    this.entityAge = 0;
+                } else {
+                    this.setEntityDead();
+                }
+            }
+        }
         this.moveStrafing = 0.0F;
         this.moveForward = 0.0F;
         float f1 = 8.0F;
@@ -615,10 +614,9 @@ public class EntityLiving extends Entity {
 	public void onEntityDeath() {
 	}
 
-	public boolean getCanSpawnHere(double x, double y, double z) {
-		this.setPosition(x, y + (double)(this.height / 2.0F), z);
-		return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
-	}
+    public boolean getCanSpawnHere() {
+        return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
+    }
 
     protected void kill() {
         this.attackEntityFrom((Entity)null, 4);

@@ -21,8 +21,16 @@ class ThreadConnectToServer extends Thread {
     public void run() {
         try {
             GuiConnecting.setNetClientHandler(this.connectingGui, new NetClientHandler(this.mc, this.ip, this.port));
+            if(GuiConnecting.isCancelled(this.connectingGui)) {
+                return;
+            }
+
             GuiConnecting.getNetClientHandler(this.connectingGui).addToSendQueue(new Packet1Handshake(this.mc.session.username, this.mc.session.sessionId, 10));
         } catch (IOException exception4) {
+            if(GuiConnecting.isCancelled(this.connectingGui)) {
+                return;
+            }
+
             exception4.printStackTrace();
             this.mc.displayGuiScreen(new GuiConnectFailed("Failed to connect to the server", exception4.toString()));
         }

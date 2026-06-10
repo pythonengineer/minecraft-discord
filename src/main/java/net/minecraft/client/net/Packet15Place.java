@@ -14,20 +14,16 @@ public class Packet15Place extends Packet {
 	public Packet15Place() {
 	}
 
-	public Packet15Place(int i1, int i2, int i3, int i4, int i5) {
-		this.id = i1;
-		this.xPosition = i2;
-		this.yPosition = i3;
-		this.zPosition = i4;
-		this.direction = i5;
-	}
-
-	public int getPacketId() {
-		return 51;
+	public Packet15Place(int id, int x, int y, int z, int direction) {
+		this.id = id;
+		this.xPosition = x;
+		this.yPosition = y;
+		this.zPosition = z;
+		this.direction = direction;
 	}
 
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
-		this.id = dataInputStream1.read();
+		this.id = dataInputStream1.readShort();
 		this.xPosition = dataInputStream1.readInt();
 		this.yPosition = dataInputStream1.read();
 		this.zPosition = dataInputStream1.readInt();
@@ -35,7 +31,7 @@ public class Packet15Place extends Packet {
 	}
 
 	public void writePacket(DataOutputStream dataOutputStream1) throws IOException {
-		dataOutputStream1.write(this.id);
+		dataOutputStream1.writeShort(this.id);
 		dataOutputStream1.writeInt(this.xPosition);
 		dataOutputStream1.write(this.yPosition);
 		dataOutputStream1.writeInt(this.zPosition);

@@ -4,11 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-class Packet22RelEntityMove extends Packet20Entity {
-	public int getPacketId() {
-		return 102;
-	}
-
+class Packet31RelEntityMove extends Packet30Entity {
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		super.readPacketData(dataInputStream1);
 		this.xPosition = dataInputStream1.readByte();

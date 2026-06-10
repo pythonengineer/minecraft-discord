@@ -64,6 +64,7 @@ public class RenderGlobal implements IWorldAccess {
     private int maxBlockY;
     private int maxBlockZ;
     private int renderDistance = -1;
+    private int renderEntitiesStartupCounter = 2;
     private int countEntitiesTotal;
     private int countEntitiesRendered;
     private int countEntitiesHidden;
@@ -264,37 +265,43 @@ public class RenderGlobal implements IWorldAccess {
             this.markRenderersForNewPosition(MathHelper.floor_double(entityPlayerSP7.posX), MathHelper.floor_double(entityPlayerSP7.posY), MathHelper.floor_double(entityPlayerSP7.posZ));
             Arrays.sort(this.sortedWorldRenderers, new EntitySorter(entityPlayerSP7));
         }
+
+        this.renderEntitiesStartupCounter = 2;
     }
 
-    public void renderEntities(Vec3D lookVector, ICamera frustrum, float partialTicks) {
-        TileEntityRenderer.instance.cacheActiveRenderInfo(this.theWorld, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, partialTicks);
-        RenderManager.instance.cacheActiveRenderInfo(this.theWorld, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, this.mc.options, partialTicks);
-        this.countEntitiesTotal = 0;
-        this.countEntitiesRendered = 0;
-        this.countEntitiesHidden = 0;
-        EntityPlayerSP entityPlayerSP4 = this.mc.thePlayer;
-        RenderManager.renderPosX = entityPlayerSP4.lastTickPosX + (entityPlayerSP4.posX - entityPlayerSP4.lastTickPosX) * (double)partialTicks;
-        RenderManager.renderPosY = entityPlayerSP4.lastTickPosY + (entityPlayerSP4.posY - entityPlayerSP4.lastTickPosY) * (double)partialTicks;
-        RenderManager.renderPosZ = entityPlayerSP4.lastTickPosZ + (entityPlayerSP4.posZ - entityPlayerSP4.lastTickPosZ) * (double)partialTicks;
-        TileEntityRenderer.staticPlayerX = entityPlayerSP4.lastTickPosX + (entityPlayerSP4.posX - entityPlayerSP4.lastTickPosX) * (double)partialTicks;
-        TileEntityRenderer.staticPlayerY = entityPlayerSP4.lastTickPosY + (entityPlayerSP4.posY - entityPlayerSP4.lastTickPosY) * (double)partialTicks;
-        TileEntityRenderer.staticPlayerZ = entityPlayerSP4.lastTickPosZ + (entityPlayerSP4.posZ - entityPlayerSP4.lastTickPosZ) * (double)partialTicks;
-        List list30 = this.theWorld.getLoadedEntityList();
-        this.countEntitiesTotal = list30.size();
+    public void renderEntities(Vec3D lookVector, ICamera camera, float renderPartialTick) {
+        if(this.renderEntitiesStartupCounter > 0) {
+            --this.renderEntitiesStartupCounter;
+        } else {
+            TileEntityRenderer.instance.cacheActiveRenderInfo(this.theWorld, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, renderPartialTick);
+            RenderManager.instance.cacheActiveRenderInfo(this.theWorld, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, this.mc.options, renderPartialTick);
+            this.countEntitiesTotal = 0;
+            this.countEntitiesRendered = 0;
+            this.countEntitiesHidden = 0;
+            EntityPlayerSP entityPlayerSP4 = this.mc.thePlayer;
+            RenderManager.renderPosX = entityPlayerSP4.lastTickPosX + (entityPlayerSP4.posX - entityPlayerSP4.lastTickPosX) * (double)renderPartialTick;
+            RenderManager.renderPosY = entityPlayerSP4.lastTickPosY + (entityPlayerSP4.posY - entityPlayerSP4.lastTickPosY) * (double)renderPartialTick;
+            RenderManager.renderPosZ = entityPlayerSP4.lastTickPosZ + (entityPlayerSP4.posZ - entityPlayerSP4.lastTickPosZ) * (double)renderPartialTick;
+            TileEntityRenderer.staticPlayerX = entityPlayerSP4.lastTickPosX + (entityPlayerSP4.posX - entityPlayerSP4.lastTickPosX) * (double)renderPartialTick;
+            TileEntityRenderer.staticPlayerY = entityPlayerSP4.lastTickPosY + (entityPlayerSP4.posY - entityPlayerSP4.lastTickPosY) * (double)renderPartialTick;
+            TileEntityRenderer.staticPlayerZ = entityPlayerSP4.lastTickPosZ + (entityPlayerSP4.posZ - entityPlayerSP4.lastTickPosZ) * (double)renderPartialTick;
+            List list5 = this.theWorld.getLoadedEntityList();
+            this.countEntitiesTotal = list5.size();
 
-        int i5;
-        for(i5 = 0; i5 < list30.size(); ++i5) {
-            Entity entity6 = (Entity)list30.get(i5);
-            if(entity6.isInRangeToRenderVec3D(lookVector) && frustrum.isBoundingBoxInFrustum(entity6.boundingBox) && (entity6 != this.mc.thePlayer || this.mc.options.thirdPersonView)) {
-                ++this.countEntitiesRendered;
-                RenderManager.instance.renderEntity(entity6, partialTicks);
+            int i6;
+            for(i6 = 0; i6 < list5.size(); ++i6) {
+                Entity entity7 = (Entity)list5.get(i6);
+                if(entity7.isInRangeToRenderVec3D(lookVector) && camera.isBoundingBoxInFrustum(entity7.boundingBox) && (entity7 != this.mc.thePlayer || this.mc.options.thirdPersonView)) {
+                    ++this.countEntitiesRendered;
+                    RenderManager.instance.renderEntity(entity7, renderPartialTick);
+                }
             }
-        }
 
-        for(i5 = 0; i5 < this.tileEntities.size(); ++i5) {
-            TileEntityRenderer.instance.renderTileEntity((TileEntity)this.tileEntities.get(i5), partialTicks);
-        }
+            for(i6 = 0; i6 < this.tileEntities.size(); ++i6) {
+                TileEntityRenderer.instance.renderTileEntity((TileEntity)this.tileEntities.get(i6), renderPartialTick);
+            }
 
+        }
     }
 
     public String getDebugInfoRenders() {

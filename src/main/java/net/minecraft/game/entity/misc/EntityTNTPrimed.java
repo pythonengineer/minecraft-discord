@@ -71,4 +71,8 @@ public class EntityTNTPrimed extends Entity {
 	protected void readEntityFromNBT(NBTTagCompound compoundTag) {
 		this.fuse = compoundTag.getByte("Fuse");
 	}
+
+    public float getShadowSize() {
+        return 0.0F;
+    }
 }

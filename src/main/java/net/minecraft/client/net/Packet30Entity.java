@@ -4,17 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Packet20Entity extends Packet {
+public class Packet30Entity extends Packet {
 	public int entityId;
 	public byte xPosition;
 	public byte yPosition;
 	public byte zPosition;
 	public byte yaw;
 	public byte pitch;
-
-	public int getPacketId() {
-		return 103;
-	}
 
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.entityId = dataInputStream1.readInt();

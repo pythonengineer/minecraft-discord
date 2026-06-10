@@ -1,6 +1,7 @@
 package net.minecraft.client.controller;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
@@ -68,5 +69,9 @@ public class PlayerController {
 
     public boolean onPlayerRightClick(EntityPlayer entityPlayer, World world, ItemStack itemStack, int x, int y, int z, int side) {
         return itemStack.useItem(entityPlayer, world, x, y, z, side);
+    }
+
+    public EntityPlayer createPlayer(World world) {
+        return new EntityPlayerSP(this.mc, world, this.mc.session);
     }
 }

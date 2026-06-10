@@ -56,7 +56,7 @@ public class TileEntityMobSpawner extends TileEntity {
                         double d12 = (double)(this.yCoord + this.worldObj.rand.nextInt(3) - 1);
                         double d14 = (double)this.zCoord + (this.worldObj.rand.nextDouble() - this.worldObj.rand.nextDouble()) * 4.0D;
                         entityLiving8.setLocationAndAngles(d10, d12, d14, this.worldObj.rand.nextFloat() * 360.0F, 0.0F);
-                        if(entityLiving8.getCanSpawnHere(d10, d12, d14)) {
+                        if(entityLiving8.getCanSpawnHere()) {
                             this.worldObj.spawnEntityInWorld(entityLiving8);
 
                             for(int i9 = 0; i9 < 20; ++i9) {

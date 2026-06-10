@@ -30,6 +30,7 @@ class WebSocketInputStream extends InputStream {
                 if (currentFrameData.length > 0) {
                     return currentFrameData[currentFramePosition++] & 0xFF;
                 }
+
                 continue;
             }
 
@@ -63,6 +64,7 @@ class WebSocketInputStream extends InputStream {
                     currentFramePosition += toRead;
                     return toRead;
                 }
+
                 continue;
             }
 

@@ -98,7 +98,7 @@ public class EntityPlayerSP extends EntityPlayer {
 
     }
 
-    public void onItemPickup(Entity entity) {
+    public void onItemPickup(Entity entity, int i2) {
         this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, entity, this, -0.5F));
     }
 
@@ -118,5 +118,8 @@ public class EntityPlayerSP extends EntityPlayer {
             }
 
         }
+    }
+
+    public void sendChatMessage(String chatMessage) {
     }
 }

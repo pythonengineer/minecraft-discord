@@ -28,7 +28,10 @@ public class ChunkProviderClient implements IChunkProvider {
 
     public void unloadChunk(int chunkX, int chunkZ) {
         Chunk chunk3 = this.provideChunk(chunkX, chunkZ);
-        chunk3.onChunkUnload();
+        if(!chunk3.isChunkRendered) {
+            chunk3.onChunkUnload();
+        }
+
         this.chunkMapping.remove(new ChunkCoordinates(chunkX, chunkZ));
         this.chunkListing.remove(chunk3);
     }

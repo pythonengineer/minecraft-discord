@@ -11,10 +11,6 @@ public class Packet53BlockChange extends Packet {
 	public int type;
 	public int metadata;
 
-	public int getPacketId() {
-		return 12;
-	}
-
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.xPosition = dataInputStream1.readInt();
 		this.yPosition = dataInputStream1.read();

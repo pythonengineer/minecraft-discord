@@ -47,16 +47,16 @@ public class BlockSnow extends Block {
         }
     }
 
-    public void harvestBlock(World world1, int i2, int i3, int i4, int i5) {
+    public void harvestBlock(World worldObj, int x, int y, int z, int metadata) {
         int i6 = Item.snowball.shiftedIndex;
         float f7 = 0.7F;
-        double d8 = (double)(world1.rand.nextFloat() * f7) + (double)(1.0F - f7) * 0.5D;
-        double d10 = (double)(world1.rand.nextFloat() * f7) + (double)(1.0F - f7) * 0.5D;
-        double d12 = (double)(world1.rand.nextFloat() * f7) + (double)(1.0F - f7) * 0.5D;
-        EntityItem entityItem14 = new EntityItem(world1, (double)i2 + d8, (double)i3 + d10, (double)i4 + d12, new ItemStack(i6));
+        double d8 = (double)(worldObj.rand.nextFloat() * f7) + (double)(1.0F - f7) * 0.5D;
+        double d10 = (double)(worldObj.rand.nextFloat() * f7) + (double)(1.0F - f7) * 0.5D;
+        double d12 = (double)(worldObj.rand.nextFloat() * f7) + (double)(1.0F - f7) * 0.5D;
+        EntityItem entityItem14 = new EntityItem(worldObj, (double)x + d8, (double)y + d10, (double)z + d12, new ItemStack(i6));
         entityItem14.delayBeforeCanPickup = 10;
-        world1.spawnEntityInWorld(entityItem14);
-        world1.setBlockWithNotify(i2, i3, i4, 0);
+        worldObj.spawnEntityInWorld(entityItem14);
+        worldObj.setBlockWithNotify(x, y, z, 0);
     }
 
     public int idDropped(int i1, EaglercraftRandom random2) {
@@ -75,8 +75,8 @@ public class BlockSnow extends Block {
 
     }
 
-    public boolean shouldSideBeRendered(IBlockAccess iBlockAccess1, int i2, int i3, int i4, int i5) {
-        Material material6 = iBlockAccess1.getBlockMaterial(i2, i3, i4);
-        return i5 == 1 ? true : (material6 == this.material ? false : super.shouldSideBeRendered(iBlockAccess1, i2, i3, i4, i5));
+    public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+        Material material6 = blockAccess.getBlockMaterial(x, y, z);
+        return side == 1 ? true : (material6 == this.material ? false : super.shouldSideBeRendered(blockAccess, x, y, z, side));
     }
 }

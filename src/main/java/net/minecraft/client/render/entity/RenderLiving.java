@@ -49,7 +49,6 @@ public class RenderLiving extends Render {
             GL11.glScalef(-1.0F, -1.0F, 1.0F);
             this.preRenderCallback(entityLiving1, f9);
             GL11.glTranslatef(0.0F, -1.5078125F, 0.0F);
-            this.renderEquippedItems(entityLiving1, f9);
 			f3 = entityLiving1.prevLimbYaw + (entityLiving1.limbYaw - entityLiving1.prevLimbYaw) * f9;
 			float f15 = entityLiving1.limbSwing - entityLiving1.limbYaw * (1.0F - f9);
 			if(f3 > 1.0F) {
@@ -68,6 +67,7 @@ public class RenderLiving extends Render {
 				}
 			}
 
+            this.renderEquippedItems(entityLiving1, f9);
 			float f16 = entityLiving1.getBrightness(f9);
 			int i17 = this.getColorMultiplier(entityLiving1, f16, f9);
 			if((i17 >> 24 & 255) > 0 || entityLiving1.hurtTime > 0 || entityLiving1.deathTime > 0) {

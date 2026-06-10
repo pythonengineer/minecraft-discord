@@ -24,10 +24,10 @@ public abstract class EntityAnimal extends EntityCreature {
 		super.readEntityFromNBT(compoundTag);
 	}
 
-	public boolean getCanSpawnHere(double x, double y, double z) {
-        int i7 = MathHelper.floor_double(x);
-        int i8 = MathHelper.floor_double(y);
-        int i9 = MathHelper.floor_double(z);
-        return this.worldObj.getBlockId(i7, i8 - 2, i9) == Block.grass.blockID && this.worldObj.getBlockLightValue(i7, i8, i9) > 8 && super.getCanSpawnHere(x, y, z);
+    public boolean getCanSpawnHere() {
+        int i1 = MathHelper.floor_double(this.posX);
+        int i2 = MathHelper.floor_double(this.boundingBox.minY);
+        int i3 = MathHelper.floor_double(this.posZ);
+        return this.worldObj.getBlockId(i1, i2 - 1, i3) == Block.grass.blockID && this.worldObj.getBlockLightValue(i1, i2, i3) > 8 && super.getCanSpawnHere();
     }
 }

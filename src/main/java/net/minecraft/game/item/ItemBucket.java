@@ -1,6 +1,7 @@
 package net.minecraft.game.item;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
+import net.minecraft.game.entity.animal.EntityCow;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.physics.MovingObjectPosition;
 import net.minecraft.game.physics.Vec3D;
@@ -81,6 +82,8 @@ public class ItemBucket extends Item {
                         return new ItemStack(Item.bucketEmpty);
                     }
                 }
+            } else if(movingObjectPosition24.entityHit instanceof EntityCow) {
+                return new ItemStack(Item.bucketMilk);
             }
 
             return itemStack1;
