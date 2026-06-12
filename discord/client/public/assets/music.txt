@@ -1,3 +1,6 @@
 calm1.ogg
 calm2.ogg
 calm3.ogg
+piano1.ogg
+piano2.ogg
+piano3.ogg

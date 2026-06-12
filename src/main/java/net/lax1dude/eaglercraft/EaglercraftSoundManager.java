@@ -262,7 +262,7 @@ public class EaglercraftSoundManager {
 
             if (!sound.playStatic) {
                 newSound.soundHandle = PlatformAudio.beginPlayback(trk, newSound.activeX, newSound.activeY,
-                        newSound.activeZ, attenuatedGain, pitch, repeat);
+                        newSound.activeZ, attenuatedGain, pitch, sound.finalVolume, repeat);
             } else {
                 newSound.soundHandle = PlatformAudio.beginPlaybackStatic(trk, attenuatedGain, pitch,
                         repeat);

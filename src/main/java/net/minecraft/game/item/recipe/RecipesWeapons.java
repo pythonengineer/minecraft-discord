@@ -19,6 +19,6 @@ public class RecipesWeapons {
 		}
 
 		craftingManager.addRecipe(new ItemStack(Item.bow, 1), new Object[]{" #X", "# X", " #X", 'X', Item.silk, '#', Item.stick});
-		craftingManager.addRecipe(new ItemStack(Item.arrow, 4), new Object[]{"X", "#", "Y", 'Y', Item.feather, 'X', Item.ingotIron, '#', Item.stick});
+		craftingManager.addRecipe(new ItemStack(Item.arrow, 4), new Object[]{"X", "#", "Y", 'Y', Item.feather, 'X', Item.flint, '#', Item.stick});
 	}
 }

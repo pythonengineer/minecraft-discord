@@ -50,6 +50,14 @@ public class EntityCreeper extends EntityMob {
         return "mob.creeperdeath";
     }
 
+    public void onDeath(Entity entity1) {
+        super.onDeath(entity1);
+        if(entity1 instanceof EntitySkeleton) {
+            this.dropItem(Item.record13.shiftedIndex + this.rand.nextInt(2), 1);
+        }
+
+    }
+
 	protected void attackEntity(Entity entity, float damage) {
 		if(this.creeperState <= 0 && damage < 3.0F || this.creeperState > 0 && damage < 7.0F) {
 			if(this.timeSinceIgnited == 0) {

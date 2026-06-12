@@ -47,7 +47,7 @@ public class BlockFire extends Block {
 	}
 
 	public int tickRate() {
-		return 20;
+		return 10;
 	}
 
 	public void updateTick(World world, int x, int y, int z, EaglercraftRandom rand) {
@@ -65,7 +65,7 @@ public class BlockFire extends Block {
 		} else if(!this.canBlockCatchFire(world, x, y - 1, z) && i6 == 15 && rand.nextInt(4) == 0) {
 			world.setBlockWithNotify(x, y, z, 0);
 		} else {
-			if(i6 % 5 == 0 && i6 > 5) {
+			if(i6 % 2 == 0 && i6 > 2) {
 				this.tryToCatchBlockOnFire(world, x + 1, y, z, 300, rand);
 				this.tryToCatchBlockOnFire(world, x - 1, y, z, 300, rand);
 				this.tryToCatchBlockOnFire(world, x, y - 1, z, 100, rand);

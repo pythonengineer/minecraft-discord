@@ -1,5 +1,8 @@
 package net.minecraft.client;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -23,8 +26,26 @@ public class GuiMainMenu extends GuiScreen {
     String[] logoBlockLayers = new String[]{" *   * * *   * *** *** *** *** *** ***", " ** ** * **  * *   *   * * * * *    * ", " * * * * * * * **  *   **  *** **   * ", " *   * * *  ** *   *   * * * * *    * ", " *   * * *   * *** *** * * * * *    * "};
     private LogoEffectRandomizer[][] logoEffects;
 	private float updateCounter = 0.0F;
-	private String[] splashes = new String[]{"Pre-beta!", "Now on Discord!", "Built on Eaglercraft!", "Jesus Christ is God", "As seen on TV!", "Awesome!", "100% pure!", "May contain nuts!", "Better than Prey!", "More polygons!", "Sexy!", "Limited edition!", "Flashing letters!", "Made by Notch!", "Coming soon!", "Best in class!", "When it\'s finished!", "Absolutely dragon free!", "Excitement!", "More than 25000 sold!", "One of a kind!", "Heaps of hits on YouTube!", "Indev!", "Spiders everywhere!", "Check it out!", "Holy cow, man!", "It\'s a game!", "Made in Sweden!", "Reticulating splines!", "Minecraft!", "Yaaay!", "Alpha version!", "Singleplayer!", "Keyboard compatible!", "Undocumented!", "Ingots!", "Exploding creepers!", "That\'s not a moon!", "l33t!", "Create!", "Survive!", "Dungeon!", "Exclusive!", "The bee\'s knees!", "Down with O.P.P.!", "Closed source!", "Classy!", "Wow!", "Not on steam!", "9.95 euro!", "Half price!", "Oh man!", "Check it out!", "Awesome community!", "Pixels!", "Teetsuuuuoooo!", "Kaaneeeedaaaa!", "Now with difficulty!", "Enhanced!", "90% bug free!", "Pretty!", "12 herbs and spices!", "Fat free!", "Absolutely no memes!", "Free dental!", "Ask your doctor!", "Minors welcome!", "Cloud computing!", "Legal in Finland!", "Hard to label!", "Technically good!", "Bringing home the bacon!", "Indie!", "GOTY!", "Ceci n\'est pas une title screen!", "Euclidian!", "Now in 3D!", "Inspirational!", "Herregud!", "Complex cellular automata!", "Yes, sir!", "Played by cowboys!", "WebGL2!", "Thousands of colors!", "Try it!", "Age of Wonders is better!", "Try the mushroom stew!", "Sensational!", "Hot tamale, hot hot tamale!", "Play him off, keyboard cat!", "Guaranteed!", "Macroscopic!", "Bring it on!", "Random splash!", "Call your mother!", "Monster infighting!", "Loved by millions!", "Ultimate edition!", "Freaky!", "You\'ve got a brand new key!", "Water proof!", "Uninflammable!", "Whoa, dude!", "All inclusive!", "Tell your friends!", "NP is not in P!", "Notch <3 ez!", "Music by C418!", "Livestreamed!", "Haunted!", "Polynomial!", "Terrestrial!", "All is full of love!", "Full of stars!", "Scientific!", "Cooler than Spock!", "Collaborate and listen!", "Never dig down!", "Take frequent breaks!", "Not linear!", "Han shot first!", "Nice to meet you!", "Buckets of lava!", "Ride the pig!", "Larger than Earth!", "sqrt(-1) love you!", "Phobos anomaly!", "Punching wood!", "Falling off cliffs!", "0% sugar!", "150% hyperbole!", "Synecdoche!", "Let\'s danec!", "Seecret Friday update!", "Reference implementation!", "Rude with two dudes with food!", "Kiss the sky!", "20 GOTO 10!", "Verlet intregration!", "Peter Griffin!", "Do not distribute!", "Cogito ergo sum!", "4815162342 lines of code!", "A skeleton popped out!", "The Work of Notch!", "The sum of its parts!", "BTAF used to be good!", "I miss ADOM!", "umop-apisdn!", "OICU812!", "Bring me Ray Cokes!", "Finger-licking!", "Thematic!", "Pneumatic!", "Sublime!", "Octagonal!", "Une baguette!", "Gargamel plays it!", "Rita is the new top dog!", "SWM forever!", "Representing Edsbyn!", "Matt Damon!", "Superfragilisticexpialidocious!", "Consummate V\'s!", "Cow Tools!", "Double buffered!", "Fan fiction!"};
-	private String splashString = this.splashes[(int)(Math.random() * (double)this.splashes.length)];
+    private String splashString = "missingno";
+
+    public GuiMainMenu() {
+        try {
+            ArrayList arrayList1 = new ArrayList();
+            BufferedReader bufferedReader2 = new BufferedReader(new InputStreamReader(EagRuntime.getResourceStream("/assets/title/splashes.txt")));
+            String string3 = "";
+
+            while((string3 = bufferedReader2.readLine()) != null) {
+                string3 = string3.trim();
+                if(string3.length() > 0) {
+                    arrayList1.add(string3);
+                }
+            }
+
+            this.splashString = (String)arrayList1.get(rand.nextInt(arrayList1.size()));
+        } catch (Exception exception4) {
+        }
+
+    }
 
 	public void updateScreen() {
         ++this.updateCounter;
@@ -102,7 +123,7 @@ public class GuiMainMenu extends GuiScreen {
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    private void drawLogo(float partialTicks) {
+    private void drawLogo(float renderPartialTick) {
         int i3;
         if(this.logoEffects == null) {
             this.logoEffects = new LogoEffectRandomizer[this.logoBlockLayers[0].length()][this.logoBlockLayers.length];
@@ -166,7 +187,7 @@ public class GuiMainMenu extends GuiScreen {
                     if(c8 != 32) {
                         GL11.glPushMatrix();
                         LogoEffectRandomizer logoEffectRandomizer9 = this.logoEffects[i7][i6];
-                        float f10 = (float)(logoEffectRandomizer9.prevHeight + (logoEffectRandomizer9.height - logoEffectRandomizer9.prevHeight) * (double)partialTicks);
+                        float f10 = (float)(logoEffectRandomizer9.prevHeight + (logoEffectRandomizer9.height - logoEffectRandomizer9.prevHeight) * (double)renderPartialTick);
                         float f11 = 1.0F;
                         float f12 = 1.0F;
                         float f13 = 0.0F;

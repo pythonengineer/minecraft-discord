@@ -56,7 +56,7 @@ public class ChunkProviderIso implements IChunkProvider {
 	public void populate(IChunkProvider iChunkProvider1, int i2, int i3) {
 	}
 
-	public boolean saveChunks(boolean flag, IProgressUpdate loadingScreen) {
+	public boolean saveChunks(boolean flag, IProgressUpdate progressUpdate) {
 		return true;
 	}
 

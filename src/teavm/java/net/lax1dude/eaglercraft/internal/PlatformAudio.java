@@ -479,7 +479,7 @@ public class PlatformAudio {
     }
 
     public static IAudioHandle beginPlayback(IAudioResource track, float x, float y, float z,
-            float volume, float pitch, boolean repeat) {
+            float volume, float pitch, float finalVolume, boolean repeat) {
         BrowserAudioResource internalTrack = (BrowserAudioResource) track;
         internalTrack.cacheHit = PlatformRuntime.steadyTimeMillis();
 
@@ -504,6 +504,7 @@ public class PlatformAudio {
         GainNode gain = audioctx.createGain();
         float v2 = volume;
         if(v2 > 1.0f) v2 = 1.0f;
+        if(finalVolume >= 0.0f) v2 = finalVolume;
         gain.getGain().setValue(v2);
 
         src.connect(panner);

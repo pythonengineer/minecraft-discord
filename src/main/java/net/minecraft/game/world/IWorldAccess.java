@@ -16,4 +16,6 @@ public interface IWorldAccess {
     void releaseEntitySkin(Entity entity1);
 
     void updateAllRenderers();
+
+    void playRecord(String string1, int i2, int i3, int i4);
 }

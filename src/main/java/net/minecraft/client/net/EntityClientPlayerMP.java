@@ -7,62 +7,78 @@ import net.minecraft.game.entity.misc.EntityItem;
 import net.minecraft.game.world.World;
 
 public class EntityClientPlayerMP extends EntityPlayerSP {
-    private NetClientHandler sendQueue;
-    private double oldPosX;
-    private double oldBasePos;
-    private double oldPosY;
-    private float oldPosZ;
-    private float oldRotationYaw;
+	private NetClientHandler sendQueue;
+	private double oldPosX;
+	private double oldBasePos;
+	private double oldPosY;
+	private double oldPosZ;
+	private float oldRotationYaw;
+	private float oldRotationPitch;
 
-    public EntityClientPlayerMP(Minecraft minecraft, World worldObj, Session session, NetClientHandler sendQueue) {
-        super(minecraft, worldObj, session);
-        this.sendQueue = sendQueue;
-    }
+	public EntityClientPlayerMP(Minecraft minecraft, World worldObj, Session session, NetClientHandler sendQueue) {
+		super(minecraft, worldObj, session);
+		this.sendQueue = sendQueue;
+	}
 
-    public void onUpdate() {
-        super.onUpdate();
-        double d1 = this.posX - this.oldPosX;
-        double d3 = this.posY + (double)this.ySize - this.oldBasePos;
-        double d5 = this.posZ - this.oldPosY;
-        double d7 = (double)(this.rotationYaw - this.oldPosZ);
-        double d9 = (double)(this.rotationPitch - this.oldRotationYaw);
-        boolean z11 = d3 != 0.0D || d1 * d1 + d5 * d5 > 0.001D;
-        boolean z12 = d7 * d7 + d9 * d9 > 0.001D;
-        if(z11 && z12) {
-            this.sendQueue.addToSendQueue(new Packet13PlayerLookMove(this.posX, this.posY + (double)this.ySize, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
-        } else if(z11) {
-            this.sendQueue.addToSendQueue(new Packet11PlayerPosition(this.posX, this.posY + (double)this.ySize, this.posZ, this.onGround));
-        } else if(z12) {
-            this.sendQueue.addToSendQueue(new Packet12PlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
-        } else {
-            this.sendQueue.addToSendQueue(new Packet10Flying(this.onGround));
-        }
+	public void onUpdate() {
+		super.onUpdate();
+		this.sendMotionUpdates();
+	}
 
-        if(z11) {
-            this.oldPosX = this.posX;
-            this.oldBasePos = this.posY + (double)this.ySize;
-            this.oldPosY = this.posZ;
-        }
+	public void onPlayerUpdate() {
+		this.sendMotionUpdates();
+	}
 
-        if(z12) {
-            this.oldPosZ = this.rotationYaw;
-            this.oldRotationYaw = this.rotationPitch;
-        }
+	public void sendMotionUpdates() {
+		double d1 = this.posX - this.oldPosX;
+		double d3 = this.boundingBox.minY - this.oldBasePos;
+		double d5 = this.posY - this.oldPosY;
+		double d7 = this.posZ - this.oldPosZ;
+		double d9 = (double)(this.rotationYaw - this.oldRotationYaw);
+		double d11 = (double)(this.rotationPitch - this.oldRotationPitch);
+		boolean z13 = d3 != 0.0D || d5 != 0.0D || d1 != 0.0D || d7 != 0.0D;
+		boolean z14 = d9 != 0.0D || d11 != 0.0D;
+		if(z13 && z14) {
+			this.sendQueue.addToSendQueue(new Packet13PlayerLookMove(this.posX, this.boundingBox.minY, this.posY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
+		} else if(z13) {
+			this.sendQueue.addToSendQueue(new Packet11PlayerPosition(this.posX, this.boundingBox.minY, this.posY, this.posZ, this.onGround));
+		} else if(z14) {
+			this.sendQueue.addToSendQueue(new Packet12PlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
+		} else {
+			this.sendQueue.addToSendQueue(new Packet10Flying(this.onGround));
+		}
 
-    }
+		if(z13) {
+			this.oldPosX = this.posX;
+			this.oldBasePos = this.boundingBox.minY;
+			this.oldPosY = this.posY;
+			this.oldPosZ = this.posZ;
+		}
 
-    protected void joinEntityItemWithWorld(EntityItem entityItem) {
-        Packet21PickupSpawn packet21PickupSpawn2 = new Packet21PickupSpawn(entityItem);
-        this.sendQueue.addToSendQueue(packet21PickupSpawn2);
-        entityItem.posX = (double)packet21PickupSpawn2.xPosition / 32.0D;
-        entityItem.posY = (double)packet21PickupSpawn2.yPosition / 32.0D;
-        entityItem.posZ = (double)packet21PickupSpawn2.zPosition / 32.0D;
-        entityItem.motionX = (double)packet21PickupSpawn2.rotation / 128.0D;
-        entityItem.motionY = (double)packet21PickupSpawn2.pitch / 128.0D;
-        entityItem.motionZ = (double)packet21PickupSpawn2.roll / 128.0D;
-    }
+		if(z14) {
+			this.oldRotationYaw = this.rotationYaw;
+			this.oldRotationPitch = this.rotationPitch;
+		}
 
-    public void sendChatMessage(String chatMessage) {
-        this.sendQueue.addToSendQueue(new Packet3Chat(chatMessage));
-    }
+	}
+
+	protected void joinEntityItemWithWorld(EntityItem entityItem) {
+		Packet21PickupSpawn packet21PickupSpawn2 = new Packet21PickupSpawn(entityItem);
+		this.sendQueue.addToSendQueue(packet21PickupSpawn2);
+		entityItem.posX = (double)packet21PickupSpawn2.xPosition / 32.0D;
+		entityItem.posY = (double)packet21PickupSpawn2.yPosition / 32.0D;
+		entityItem.posZ = (double)packet21PickupSpawn2.zPosition / 32.0D;
+		entityItem.motionX = (double)packet21PickupSpawn2.rotation / 128.0D;
+		entityItem.motionY = (double)packet21PickupSpawn2.pitch / 128.0D;
+		entityItem.motionZ = (double)packet21PickupSpawn2.roll / 128.0D;
+	}
+
+	public void sendChatMessage(String chatMessage) {
+		this.sendQueue.addToSendQueue(new Packet3Chat(chatMessage));
+	}
+
+	public void swingItem() {
+		super.swingItem();
+		this.sendQueue.addToSendQueue(new Packet18ArmAnimation(this, 1));
+	}
 }

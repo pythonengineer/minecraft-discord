@@ -7,6 +7,7 @@ import java.io.IOException;
 public class Packet10Flying extends Packet {
     public double xPosition;
     public double yPosition;
+    public double zPosition;
     public double stance;
     public float yaw;
     public float pitch;
@@ -31,5 +32,9 @@ public class Packet10Flying extends Packet {
 
     public void writePacket(DataOutputStream dataOutputStream1) throws IOException {
         dataOutputStream1.write(this.onGround ? 1 : 0);
+    }
+
+    public int getPacketSize() {
+        return 1;
     }
 }

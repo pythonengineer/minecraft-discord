@@ -60,4 +60,8 @@ public class Packet21PickupSpawn extends Packet {
     public void processPacket(NetHandler netHandler1) {
         netHandler1.handlePickupSpawn(this);
     }
+
+    public int getPacketSize() {
+        return 22;
+    }
 }

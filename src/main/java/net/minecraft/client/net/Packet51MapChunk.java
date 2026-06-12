@@ -58,4 +58,8 @@ public class Packet51MapChunk extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleMapChunk(this);
 	}
+
+    public int getPacketSize() {
+        return 17 + this.tempLength;
+    }
 }

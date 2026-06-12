@@ -8,6 +8,7 @@ import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -22,7 +23,17 @@ public class EntityMinecart extends Entity implements IInventory {
 	public int timeSinceHit;
 	public int forwardDirection;
     private boolean isInReverse;
-	private static final int[][][] matrix = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
+    public int minecartType;
+    public int fuel;
+    public double pushX;
+    public double pushZ;
+    private static final int[][][] matrix = new int[][][]{{{0, 0, -1}, {0, 0, 1}}, {{-1, 0, 0}, {1, 0, 0}}, {{-1, -1, 0}, {1, 0, 0}}, {{-1, 0, 0}, {1, -1, 0}}, {{0, 0, -1}, {0, -1, 1}}, {{0, -1, -1}, {0, 0, 1}}, {{0, 0, 1}, {1, 0, 0}}, {{0, 0, 1}, {-1, 0, 0}}, {{0, 0, -1}, {-1, 0, 0}}, {{0, 0, -1}, {1, 0, 0}}};
+    private int turnProgress;
+    private double minecartX;
+    private double minecartY;
+    private double minecartZ;
+    private double minecartYaw;
+    private double minecartPitch;
 
 	public EntityMinecart(World world1) {
 		super(world1);
@@ -49,32 +60,39 @@ public class EntityMinecart extends Entity implements IInventory {
 		return true;
 	}
 
-	public EntityMinecart(World world, double x, double y, double z) {
-		this(world);
-		this.setPosition(x, y + (double)this.yOffset, z);
-		this.motionX = 0.0D;
-		this.motionY = 0.0D;
-		this.motionZ = 0.0D;
-		this.prevPosX = x;
-		this.prevPosY = y;
-		this.prevPosZ = z;
-	}
+    public EntityMinecart(World worldObj, double x, double y, double z, int minecartType) {
+        this(worldObj);
+        this.setPosition(x, y + (double)this.yOffset, z);
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
+        this.prevPosX = x;
+        this.prevPosY = y;
+        this.prevPosZ = z;
+        this.minecartType = minecartType;
+    }
 
     public double getMountedYOffset() {
         return (double)this.height * 0.0D - (double)0.3F;
     }
 
-	public boolean attackEntityFrom(Entity entity1, int i2) {
-		this.forwardDirection = -this.forwardDirection;
-		this.timeSinceHit = 10;
-		this.damageTaken += i2 * 10;
-		if(this.damageTaken > 40) {
-			this.entityDropItem(Item.minecartEmpty.shiftedIndex, 1, 0.0F);
-			this.setEntityDead();
-		}
+    public boolean attackEntityFrom(Entity entity, int damage) {
+        this.forwardDirection = -this.forwardDirection;
+        this.timeSinceHit = 10;
+        this.damageTaken += damage * 10;
+        if(this.damageTaken > 40) {
+            this.entityDropItem(Item.minecartEmpty.shiftedIndex, 1, 0.0F);
+            if(this.minecartType == 1) {
+                this.entityDropItem(Block.chest.blockID, 1, 0.0F);
+            } else if(this.minecartType == 2) {
+                this.entityDropItem(Block.stoneOvenIdle.blockID, 1, 0.0F);
+            }
 
-		return true;
-	}
+            this.setEntityDead();
+        }
+
+        return true;
+    }
 
 	public boolean canBeCollidedWith() {
 		return !this.isDead;
@@ -108,219 +126,290 @@ public class EntityMinecart extends Entity implements IInventory {
 		super.setEntityDead();
 	}
 
-	public void onUpdate() {
-		if(this.timeSinceHit > 0) {
-			--this.timeSinceHit;
-		}
+    public void onUpdate() {
+        double d7;
+        if(this.worldObj.multiplayerWorld) {
+            if(this.turnProgress > 0) {
+                double d41 = this.posX + (this.minecartX - this.posX) / (double)this.turnProgress;
+                double d42 = this.posY + (this.minecartY - this.posY) / (double)this.turnProgress;
+                double d5 = this.posZ + (this.minecartZ - this.posZ) / (double)this.turnProgress;
 
-		if(this.damageTaken > 0) {
-			--this.damageTaken;
-		}
+                for(d7 = this.minecartYaw - (double)this.rotationYaw; d7 < -180.0D; d7 += 360.0D) {
+                }
 
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
-		this.motionY -= (double)0.04F;
-		int i1 = MathHelper.floor_double(this.posX);
-		int i2 = MathHelper.floor_double(this.posY);
-		int i3 = MathHelper.floor_double(this.posZ);
-		if(this.worldObj.getBlockId(i1, i2 - 1, i3) == Block.minecartTrack.blockID) {
-			--i2;
-		}
+                while(d7 >= 180.0D) {
+                    d7 -= 360.0D;
+                }
 
-		double d4 = 0.4D;
-		double d6 = 2.0D / 256D;
-		if(this.worldObj.getBlockId(i1, i2, i3) == Block.minecartTrack.blockID) {
-			Vec3D vec3D4 = this.getPos(this.posX, this.posY, this.posZ);
-			int i5 = this.worldObj.getBlockMetadata(i1, i2, i3);
-			this.posY = (double)i2;
-			if(i5 >= 2 && i5 <= 5) {
-				this.posY = (double)(i2 + 1);
-			}
-
-			if(i5 == 2) {
-				this.motionX -= d6;
-			}
-
-			if(i5 == 3) {
-				this.motionX += d6;
-			}
-
-			if(i5 == 4) {
-				this.motionZ += d6;
-			}
-
-			if(i5 == 5) {
-				this.motionZ -= d6;
-			}
-
-			int[][] i35 = matrix[i5];
-			double d7 = (double)(i35[1][0] - i35[0][0]);
-			double d9 = (double)(i35[1][2] - i35[0][2]);
-			double d11 = Math.sqrt(d7 * d7 + d9 * d9);
-			double d17 = this.motionX * d7 + this.motionZ * d9;
-			if(d17 < 0.0D) {
-				d7 = -d7;
-				d9 = -d9;
-			}
-
-			double d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-			this.motionX = d15 * d7 / d11;
-			this.motionZ = d15 * d9 / d11;
-			double d21 = 0.0D;
-			double d19 = (double)i1 + 0.5D + (double)i35[0][0] * 0.5D;
-			double d22 = (double)i3 + 0.5D + (double)i35[0][2] * 0.5D;
-			double d23 = (double)i1 + 0.5D + (double)i35[1][0] * 0.5D;
-			double d25 = (double)i3 + 0.5D + (double)i35[1][2] * 0.5D;
-			d7 = d23 - d19;
-			d9 = d25 - d22;
-			double d27;
-			double d29;
-			if(d7 == 0.0D) {
-				this.posX = (double)i1 + 0.5D;
-				d21 = this.posZ - (double)i3;
-			} else if(d9 == 0.0D) {
-				this.posZ = (double)i3 + 0.5D;
-				d21 = this.posX - (double)i1;
-			} else {
-				d27 = this.posX - d19;
-				d29 = this.posZ - d22;
-				double d35 = (d27 * d7 + d29 * d9) * 2.0D;
-				d21 = d35;
-			}
-
-			this.posX = d19 + d7 * d21;
-			this.posZ = d22 + d9 * d21;
-			this.setPosition(this.posX, this.posY + (double)this.yOffset, this.posZ);
-			d27 = this.motionX;
-			d29 = this.motionZ;
-			if(this.riddenByEntity != null) {
-				d27 *= 0.75D;
-				d29 *= 0.75D;
-			}
-
-			if(d27 < -d4) {
-				d27 = -d4;
-			}
-
-			if(d27 > d4) {
-				d27 = d4;
-			}
-
-			if(d29 < -d4) {
-				d29 = -d4;
-			}
-
-			if(d29 > d4) {
-				d29 = d4;
-			}
-
-			this.moveEntity(d27, 0.0D, d29);
-			if(i35[0][1] != 0 && MathHelper.floor_double(this.posX) - i1 == i35[0][0] && MathHelper.floor_double(this.posZ) - i3 == i35[0][2]) {
-				this.setPosition(this.posX, this.posY + (double)i35[0][1], this.posZ);
-			} else if(i35[1][1] != 0 && MathHelper.floor_double(this.posX) - i1 == i35[1][0] && MathHelper.floor_double(this.posZ) - i3 == i35[1][2]) {
-				this.setPosition(this.posX, this.posY + (double)i35[1][1], this.posZ);
-			}
-
-			if(this.riddenByEntity != null) {
-				this.motionX *= (double)0.997F;
-				this.motionY *= 0.0D;
-				this.motionZ *= (double)0.997F;
-			} else {
-				this.motionX *= (double)0.96F;
-				this.motionY *= 0.0D;
-				this.motionZ *= (double)0.96F;
-			}
-
-			Vec3D vec3D31 = this.getPos(this.posX, this.posY, this.posZ);
-			if(vec3D31 != null && vec3D4 != null) {
-				double d32 = (vec3D4.yCoord - vec3D31.yCoord) * 0.05D;
-				d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-				if(d15 > 0.0D) {
-					this.motionX = this.motionX / d15 * (d15 + d32);
-					this.motionZ = this.motionZ / d15 * (d15 + d32);
-				}
-
-				this.setPosition(this.posX, vec3D31.yCoord, this.posZ);
+                this.rotationYaw = (float)((double)this.rotationYaw + d7 / (double)this.turnProgress);
+                this.rotationPitch = (float)((double)this.rotationPitch + (this.minecartPitch - (double)this.rotationPitch) / (double)this.turnProgress);
+                --this.turnProgress;
+                this.setPosition(d41, d42, d5);
+                this.setRotation(this.rotationYaw, this.rotationPitch);
+            } else {
+                this.setPosition(this.posX, this.posY, this.posZ);
+                this.setRotation(this.rotationYaw, this.rotationPitch);
             }
 
-            int i39 = MathHelper.floor_double(this.posX);
-            int i33 = MathHelper.floor_double(this.posZ);
-            if(i39 != i1 || i33 != i3) {
-                d15 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-                this.motionX = d15 * (double)(i39 - i1);
-                this.motionZ = d15 * (double)(i33 - i3);
-			}
-		} else {
-			if(this.motionX < -d4) {
-				this.motionX = -d4;
-			}
-
-			if(this.motionX > d4) {
-				this.motionX = d4;
-			}
-
-			if(this.motionZ < -d4) {
-				this.motionZ = -d4;
-			}
-
-			if(this.motionZ > d4) {
-				this.motionZ = d4;
-			}
-
-			if(this.onGround) {
-				this.motionX *= 0.5D;
-				this.motionY *= 0.5D;
-				this.motionZ *= 0.5D;
-			}
-
-			this.moveEntity(this.motionX, this.motionY, this.motionZ);
-			if(!this.onGround) {
-				this.motionX *= (double)0.95F;
-				this.motionY *= (double)0.95F;
-				this.motionZ *= (double)0.95F;
-			}
-		}
-
-        this.rotationPitch = 0.0F;
-        double d36 = this.prevPosX - this.posX;
-        double d37 = this.prevPosZ - this.posZ;
-        if(d36 * d36 + d37 * d37 > 0.001D) {
-            this.rotationYaw = (float)(Math.atan2(d37, d36) * 180.0D / Math.PI);
-            if(this.isInReverse) {
-                this.rotationYaw += 180.0F;
+        } else {
+            if(this.timeSinceHit > 0) {
+                --this.timeSinceHit;
             }
-        }
 
-        double d38;
-        for(d38 = (double)(this.rotationYaw - this.prevRotationYaw); d38 >= 180.0D; d38 -= 360.0D) {
-        }
+            if(this.damageTaken > 0) {
+                --this.damageTaken;
+            }
 
-        while(d38 < -180.0D) {
-            d38 += 360.0D;
-        }
+            this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.prevPosZ = this.posZ;
+            this.motionY -= (double)0.04F;
+            int i1 = MathHelper.floor_double(this.posX);
+            int i2 = MathHelper.floor_double(this.posY);
+            int i3 = MathHelper.floor_double(this.posZ);
+            if(this.worldObj.getBlockId(i1, i2 - 1, i3) == Block.minecartTrack.blockID) {
+                --i2;
+            }
 
-        if(d38 < -170.0D || d38 >= 170.0D) {
-            this.rotationYaw += 180.0F;
-            this.isInReverse = !this.isInReverse;
-        }
+            double d4 = 0.4D;
+            boolean z6 = false;
+            d7 = 2.0D / 256D;
+            if(this.worldObj.getBlockId(i1, i2, i3) == Block.minecartTrack.blockID) {
+                Vec3D vec3D9 = this.getPos(this.posX, this.posY, this.posZ);
+                int i10 = this.worldObj.getBlockMetadata(i1, i2, i3);
+                this.posY = (double)i2;
+                if(i10 >= 2 && i10 <= 5) {
+                    this.posY = (double)(i2 + 1);
+                }
 
-        this.setRotation(this.rotationYaw, this.rotationPitch);
-        List list41 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
-        if(list41 != null && list41.size() > 0) {
-            for(int i42 = 0; i42 < list41.size(); ++i42) {
-                Entity entity8 = (Entity)list41.get(i42);
-                if(entity8 != this.riddenByEntity && entity8.canBePushed() && entity8 instanceof EntityMinecart) {
-                    entity8.applyEntityCollision(this);
+                if(i10 == 2) {
+                    this.motionX -= d7;
+                }
+
+                if(i10 == 3) {
+                    this.motionX += d7;
+                }
+
+                if(i10 == 4) {
+                    this.motionZ += d7;
+                }
+
+                if(i10 == 5) {
+                    this.motionZ -= d7;
+                }
+
+                int[][] i11 = matrix[i10];
+                double d12 = (double)(i11[1][0] - i11[0][0]);
+                double d14 = (double)(i11[1][2] - i11[0][2]);
+                double d16 = Math.sqrt(d12 * d12 + d14 * d14);
+                double d18 = this.motionX * d12 + this.motionZ * d14;
+                if(d18 < 0.0D) {
+                    d12 = -d12;
+                    d14 = -d14;
+                }
+
+                double d20 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                this.motionX = d20 * d12 / d16;
+                this.motionZ = d20 * d14 / d16;
+                double d22 = 0.0D;
+                double d24 = (double)i1 + 0.5D + (double)i11[0][0] * 0.5D;
+                double d26 = (double)i3 + 0.5D + (double)i11[0][2] * 0.5D;
+                double d28 = (double)i1 + 0.5D + (double)i11[1][0] * 0.5D;
+                double d30 = (double)i3 + 0.5D + (double)i11[1][2] * 0.5D;
+                d12 = d28 - d24;
+                d14 = d30 - d26;
+                double d32;
+                double d34;
+                double d36;
+                if(d12 == 0.0D) {
+                    this.posX = (double)i1 + 0.5D;
+                    d22 = this.posZ - (double)i3;
+                } else if(d14 == 0.0D) {
+                    this.posZ = (double)i3 + 0.5D;
+                    d22 = this.posX - (double)i1;
+                } else {
+                    d32 = this.posX - d24;
+                    d34 = this.posZ - d26;
+                    d36 = (d32 * d12 + d34 * d14) * 2.0D;
+                    d22 = d36;
+                }
+
+                this.posX = d24 + d12 * d22;
+                this.posZ = d26 + d14 * d22;
+                this.setPosition(this.posX, this.posY + (double)this.yOffset, this.posZ);
+                d32 = this.motionX;
+                d34 = this.motionZ;
+                if(this.riddenByEntity != null) {
+                    d32 *= 0.75D;
+                    d34 *= 0.75D;
+                }
+
+                if(d32 < -d4) {
+                    d32 = -d4;
+                }
+
+                if(d32 > d4) {
+                    d32 = d4;
+                }
+
+                if(d34 < -d4) {
+                    d34 = -d4;
+                }
+
+                if(d34 > d4) {
+                    d34 = d4;
+                }
+
+                this.moveEntity(d32, 0.0D, d34);
+                if(i11[0][1] != 0 && MathHelper.floor_double(this.posX) - i1 == i11[0][0] && MathHelper.floor_double(this.posZ) - i3 == i11[0][2]) {
+                    this.setPosition(this.posX, this.posY + (double)i11[0][1], this.posZ);
+                } else if(i11[1][1] != 0 && MathHelper.floor_double(this.posX) - i1 == i11[1][0] && MathHelper.floor_double(this.posZ) - i3 == i11[1][2]) {
+                    this.setPosition(this.posX, this.posY + (double)i11[1][1], this.posZ);
+                }
+
+                if(this.riddenByEntity != null) {
+                    this.motionX *= (double)0.997F;
+                    this.motionY *= 0.0D;
+                    this.motionZ *= (double)0.997F;
+                } else {
+                    if(this.minecartType == 2) {
+                        d36 = (double)MathHelper.sqrt_double(this.pushX * this.pushX + this.pushZ * this.pushZ);
+                        if(d36 > 0.01D) {
+                            z6 = true;
+                            this.pushX /= d36;
+                            this.pushZ /= d36;
+                            double d38 = 0.04D;
+                            this.motionX *= (double)0.8F;
+                            this.motionY *= 0.0D;
+                            this.motionZ *= (double)0.8F;
+                            this.motionX += this.pushX * d38;
+                            this.motionZ += this.pushZ * d38;
+                        } else {
+                            this.motionX *= (double)0.9F;
+                            this.motionY *= 0.0D;
+                            this.motionZ *= (double)0.9F;
+                        }
+                    }
+
+                    this.motionX *= (double)0.96F;
+                    this.motionY *= 0.0D;
+                    this.motionZ *= (double)0.96F;
+                }
+
+                Vec3D vec3D46 = this.getPos(this.posX, this.posY, this.posZ);
+                if(vec3D46 != null && vec3D9 != null) {
+                    double d37 = (vec3D9.yCoord - vec3D46.yCoord) * 0.05D;
+                    d20 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                    if(d20 > 0.0D) {
+                        this.motionX = this.motionX / d20 * (d20 + d37);
+                        this.motionZ = this.motionZ / d20 * (d20 + d37);
+                    }
+
+                    this.setPosition(this.posX, vec3D46.yCoord, this.posZ);
+                }
+
+                int i47 = MathHelper.floor_double(this.posX);
+                int i48 = MathHelper.floor_double(this.posZ);
+                if(i47 != i1 || i48 != i3) {
+                    d20 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                    this.motionX = d20 * (double)(i47 - i1);
+                    this.motionZ = d20 * (double)(i48 - i3);
+                }
+
+                if(this.minecartType == 2) {
+                    double d39 = (double)MathHelper.sqrt_double(this.pushX * this.pushX + this.pushZ * this.pushZ);
+                    if(d39 > 0.01D && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.001D) {
+                        this.pushX /= d39;
+                        this.pushZ /= d39;
+                        if(this.pushX * this.motionX + this.pushZ * this.motionZ < 0.0D) {
+                            this.pushX = 0.0D;
+                            this.pushZ = 0.0D;
+                        } else {
+                            this.pushX = this.motionX;
+                            this.pushZ = this.motionZ;
+                        }
+                    }
+                }
+            } else {
+                if(this.motionX < -d4) {
+                    this.motionX = -d4;
+                }
+
+                if(this.motionX > d4) {
+                    this.motionX = d4;
+                }
+
+                if(this.motionZ < -d4) {
+                    this.motionZ = -d4;
+                }
+
+                if(this.motionZ > d4) {
+                    this.motionZ = d4;
+                }
+
+                if(this.onGround) {
+                    this.motionX *= 0.5D;
+                    this.motionY *= 0.5D;
+                    this.motionZ *= 0.5D;
+                }
+
+                this.moveEntity(this.motionX, this.motionY, this.motionZ);
+                if(!this.onGround) {
+                    this.motionX *= (double)0.95F;
+                    this.motionY *= (double)0.95F;
+                    this.motionZ *= (double)0.95F;
                 }
             }
+
+            this.rotationPitch = 0.0F;
+            double d43 = this.prevPosX - this.posX;
+            double d44 = this.prevPosZ - this.posZ;
+            if(d43 * d43 + d44 * d44 > 0.001D) {
+                this.rotationYaw = (float)(Math.atan2(d44, d43) * 180.0D / Math.PI);
+                if(this.isInReverse) {
+                    this.rotationYaw += 180.0F;
+                }
+            }
+
+            double d13;
+            for(d13 = (double)(this.rotationYaw - this.prevRotationYaw); d13 >= 180.0D; d13 -= 360.0D) {
+            }
+
+            while(d13 < -180.0D) {
+                d13 += 360.0D;
+            }
+
+            if(d13 < -170.0D || d13 >= 170.0D) {
+                this.rotationYaw += 180.0F;
+                this.isInReverse = !this.isInReverse;
+            }
+
+            this.setRotation(this.rotationYaw, this.rotationPitch);
+            List list15 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
+            if(list15 != null && list15.size() > 0) {
+                for(int i45 = 0; i45 < list15.size(); ++i45) {
+                    Entity entity17 = (Entity)list15.get(i45);
+                    if(entity17 != this.riddenByEntity && entity17.canBePushed() && entity17 instanceof EntityMinecart) {
+                        entity17.applyEntityCollision(this);
+                    }
+                }
+            }
+
+            if(this.riddenByEntity != null && this.riddenByEntity.isDead) {
+                this.riddenByEntity = null;
+            }
+
+            if(z6 && this.rand.nextInt(4) == 0) {
+                --this.fuel;
+                if(this.fuel < 0) {
+                    this.pushX = this.pushZ = 0.0D;
+                }
+
+                this.worldObj.spawnParticle("largesmoke", this.posX, this.posY + 0.8D, this.posZ, 0.0D, 0.0D, 0.0D);
+            }
+
         }
-
-		if(this.riddenByEntity != null && this.riddenByEntity.isDead) {
-			this.riddenByEntity = null;
-		}
-
-	}
+    }
 
 	public Vec3D getPosOffset(double x, double y, double z, double offsetMultiplier) {
 		int i9 = MathHelper.floor_double(x);
@@ -413,76 +502,113 @@ public class EntityMinecart extends Entity implements IInventory {
 		}
 	}
 
-	protected void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
-		NBTTagList nBTTagList2 = new NBTTagList();
+    protected void writeEntityToNBT(NBTTagCompound compoundTag) {
+        compoundTag.setInteger("Type", this.minecartType);
+        if(this.minecartType == 2) {
+            compoundTag.setDouble("PushX", this.pushX);
+            compoundTag.setDouble("PushZ", this.pushZ);
+            compoundTag.setShort("Fuel", (short)this.fuel);
+        } else if(this.minecartType == 1) {
+            NBTTagList nBTTagList2 = new NBTTagList();
 
-		for(int i3 = 0; i3 < this.cargoItems.length; ++i3) {
-			if(this.cargoItems[i3] != null) {
-				NBTTagCompound nBTTagCompound4 = new NBTTagCompound();
-				nBTTagCompound4.setByte("Slot", (byte)i3);
-				this.cargoItems[i3].writeToNBT(nBTTagCompound4);
-				nBTTagList2.setTag(nBTTagCompound4);
-			}
-		}
+            for(int i3 = 0; i3 < this.cargoItems.length; ++i3) {
+                if(this.cargoItems[i3] != null) {
+                    NBTTagCompound nBTTagCompound4 = new NBTTagCompound();
+                    nBTTagCompound4.setByte("Slot", (byte)i3);
+                    this.cargoItems[i3].writeToNBT(nBTTagCompound4);
+                    nBTTagList2.setTag(nBTTagCompound4);
+                }
+            }
 
-		nBTTagCompound1.setTag("Items", nBTTagList2);
-	}
+            compoundTag.setTag("Items", nBTTagList2);
+        }
 
-	protected void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
-		NBTTagList nBTTagList2 = nBTTagCompound1.getTagList("Items");
-		this.cargoItems = new ItemStack[this.getSizeInventory()];
+    }
 
-		for(int i3 = 0; i3 < nBTTagList2.tagCount(); ++i3) {
-			NBTTagCompound nBTTagCompound4 = (NBTTagCompound)nBTTagList2.tagAt(i3);
-			int i5 = nBTTagCompound4.getByte("Slot") & 255;
-			if(i5 >= 0 && i5 < this.cargoItems.length) {
-				this.cargoItems[i5] = new ItemStack(nBTTagCompound4);
-			}
-		}
+    protected void readEntityFromNBT(NBTTagCompound compoundTag) {
+        this.minecartType = compoundTag.getInteger("Type");
+        if(this.minecartType == 2) {
+            this.pushX = compoundTag.getDouble("PushX");
+            this.pushZ = compoundTag.getDouble("PushZ");
+            this.fuel = compoundTag.getShort("Fuel");
+        } else if(this.minecartType == 1) {
+            NBTTagList nBTTagList2 = compoundTag.getTagList("Items");
+            this.cargoItems = new ItemStack[this.getSizeInventory()];
 
-	}
+            for(int i3 = 0; i3 < nBTTagList2.tagCount(); ++i3) {
+                NBTTagCompound nBTTagCompound4 = (NBTTagCompound)nBTTagList2.tagAt(i3);
+                int i5 = nBTTagCompound4.getByte("Slot") & 255;
+                if(i5 >= 0 && i5 < this.cargoItems.length) {
+                    this.cargoItems[i5] = new ItemStack(nBTTagCompound4);
+                }
+            }
+        }
+
+    }
 
     public float getShadowSize() {
         return 0.0F;
     }
 
-	public void applyEntityCollision(Entity entity1) {
-		if(entity1 != this.riddenByEntity) {
-			double d2 = entity1.posX - this.posX;
-			double d4 = entity1.posZ - this.posZ;
-			double d6 = d2 * d2 + d4 * d4;
-			if(d6 >= 9.999999747378752E-5D) {
-				d6 = (double)MathHelper.sqrt_double(d6);
-				d2 /= d6;
-				d4 /= d6;
-				double d8 = 1.0D / d6;
-				if(d8 > 1.0D) {
-					d8 = 1.0D;
-				}
+    public void applyEntityCollision(Entity entity) {
+        if(entity != this.riddenByEntity) {
+            if(entity instanceof EntityLiving && !(entity instanceof EntityPlayer) && this.minecartType == 0 && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01D && this.riddenByEntity == null && entity.ridingEntity == null) {
+                entity.mountEntity(this);
+            }
 
-				d2 *= d8;
-				d4 *= d8;
-				d2 *= (double)0.1F;
-				d4 *= (double)0.1F;
-				d2 *= (double)(1.0F - this.entityCollisionReduction);
-				d4 *= (double)(1.0F - this.entityCollisionReduction);
-				d2 *= 0.5D;
-				d4 *= 0.5D;
-				if(entity1 instanceof EntityMinecart) {
-					double d10 = (entity1.motionX + this.motionX) / 2.0D;
-					double d12 = (entity1.motionZ + this.motionZ) / 2.0D;
-					this.motionX = this.motionZ = 0.0D;
-					this.addVelocity(d10 - d2, 0.0D, d12 - d4);
-					entity1.motionX = entity1.motionZ = 0.0D;
-					entity1.addVelocity(d10 + d2, 0.0D, d12 + d4);
-				} else {
-					this.addVelocity(-d2, 0.0D, -d4);
-					entity1.addVelocity(d2 / 4.0D, 0.0D, d4 / 4.0D);
-				}
-			}
+            double d2 = entity.posX - this.posX;
+            double d4 = entity.posZ - this.posZ;
+            double d6 = d2 * d2 + d4 * d4;
+            if(d6 >= 9.999999747378752E-5D) {
+                d6 = (double)MathHelper.sqrt_double(d6);
+                d2 /= d6;
+                d4 /= d6;
+                double d8 = 1.0D / d6;
+                if(d8 > 1.0D) {
+                    d8 = 1.0D;
+                }
 
-		}
-	}
+                d2 *= d8;
+                d4 *= d8;
+                d2 *= (double)0.1F;
+                d4 *= (double)0.1F;
+                d2 *= (double)(1.0F - this.entityCollisionReduction);
+                d4 *= (double)(1.0F - this.entityCollisionReduction);
+                d2 *= 0.5D;
+                d4 *= 0.5D;
+                if(entity instanceof EntityMinecart) {
+                    double d10 = entity.motionX + this.motionX;
+                    double d12 = entity.motionZ + this.motionZ;
+                    if(((EntityMinecart)entity).minecartType == 2 && this.minecartType != 2) {
+                        this.motionX *= (double)0.2F;
+                        this.motionZ *= (double)0.2F;
+                        this.addVelocity(entity.motionX - d2, 0.0D, entity.motionZ - d4);
+                        entity.motionX *= (double)0.7F;
+                        entity.motionZ *= (double)0.7F;
+                    } else if(((EntityMinecart)entity).minecartType != 2 && this.minecartType == 2) {
+                        entity.motionX *= (double)0.2F;
+                        entity.motionZ *= (double)0.2F;
+                        entity.addVelocity(this.motionX + d2, 0.0D, this.motionZ + d4);
+                        this.motionX *= (double)0.7F;
+                        this.motionZ *= (double)0.7F;
+                    } else {
+                        d10 /= 2.0D;
+                        d12 /= 2.0D;
+                        this.motionX *= (double)0.2F;
+                        this.motionZ *= (double)0.2F;
+                        this.addVelocity(d10 - d2, 0.0D, d12 - d4);
+                        entity.motionX *= (double)0.2F;
+                        entity.motionZ *= (double)0.2F;
+                        entity.addVelocity(d10 + d2, 0.0D, d12 + d4);
+                    }
+                } else {
+                    this.addVelocity(-d2, 0.0D, -d4);
+                    entity.addVelocity(d2 / 4.0D, 0.0D, d4 / 4.0D);
+                }
+            }
+
+        }
+    }
 
 	public int getSizeInventory() {
 		return 27;
@@ -531,8 +657,34 @@ public class EntityMinecart extends Entity implements IInventory {
 	public void onInventoryChanged() {
 	}
 
-    public boolean interact(EntityPlayer entityPlayer) {
-        entityPlayer.mountEntity(this);
+    public boolean interact(EntityPlayer entityPlayer1) {
+        if(this.minecartType == 0) {
+            entityPlayer1.mountEntity(this);
+        } else if(this.minecartType == 1) {
+            entityPlayer1.displayGUIChest(this);
+        } else if(this.minecartType == 2) {
+            ItemStack itemStack2 = entityPlayer1.inventory.getCurrentItem();
+            if(itemStack2 != null && itemStack2.itemID == Item.coal.shiftedIndex) {
+                if(--itemStack2.stackSize == 0) {
+                    entityPlayer1.inventory.setInventorySlotContents(entityPlayer1.inventory.currentItem, (ItemStack)null);
+                }
+
+                this.fuel += 1200;
+            }
+
+            this.pushX = this.posX - entityPlayer1.posX;
+            this.pushZ = this.posZ - entityPlayer1.posZ;
+        }
+
         return true;
+    }
+
+    public void setPositionAndRotation(double d1, double d3, double d5, float f7, float f8, int i9) {
+        this.minecartX = d1;
+        this.minecartY = d3;
+        this.minecartZ = d5;
+        this.minecartYaw = (double)f7;
+        this.minecartPitch = (double)f8;
+        this.turnProgress = i9;
     }
 }

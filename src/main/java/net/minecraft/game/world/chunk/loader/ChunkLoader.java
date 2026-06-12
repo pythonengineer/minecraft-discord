@@ -80,10 +80,11 @@ public class ChunkLoader implements IChunkLoader {
         return null;
     }
 
-    public void saveChunk(World world1, Chunk chunk2) {
-        VFile2 file3 = this.chunkFileForXZ(chunk2.xPosition, chunk2.zPosition);
+    public void saveChunk(World worldObj, Chunk chunk) {
+        worldObj.checkSessionLock();
+        VFile2 file3 = this.chunkFileForXZ(chunk.xPosition, chunk.zPosition);
         if(file3.exists()) {
-            world1.sizeOnDisk -= file3.length();
+            worldObj.sizeOnDisk -= file3.length();
         }
 
         try {
@@ -92,7 +93,7 @@ public class ChunkLoader implements IChunkLoader {
             NBTTagCompound nBTTagCompound5 = new NBTTagCompound();
             NBTTagCompound nBTTagCompound6 = new NBTTagCompound();
             nBTTagCompound5.setTag("Level", nBTTagCompound6);
-            this.storeChunkInCompound(chunk2, world1, nBTTagCompound6);
+            this.storeChunkInCompound(chunk, worldObj, nBTTagCompound6);
             CompressedStreamTools.writeCompressed(nBTTagCompound5, fos);
             fos.close();
             if(file3.exists()) {
@@ -100,34 +101,35 @@ public class ChunkLoader implements IChunkLoader {
             }
 
             file4.renameTo(file3);
-            world1.sizeOnDisk += file3.length();
+            worldObj.sizeOnDisk += file3.length();
         } catch (IOException exception7) {
             exception7.printStackTrace();
         }
 
     }
 
-    public void storeChunkInCompound(Chunk chunk1, World world2, NBTTagCompound nBTTagCompound3) {
-        nBTTagCompound3.setInteger("xPos", chunk1.xPosition);
-        nBTTagCompound3.setInteger("zPos", chunk1.zPosition);
-        nBTTagCompound3.setLong("LastUpdate", world2.worldTime);
-        nBTTagCompound3.setByteArray("Blocks", chunk1.blocks);
-        nBTTagCompound3.setByteArray("Data", chunk1.data.data);
-        nBTTagCompound3.setByteArray("SkyLight", chunk1.skylightMap.data);
-        nBTTagCompound3.setByteArray("BlockLight", chunk1.blocklightMap.data);
-        nBTTagCompound3.setByteArray("HeightMap", chunk1.heightMap);
-        nBTTagCompound3.setBoolean("TerrainPopulated", chunk1.isTerrainPopulated);
-        chunk1.hasEntities = false;
+    public void storeChunkInCompound(Chunk chunk, World worldObj, NBTTagCompound nbtCompound) {
+        worldObj.checkSessionLock();
+        nbtCompound.setInteger("xPos", chunk.xPosition);
+        nbtCompound.setInteger("zPos", chunk.zPosition);
+        nbtCompound.setLong("LastUpdate", worldObj.worldTime);
+        nbtCompound.setByteArray("Blocks", chunk.blocks);
+        nbtCompound.setByteArray("Data", chunk.data.data);
+        nbtCompound.setByteArray("SkyLight", chunk.skylightMap.data);
+        nbtCompound.setByteArray("BlockLight", chunk.blocklightMap.data);
+        nbtCompound.setByteArray("HeightMap", chunk.heightMap);
+        nbtCompound.setBoolean("TerrainPopulated", chunk.isTerrainPopulated);
+        chunk.hasEntities = false;
         NBTTagList nBTTagList4 = new NBTTagList();
 
         Iterator iterator6;
         NBTTagCompound nBTTagCompound8;
-        for(int i5 = 0; i5 < chunk1.entities.length; ++i5) {
-            iterator6 = chunk1.entities[i5].iterator();
+        for(int i5 = 0; i5 < chunk.entities.length; ++i5) {
+            iterator6 = chunk.entities[i5].iterator();
 
             while(iterator6.hasNext()) {
                 Entity entity7 = (Entity)iterator6.next();
-                chunk1.hasEntities = true;
+                chunk.hasEntities = true;
                 nBTTagCompound8 = new NBTTagCompound();
                 if(entity7.addEntityID(nBTTagCompound8)) {
                     nBTTagList4.setTag(nBTTagCompound8);
@@ -135,9 +137,9 @@ public class ChunkLoader implements IChunkLoader {
             }
         }
 
-        nBTTagCompound3.setTag("Entities", nBTTagList4);
+        nbtCompound.setTag("Entities", nBTTagList4);
         NBTTagList nBTTagList9 = new NBTTagList();
-        iterator6 = chunk1.chunkTileEntityMap.values().iterator();
+        iterator6 = chunk.chunkTileEntityMap.values().iterator();
 
         while(iterator6.hasNext()) {
             TileEntity tileEntity10 = (TileEntity)iterator6.next();
@@ -146,7 +148,7 @@ public class ChunkLoader implements IChunkLoader {
             nBTTagList9.setTag(nBTTagCompound8);
         }
 
-        nBTTagCompound3.setTag("TileEntities", nBTTagList9);
+        nbtCompound.setTag("TileEntities", nBTTagList9);
     }
 
     public static Chunk loadChunkIntoWorldFromCompound(World world0, NBTTagCompound nBTTagCompound1) {
@@ -206,6 +208,6 @@ public class ChunkLoader implements IChunkLoader {
     public void saveExtraData() {
     }
 
-    public void saveExtraChunkData(World world1, Chunk chunk2) {
+    public void saveExtraChunkData(World worldObj, Chunk chunk) {
     }
 }

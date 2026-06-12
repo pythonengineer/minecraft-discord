@@ -48,4 +48,8 @@ public class Packet52MultiBlockChange extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleMultiBlockChange(this);
 	}
+
+    public int getPacketSize() {
+        return 10 + this.size * 4;
+    }
 }

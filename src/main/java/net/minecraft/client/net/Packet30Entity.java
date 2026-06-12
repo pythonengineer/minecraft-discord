@@ -11,6 +11,7 @@ public class Packet30Entity extends Packet {
 	public byte zPosition;
 	public byte yaw;
 	public byte pitch;
+    public boolean rotating = false;
 
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		this.entityId = dataInputStream1.readInt();
@@ -23,4 +24,8 @@ public class Packet30Entity extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleEntity(this);
 	}
+
+    public int getPacketSize() {
+        return 4;
+    }
 }

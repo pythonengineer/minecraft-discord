@@ -2,7 +2,6 @@ package net.minecraft.client.gui.container;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.minecraft.client.RenderHelper;
-import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -11,52 +10,42 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.item.recipe.CraftingManager;
 
 public class GuiInventory extends GuiContainer {
-    private InventoryCrafting craftMatrix = new InventoryCrafting(this, 2, 2);
+    private InventoryCrafting craftMatrix;
     private IInventory craftResult = new InventoryCraftResult();
     private float xSize_lo;
     private float ySize_lo;
 
-	public GuiInventory(IInventory var1) {
-		this.allowUserInput = true;
+    public GuiInventory(IInventory inventory, ItemStack[] stack) {
+        this.allowUserInput = true;
+        this.craftMatrix = new InventoryCrafting(this, stack);
         this.inventorySlots.add(new SlotCrafting(this, this.craftMatrix, this.craftResult, 0, 144, 36));
 
-        int i2;
         int i3;
-        for(i2 = 0; i2 < 2; ++i2) {
-            for(i3 = 0; i3 < 2; ++i3) {
-                this.inventorySlots.add(new Slot(this, this.craftMatrix, i3 + (i2 << 1), 88 + i3 * 18, 26 + i2 * 18));
+        int i4;
+        for(i3 = 0; i3 < 2; ++i3) {
+            for(i4 = 0; i4 < 2; ++i4) {
+                this.inventorySlots.add(new Slot(this, this.craftMatrix, i4 + i3 * 2, 88 + i4 * 18, 26 + i3 * 18));
             }
         }
 
-		for(i2 = 0; i2 < 4; ++i2) {
-            this.inventorySlots.add(new SlotArmor(this, this, var1, var1.getSizeInventory() - 1 - i2, 8, 8 + i2 * 18, i2));
-		}
+        for(i3 = 0; i3 < 4; ++i3) {
+            this.inventorySlots.add(new SlotArmor(this, this, inventory, inventory.getSizeInventory() - 1 - i3, 8, 8 + i3 * 18, i3));
+        }
 
-		for(i2 = 0; i2 < 3; ++i2) {
-			for(i3 = 0; i3 < 9; ++i3) {
-				this.inventorySlots.add(new Slot(this, var1, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
-			}
-		}
-
-		for(i2 = 0; i2 < 9; ++i2) {
-			this.inventorySlots.add(new Slot(this, var1, i2, 8 + i2 * 18, 142));
-		}
-
-	}
-
-	public void onGuiClosed() {
-		super.onGuiClosed();
-
-        for(int i1 = 0; i1 < this.craftMatrix.getSizeInventory(); ++i1) {
-            ItemStack itemStack = this.craftMatrix.getStackInSlot(i1);
-            if(itemStack != null) {
-                this.mc.thePlayer.dropPlayerItem(itemStack);
+        for(i3 = 0; i3 < 3; ++i3) {
+            for(i4 = 0; i4 < 9; ++i4) {
+                this.inventorySlots.add(new Slot(this, inventory, i4 + (i3 + 1) * 9, 8 + i4 * 18, 84 + i3 * 18));
             }
         }
 
-	}
+        for(i3 = 0; i3 < 9; ++i3) {
+            this.inventorySlots.add(new Slot(this, inventory, i3, 8 + i3 * 18, 142));
+        }
 
-	public void onCraftMatrixChanged(IInventory iInventory1) {
+        this.onCraftMatrixChanged(this.craftMatrix);
+    }
+
+	public void onCraftMatrixChanged(IInventory inventory) {
 		int[] i1 = new int[9];
 
 		for(int i2 = 0; i2 < 3; ++i2) {

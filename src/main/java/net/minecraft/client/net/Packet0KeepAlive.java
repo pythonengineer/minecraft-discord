@@ -12,4 +12,8 @@ public class Packet0KeepAlive extends Packet {
 
     public void writePacket(DataOutputStream dataOutputStream1) {
     }
+
+    public int getPacketSize() {
+        return 0;
+    }
 }

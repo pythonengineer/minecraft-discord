@@ -81,29 +81,34 @@ public class FontRenderer {
             GL11.glEndList();
         }
 
-        for(i6 = 0; i6 < 32; ++i6) {
-            i8 = (i6 & 8) << 3;
-            i9 = (i6 & 1) * 191 + i8;
-            int i19 = ((i6 & 2) >> 1) * 191 + i8;
-            i11 = ((i6 & 4) >> 2) * 191 + i8;
-            boolean z20 = i6 >= 16;
+        for(i9 = 0; i9 < 32; ++i9) {
+            i10 = (i9 >> 3 & 1) * 85;
+            i11 = (i9 >> 2 & 1) * 170 + i10;
+            i12 = (i9 >> 1 & 1) * 170 + i10;
+            int i22 = (i9 >> 0 & 1) * 170 + i10;
+            if(i9 == 6) {
+                i11 += 85;
+            }
+
+            boolean z24 = i9 >= 16;
             if(gameSettings.anaglyph) {
-                int i13 = (i11 * 30 + i19 * 59 + i9 * 11) / 100;
-                int i14 = (i11 * 30 + i19 * 70) / 100;
-                i16 = (i11 * 30 + i9 * 70) / 100;
-                i11 = i13;
-                i19 = i14;
-                i9 = i16;
+                i15 = (i11 * 30 + i12 * 59 + i22 * 11) / 100;
+                i16 = (i11 * 30 + i12 * 70) / 100;
+                int i17 = (i11 * 30 + i22 * 70) / 100;
+                i11 = i15;
+                i12 = i16;
+                i22 = i17;
             }
 
-            i6 += 2;
-            if(z20) {
+            if(z24) {
                 i11 /= 4;
-                i19 /= 4;
-                i9 /= 4;
+                i12 /= 4;
+                i22 /= 4;
             }
 
-            GL11.glColor4f((float)i11 / 255.0F, (float)i19 / 255.0F, (float)i9 / 255.0F, 1.0F);
+            GL11.glNewList(this.fontDisplayLists + 256 + i9, GL11.GL_COMPILE);
+            GL11.glColor3f((float)i11 / 255.0F, (float)i12 / 255.0F, (float)i22 / 255.0F);
+            GL11.glEndList();
         }
 
 	}
@@ -143,7 +148,7 @@ public class FontRenderer {
             for(i6 = 0; i6 < message.length(); ++i6) {
                 int i11;
                 for(; message.charAt(i6) == 167 && message.length() > i6 + 1; i6 += 2) {
-                    i11 = "0123456789abcdef".indexOf(message.charAt(i6 + 1));
+                    i11 = "0123456789abcdef".indexOf(message.toLowerCase().charAt(i6 + 1));
                     if(i11 < 0 || i11 > 15) {
                         i11 = 15;
                     }

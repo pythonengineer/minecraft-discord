@@ -30,4 +30,8 @@ public abstract class EntityAnimal extends EntityCreature {
         int i3 = MathHelper.floor_double(this.posZ);
         return this.worldObj.getBlockId(i1, i2 - 1, i3) == Block.grass.blockID && this.worldObj.getBlockLightValue(i1, i2, i3) > 8 && super.getCanSpawnHere();
     }
+
+    public int getTalkInterval() {
+        return 120;
+    }
 }

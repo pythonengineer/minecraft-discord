@@ -1,9 +1,11 @@
 package net.minecraft.client.render.entity;
 
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.render.RenderBlocks;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -23,7 +25,7 @@ public class RenderPlayer extends RenderLiving {
 	}
 
     protected boolean setArmorModel(EntityPlayer player, int flag) {
-        ItemStack itemStack4 = player.inventory.armorItemInSlot[3 - flag];
+        ItemStack itemStack4 = player.inventory.armorInventory[3 - flag];
         if(itemStack4 != null) {
             Item item5 = itemStack4.getItem();
             if(item5 instanceof ItemArmor) {
@@ -55,7 +57,7 @@ public class RenderPlayer extends RenderLiving {
         float f11 = 1.6F;
         float f12 = 0.016666668F * f11;
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)x + 0.0F, (float)y + 0.8F, (float)z + 0.07F * f11);
+        GL11.glTranslatef((float)x + 0.0F, (float)y + 2.3F, (float)z);
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
@@ -68,12 +70,23 @@ public class RenderPlayer extends RenderLiving {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        fontRenderer10.drawString(string14, -fontRenderer10.getStringWidth(string14) / 2, 0, 1073741824);
-        GL11.glDisable(GL11.GL_BLEND);
+        Tessellator tessellator17 = Tessellator.instance;
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        tessellator17.startDrawingQuads(DefaultVertexFormats.POSITION_COLOR);
+        int i18 = fontRenderer10.getStringWidth(string14) / 2;
+        tessellator17.setColorRGBA_F(0.0F, 0.0F, 0.0F, 0.25F);
+        tessellator17.addVertex((double)(-i18 - 1), -1.0D, 0.0D);
+        tessellator17.addVertex((double)(-i18 - 1), 8.0D, 0.0D);
+        tessellator17.addVertex((double)(i18 + 1), 8.0D, 0.0D);
+        tessellator17.addVertex((double)(i18 + 1), -1.0D, 0.0D);
+        tessellator17.draw();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        fontRenderer10.drawString(string14, -fontRenderer10.getStringWidth(string14) / 2, 0, 553648127);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(true);
-        fontRenderer10.drawString(string14, -fontRenderer10.getStringWidth(string14) / 2, 0, 0xFF000000);
+        fontRenderer10.drawString(string14, -fontRenderer10.getStringWidth(string14) / 2, 0, -1);
         GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_BLEND);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glPopMatrix();
 	}
@@ -90,20 +103,21 @@ public class RenderPlayer extends RenderLiving {
                 GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
                 f4 *= 0.75F;
                 GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
                 GL11.glScalef(f4, -f4, f4);
             } else if(Item.itemsList[itemStack3.itemID].isFull3D()) {
                 f4 = 0.625F;
                 GL11.glTranslatef(0.0F, 0.1875F, 0.0F);
                 GL11.glScalef(f4, -f4, f4);
-                GL11.glRotatef(-120.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
                 GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
             } else {
-                f4 = 0.5F;
-                GL11.glTranslatef(-0.25F, 0.1875F, -0.1875F);
+                f4 = 0.375F;
+                GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
                 GL11.glScalef(f4, f4, f4);
-                GL11.glRotatef(10.0F, 1.0F, 0.0F, 0.0F);
-                GL11.glRotatef(-160.0F, 0.0F, 0.0F, 1.0F);
-                GL11.glRotatef(-50.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
+                GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
             }
 
             this.renderManager.itemRenderer.renderItem(itemStack3);
@@ -112,9 +126,20 @@ public class RenderPlayer extends RenderLiving {
 
     }
 
-	public void drawFirstPersonHand() {
+    protected void scalePlayer(EntityPlayer playerEntity, float f2) {
+        float f3 = 0.9375F;
+        GL11.glScalef(f3, f3, f3);
+    }
+
+    public void drawFirstPersonHand() {
+        this.modelBipedMain.swingProgress = 0.0F;
+        this.modelBipedMain.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
         this.modelBipedMain.bipedRightArm.render(0.0625F);
-	}
+    }
+
+    protected void preRenderCallback(EntityLiving livingEntity, float f2) {
+        this.scalePlayer((EntityPlayer)livingEntity, f2);
+    }
 
     protected boolean shouldRenderPass(EntityLiving livingEntity, int flag) {
         return this.setArmorModel((EntityPlayer)livingEntity, flag);

@@ -14,12 +14,16 @@ import net.minecraft.game.entity.EntityLiving;
 public class SoundManager {
     private EaglercraftSoundManager sndManager;
     private SoundPool soundPoolSounds = new SoundPool();
+    private SoundPool soundPoolStreaming = new SoundPool();
     private SoundPool soundPoolMusic = new SoundPool();
     private GameSettings options;
     private EaglercraftRandom rand = new EaglercraftRandom();
     private int ticksBeforeMusic = this.rand.nextInt(12000);
+    private SoundPoolEntry playingMusic;
+    private SoundPoolEntry playingStreaming;
 
     public void loadSoundSettings(GameSettings options) {
+        this.soundPoolStreaming.isGetRandomSound = false;
         this.options = options;
         this.sndManager = new EaglercraftSoundManager();
     }
@@ -42,6 +46,15 @@ public class SoundManager {
             }
         } catch (Exception e) {
         }
+
+        stream = EagRuntime.getResourceStream("/assets/streaming.txt");
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            String file;
+            while ((file = reader.readLine()) != null) {
+                this.addStreaming(file, "/assets/streaming/" + file);
+            }
+        } catch (Exception e) {
+        }
     }
 
     public void onSoundOptionsChanged() {
@@ -60,12 +73,36 @@ public class SoundManager {
         this.soundPoolSounds.addSound(this.sndManager, soundFile, soundName);
     }
 
+    public void addStreaming(String streamingName, String streamingFile) {
+        EagRuntime.getRequiredResourceBytes(streamingName);
+        this.soundPoolStreaming.addSound(this.sndManager, streamingName, streamingFile);
+    }
+
     public void addMusic(String musicName, String musicFile) {
         if (EagRuntime.getPlatformOS() != EnumPlatformOS.IPHONE && this.options.music) {
             EagRuntime.getRequiredResourceBytes(musicFile);
         }
 
         this.soundPoolMusic.addSound(this.sndManager, musicName, musicFile);
+    }
+
+    public void playRandomMusicIfReady() {
+        if(this.options.music) {
+            if(!this.sndManager.isSoundPlaying(this.playingMusic) && !this.sndManager.isSoundPlaying(this.playingStreaming) && (this.playingMusic == null || !this.playingMusic.queued)) {
+                if(this.ticksBeforeMusic > 0) {
+                    --this.ticksBeforeMusic;
+                    return;
+                }
+
+                this.playingMusic = this.soundPoolMusic.getRandomSound();
+                this.playingMusic.playStatic = true;
+                if(this.playingMusic != null) {
+                    this.ticksBeforeMusic = this.rand.nextInt(24000) + 24000;
+                    this.play(this.playingMusic);
+                }
+            }
+
+        }
     }
 
     public SoundPoolEntry play(SoundPoolEntry sound) {
@@ -76,6 +113,22 @@ public class SoundManager {
     public void setListener(EntityLiving livingEntity, float partialTicks) {
         if(this.options.sound) {
             this.sndManager.setListener(livingEntity, partialTicks);
+        }
+    }
+
+    public void playStreaming(String soundName, float x, float y, float z, float volume, float pitch) {
+        if(this.options.sound) {
+            this.sndManager.stopSound(this.playingStreaming);
+            if(soundName != null) {
+                SoundPoolEntry entry = this.soundPoolStreaming.getRandomSoundFromSoundPool(soundName);
+                if(entry != null && volume > 0.0F) {
+                    this.sndManager.stopSound(this.playingMusic);
+                    float f9 = 16.0F;
+                    this.playingStreaming = new SoundPoolEntry(entry, x, y, z, 4.0F, 1.0F, 0.5F);
+                    this.play(this.playingStreaming);
+                }
+
+            }
         }
     }
 

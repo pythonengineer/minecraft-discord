@@ -28,6 +28,8 @@ public class GuiIngame extends Gui {
 	private Minecraft mc;
 	public String testMessage = null;
     private int updateCounter = 0;
+    private String recordPlaying = "";
+    private int recordPlayingUpFor = 0;
 	public float damageGuiPartialTime;
     float prevVignetteBrightness = 1.0F;
 
@@ -35,7 +37,7 @@ public class GuiIngame extends Gui {
 		this.mc = mc;
 	}
 
-	public void renderGameOverlay(float partialTicks) {
+	public void renderGameOverlay(float renderPartialTick) {
         int scaledWidth = this.mc.scaledResolution.getScaledWidth();
         int scaledHeight = this.mc.scaledResolution.getScaledHeight();
 
@@ -45,7 +47,7 @@ public class GuiIngame extends Gui {
 
         GL11.glEnable(GL11.GL_BLEND);
         if(this.mc.options.fancyGraphics) {
-            this.renderVignette(this.mc.thePlayer.getBrightness(partialTicks), scaledWidth, scaledHeight);
+            this.renderVignette(this.mc.thePlayer.getBrightness(renderPartialTick), scaledWidth, scaledHeight);
         }
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -159,7 +161,7 @@ public class GuiIngame extends Gui {
         for(i10 = 0; i10 < 9; ++i10) {
             int i26 = scaledWidth / 2 - 90 + i10 * 20 + 2;
             int i20 = scaledHeight - 16 - 3;
-            this.renderInventorySlot(i10, i26, i20, partialTicks);
+            this.renderInventorySlot(i10, i26, i20, renderPartialTick);
         }
 
 		RenderHelper.disableStandardItemLighting();
@@ -177,12 +179,31 @@ public class GuiIngame extends Gui {
         onBeginTouchGUI();
 
         if(this.mc.options.showFPS) {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.11 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.15 (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoRenders(), 2, 12, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.getEntityDebug(), 2, 22, 0xFFFFFF);
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 0xFFFFFF);
         } else {
-            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.11", 2, 2, 0xFFFFFF);
+            this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.15", 2, 2, 0xFFFFFF);
+        }
+
+        if(this.recordPlayingUpFor > 0) {
+            float f23 = (float)this.recordPlayingUpFor - renderPartialTick;
+            int i14 = (int)(f23 * 256.0F / 20.0F);
+            if(i14 > 255) {
+                i14 = 255;
+            }
+
+            if(i14 > 0) {
+                GL11.glPushMatrix();
+                GL11.glTranslatef((float)(scaledWidth / 2), (float)(scaledHeight - 48), 0.0F);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                int i15 = HSBtoRGB(f23 / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
+                this.mc.fontRenderer.drawString(this.recordPlaying, -this.mc.fontRenderer.getStringWidth(this.recordPlaying) / 2, -4, i15 + (i14 << 24));
+                GL11.glDisable(GL11.GL_BLEND);
+                GL11.glPopMatrix();
+            }
         }
 
         onEndTouchGUI();
@@ -197,6 +218,8 @@ public class GuiIngame extends Gui {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0.0F, (float)(scaledHeight - 48), 0.0F);
 
         for(int i15 = 0; i15 < this.chatMessageList.size() && i15 < b23; ++i15) {
             if(((ChatLine)this.chatMessageList.get(i15)).updateCounter < 200 || z24) {
@@ -218,11 +241,17 @@ public class GuiIngame extends Gui {
                 }
 
                 if(i18 > 0) {
-                    this.mc.fontRenderer.drawStringWithShadow(((ChatLine)this.chatMessageList.get(i15)).message, 2, scaledHeight - 24 - i15 * 9 - 20, 0xFFFFFF + (i18 << 24));
+                    byte b30 = 2;
+                    int i20 = -i15 * 9;
+                    String string21 = ((ChatLine)this.chatMessageList.get(i15)).message;
+                    this.drawRect(b30, i20 - 1, b30 + 320, i20 + 8, i18 / 2 << 24);
+                    GL11.glEnable(GL11.GL_BLEND);
+                    this.mc.fontRenderer.drawStringWithShadow(string21, b30, i20, 0xFFFFFF + (i18 << 24));
                 }
             }
         }
 
+        GL11.glPopMatrix();
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_BLEND);
 	}
@@ -278,6 +307,10 @@ public class GuiIngame extends Gui {
     }
 
     public void updateTick() {
+        if(this.recordPlayingUpFor > 0) {
+            --this.recordPlayingUpFor;
+        }
+
         ++this.updateCounter;
 
         for(int i1 = 0; i1 < this.chatMessageList.size(); ++i1) {
@@ -286,13 +319,27 @@ public class GuiIngame extends Gui {
 
     }
 
-    public void addChatMessage(String string1) {
-        this.chatMessageList.add(0, new ChatLine(string1));
+    public void addChatMessage(String message) {
+        while(this.mc.fontRenderer.getStringWidth(message) > 320) {
+            int i2;
+            for(i2 = 1; i2 < message.length() && this.mc.fontRenderer.getStringWidth(message.substring(0, i2 + 1)) <= 320; ++i2) {
+            }
+
+            this.addChatMessage(message.substring(0, i2));
+            message = message.substring(i2);
+        }
+
+        this.chatMessageList.add(0, new ChatLine(message));
 
         while(this.chatMessageList.size() > 50) {
             this.chatMessageList.remove(this.chatMessageList.size() - 1);
         }
 
+    }
+
+    public void setRecordPlayingMessage(String record) {
+        this.recordPlaying = "Now playing: " + record;
+        this.recordPlayingUpFor = 60;
     }
 
     private int hotbarAreaX = -1;
@@ -378,7 +425,7 @@ public class GuiIngame extends Gui {
                 } else if (currentHotbarSlotTouch == 9) {
                     hotbarSlotTouchAlreadySelected = false;
                     currentHotbarSlotTouch = 69;
-                    this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory));
+                    this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory, this.mc.thePlayer.inventory.craftingInventory));
                 }
                 return true;
             }
@@ -462,5 +509,52 @@ public class GuiIngame extends Gui {
         ty = applyTouchHotbarTransformY(ty, false);
         return (tx >= hotbarAreaX && ty >= hotbarAreaY && tx < hotbarAreaX + hotbarAreaW
                 && ty < hotbarAreaY + hotbarAreaH);
+    }
+
+    public static int HSBtoRGB(float hue, float saturation, float brightness) {
+        int r = 0, g = 0, b = 0;
+        if (saturation == 0) {
+            r = g = b = (int) (brightness * 255.0f + 0.5f);
+        } else {
+            float h = (hue - (float)Math.floor(hue)) * 6.0f;
+            float f = h - (float)java.lang.Math.floor(h);
+            float p = brightness * (1.0f - saturation);
+            float q = brightness * (1.0f - saturation * f);
+            float t = brightness * (1.0f - (saturation * (1.0f - f)));
+            switch ((int) h) {
+            case 0:
+                r = (int) (brightness * 255.0f + 0.5f);
+                g = (int) (t * 255.0f + 0.5f);
+                b = (int) (p * 255.0f + 0.5f);
+                break;
+            case 1:
+                r = (int) (q * 255.0f + 0.5f);
+                g = (int) (brightness * 255.0f + 0.5f);
+                b = (int) (p * 255.0f + 0.5f);
+                break;
+            case 2:
+                r = (int) (p * 255.0f + 0.5f);
+                g = (int) (brightness * 255.0f + 0.5f);
+                b = (int) (t * 255.0f + 0.5f);
+                break;
+            case 3:
+                r = (int) (p * 255.0f + 0.5f);
+                g = (int) (q * 255.0f + 0.5f);
+                b = (int) (brightness * 255.0f + 0.5f);
+                break;
+            case 4:
+                r = (int) (t * 255.0f + 0.5f);
+                g = (int) (p * 255.0f + 0.5f);
+                b = (int) (brightness * 255.0f + 0.5f);
+                break;
+            case 5:
+                r = (int) (brightness * 255.0f + 0.5f);
+                g = (int) (p * 255.0f + 0.5f);
+                b = (int) (q * 255.0f + 0.5f);
+                break;
+            }
+        }
+
+        return 0xff000000 | (r << 16) | (g << 8) | (b << 0);
     }
 }

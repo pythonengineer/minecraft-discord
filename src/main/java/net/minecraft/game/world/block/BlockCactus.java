@@ -1,5 +1,6 @@
 package net.minecraft.game.world.block;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.world.World;
@@ -8,17 +9,37 @@ import net.minecraft.game.world.material.Material;
 public class BlockCactus extends Block {
 	protected BlockCactus(int id, int tex) {
 		super(id, tex, Material.cactus);
-	}
+        this.setTickOnLoad(true);
+    }
+
+    public void updateTick(World worldObj, int x, int y, int z, EaglercraftRandom rand) {
+        if(worldObj.getBlockId(x, y + 1, z) == 0) {
+            int i6;
+            for(i6 = 1; worldObj.getBlockId(x, y - i6, z) == this.blockID; ++i6) {
+            }
+
+            if(i6 < 3) {
+                int i7 = worldObj.getBlockMetadata(x, y, z);
+                if(i7 == 15) {
+                    worldObj.setBlockWithNotify(x, y + 1, z, this.blockID);
+                    worldObj.setBlockMetadataWithNotify(x, y, z, 0);
+                } else {
+                    worldObj.setBlockMetadataWithNotify(x, y, z, i7 + 1);
+                }
+            }
+        }
+
+    }
 
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world1, int i2, int i3, int i4) {
 		float f5 = 0.0625F;
 		return AxisAlignedBB.getBoundingBoxFromPool((double)((float)i2 + f5), (double)i3, (double)((float)i4 + f5), (double)((float)(i2 + 1) - f5), (double)((float)(i3 + 1) - f5), (double)((float)(i4 + 1) - f5));
 	}
 
-	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world1, int i2, int i3, int i4) {
-		float f5 = 0.0625F;
-		return AxisAlignedBB.getBoundingBoxFromPool((double)((float)i2 + f5), (double)i3, (double)((float)i4 + f5), (double)((float)(i2 + 1) - f5), (double)(i3 + 1), (double)((float)(i4 + 1) - f5));
-	}
+    public AxisAlignedBB getSelectedBoundingBoxFromPool(World worldObj, int x, int y, int z) {
+        float f5 = 0.0625F;
+        return AxisAlignedBB.getBoundingBoxFromPool((double)((float)x + f5), (double)y, (double)((float)z + f5), (double)((float)(x + 1) - f5), (double)(y + 1), (double)((float)(z + 1) - f5));
+    }
 
 	public int getBlockTextureFromSide(int i1) {
 		return i1 == 1 ? this.blockIndexInTexture - 1 : (i1 == 0 ? this.blockIndexInTexture + 1 : this.blockIndexInTexture);

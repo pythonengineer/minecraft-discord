@@ -36,8 +36,8 @@ public class BlockMinecartTrack extends Block {
         }
     }
 
-    public int getBlockTextureFromSideAndMetadata(int i1, int i2) {
-        return i2 >= 6 ? this.blockIndexInTexture - 16 : this.blockIndexInTexture;
+    public int getBlockTextureFromSideAndMetadata(int side, int metadata) {
+        return metadata >= 6 ? this.blockIndexInTexture - 16 : this.blockIndexInTexture;
     }
 
     public boolean renderAsNormalBlock() {

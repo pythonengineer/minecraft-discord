@@ -65,70 +65,54 @@ public class EntityRenderer {
 
     }
 
-    private Vec3D getPlayerPosition(float partialTicks) {
-        EntityPlayerSP entityPlayerSP2 = this.mc.thePlayer;
-        double d3 = entityPlayerSP2.prevPosX + (entityPlayerSP2.posX - entityPlayerSP2.prevPosX) * (double)partialTicks;
-        double d5 = entityPlayerSP2.prevPosY + (entityPlayerSP2.posY - entityPlayerSP2.prevPosY) * (double)partialTicks;
-        double d7 = entityPlayerSP2.prevPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.prevPosZ) * (double)partialTicks;
-        return Vec3D.createVector(d3, d5, d7);
-    }
-
-    private void getMouseOver(float partialTicks) {
-        EntityPlayerSP entityPlayerSP2 = this.mc.thePlayer;
-        float f3 = entityPlayerSP2.prevRotationPitch + (entityPlayerSP2.rotationPitch - entityPlayerSP2.prevRotationPitch) * partialTicks;
-        float f4 = entityPlayerSP2.prevRotationYaw + (entityPlayerSP2.rotationYaw - entityPlayerSP2.prevRotationYaw) * partialTicks;
-        Vec3D vec3D5 = this.getPlayerPosition(partialTicks);
-        float f6 = MathHelper.cos(-f4 * 0.017453292F - (float)Math.PI);
-        float f7 = MathHelper.sin(-f4 * 0.017453292F - (float)Math.PI);
-        float f8 = -MathHelper.cos(-f3 * 0.017453292F);
-        float f9 = MathHelper.sin(-f3 * 0.017453292F);
-        float f10 = f7 * f8;
-        float f12 = f6 * f8;
-        double d13 = (double)this.mc.playerController.getBlockReachDistance();
-        Vec3D vec3D15 = vec3D5.addVector((double)f10 * d13, (double)f9 * d13, (double)f12 * d13);
-        this.mc.objectMouseOver = this.mc.theWorld.rayTraceBlocks(vec3D5, vec3D15);
-        double d16 = d13;
-        vec3D5 = this.getPlayerPosition(partialTicks);
-        if(this.mc.objectMouseOver != null) {
-            d16 = this.mc.objectMouseOver.hitVec.distanceTo(vec3D5);
-        }
-
-        if(this.mc.playerController instanceof PlayerControllerCreative) {
-            d13 = 32.0D;
-            d16 = 32.0D;
-        } else {
-            if(d16 > 3.0D) {
-                d16 = 3.0D;
+    public void getMouseOver(float renderPartialTick) {
+        if(this.mc.thePlayer != null) {
+            double d2 = (double)this.mc.playerController.getBlockReachDistance();
+            this.mc.objectMouseOver = this.mc.thePlayer.rayTrace(d2, renderPartialTick);
+            double d4 = d2;
+            Vec3D vec3D6 = this.mc.thePlayer.getPosition(renderPartialTick);
+            if(this.mc.objectMouseOver != null) {
+                d4 = this.mc.objectMouseOver.hitVec.distanceTo(vec3D6);
             }
 
-            d13 = d16;
-        }
+            if(this.mc.playerController instanceof PlayerControllerCreative) {
+                d2 = 32.0D;
+                d4 = 32.0D;
+            } else {
+                if(d4 > 3.0D) {
+                    d4 = 3.0D;
+                }
 
-        vec3D15 = vec3D5.addVector((double)f10 * d13, (double)f9 * d13, (double)f12 * d13);
-        this.pointedEntity = null;
-        List list18 = this.mc.theWorld.getEntitiesWithinAABBExcludingEntity(entityPlayerSP2, entityPlayerSP2.boundingBox.addCoord((double)f10 * d13, (double)f9 * d13, (double)f12 * d13));
-        double d19 = 0.0D;
+                d2 = d4;
+            }
 
-        for(int i21 = 0; i21 < list18.size(); ++i21) {
-            Entity entity22 = (Entity)list18.get(i21);
-            if(entity22.canBeCollidedWith()) {
-                float f23 = 0.1F;
-                AxisAlignedBB axisAlignedBB24 = entity22.boundingBox.expand((double)f23, (double)f23, (double)f23);
-                MovingObjectPosition movingObjectPosition25 = axisAlignedBB24.calculateIntercept(vec3D5, vec3D15);
-                if(movingObjectPosition25 != null) {
-                    double d26 = vec3D5.distanceTo(movingObjectPosition25.hitVec);
-                    if(d26 < d19 || d19 == 0.0D) {
-                        this.pointedEntity = entity22;
-                        d19 = d26;
+            Vec3D vec3D7 = this.mc.thePlayer.getLook(renderPartialTick);
+            Vec3D vec3D8 = vec3D6.addVector(vec3D7.xCoord * d2, vec3D7.yCoord * d2, vec3D7.zCoord * d2);
+            this.pointedEntity = null;
+            List list9 = this.mc.theWorld.getEntitiesWithinAABBExcludingEntity(this.mc.thePlayer, this.mc.thePlayer.boundingBox.addCoord(vec3D7.xCoord * d2, vec3D7.yCoord * d2, vec3D7.zCoord * d2));
+            double d10 = 0.0D;
+
+            for(int i12 = 0; i12 < list9.size(); ++i12) {
+                Entity entity13 = (Entity)list9.get(i12);
+                if(entity13.canBeCollidedWith()) {
+                    float f14 = 0.1F;
+                    AxisAlignedBB axisAlignedBB15 = entity13.boundingBox.expand((double)f14, (double)f14, (double)f14);
+                    MovingObjectPosition movingObjectPosition16 = axisAlignedBB15.calculateIntercept(vec3D6, vec3D8);
+                    if(movingObjectPosition16 != null) {
+                        double d17 = vec3D6.distanceTo(movingObjectPosition16.hitVec);
+                        if(d17 < d10 || d10 == 0.0D) {
+                            this.pointedEntity = entity13;
+                            d10 = d17;
+                        }
                     }
                 }
             }
-        }
 
-        if(this.pointedEntity != null && !(this.mc.playerController instanceof PlayerControllerCreative)) {
-            this.mc.objectMouseOver = new MovingObjectPosition(this.pointedEntity);
-        }
+            if(this.pointedEntity != null && !(this.mc.playerController instanceof PlayerControllerCreative)) {
+                this.mc.objectMouseOver = new MovingObjectPosition(this.pointedEntity);
+            }
 
+        }
     }
 
     private float getFOVModifier(float partialTicks) {
@@ -385,7 +369,7 @@ public class EntityRenderer {
             RenderHelper.disableStandardItemLighting();
             renderGlobal3.sortAndRender(entityPlayerSP2, 0, (double)renderPartialTick);
             RenderHelper.enableStandardItemLighting();
-            renderGlobal3.renderEntities(this.getPlayerPosition(renderPartialTick), frustrum12, renderPartialTick);
+            renderGlobal3.renderEntities(entityPlayerSP2.getPosition(renderPartialTick), frustrum12, renderPartialTick);
             effectRenderer4.renderLitParticles(this.mc.thePlayer, renderPartialTick);
             RenderHelper.disableStandardItemLighting();
             this.setupFog(0);

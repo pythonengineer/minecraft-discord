@@ -8,6 +8,7 @@ import net.ellerton.japng.Png;
 import net.ellerton.japng.argb8888.Argb8888Bitmap;
 import net.ellerton.japng.error.PngException;
 import net.lax1dude.eaglercraft.EagRuntime;
+import net.lax1dude.eaglercraft.EagUtils;
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
 class ThreadDownloadImage extends Thread {
@@ -35,8 +36,8 @@ class ThreadDownloadImage extends Thread {
 
         textureUrl = textureUrl.replace("http:", "https:");
         try {
-            Thread.sleep(5L);
-        } catch (InterruptedException e1) {
+            EagUtils.sleep(5L);
+        } catch (Exception e1) {
         }
 
         data = EagRuntime.downloadSkinURL(textureUrl);

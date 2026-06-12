@@ -41,4 +41,8 @@ public class Packet15Place extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handlePlace(this);
 	}
+
+    public int getPacketSize() {
+        return 12;
+    }
 }

@@ -22,6 +22,7 @@ public class RenderLiving extends Render {
 	public void doRenderLiving(EntityLiving entityLiving1, double d2, double d4, double d6, float f8, float f9) {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_CULL_FACE);
+        this.mainModel.swingProgress = this.renderSwingProgress(entityLiving1, f9);
         this.mainModel.isRiding = entityLiving1.ridingEntity != null;
         if(this.renderPassModel != null) {
             this.renderPassModel.isRiding = this.mainModel.isRiding;
@@ -32,7 +33,7 @@ public class RenderLiving extends Render {
 			float f10 = entityLiving1.prevRotationYaw + (entityLiving1.rotationYaw - entityLiving1.prevRotationYaw) * f9;
 			float f11 = entityLiving1.prevRotationPitch + (entityLiving1.rotationPitch - entityLiving1.prevRotationPitch) * f9;
 			GL11.glTranslatef((float)d2, (float)d4, (float)d6);
-			float f14 = (float)entityLiving1.ticksExisted + f9;
+            float f14 = this.handleRotationFloat(entityLiving1, f9);
 			GL11.glRotatef(180.0F - f8, 0.0F, 1.0F, 0.0F);
 			float f3;
 			if(entityLiving1.deathTime > 0) {
@@ -118,6 +119,14 @@ public class RenderLiving extends Render {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
 	}
+
+    protected float renderSwingProgress(EntityLiving entityLiving1, float f2) {
+        return entityLiving1.getSwingProgress(f2);
+    }
+
+    protected float handleRotationFloat(EntityLiving entityLiving1, float f2) {
+        return (float)entityLiving1.ticksExisted + f2;
+    }
 
     protected void renderEquippedItems(EntityLiving livingEntity, float partialTicks) {
     }

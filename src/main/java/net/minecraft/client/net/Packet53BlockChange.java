@@ -34,4 +34,8 @@ public class Packet53BlockChange extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleBlockChange(this);
 	}
+
+    public int getPacketSize() {
+        return 11;
+    }
 }

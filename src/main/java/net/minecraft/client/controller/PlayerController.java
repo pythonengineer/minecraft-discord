@@ -23,11 +23,11 @@ public class PlayerController {
     public void onWorldChange(World world) {
     }
 
-	public void clickBlock(int x, int y, int z) {
-		this.sendBlockRemoved(x, y, z);
-	}
+    public void clickBlock(int x, int y, int z, int side) {
+        this.sendBlockRemoved(x, y, z, side);
+    }
 
-	public boolean sendBlockRemoved(int x, int y, int z) {
+    public boolean sendBlockRemoved(int x, int y, int z, int side) {
 		this.mc.effectRenderer.addBlockDestroyEffects(x, y, z);
 		World world4 = this.mc.theWorld;
 		Block block5 = Block.blocksList[world4.getBlockId(x, y, z)];

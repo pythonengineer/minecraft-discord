@@ -25,4 +25,8 @@ public class Packet3Chat extends Packet {
     public void processPacket(NetHandler netHandler1) {
         netHandler1.handleChat(this);
     }
+
+    public int getPacketSize() {
+        return this.message.length();
+    }
 }

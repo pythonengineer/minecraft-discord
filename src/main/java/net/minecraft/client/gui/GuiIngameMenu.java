@@ -11,7 +11,11 @@ public class GuiIngameMenu extends GuiScreen {
     public void initGui() {
         this.updateCounter2 = 0;
 		this.controlList.clear();
-        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Save and quit to title.."));
+        this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Save and quit to title"));
+        if(this.mc.isMultiplayerWorld()) {
+            ((GuiButton)this.controlList.get(0)).displayString = "Disconnect";
+        }
+
         this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24, "Back to game"));
         this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96, "Options..."));
 	}
@@ -22,6 +26,10 @@ public class GuiIngameMenu extends GuiScreen {
 		}
 
 		if(button.id == 1) {
+            if(this.mc.isMultiplayerWorld()) {
+                this.mc.theWorld.sendQuittingDisconnectingPacket();
+            }
+
             this.mc.changeWorld1((World)null);
 			this.mc.displayGuiScreen(new GuiMainMenu());
 		}

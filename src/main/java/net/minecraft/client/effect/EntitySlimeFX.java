@@ -7,9 +7,9 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public class EntitySlimeFX extends EntityFX {
-    public EntitySlimeFX(World world1, double d2, double d4, double d6) {
+    public EntitySlimeFX(World world1, double d2, double d4, double d6, Item item8) {
         super(world1, d2, d4, d6, 0.0D, 0.0D, 0.0D);
-        this.particleTextureIndex = Item.snowball.getIconIndex((ItemStack)null);
+        this.particleTextureIndex = item8.getIconIndex((ItemStack)null);
         this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
         this.particleGravity = Block.blockSnow.blockParticleGravity;
         this.particleScale /= 2.0F;

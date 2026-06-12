@@ -41,4 +41,8 @@ public class Packet14BlockDig extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleBlockDig(this);
 	}
+
+    public int getPacketSize() {
+        return 11;
+    }
 }

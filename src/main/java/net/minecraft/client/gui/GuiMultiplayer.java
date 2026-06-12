@@ -1,12 +1,12 @@
 package net.minecraft.client.gui;
 
+import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 import net.minecraft.client.net.GuiConnecting;
 
 public class GuiMultiplayer extends GuiScreen {
     private GuiScreen parentScreen;
     private int updateCounter = 0;
     private String ipText = "";
-    private String ipServer = "";
 
     public GuiMultiplayer(GuiScreen guiScreen1) {
         this.parentScreen = guiScreen1;
@@ -17,7 +17,13 @@ public class GuiMultiplayer extends GuiScreen {
     }
 
     public void initGui() {
-        this.ipServer = "OK:" + this.mc.serverName + ":" + this.mc.serverPort;
+        if(this.mc.serverName != null) {
+            this.ipText = this.mc.serverName;
+            if(this.mc.serverPort != 0) {
+                this.ipText += ":" + this.mc.serverPort;
+            }
+        }
+
         this.controlList.clear();
         this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, "Connect"));
         this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, "Cancel"));
@@ -28,59 +34,78 @@ public class GuiMultiplayer extends GuiScreen {
             if(guiButton1.id == 1) {
                 this.mc.displayGuiScreen(this.parentScreen);
             } else if(guiButton1.id == 0) {
-                System.out.println(this.ipServer);
-                String[] string2 = this.ipServer.split(":");
-                if(string2[0].equals("OK")) {
-                    String host = string2[1];
-                    String port = string2[2];
-                    if(string2[1].equals("ws")) {
-                        string2 = this.ipServer.split("ws://")[1].split(":");
-                        host = "ws://" + string2[0];
-                        port = string2[1];
-                    } else if(string2[1].equals("wss")) {
-                        string2 = this.ipServer.split("wss://")[1].split(":");
-                        host = "wss://" + string2[0];
-                        port = string2[1];
-                    }
-
-                    this.mc.displayGuiScreen(new GuiConnecting(this.mc, host, Integer.parseInt(port)));
+                String s = this.ipText.trim();
+                String proto = "ws";
+                int i = 0;
+                if (s.startsWith("wss://")) {
+                    proto = "wss";
+                    i = 6;
+                } else if (s.startsWith("ws://")) {
+                    i = 5;
                 }
+
+                String[] p = s.substring(i).split(":", 2);
+                int port = p.length > 1 ? Integer.parseInt(p[1]) : (i == 0 ? 25565 : 0);
+                this.mc.displayGuiScreen(new GuiConnecting(this.mc, proto + "://" + p[0], port));
             }
 
         }
     }
 
     protected void keyTyped(char c1, int i2) {
+        if(c1 == 22 || i2 == 47) {
+            String string3 = "" + GuiScreen.getClipboardString();
+            int i4 = 64 - this.ipText.length();
+            if(i4 > string3.length()) {
+                i4 = string3.length();
+            }
+
+            if(i4 > 0) {
+                this.ipText = this.ipText + string3.substring(0, i4);
+            }
+        }
+
         if(i2 == 14 && this.ipText.length() > 0) {
             this.ipText = this.ipText.substring(0, this.ipText.length() - 1);
         }
 
-        if(" !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(c1) >= 0 && this.ipText.length() < 16) {
+        if(" !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(c1) >= 0 && this.ipText.length() < 64) {
             this.ipText = this.ipText + c1;
         }
 
-        ((GuiButton)this.controlList.get(0)).enabled = this.cipherCode(this.ipText.trim());
-    }
-
-    private boolean cipherCode(String string1) {
-        return true;
+        ((GuiButton)this.controlList.get(0)).enabled = this.ipText.length() > 0;
     }
 
     public void drawScreen(int i1, int i2, float f3) {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRenderer, "Play Multiplayer", this.width / 2, this.height / 4 - 60 + 20, 0xFFFFFF);
         this.drawString(this.fontRenderer, "Minecraft Multiplayer is currently not finished, but there", this.width / 2 - 140, this.height / 4 - 60 + 60 + 0, 10526880);
-        this.drawString(this.fontRenderer, "is some invite-only testing going on.", this.width / 2 - 140, this.height / 4 - 60 + 60 + 9, 10526880);
-        this.drawString(this.fontRenderer, "Public (and buggy) testing is coming in a few weeks or so.", this.width / 2 - 140, this.height / 4 - 60 + 60 + 18, 10526880);
-        this.drawString(this.fontRenderer, "If you\'ve received an invite code, enter the code below:", this.width / 2 - 140, this.height / 4 - 60 + 60 + 45, 10526880);
+        this.drawString(this.fontRenderer, "is some buggy early testing going on.", this.width / 2 - 140, this.height / 4 - 60 + 60 + 9, 10526880);
+        this.drawString(this.fontRenderer, "Enter the IP of a server to connect to it:", this.width / 2 - 140, this.height / 4 - 60 + 60 + 36, 10526880);
         int i4 = this.width / 2 - 100;
         int i5 = this.height / 4 - 10 + 50 + 18;
         short s6 = 200;
         byte b7 = 20;
         this.drawRect(i4 - 1, i5 - 1, i4 + s6 + 1, i5 + b7 + 1, -6250336);
         this.drawRect(i4, i5, i4 + s6, i5 + b7, 0xFF000000);
-        String string8 = "################";
-        this.drawString(this.fontRenderer, string8.substring(0, this.ipText.length()) + (this.updateCounter / 6 % 2 == 0 ? "_" : ""), i4 + 4, i5 + (b7 - 8) / 2, 14737632);
+        this.drawString(this.fontRenderer, this.ipText + (this.updateCounter / 6 % 2 == 0 ? "_" : ""), i4 + 4, i5 + (b7 - 8) / 2, 14737632);
         super.drawScreen(i1, i2, f3);
+    }
+
+    public void fireInputEvent(EnumInputEvent clipboardPaste, String param) {
+        switch (clipboardPaste) {
+        case CLIPBOARD_COPY:
+            break;
+        case CLIPBOARD_PASTE:
+            String string = GuiScreen.getClipboardString();
+            for (char c : string.toCharArray()) {
+                if(" !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(c) >= 0 && this.ipText.length() < 64) {
+                    this.ipText = this.ipText + c;
+                }
+            }
+            break;
+        default:
+            break;
+        }
     }
 }

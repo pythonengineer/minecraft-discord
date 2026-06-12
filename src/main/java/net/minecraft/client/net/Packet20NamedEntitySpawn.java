@@ -58,4 +58,8 @@ public class Packet20NamedEntitySpawn extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleNamedEntitySpawn(this);
 	}
+
+    public int getPacketSize() {
+        return 28;
+    }
 }

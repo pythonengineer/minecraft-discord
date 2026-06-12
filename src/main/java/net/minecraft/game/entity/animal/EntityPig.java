@@ -16,14 +16,14 @@ public class EntityPig extends EntityAnimal {
 		this.saddled = false;
 	}
 
-	public void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
-		super.writeEntityToNBT(nBTTagCompound1);
-		nBTTagCompound1.setBoolean("Saddle", this.saddled);
+	public void writeEntityToNBT(NBTTagCompound compoundTag) {
+		super.writeEntityToNBT(compoundTag);
+		compoundTag.setBoolean("Saddle", this.saddled);
 	}
 
-	public void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
-		super.readEntityFromNBT(nBTTagCompound1);
-		this.saddled = nBTTagCompound1.getBoolean("Saddle");
+	public void readEntityFromNBT(NBTTagCompound compoundTag) {
+		super.readEntityFromNBT(compoundTag);
+		this.saddled = compoundTag.getBoolean("Saddle");
 	}
 
 	protected String getLivingSound() {

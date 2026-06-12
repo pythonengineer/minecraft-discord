@@ -4,7 +4,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-class Packet33RelEntityMoveLook extends Packet30Entity {
+public class Packet33RelEntityMoveLook extends Packet30Entity {
+    public Packet33RelEntityMoveLook() {
+        this.rotating = true;
+    }
+
 	public void readPacketData(DataInputStream dataInputStream1) throws IOException {
 		super.readPacketData(dataInputStream1);
 		this.xPosition = dataInputStream1.readByte();
@@ -22,4 +26,8 @@ class Packet33RelEntityMoveLook extends Packet30Entity {
 		dataOutputStream1.writeByte(this.yaw);
 		dataOutputStream1.writeByte(this.pitch);
 	}
+
+    public int getPacketSize() {
+        return 9;
+    }
 }

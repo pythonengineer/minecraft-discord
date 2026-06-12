@@ -5,6 +5,7 @@ import com.mojang.nbt.NBTTagCompound;
 import java.util.Map;
 
 import net.lax1dude.eaglercraft.minecraft.EntityConstructor;
+import net.minecraft.game.entity.animal.EntityChicken;
 import net.minecraft.game.entity.animal.EntityCow;
 import net.minecraft.game.entity.animal.EntityPig;
 import net.minecraft.game.entity.animal.EntitySheep;
@@ -125,6 +126,7 @@ public class EntityList {
         addMapping(EntityPig.class, EntityPig::new, "Pig");
         addMapping(EntitySheep.class, EntitySheep::new, "Sheep");
         addMapping(EntityCow.class, EntityCow::new, "Cow");
+        addMapping(EntityChicken.class, EntityChicken::new, "Chicken");
         addMapping(EntityTNTPrimed.class, EntityTNTPrimed::new, "PrimedTnt");
         addMapping(EntityFallingSand.class, EntityFallingSand::new, "FallingSand");
         addMapping(EntityMinecart.class, EntityMinecart::new, "Minecart");

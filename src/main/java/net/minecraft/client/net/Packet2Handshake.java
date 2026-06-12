@@ -4,15 +4,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Packet1Handshake extends Packet {
+public class Packet2Handshake extends Packet {
 	public int protocol;
 	public String username;
 	public String password;
 
-	public Packet1Handshake() {
+	public Packet2Handshake() {
 	}
 
-	public Packet1Handshake(String string1, String string2, int i3) {
+	public Packet2Handshake(String string1, String string2, int i3) {
 		this.username = string1;
 		this.password = string2;
 		this.protocol = i3;
@@ -33,4 +33,8 @@ public class Packet1Handshake extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleLogin(this);
 	}
+
+    public int getPacketSize() {
+        return 4 + this.username.length() + this.password.length() + 4;
+    }
 }

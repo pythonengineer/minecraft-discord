@@ -16,12 +16,12 @@ public class EntityCow extends EntityAnimal {
         this.setSize(0.9F, 1.3F);
     }
 
-    public void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
-        super.writeEntityToNBT(nBTTagCompound1);
+    public void writeEntityToNBT(NBTTagCompound compoundTag) {
+        super.writeEntityToNBT(compoundTag);
     }
 
-    public void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
-        super.readEntityFromNBT(nBTTagCompound1);
+    public void readEntityFromNBT(NBTTagCompound compoundTag) {
+        super.readEntityFromNBT(compoundTag);
     }
 
     protected String getLivingSound() {
@@ -37,7 +37,7 @@ public class EntityCow extends EntityAnimal {
     }
 
     protected float getSoundVolume() {
-        return 0.7F;
+        return 0.4F;
     }
 
     protected int getDropItemId() {

@@ -1,11 +1,13 @@
 package net.lax1dude.eaglercraft.touch;
 
+import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.Touch;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.GuiMainMenu;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 
 /**
@@ -154,6 +156,10 @@ public enum EnumTouchControl {
 
     PASTE(EnumTouchControlPos.TOP, 144, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            GuiScreen screen = Minecraft.minecraft.currentScreen;
+            if(screen != null) {
+                screen.fireInputEvent(EnumInputEvent.CLIPBOARD_PASTE, null);
+            }
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -163,6 +169,10 @@ public enum EnumTouchControl {
 
     COPY(EnumTouchControlPos.TOP, 90, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            GuiScreen screen = Minecraft.minecraft.currentScreen;
+            if(screen != null) {
+                screen.fireInputEvent(EnumInputEvent.CLIPBOARD_COPY, null);
+            }
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -370,7 +380,7 @@ public enum EnumTouchControl {
                 CHAT.setVisible(renderer, false);
                 F3.setVisible(renderer, false);
                 F5.setVisible(renderer, false);
-                PASTE.setVisible(renderer, false);
+                PASTE.setVisible(renderer, true);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, false);
                 ATTACK.setVisible(renderer, false);

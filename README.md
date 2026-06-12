@@ -5,7 +5,7 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **Alpha v1.0.11**, an *Alpha* version of the game which was released on _**July 23, 2010**_. It is the 6th *Seecret Friday* version.
+This version is **Alpha v1.0.15**, an *Alpha* version of the game which was released on _**August 3, 2010**_. It was the first public release of Survival Multiplayer.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.

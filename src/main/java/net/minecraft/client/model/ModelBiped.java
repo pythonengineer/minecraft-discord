@@ -90,6 +90,29 @@ public class ModelBiped extends ModelBase {
             this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F - 0.31415927F;
         }
 
+        this.bipedRightArm.rotateAngleY = 0.0F;
+        this.bipedLeftArm.rotateAngleY = 0.0F;
+        if(this.swingProgress > -9990.0F) {
+            float f7 = this.swingProgress;
+            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(f7) * (float)Math.PI * 2.0F) * 0.2F;
+            this.bipedRightArm.rotationPointZ = MathHelper.sin(this.bipedBody.rotateAngleY) * 5.0F;
+            this.bipedRightArm.rotationPointX = -MathHelper.cos(this.bipedBody.rotateAngleY) * 5.0F;
+            this.bipedLeftArm.rotationPointZ = -MathHelper.sin(this.bipedBody.rotateAngleY) * 5.0F;
+            this.bipedLeftArm.rotationPointX = MathHelper.cos(this.bipedBody.rotateAngleY) * 5.0F;
+            this.bipedRightArm.rotateAngleY += this.bipedBody.rotateAngleY;
+            this.bipedLeftArm.rotateAngleY += this.bipedBody.rotateAngleY;
+            this.bipedLeftArm.rotateAngleX += this.bipedBody.rotateAngleY;
+            f7 = 1.0F - this.swingProgress;
+            f7 *= f7;
+            f7 *= f7;
+            f7 = 1.0F - f7;
+            float f8 = MathHelper.sin(f7 * (float)Math.PI);
+            float f9 = MathHelper.sin(this.swingProgress * (float)Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * 0.75F;
+            this.bipedRightArm.rotateAngleX = (float)((double)this.bipedRightArm.rotateAngleX - ((double)f8 * 1.2D + (double)f9));
+            this.bipedRightArm.rotateAngleY += this.bipedBody.rotateAngleY * 2.0F;
+            this.bipedRightArm.rotateAngleZ = MathHelper.sin(this.swingProgress * (float)Math.PI) * -0.4F;
+        }
+
         this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
         this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
         this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;

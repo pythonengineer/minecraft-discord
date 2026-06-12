@@ -35,37 +35,37 @@ public class PlayerControllerMP extends PlayerController {
     public void initController() {
     }
 
-    public boolean sendBlockRemoved(int i1, int i2, int i3) {
-        this.netClientHandler.addToSendQueue(new Packet14BlockDig(3, i1, i2, i3, 0));
-        int i4 = this.mc.theWorld.getBlockId(i1, i2, i3);
-        int i5 = this.mc.theWorld.getBlockMetadata(i1, i2, i3);
-        boolean z6 = super.sendBlockRemoved(i1, i2, i3);
-        ItemStack itemStack7 = this.mc.thePlayer.getCurrentEquippedItem();
-        if(itemStack7 != null) {
-            itemStack7.onDestroyBlock(i4, i1, i2, i3);
-            if(itemStack7.stackSize == 0) {
-                itemStack7.onItemDestroyedByUse(this.mc.thePlayer);
+    public boolean sendBlockRemoved(int x, int y, int z, int side) {
+        this.netClientHandler.addToSendQueue(new Packet14BlockDig(3, x, y, z, side));
+        int i5 = this.mc.theWorld.getBlockId(x, y, z);
+        int i6 = this.mc.theWorld.getBlockMetadata(x, y, z);
+        boolean z7 = super.sendBlockRemoved(x, y, z, side);
+        ItemStack itemStack8 = this.mc.thePlayer.getCurrentEquippedItem();
+        if(itemStack8 != null) {
+            itemStack8.onDestroyBlock(i5, x, y, z);
+            if(itemStack8.stackSize == 0) {
+                itemStack8.onItemDestroyedByUse(this.mc.thePlayer);
                 this.mc.thePlayer.destroyCurrentEquippedItem();
             }
         }
 
-        if(z6 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[i4])) {
-            Block.blocksList[i4].dropBlockAsItem(this.mc.theWorld, i1, i2, i3, i5);
+        if(z7 && this.mc.thePlayer.canHarvestBlock(Block.blocksList[i5])) {
+            Block.blocksList[i5].dropBlockAsItem(this.mc.theWorld, x, y, z, i6);
         }
 
-        return z6;
+        return z7;
     }
 
-    public void clickBlock(int x, int y, int z) {
+    public void clickBlock(int x, int y, int z, int side) {
         this.isHittingBlock = true;
-        this.netClientHandler.addToSendQueue(new Packet14BlockDig(0, x, y, z, 0));
+        this.netClientHandler.addToSendQueue(new Packet14BlockDig(0, x, y, z, side));
         int i4 = this.mc.theWorld.getBlockId(x, y, z);
         if(i4 > 0 && this.curBlockDamageMP == 0.0F) {
             Block.blocksList[i4].onBlockClicked(this.mc.theWorld, x, y, z, this.mc.thePlayer);
         }
 
         if(i4 > 0 && Block.blocksList[i4].blockStrength(this.mc.thePlayer) >= 1.0F) {
-            this.sendBlockRemoved(x, y, z);
+            this.sendBlockRemoved(x, y, z, side);
         }
 
     }
@@ -100,7 +100,7 @@ public class PlayerControllerMP extends PlayerController {
 
                 ++this.stepSoundTickCounter;
                 if(this.curBlockDamageMP >= 1.0F) {
-                    this.sendBlockRemoved(x, y, z);
+                    this.sendBlockRemoved(x, y, z, side);
                     this.curBlockDamageMP = 0.0F;
                     this.prevBlockDamageMP = 0.0F;
                     this.stepSoundTickCounter = 0.0F;
@@ -118,12 +118,12 @@ public class PlayerControllerMP extends PlayerController {
         }
     }
 
-    public void setPartialTime(float f1) {
+    public void setPartialTime(float renderPartialTick) {
         if(this.curBlockDamageMP <= 0.0F) {
             this.mc.ingameGUI.damageGuiPartialTime = 0.0F;
             this.mc.renderGlobal.damagePartialTime = 0.0F;
         } else {
-            float f2 = this.prevBlockDamageMP + (this.curBlockDamageMP - this.prevBlockDamageMP) * f1;
+            float f2 = this.prevBlockDamageMP + (this.curBlockDamageMP - this.prevBlockDamageMP) * renderPartialTick;
             this.mc.ingameGUI.damageGuiPartialTime = f2;
             this.mc.renderGlobal.damagePartialTime = f2;
         }
@@ -134,8 +134,8 @@ public class PlayerControllerMP extends PlayerController {
         return 4.0F;
     }
 
-    public void onWorldChange(World world1) {
-        super.onWorldChange(world1);
+    public void onWorldChange(World world) {
+        super.onWorldChange(world);
     }
 
     public void onUpdate() {

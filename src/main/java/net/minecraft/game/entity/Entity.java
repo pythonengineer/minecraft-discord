@@ -79,11 +79,22 @@ public abstract class Entity {
     public int chunkCoordX;
     public int chunkCoordY;
     public int chunkCoordZ;
+    public int serverPosX;
+    public int serverPosY;
+    public int serverPosZ;
 
 	public Entity(World world) {
 		this.worldObj = world;
 		this.setPosition(0.0D, 0.0D, 0.0D);
 	}
+
+    public boolean equals(Object entity) {
+        return entity instanceof Entity ? ((Entity)entity).entityID == this.entityID : false;
+    }
+
+    public int hashCode() {
+        return this.entityID;
+    }
 
 	protected void preparePlayerToSpawn() {
 		if(this.worldObj != null) {
@@ -491,6 +502,7 @@ public abstract class Entity {
         this.prevPosZ = this.posZ = posZ;
         this.rotationYaw = rotationYaw;
         this.rotationPitch = rotationPitch;
+        this.ySize = 0.0F;
         double d9 = (double)(this.prevRotationYaw - rotationYaw);
         if(d9 < -180.0D) {
             this.prevRotationYaw += 360.0F;
@@ -804,5 +816,7 @@ public abstract class Entity {
     }
 
     public void setPositionAndRotation(double x, double y, double z, float rotationYaw, float rotationPitch, int newPosRotationIncrements) {
+        this.setPosition(x, y, z);
+        this.setRotation(rotationYaw, rotationPitch);
     }
 }

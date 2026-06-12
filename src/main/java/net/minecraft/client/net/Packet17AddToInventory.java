@@ -24,4 +24,8 @@ public class Packet17AddToInventory extends Packet {
     public void processPacket(NetHandler netHandler1) {
         netHandler1.handleAddToInventory(this);
     }
+
+    public int getPacketSize() {
+        return 5;
+    }
 }

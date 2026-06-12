@@ -21,4 +21,8 @@ public class Packet22Collect extends Packet {
     public void processPacket(NetHandler netHandler1) {
         netHandler1.handleCollect(this);
     }
+
+    public int getPacketSize() {
+        return 8;
+    }
 }

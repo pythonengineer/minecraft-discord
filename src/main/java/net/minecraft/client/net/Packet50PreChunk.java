@@ -24,4 +24,8 @@ public class Packet50PreChunk extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handlePreChunk(this);
 	}
+
+    public int getPacketSize() {
+        return 9;
+    }
 }

@@ -113,7 +113,7 @@ public class WorldGenDungeons extends WorldGenerator {
 
     private ItemStack pickCheckLootItem(EaglercraftRandom rand) {
         int i2 = rand.nextInt(10);
-        return i2 == 0 ? new ItemStack(Item.saddle) : (i2 == 1 ? new ItemStack(Item.ingotIron, rand.nextInt(4) + 1) : (i2 == 2 ? new ItemStack(Item.bread) : (i2 == 3 ? new ItemStack(Item.wheat, rand.nextInt(4) + 1) : (i2 == 4 ? new ItemStack(Item.gunpowder, rand.nextInt(4) + 1) : (i2 == 5 ? new ItemStack(Item.silk, rand.nextInt(4) + 1) : (i2 == 6 ? new ItemStack(Item.bucketEmpty) : (i2 == 7 && rand.nextInt(100) == 0 ? new ItemStack(Item.appleGold) : null)))))));
+        return i2 == 0 ? new ItemStack(Item.saddle) : (i2 == 1 ? new ItemStack(Item.ingotIron, rand.nextInt(4) + 1) : (i2 == 2 ? new ItemStack(Item.bread) : (i2 == 3 ? new ItemStack(Item.wheat, rand.nextInt(4) + 1) : (i2 == 4 ? new ItemStack(Item.gunpowder, rand.nextInt(4) + 1) : (i2 == 5 ? new ItemStack(Item.silk, rand.nextInt(4) + 1) : (i2 == 6 ? new ItemStack(Item.bucketEmpty) : (i2 == 7 && rand.nextInt(100) == 0 ? new ItemStack(Item.appleGold) : (i2 == 8 && rand.nextInt(2) == 0 ? new ItemStack(Item.redstone, rand.nextInt(4) + 1) : (i2 == 9 && rand.nextInt(10) == 0 ? new ItemStack(Item.itemsList[Item.record13.shiftedIndex + rand.nextInt(2)]) : null)))))))));
     }
 
     private String pickMobSpawner(EaglercraftRandom rand) {

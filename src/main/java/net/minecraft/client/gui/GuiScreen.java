@@ -12,6 +12,7 @@ import net.lax1dude.eaglercraft.internal.EnumTouchEvent;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.minecraft.client.Minecraft;
@@ -44,6 +45,10 @@ public class GuiScreen extends Gui {
             this.mc.setIngameFocus();
         }
 
+    }
+
+    public static String getClipboardString() {
+        return EagRuntime.getClipboard();
     }
 
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
@@ -288,6 +293,9 @@ public class GuiScreen extends Gui {
     public boolean isTouchPointDragging(int uid) {
         int[] ret = touchStarts.get(uid);
         return ret != null && ret[2] == 1;
+    }
+
+    public void fireInputEvent(EnumInputEvent event, String param) {
     }
 
     public static int applyEaglerScale(float scaleFac, int coord, int screenDim) {

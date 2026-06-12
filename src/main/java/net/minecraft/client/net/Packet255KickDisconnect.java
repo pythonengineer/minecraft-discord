@@ -25,4 +25,8 @@ public class Packet255KickDisconnect extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleKickDisconnect(this);
 	}
+
+    public int getPacketSize() {
+        return this.reason.length();
+    }
 }

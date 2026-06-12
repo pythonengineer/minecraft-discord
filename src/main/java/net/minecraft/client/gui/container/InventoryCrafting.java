@@ -14,6 +14,12 @@ public class InventoryCrafting implements IInventory {
         this.craftingInventory = container;
     }
 
+    public InventoryCrafting(GuiContainer container, ItemStack[] stack) {
+        this.gridSize = stack.length;
+        this.stackList = stack;
+        this.craftingInventory = container;
+    }
+
 	public int getSizeInventory() {
 		return this.gridSize;
 	}

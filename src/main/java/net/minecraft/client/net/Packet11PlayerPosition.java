@@ -9,11 +9,12 @@ public class Packet11PlayerPosition extends Packet10Flying {
         this.moving = true;
     }
 
-    public Packet11PlayerPosition(double x, double minY, double y, boolean z7) {
+    public Packet11PlayerPosition(double x, double minY, double y, double z, boolean onGround) {
         this.xPosition = x;
         this.yPosition = minY;
         this.stance = y;
-        this.onGround = z7;
+        this.zPosition = z;
+        this.onGround = onGround;
         this.moving = true;
     }
 
@@ -21,6 +22,7 @@ public class Packet11PlayerPosition extends Packet10Flying {
         this.xPosition = dataInputStream1.readDouble();
         this.yPosition = dataInputStream1.readDouble();
         this.stance = dataInputStream1.readDouble();
+        this.zPosition = dataInputStream1.readDouble();
         super.readPacketData(dataInputStream1);
     }
 
@@ -28,6 +30,11 @@ public class Packet11PlayerPosition extends Packet10Flying {
         dataOutputStream1.writeDouble(this.xPosition);
         dataOutputStream1.writeDouble(this.yPosition);
         dataOutputStream1.writeDouble(this.stance);
+        dataOutputStream1.writeDouble(this.zPosition);
         super.writePacket(dataOutputStream1);
+    }
+
+    public int getPacketSize() {
+        return 33;
     }
 }

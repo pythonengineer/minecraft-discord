@@ -1,8 +1,11 @@
 package net.minecraft.client.net;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
+import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.chunk.ChunkProviderClient;
@@ -13,6 +16,8 @@ public class WorldClient extends World {
     private NetClientHandler sendQueue;
     private ChunkProviderClient clientChunkProvider;
     private MCHashTable entityHashTable = new MCHashTable();
+    private Set entityList = new HashSet();
+    private Set entitySpawnQueue = new HashSet();
 
     public WorldClient(NetClientHandler netClientHandler) {
         super("MpServer");
@@ -23,9 +28,15 @@ public class WorldClient extends World {
     }
 
     public void tick() {
+        int i1;
+        for(i1 = 0; i1 < 10 && !this.entitySpawnQueue.isEmpty(); ++i1) {
+            Entity entity2 = (Entity)this.entitySpawnQueue.iterator().next();
+            this.spawnEntityInWorld(entity2);
+        }
+
         this.sendQueue.processReadPackets();
 
-        for(int i1 = 0; i1 < this.blocksToReceive.size(); ++i1) {
+        for(i1 = 0; i1 < this.blocksToReceive.size(); ++i1) {
             WorldBlockPositionType worldBlockPositionType2 = (WorldBlockPositionType)this.blocksToReceive.get(i1);
             if(--worldBlockPositionType2.acceptCountdown == 0) {
                 super.setBlockAndMetadata(worldBlockPositionType2.posX, worldBlockPositionType2.posY, worldBlockPositionType2.posZ, worldBlockPositionType2.blockID, worldBlockPositionType2.metadata);
@@ -74,10 +85,51 @@ public class WorldClient extends World {
             this.clientChunkProvider.unloadChunk(x, z);
         }
 
+        if(!mode) {
+            this.markBlocksDirty(x * 16, 0, z * 16, x * 16 + 15, 128, z * 16 + 15);
+        }
+
+    }
+
+    public boolean spawnEntityInWorld(Entity entity1) {
+        boolean z2 = super.spawnEntityInWorld(entity1);
+        if(entity1 instanceof EntityPlayerSP) {
+            this.entityList.add(entity1);
+        }
+
+        return z2;
+    }
+
+    public void setEntityDead(Entity entity1) {
+        super.setEntityDead(entity1);
+        if(entity1 instanceof EntityPlayerSP) {
+            this.entityList.remove(entity1);
+        }
+
+    }
+
+    protected void obtainEntitySkin(Entity entity) {
+        super.obtainEntitySkin(entity);
+        if(this.entitySpawnQueue.contains(entity)) {
+            this.entitySpawnQueue.remove(entity);
+        }
+
+    }
+
+    protected void releaseEntitySkin(Entity entity1) {
+        super.releaseEntitySkin(entity1);
+        if(this.entityList.contains(entity1)) {
+            this.entitySpawnQueue.add(entity1);
+        }
+
     }
 
     public void addEntityToWorld(int id, Entity entity) {
-        this.spawnEntityInWorld(entity);
+        this.entityList.add(entity);
+        if(!this.spawnEntityInWorld(entity)) {
+            this.entitySpawnQueue.add(entity);
+        }
+
         this.entityHashTable.addKey(id, entity);
     }
 
@@ -88,6 +140,7 @@ public class WorldClient extends World {
     public Entity removeEntityFromWorld(int id) {
         Entity entity2 = (Entity)this.entityHashTable.removeObject(id);
         if(entity2 != null) {
+            this.entityList.remove(entity2);
             this.setEntityDead(entity2);
         }
 
@@ -135,5 +188,9 @@ public class WorldClient extends World {
         } else {
             return false;
         }
+    }
+
+    public void sendQuittingDisconnectingPacket() {
+        this.sendQueue.addToSendQueue(new Packet255KickDisconnect("Quitting"));
     }
 }

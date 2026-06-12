@@ -14,8 +14,8 @@ public class NetHandler {
         this.registerPacket(packet);
     }
 
-    public void handleLogin(Packet1Handshake packet1Handshake1) {
-        this.registerPacket(packet1Handshake1);
+    public void handleLogin(Packet2Handshake packet2Handshake1) {
+        this.registerPacket(packet2Handshake1);
     }
 
     public void handleFlying(Packet10Flying packet) {
@@ -75,6 +75,14 @@ public class NetHandler {
     }
 
     public void handleAddToInventory(Packet17AddToInventory packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleVehicleSpawn(Packet23VehicleSpawn packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleArmAnimation(Packet18ArmAnimation packet) {
         this.registerPacket(packet);
     }
 }

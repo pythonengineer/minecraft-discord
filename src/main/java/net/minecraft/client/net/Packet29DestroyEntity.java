@@ -18,4 +18,8 @@ public class Packet29DestroyEntity extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleDestroyEntity(this);
 	}
+
+    public int getPacketSize() {
+        return 4;
+    }
 }

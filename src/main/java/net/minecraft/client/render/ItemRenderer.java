@@ -16,8 +16,6 @@ public class ItemRenderer {
 	private ItemStack itemToRender = null;
 	private float equippedProgress = 0.0F;
 	private float prevEquippedProgress = 0.0F;
-	private int swingProgress = 0;
-	private boolean itemSwingState = false;
 	private RenderBlocks renderBlocksInstance = new RenderBlocks();
 
 	public ItemRenderer(Minecraft mc) {
@@ -132,11 +130,11 @@ public class ItemRenderer {
         GL11.glPopMatrix();
     }
 
-    public void renderItemInFirstPerson(float partialTicks) {
-        float f2 = this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks;
+    public void renderItemInFirstPerson(float renderPartialTick) {
+        float f2 = this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * renderPartialTick;
         GL11.glPushMatrix();
-        GL11.glRotatef(this.mc.thePlayer.prevRotationPitch + (this.mc.thePlayer.rotationPitch - this.mc.thePlayer.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef(this.mc.thePlayer.prevRotationYaw + (this.mc.thePlayer.rotationYaw - this.mc.thePlayer.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
+        GL11.glRotatef(this.mc.thePlayer.prevRotationPitch + (this.mc.thePlayer.rotationPitch - this.mc.thePlayer.prevRotationPitch) * renderPartialTick, 1.0F, 0.0F, 0.0F);
+        GL11.glRotatef(this.mc.thePlayer.prevRotationYaw + (this.mc.thePlayer.rotationYaw - this.mc.thePlayer.prevRotationYaw) * renderPartialTick, 0.0F, 1.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
         float f9 = this.mc.theWorld.getBrightness(MathHelper.floor_double(this.mc.thePlayer.posX), MathHelper.floor_double(this.mc.thePlayer.posY), MathHelper.floor_double(this.mc.thePlayer.posZ));
@@ -145,48 +143,36 @@ public class ItemRenderer {
         float f5;
         if(this.itemToRender != null) {
             GL11.glPushMatrix();
-            if(this.itemSwingState) {
-                f9 = ((float)this.swingProgress + partialTicks) / 8.0F;
-                f4 = MathHelper.sin(f9 * (float)Math.PI);
-                f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
-                GL11.glTranslatef(-f5 * 0.4F, MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI * 2.0F) * 0.2F, -f4 * 0.2F);
-            }
-
+            f9 = this.mc.thePlayer.getSwingProgress(renderPartialTick);
+            f4 = MathHelper.sin(f9 * (float)Math.PI);
+            f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
+            GL11.glTranslatef(-f5 * 0.4F, MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI * 2.0F) * 0.2F, -f4 * 0.2F);
             GL11.glTranslatef(0.56F, -0.52F - (1.0F - f2) * 0.6F, -0.71999997F);
             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
             GL11.glEnable(GL11.GL_RESCALE_NORMAL);
-            if(this.itemSwingState) {
-                f9 = ((float)this.swingProgress + partialTicks) / 8.0F;
-                f4 = MathHelper.sin(f9 * f9 * (float)Math.PI);
-                f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
-                GL11.glRotatef(-f4 * 20.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glRotatef(-f5 * 20.0F, 0.0F, 0.0F, 1.0F);
-                GL11.glRotatef(-f5 * 80.0F, 1.0F, 0.0F, 0.0F);
-            }
-
+            f9 = this.mc.thePlayer.getSwingProgress(renderPartialTick);
+            f4 = MathHelper.sin(f9 * f9 * (float)Math.PI);
+            f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
+            GL11.glRotatef(-f4 * 20.0F, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(-f5 * 20.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glRotatef(-f5 * 80.0F, 1.0F, 0.0F, 0.0F);
             GL11.glScalef(0.4F, 0.4F, 0.4F);
             this.renderItem(this.itemToRender);
             GL11.glPopMatrix();
         } else {
             GL11.glPushMatrix();
-            if(this.itemSwingState) {
-                f9 = ((float)this.swingProgress + partialTicks) / 8.0F;
-                f4 = MathHelper.sin(f9 * (float)Math.PI);
-                f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
-                GL11.glTranslatef(-f5 * 0.3F, MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI * 2.0F) * 0.4F, -f4 * 0.4F);
-            }
-
+            f9 = this.mc.thePlayer.getSwingProgress(renderPartialTick);
+            f4 = MathHelper.sin(f9 * (float)Math.PI);
+            f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
+            GL11.glTranslatef(-f5 * 0.3F, MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI * 2.0F) * 0.4F, -f4 * 0.4F);
             GL11.glTranslatef(0.64000005F, -0.6F - (1.0F - f2) * 0.6F, -0.71999997F);
             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
             GL11.glEnable(GL11.GL_RESCALE_NORMAL);
-            if(this.itemSwingState) {
-                f9 = ((float)this.swingProgress + partialTicks) / 8.0F;
-                f4 = MathHelper.sin(f9 * f9 * (float)Math.PI);
-                f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
-                GL11.glRotatef(f5 * 70.0F, 0.0F, 1.0F, 0.0F);
-                GL11.glRotatef(-f4 * 20.0F, 0.0F, 0.0F, 1.0F);
-            }
-
+            f9 = this.mc.thePlayer.getSwingProgress(renderPartialTick);
+            f4 = MathHelper.sin(f9 * f9 * (float)Math.PI);
+            f5 = MathHelper.sin(MathHelper.sqrt_float(f9) * (float)Math.PI);
+            GL11.glRotatef(f5 * 70.0F, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(-f4 * 20.0F, 0.0F, 0.0F, 1.0F);
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTextureForDownloadableImage(this.mc.thePlayer.skinUrl, this.mc.thePlayer.getTexture()));
             GL11.glTranslatef(-1.0F, 3.6F, 3.5F);
             GL11.glRotatef(120.0F, 0.0F, 0.0F, 1.0F);
@@ -307,14 +293,6 @@ public class ItemRenderer {
 
 	public void updateEquippedItem() {
 		this.prevEquippedProgress = this.equippedProgress;
-		if(this.itemSwingState) {
-			++this.swingProgress;
-			if(this.swingProgress == 8) {
-				this.swingProgress = 0;
-				this.itemSwingState = false;
-			}
-		}
-
 		ItemStack itemStack = this.mc.thePlayer.inventory.getCurrentItem();
 		float f2 = itemStack == this.itemToRender ? 1.0F : 0.0F;
 		f2 -= this.equippedProgress;
@@ -335,10 +313,5 @@ public class ItemRenderer {
 
 	public void resetEquippedProgress() {
 		this.equippedProgress = 0.0F;
-	}
-
-	public void swing() {
-		this.swingProgress = -1;
-		this.itemSwingState = true;
 	}
 }

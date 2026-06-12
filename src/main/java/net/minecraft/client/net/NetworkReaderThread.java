@@ -9,9 +9,41 @@ class NetworkReaderThread extends Thread {
     }
 
     public void run() {
-        while(NetworkManager.isRunning(this.netManager) && !NetworkManager.isServerTerminating(this.netManager)) {
-            NetworkManager.readNetworkPacket(this.netManager);
+        Object object1 = NetworkManager.threadSyncObject;
+        synchronized(NetworkManager.threadSyncObject) {
+            ++NetworkManager.numReadThreads;
         }
 
+        while(!Thread.currentThread().isInterrupted()) {
+            boolean z11 = false;
+
+            try {
+                z11 = true;
+                if(NetworkManager.isRunning(this.netManager)) {
+                    if(!NetworkManager.isServerTerminating(this.netManager)) {
+                        NetworkManager.readNetworkPacket(this.netManager);
+                        continue;
+                    }
+
+                    z11 = false;
+                    break;
+                }
+
+                z11 = false;
+                break;
+            } finally {
+                if(z11) {
+                    Object object5 = NetworkManager.threadSyncObject;
+                    synchronized(NetworkManager.threadSyncObject) {
+                        --NetworkManager.numReadThreads;
+                    }
+                }
+            }
+        }
+
+        object1 = NetworkManager.threadSyncObject;
+        synchronized(NetworkManager.threadSyncObject) {
+            --NetworkManager.numReadThreads;
+        }
     }
 }

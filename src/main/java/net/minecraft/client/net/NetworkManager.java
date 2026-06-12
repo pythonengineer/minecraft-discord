@@ -7,9 +7,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.lax1dude.eaglercraft.EagUtils;
 import net.lax1dude.eaglercraft.internal.IWebSocketClient;
 
 public class NetworkManager {
+    public static final Object threadSyncObject = new Object();
+    public static int numReadThreads;
+    public static int numWriteThreads;
+    private Object sendQueueLock = new Object();
     private IWebSocketClient networkSocket;
     private DataInputStream socketInputStream;
     private DataOutputStream socketOutputStream;
@@ -24,6 +29,7 @@ public class NetworkManager {
     private boolean isTerminating = false;
     private String terminationReason = "";
     private int timeSinceLastRead = 0;
+    private int sendQueueByteLength = 0;
     private int chunkDataSendCounter = 0;
 
     public NetworkManager(IWebSocketClient socket, String name, NetHandler netHandler) throws IOException {
@@ -39,35 +45,54 @@ public class NetworkManager {
 
     public void addToSendQueue(Packet packet) {
         if(!this.isServerTerminating) {
-            if(packet.isChunkDataPacket) {
-                this.chunkDataPackets.add(packet);
-            } else {
-                this.dataPackets.add(packet);
-            }
+            Object object2 = this.sendQueueLock;
+            synchronized(this.sendQueueLock) {
+                this.sendQueueByteLength += packet.getPacketSize() + 1;
+                if(packet.isChunkDataPacket) {
+                    this.chunkDataPackets.add(packet);
+                } else {
+                    this.dataPackets.add(packet);
+                }
 
+            }
         }
     }
 
     private void sendPacket() {
         try {
             boolean z1 = true;
+            Packet packet2;
+            Object object3;
             if(!this.dataPackets.isEmpty()) {
                 z1 = false;
-                Packet.writePacket((Packet)this.dataPackets.remove(0), this.socketOutputStream);
+                object3 = this.sendQueueLock;
+                synchronized(this.sendQueueLock) {
+                    packet2 = (Packet)this.dataPackets.remove(0);
+                    this.sendQueueByteLength -= packet2.getPacketSize() + 1;
+                }
+
+                Packet.writePacket(packet2, this.socketOutputStream);
             }
 
             if((z1 || this.chunkDataSendCounter-- <= 0) && !this.chunkDataPackets.isEmpty()) {
                 z1 = false;
-                Packet.writePacket((Packet)this.chunkDataPackets.remove(0), this.socketOutputStream);
+                object3 = this.sendQueueLock;
+                synchronized(this.sendQueueLock) {
+                    packet2 = (Packet)this.chunkDataPackets.remove(0);
+                    this.sendQueueByteLength -= packet2.getPacketSize() + 1;
+                }
+
+                Packet.writePacket(packet2, this.socketOutputStream);
                 this.chunkDataSendCounter = 50;
             }
 
             if(z1) {
-                Thread.sleep(10L);
+                EagUtils.sleep(10L);
             }
-        } catch (InterruptedException interruptedException2) {
-        } catch (Exception exception3) {
-            this.onNetworkError(exception3);
+        } catch (Exception exception9) {
+            if(!this.isTerminating) {
+                this.onNetworkError(exception9);
+            }
         }
 
     }
@@ -81,7 +106,9 @@ public class NetworkManager {
                 this.networkShutdown("End of stream");
             }
         } catch (Exception exception2) {
-            this.onNetworkError(exception2);
+            if(!this.isTerminating) {
+                this.onNetworkError(exception2);
+            }
         }
 
     }
@@ -95,6 +122,7 @@ public class NetworkManager {
         if(this.isRunning) {
             this.isTerminating = true;
             this.terminationReason = reason;
+            (new NetworkMasterThread(this)).start();
             this.isRunning = false;
 
             try {
@@ -116,6 +144,10 @@ public class NetworkManager {
     }
 
     public void processReadPackets() {
+        if(this.sendQueueByteLength > 1048576) {
+            this.networkShutdown("Send buffer overflow");
+        }
+
         if(this.readPackets.isEmpty()) {
             if(this.timeSinceLastRead++ == 1200) {
                 this.networkShutdown("Timed out");
@@ -151,5 +183,13 @@ public class NetworkManager {
 
     static void sendNetworkPacket(NetworkManager networkManager0) {
         networkManager0.sendPacket();
+    }
+
+    static Thread getReadThread(NetworkManager networkManager0) {
+        return networkManager0.readThread;
+    }
+
+    static Thread getWriteThread(NetworkManager networkManager0) {
+        return networkManager0.writeThread;
     }
 }

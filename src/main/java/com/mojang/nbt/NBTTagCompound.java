@@ -58,6 +58,10 @@ public class NBTTagCompound extends NBTBase {
 		this.tagMap.put(key, (new NBTTagFloat(floatValue)).setKey(key));
 	}
 
+    public void setDouble(String name, double value) {
+        this.tagMap.put(name, (new NBTTagDouble(value)).setKey(name));
+    }
+
 	public void setString(String key, String stringValue) {
 		this.tagMap.put(key, (new NBTTagString(stringValue)).setKey(key));
 	}
@@ -97,6 +101,10 @@ public class NBTTagCompound extends NBTBase {
 	public float getFloat(String key) {
 		return !this.tagMap.containsKey(key) ? 0.0F : ((NBTTagFloat)this.tagMap.get(key)).floatValue;
 	}
+
+    public double getDouble(String name) {
+        return !this.tagMap.containsKey(name) ? 0.0D : ((NBTTagDouble)this.tagMap.get(name)).doubleValue;
+    }
 
 	public String getString(String key) {
 		return !this.tagMap.containsKey(key) ? "" : ((NBTTagString)this.tagMap.get(key)).stringValue;

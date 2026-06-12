@@ -15,6 +15,11 @@ fire/fire.ogg
 fire/ignite.ogg
 liquid/lava.ogg
 liquid/water.ogg
+mob/chicken1.ogg
+mob/chicken2.ogg
+mob/chicken3.ogg
+mob/chickenhurt1.ogg
+mob/chickenhurt2.ogg
 mob/cow1.ogg
 mob/cow2.ogg
 mob/cow3.ogg
@@ -41,6 +46,13 @@ mob/skeletonhurt1.ogg
 mob/skeletonhurt2.ogg
 mob/skeletonhurt3.ogg
 mob/skeletonhurt4.ogg
+mob/slime1.ogg
+mob/slime2.ogg
+mob/slime3.ogg
+mob/slime4.ogg
+mob/slime5.ogg
+mob/slimeattack1.ogg
+mob/slimeattack2.ogg
 mob/spider1.ogg
 mob/spider2.ogg
 mob/spider3.ogg

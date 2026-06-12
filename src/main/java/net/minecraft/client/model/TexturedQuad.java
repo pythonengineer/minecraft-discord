@@ -7,9 +7,11 @@ import net.minecraft.game.physics.Vec3D;
 public class TexturedQuad {
     public PositionTextureVertex[] vertexPositions;
     public int nVertices;
+    private boolean invertNormal;
 
     private TexturedQuad(PositionTextureVertex[] vertexPositions) {
         this.nVertices = 0;
+        this.invertNormal = false;
         this.vertexPositions = vertexPositions;
         this.nVertices = vertexPositions.length;
     }
@@ -37,7 +39,11 @@ public class TexturedQuad {
         Vec3D vec3D4 = this.vertexPositions[1].vector3D.subtract(this.vertexPositions[2].vector3D);
         Vec3D vec3D5 = vec3D4.crossProduct(vec3D3).normalize();
         tessellator.startDrawingQuads(DefaultVertexFormats.POSITION_TEX_NORMAL);
-        tessellator.setNormal((float)vec3D5.xCoord, (float)vec3D5.yCoord, (float)vec3D5.zCoord);
+        if(this.invertNormal) {
+            tessellator.setNormal(-((float)vec3D5.xCoord), -((float)vec3D5.yCoord), -((float)vec3D5.zCoord));
+        } else {
+            tessellator.setNormal((float)vec3D5.xCoord, (float)vec3D5.yCoord, (float)vec3D5.zCoord);
+        }
 
         for(int i6 = 0; i6 < 4; ++i6) {
             PositionTextureVertex positionTextureVertex7 = this.vertexPositions[i6];

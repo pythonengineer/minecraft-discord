@@ -21,134 +21,157 @@ public class MetadataChunkBlock {
         this.maxZ = maxZ;
     }
 
-    public void updateLight(World world1) {
-        for(int i2 = this.minX; i2 <= this.maxX; ++i2) {
-            for(int i3 = this.minZ; i3 <= this.maxZ; ++i3) {
-                if(world1.blockExists(i2, 0, i3)) {
-                    for(int i4 = this.minY; i4 <= this.maxY; ++i4) {
-                        if(i4 >= 0 && i4 < 128) {
-                            int i5 = world1.getSavedLightValue(this.skyBlock, i2, i4, i3);
-                            int i7 = world1.getBlockId(i2, i4, i3);
-                            int i8 = Block.lightOpacity[i7];
-                            if(i8 == 0) {
-                                i8 = 1;
-                            }
-
-                            int i9 = 0;
-                            if(this.skyBlock == EnumSkyBlock.Sky) {
-                                if(world1.canExistingBlockSeeTheSky(i2, i4, i3)) {
-                                    i9 = 15;
-                                }
-                            } else if(this.skyBlock == EnumSkyBlock.Block) {
-                                i9 = Block.lightValue[i7];
-                            }
-
-                            int i10;
-                            int i16;
-                            if(i8 >= 15 && i9 == 0) {
-                                i16 = 0;
-                            } else {
-                                i10 = world1.getSavedLightValue(this.skyBlock, i2 - 1, i4, i3);
-                                int i11 = world1.getSavedLightValue(this.skyBlock, i2 + 1, i4, i3);
-                                int i12 = world1.getSavedLightValue(this.skyBlock, i2, i4 - 1, i3);
-                                int i13 = world1.getSavedLightValue(this.skyBlock, i2, i4 + 1, i3);
-                                int i14 = world1.getSavedLightValue(this.skyBlock, i2, i4, i3 - 1);
-                                int i15 = world1.getSavedLightValue(this.skyBlock, i2, i4, i3 + 1);
-                                i16 = i10;
-                                if(i11 > i10) {
-                                    i16 = i11;
+    public void updateLight(World world) {
+        int i2 = this.maxX - this.minX;
+        int i3 = this.maxY - this.minY;
+        int i4 = this.maxZ - this.minZ;
+        int i5 = i2 * i3 * i4;
+        if(i5 <= 32768) {
+            for(int i6 = this.minX; i6 <= this.maxX; ++i6) {
+                for(int i7 = this.minZ; i7 <= this.maxZ; ++i7) {
+                    if(world.blockExists(i6, 0, i7)) {
+                        for(int i8 = this.minY; i8 <= this.maxY; ++i8) {
+                            if(i8 >= 0 && i8 < 128) {
+                                int i9 = world.getSavedLightValue(this.skyBlock, i6, i8, i7);
+                                boolean z10 = false;
+                                int i11 = world.getBlockId(i6, i8, i7);
+                                int i12 = Block.lightOpacity[i11];
+                                if(i12 == 0) {
+                                    i12 = 1;
                                 }
 
-                                if(i12 > i16) {
-                                    i16 = i12;
+                                int i13 = 0;
+                                if(this.skyBlock == EnumSkyBlock.Sky) {
+                                    if(world.canExistingBlockSeeTheSky(i6, i8, i7)) {
+                                        i13 = 15;
+                                    }
+                                } else if(this.skyBlock == EnumSkyBlock.Block) {
+                                    i13 = Block.lightValue[i11];
                                 }
 
-                                if(i13 > i16) {
-                                    i16 = i13;
+                                int i14;
+                                int i20;
+                                if(i12 >= 15 && i13 == 0) {
+                                    i20 = 0;
+                                } else {
+                                    i14 = world.getSavedLightValue(this.skyBlock, i6 - 1, i8, i7);
+                                    int i15 = world.getSavedLightValue(this.skyBlock, i6 + 1, i8, i7);
+                                    int i16 = world.getSavedLightValue(this.skyBlock, i6, i8 - 1, i7);
+                                    int i17 = world.getSavedLightValue(this.skyBlock, i6, i8 + 1, i7);
+                                    int i18 = world.getSavedLightValue(this.skyBlock, i6, i8, i7 - 1);
+                                    int i19 = world.getSavedLightValue(this.skyBlock, i6, i8, i7 + 1);
+                                    i20 = i14;
+                                    if(i15 > i14) {
+                                        i20 = i15;
+                                    }
+
+                                    if(i16 > i20) {
+                                        i20 = i16;
+                                    }
+
+                                    if(i17 > i20) {
+                                        i20 = i17;
+                                    }
+
+                                    if(i18 > i20) {
+                                        i20 = i18;
+                                    }
+
+                                    if(i19 > i20) {
+                                        i20 = i19;
+                                    }
+
+                                    i20 -= i12;
+                                    if(i20 < 0) {
+                                        i20 = 0;
+                                    }
+
+                                    if(i13 > i20) {
+                                        i20 = i13;
+                                    }
                                 }
 
-                                if(i14 > i16) {
-                                    i16 = i14;
-                                }
+                                if(i9 != i20) {
+                                    world.setLightValue(this.skyBlock, i6, i8, i7, i20);
+                                    i14 = i20 - 1;
+                                    if(i14 < 0) {
+                                        i14 = 0;
+                                    }
 
-                                if(i15 > i16) {
-                                    i16 = i15;
-                                }
+                                    world.neighborLightPropagationChanged(this.skyBlock, i6 - 1, i8, i7, i14);
+                                    world.neighborLightPropagationChanged(this.skyBlock, i6, i8 - 1, i7, i14);
+                                    world.neighborLightPropagationChanged(this.skyBlock, i6, i8, i7 - 1, i14);
+                                    if(i6 + 1 >= this.maxX) {
+                                        world.neighborLightPropagationChanged(this.skyBlock, i6 + 1, i8, i7, i14);
+                                    }
 
-                                i16 -= i8;
-                                if(i16 < 0) {
-                                    i16 = 0;
-                                }
+                                    if(i8 + 1 >= this.maxY) {
+                                        world.neighborLightPropagationChanged(this.skyBlock, i6, i8 + 1, i7, i14);
+                                    }
 
-                                if(i9 > i16) {
-                                    i16 = i9;
-                                }
-                            }
-
-                            if(i5 != i16) {
-                                world1.setLightValue(this.skyBlock, i2, i4, i3, i16);
-                                i10 = i16 - 1;
-                                if(i10 < 0) {
-                                    i10 = 0;
-                                }
-
-                                world1.neighborLightPropagationChanged(this.skyBlock, i2 - 1, i4, i3, i10);
-                                world1.neighborLightPropagationChanged(this.skyBlock, i2, i4 - 1, i3, i10);
-                                world1.neighborLightPropagationChanged(this.skyBlock, i2, i4, i3 - 1, i10);
-                                if(i2 + 1 >= this.maxX) {
-                                    world1.neighborLightPropagationChanged(this.skyBlock, i2 + 1, i4, i3, i10);
-                                }
-
-                                if(i4 + 1 >= this.maxY) {
-                                    world1.neighborLightPropagationChanged(this.skyBlock, i2, i4 + 1, i3, i10);
-                                }
-
-                                if(i3 + 1 >= this.maxZ) {
-                                    world1.neighborLightPropagationChanged(this.skyBlock, i2, i4, i3 + 1, i10);
+                                    if(i7 + 1 >= this.maxZ) {
+                                        world.neighborLightPropagationChanged(this.skyBlock, i6, i8, i7 + 1, i14);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
+        }
     }
 
-    public boolean getLightUpdated(int i1, int i2, int i3, int i4, int i5, int i6) {
-        if(i1 >= this.minX && i2 >= this.minY && i3 >= this.minZ && i4 <= this.maxX && i5 <= this.maxY && i6 <= this.maxZ) {
+    public boolean getLightUpdated(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        if(minX >= this.minX && minY >= this.minY && minZ >= this.minZ && maxX <= this.maxX && maxY <= this.maxY && maxZ <= this.maxZ) {
             return true;
         } else {
             byte b7 = 1;
-            if(i1 >= this.minX - b7 && i2 >= this.minY - b7 && i3 >= this.minZ - b7 && i4 <= this.maxX + b7 && i5 <= this.maxY + b7 && i6 <= this.maxZ + b7) {
-                if(i1 < this.minX) {
-                    this.minX = i1;
+            if(minX >= this.minX - b7 && minY >= this.minY - b7 && minZ >= this.minZ - b7 && maxX <= this.maxX + b7 && maxY <= this.maxY + b7 && maxZ <= this.maxZ + b7) {
+                int i8 = this.maxX - this.minX;
+                int i9 = this.maxY - this.minY;
+                int i10 = this.maxZ - this.minZ;
+                if(minX > this.minX) {
+                    minX = this.minX;
                 }
 
-                if(i2 < this.minY) {
-                    this.minY = i2;
+                if(minY > this.minY) {
+                    minY = this.minY;
                 }
 
-                if(i3 < this.minZ) {
-                    this.minZ = i3;
+                if(minZ > this.minZ) {
+                    minZ = this.minZ;
                 }
 
-                if(i4 > this.maxX) {
-                    this.maxX = i4;
+                if(maxX < this.maxX) {
+                    maxX = this.maxX;
                 }
 
-                if(i5 > this.maxY) {
-                    this.maxY = i5;
+                if(maxY < this.maxY) {
+                    maxY = this.maxY;
                 }
 
-                if(i6 > this.maxZ) {
-                    this.maxZ = i6;
+                if(maxZ < this.maxZ) {
+                    maxZ = this.maxZ;
                 }
 
-                return true;
-            } else {
-                return false;
+                int i11 = maxX - minX;
+                int i12 = maxY - minY;
+                int i13 = maxZ - minZ;
+                int i14 = i8 * i9 * i10;
+                int i15 = i11 * i12 * i13;
+                if(i15 - i14 <= 2) {
+                    this.minX = minX;
+                    this.minY = minY;
+                    this.minZ = minZ;
+                    this.maxX = maxX;
+                    this.maxY = maxY;
+                    this.maxZ = maxZ;
+                    return true;
+                }
             }
+
+            return false;
         }
     }
 }

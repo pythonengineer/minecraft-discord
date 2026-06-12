@@ -11,6 +11,7 @@ public class SoundPoolEntry {
     public boolean queued = false;
     public float pitch = 1.0F;
     public float volume = 1.0F;
+    public float finalVolume = -1.0F;
     public float x;
     public float y;
     public float z;
@@ -19,6 +20,16 @@ public class SoundPoolEntry {
         this.mgr = mgr;
         this.soundName = soundName;
         this.soundUrl = soundUrl;
+    }
+
+    public SoundPoolEntry(SoundPoolEntry sound, float x, float y, float z, float volume, float pitch, float finalVolume) {
+        this(sound.mgr, sound.soundName, sound.soundUrl);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.volume = volume;
+        this.pitch = pitch;
+        this.finalVolume = finalVolume;
     }
 
     public SoundPoolEntry(SoundPoolEntry sound, float x, float y, float z, float volume, float pitch) {

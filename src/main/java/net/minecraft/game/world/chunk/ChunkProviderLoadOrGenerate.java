@@ -141,11 +141,11 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
 	}
 
-	public boolean saveChunks(boolean flag, IProgressUpdate loadingScreen) {
+	public boolean saveChunks(boolean flag, IProgressUpdate progressUpdate) {
 		int i3 = 0;
 		int i4 = 0;
 		int i5;
-		if(loadingScreen != null) {
+		if(progressUpdate != null) {
 			for(i5 = 0; i5 < this.chunks.length; ++i5) {
 				if(this.chunks[i5] != null && this.chunks[i5].needsSaving(flag)) {
 					++i4;
@@ -169,10 +169,10 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 						return false;
 					}
 
-					if(loadingScreen != null) {
+					if(progressUpdate != null) {
 						++i5;
 						if(i5 % 10 == 0) {
-							loadingScreen.setLoadingProgress(i5 * 100 / i4);
+							progressUpdate.setLoadingProgress(i5 * 100 / i4);
 						}
 					}
 				}

@@ -61,10 +61,23 @@ public class RenderMinecart extends Render {
 			GL11.glRotatef(MathHelper.sin(f23) * f23 * f24 / 10.0F * (float)entity.forwardDirection, 1.0F, 0.0F, 0.0F);
 		}
 
-		this.loadTexture("/terrain.png");
-		float f25 = 0.75F;
-		GL11.glScalef(f25, f25, f25);
-		GL11.glScalef(1.0F / f25, 1.0F / f25, 1.0F / f25);
+        if(entity.minecartType != 0) {
+            this.loadTexture("/terrain.png");
+            float f25 = 0.75F;
+            GL11.glScalef(f25, f25, f25);
+            GL11.glTranslatef(0.0F, 0.3125F, 0.0F);
+            GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
+            if(entity.minecartType == 1) {
+                (new RenderBlocks()).renderBlockOnInventory(Block.chest);
+            } else if(entity.minecartType == 2) {
+                (new RenderBlocks()).renderBlockOnInventory(Block.stoneOvenIdle);
+            }
+
+            GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+            GL11.glTranslatef(0.0F, -0.3125F, 0.0F);
+            GL11.glScalef(1.0F / f25, 1.0F / f25, 1.0F / f25);
+        }
+
 		this.loadTexture("/item/cart.png");
 		GL11.glScalef(-1.0F, -1.0F, 1.0F);
 		this.modelMinecart.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);

@@ -2,10 +2,12 @@ package net.minecraft.game.entity.monster;
 
 import com.mojang.nbt.NBTTagCompound;
 
+import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.chunk.Chunk;
 
 public class EntitySlime extends EntityLiving implements IMobs {
     public float squishFactor;
@@ -29,9 +31,9 @@ public class EntitySlime extends EntityLiving implements IMobs {
         this.setPosition(this.posX, this.posY, this.posZ);
     }
 
-    public void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
-        super.writeEntityToNBT(nBTTagCompound1);
-        nBTTagCompound1.setInteger("Size", this.size - 1);
+    public void writeEntityToNBT(NBTTagCompound compoundTag) {
+        super.writeEntityToNBT(compoundTag);
+        compoundTag.setInteger("Size", this.size - 1);
     }
 
     public void readEntityFromNBT(NBTTagCompound compoundTag) {
@@ -44,6 +46,18 @@ public class EntitySlime extends EntityLiving implements IMobs {
         boolean z1 = this.onGround;
         super.onUpdate();
         if(this.onGround && !z1) {
+            for(int i2 = 0; i2 < this.size * 8; ++i2) {
+                float f3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+                float f4 = this.rand.nextFloat() * 0.5F + 0.5F;
+                float f5 = MathHelper.sin(f3) * (float)this.size * 0.5F * f4;
+                float f6 = MathHelper.cos(f3) * (float)this.size * 0.5F * f4;
+                this.worldObj.spawnParticle("slime", this.posX + (double)f5, this.boundingBox.minY, this.posZ + (double)f6, 0.0D, 0.0D, 0.0D);
+            }
+
+            if(this.size > 2) {
+                this.worldObj.playSoundAtEntity(this, "mob.slime", this.getSoundVolume(), ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) / 0.8F);
+            }
+
             this.squishFactor = -0.5F;
         }
 
@@ -63,6 +77,10 @@ public class EntitySlime extends EntityLiving implements IMobs {
             }
 
             this.isJumping = true;
+            if(this.size > 1) {
+                this.worldObj.playSoundAtEntity(this, "mob.slime", this.getSoundVolume(), ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) * 0.8F);
+            }
+
             this.squishFactor = 1.0F;
             this.moveStrafing = 1.0F - this.rand.nextFloat() * 2.0F;
             this.moveForward = (float)(1 * this.size);
@@ -91,18 +109,18 @@ public class EntitySlime extends EntityLiving implements IMobs {
     }
 
     public void onCollideWithPlayer(EntityPlayer entityPlayer1) {
-        if(this.size > 1) {
-            entityPlayer1.attackEntityFrom(this, this.size);
+        if(this.size > 1 && this.canEntityBeSeen(entityPlayer1) && (double)this.getDistanceToEntity(entityPlayer1) < 0.6D * (double)this.size && entityPlayer1.attackEntityFrom(this, this.size)) {
+            this.worldObj.playSoundAtEntity(this, "mob.slimeattack", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
         }
 
     }
 
     protected String getHurtSound() {
-        return null;
+        return "mob.slime";
     }
 
     protected String getDeathSound() {
-        return null;
+        return "mob.slime";
     }
 
     protected int getDropItemId() {
@@ -110,6 +128,11 @@ public class EntitySlime extends EntityLiving implements IMobs {
     }
 
     public boolean getCanSpawnHere() {
-        return this.posY < 32.0D;
+        Chunk chunk1 = this.worldObj.getChunkFromBlockCoords(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY));
+        return (this.size == 1 || this.worldObj.difficultySetting > 0) && this.rand.nextInt(10) == 0 && chunk1.getRandomWithSeed(987234911L).nextInt(100) == 0 && this.posY < 16.0D;
+    }
+
+    protected float getSoundVolume() {
+        return 0.6F;
     }
 }

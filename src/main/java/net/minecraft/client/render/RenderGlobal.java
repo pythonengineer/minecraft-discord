@@ -29,6 +29,7 @@ import net.minecraft.client.render.entity.RenderManager;
 import net.minecraft.client.render.tileentity.TileEntityRenderer;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
@@ -1129,6 +1130,14 @@ public class RenderGlobal implements IWorldAccess {
         ++this.frustumCheckOffset;
     }
 
+    public void playRecord(String record, int x, int y, int z) {
+        if(record != null) {
+            this.mc.ingameGUI.setRecordPlayingMessage("C418 - " + record);
+        }
+
+        this.mc.sndManager.playStreaming(record, (float)x, (float)y, (float)z, 1.0F, 1.0F);
+    }
+
     public void playSound(String soundName, double x, double y, double z, float volume, float pitch) {
         float f10 = 16.0F;
         if(volume > 1.0F) {
@@ -1141,27 +1150,29 @@ public class RenderGlobal implements IWorldAccess {
 
     }
 
-    public void spawnParticle(String particleName, double x, double y, double z, double motionX, double motionY, double motionZ) {
+    public void spawnParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ) {
         double d14 = this.mc.thePlayer.posX - x;
         double d16 = this.mc.thePlayer.posY - y;
         double d18 = this.mc.thePlayer.posZ - z;
         if(d14 * d14 + d16 * d16 + d18 * d18 <= 256.0D) {
-            if(particleName == "bubble") {
+            if(particle == "bubble") {
                 this.mc.effectRenderer.addEffect(new EntityBubbleFX(this.theWorld, x, y, z, motionX, motionY, motionZ));
-            } else if(particleName == "smoke") {
+            } else if(particle == "smoke") {
                 this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.theWorld, x, y, z));
-            } else if(particleName == "explode") {
+            } else if(particle == "explode") {
                 this.mc.effectRenderer.addEffect(new EntityExplodeFX(this.theWorld, x, y, z, motionX, motionY, motionZ));
-            } else if(particleName == "flame") {
+            } else if(particle == "flame") {
                 this.mc.effectRenderer.addEffect(new EntityFlameFX(this.theWorld, x, y, z, motionX, motionY, motionZ));
-            } else if(particleName == "lava") {
+            } else if(particle == "lava") {
                 this.mc.effectRenderer.addEffect(new EntityLavaFX(this.theWorld, x, y, z));
-            } else if(particleName == "largesmoke") {
+            } else if(particle == "largesmoke") {
                 this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.theWorld, x, y, z, 2.5F));
-            } else if(particleName == "reddust") {
+            } else if(particle == "reddust") {
                 this.mc.effectRenderer.addEffect(new EntityReddustFX(this.theWorld, x, y, z));
-            } else if(particleName == "snowballpoof") {
-                this.mc.effectRenderer.addEffect(new EntitySlimeFX(this.theWorld, x, y, z));
+            } else if(particle == "snowballpoof") {
+                this.mc.effectRenderer.addEffect(new EntitySlimeFX(this.theWorld, x, y, z, Item.snowball));
+            } else if(particle == "slime") {
+                this.mc.effectRenderer.addEffect(new EntitySlimeFX(this.theWorld, x, y, z, Item.slimeBall));
             }
 
         }

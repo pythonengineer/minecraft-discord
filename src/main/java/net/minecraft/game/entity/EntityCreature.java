@@ -14,10 +14,6 @@ public class EntityCreature extends EntityLiving {
 		super(world1);
 	}
 
-	protected boolean updateEntityActionState(Entity entity) {
-		return this.worldObj.rayTraceBlocks(Vec3D.createVector(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), Vec3D.createVector(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
-	}
-
 	protected void updateEntityActionState() {
 		this.hasAttacked = false;
 		float f1 = 16.0F;
@@ -30,7 +26,7 @@ public class EntityCreature extends EntityLiving {
 			this.entityToAttack = null;
 		} else {
 			float f2 = this.entityToAttack.getDistanceToEntity(this);
-			if(this.updateEntityActionState(this.entityToAttack)) {
+            if(this.canEntityBeSeen(this.entityToAttack)) {
 				this.attackEntity(this.entityToAttack, f2);
 			}
 		}

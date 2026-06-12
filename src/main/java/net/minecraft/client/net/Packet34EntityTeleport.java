@@ -48,4 +48,8 @@ public class Packet34EntityTeleport extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleEntityTeleport(this);
 	}
+
+    public int getPacketSize() {
+        return 34;
+    }
 }

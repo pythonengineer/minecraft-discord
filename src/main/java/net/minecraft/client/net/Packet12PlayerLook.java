@@ -27,4 +27,8 @@ public class Packet12PlayerLook extends Packet10Flying {
         dataOutputStream1.writeFloat(this.pitch);
         super.writePacket(dataOutputStream1);
     }
+
+    public int getPacketSize() {
+        return 9;
+    }
 }

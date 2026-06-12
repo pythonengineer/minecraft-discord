@@ -10,7 +10,7 @@ import net.minecraft.game.world.material.Material;
 
 public class Item {
 	protected static EaglercraftRandom rand = new EaglercraftRandom();
-	public static Item[] itemsList = new Item[1024];
+	public static Item[] itemsList = new Item[32000];
 	public static Item shovel = (new ItemSpade(0, 2)).setIconIndex(82);
 	public static Item pickaxeSteel = (new ItemPickaxe(1, 2)).setIconIndex(98);
 	public static Item axeSteel = (new ItemAxe(2, 2)).setIconIndex(114);
@@ -35,7 +35,7 @@ public class Item {
 	public static Item shovelDiamond = (new ItemSpade(21, 3)).setIconIndex(83);
 	public static Item pickaxeDiamond = (new ItemPickaxe(22, 3)).setIconIndex(99);
 	public static Item axeDiamond = (new ItemAxe(23, 3)).setIconIndex(115);
-	public static Item stick = (new Item(24)).setIconIndex(53);
+    public static Item stick = (new Item(24)).setIconIndex(53).setFull3D();
 	public static Item bowlEmpty = (new Item(25)).setIconIndex(71);
 	public static Item bowlSoup = (new ItemSoup(26, 10)).setIconIndex(72);
 	public static Item swordGold = (new ItemSword(27, 0)).setIconIndex(68);
@@ -83,7 +83,7 @@ public class Item {
 	public static Item bucketEmpty = (new ItemBucket(69, 0)).setIconIndex(74);
 	public static Item bucketWater = (new ItemBucket(70, Block.waterMoving.blockID)).setIconIndex(75);
 	public static Item bucketLava = (new ItemBucket(71, Block.lavaMoving.blockID)).setIconIndex(76);
-    public static Item minecartEmpty = (new ItemMinecart(72)).setIconIndex(135);
+    public static Item minecartEmpty = (new ItemMinecart(72, 0)).setIconIndex(135);
 	public static Item saddle = (new ItemSaddle(73)).setIconIndex(104);
     public static Item doorSteel = (new ItemDoor(74, Material.iron)).setIconIndex(44);
     public static Item redstone = (new ItemRedstone(75)).setIconIndex(56);
@@ -97,10 +97,16 @@ public class Item {
     public static Item paper = (new Item(83)).setIconIndex(58);
     public static Item book = (new Item(84)).setIconIndex(59);
     public static Item slimeBall = (new Item(85)).setIconIndex(30);
+    public static Item minecartBox = (new ItemMinecart(86, 1)).setIconIndex(151);
+    public static Item minecartEngine = (new ItemMinecart(87, 2)).setIconIndex(167);
+    public static Item egg = (new Item(88)).setIconIndex(12);
+    public static Item record13 = (new ItemRecord(2000, "13")).setIconIndex(240);
+    public static Item recordCat = (new ItemRecord(2001, "cat")).setIconIndex(241);
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
 	protected int maxDamage = 32;
     protected int iconIndex;
+    protected boolean bFull3D = false;
 
 	protected Item(int itemID) {
 		this.shiftedIndex = itemID + 256;
@@ -157,8 +163,13 @@ public class Item {
 	public void saddleEntity(ItemStack itemStack, EntityLiving entityLiving) {
 	}
 
+    public Item setFull3D() {
+        this.bFull3D = true;
+        return this;
+    }
+
     public boolean isFull3D() {
-        return false;
+        return this.bFull3D;
     }
 
     public boolean shouldUseOnTouchEagler(ItemStack itemStack) {

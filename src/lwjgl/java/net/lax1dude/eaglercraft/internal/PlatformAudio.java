@@ -189,7 +189,7 @@ public class PlatformAudio {
     private static int sourceCounter = 0;
 
     public static IAudioHandle beginPlayback(IAudioResource track, float x, float y, float z, float volume, float pitch,
-            boolean repeat) {
+            float finalVolume, boolean repeat) {
         if (sndSystem == null) {
             return null;
         }
@@ -204,7 +204,11 @@ public class PlatformAudio {
                 ((PaulscodeAudioResource)track).resourceLoc.getPath(), false, x, y, z, 2, f1);
         sndSystem.setTemporary(srcName, true);
         sndSystem.setPitch(srcName, pitch);
-        sndSystem.setVolume(srcName, volume);
+        if (finalVolume >= 0.0F) {
+            sndSystem.setVolume(srcName, finalVolume);
+        } else {
+            sndSystem.setVolume(srcName, volume);
+        }
         sndSystem.setLooping(srcName, repeat);
         sndSystem.play(srcName);
 

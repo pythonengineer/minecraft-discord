@@ -1,6 +1,7 @@
 package net.minecraft.client;
 
 import net.lax1dude.eaglercraft.EagRuntime;
+import net.lax1dude.eaglercraft.EagUtils;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.crash.CrashReport;
@@ -13,6 +14,7 @@ import net.lax1dude.eaglercraft.lwjgl.input.Mouse;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayMode;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 import net.lax1dude.eaglercraft.opengl.DefaultVertexFormats;
 import net.lax1dude.eaglercraft.touch.TouchControls;
 import net.lax1dude.eaglercraft.touch.TouchOverlayRenderer;
@@ -24,6 +26,7 @@ import net.minecraft.client.controller.PlayerControllerSP;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiConflictWarning;
 import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
@@ -153,7 +156,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.11");
+        Display.setTitle("Minecraft Alpha v1.0.15");
 
         try {
             Display.create();
@@ -162,8 +165,8 @@ public class Minecraft implements Runnable {
             lWJGLException17.printStackTrace();
 
             try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException interruptedException16) {
+                EagUtils.sleep(1000L);
+            } catch (Exception interruptedException16) {
             }
 
             Display.create();
@@ -348,7 +351,15 @@ public class Minecraft implements Runnable {
 
                 for(int i26 = 0; i26 < this.timer.elapsedTicks; ++i26) {
                     ++this.ticksRan;
-                    this.runTick();
+
+                    try {
+                        this.runTick();
+                    } catch (MinecraftException minecraftException12) {
+                        this.theWorld = null;
+                        this.changeWorld1((World)null);
+                        this.displayGuiScreen(new GuiConflictWarning());
+                    }
+
                     if (i26 < this.timer.elapsedTicks - 1) {
                         PointerInputAbstraction.runGameLoop();
                     }
@@ -376,7 +387,7 @@ public class Minecraft implements Runnable {
                         this.toggleFullscreen();
                     }
 
-                    Thread.sleep(10L);
+                    EagUtils.sleep(10L);
                 }
 
                 if(Keyboard.isKeyDown(Keyboard.KEY_F6)) {
@@ -389,7 +400,7 @@ public class Minecraft implements Runnable {
                 this.updateDisplay();
 
                 if(this.options.limitFramerate) {
-                    Thread.sleep(5L);
+                    EagUtils.sleep(5L);
                 }
 
                 ++i3;
@@ -549,7 +560,7 @@ public class Minecraft implements Runnable {
             Display.setFullscreen(this.fullscreen);
             this.resize(this.displayWidth, this.displayHeight);
             this.updateDisplay();
-            Thread.sleep(1000L);
+            EagUtils.sleep(1000L);
             if(this.fullscreen) {
                 this.setIngameFocus();
             }
@@ -626,7 +637,7 @@ public class Minecraft implements Runnable {
     private void clickMouse(int mouseButton) {
         if(mouseButton != 0 || this.leftClickCounter <= 0) {
             if(mouseButton == 0) {
-                this.entityRenderer.itemRenderer.swing();
+                this.thePlayer.swingItem();
             }
 
             ItemStack itemStack2;
@@ -652,7 +663,7 @@ public class Minecraft implements Runnable {
                 if(mouseButton == 0) {
                     this.theWorld.extinguishFire(i11, i13, i14, this.objectMouseOver.sideHit);
                     if(block6 != Block.bedrock || this.thePlayer.unusedMiningCooldown >= 100) {
-                        this.playerController.clickBlock(i11, i13, i14);
+                        this.playerController.clickBlock(i11, i13, i14, this.objectMouseOver.sideHit);
                     }
                 } else {
                     ItemStack itemStack19 = this.thePlayer.inventory.getCurrentItem();
@@ -667,7 +678,7 @@ public class Minecraft implements Runnable {
 
                     int i9 = itemStack19.stackSize;
                     if(this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemStack19, i11, i13, i14, i16)) {
-                        this.entityRenderer.itemRenderer.swing();
+                        this.thePlayer.swingItem();
                     }
 
                     if(itemStack19.stackSize == 0) {
@@ -778,6 +789,11 @@ public class Minecraft implements Runnable {
         }
 
         this.ingameGUI.updateTick();
+        this.entityRenderer.getMouseOver(1.0F);
+        if(this.thePlayer != null) {
+            this.thePlayer.onPlayerUpdate();
+        }
+
         if(!this.isGamePaused && this.theWorld != null) {
             this.playerController.onUpdate();
         }
@@ -790,6 +806,24 @@ public class Minecraft implements Runnable {
 		if(this.currentScreen == null && this.thePlayer != null && this.thePlayer.health <= 0) {
 			this.displayGuiScreen((GuiScreen)null);
 		}
+
+        if(this.currentScreen != null) {
+            this.mouseTicksRan = this.ticksRan + 10000;
+        }
+
+        if(this.currentScreen != null) {
+            this.currentScreen.handleInput();
+            if(this.currentScreen != null) {
+                this.currentScreen.updateScreen();
+            }
+        }
+
+        String pastedStr;
+        while ((pastedStr = Touch.getPastedString()) != null) {
+            if (this.currentScreen != null) {
+                this.currentScreen.fireInputEvent(EnumInputEvent.CLIPBOARD_PASTE, pastedStr);
+            }
+        }
 
 		int i1;
 		if(this.currentScreen == null || this.currentScreen.allowUserInput) {
@@ -914,7 +948,7 @@ public class Minecraft implements Runnable {
                             }
 
                             if(Keyboard.getEventKey() == this.options.keyBindInventory.keyCode) {
-                                this.displayGuiScreen(new GuiInventory(this.thePlayer.inventory));
+                                this.displayGuiScreen(new GuiInventory(this.thePlayer.inventory, this.thePlayer.inventory.craftingInventory));
                             }
 
                             if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
@@ -972,17 +1006,6 @@ public class Minecraft implements Runnable {
             this.sendClickBlockToController(0, this.currentScreen == null && (Mouse.isButtonDown(0) || miningTouch) && !useTouch && this.inGameHasFocus);
 		}
 
-		if(this.currentScreen != null) {
-			this.mouseTicksRan = this.ticksRan + 10000;
-		}
-
-		if(this.currentScreen != null) {
-            this.currentScreen.handleInput();
-			if(this.currentScreen != null) {
-				this.currentScreen.updateScreen();
-			}
-		}
-
         if(this.theWorld != null) {
             this.theWorld.difficultySetting = this.options.difficulty;
             if(!this.isGamePaused) {
@@ -1033,6 +1056,7 @@ public class Minecraft implements Runnable {
     }
 
     public void changeWorld(World world, String title) {
+        this.sndManager.playStreaming((String)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
         if(this.theWorld != null) {
             this.theWorld.saveWorldIndirectly(this.loadingScreen);
         }
@@ -1161,7 +1185,9 @@ public class Minecraft implements Runnable {
 
     public static void main(String[] args) throws LWJGLException {
         PlatformRuntime.setThreadName("Client thread");
-        (minecraft = new Minecraft(854, 480, false)).run();
+        minecraft = new Minecraft(854, 480, false);
+        minecraft.session = new Session("Player" + EagRuntime.currentTimeMillis() % 1000L, "Password");
+        minecraft.run();
     }
 
     public static void main(String[] args, String username, String server, int port, String mpPass) throws LWJGLException {

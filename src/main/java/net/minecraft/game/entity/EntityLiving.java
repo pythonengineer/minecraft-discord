@@ -6,6 +6,8 @@ import java.util.List;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.physics.MovingObjectPosition;
+import net.minecraft.game.physics.Vec3D;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.block.StepSound;
@@ -30,6 +32,8 @@ public class EntityLiving extends Entity {
 	protected float unusedFloat1 = 1.0F;
 	protected int scoreValue = 0;
 	protected float unusedFloat2 = 0.0F;
+    public float prevSwingProgress;
+    public float swingProgress;
 	public int health = 10;
 	public int prevHealth;
 	private int livingSoundTime;
@@ -67,6 +71,10 @@ public class EntityLiving extends Entity {
 		this.stepHeight = 0.5F;
 	}
 
+    protected boolean canEntityBeSeen(Entity entity) {
+        return this.worldObj.rayTraceBlocks(Vec3D.createVector(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), Vec3D.createVector(entity.posX, entity.posY + (double)entity.getEyeHeight(), entity.posZ)) == null;
+    }
+
 	public String getTexture() {
 		return this.texture;
 	}
@@ -83,12 +91,17 @@ public class EntityLiving extends Entity {
 		return this.height * 0.85F;
 	}
 
+    public int getTalkInterval() {
+        return 80;
+    }
+
     public void onEntityUpdate() {
+        this.prevSwingProgress = this.swingProgress;
         super.onEntityUpdate();
-		if(this.rand.nextInt(1000) < this.livingSoundTime++) {
-			this.livingSoundTime = -80;
-			String string1;
-			if((string1 = this.getLivingSound()) != null) {
+        if(this.rand.nextInt(1000) < this.livingSoundTime++) {
+            this.livingSoundTime = -this.getTalkInterval();
+            String string1 = this.getLivingSound();
+            if(string1 != null) {
 				this.worldObj.playSoundAtEntity(this, string1, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 			}
 		}
@@ -182,6 +195,10 @@ public class EntityLiving extends Entity {
             f8 = 1.0F;
             f7 = f5 * 3.0F;
             f16 = (float)Math.atan2(d14, d11) * 180.0F / (float)Math.PI - 90.0F;
+        }
+
+        if(this.swingProgress > 0.0F) {
+            f16 = this.rotationYaw;
         }
 
         if(!this.onGround) {
@@ -624,5 +641,54 @@ public class EntityLiving extends Entity {
 
     protected void kill() {
         this.attackEntityFrom((Entity)null, 4);
+    }
+
+    public float getSwingProgress(float renderPartialTick) {
+        float f2 = this.swingProgress - this.prevSwingProgress;
+        if(f2 < 0.0F) {
+            ++f2;
+        }
+
+        return this.prevSwingProgress + f2 * renderPartialTick;
+    }
+
+    public Vec3D getPosition(float renderPartialTick) {
+        if(renderPartialTick == 1.0F) {
+            return Vec3D.createVector(this.posX, this.posY, this.posZ);
+        } else {
+            double d2 = this.prevPosX + (this.posX - this.prevPosX) * (double)renderPartialTick;
+            double d4 = this.prevPosY + (this.posY - this.prevPosY) * (double)renderPartialTick;
+            double d6 = this.prevPosZ + (this.posZ - this.prevPosZ) * (double)renderPartialTick;
+            return Vec3D.createVector(d2, d4, d6);
+        }
+    }
+
+    public Vec3D getLook(float renderPartialTick) {
+        float f2;
+        float f3;
+        float f4;
+        float f5;
+        if(renderPartialTick == 1.0F) {
+            f2 = MathHelper.cos(-this.rotationYaw * 0.017453292F - (float)Math.PI);
+            f3 = MathHelper.sin(-this.rotationYaw * 0.017453292F - (float)Math.PI);
+            f4 = -MathHelper.cos(-this.rotationPitch * 0.017453292F);
+            f5 = MathHelper.sin(-this.rotationPitch * 0.017453292F);
+            return Vec3D.createVector((double)(f3 * f4), (double)f5, (double)(f2 * f4));
+        } else {
+            f2 = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * renderPartialTick;
+            f3 = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * renderPartialTick;
+            f4 = MathHelper.cos(-f3 * 0.017453292F - (float)Math.PI);
+            f5 = MathHelper.sin(-f3 * 0.017453292F - (float)Math.PI);
+            float f6 = -MathHelper.cos(-f2 * 0.017453292F);
+            float f7 = MathHelper.sin(-f2 * 0.017453292F);
+            return Vec3D.createVector((double)(f5 * f6), (double)f7, (double)(f4 * f6));
+        }
+    }
+
+    public MovingObjectPosition rayTrace(double d1, float renderPartialTick) {
+        Vec3D vec3D4 = this.getPosition(renderPartialTick);
+        Vec3D vec3D5 = this.getLook(renderPartialTick);
+        Vec3D vec3D6 = vec3D4.addVector(vec3D5.xCoord * d1, vec3D5.yCoord * d1, vec3D5.zCoord * d1);
+        return this.worldObj.rayTraceBlocks(vec3D4, vec3D6);
     }
 }

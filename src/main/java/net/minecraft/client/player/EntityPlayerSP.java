@@ -35,6 +35,7 @@ public class EntityPlayerSP extends EntityPlayer {
     }
 
     public void updateEntityActionState() {
+        super.updateEntityActionState();
         this.moveStrafing = this.movementInput.moveStrafe;
         this.moveForward = this.movementInput.moveForward;
         this.isJumping = this.movementInput.jump;
@@ -121,5 +122,8 @@ public class EntityPlayerSP extends EntityPlayer {
     }
 
     public void sendChatMessage(String chatMessage) {
+    }
+
+    public void onPlayerUpdate() {
     }
 }

@@ -13,12 +13,16 @@ public class SoundPool {
     private Map nameToSoundPoolEntriesMapping = new HashMap();
     private List allSoundPoolEntries = new ArrayList();
     public int numberOfSoundPoolEntries = 0;
+    public boolean isGetRandomSound = true;
 
     public SoundPoolEntry addSound(EaglercraftSoundManager mgr, String soundName, String soundFile) {
         try {
             String string3 = soundName;
-
-            for(soundName = soundName.substring(0, soundName.indexOf(".")); Character.isDigit(soundName.charAt(soundName.length() - 1)); soundName = soundName.substring(0, soundName.length() - 1)) {
+            soundName = soundName.substring(0, soundName.indexOf("."));
+            if(this.isGetRandomSound) {
+                while(Character.isDigit(soundName.charAt(soundName.length() - 1))) {
+                    soundName = soundName.substring(0, soundName.length() - 1);
+                }
             }
 
             soundName = soundName.replaceAll("/", ".");
@@ -40,5 +44,9 @@ public class SoundPool {
     public SoundPoolEntry getRandomSoundFromSoundPool(String soundName) {
         List list2 = (List)this.nameToSoundPoolEntriesMapping.get(soundName);
         return list2 == null ? null : (SoundPoolEntry)list2.get(this.rand.nextInt(list2.size()));
+    }
+
+    public SoundPoolEntry getRandomSound() {
+        return this.allSoundPoolEntries.size() == 0 ? null : (SoundPoolEntry)this.allSoundPoolEntries.get(this.rand.nextInt(this.allSoundPoolEntries.size()));
     }
 }

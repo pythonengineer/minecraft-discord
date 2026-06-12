@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.physics.AxisAlignedBB;
@@ -361,21 +362,17 @@ public class Chunk {
         this.removeEntityAtIndex(entity, entity.chunkCoordY);
     }
 
-	public void removeEntityAtIndex(Entity entity, int entityID) {
-		if(entityID < 0) {
-			entityID = 0;
-		}
-
-		if(entityID >= this.entities.length) {
-			entityID = this.entities.length - 1;
-		}
-
-        if(!this.entities[entityID].contains(entity)) {
-            System.out.println("There\'s no such entity to remove: " + entity + " @ " + this.xPosition + ", " + this.zPosition);
+    public void removeEntityAtIndex(Entity entity, int index) {
+        if(index < 0) {
+            index = 0;
         }
 
-		this.entities[entityID].remove(entity);
-	}
+        if(index >= this.entities.length) {
+            index = this.entities.length - 1;
+        }
+
+        this.entities[index].remove(entity);
+    }
 
 	public boolean canBlockSeeTheSky(int x, int y, int z) {
 		return y >= (this.heightMap[z << 4 | x] & 255);
@@ -550,5 +547,9 @@ public class Chunk {
         }
 
         return size;
+    }
+
+    public EaglercraftRandom getRandomWithSeed(long j1) {
+        return new EaglercraftRandom(this.worldObj.randomSeed + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ j1);
     }
 }

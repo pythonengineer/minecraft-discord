@@ -1,6 +1,7 @@
 package net.minecraft.game.world.chunk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,12 @@ public class ChunkProviderClient implements IChunkProvider {
 
     public Chunk loadChunk(int chunkX, int chunkZ) {
         ChunkCoordinates chunkCoordinates3 = new ChunkCoordinates(chunkX, chunkZ);
-        Chunk chunk4 = new Chunk(this.worldObj, new byte[32768], chunkX, chunkZ);
-        this.chunkMapping.put(chunkCoordinates3, chunk4);
-        return chunk4;
+        byte[] b4 = new byte[32768];
+        Chunk chunk5 = new Chunk(this.worldObj, b4, chunkX, chunkZ);
+        Arrays.fill(chunk5.skylightMap.data, (byte)-1);
+        this.chunkMapping.put(chunkCoordinates3, chunk5);
+        chunk5.isChunkLoaded = true;
+        return chunk5;
     }
 
     public Chunk provideChunk(int i1, int i2) {
@@ -49,7 +53,7 @@ public class ChunkProviderClient implements IChunkProvider {
         return chunk4 == null ? this.blankChunk : chunk4;
     }
 
-    public boolean saveChunks(boolean z1, IProgressUpdate iProgressUpdate2) {
+    public boolean saveChunks(boolean flag, IProgressUpdate progressUpdate) {
         return true;
     }
 

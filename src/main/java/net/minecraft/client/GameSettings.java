@@ -46,6 +46,9 @@ public class GameSettings {
         this.loadOptions();
     }
 
+    public GameSettings() {
+    }
+
     public String getKeyBindingDescription(int keyBindIndex) {
         return this.keyBindings[keyBindIndex].keyDescription + ": " + Keyboard.getKeyName(this.keyBindings[keyBindIndex].keyCode);
     }

@@ -513,7 +513,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
         int i13;
         int i14;
         int i15;
-        for(i12 = 0; i12 < 4; ++i12) {
+        for(i12 = 0; i12 < 8; ++i12) {
             i13 = i4 + this.rand.nextInt(16) + 8;
             i14 = this.rand.nextInt(128);
             i15 = i5 + this.rand.nextInt(16) + 8;

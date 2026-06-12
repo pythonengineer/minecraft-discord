@@ -12,7 +12,8 @@ import net.minecraft.game.world.material.Material;
 
 public class InventoryPlayer implements IInventory {
 	public ItemStack[] mainInventory = new ItemStack[36];
-	public ItemStack[] armorItemInSlot = new ItemStack[4];
+	public ItemStack[] armorInventory = new ItemStack[4];
+    public ItemStack[] craftingInventory = new ItemStack[4];
 	public int currentItem = 0;
 	private EntityPlayer player;
 
@@ -155,7 +156,7 @@ public class InventoryPlayer implements IInventory {
 	public ItemStack decrStackSize(int slot, int decrementAmount) {
 		ItemStack[] itemStack3 = this.mainInventory;
 		if(slot >= this.mainInventory.length) {
-			itemStack3 = this.armorItemInSlot;
+			itemStack3 = this.armorInventory;
 			slot -= this.mainInventory.length;
 		}
 
@@ -180,10 +181,15 @@ public class InventoryPlayer implements IInventory {
 
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		ItemStack[] itemStack3 = this.mainInventory;
-		if(slot >= this.mainInventory.length) {
-			itemStack3 = this.armorItemInSlot;
-			slot -= this.mainInventory.length;
-		}
+        if(slot >= itemStack3.length) {
+            slot -= itemStack3.length;
+            itemStack3 = this.armorInventory;
+        }
+
+        if(slot >= itemStack3.length) {
+            slot -= itemStack3.length;
+            itemStack3 = this.craftingInventory;
+        }
 
 		itemStack3[slot] = stack;
 	}
@@ -209,21 +215,31 @@ public class InventoryPlayer implements IInventory {
 			}
 		}
 
-		for(i = 0; i < this.armorItemInSlot.length; ++i) {
-			if(this.armorItemInSlot[i] != null) {
+		for(i = 0; i < this.armorInventory.length; ++i) {
+			if(this.armorInventory[i] != null) {
 				compound = new NBTTagCompound();
 				compound.setByte("Slot", (byte)(i + 100));
-				this.armorItemInSlot[i].writeToNBT(compound);
+				this.armorInventory[i].writeToNBT(compound);
 				tagList.setTag(compound);
 			}
 		}
+
+        for(i = 0; i < this.craftingInventory.length; ++i) {
+            if(this.craftingInventory[i] != null) {
+                compound = new NBTTagCompound();
+                compound.setByte("Slot", (byte)(i + 80));
+                this.craftingInventory[i].writeToNBT(compound);
+                tagList.setTag(compound);
+            }
+        }
 
 		return tagList;
 	}
 
 	public void readFromNBT(NBTTagList tagList) {
 		this.mainInventory = new ItemStack[36];
-		this.armorItemInSlot = new ItemStack[4];
+		this.armorInventory = new ItemStack[4];
+        this.craftingInventory = new ItemStack[4];
 
 		for(int i = 0; i < tagList.tagCount(); ++i) {
 			NBTTagCompound compound = (NBTTagCompound)tagList.tagAt(i);
@@ -232,8 +248,12 @@ public class InventoryPlayer implements IInventory {
 				this.mainInventory[slot] = new ItemStack(compound);
 			}
 
-			if(slot >= 100 && slot < this.armorItemInSlot.length + 100) {
-				this.armorItemInSlot[slot - 100] = new ItemStack(compound);
+            if(slot >= 80 && slot < this.craftingInventory.length + 80) {
+                this.craftingInventory[slot - 80] = new ItemStack(compound);
+            }
+
+			if(slot >= 100 && slot < this.armorInventory.length + 100) {
+				this.armorInventory[slot - 100] = new ItemStack(compound);
 			}
 		}
 
@@ -245,10 +265,15 @@ public class InventoryPlayer implements IInventory {
 
 	public ItemStack getStackInSlot(int slot) {
 		ItemStack[] itemStack2 = this.mainInventory;
-		if(slot >= this.mainInventory.length) {
-			itemStack2 = this.armorItemInSlot;
-			slot -= this.mainInventory.length;
-		}
+        if(slot >= itemStack2.length) {
+            slot -= itemStack2.length;
+            itemStack2 = this.armorInventory;
+        }
+
+        if(slot >= itemStack2.length) {
+            slot -= itemStack2.length;
+            itemStack2 = this.craftingInventory;
+        }
 
 		return itemStack2[slot];
 	}
@@ -276,7 +301,7 @@ public class InventoryPlayer implements IInventory {
 	}
 
 	public ItemStack armorItemInSlot(int slot) {
-		return this.armorItemInSlot[slot];
+		return this.armorInventory[slot];
 	}
 
 	public int getTotalArmorValue() {
@@ -284,14 +309,14 @@ public class InventoryPlayer implements IInventory {
 		int i2 = 0;
 		int i3 = 0;
 
-		for(int i4 = 0; i4 < this.armorItemInSlot.length; ++i4) {
-			if(this.armorItemInSlot[i4] != null && this.armorItemInSlot[i4].getItem() instanceof ItemArmor) {
-				int i5 = this.armorItemInSlot[i4].getMaxDamage();
-				int i6 = this.armorItemInSlot[i4].itemDmg;
+		for(int i4 = 0; i4 < this.armorInventory.length; ++i4) {
+			if(this.armorInventory[i4] != null && this.armorInventory[i4].getItem() instanceof ItemArmor) {
+				int i5 = this.armorInventory[i4].getMaxDamage();
+				int i6 = this.armorInventory[i4].itemDmg;
 				int i7 = i5 - i6;
 				i2 += i7;
 				i3 += i5;
-				int i8 = ((ItemArmor)this.armorItemInSlot[i4].getItem()).damageReduceAmount;
+				int i8 = ((ItemArmor)this.armorInventory[i4].getItem()).damageReduceAmount;
 				i1 += i8;
 			}
 		}
@@ -304,12 +329,12 @@ public class InventoryPlayer implements IInventory {
 	}
 
 	public void damageArmor(int damage) {
-		for(int i = 0; i < this.armorItemInSlot.length; ++i) {
-			if(this.armorItemInSlot[i] != null && this.armorItemInSlot[i].getItem() instanceof ItemArmor) {
-				this.armorItemInSlot[i].damageItem(damage);
-				if(this.armorItemInSlot[i].stackSize == 0) {
-                    this.armorItemInSlot[i].onItemDestroyedByUse(this.player);
-					this.armorItemInSlot[i] = null;
+		for(int i = 0; i < this.armorInventory.length; ++i) {
+			if(this.armorInventory[i] != null && this.armorInventory[i].getItem() instanceof ItemArmor) {
+				this.armorInventory[i].damageItem(damage);
+				if(this.armorInventory[i].stackSize == 0) {
+                    this.armorInventory[i].onItemDestroyedByUse(this.player);
+					this.armorInventory[i] = null;
 				}
 			}
 		}
@@ -325,10 +350,10 @@ public class InventoryPlayer implements IInventory {
 			}
 		}
 
-		for(i = 0; i < this.armorItemInSlot.length; ++i) {
-			if(this.armorItemInSlot[i] != null) {
-				this.player.dropPlayerItemWithRandomChoice(this.armorItemInSlot[i], true);
-				this.armorItemInSlot[i] = null;
+		for(i = 0; i < this.armorInventory.length; ++i) {
+			if(this.armorInventory[i] != null) {
+				this.player.dropPlayerItemWithRandomChoice(this.armorInventory[i], true);
+				this.armorInventory[i] = null;
 			}
 		}
 

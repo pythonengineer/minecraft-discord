@@ -25,7 +25,7 @@ class ThreadConnectToServer extends Thread {
                 return;
             }
 
-            GuiConnecting.getNetClientHandler(this.connectingGui).addToSendQueue(new Packet1Handshake(this.mc.session.username, this.mc.session.sessionId, 10));
+            GuiConnecting.getNetClientHandler(this.connectingGui).addToSendQueue(new Packet2Handshake(this.mc.session.username, this.mc.session.sessionId, 13));
         } catch (IOException exception4) {
             if(GuiConnecting.isCancelled(this.connectingGui)) {
                 return;

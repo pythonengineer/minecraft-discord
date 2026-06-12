@@ -55,10 +55,10 @@ public class EntityBoat extends Entity {
 		return (double)this.height * 0.0D - (double)0.3F;
 	}
 
-	public boolean attackEntityFrom(Entity entity1, int i2) {
+    public boolean attackEntityFrom(Entity entity, int damage) {
 		this.forwardDirection = -this.forwardDirection;
 		this.timeSinceHit = 10;
-		this.damageTaken += i2 * 10;
+        this.damageTaken += damage * 10;
 		if(this.damageTaken > 40) {
 			int i3;
 			for(i3 = 0; i3 < 3; ++i3) {
@@ -224,10 +224,10 @@ public class EntityBoat extends Entity {
 		this.riddenByEntity.setPosition(this.posX + d1, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + d3);
 	}
 
-	protected void writeEntityToNBT(NBTTagCompound nBTTagCompound1) {
+	protected void writeEntityToNBT(NBTTagCompound compoundTag) {
 	}
 
-	protected void readEntityFromNBT(NBTTagCompound nBTTagCompound1) {
+	protected void readEntityFromNBT(NBTTagCompound compoundTag) {
 	}
 
 	public float getShadowSize() {

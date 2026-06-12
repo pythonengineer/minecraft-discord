@@ -29,4 +29,8 @@ public class Packet16BlockItemSwitch extends Packet {
 	public void processPacket(NetHandler netHandler1) {
 		netHandler1.handleBlockItemSwitch(this);
 	}
+
+    public int getPacketSize() {
+        return 6;
+    }
 }

@@ -25,6 +25,8 @@ public class EntityPlayer extends EntityLiving {
 	public int score = 0;
 	public float prevCameraYaw;
 	public float cameraYaw;
+    public boolean isSwinging = false;
+    public int swingProgressInt = 0;
 	public String username;
 	private int damageRemainder = 0;
 
@@ -54,6 +56,17 @@ public class EntityPlayer extends EntityLiving {
 	}
 
     protected void updateEntityActionState() {
+        if(this.isSwinging) {
+            ++this.swingProgressInt;
+            if(this.swingProgressInt == 8) {
+                this.swingProgressInt = 0;
+                this.isSwinging = false;
+            }
+        } else {
+            this.swingProgressInt = 0;
+        }
+
+        this.swingProgress = (float)this.swingProgressInt / 8.0F;
     }
 
 	public void onLivingUpdate() {
@@ -231,20 +244,6 @@ public class EntityPlayer extends EntityLiving {
 	public void displayGUIEditSign(TileEntitySign signTileEntity) {
 	}
 
-    public void dropOneItem(boolean flag) {
-        this.dropPlayerItem(this.inventory.decrStackSize(this.inventory.currentItem,
-            flag && this.inventory.getCurrentItem() != null ? this.inventory.getCurrentItem().stackSize : 1));
-    }
-
-    public boolean getItemShouldUseOnTouchEagler() {
-        ItemStack st = this.inventory.getCurrentItem();
-        return st != null && st.getItem().shouldUseOnTouchEagler(st);
-    }
-
-	public int getPlayerArmorValue() {
-		return this.inventory.getTotalArmorValue();
-	}
-
 	public void interactWithEntity(Entity entity1) {
 	}
 
@@ -258,5 +257,20 @@ public class EntityPlayer extends EntityLiving {
 
     public double getYOffset() {
         return (double)(this.yOffset - 0.5F);
+    }
+
+    public void swingItem() {
+        this.swingProgressInt = -1;
+        this.isSwinging = true;
+    }
+
+    public void dropOneItem(boolean flag) {
+        this.dropPlayerItem(this.inventory.decrStackSize(this.inventory.currentItem,
+            flag && this.inventory.getCurrentItem() != null ? this.inventory.getCurrentItem().stackSize : 1));
+    }
+
+    public boolean getItemShouldUseOnTouchEagler() {
+        ItemStack st = this.inventory.getCurrentItem();
+        return st != null && st.getItem().shouldUseOnTouchEagler(st);
     }
 }
