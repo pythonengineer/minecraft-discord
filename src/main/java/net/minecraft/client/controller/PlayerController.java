@@ -17,9 +17,6 @@ public class PlayerController {
 		this.mc = mc;
 	}
 
-    public void init() {
-    }
-
     public void onWorldChange(World world) {
     }
 
@@ -68,7 +65,8 @@ public class PlayerController {
 	}
 
     public boolean onPlayerRightClick(EntityPlayer entityPlayer, World world, ItemStack itemStack, int x, int y, int z, int side) {
-        return itemStack.useItem(entityPlayer, world, x, y, z, side);
+        int i8 = world.getBlockId(x, y, z);
+        return i8 > 0 && Block.blocksList[i8].blockActivated(world, x, y, z, entityPlayer) ? true : (itemStack == null ? false : itemStack.useItem(entityPlayer, world, x, y, z, side));
     }
 
     public EntityPlayer createPlayer(World world) {

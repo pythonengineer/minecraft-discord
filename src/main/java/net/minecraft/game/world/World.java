@@ -41,7 +41,7 @@ import net.minecraft.game.world.terrain.ChunkProviderGenerate;
 
 public class World implements IBlockAccess {
 	private List lightingToUpdate;
-	private List loadedEntityList;
+	public List loadedEntityList;
     private List unloadedEntityList;
     private TreeSet scheduledTickTreeSet;
     private Set scheduledTickSet;
@@ -57,6 +57,7 @@ public class World implements IBlockAccess {
     public boolean editingBlocks;
     public static float[] lightBrightnessTable = new float[16];
     private final long lockTimestamp;
+    protected int autosavePeriod;
     public List playerEntities;
 	public int difficultySetting;
 	public Object fontRenderer;
@@ -65,7 +66,7 @@ public class World implements IBlockAccess {
 	public int spawnY;
 	public int spawnZ;
 	public boolean isNewWorld;
-	private List worldAccesses;
+    protected List worldAccesses;
 	private IChunkProvider chunkProvider;
 	private VFile2 saveDirectory;
     public long randomSeed;
@@ -129,6 +130,7 @@ public class World implements IBlockAccess {
         this.DIST_HASH_MAGIC = 1013904223;
         this.editingBlocks = false;
         this.lockTimestamp = EagRuntime.currentTimeMillis();
+        this.autosavePeriod = 40;
         this.playerEntities = new ArrayList();
         this.rand = new EaglercraftRandom();
         this.isNewWorld = false;
@@ -162,6 +164,7 @@ public class World implements IBlockAccess {
 		this.DIST_HASH_MAGIC = 1013904223;
         this.editingBlocks = false;
         this.lockTimestamp = EagRuntime.currentTimeMillis();
+        this.autosavePeriod = 40;
         this.playerEntities = new ArrayList();
 		this.rand = new EaglercraftRandom();
 		this.isNewWorld = false;
@@ -1525,7 +1528,7 @@ public class World implements IBlockAccess {
         }
 
         ++this.worldTime;
-        if(this.worldTime % 20L == 0L) {
+        if(this.worldTime % (long)this.autosavePeriod == 0L) {
             this.saveWorld(false, (IProgressUpdate)null);
         }
 
@@ -1593,7 +1596,7 @@ public class World implements IBlockAccess {
                 i9 = this.getTopSolidOrLiquidBlock(i7 + i3, i8 + i4);
                 if(i9 >= 0 && i9 < 128 && chunk14.getSavedLightValue(EnumSkyBlock.Block, i7, i9, i8) < 10) {
                     i10 = chunk14.getBlockID(i7, i9 - 1, i8);
-                    if(chunk14.getBlockID(i7, i9, i8) == 0 && i10 != 0 && i10 != Block.ice.blockID && Block.blocksList[i10].material.getIsSolid()) {
+                    if(chunk14.getBlockID(i7, i9, i8) == 0 && Block.snow.canPlaceBlockAt(this, i7 + i3, i9, i8 + i4)) {
                         this.setBlockWithNotify(i7 + i3, i9, i8 + i4, Block.snow.blockID);
                     }
 
@@ -1880,6 +1883,28 @@ public class World implements IBlockAccess {
         } catch (IOException iOException7) {
             throw new MinecraftException("Failed to check session lock, aborting");
         }
+    }
+
+    public void setWorldTime(long time) {
+        this.worldTime = time;
+    }
+
+    public void joinEntityInSurroundings(Entity entity) {
+        int i2 = MathHelper.floor_double(entity.posX / 16.0D);
+        int i3 = MathHelper.floor_double(entity.posZ / 16.0D);
+        byte b4 = 2;
+
+        for(int i5 = i2 - b4; i5 <= i2 + b4; ++i5) {
+            for(int i6 = i3 - b4; i6 <= i3 + b4; ++i6) {
+                this.getChunkFromChunkCoords(i5, i6);
+            }
+        }
+
+        if(!this.loadedEntityList.contains(entity)) {
+            System.out.println("REINSERTING PLAYER!");
+            this.loadedEntityList.add(entity);
+        }
+
     }
 
 	static {

@@ -30,17 +30,21 @@ public class EntityList {
     private static final Map<String, EntityConstructor<? extends Entity>> stringToConstructorMapping = Maps
             .newHashMap();
     private static Map<Class<? extends Entity>, String> classToStringMapping = Maps.newHashMap();
+    private static Map<Integer, EntityConstructor<? extends Entity>> IDtoConstructorMapping = Maps.newHashMap();
+    private static Map<Class<? extends Entity>, Integer> classToIDMapping = Maps.newHashMap();
     private static final Map<Class<? extends Entity>, EntityConstructor<? extends Entity>> classToConstructorMapping = Maps
             .newHashMap();
 
     private static void addMapping(Class<? extends Entity> entityClass, 
-            EntityConstructor<? extends Entity> entityConstructor, String entityName) {
+            EntityConstructor<? extends Entity> entityConstructor, String entityName, int entityID) {
         if (stringToClassMapping.containsKey(entityName)) {
             throw new IllegalArgumentException("ID is already registered: " + entityName);
         } else {
             stringToClassMapping.put(entityName, entityClass);
             stringToConstructorMapping.put(entityName, entityConstructor);
             classToStringMapping.put(entityClass, entityName);
+            IDtoConstructorMapping.put(entityID, entityConstructor);
+            classToIDMapping.put(entityClass, entityID);
             classToConstructorMapping.put(entityClass, entityConstructor);
         }
     }
@@ -106,30 +110,53 @@ public class EntityList {
         return entity;
     }
 
+    public static Entity createEntityByID(int entityID, World worldIn) {
+        Entity entity = null;
+
+        try {
+            EntityConstructor<? extends Entity> constructor = IDtoConstructorMapping.get(entityID);
+            if (constructor != null) {
+                entity = constructor.createEntity(worldIn);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        if(entity == null) {
+            System.out.println("Skipping Entity with id " + entityID);
+        }
+
+        return entity;
+    }
+
+    public static int getEntityID(Entity entity) {
+        return ((Integer)classToIDMapping.get(entity.getClass())).intValue();
+    }
+
     public static String getEntityString(Entity entity) {
         return (String)classToStringMapping.get(entity.getClass());
     }
 
     static {
-        addMapping(EntityArrow.class, EntityArrow::new, "Arrow");
-        addMapping(EntitySnowball.class, EntityArrow::new, "Snowball");
-        addMapping(EntityItem.class, EntityItem::new, "Item");
-        addMapping(EntityPainting.class, EntityPainting::new, "Painting");
-        addMapping(EntityLiving.class, EntityLiving::new, "Mob");
-        addMapping(EntityMob.class, EntityMob::new, "Monster");
-        addMapping(EntityCreeper.class, EntityCreeper::new, "Creeper");
-        addMapping(EntitySkeleton.class, EntitySkeleton::new, "Skeleton");
-        addMapping(EntitySpider.class, EntitySpider::new, "Spider");
-        addMapping(EntityGiantZombie.class, EntityGiantZombie::new, "Giant");
-        addMapping(EntityZombie.class, EntityZombie::new, "Zombie");
-        addMapping(EntitySlime.class, EntitySlime::new, "Slime");
-        addMapping(EntityPig.class, EntityPig::new, "Pig");
-        addMapping(EntitySheep.class, EntitySheep::new, "Sheep");
-        addMapping(EntityCow.class, EntityCow::new, "Cow");
-        addMapping(EntityChicken.class, EntityChicken::new, "Chicken");
-        addMapping(EntityTNTPrimed.class, EntityTNTPrimed::new, "PrimedTnt");
-        addMapping(EntityFallingSand.class, EntityFallingSand::new, "FallingSand");
-        addMapping(EntityMinecart.class, EntityMinecart::new, "Minecart");
-        addMapping(EntityBoat.class, EntityBoat::new, "Boat");
+        addMapping(EntityArrow.class, EntityArrow::new, "Arrow", 10);
+        addMapping(EntitySnowball.class, EntityArrow::new, "Snowball", 11);
+        addMapping(EntityItem.class, EntityItem::new, "Item", 1);
+        addMapping(EntityPainting.class, EntityPainting::new, "Painting", 9);
+        addMapping(EntityLiving.class, EntityLiving::new, "Mob", 48);
+        addMapping(EntityMob.class, EntityMob::new, "Monster", 49);
+        addMapping(EntityCreeper.class, EntityCreeper::new, "Creeper", 50);
+        addMapping(EntitySkeleton.class, EntitySkeleton::new, "Skeleton", 51);
+        addMapping(EntitySpider.class, EntitySpider::new, "Spider", 52);
+        addMapping(EntityGiantZombie.class, EntityGiantZombie::new, "Giant", 53);
+        addMapping(EntityZombie.class, EntityZombie::new, "Zombie", 54);
+        addMapping(EntitySlime.class, EntitySlime::new, "Slime", 55);
+        addMapping(EntityPig.class, EntityPig::new, "Pig", 90);
+        addMapping(EntitySheep.class, EntitySheep::new, "Sheep", 91);
+        addMapping(EntityCow.class, EntityCow::new, "Cow", 91);
+        addMapping(EntityChicken.class, EntityChicken::new, "Chicken", 91);
+        addMapping(EntityTNTPrimed.class, EntityTNTPrimed::new, "PrimedTnt", 20);
+        addMapping(EntityFallingSand.class, EntityFallingSand::new, "FallingSand", 21);
+        addMapping(EntityMinecart.class, EntityMinecart::new, "Minecart", 40);
+        addMapping(EntityBoat.class, EntityBoat::new, "Boat", 41);
     }
 }

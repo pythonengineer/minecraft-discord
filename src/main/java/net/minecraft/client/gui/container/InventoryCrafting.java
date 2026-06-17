@@ -6,18 +6,18 @@ import net.minecraft.game.item.ItemStack;
 public class InventoryCrafting implements IInventory {
 	private ItemStack[] stackList;
 	private int gridSize;
-	private GuiContainer craftingInventory;
+    private CraftingInventoryCB craftingInventory;
 
-    public InventoryCrafting(GuiContainer container, int x, int y) {
+    public InventoryCrafting(CraftingInventoryCB craftingInventoryCB, int x, int y) {
         this.gridSize = x * y;
         this.stackList = new ItemStack[this.gridSize];
-        this.craftingInventory = container;
+        this.craftingInventory = craftingInventoryCB;
     }
 
-    public InventoryCrafting(GuiContainer container, ItemStack[] stack) {
+    public InventoryCrafting(CraftingInventoryCB craftingInventoryCB, ItemStack[] stack) {
         this.gridSize = stack.length;
         this.stackList = stack;
-        this.craftingInventory = container;
+        this.craftingInventory = craftingInventoryCB;
     }
 
 	public int getSizeInventory() {

@@ -53,6 +53,10 @@ public class ItemBucket extends Item {
                         return new ItemStack(Item.bucketLava);
                     }
                 } else {
+                    if(this.isFull < 0) {
+                        return new ItemStack(Item.bucketEmpty);
+                    }
+
                     if(movingObjectPosition24.sideHit == 0) {
                         --i26;
                     }

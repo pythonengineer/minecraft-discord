@@ -54,7 +54,11 @@ public class GuiMultiplayer extends GuiScreen {
 
     protected void keyTyped(char c1, int i2) {
         if(c1 == 22 || i2 == 47) {
-            String string3 = "" + GuiScreen.getClipboardString();
+            String string3 = GuiScreen.getClipboardString();
+            if(string3 == null) {
+                string3 = "";
+            }
+
             int i4 = 64 - this.ipText.length();
             if(i4 > string3.length()) {
                 i4 = string3.length();
@@ -63,6 +67,10 @@ public class GuiMultiplayer extends GuiScreen {
             if(i4 > 0) {
                 this.ipText = this.ipText + string3.substring(0, i4);
             }
+        }
+
+        if(c1 == 13 || i2 == 28) {
+            this.actionPerformed((GuiButton)this.controlList.get(0));
         }
 
         if(i2 == 14 && this.ipText.length() > 0) {

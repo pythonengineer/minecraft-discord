@@ -4,7 +4,7 @@ import net.minecraft.game.IInventory;
 import net.minecraft.game.item.ItemArmor;
 import net.minecraft.game.item.ItemStack;
 
-class SlotArmor extends Slot {
+class SlotArmor extends SlotInventory {
     final int armorType;
     final GuiInventory guiInventory;
 

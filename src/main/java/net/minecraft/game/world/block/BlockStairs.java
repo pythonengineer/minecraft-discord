@@ -65,21 +65,23 @@ public class BlockStairs extends Block {
     }
 
     public void onNeighborBlockChange(World world, int x, int y, int z, int i5) {
-        if(world.getBlockMaterial(x, y + 1, z).isSolid()) {
-            world.setBlockWithNotify(x, y, z, this.modelBlock.blockID);
-        } else {
-            this.updateState(world, x, y, z);
-            this.updateState(world, x + 1, y - 1, z);
-            this.updateState(world, x - 1, y - 1, z);
-            this.updateState(world, x, y - 1, z - 1);
-            this.updateState(world, x, y - 1, z + 1);
-            this.updateState(world, x + 1, y + 1, z);
-            this.updateState(world, x - 1, y + 1, z);
-            this.updateState(world, x, y + 1, z - 1);
-            this.updateState(world, x, y + 1, z + 1);
-        }
+        if(!world.multiplayerWorld) {
+            if(world.getBlockMaterial(x, y + 1, z).isSolid()) {
+                world.setBlockWithNotify(x, y, z, this.modelBlock.blockID);
+            } else {
+                this.updateState(world, x, y, z);
+                this.updateState(world, x + 1, y - 1, z);
+                this.updateState(world, x - 1, y - 1, z);
+                this.updateState(world, x, y - 1, z - 1);
+                this.updateState(world, x, y - 1, z + 1);
+                this.updateState(world, x + 1, y + 1, z);
+                this.updateState(world, x - 1, y + 1, z);
+                this.updateState(world, x, y + 1, z - 1);
+                this.updateState(world, x, y + 1, z + 1);
+            }
 
-        this.modelBlock.onNeighborBlockChange(world, x, y, z, i5);
+            this.modelBlock.onNeighborBlockChange(world, x, y, z, i5);
+        }
     }
 
     private void updateState(World world, int x, int y, int z) {

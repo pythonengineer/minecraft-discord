@@ -22,7 +22,6 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.util.ReportedException;
 import net.minecraft.client.controller.PlayerController;
 import net.minecraft.client.controller.PlayerControllerCreative;
-import net.minecraft.client.controller.PlayerControllerSP;
 import net.minecraft.client.effect.EffectRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiChat;
@@ -60,7 +59,7 @@ import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
 
 public class Minecraft implements Runnable {
-	public PlayerController playerController = new PlayerControllerSP(this);
+	public PlayerController playerController;
 	private boolean fullscreen = false;
 	public int displayWidth;
 	public int displayHeight;
@@ -101,6 +100,7 @@ public class Minecraft implements Runnable {
     private long prevFrameTime;
     public boolean inGameHasFocus;
     private long systemTime;
+    private int joinPlayerCounter = 0;
     private int mouseTicksRan;
     public boolean isRaining;
     public boolean mouseGrabSupported = false;
@@ -156,7 +156,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.15");
+        Display.setTitle("Minecraft Alpha v1.0.17_04");
 
         try {
             Display.create();
@@ -210,7 +210,6 @@ public class Minecraft implements Runnable {
         this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
 
         this.ingameGUI = new GuiIngame(this);
-        this.playerController.init();
         if(this.serverName != null) {
             this.displayGuiScreen(new GuiConnecting(this, this.serverName, this.serverPort));
         } else {
@@ -374,7 +373,10 @@ public class Minecraft implements Runnable {
                 }
 
                 if(!this.skipRenderWorld) {
-                    this.playerController.setPartialTime(this.timer.renderPartialTicks);
+                    if(this.playerController != null) {
+                        this.playerController.setPartialTime(this.timer.renderPartialTicks);
+                    }
+
                     this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
                 }
 
@@ -666,24 +668,19 @@ public class Minecraft implements Runnable {
                         this.playerController.clickBlock(i11, i13, i14, this.objectMouseOver.sideHit);
                     }
                 } else {
-                    ItemStack itemStack19 = this.thePlayer.inventory.getCurrentItem();
-                    int i7 = this.theWorld.getBlockId(i11, i13, i14);
-                    if(i7 > 0 && Block.blocksList[i7].blockActivated(this.theWorld, i11, i13, i14, this.thePlayer)) {
-                        return;
-                    }
-
-                    if(itemStack19 == null) {
-                        return;
-                    }
-
-                    int i9 = itemStack19.stackSize;
-                    if(this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemStack19, i11, i13, i14, i16)) {
+                    ItemStack itemStack7 = this.thePlayer.inventory.getCurrentItem();
+                    int i8 = itemStack7 != null ? itemStack7.stackSize : 0;
+                    if(this.playerController.onPlayerRightClick(this.thePlayer, this.theWorld, itemStack7, i11, i13, i14, i16)) {
                         this.thePlayer.swingItem();
                     }
 
-                    if(itemStack19.stackSize == 0) {
+                    if(itemStack7 == null) {
+                        return;
+                    }
+
+                    if(itemStack7.stackSize == 0) {
                         this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-                    } else if(itemStack19.stackSize != i9) {
+                    } else if(itemStack7.stackSize != i8) {
                         this.entityRenderer.itemRenderer.resetEquippedProgress();
                     }
                 }
@@ -1007,6 +1004,14 @@ public class Minecraft implements Runnable {
 		}
 
         if(this.theWorld != null) {
+            if(this.thePlayer != null) {
+                ++this.joinPlayerCounter;
+                if(this.joinPlayerCounter == 30) {
+                    this.joinPlayerCounter = 0;
+                    this.theWorld.joinEntityInSurroundings(this.thePlayer);
+                }
+            }
+
             this.theWorld.difficultySetting = this.options.difficulty;
             if(!this.isGamePaused) {
                 this.entityRenderer.updateRenderer();

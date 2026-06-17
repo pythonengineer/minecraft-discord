@@ -75,16 +75,42 @@ const new_client = function (client, req) {
             if (hasAuthed) {
                 target.write(msg);
             } else {
-                const combinedBuffer = Buffer.concat([buffer, msg]);
+                let combinedBuffer = Buffer.concat([buffer, msg]);
                 let offset = 0;
+
                 while (offset < combinedBuffer.length) {
-                    if (combinedBuffer.length - offset < 9) {
+                    if (combinedBuffer.length - offset < 3) {
                         offset = 0;
                         break;
                     }
 
                     const packetId = combinedBuffer.readUint8(offset);
                     offset += 1;
+
+                    if (packetId == 2) {
+                        if (combinedBuffer.length - offset < 2) {
+                            offset = 0;
+                            break;
+                        }
+
+                        const usernameLen = combinedBuffer.readUint16BE(offset);
+                        offset += 2;
+                        if (combinedBuffer.length - offset < usernameLen) {
+                            offset = 0;
+                            break;
+                        }
+
+                        offset += usernameLen;
+                        target.write(combinedBuffer.slice(0, offset));
+                        combinedBuffer = combinedBuffer.slice(offset);
+                        offset = 0;
+                        continue;
+                    }
+
+                    if (combinedBuffer.length - offset < 6) {
+                        offset = 0;
+                        break;
+                    }
 
                     const protocol = combinedBuffer.readInt32BE(offset);
                     offset += 4;

@@ -5,25 +5,11 @@ import net.minecraft.game.item.ItemStack;
 
 public class Slot {
 	public final int slotIndex;
-	public final int xDisplayPosition;
-	public final int yDisplayPosition;
 	public final IInventory inventory;
-	private final GuiContainer slotContainer;
 
-    public Slot(GuiContainer container, IInventory inventory, int slot, int x, int y) {
-        this.slotContainer = container;
+    public Slot(IInventory inventory, int slot) {
         this.inventory = inventory;
         this.slotIndex = slot;
-        this.xDisplayPosition = x;
-        this.yDisplayPosition = y;
-    }
-
-    public boolean getIsMouseOverSlot(int x, int y) {
-        int i3 = (this.slotContainer.width - this.slotContainer.xSize) / 2;
-        int i4 = (this.slotContainer.height - this.slotContainer.ySize) / 2;
-        x -= i3;
-        y -= i4;
-        return x >= this.xDisplayPosition - 1 && x < this.xDisplayPosition + 16 + 1 && y >= this.yDisplayPosition - 1 && y < this.yDisplayPosition + 16 + 1;
     }
 
 	public void onPickupFromSlot() {

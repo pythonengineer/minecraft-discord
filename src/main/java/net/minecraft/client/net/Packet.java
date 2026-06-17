@@ -67,8 +67,10 @@ public abstract class Packet {
 
 	static {
         addIdClassMapping(0, Packet0KeepAlive.class);
-        addIdClassMapping(1, Packet2Handshake.class);
+        addIdClassMapping(1, Packet1Login.class);
+        addIdClassMapping(2, Packet2Handshake.class);
         addIdClassMapping(3, Packet3Chat.class);
+        addIdClassMapping(4, Packet4UpdateTime.class);
         addIdClassMapping(10, Packet10Flying.class);
         addIdClassMapping(11, Packet11PlayerPosition.class);
         addIdClassMapping(12, Packet12PlayerLook.class);
@@ -82,6 +84,7 @@ public abstract class Packet {
         addIdClassMapping(21, Packet21PickupSpawn.class);
         addIdClassMapping(22, Packet22Collect.class);
         addIdClassMapping(23, Packet23VehicleSpawn.class);
+        addIdClassMapping(24, Packet24MobSpawn.class);
         addIdClassMapping(29, Packet29DestroyEntity.class);
         addIdClassMapping(30, Packet30Entity.class);
         addIdClassMapping(31, Packet31RelEntityMove.class);

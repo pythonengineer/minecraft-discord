@@ -65,9 +65,7 @@ public class GuiMainMenu extends GuiScreen {
 	public void initGui() {
         Calendar calendar1 = Calendar.getInstance();
         calendar1.setTime(new Date());
-        if(this.mc.session != null && this.mc.session.username.equals("athna") && calendar1.get(2) + 1 == 7 && calendar1.get(5) == 26 && calendar1.get(1) == 2010) {
-            this.splashString = "Happy birthday! I love you! Alex x";
-        } else if(calendar1.get(2) + 1 == 11 && calendar1.get(5) == 9) {
+        if(calendar1.get(2) + 1 == 11 && calendar1.get(5) == 9) {
             this.splashString = "Happy birthday, ez!";
         } else if(calendar1.get(2) + 1 == 6 && calendar1.get(5) == 1) {
             this.splashString = "Happy birthday, Notch!";

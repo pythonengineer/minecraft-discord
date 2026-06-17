@@ -22,8 +22,8 @@ public class GuiConnectFailed extends GuiScreen {
         this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, "Back to title screen"));
     }
 
-    protected void actionPerformed(GuiButton guiButton1) {
-        if(guiButton1.id == 0) {
+    protected void actionPerformed(GuiButton button) {
+        if(button.id == 0) {
             this.mc.displayGuiScreen(new GuiMainMenu());
         }
 

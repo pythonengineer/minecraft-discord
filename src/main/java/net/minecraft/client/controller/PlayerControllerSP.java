@@ -31,7 +31,7 @@ public class PlayerControllerSP extends PlayerController {
     private float blockDestroySoundCounter = 0.0F;
     private int blockHitWait = 0;
     private SpawnerAnimals monsterSpawner = new SpawnerMonsters(this, 200, EntityMob.class, new Class[]{EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySpider.class, EntitySlime.class});
-    private SpawnerAnimals animalSpawner = new SpawnerAnimals(20, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class, EntityCow.class, EntityChicken.class});
+    private SpawnerAnimals animalSpawner = new SpawnerAnimals(15, EntityAnimal.class, new Class[]{EntitySheep.class, EntityPig.class, EntityCow.class, EntityChicken.class});
 
     public PlayerControllerSP(Minecraft minecraft1) {
         super(minecraft1);
@@ -39,9 +39,6 @@ public class PlayerControllerSP extends PlayerController {
 
     public void flipPlayer(EntityPlayer playerEntity) {
         playerEntity.rotationYaw = -180.0F;
-    }
-
-    public void init() {
     }
 
     public boolean sendBlockRemoved(int x, int y, int z, int side) {

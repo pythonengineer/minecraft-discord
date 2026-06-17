@@ -488,6 +488,10 @@ public class PlatformAudio {
         src.getPlaybackRate().setValue(pitch);
         src.setLoop(repeat);
 
+        x = Float.isFinite(x) ? x : 0.0f;
+        y = Float.isFinite(y) ? y : 0.0f;
+        z = Float.isFinite(z) ? z : 0.0f;
+
         PannerNode panner = audioctx.createPanner();
         panner.setPosition(x, y, z);
         float v1 = 16.0f;

@@ -225,7 +225,7 @@ public class Chunk {
         byte b6 = (byte)blockID;
         int i7 = this.heightMap[z << 4 | x] & 255;
         int i8 = this.blocks[x << 11 | z << 7 | y] & 255;
-        if(i8 == blockID) {
+        if(i8 == blockID && this.data.get(x, y, z) == metadata) {
             return false;
         } else {
             int i9 = this.xPosition * 16 + x;

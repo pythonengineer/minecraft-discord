@@ -25,6 +25,7 @@ public class CraftingManager {
         (new RecipesArmor()).addRecipes(this);
         this.addRecipe(new ItemStack(Item.paper, 3), new Object[]{"###", '#', Item.reed});
         this.addRecipe(new ItemStack(Item.book, 1), new Object[]{"#", "#", "#", '#', Item.paper});
+        this.addRecipe(new ItemStack(Block.fence, 2), new Object[]{"###", "###", '#', Item.stick});
         this.addRecipe(new ItemStack(Block.jukebox, 1), new Object[]{"###", "#X#", "###", '#', Block.planks, 'X', Item.diamond});
         this.addRecipe(new ItemStack(Block.bookshelf, 1), new Object[]{"###", "XXX", "###", '#', Block.planks, 'X', Item.book});
         this.addRecipe(new ItemStack(Block.blockSnow, 1), new Object[]{"##", "##", '#', Item.snowball});

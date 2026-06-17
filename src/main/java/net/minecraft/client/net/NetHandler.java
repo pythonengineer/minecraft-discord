@@ -14,8 +14,8 @@ public class NetHandler {
         this.registerPacket(packet);
     }
 
-    public void handleLogin(Packet2Handshake packet2Handshake1) {
-        this.registerPacket(packet2Handshake1);
+    public void handleLogin(Packet1Login packet) {
+        this.registerPacket(packet);
     }
 
     public void handleFlying(Packet10Flying packet) {
@@ -83,6 +83,18 @@ public class NetHandler {
     }
 
     public void handleArmAnimation(Packet18ArmAnimation packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleHandshake(Packet2Handshake packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleMobSpawn(Packet24MobSpawn packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleUpdateTime(Packet4UpdateTime packet) {
         this.registerPacket(packet);
     }
 }

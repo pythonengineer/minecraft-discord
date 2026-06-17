@@ -63,6 +63,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 	}
 
 	protected void joinEntityItemWithWorld(EntityItem entityItem) {
+        System.out.println("Dropping?");
 		Packet21PickupSpawn packet21PickupSpawn2 = new Packet21PickupSpawn(entityItem);
 		this.sendQueue.addToSendQueue(packet21PickupSpawn2);
 		entityItem.posX = (double)packet21PickupSpawn2.xPosition / 32.0D;

@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.EntityList;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.misc.EntityBoat;
 import net.minecraft.game.entity.misc.EntityItem;
@@ -59,7 +60,7 @@ public class NetClientHandler extends NetHandler {
         }
     }
 
-    public void handleLogin(Packet2Handshake packet2Handshake1) {
+    public void handleLogin(Packet1Login packet) {
         this.mc.playerController = new PlayerControllerMP(this.mc, this);
         this.worldClient = new WorldClient(this);
         this.worldClient.multiplayerWorld = true;
@@ -303,8 +304,41 @@ public class NetClientHandler extends NetHandler {
         this.mc.thePlayer.inventory.addItemStackToInventory(new ItemStack(packet.itemID, packet.count, packet.itemDamage));
     }
 
+    public void handleHandshake(Packet2Handshake packet2Handshake1) {
+        if(packet2Handshake1.username.equals("-")) {
+            this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 1));
+        } else {
+            try {
+                this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 1));
+            } catch (Exception exception5) {
+                exception5.printStackTrace();
+                this.netManager.networkShutdown("Internal client error: " + exception5.toString());
+            }
+        }
+
+    }
+
     public void disconnect() {
         this.disconnected = true;
         this.netManager.networkShutdown("Closed");
+    }
+
+    public void handleMobSpawn(Packet24MobSpawn packet) {
+        double d2 = (double)packet.xPosition / 32.0D;
+        double d4 = (double)packet.yPosition / 32.0D;
+        double d6 = (double)packet.zPosition / 32.0D;
+        float f8 = (float)(packet.yaw * 360) / 256.0F;
+        float f9 = (float)(packet.pitch * 360) / 256.0F;
+        EntityLiving entityLiving10 = (EntityLiving)EntityList.createEntityByID(packet.type, this.mc.theWorld);
+        entityLiving10.serverPosX = packet.xPosition;
+        entityLiving10.serverPosY = packet.yPosition;
+        entityLiving10.serverPosZ = packet.zPosition;
+        entityLiving10.setPositionAndRotation(d2, d4, d6, f8, f9);
+        entityLiving10.isAIEnabled = true;
+        this.worldClient.addEntityToWorld(packet.entityId, entityLiving10);
+    }
+
+    public void handleUpdateTime(Packet4UpdateTime packet4UpdateTime1) {
+        this.mc.theWorld.setWorldTime(packet4UpdateTime1.time);
     }
 }

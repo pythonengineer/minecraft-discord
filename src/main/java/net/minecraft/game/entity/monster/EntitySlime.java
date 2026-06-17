@@ -129,7 +129,7 @@ public class EntitySlime extends EntityLiving implements IMobs {
 
     public boolean getCanSpawnHere() {
         Chunk chunk1 = this.worldObj.getChunkFromBlockCoords(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY));
-        return (this.size == 1 || this.worldObj.difficultySetting > 0) && this.rand.nextInt(10) == 0 && chunk1.getRandomWithSeed(987234911L).nextInt(100) == 0 && this.posY < 16.0D;
+        return (this.size == 1 || this.worldObj.difficultySetting > 0) && this.rand.nextInt(10) == 0 && chunk1.getRandomWithSeed(987234911L).nextInt(30) == 0 && this.posY < 16.0D;
     }
 
     protected float getSoundVolume() {

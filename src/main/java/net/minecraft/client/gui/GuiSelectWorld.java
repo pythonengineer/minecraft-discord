@@ -2,6 +2,7 @@ package net.minecraft.client.gui;
 
 import com.mojang.nbt.NBTTagCompound;
 
+import net.minecraft.client.controller.PlayerControllerSP;
 import net.minecraft.game.world.World;
 
 public class GuiSelectWorld extends GuiScreen {
@@ -57,6 +58,7 @@ public class GuiSelectWorld extends GuiScreen {
 		this.mc.displayGuiScreen((GuiScreen)null);
 		if(!this.selected) {
 			this.selected = true;
+            this.mc.playerController = new PlayerControllerSP(this.mc);
 			this.mc.startWorld("World" + worldIndex);
 			this.mc.displayGuiScreen((GuiScreen)null);
 		}

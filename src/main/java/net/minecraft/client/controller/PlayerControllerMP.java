@@ -32,9 +32,6 @@ public class PlayerControllerMP extends PlayerController {
         entityPlayer1.rotationYaw = -180.0F;
     }
 
-    public void initController() {
-    }
-
     public boolean sendBlockRemoved(int x, int y, int z, int side) {
         this.netClientHandler.addToSendQueue(new Packet14BlockDig(3, x, y, z, side));
         int i5 = this.mc.theWorld.getBlockId(x, y, z);
@@ -159,7 +156,7 @@ public class PlayerControllerMP extends PlayerController {
 
     public boolean onPlayerRightClick(EntityPlayer entityPlayer, World world, ItemStack itemStack, int x, int y, int z, int side) {
         this.syncCurrentPlayItem();
-        this.netClientHandler.addToSendQueue(new Packet15Place(itemStack.itemID, x, y, z, side));
+        this.netClientHandler.addToSendQueue(new Packet15Place(itemStack != null ? itemStack.itemID : -1, x, y, z, side));
         return super.onPlayerRightClick(entityPlayer, world, itemStack, x, y, z, side);
     }
 

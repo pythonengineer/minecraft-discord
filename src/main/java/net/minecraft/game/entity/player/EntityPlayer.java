@@ -142,7 +142,7 @@ public class EntityPlayer extends EntityLiving {
 	public void dropPlayerItemWithRandomChoice(ItemStack stack, boolean isRandom) {
 		if(stack != null) {
 			EntityItem stack1;
-			(stack1 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F, this.posZ, stack)).delayBeforeCanPickup = 40;
+			(stack1 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F + (double)this.getEyeHeight(), this.posZ, stack)).delayBeforeCanPickup = 40;
 			float f3;
 			float isRandom1;
 			if(isRandom) {

@@ -12,19 +12,19 @@ public class GuiFurnace extends GuiContainer {
 
     public GuiFurnace(InventoryPlayer playerInventory, TileEntityFurnace furnaceTileEntity) {
         this.furnaceInventory = furnaceTileEntity;
-        this.inventorySlots.add(new Slot(this, furnaceTileEntity, 0, 56, 17));
-        this.inventorySlots.add(new Slot(this, furnaceTileEntity, 1, 56, 53));
-        this.inventorySlots.add(new Slot(this, furnaceTileEntity, 2, 116, 35));
+        this.inventorySlots.add(new SlotInventory(this, furnaceTileEntity, 0, 56, 17));
+        this.inventorySlots.add(new SlotInventory(this, furnaceTileEntity, 1, 56, 53));
+        this.inventorySlots.add(new SlotInventory(this, furnaceTileEntity, 2, 116, 35));
 
         int i4;
         for(i4 = 0; i4 < 3; ++i4) {
             for(int i3 = 0; i3 < 9; ++i3) {
-                this.inventorySlots.add(new Slot(this, playerInventory, i3 + (i4 + 1) * 9, 8 + i3 * 18, 84 + i4 * 18));
+                this.inventorySlots.add(new SlotInventory(this, playerInventory, i3 + (i4 + 1) * 9, 8 + i3 * 18, 84 + i4 * 18));
             }
         }
 
         for(i4 = 0; i4 < 9; ++i4) {
-            this.inventorySlots.add(new Slot(this, playerInventory, i4, 8 + i4 * 18, 142));
+            this.inventorySlots.add(new SlotInventory(this, playerInventory, i4, 8 + i4 * 18, 142));
         }
 
     }
@@ -34,7 +34,7 @@ public class GuiFurnace extends GuiContainer {
         this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
     }
 
-    protected void drawGuiContainerBackgroundLayer(float f1) {
+    protected void drawGuiContainerBackgroundLayer(float renderPartialTick) {
         int i1 = this.mc.renderEngine.getTexture("/gui/furnace.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.renderEngine.bindTexture(i1);

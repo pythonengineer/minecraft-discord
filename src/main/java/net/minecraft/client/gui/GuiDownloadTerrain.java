@@ -30,7 +30,7 @@ public class GuiDownloadTerrain extends GuiScreen {
 
     }
 
-    protected void actionPerformed(GuiButton guiButton1) {
+    protected void actionPerformed(GuiButton button) {
     }
 
     public void drawScreen(int mouseX, int mouseY, float renderPartialTick) {

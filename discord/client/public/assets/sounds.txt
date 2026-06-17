@@ -20,6 +20,7 @@ mob/chicken2.ogg
 mob/chicken3.ogg
 mob/chickenhurt1.ogg
 mob/chickenhurt2.ogg
+mob/chickenplop.ogg
 mob/cow1.ogg
 mob/cow2.ogg
 mob/cow3.ogg

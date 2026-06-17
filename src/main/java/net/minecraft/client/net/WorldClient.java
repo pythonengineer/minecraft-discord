@@ -7,6 +7,7 @@ import java.util.Set;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.world.IWorldAccess;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.chunk.ChunkProviderClient;
 import net.minecraft.game.world.chunk.IChunkProvider;
@@ -28,20 +29,30 @@ public class WorldClient extends World {
     }
 
     public void tick() {
-        int i1;
-        for(i1 = 0; i1 < 10 && !this.entitySpawnQueue.isEmpty(); ++i1) {
-            Entity entity2 = (Entity)this.entitySpawnQueue.iterator().next();
-            this.spawnEntityInWorld(entity2);
+        ++this.worldTime;
+        int i1 = this.calculateSkylightSubtracted(1.0F);
+        int i2;
+        if(i1 != this.skylightSubtracted) {
+            this.skylightSubtracted = i1;
+
+            for(i2 = 0; i2 < this.worldAccesses.size(); ++i2) {
+                ((IWorldAccess)this.worldAccesses.get(i2)).updateAllRenderers();
+            }
+        }
+
+        for(i2 = 0; i2 < 10 && !this.entitySpawnQueue.isEmpty(); ++i2) {
+            Entity entity3 = (Entity)this.entitySpawnQueue.iterator().next();
+            this.spawnEntityInWorld(entity3);
         }
 
         this.sendQueue.processReadPackets();
 
-        for(i1 = 0; i1 < this.blocksToReceive.size(); ++i1) {
-            WorldBlockPositionType worldBlockPositionType2 = (WorldBlockPositionType)this.blocksToReceive.get(i1);
-            if(--worldBlockPositionType2.acceptCountdown == 0) {
-                super.setBlockAndMetadata(worldBlockPositionType2.posX, worldBlockPositionType2.posY, worldBlockPositionType2.posZ, worldBlockPositionType2.blockID, worldBlockPositionType2.metadata);
-                super.markBlockNeedsUpdate(worldBlockPositionType2.posX, worldBlockPositionType2.posY, worldBlockPositionType2.posZ);
-                this.blocksToReceive.remove(i1--);
+        for(i2 = 0; i2 < this.blocksToReceive.size(); ++i2) {
+            WorldBlockPositionType worldBlockPositionType4 = (WorldBlockPositionType)this.blocksToReceive.get(i2);
+            if(--worldBlockPositionType4.acceptCountdown == 0) {
+                super.setBlockAndMetadata(worldBlockPositionType4.posX, worldBlockPositionType4.posY, worldBlockPositionType4.posZ, worldBlockPositionType4.blockID, worldBlockPositionType4.metadata);
+                super.markBlockNeedsUpdate(worldBlockPositionType4.posX, worldBlockPositionType4.posY, worldBlockPositionType4.posZ);
+                this.blocksToReceive.remove(i2--);
             }
         }
 
@@ -57,7 +68,7 @@ public class WorldClient extends World {
 
     }
 
-    protected IChunkProvider getChunkProvider(VFile2 file1) {
+    protected IChunkProvider getChunkProvider(VFile2 file) {
         this.clientChunkProvider = new ChunkProviderClient(this);
         return this.clientChunkProvider;
     }
@@ -91,19 +102,19 @@ public class WorldClient extends World {
 
     }
 
-    public boolean spawnEntityInWorld(Entity entity1) {
-        boolean z2 = super.spawnEntityInWorld(entity1);
-        if(entity1 instanceof EntityPlayerSP) {
-            this.entityList.add(entity1);
+    public boolean spawnEntityInWorld(Entity entity) {
+        boolean z2 = super.spawnEntityInWorld(entity);
+        if(entity instanceof EntityPlayerSP) {
+            this.entityList.add(entity);
         }
 
         return z2;
     }
 
-    public void setEntityDead(Entity entity1) {
-        super.setEntityDead(entity1);
-        if(entity1 instanceof EntityPlayerSP) {
-            this.entityList.remove(entity1);
+    public void setEntityDead(Entity entity) {
+        super.setEntityDead(entity);
+        if(entity instanceof EntityPlayerSP) {
+            this.entityList.remove(entity);
         }
 
     }

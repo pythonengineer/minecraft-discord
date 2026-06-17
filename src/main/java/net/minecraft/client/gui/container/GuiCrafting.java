@@ -9,60 +9,34 @@ import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.item.recipe.CraftingManager;
 
 public class GuiCrafting extends GuiContainer {
-	private InventoryCrafting craftingInventory = new InventoryCrafting(this, 3, 3);
-	private IInventory craftingResultInventory = new InventoryCraftResult();
+    public CraftingInventoryWorkbenchCB craftingInventory = new CraftingInventoryWorkbenchCB();
 
 	public GuiCrafting(InventoryPlayer playerInventory) {
-		this.inventorySlots.add(new SlotCrafting(this, this.craftingInventory, this.craftingResultInventory, 0, 124, 35));
+		this.inventorySlots.add(new SlotCrafting(this, this.craftingInventory.craftMatrix, this.craftingInventory.craftResult, 0, 124, 35));
 
 		int i2;
 		int i3;
 		for(i2 = 0; i2 < 3; ++i2) {
 			for(i3 = 0; i3 < 3; ++i3) {
-				this.inventorySlots.add(new Slot(this, this.craftingInventory, i3 + i2 * 3, 30 + i3 * 18, 17 + i2 * 18));
+				this.inventorySlots.add(new SlotInventory(this, this.craftingInventory.craftMatrix, i3 + i2 * 3, 30 + i3 * 18, 17 + i2 * 18));
 			}
 		}
 
 		for(i2 = 0; i2 < 3; ++i2) {
 			for(i3 = 0; i3 < 9; ++i3) {
-				this.inventorySlots.add(new Slot(this, playerInventory, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
+				this.inventorySlots.add(new SlotInventory(this, playerInventory, i3 + (i2 + 1) * 9, 8 + i3 * 18, 84 + i2 * 18));
 			}
 		}
 
 		for(i2 = 0; i2 < 9; ++i2) {
-			this.inventorySlots.add(new Slot(this, playerInventory, i2, 8 + i2 * 18, 142));
+			this.inventorySlots.add(new SlotInventory(this, playerInventory, i2, 8 + i2 * 18, 142));
 		}
 
 	}
 
 	public void onGuiClosed() {
 		super.onGuiClosed();
-
-		for(int i1 = 0; i1 < 9; ++i1) {
-			ItemStack itemStack = this.craftingInventory.getStackInSlot(i1);
-			if(itemStack != null) {
-				this.mc.thePlayer.dropPlayerItem(itemStack);
-			}
-		}
-
-	}
-
-	public void onCraftMatrixChanged(IInventory iInventory1) {
-		int[] i1 = new int[9];
-
-		for(int i2 = 0; i2 < 3; ++i2) {
-			for(int i3 = 0; i3 < 3; ++i3) {
-				int i4 = i2 + i3 * 3;
-				ItemStack itemStack = this.craftingInventory.getStackInSlot(i4);
-				if(itemStack == null) {
-					i1[i4] = -1;
-				} else {
-					i1[i4] = itemStack.itemID;
-				}
-			}
-		}
-
-		this.craftingResultInventory.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(i1));
+        this.craftingInventory.onCraftGuiClosed(this.mc.thePlayer);
 	}
 
 	protected void drawGuiContainerForegroundLayer() {
@@ -70,7 +44,7 @@ public class GuiCrafting extends GuiContainer {
 		this.fontRenderer.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
 	}
 
-	protected void drawGuiContainerBackgroundLayer(float f1) {
+	protected void drawGuiContainerBackgroundLayer(float renderPartialTick) {
 		int i1 = this.mc.renderEngine.getTexture("/gui/crafting.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.renderEngine.bindTexture(i1);
@@ -118,6 +92,6 @@ public class GuiCrafting extends GuiContainer {
     }
 
     public boolean canMergeSlot(ItemStack itemstack, Slot slot) {
-        return slot.inventory != this.craftingResultInventory && super.canMergeSlot(itemstack, slot);
+        return slot.inventory != this.craftingInventory.craftResult && super.canMergeSlot(itemstack, slot);
     }
 }

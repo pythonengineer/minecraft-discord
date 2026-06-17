@@ -16,6 +16,7 @@ public class InventoryPlayer implements IInventory {
     public ItemStack[] craftingInventory = new ItemStack[4];
 	public int currentItem = 0;
 	private EntityPlayer player;
+    public ItemStack draggedItemStack;
 
 	public InventoryPlayer(EntityPlayer playerEntity) {
 		this.player = playerEntity;

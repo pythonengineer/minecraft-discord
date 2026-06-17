@@ -3,7 +3,7 @@ package net.minecraft.client.gui.container;
 import net.minecraft.game.IInventory;
 import net.minecraft.game.item.ItemStack;
 
-class SlotCrafting extends Slot {
+public class SlotCrafting extends SlotInventory {
     private final IInventory craftMatrix;
 
     public SlotCrafting(GuiContainer containerGui, IInventory craftMatrix, IInventory inventory, int slot, int x, int y) {

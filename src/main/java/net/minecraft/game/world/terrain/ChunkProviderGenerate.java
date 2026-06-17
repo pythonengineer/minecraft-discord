@@ -36,6 +36,8 @@ public class ChunkProviderGenerate implements IChunkProvider {
     private double[] sandNoise = new double[256];
     private double[] gravelNoise = new double[256];
     private double[] stoneNoise = new double[256];
+    private MapGenBase caveGenerator = new MapGenCaves();
+    private MapGenBase caveGenerator2 = new MapGenBase2();
     double[] noise3;
     double[] noise1;
     double[] noise2;
@@ -202,199 +204,9 @@ public class ChunkProviderGenerate implements IChunkProvider {
         Chunk chunk4 = new Chunk(this.worldObj, b3, chunkX, chunkZ);
         this.generateTerrain(chunkX, chunkZ, b3);
         this.replaceSurfaceBlocks(chunkX, chunkZ, b3);
-        this.generateCaves(chunkX, chunkZ, b3);
+        this.caveGenerator.generate(this, this.worldObj, chunkX, chunkZ, b3);
         chunk4.generateSkylightMap();
         return chunk4;
-    }
-
-    protected void generateLargeCaveNode(int chunkX, int chunkZ, byte[] chunkData, double x, double y, double z) {
-        this.generateCaveNode(chunkX, chunkZ, chunkData, x, y, z, 1.0F + this.rand.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
-    }
-
-    protected void generateCaveNode(int chunkX, int chunkZ, byte[] chunkData, double x, double y, double z, float scaleFactor, float directionHorizontal, float directionVertical, int outwardsSize, int inwardsSize, double radius) {
-        double d17 = (double)(chunkX * 16 + 8);
-        double d19 = (double)(chunkZ * 16 + 8);
-        float f21 = 0.0F;
-        float f22 = 0.0F;
-        EaglercraftRandom random23 = new EaglercraftRandom(this.rand.nextLong());
-        if(inwardsSize <= 0) {
-            byte b24 = 112;
-            inwardsSize = b24 - random23.nextInt(b24 / 4);
-        }
-
-        boolean z52 = false;
-        if(outwardsSize == -1) {
-            outwardsSize = inwardsSize / 2;
-            z52 = true;
-        }
-
-        int i25 = random23.nextInt(inwardsSize / 2) + inwardsSize / 4;
-
-        for(boolean z26 = random23.nextInt(6) == 0; outwardsSize < inwardsSize; ++outwardsSize) {
-            double d27 = 1.5D + (double)(MathHelper.sin((float)outwardsSize * (float)Math.PI / (float)inwardsSize) * scaleFactor * 1.0F);
-            double d29 = d27 * radius;
-            float f31 = MathHelper.cos(directionVertical);
-            float f32 = MathHelper.sin(directionVertical);
-            x += (double)(MathHelper.cos(directionHorizontal) * f31);
-            y += (double)f32;
-            z += (double)(MathHelper.sin(directionHorizontal) * f31);
-            if(z26) {
-                directionVertical *= 0.92F;
-            } else {
-                directionVertical *= 0.7F;
-            }
-
-            directionVertical += f22 * 0.1F;
-            directionHorizontal += f21 * 0.1F;
-            f22 *= 0.9F;
-            f21 *= 0.75F;
-            f22 += (random23.nextFloat() - random23.nextFloat()) * random23.nextFloat() * 2.0F;
-            f21 += (random23.nextFloat() - random23.nextFloat()) * random23.nextFloat() * 4.0F;
-            if(!z52 && outwardsSize == i25 && scaleFactor > 1.0F) {
-                this.generateCaveNode(chunkX, chunkZ, chunkData, x, y, z, random23.nextFloat() * 0.5F + 0.5F, directionHorizontal - (float)Math.PI / 2F, directionVertical / 3.0F, outwardsSize, inwardsSize, 1.0D);
-                this.generateCaveNode(chunkX, chunkZ, chunkData, x, y, z, random23.nextFloat() * 0.5F + 0.5F, directionHorizontal + (float)Math.PI / 2F, directionVertical / 3.0F, outwardsSize, inwardsSize, 1.0D);
-                return;
-            }
-
-            if(z52 || random23.nextInt(4) != 0) {
-                double d33 = x - d17;
-                double d35 = z - d19;
-                double d37 = (double)(inwardsSize - outwardsSize);
-                double d39 = (double)(scaleFactor + 2.0F + 16.0F);
-                if(d33 * d33 + d35 * d35 - d37 * d37 > d39 * d39) {
-                    return;
-                }
-
-                if(x >= d17 - 16.0D - d27 * 2.0D && z >= d19 - 16.0D - d27 * 2.0D && x <= d17 + 16.0D + d27 * 2.0D && z <= d19 + 16.0D + d27 * 2.0D) {
-                    int i53 = MathHelper.floor_double(x - d27) - chunkX * 16 - 1;
-                    int i34 = MathHelper.floor_double(x + d27) - chunkX * 16 + 1;
-                    int i54 = MathHelper.floor_double(y - d29) - 1;
-                    int i36 = MathHelper.floor_double(y + d29) + 1;
-                    int i55 = MathHelper.floor_double(z - d27) - chunkZ * 16 - 1;
-                    int i38 = MathHelper.floor_double(z + d27) - chunkZ * 16 + 1;
-                    if(i53 < 0) {
-                        i53 = 0;
-                    }
-
-                    if(i34 > 16) {
-                        i34 = 16;
-                    }
-
-                    if(i54 < 1) {
-                        i54 = 1;
-                    }
-
-                    if(i36 > 120) {
-                        i36 = 120;
-                    }
-
-                    if(i55 < 0) {
-                        i55 = 0;
-                    }
-
-                    if(i38 > 16) {
-                        i38 = 16;
-                    }
-
-                    boolean z56 = false;
-
-                    int i40;
-                    int i43;
-                    for(i40 = i53; !z56 && i40 < i34; ++i40) {
-                        for(int i41 = i55; !z56 && i41 < i38; ++i41) {
-                            for(int i42 = i36 + 1; !z56 && i42 >= i54 - 1; --i42) {
-                                i43 = (i40 * 16 + i41) * 128 + i42;
-                                if(i42 >= 0 && i42 < 128) {
-                                    if(chunkData[i43] == Block.waterMoving.blockID || chunkData[i43] == Block.waterStill.blockID) {
-                                        z56 = true;
-                                    }
-
-                                    if(i42 != i54 - 1 && i40 != i53 && i40 != i34 - 1 && i41 != i55 && i41 != i38 - 1) {
-                                        i42 = i54;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if(!z56) {
-                        for(i40 = i53; i40 < i34; ++i40) {
-                            double d57 = ((double)(i40 + chunkX * 16) + 0.5D - x) / d27;
-
-                            for(i43 = i55; i43 < i38; ++i43) {
-                                double d44 = ((double)(i43 + chunkZ * 16) + 0.5D - z) / d27;
-                                int i46 = (i40 * 16 + i43) * 128 + i36;
-                                boolean z47 = false;
-
-                                for(int i48 = i36 - 1; i48 >= i54; --i48) {
-                                    double d49 = ((double)i48 + 0.5D - y) / d29;
-                                    if(d49 > -0.7D && d57 * d57 + d49 * d49 + d44 * d44 < 1.0D) {
-                                        byte b51 = chunkData[i46];
-                                        if(b51 == Block.grass.blockID) {
-                                            z47 = true;
-                                        }
-
-                                        if(b51 == Block.stone.blockID || b51 == Block.dirt.blockID || b51 == Block.grass.blockID) {
-                                            if(i48 < 10) {
-                                                chunkData[i46] = (byte)Block.lavaMoving.blockID;
-                                            } else {
-                                                chunkData[i46] = 0;
-                                                if(z47 && chunkData[i46 - 1] == Block.dirt.blockID) {
-                                                    chunkData[i46 - 1] = (byte)Block.grass.blockID;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    --i46;
-                                }
-                            }
-                        }
-
-                        if(z52) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    private void generateCaves(int chunkX, int chunkZ, byte[] chunkData) {
-        byte b4 = 8;
-        this.rand.setSeed(this.worldObj.randomSeed);
-        long j5 = this.rand.nextLong() / 2L * 2L + 1L;
-        long j7 = this.rand.nextLong() / 2L * 2L + 1L;
-
-        for(int i9 = chunkX - b4; i9 <= chunkX + b4; ++i9) {
-            for(int i10 = chunkZ - b4; i10 <= chunkZ + b4; ++i10) {
-                this.rand.setSeed((long)i9 * j5 + (long)i10 * j7 ^ this.worldObj.randomSeed);
-                int i11 = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(40) + 1) + 1);
-                if(this.rand.nextInt(15) != 0) {
-                    i11 = 0;
-                }
-
-                for(int i12 = 0; i12 < i11; ++i12) {
-                    double d13 = (double)(i9 * 16 + this.rand.nextInt(16));
-                    double d15 = (double)this.rand.nextInt(this.rand.nextInt(120) + 8);
-                    double d17 = (double)(i10 * 16 + this.rand.nextInt(16));
-                    int i19 = 1;
-                    if(this.rand.nextInt(4) == 0) {
-                        this.generateLargeCaveNode(chunkX, chunkZ, chunkData, d13, d15, d17);
-                        i19 += this.rand.nextInt(4);
-                    }
-
-                    for(int i20 = 0; i20 < i19; ++i20) {
-                        float f21 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-                        float f22 = (this.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
-                        float f23 = this.rand.nextFloat() * 2.0F + this.rand.nextFloat();
-                        this.generateCaveNode(chunkX, chunkZ, chunkData, d13, d15, d17, f23, f21, f22, 0, 0, 1.0D);
-                    }
-                }
-            }
-        }
-
     }
 
     private double[] initializeNoiseField(double[] d1, int i2, int i3, int i4, int i5, int i6, int i7) {
@@ -656,13 +468,11 @@ public class ChunkProviderGenerate implements IChunkProvider {
             (new WorldGenLiquids(Block.lavaMoving.blockID)).generate(this.worldObj, this.rand, i15, i16, i17);
         }
 
-        if(this.worldObj.snowCovered) {
-            for(i14 = i4 + 8 + 0; i14 < i4 + 8 + 16; ++i14) {
-                for(i15 = i5 + 8 + 0; i15 < i5 + 8 + 16; ++i15) {
-                    i16 = this.worldObj.getTopSolidOrLiquidBlock(i14, i15);
-                    if(i16 > 0 && i16 < 128 && this.worldObj.getBlockId(i14, i16, i15) == 0 && this.worldObj.getBlockMaterial(i14, i16 - 1, i15).getIsSolid() && this.worldObj.getBlockMaterial(i14, i16 - 1, i15) != Material.ice) {
-                        this.worldObj.setBlockWithNotify(i14, i16, i15, Block.snow.blockID);
-                    }
+        for(i14 = i4 + 8 + 0; i14 < i4 + 8 + 16; ++i14) {
+            for(i15 = i5 + 8 + 0; i15 < i5 + 8 + 16; ++i15) {
+                i16 = this.worldObj.getTopSolidOrLiquidBlock(i14, i15);
+                if(this.worldObj.snowCovered && i16 > 0 && i16 < 128 && this.worldObj.getBlockId(i14, i16, i15) == 0 && this.worldObj.getBlockMaterial(i14, i16 - 1, i15).getIsSolid() && this.worldObj.getBlockMaterial(i14, i16 - 1, i15) != Material.ice) {
+                    this.worldObj.setBlockWithNotify(i14, i16, i15, Block.snow.blockID);
                 }
             }
         }

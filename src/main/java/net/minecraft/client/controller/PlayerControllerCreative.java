@@ -13,9 +13,6 @@ public class PlayerControllerCreative extends PlayerController {
 		this.isInTestMode = true;
 	}
 
-    public void init() {
-    }
-
 	public void onRespawn(EntityPlayer playerEntity) {
 		for(int i2 = 0; i2 < 9; ++i2) {
 			if(playerEntity.inventory.mainInventory[i2] == null) {

@@ -32,6 +32,7 @@ public class EntityLiving extends Entity {
 	protected float unusedFloat1 = 1.0F;
 	protected int scoreValue = 0;
 	protected float unusedFloat2 = 0.0F;
+    public boolean isAIEnabled = false;
     public float prevSwingProgress;
     public float swingProgress;
 	public int health = 10;
@@ -50,6 +51,13 @@ public class EntityLiving extends Entity {
 	public float prevLimbYaw;
 	public float limbYaw;
 	public float limbSwing;
+    private int newPosRotationIncrements;
+    private double newPosX;
+    private double newPosY;
+    private double newPosZ;
+    private double newRotationYaw;
+    private double newRotationPitch;
+    float unusedFloat3 = 0.0F;
 	protected int entityAge = 0;
 	protected float moveStrafing;
 	protected float moveForward;
@@ -181,6 +189,16 @@ public class EntityLiving extends Entity {
         this.prevRidingRotUnused = 0.0F;
     }
 
+    public void setPositionAndRotation(double d1, double d3, double d5, float f7, float f8, int i9) {
+        this.yOffset = 0.0F;
+        this.newPosX = d1;
+        this.newPosY = d3;
+        this.newPosZ = d5;
+        this.newRotationYaw = (double)f7;
+        this.newRotationPitch = (double)f8;
+        this.newPosRotationIncrements = i9;
+    }
+
     public void onUpdate() {
         super.onUpdate();
 		this.onLivingUpdate();
@@ -285,6 +303,10 @@ public class EntityLiving extends Entity {
 	}
 
 	public boolean attackEntityFrom(Entity entity, int damage) {
+        if(this.worldObj.multiplayerWorld) {
+            damage = 0;
+        }
+
 		this.entityAge = 0;
 		if(this.health <= 0) {
 			return false;
@@ -498,12 +520,32 @@ public class EntityLiving extends Entity {
 	}
 
 	public void onLivingUpdate() {
+        if(this.newPosRotationIncrements > 0) {
+            double d1 = this.posX + (this.newPosX - this.posX) / (double)this.newPosRotationIncrements;
+            double d3 = this.posY + (this.newPosY - this.posY) / (double)this.newPosRotationIncrements;
+            double d5 = this.posZ + (this.newPosZ - this.posZ) / (double)this.newPosRotationIncrements;
+
+            double d7;
+            for(d7 = this.newRotationYaw - (double)this.rotationYaw; d7 < -180.0D; d7 += 360.0D) {
+            }
+
+            while(d7 >= 180.0D) {
+                d7 -= 360.0D;
+            }
+
+            this.rotationYaw = (float)((double)this.rotationYaw + d7 / (double)this.newPosRotationIncrements);
+            this.rotationPitch = (float)((double)this.rotationPitch + (this.newRotationPitch - (double)this.rotationPitch) / (double)this.newPosRotationIncrements);
+            --this.newPosRotationIncrements;
+            this.setPosition(d1, d3, d5);
+            this.setRotation(this.rotationYaw, this.rotationPitch);
+        }
+
 		if(this.health <= 0) {
 			this.isJumping = false;
 			this.moveStrafing = 0.0F;
 			this.moveForward = 0.0F;
 			this.randomYawVelocity = 0.0F;
-		} else {
+        } else if(!this.isAIEnabled) {
 			this.updateEntityActionState();
 		}
 

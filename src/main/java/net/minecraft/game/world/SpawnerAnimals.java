@@ -9,6 +9,8 @@ import net.minecraft.client.IProgressUpdate;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityList;
 import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.monster.EntitySkeleton;
+import net.minecraft.game.entity.monster.EntitySpider;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.world.chunk.ChunkCoordIntPair;
 import net.minecraft.game.world.material.Material;
@@ -120,6 +122,12 @@ public class SpawnerAnimals {
                                 if(entityLiving29.getCanSpawnHere()) {
                                     ++i4;
                                     world.spawnEntityInWorld(entityLiving29);
+                                    if(entityLiving29 instanceof EntitySpider && world.rand.nextInt(100) == 0) {
+                                        EntitySkeleton entitySkeleton30 = new EntitySkeleton(world);
+                                        entitySkeleton30.setLocationAndAngles((double)f18, (double)f19, (double)f20, entityLiving29.rotationYaw, 0.0F);
+                                        world.spawnEntityInWorld(entitySkeleton30);
+                                        entitySkeleton30.mountEntity(entityLiving29);
+                                    }
                                 }
                             }
                         }

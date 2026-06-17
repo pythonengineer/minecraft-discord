@@ -5,12 +5,12 @@
 _**Minecraft on Discord**_ is a project that brings every version of Minecraft to Discord's activities on web, mobile, and desktop by converting
 its Java engine to modern WebGL-compatible JavaScript and providing a web proxy that your embedded Discord application can use.
 
-This version is **Alpha v1.0.15**, an *Alpha* version of the game which was released on _**August 3, 2010**_. It was the first public release of Survival Multiplayer.
+This version is **Alpha v1.0.17_04**, an *Alpha* version of the game which was released on _**August 23, 2010**_. It is the 8th *Seecret Friday* version.
 
 The modern OpenGL pipeline and the TeaVM application that allows Minecraft to be run in the web was created for *Eaglercraft* by *lax1dude* and *ayunami2000*,
 along with the touch support for mobile users. Much of the credit for this project therefore belongs to them.
 
-You can learn more about this particular version [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Alpha_v1.0.11).
+You can learn more about this particular version [on the Minecraft wiki](https://minecraft.wiki/w/Java_Edition_Alpha_v1.0.17_04). Or the server version [here](https://minecraft.wiki/w/Java_Edition_Alpha_server_0.1.4).
 
 ### Setup
 
@@ -31,8 +31,9 @@ You can run `npm run preview` to start a web server, or move the contents of the
 As all endpoints must be HTTPS secure, a good way to set up public endpoints for both the embedded application web server and the multiplayer proxy server
 is to use something like *cloudflared* or *ngrok* and have a domain pointed at port 4173 for the embedded app and port 3000 for the websocket proxy if you don't have your own domains.
 
-The Minecraft server itself is in the "server" folder of the repository. Clients need not connect directly to it thanks to the websocket proxy.
+The Minecraft server (hMod) itself is in the "server" folder of the repository. Clients need not connect directly to it thanks to the websocket proxy.
 If the Minecraft server you want to connect to isn't available at `127.0.0.1:25565` for the websocket, you will need to edit `discord/server/websockify.js`.
+Make sure `online-mode` is set to false in the server configuration.
 
 Uncommenting the Eruda script in `discord/index.html` will enable a web debugging console that works sometimes on mobile.
 You can also set `openDebugConsoleOnLaunch` to 'true' in `window.minecraftOpts` in the same file or use Discord's development console.
