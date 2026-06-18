@@ -139,8 +139,8 @@ public class BlockPressurePlate extends Block {
         return blockAccess.getBlockMetadata(x, y, z) > 0;
     }
 
-    public boolean isIndirectlyPoweringTo(World world1, int i2, int i3, int i4, int i5) {
-        return world1.getBlockMetadata(i2, i3, i4) == 0 ? false : i5 == 1;
+    public boolean isIndirectlyPoweringTo(World worldObj, int x, int y, int z, int side) {
+        return worldObj.getBlockMetadata(x, y, z) == 0 ? false : side == 1;
     }
 
     public boolean canProvidePower() {

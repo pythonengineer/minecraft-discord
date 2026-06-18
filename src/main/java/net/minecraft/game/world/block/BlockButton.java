@@ -189,13 +189,13 @@ public class BlockButton extends Block {
         return (blockAccess.getBlockMetadata(x, y, z) & 8) > 0;
     }
 
-    public boolean isIndirectlyPoweringTo(World world1, int i2, int i3, int i4, int i5) {
-        int i6 = world1.getBlockMetadata(i2, i3, i4);
+    public boolean isIndirectlyPoweringTo(World worldObj, int x, int y, int z, int side) {
+        int i6 = worldObj.getBlockMetadata(x, y, z);
         if((i6 & 8) == 0) {
             return false;
         } else {
             int i7 = i6 & 7;
-            return i7 == 5 && i5 == 1 ? true : (i7 == 4 && i5 == 2 ? true : (i7 == 3 && i5 == 3 ? true : (i7 == 2 && i5 == 4 ? true : i7 == 1 && i5 == 5)));
+            return i7 == 5 && side == 1 ? true : (i7 == 4 && side == 2 ? true : (i7 == 3 && side == 3 ? true : (i7 == 2 && side == 4 ? true : i7 == 1 && side == 5)));
         }
     }
 

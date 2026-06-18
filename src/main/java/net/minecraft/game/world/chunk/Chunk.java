@@ -383,6 +383,10 @@ public class Chunk {
 		TileEntity tileEntity5 = (TileEntity)this.chunkTileEntityMap.get(chunkPosition4);
 		if(tileEntity5 == null) {
 			int i6 = this.getBlockID(x, y, z);
+            if(!Block.isBlockContainer[i6]) {
+                return null;
+            }
+
 			BlockContainer blockContainer7 = (BlockContainer)Block.blocksList[i6];
 			blockContainer7.onBlockAdded(this.worldObj, this.xPosition * 16 + x, y, this.zPosition * 16 + z);
 			tileEntity5 = (TileEntity)this.chunkTileEntityMap.get(chunkPosition4);

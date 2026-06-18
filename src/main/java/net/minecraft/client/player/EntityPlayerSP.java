@@ -1,7 +1,6 @@
 package net.minecraft.client.player;
 
 import com.mojang.nbt.NBTTagCompound;
-import com.mojang.nbt.NBTTagList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.effect.EntityPickupFX;
@@ -57,14 +56,11 @@ public class EntityPlayerSP extends EntityPlayer {
     public void writeEntityToNBT(NBTTagCompound compoundTag) {
         super.writeEntityToNBT(compoundTag);
         compoundTag.setInteger("Score", this.score);
-        compoundTag.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
     }
 
     public void readEntityFromNBT(NBTTagCompound compoundTag) {
         super.readEntityFromNBT(compoundTag);
         this.score = compoundTag.getInteger("Score");
-        NBTTagList nBTTagList2 = compoundTag.getTagList("Inventory");
-        this.inventory.readFromNBT(nBTTagList2);
     }
 
     public void displayGUIChest(IInventory inventory) {

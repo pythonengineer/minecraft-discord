@@ -68,7 +68,7 @@ public class World implements IBlockAccess {
 	public boolean isNewWorld;
     protected List worldAccesses;
 	private IChunkProvider chunkProvider;
-	private VFile2 saveDirectory;
+	public VFile2 saveDirectory;
     public long randomSeed;
 	private NBTTagCompound nbtCompoundPlayer;
 	public long sizeOnDisk;
@@ -1703,12 +1703,16 @@ public class World implements IBlockAccess {
 		return this.loadedEntityList;
 	}
 
-	public void updateTileEntityChunkAndDoNothing(int x, int y, int z) {
-	    if(this.blockExists(x, y, z)) {
-			this.getChunkFromBlockCoords(x, z).setChunkModified();
-		}
+    public void updateTileEntityChunkAndDoNothing(int x, int y, int z, TileEntity tileEntity) {
+        if(this.blockExists(x, y, z)) {
+            this.getChunkFromBlockCoords(x, z).setChunkModified();
+        }
 
-	}
+        for(int i5 = 0; i5 < this.worldAccesses.size(); ++i5) {
+            ((IWorldAccess)this.worldAccesses.get(i5)).doNothingWithTileEntity(x, y, z, tileEntity);
+        }
+
+    }
 
 	public int countEntities(Class entityClass) {
 		int i2 = 0;

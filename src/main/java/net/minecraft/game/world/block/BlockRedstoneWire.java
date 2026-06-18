@@ -248,9 +248,9 @@ public class BlockRedstoneWire extends Block {
 		return Item.redstone.shiftedIndex;
 	}
 
-	public boolean isIndirectlyPoweringTo(World world1, int i2, int i3, int i4, int i5) {
-		return !this.wiresProvidePower ? false : this.isPoweringTo(world1, i2, i3, i4, i5);
-	}
+    public boolean isIndirectlyPoweringTo(World worldObj, int x, int y, int z, int side) {
+        return !this.wiresProvidePower ? false : this.isPoweringTo(worldObj, x, y, z, side);
+    }
 
     public boolean isPoweringTo(IBlockAccess blockAccess, int x, int y, int z, int metadata) {
         if(!this.wiresProvidePower) {
@@ -290,15 +290,15 @@ public class BlockRedstoneWire extends Block {
 		return this.wiresProvidePower;
 	}
 
-	public void randomDisplayTick(World world1, int i2, int i3, int i4, EaglercraftRandom random5) {
-		if(world1.getBlockMetadata(i2, i3, i4) > 0) {
-			double d6 = (double)i2 + 0.5D + ((double)random5.nextFloat() - 0.5D) * 0.2D;
-			double d8 = (double)((float)i3 + 0.0625F);
-			double d10 = (double)i4 + 0.5D + ((double)random5.nextFloat() - 0.5D) * 0.2D;
-			world1.spawnParticle("reddust", d6, d8, d10, 0.0D, 0.0D, 0.0D);
-		}
+    public void randomDisplayTick(World worldObj, int x, int y, int z, EaglercraftRandom rand) {
+        if(worldObj.getBlockMetadata(x, y, z) > 0) {
+            double d6 = (double)x + 0.5D + ((double)rand.nextFloat() - 0.5D) * 0.2D;
+            double d8 = (double)((float)y + 0.0625F);
+            double d10 = (double)z + 0.5D + ((double)rand.nextFloat() - 0.5D) * 0.2D;
+            worldObj.spawnParticle("reddust", d6, d8, d10, 0.0D, 0.0D, 0.0D);
+        }
 
-	}
+    }
 
 	public static boolean isPowerProviderOrWire(IBlockAccess blockAccess, int x, int y, int z) {
 		int i4 = blockAccess.getBlockId(x, y, z);

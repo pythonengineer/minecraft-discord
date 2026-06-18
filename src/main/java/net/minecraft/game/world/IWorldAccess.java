@@ -1,6 +1,7 @@
 package net.minecraft.game.world;
 
 import net.minecraft.game.entity.Entity;
+import net.minecraft.game.world.block.tileentity.TileEntity;
 
 public interface IWorldAccess {
     void markBlockAndNeighborsNeedsUpdate(int i1, int i2, int i3);
@@ -18,4 +19,6 @@ public interface IWorldAccess {
     void updateAllRenderers();
 
     void playRecord(String string1, int i2, int i3, int i4);
+
+    void doNothingWithTileEntity(int i1, int i2, int i3, TileEntity tileEntity4);
 }

@@ -97,4 +97,16 @@ public class NetHandler {
     public void handleUpdateTime(Packet4UpdateTime packet) {
         this.registerPacket(packet);
     }
+
+    public void handlePlayerInventory(Packet5PlayerInventory packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleComplexEntity(Packet59ComplexEntity packet) {
+        this.registerPacket(packet);
+    }
+
+    public void handleSpawnPosition(Packet6SpawnPosition packet) {
+        this.registerPacket(packet);
+    }
 }

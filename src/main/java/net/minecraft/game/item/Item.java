@@ -100,6 +100,7 @@ public class Item {
     public static Item minecartBox = (new ItemMinecart(86, 1)).setIconIndex(151);
     public static Item minecartEngine = (new ItemMinecart(87, 2)).setIconIndex(167);
     public static Item egg = (new Item(88)).setIconIndex(12);
+    public static Item compass = (new Item(89)).setIconIndex(54);
     public static Item record13 = (new ItemRecord(2000, "13")).setIconIndex(240);
     public static Item recordCat = (new ItemRecord(2001, "cat")).setIconIndex(241);
 	public final int shiftedIndex;

@@ -12,7 +12,7 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.game.entity.EntityLiving;
 
 public class SoundManager {
-    private EaglercraftSoundManager sndManager;
+    private static EaglercraftSoundManager sndManager;
     private SoundPool soundPoolSounds = new SoundPool();
     private SoundPool soundPoolStreaming = new SoundPool();
     private SoundPool soundPoolMusic = new SoundPool();
@@ -25,7 +25,7 @@ public class SoundManager {
     public void loadSoundSettings(GameSettings options) {
         this.soundPoolStreaming.isGetRandomSound = false;
         this.options = options;
-        this.sndManager = new EaglercraftSoundManager();
+        sndManager = new EaglercraftSoundManager();
     }
 
     public void registerSounds() {
@@ -59,23 +59,23 @@ public class SoundManager {
 
     public void onSoundOptionsChanged() {
         if(!this.options.music) {
-            this.sndManager.stopAllStatic();
+            sndManager.stopAllStatic();
         }
 
     }
 
     public void closeMinecraft() {
-        this.sndManager.stopAllSounds();
+        sndManager.stopAllSounds();
     }
 
     public void addSound(String soundName, String soundFile) {
         EagRuntime.getRequiredResourceBytes(soundName);
-        this.soundPoolSounds.addSound(this.sndManager, soundFile, soundName);
+        this.soundPoolSounds.addSound(sndManager, soundFile, soundName);
     }
 
     public void addStreaming(String streamingName, String streamingFile) {
         EagRuntime.getRequiredResourceBytes(streamingName);
-        this.soundPoolStreaming.addSound(this.sndManager, streamingName, streamingFile);
+        this.soundPoolStreaming.addSound(sndManager, streamingName, streamingFile);
     }
 
     public void addMusic(String musicName, String musicFile) {
@@ -83,12 +83,12 @@ public class SoundManager {
             EagRuntime.getRequiredResourceBytes(musicFile);
         }
 
-        this.soundPoolMusic.addSound(this.sndManager, musicName, musicFile);
+        this.soundPoolMusic.addSound(sndManager, musicName, musicFile);
     }
 
     public void playRandomMusicIfReady() {
         if(this.options.music) {
-            if(!this.sndManager.isSoundPlaying(this.playingMusic) && !this.sndManager.isSoundPlaying(this.playingStreaming) && (this.playingMusic == null || !this.playingMusic.queued)) {
+            if(!sndManager.isSoundPlaying(this.playingMusic) && !sndManager.isSoundPlaying(this.playingStreaming) && (this.playingMusic == null || !this.playingMusic.queued)) {
                 if(this.ticksBeforeMusic > 0) {
                     --this.ticksBeforeMusic;
                     return;
@@ -106,24 +106,23 @@ public class SoundManager {
     }
 
     public SoundPoolEntry play(SoundPoolEntry sound) {
-        this.sndManager.playSound(sound);
+        sndManager.playSound(sound);
         return sound;
     }
 
     public void setListener(EntityLiving livingEntity, float partialTicks) {
         if(this.options.sound) {
-            this.sndManager.setListener(livingEntity, partialTicks);
+            sndManager.setListener(livingEntity, partialTicks);
         }
     }
 
     public void playStreaming(String soundName, float x, float y, float z, float volume, float pitch) {
         if(this.options.sound) {
-            this.sndManager.stopSound(this.playingStreaming);
+            sndManager.stopSound(this.playingStreaming);
             if(soundName != null) {
                 SoundPoolEntry entry = this.soundPoolStreaming.getRandomSoundFromSoundPool(soundName);
                 if(entry != null && volume > 0.0F) {
-                    this.sndManager.stopSound(this.playingMusic);
-                    float f9 = 16.0F;
+                    sndManager.stopSound(this.playingMusic);
                     this.playingStreaming = new SoundPoolEntry(entry, x, y, z, 4.0F, 1.0F, 0.5F);
                     this.play(this.playingStreaming);
                 }

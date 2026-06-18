@@ -117,7 +117,6 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
         boolean z2 = false;
 		if(this.furnaceBurnTime > 0) {
 			--this.furnaceBurnTime;
-            z2 = true;
 		}
 
 		if(this.furnaceBurnTime == 0 && this.canSmelt()) {
@@ -150,7 +149,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
         }
 
         if(z2) {
-            this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
+            this.onInventoryChanged();
         }
 
 	}
@@ -190,12 +189,8 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
             return 0;
         } else {
             int i2 = stack.getItem().shiftedIndex;
-            return i2 < 256 && Block.blocksList[i2].material == Material.wood ? 300 : (i2 == Item.stick.shiftedIndex ? 100 : (i2 == Item.coal.shiftedIndex ? 1600 : 0));
+            return i2 < 256 && Block.blocksList[i2].material == Material.wood ? 300 : (i2 == Item.stick.shiftedIndex ? 100 : (i2 == Item.coal.shiftedIndex ? 1600 : (i2 == Item.bucketLava.shiftedIndex ? 20000 : 0)));
         }
-	}
-
-	public void onInventoryChanged() {
-		this.worldObj.updateTileEntityChunkAndDoNothing(this.xCoord, this.yCoord, this.zCoord);
 	}
 
     public static boolean isItemFuel(ItemStack parItemStack) {

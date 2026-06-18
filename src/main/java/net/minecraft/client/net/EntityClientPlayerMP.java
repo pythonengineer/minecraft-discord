@@ -4,16 +4,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.world.World;
 
 public class EntityClientPlayerMP extends EntityPlayerSP {
 	private NetClientHandler sendQueue;
+    private int motionUpdateCounter = 0;
 	private double oldPosX;
 	private double oldBasePos;
 	private double oldPosY;
 	private double oldPosZ;
 	private float oldRotationYaw;
 	private float oldRotationPitch;
+    private InventoryPlayer serverSideInventory = new InventoryPlayer((EntityPlayer)null);
 
 	public EntityClientPlayerMP(Minecraft minecraft, World worldObj, Session session, NetClientHandler sendQueue) {
 		super(minecraft, worldObj, session);
@@ -30,6 +34,17 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 	}
 
 	public void sendMotionUpdates() {
+        if(this.motionUpdateCounter++ == 20) {
+            if(!this.inventory.getInventoryEqual(this.serverSideInventory)) {
+                this.sendQueue.addToSendQueue(new Packet5PlayerInventory(-1, this.inventory.mainInventory));
+                this.sendQueue.addToSendQueue(new Packet5PlayerInventory(-2, this.inventory.craftingInventory));
+                this.sendQueue.addToSendQueue(new Packet5PlayerInventory(-3, this.inventory.armorInventory));
+                this.serverSideInventory = this.inventory.copyInventory();
+            }
+
+            this.motionUpdateCounter = 0;
+        }
+
 		double d1 = this.posX - this.oldPosX;
 		double d3 = this.boundingBox.minY - this.oldBasePos;
 		double d5 = this.posY - this.oldPosY;

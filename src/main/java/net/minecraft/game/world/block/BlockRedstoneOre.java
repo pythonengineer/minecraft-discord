@@ -61,12 +61,12 @@ public class BlockRedstoneOre extends Block {
 		return 4 + random1.nextInt(2);
 	}
 
-	public void randomDisplayTick(World world1, int i2, int i3, int i4, EaglercraftRandom random5) {
-		if(this.glowing) {
-			this.sparkle(world1, i2, i3, i4);
-		}
+    public void randomDisplayTick(World worldObj, int x, int y, int z, EaglercraftRandom rand) {
+        if(this.glowing) {
+            this.sparkle(worldObj, x, y, z);
+        }
 
-	}
+    }
 
 	private void sparkle(World world, int x, int y, int z) {
 	    EaglercraftRandom random5 = world.rand;

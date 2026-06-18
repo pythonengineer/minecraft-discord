@@ -1,7 +1,6 @@
 package net.minecraft.game.world.terrain;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
-import net.lax1dude.eaglercraft.util.MathHelper;
 import net.minecraft.client.IProgressUpdate;
 import net.minecraft.game.world.World;
 import net.minecraft.game.world.block.Block;
@@ -37,7 +36,6 @@ public class ChunkProviderGenerate implements IChunkProvider {
     private double[] gravelNoise = new double[256];
     private double[] stoneNoise = new double[256];
     private MapGenBase caveGenerator = new MapGenCaves();
-    private MapGenBase caveGenerator2 = new MapGenBase2();
     double[] noise3;
     double[] noise1;
     double[] noise2;

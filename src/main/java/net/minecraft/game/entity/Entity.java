@@ -23,6 +23,7 @@ import net.minecraft.game.world.material.Material;
 public abstract class Entity {
     private static int nextEntityID = 0;
     public int entityID = nextEntityID++;
+    public double renderDistanceWeight = 1.0D;
 	public boolean preventEntitySpawning = false;
     public Entity riddenByEntity;
     public Entity ridingEntity;
@@ -613,7 +614,7 @@ public abstract class Entity {
 
 	public boolean isInRangeToRenderDist(double distance) {
 		double d3 = this.boundingBox.getAverageEdgeLength();
-		d3 *= 64.0D;
+        d3 *= 64.0D * this.renderDistanceWeight;
 		return distance < d3 * d3;
 	}
 

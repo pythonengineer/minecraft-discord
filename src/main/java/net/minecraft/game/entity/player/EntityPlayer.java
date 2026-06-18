@@ -1,6 +1,7 @@
 package net.minecraft.game.entity.player;
 
 import com.mojang.nbt.NBTTagCompound;
+import com.mojang.nbt.NBTTagList;
 
 import java.util.List;
 
@@ -189,11 +190,14 @@ public class EntityPlayer extends EntityLiving {
 
 	public void readEntityFromNBT(NBTTagCompound compoundTag) {
 		super.readEntityFromNBT(compoundTag);
+        NBTTagList nBTTagList2 = compoundTag.getTagList("Inventory");
+        this.inventory.readFromNBT(nBTTagList2);
 	}
 
 	public void writeEntityToNBT(NBTTagCompound compoundTag) {
 		super.writeEntityToNBT(compoundTag);
-	}
+        compoundTag.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
+    }
 
 	public void displayGUIChest(IInventory inventory) {
 	}

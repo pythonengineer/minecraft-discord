@@ -31,6 +31,7 @@ public class Block {
     public static final Block[] blocksList = new Block[256];
     public static final boolean[] tickOnLoad = new boolean[256];
     public static final boolean[] opaqueCubeLookup = new boolean[256];
+    public static final boolean[] isBlockContainer = new boolean[256];
     public static final int[] lightOpacity = new int[256];
     public static final boolean[] canBlockGrass = new boolean[256];
     public static final int[] lightValue = new int[256];
@@ -148,6 +149,7 @@ public class Block {
             opaqueCubeLookup[blockID] = this.isOpaqueCube();
             lightOpacity[blockID] = this.isOpaqueCube() ? 255 : 0;
             canBlockGrass[blockID] = this.getCanBlockGrass();
+            isBlockContainer[blockID] = false;
         }
     }
 

@@ -22,6 +22,7 @@ import net.minecraft.game.entity.player.EntityOtherPlayerMP;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.chunk.Chunk;
 
 public class NetClientHandler extends NetHandler {
@@ -234,8 +235,8 @@ public class NetClientHandler extends NetHandler {
         this.worldClient.setChunkData(packet51MapChunk1.xPosition, packet51MapChunk1.yPosition, packet51MapChunk1.zPosition, packet51MapChunk1.xSize, packet51MapChunk1.ySize, packet51MapChunk1.zSize, packet51MapChunk1.chunkData);
     }
 
-    public void handleBlockChange(Packet53BlockChange packet53BlockChange1) {
-        this.worldClient.handleBlockChange(packet53BlockChange1.xPosition, packet53BlockChange1.yPosition, packet53BlockChange1.zPosition, packet53BlockChange1.type, packet53BlockChange1.metadata);
+    public void handleBlockChange(Packet53BlockChange packet) {
+        this.worldClient.handleBlockChange(packet.xPosition, packet.yPosition, packet.zPosition, packet.type, packet.metadata);
     }
 
     public void handleKickDisconnect(Packet255KickDisconnect packet) {
@@ -274,11 +275,11 @@ public class NetClientHandler extends NetHandler {
 
     }
 
-    public void handleBlockItemSwitch(Packet16BlockItemSwitch packet16BlockItemSwitch1) {
-        Entity entity2 = this.worldClient.getEntityByID(packet16BlockItemSwitch1.entityId);
+    public void handleBlockItemSwitch(Packet16BlockItemSwitch packet) {
+        Entity entity2 = this.worldClient.getEntityByID(packet.entityId);
         if(entity2 != null) {
             EntityPlayer entityPlayer3 = (EntityPlayer)entity2;
-            int i4 = packet16BlockItemSwitch1.id;
+            int i4 = packet.id;
             if(i4 == 0) {
                 entityPlayer3.inventory.mainInventory[entityPlayer3.inventory.currentItem] = null;
             } else {
@@ -304,12 +305,12 @@ public class NetClientHandler extends NetHandler {
         this.mc.thePlayer.inventory.addItemStackToInventory(new ItemStack(packet.itemID, packet.count, packet.itemDamage));
     }
 
-    public void handleHandshake(Packet2Handshake packet2Handshake1) {
-        if(packet2Handshake1.username.equals("-")) {
-            this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 1));
+    public void handleHandshake(Packet2Handshake packet) {
+        if(packet.username.equals("-")) {
+            this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 2));
         } else {
             try {
-                this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 1));
+                this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 2));
             } catch (Exception exception5) {
                 exception5.printStackTrace();
                 this.netManager.networkShutdown("Internal client error: " + exception5.toString());
@@ -338,7 +339,38 @@ public class NetClientHandler extends NetHandler {
         this.worldClient.addEntityToWorld(packet.entityId, entityLiving10);
     }
 
-    public void handleUpdateTime(Packet4UpdateTime packet4UpdateTime1) {
-        this.mc.theWorld.setWorldTime(packet4UpdateTime1.time);
+    public void handleUpdateTime(Packet4UpdateTime packet) {
+        this.mc.theWorld.setWorldTime(packet.time);
+    }
+
+    public void handlePlayerInventory(Packet5PlayerInventory packet) {
+        EntityPlayerSP entityPlayerSP2 = this.mc.thePlayer;
+        if(packet.inventoryType == -1) {
+            entityPlayerSP2.inventory.mainInventory = packet.inventory;
+        }
+
+        if(packet.inventoryType == -2) {
+            entityPlayerSP2.inventory.craftingInventory = packet.inventory;
+        }
+
+        if(packet.inventoryType == -3) {
+            entityPlayerSP2.inventory.armorInventory = packet.inventory;
+        }
+
+    }
+
+    public void handleComplexEntity(Packet59ComplexEntity packet) {
+        TileEntity tileEntity2 = this.worldClient.getBlockTileEntity(packet.xCoord, packet.yCoord, packet.zCoord);
+        if(tileEntity2 != null) {
+            tileEntity2.readFromNBT(packet.tileEntityNBT);
+            this.worldClient.markBlocksDirty(packet.xCoord, packet.yCoord, packet.zCoord, packet.xCoord, packet.yCoord, packet.zCoord);
+        }
+
+    }
+
+    public void handleSpawnPosition(Packet6SpawnPosition packet) {
+        this.worldClient.spawnX = packet.xPosition;
+        this.worldClient.spawnY = packet.yPosition;
+        this.worldClient.spawnZ = packet.zPosition;
     }
 }

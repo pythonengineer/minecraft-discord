@@ -9,6 +9,7 @@ import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.world.IWorldAccess;
 import net.minecraft.game.world.World;
+import net.minecraft.game.world.block.tileentity.TileEntity;
 import net.minecraft.game.world.chunk.ChunkProviderClient;
 import net.minecraft.game.world.chunk.IChunkProvider;
 
@@ -16,6 +17,7 @@ public class WorldClient extends World {
     private LinkedList blocksToReceive = new LinkedList();
     private NetClientHandler sendQueue;
     private ChunkProviderClient clientChunkProvider;
+    private boolean noTileEntityUpdates = false;
     private MCHashTable entityHashTable = new MCHashTable();
     private Set entityList = new HashSet();
     private Set entitySpawnQueue = new HashSet();
@@ -198,6 +200,12 @@ public class WorldClient extends World {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void updateTileEntityChunkAndDoNothing(int i1, int i2, int i3, TileEntity tileEntity4) {
+        if(!this.noTileEntityUpdates) {
+            this.sendQueue.addToSendQueue(new Packet59ComplexEntity(i1, i2, i3, tileEntity4));
         }
     }
 

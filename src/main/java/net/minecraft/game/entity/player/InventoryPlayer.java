@@ -11,12 +11,13 @@ import net.minecraft.game.world.block.Block;
 import net.minecraft.game.world.material.Material;
 
 public class InventoryPlayer implements IInventory {
-	public ItemStack[] mainInventory = new ItemStack[36];
+    public ItemStack[] mainInventory = new ItemStack[37];
 	public ItemStack[] armorInventory = new ItemStack[4];
     public ItemStack[] craftingInventory = new ItemStack[4];
 	public int currentItem = 0;
 	private EntityPlayer player;
     public ItemStack draggedItemStack;
+    public boolean inventoryChanged = false;
 
 	public InventoryPlayer(EntityPlayer playerEntity) {
 		this.player = playerEntity;
@@ -360,6 +361,53 @@ public class InventoryPlayer implements IInventory {
 
 	}
 
-	public void onInventoryChanged() {
-	}
+    public void onInventoryChanged() {
+        this.inventoryChanged = true;
+    }
+
+    public boolean getInventoryEqual(InventoryPlayer inventoryPlayer1) {
+        int i2;
+        for(i2 = 0; i2 < this.mainInventory.length; ++i2) {
+            if(!this.getItemStacksEqual(inventoryPlayer1.mainInventory[i2], this.mainInventory[i2])) {
+                return false;
+            }
+        }
+
+        for(i2 = 0; i2 < this.armorInventory.length; ++i2) {
+            if(!this.getItemStacksEqual(inventoryPlayer1.armorInventory[i2], this.armorInventory[i2])) {
+                return false;
+            }
+        }
+
+        for(i2 = 0; i2 < this.craftingInventory.length; ++i2) {
+            if(!this.getItemStacksEqual(inventoryPlayer1.craftingInventory[i2], this.craftingInventory[i2])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean getItemStacksEqual(ItemStack itemStack1, ItemStack itemStack2) {
+        return itemStack1 == null && itemStack2 == null ? true : (itemStack1 != null && itemStack2 != null ? itemStack1.itemID == itemStack2.itemID && itemStack1.stackSize == itemStack2.stackSize && itemStack1.itemDmg == itemStack2.itemDmg : false);
+    }
+
+    public InventoryPlayer copyInventory() {
+        InventoryPlayer inventoryPlayer1 = new InventoryPlayer((EntityPlayer)null);
+
+        int i2;
+        for(i2 = 0; i2 < this.mainInventory.length; ++i2) {
+            inventoryPlayer1.mainInventory[i2] = this.mainInventory[i2] != null ? this.mainInventory[i2].copy() : null;
+        }
+
+        for(i2 = 0; i2 < this.armorInventory.length; ++i2) {
+            inventoryPlayer1.armorInventory[i2] = this.armorInventory[i2] != null ? this.armorInventory[i2].copy() : null;
+        }
+
+        for(i2 = 0; i2 < this.craftingInventory.length; ++i2) {
+            inventoryPlayer1.craftingInventory[i2] = this.craftingInventory[i2] != null ? this.craftingInventory[i2].copy() : null;
+        }
+
+        return inventoryPlayer1;
+    }
 }

@@ -44,6 +44,7 @@ import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.RenderManager;
+import net.minecraft.client.render.texture.TextureCompassFX;
 import net.minecraft.client.render.texture.TextureFlamesFX;
 import net.minecraft.client.render.texture.TextureLavaFX;
 import net.minecraft.client.render.texture.TextureLavaFlowFX;
@@ -156,7 +157,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-        Display.setTitle("Minecraft Alpha v1.0.17_04");
+        Display.setTitle("Minecraft Alpha v1.1.0");
 
         try {
             Display.create();
@@ -196,6 +197,7 @@ public class Minecraft implements Runnable {
         this.glCapabilities = new OpenGlCapsChecker();
         this.renderEngine.registerTextureFX(this.textureLavaFX);
         this.renderEngine.registerTextureFX(this.textureWaterFX);
+        this.renderEngine.registerTextureFX(new TextureCompassFX(this));
         this.renderEngine.registerTextureFX(new TextureWaterFlowFX());
         this.renderEngine.registerTextureFX(new TextureLavaFlowFX());
         this.renderEngine.registerTextureFX(new TextureFlamesFX(0));
@@ -940,6 +942,10 @@ public class Minecraft implements Runnable {
                                 this.displayInGameMenu();
                             }
 
+                            if(Keyboard.getEventKey() == Keyboard.KEY_S && Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+                                this.t();
+                            }
+
                             if(Keyboard.getEventKey() == Keyboard.KEY_F5) {
                                 this.options.thirdPersonView = !this.options.thirdPersonView;
                             }
@@ -1039,6 +1045,12 @@ public class Minecraft implements Runnable {
         }
 
         this.systemTime = EagRuntime.currentTimeMillis();
+    }
+
+    private void t() {
+        System.out.println("FORCING RELOAD!");
+        this.sndManager = new SoundManager();
+        this.sndManager.loadSoundSettings(this.options);
     }
 
     public boolean isMultiplayerWorld() {

@@ -1,7 +1,11 @@
 package net.minecraft.client;
 
+import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+
 public class OpenGlCapsChecker {
+    private static boolean tryCheckOcclusionCapable = false;
+
     public boolean checkARBOcclusion() {
-        return false;
+        return tryCheckOcclusionCapable & GL11.checkOcclusionQuerySupport();
     }
 }

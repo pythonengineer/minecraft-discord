@@ -17,25 +17,27 @@ public class TileEntityChest extends TileEntity implements IInventory {
 		return this.chestContents[slot];
 	}
 
-	public ItemStack decrStackSize(int slot, int decrementAmount) {
-		if(this.chestContents[slot] != null) {
-			ItemStack decrementAmount1;
-			if(this.chestContents[slot].stackSize <= decrementAmount) {
-				decrementAmount1 = this.chestContents[slot];
-				this.chestContents[slot] = null;
-				return decrementAmount1;
-			} else {
-				decrementAmount1 = this.chestContents[slot].splitStack(decrementAmount);
-				if(this.chestContents[slot].stackSize == 0) {
-					this.chestContents[slot] = null;
-				}
+    public ItemStack decrStackSize(int slot, int stackSize) {
+        if(this.chestContents[slot] != null) {
+            ItemStack itemStack3;
+            if(this.chestContents[slot].stackSize <= stackSize) {
+                itemStack3 = this.chestContents[slot];
+                this.chestContents[slot] = null;
+                this.onInventoryChanged();
+                return itemStack3;
+            } else {
+                itemStack3 = this.chestContents[slot].splitStack(stackSize);
+                if(this.chestContents[slot].stackSize == 0) {
+                    this.chestContents[slot] = null;
+                }
 
-				return decrementAmount1;
-			}
-		} else {
-			return null;
-		}
-	}
+                this.onInventoryChanged();
+                return itemStack3;
+            }
+        } else {
+            return null;
+        }
+    }
 
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		this.chestContents[slot] = stack;
@@ -43,6 +45,7 @@ public class TileEntityChest extends TileEntity implements IInventory {
 			stack.stackSize = this.getInventoryStackLimit();
 		}
 
+        this.onInventoryChanged();
 	}
 
 	public String getInvName() {

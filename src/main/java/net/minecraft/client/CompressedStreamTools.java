@@ -5,6 +5,8 @@ import com.mojang.nbt.NBTTagCompound;
 
 import net.lax1dude.eaglercraft.EaglerZLIB;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
@@ -36,6 +38,32 @@ public class CompressedStreamTools {
             dataOutputStream5.close();
         }
 
+    }
+
+    public static NBTTagCompound decompress(byte[] data) throws IOException {
+        DataInputStream dataInputStream1 = new DataInputStream(EaglerZLIB.newGZIPInputStream(new ByteArrayInputStream(data)));
+
+        NBTTagCompound nBTTagCompound2;
+        try {
+            nBTTagCompound2 = read(dataInputStream1);
+        } finally {
+            dataInputStream1.close();
+        }
+
+        return nBTTagCompound2;
+    }
+
+    public static byte[] compress(NBTTagCompound compoundTag) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream1 = new ByteArrayOutputStream();
+        DataOutputStream dataOutputStream2 = new DataOutputStream(EaglerZLIB.newGZIPOutputStream(byteArrayOutputStream1));
+
+        try {
+            write(compoundTag, dataOutputStream2);
+        } finally {
+            dataOutputStream2.close();
+        }
+
+        return byteArrayOutputStream1.toByteArray();
     }
 
     public static NBTTagCompound read(DataInput dataInput0) throws IOException {

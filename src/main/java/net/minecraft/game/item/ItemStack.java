@@ -135,7 +135,6 @@ public class ItemStack {
 	}
 
     public ItemStack copy() {
-        ItemStack itemstack = new ItemStack(this.itemID, this.stackSize, this.itemDmg);
-        return itemstack;
+        return new ItemStack(this.itemID, this.stackSize, this.itemDmg);
     }
 }

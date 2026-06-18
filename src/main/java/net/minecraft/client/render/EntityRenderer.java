@@ -174,34 +174,33 @@ public class EntityRenderer {
         double d7 = entityPlayerSP2.prevPosZ + (entityPlayerSP2.posZ - entityPlayerSP2.prevPosZ) * (double)renderPartialTick;
         if(this.mc.options.thirdPersonView) {
             double d9 = 4.0D;
-            float f10000 = entityPlayerSP2.prevRenderYawOffset + (entityPlayerSP2.renderYawOffset - entityPlayerSP2.prevRenderYawOffset) * renderPartialTick;
-            float f12 = entityPlayerSP2.rotationYaw;
-            float f13 = entityPlayerSP2.rotationPitch;
-            double d14 = (double)(-MathHelper.sin(f12 / 180.0F * (float)Math.PI) * MathHelper.cos(f13 / 180.0F * (float)Math.PI)) * d9;
-            double d16 = (double)(MathHelper.cos(f12 / 180.0F * (float)Math.PI) * MathHelper.cos(f13 / 180.0F * (float)Math.PI)) * d9;
-            double d18 = (double)(-MathHelper.sin(f13 / 180.0F * (float)Math.PI)) * d9;
+            float f11 = entityPlayerSP2.rotationYaw;
+            float f12 = entityPlayerSP2.rotationPitch;
+            double d13 = (double)(-MathHelper.sin(f11 / 180.0F * (float)Math.PI) * MathHelper.cos(f12 / 180.0F * (float)Math.PI)) * d9;
+            double d15 = (double)(MathHelper.cos(f11 / 180.0F * (float)Math.PI) * MathHelper.cos(f12 / 180.0F * (float)Math.PI)) * d9;
+            double d17 = (double)(-MathHelper.sin(f12 / 180.0F * (float)Math.PI)) * d9;
 
-            for(int i20 = 0; i20 < 8; ++i20) {
-                float f21 = (float)((i20 & 1) * 2 - 1);
-                float f22 = (float)((i20 >> 1 & 1) * 2 - 1);
-                float f23 = (float)((i20 >> 2 & 1) * 2 - 1);
+            for(int i19 = 0; i19 < 8; ++i19) {
+                float f20 = (float)((i19 & 1) * 2 - 1);
+                float f21 = (float)((i19 >> 1 & 1) * 2 - 1);
+                float f22 = (float)((i19 >> 2 & 1) * 2 - 1);
+                f20 *= 0.1F;
                 f21 *= 0.1F;
                 f22 *= 0.1F;
-                f23 *= 0.1F;
-                MovingObjectPosition movingObjectPosition24 = this.mc.theWorld.rayTraceBlocks(Vec3D.createVector(d3 + (double)f21, d5 + (double)f22, d7 + (double)f23), Vec3D.createVector(d3 - d14 + (double)f21 + (double)f23, d5 - d18 + (double)f22, d7 - d16 + (double)f23));
-                if(movingObjectPosition24 != null) {
-                    double d25 = movingObjectPosition24.hitVec.distanceTo(Vec3D.createVector(d3, d5, d7));
-                    if(d25 < d9) {
-                        d9 = d25;
+                MovingObjectPosition movingObjectPosition23 = this.mc.theWorld.rayTraceBlocks(Vec3D.createVector(d3 + (double)f20, d5 + (double)f21, d7 + (double)f22), Vec3D.createVector(d3 - d13 + (double)f20 + (double)f22, d5 - d17 + (double)f21, d7 - d15 + (double)f22));
+                if(movingObjectPosition23 != null) {
+                    double d24 = movingObjectPosition23.hitVec.distanceTo(Vec3D.createVector(d3, d5, d7));
+                    if(d24 < d9) {
+                        d9 = d24;
                     }
                 }
             }
 
-            GL11.glRotatef(entityPlayerSP2.rotationPitch - f13, 1.0F, 0.0F, 0.0F);
-            GL11.glRotatef(entityPlayerSP2.rotationYaw - f12, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(entityPlayerSP2.rotationPitch - f12, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(entityPlayerSP2.rotationYaw - f11, 0.0F, 1.0F, 0.0F);
             GL11.glTranslatef(0.0F, 0.0F, (float)(-d9));
-            GL11.glRotatef(f12 - entityPlayerSP2.rotationYaw, 0.0F, 1.0F, 0.0F);
-            GL11.glRotatef(f13 - entityPlayerSP2.rotationPitch, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(f11 - entityPlayerSP2.rotationYaw, 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(f12 - entityPlayerSP2.rotationPitch, 1.0F, 0.0F, 0.0F);
         } else {
             GL11.glTranslatef(0.0F, 0.0F, -0.1F);
         }

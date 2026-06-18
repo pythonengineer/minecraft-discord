@@ -136,7 +136,7 @@ public class WorldRenderer {
                                     tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
                                 }
 
-                                if(i9 == 0 && Block.blocksList[i16] instanceof BlockContainer) {
+                                if(i9 == 0 && Block.isBlockContainer[i16]) {
                                     TileEntity tileEntity17 = chunkCache18.getBlockTileEntity(i15, i13, i14);
                                     if(TileEntityRenderer.instance.hasSpecialRenderer(tileEntity17)) {
                                         this.tileEntityRenderers.add(tileEntity17);
