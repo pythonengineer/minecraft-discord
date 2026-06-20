@@ -6,7 +6,7 @@ import net.lax1dude.eaglercraft.internal.paulscode.lwjgl3.LibraryLWJGLOpenAL;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.client.sound.SoundPoolEntry;
+import net.minecraft.src.SoundPoolEntry;
 import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemLogger;

@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.Touch;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.touch.EnumTouchControl.TouchAction;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.src.ScaledResolution;
 
 import java.util.*;
 
@@ -28,6 +28,8 @@ public class TouchControls {
 
     public static final Map<Integer, TouchControlInput> touchControls = new HashMap<>();
     protected static Set<EnumTouchControl> touchControlPressed = EnumSet.noneOf(EnumTouchControl.class);
+
+    protected static boolean isSneakToggled = false;
 
     public static void update(boolean screenTouched) {
         Minecraft mc = Minecraft.minecraft;
@@ -96,6 +98,18 @@ public class TouchControls {
         }
     }
 
+    public static void resetSneak() {
+        isSneakToggled = false;
+    }
+
+    public static void resetSneakInvalidate() {
+        if(isSneakToggled) {
+            isSneakToggled = false;
+            EnumTouchControl.SNEAK.invalid = true;
+            Minecraft.minecraft.touchOverlayRenderer.invalidate();
+        }
+    }
+
     public static void handleInput() {
         if (!touchControls.isEmpty()) {
             Set<EnumTouchControl> newPressed = EnumSet.noneOf(EnumTouchControl.class);
@@ -118,6 +132,10 @@ public class TouchControls {
 
     public static boolean isPressed(EnumTouchControl control) {
         return touchControlPressed.contains(control);
+    }
+
+    public static boolean getSneakToggled() {
+        return isSneakToggled;
     }
 
     public static EnumTouchControl overlappingControl(int tx, int ty) {

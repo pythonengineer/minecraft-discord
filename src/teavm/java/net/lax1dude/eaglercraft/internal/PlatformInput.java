@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.GameSettings;
+import net.minecraft.src.GameSettings;
 
 import net.lax1dude.eaglercraft.internal.teavm.TeaVMUtils;
 import net.lax1dude.eaglercraft.internal.teavm.TouchEvent;
@@ -215,6 +215,7 @@ public class PlatformInput {
     private static boolean[] keyStates = new boolean[256];
 
     private static boolean spacePressed = false;
+    private static boolean sneakPressed = false;
     private static int touchPressed = Keyboard.KEY_NONE;
     private static int functionKeyModifier = Keyboard.KEY_F;
 
@@ -1099,6 +1100,15 @@ public class PlatformInput {
         } else if (spacePressed) {
             keyEvents.add(new VKeyEvent(-1, 0, Keyboard.KEY_SPACE, '\0', EVENT_KEY_UP));
             spacePressed = false;
+        }
+        if (TouchControls.isPressed(EnumTouchControl.SNEAK)) {
+            if (!sneakPressed) {
+                sneakPressed = true;
+                keyEvents.add(new VKeyEvent(-1, 0, Keyboard.KEY_LSHIFT, '\0', EVENT_KEY_DOWN));
+            }
+        } else if (sneakPressed && !TouchControls.getSneakToggled()) {
+            keyEvents.add(new VKeyEvent(-1, 0, Keyboard.KEY_LSHIFT, '\0', EVENT_KEY_UP));
+            sneakPressed = false;
         }
     }
 
@@ -2490,7 +2500,7 @@ public class PlatformInput {
     }
 
     public static void setTitle(String title) {
-        options = Minecraft.minecraft.options;
+        options = Minecraft.minecraft.gameSettings;
     }
 
     public static void setSize(int width, int height) {

@@ -1,6 +1,6 @@
 {
   "name": "minecraft-server",
-  "version": "0.2.1",
+  "version": "0.2.8",
   "description": "",
   "main": "server.js",
   "type": "module",

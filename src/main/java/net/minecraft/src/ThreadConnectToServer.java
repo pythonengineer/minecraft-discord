@@ -1,0 +1,36 @@
+package net.minecraft.src;
+
+import net.minecraft.client.Minecraft;
+
+class ThreadConnectToServer extends Thread {
+	final Minecraft mc;
+	final String hostName;
+	final int port;
+	final GuiConnecting connectingGui;
+
+	ThreadConnectToServer(GuiConnecting var1, Minecraft var2, String var3, int var4) {
+		this.connectingGui = var1;
+		this.mc = var2;
+		this.hostName = var3;
+		this.port = var4;
+	}
+
+	public void run() {
+		try {
+			GuiConnecting.setNetClientHandler(this.connectingGui, new NetClientHandler(this.mc, this.hostName, this.port));
+			if(GuiConnecting.isCancelled(this.connectingGui)) {
+				return;
+			}
+
+			GuiConnecting.getNetClientHandler(this.connectingGui).addToSendQueue(new Packet2Handshake(this.mc.field_6320_i.inventory));
+		} catch (Exception var4) {
+			if(GuiConnecting.isCancelled(this.connectingGui)) {
+				return;
+			}
+
+			var4.printStackTrace();
+			this.mc.displayGuiScreen(new GuiConnectFailed("Failed to connect to the server", var4.toString()));
+		}
+
+	}
+}

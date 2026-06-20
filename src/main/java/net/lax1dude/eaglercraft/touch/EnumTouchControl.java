@@ -1,14 +1,13 @@
 package net.lax1dude.eaglercraft.touch;
 
 import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.src.GuiChat;
+import net.minecraft.src.GuiScreen;
+import net.minecraft.src.GuiMainMenu;
+import net.minecraft.src.ScaledResolution;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.Touch;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.GuiMainMenu;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 
 /**
  * Copyright (c) 2024 lax1dude, ayunami2000. All Rights Reserved.
@@ -76,11 +75,12 @@ public enum EnumTouchControl {
     SNEAK(EnumTouchControlPos.BOTTOM_LEFT, 64, 64, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
             enumIn.invalid = true;
+            TouchControls.isSneakToggled = !TouchControls.isSneakToggled;
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
         int[] pos = enumIn.getLocation(res, TouchOverlayRenderer._fuck);
-        TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 18, 108, 18, 18, 2);
+        TouchOverlayRenderer.drawTexturedModalRect(pos[0], pos[1], 18, TouchControls.isSneakToggled ? 126 : 108, 18, 18, 2);
     }),
 
     BACK(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
@@ -90,7 +90,7 @@ public enum EnumTouchControl {
             } else {
                 Minecraft mc = Minecraft.minecraft;
                 if (mc.thePlayer != null) {
-                    mc.setIngameFocus();
+                    mc.func_6259_e();
                 } else if(mc.currentScreen != null && !(mc.currentScreen instanceof GuiMainMenu)) {
                     mc.displayGuiScreen(null);
                 }
@@ -116,7 +116,7 @@ public enum EnumTouchControl {
 
     PAUSE(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.displayInGameMenu();
+            Minecraft.minecraft.func_6252_g();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -146,7 +146,7 @@ public enum EnumTouchControl {
     F5(EnumTouchControlPos.TOP, 90, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
             Minecraft mc = Minecraft.minecraft;
-            mc.options.thirdPersonView = !mc.options.thirdPersonView;
+            mc.gameSettings.thirdPersonView = !mc.gameSettings.thirdPersonView;
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -424,7 +424,7 @@ public enum EnumTouchControl {
                 DPAD_UP_LEFT.setVisible(renderer, false);
                 DPAD_UP_RIGHT.setVisible(renderer, false);
                 JUMP.setVisible(renderer, true);
-                SNEAK.setVisible(renderer, false);
+                SNEAK.setVisible(renderer, true);
                 BACK.setVisible(renderer, false);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);
@@ -454,7 +454,7 @@ public enum EnumTouchControl {
                 DPAD_UP_LEFT.setVisible(renderer, true);
                 DPAD_UP_RIGHT.setVisible(renderer, true);
                 JUMP.setVisible(renderer, true);
-                SNEAK.setVisible(renderer, false);
+                SNEAK.setVisible(renderer, true);
                 BACK.setVisible(renderer, false);
                 BACK_DISABLED.setVisible(renderer, false);
                 KEYBOARD.setVisible(renderer, false);

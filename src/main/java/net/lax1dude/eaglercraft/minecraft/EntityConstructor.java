@@ -1,6 +1,6 @@
 package net.lax1dude.eaglercraft.minecraft;
 
-import net.minecraft.game.world.World;
+import net.minecraft.src.World;
 
 /**
  * Copyright (c) 2022 lax1dude. All Rights Reserved.

@@ -11,8 +11,8 @@ import net.lax1dude.eaglercraft.internal.PlatformAudio;
 import net.lax1dude.eaglercraft.log4j.LogManager;
 import net.lax1dude.eaglercraft.log4j.Logger;
 import net.lax1dude.eaglercraft.util.MathHelper;
-import net.minecraft.client.sound.SoundPoolEntry;
-import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.src.EntityLiving;
+import net.minecraft.src.SoundPoolEntry;
 
 /**
  * Copyright (c) 2022-2023 lax1dude, ayunami2000. All Rights Reserved.
@@ -64,20 +64,20 @@ public class EaglercraftSoundManager {
         }
 
         protected void updateLocation() {
-            if (soundInstance.playStatic) {
-                return;
+            if (!soundInstance.playStatic) {
+                float x = soundInstance.x;
+                float y = soundInstance.y;
+                float z = soundInstance.z;
+                if (x != activeX || y != activeY || z != activeZ) {
+                    soundHandle.move(x, y, z);
+                    activeX = x;
+                    activeY = y;
+                    activeZ = z;
+                }
             }
-            float x = soundInstance.x;
-            float y = soundInstance.y;
-            float z = soundInstance.z;
+
             float pitch = soundInstance.pitch;
             float gain = soundInstance.volume;
-            if (x != activeX || y != activeY || z != activeZ) {
-                soundHandle.move(x, y, z);
-                activeX = x;
-                activeY = y;
-                activeZ = z;
-            }
             if (pitch != activePitch) {
                 soundHandle.pitch(EaglercraftSoundManager.this.getNormalizedPitch(soundInstance));
                 activePitch = pitch;

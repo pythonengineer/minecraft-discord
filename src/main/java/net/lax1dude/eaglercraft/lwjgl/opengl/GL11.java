@@ -8,11 +8,10 @@ import net.lax1dude.eaglercraft.log4j.Logger;
 import net.lax1dude.eaglercraft.lwjgl.opengl.DisplayList.ListOperation;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.opengl.DrawUtils;
-import net.lax1dude.eaglercraft.opengl.VertexFormat;
 import net.lax1dude.eaglercraft.vector.Matrix4f;
 import net.lax1dude.eaglercraft.vector.Vector3f;
 import net.lax1dude.eaglercraft.vector.Vector4f;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.src.Tessellator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -3674,9 +3673,9 @@ public class GL11 {
         _wglEndQuery(target);
     }
 
-    public static void glBegin(int mode, VertexFormat fmt) {
+    public static void glBegin(int mode) {
         fixedDrawing = true;
-        Tessellator.instance.startDrawing(mode, fmt);
+        Tessellator.instance.startDrawing(mode);
     }
 
     public static void glEnd() {
@@ -3685,7 +3684,7 @@ public class GL11 {
     }
 
     public static void glTexCoord2f(float u, float v) {
-        Tessellator.instance.addUV(u, v);
+        Tessellator.instance.setTextureUV(u, v);
     }
 
     public static void glVertex3f(float x, float y, float z) {

@@ -112,7 +112,21 @@ public class ImageData {
 
     public void getRGB(int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
         for (int y = 0; y < h; ++y) {
-            System.arraycopy(pixels, (y + startY) * width + startX, rgbArray, offset + y * scansize, w);
+            for (int x = 0; x < w; ++x) {
+                int abgr = pixels[(y + startY) * width + (startX + x)];
+                int a = (abgr >> 24) & 0xFF;
+                int b = (abgr >> 16) & 0xFF;
+                int g = (abgr >> 8) & 0xFF;
+                int r = abgr & 0xFF;
+                int argb = (a << 24) | (r << 16) | (g << 8) | b;
+                rgbArray[offset + y * scansize + x] = argb;
+            }
+        }
+    }
+
+    public void setRGB(int startX, int startY, int w, int h, int[] rgbArray, int offset, int scansize) {
+        for (int y = 0; y < h; ++y) {
+            System.arraycopy(rgbArray, offset + y * scansize, pixels, (y + startY) * width + startX, w);
         }
     }
 
