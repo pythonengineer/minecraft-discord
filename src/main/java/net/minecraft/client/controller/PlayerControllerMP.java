@@ -99,7 +99,7 @@ public class PlayerControllerMP extends PlayerController {
                 }
 
                 ++this.stepSoundTickCounter;
-                if(this.curBlockDamageMP >= 1.0F) {
+                if(this.curBlockDamageMP >= 1.0000001F) {
                     this.sendBlockRemoved(x, y, z, side);
                     this.curBlockDamageMP = 0.0F;
                     this.prevBlockDamageMP = 0.0F;
