@@ -114,7 +114,7 @@ public final class SpawnerAnimals {
 												var35.mountEntity(var34);
 											}
 
-											if(var13 >= var34.func_6391_i()) {
+											if(var13 >= var34.getMaxSpawnedInChunk()) {
 												continue label110;
 											}
 										}

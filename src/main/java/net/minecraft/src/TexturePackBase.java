@@ -2,7 +2,6 @@ package net.minecraft.src;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.minecraft.client.Minecraft;
 

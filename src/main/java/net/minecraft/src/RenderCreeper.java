@@ -47,11 +47,11 @@ public class RenderCreeper extends RenderLiving {
 		}
 	}
 
-	protected void func_6330_a(EntityLiving var1, float var2) {
+	protected void preRenderCallback(EntityLiving var1, float var2) {
 		this.a((EntityCreeper)var1, var2);
 	}
 
-	protected int func_173_a(EntityLiving var1, float var2, float var3) {
+	protected int getColorMultiplier(EntityLiving var1, float var2, float var3) {
 		return this.a((EntityCreeper)var1, var2, var3);
 	}
 }

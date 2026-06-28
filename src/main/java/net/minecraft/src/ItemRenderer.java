@@ -10,6 +10,7 @@ public class ItemRenderer {
 	private float field_9453_c = 0.0F;
 	private float field_9452_d = 0.0F;
 	private RenderBlocks field_1357_e = new RenderBlocks();
+	private int field_20099_f = -1;
 
 	public ItemRenderer(Minecraft var1) {
 		this.mc = var1;
@@ -181,14 +182,14 @@ public class ItemRenderer {
 			var9 = MathHelper.sin(MathHelper.sqrt_float(var7) * (float)Math.PI);
 			GL11.glRotatef(var9 * 70.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(-var8 * 20.0F, 0.0F, 0.0F, 1.0F);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTextureForDownloadableImage(this.mc.thePlayer.skinUrl, this.mc.thePlayer.getEntityTexture()));
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTextureForDownloadableImage(this.mc.thePlayer.field_20047_bv, this.mc.thePlayer.getEntityTexture()));
 			GL11.glTranslatef(-1.0F, 3.6F, 3.5F);
 			GL11.glRotatef(120.0F, 0.0F, 0.0F, 1.0F);
 			GL11.glRotatef(200.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(-135.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glScalef(1.0F, 1.0F, 1.0F);
 			GL11.glTranslatef(5.6F, 0.0F, 0.0F);
-			Render var10 = RenderManager.instance.func_855_a(this.mc.thePlayer);
+			Render var10 = RenderManager.instance.getEntityRenderObject(this.mc.thePlayer);
 			RenderPlayer var11 = (RenderPlayer)var10;
 			var9 = 1.0F;
 			GL11.glScalef(var9, var9, var9);
@@ -322,20 +323,31 @@ public class ItemRenderer {
 		this.field_9452_d = this.field_9453_c;
 		EntityPlayerSP var1 = this.mc.thePlayer;
 		ItemStack var2 = var1.inventory.getCurrentItem();
-		float var4 = 0.4F;
-		float var5 = var2 == this.field_9451_b ? 1.0F : 0.0F;
-		float var6 = var5 - this.field_9453_c;
-		if(var6 < -var4) {
-			var6 = -var4;
+		boolean var4 = this.field_20099_f == var1.inventory.currentItem && var2 == this.field_9451_b;
+		if(this.field_9451_b == null && var2 == null) {
+			var4 = true;
 		}
 
-		if(var6 > var4) {
-			var6 = var4;
+		if(var2 != null && this.field_9451_b != null && var2 != this.field_9451_b && var2.itemID == this.field_9451_b.itemID) {
+			this.field_9451_b = var2;
+			var4 = true;
 		}
 
-		this.field_9453_c += var6;
+		float var5 = 0.4F;
+		float var6 = var4 ? 1.0F : 0.0F;
+		float var7 = var6 - this.field_9453_c;
+		if(var7 < -var5) {
+			var7 = -var5;
+		}
+
+		if(var7 > var5) {
+			var7 = var5;
+		}
+
+		this.field_9453_c += var7;
 		if(this.field_9453_c < 0.1F) {
 			this.field_9451_b = var2;
+			this.field_20099_f = var1.inventory.currentItem;
 		}
 
 	}

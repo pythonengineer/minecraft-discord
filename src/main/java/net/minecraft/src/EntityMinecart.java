@@ -31,7 +31,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.b = 0;
 		this.c = 1;
 		this.field_856_i = false;
-		this.field_618_ad = true;
+		this.preventEntitySpawning = true;
 		this.setSize(0.98F, 0.7F);
 		this.yOffset = this.height / 2.0F;
 		this.entityWalks = false;
@@ -61,15 +61,15 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.d = var8;
 	}
 
-	public double func_402_h() {
+	public double getMountedYOffset() {
 		return (double)this.height * 0.0D - (double)0.3F;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		if(!this.worldObj.multiplayerWorld && !this.isDead) {
 			this.c = -this.c;
 			this.b = 10;
-			this.func_9281_M();
+			this.setBeenAttacked();
 			this.a += var2 * 10;
 			if(this.a > 40) {
 				this.dropItemWithOffset(Item.minecartEmpty.shiftedIndex, 1, 0.0F);
@@ -88,7 +88,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		}
 	}
 
-	public void func_9280_g() {
+	public void performHurtAnimation() {
 		System.out.println("Animating hurt");
 		this.c = -this.c;
 		this.b = 10;
@@ -386,7 +386,7 @@ public class EntityMinecart extends Entity implements IInventory {
 			}
 
 			this.setRotation(this.rotationYaw, this.rotationPitch);
-			List var15 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expands((double)0.2F, 0.0D, (double)0.2F));
+			List var15 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
 			if(var15 != null && var15.size() > 0) {
 				for(int var45 = 0; var45 < var15.size(); ++var45) {
 					Entity var17 = (Entity)var15.get(var45);
@@ -574,8 +574,8 @@ public class EntityMinecart extends Entity implements IInventory {
 					var4 *= var8;
 					var2 *= (double)0.1F;
 					var4 *= (double)0.1F;
-					var2 *= (double)(1.0F - this.field_632_aO);
-					var4 *= (double)(1.0F - this.field_632_aO);
+					var2 *= (double)(1.0F - this.entityCollisionReduction);
+					var4 *= (double)(1.0F - this.entityCollisionReduction);
 					var2 *= 0.5D;
 					var4 *= 0.5D;
 					if(var1 instanceof EntityMinecart) {
@@ -670,7 +670,9 @@ public class EntityMinecart extends Entity implements IInventory {
 				var1.mountEntity(this);
 			}
 		} else if(this.d == 1) {
-			var1.displayGUIChest(this);
+			if(!this.worldObj.multiplayerWorld) {
+				var1.displayGUIChest(this);
+			}
 		} else if(this.d == 2) {
 			ItemStack var2 = var1.inventory.getCurrentItem();
 			if(var2 != null && var2.itemID == Item.coal.shiftedIndex) {
@@ -704,5 +706,9 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.field_9409_q = this.motionX = var1;
 		this.field_9408_r = this.motionY = var3;
 		this.field_9407_s = this.motionZ = var5;
+	}
+
+	public boolean func_20070_a_(EntityPlayer var1) {
+		return this.isDead ? false : var1.getDistanceSqToEntity(this) <= 64.0D;
 	}
 }

@@ -16,11 +16,11 @@ public class EntityPortalFX extends EntityFX {
 		this.field_4084_r = this.posZ = var6;
 		float var14 = this.rand.nextFloat() * 0.6F + 0.4F;
 		this.field_4083_a = this.field_665_g = this.rand.nextFloat() * 0.2F + 0.5F;
-		this.field_663_i = this.field_662_j = this.field_661_k = 1.0F * var14;
-		this.field_662_j *= 0.3F;
-		this.field_663_i *= 0.9F;
+		this.particleRed = this.particleBlue = this.particleGreen = 1.0F * var14;
+		this.particleBlue *= 0.3F;
+		this.particleRed *= 0.9F;
 		this.field_666_f = (int)(Math.random() * 10.0D) + 40;
-		this.field_9314_ba = true;
+		this.noClip = true;
 		this.field_670_b = (int)(Math.random() * 8.0D);
 	}
 

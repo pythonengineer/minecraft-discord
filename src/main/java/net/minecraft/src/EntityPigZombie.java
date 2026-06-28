@@ -10,13 +10,13 @@ public class EntityPigZombie extends EntityZombie {
 	public EntityPigZombie(World var1) {
 		super(var1);
 		this.texture = "/mob/pigzombie.png";
-		this.field_9333_am = 0.5F;
-		this.field_762_e = 5;
+		this.moveSpeed = 0.5F;
+		this.attackStrength = 5;
 		this.isImmuneToFire = true;
 	}
 
 	public void onUpdate() {
-		this.field_9333_am = this.playerToAttack != null ? 0.95F : 0.5F;
+		this.moveSpeed = this.playerToAttack != null ? 0.95F : 0.5F;
 		if(this.randomSoundDelay > 0 && --this.randomSoundDelay == 0) {
 			this.worldObj.playSoundAtEntity(this, "mob.zombiepig.zpigangry", this.getSoundVolume() * 2.0F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
 		}
@@ -46,9 +46,9 @@ public class EntityPigZombie extends EntityZombie {
 		super.onLivingUpdate();
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		if(var1 instanceof EntityPlayer) {
-			List var3 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expands(32.0D, 32.0D, 32.0D));
+			List var3 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(32.0D, 32.0D, 32.0D));
 
 			for(int var4 = 0; var4 < var3.size(); ++var4) {
 				Entity var5 = (Entity)var3.get(var4);
@@ -61,7 +61,7 @@ public class EntityPigZombie extends EntityZombie {
 			this.becomeAngryAt(var1);
 		}
 
-		return super.canAttackEntity(var1, var2);
+		return super.attackEntityFrom(var1, var2);
 	}
 
 	private void becomeAngryAt(Entity var1) {

@@ -19,7 +19,7 @@ public class PlayerControllerTest extends PlayerController {
 
 	}
 
-	public boolean func_6469_d() {
+	public boolean shouldDrawHUD() {
 		return false;
 	}
 
@@ -27,6 +27,6 @@ public class PlayerControllerTest extends PlayerController {
 		super.func_717_a(var1);
 	}
 
-	public void func_6474_c() {
+	public void updateController() {
 	}
 }

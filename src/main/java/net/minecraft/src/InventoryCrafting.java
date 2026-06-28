@@ -11,12 +11,6 @@ public class InventoryCrafting implements IInventory {
 		this.eventHandler = var1;
 	}
 
-	public InventoryCrafting(CraftingInventoryCB var1, ItemStack[] var2) {
-		this.nbrSlots = var2.length;
-		this.stackList = var2;
-		this.eventHandler = var1;
-	}
-
 	public int getSizeInventory() {
 		return this.nbrSlots;
 	}
@@ -61,5 +55,9 @@ public class InventoryCrafting implements IInventory {
 	}
 
 	public void onInventoryChanged() {
+	}
+
+	public boolean func_20070_a_(EntityPlayer var1) {
+		return true;
 	}
 }

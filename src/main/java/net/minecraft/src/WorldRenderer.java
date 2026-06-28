@@ -8,23 +8,23 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class WorldRenderer {
 	public World worldObj;
-	private int field_1744_C = -1;
-	private static Tessellator field_1742_D = Tessellator.instance;
-	public static int field_1762_b = 0;
-	public int field_1761_c;
-	public int field_1760_d;
-	public int field_1759_e;
-	public int field_1758_f;
-	public int field_1757_g;
-	public int field_1756_h;
+	private int glRenderList = -1;
+	private static Tessellator tessellator = Tessellator.instance;
+	public static int chunksUpdated = 0;
+	public int posX;
+	public int posY;
+	public int posZ;
+	public int sizeWidth;
+	public int sizeHeight;
+	public int sizeDepth;
 	public int field_1755_i;
 	public int field_1754_j;
 	public int field_1753_k;
 	public int field_1752_l;
 	public int field_1751_m;
 	public int field_1750_n;
-	public boolean field_1749_o = false;
-	public boolean[] field_1748_p = new boolean[2];
+	public boolean isInFrustrum = false;
+	public boolean[] skipRenderPass = new boolean[2];
 	public int field_1746_q;
 	public int field_1743_r;
 	public int field_1741_s;
@@ -32,34 +32,34 @@ public class WorldRenderer {
 	public boolean needsUpdate;
 	public AxisAlignedBB field_1736_v;
 	public int field_1735_w;
-	public boolean field_1734_x = true;
-	public boolean field_1733_y;
+	public boolean isVisible = true;
+	public boolean isWaitingOnOcclusionQuery;
 	public int field_1732_z;
 	public boolean field_1747_A;
-	private boolean field_1739_E = false;
-	public List field_1745_B = new ArrayList();
+	private boolean isInitialized = false;
+	public List tileEntityRenderers = new ArrayList();
 	private List field_1737_F;
 
 	public WorldRenderer(World var1, List var2, int var3, int var4, int var5, int var6, int var7) {
 		this.worldObj = var1;
 		this.field_1737_F = var2;
-		this.field_1758_f = this.field_1757_g = this.field_1756_h = var6;
-		this.field_1740_t = MathHelper.sqrt_float((float)(this.field_1758_f * this.field_1758_f + this.field_1757_g * this.field_1757_g + this.field_1756_h * this.field_1756_h)) / 2.0F;
-		this.field_1744_C = var7;
-		this.field_1761_c = -999;
+		this.sizeWidth = this.sizeHeight = this.sizeDepth = var6;
+		this.field_1740_t = MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth)) / 2.0F;
+		this.glRenderList = var7;
+		this.posX = -999;
 		this.func_1197_a(var3, var4, var5);
 		this.needsUpdate = false;
 	}
 
 	public void func_1197_a(int var1, int var2, int var3) {
-		if(var1 != this.field_1761_c || var2 != this.field_1760_d || var3 != this.field_1759_e) {
+		if(var1 != this.posX || var2 != this.posY || var3 != this.posZ) {
 			this.func_1195_b();
-			this.field_1761_c = var1;
-			this.field_1760_d = var2;
-			this.field_1759_e = var3;
-			this.field_1746_q = var1 + this.field_1758_f / 2;
-			this.field_1743_r = var2 + this.field_1757_g / 2;
-			this.field_1741_s = var3 + this.field_1756_h / 2;
+			this.posX = var1;
+			this.posY = var2;
+			this.posZ = var3;
+			this.field_1746_q = var1 + this.sizeWidth / 2;
+			this.field_1743_r = var2 + this.sizeHeight / 2;
+			this.field_1741_s = var3 + this.sizeDepth / 2;
 			this.field_1752_l = var1 & 1023;
 			this.field_1751_m = var2;
 			this.field_1750_n = var3 & 1023;
@@ -67,36 +67,36 @@ public class WorldRenderer {
 			this.field_1754_j = var2 - this.field_1751_m;
 			this.field_1753_k = var3 - this.field_1750_n;
 			float var4 = 2.0F;
-			this.field_1736_v = AxisAlignedBB.getBoundingBox((double)((float)var1 - var4), (double)((float)var2 - var4), (double)((float)var3 - var4), (double)((float)(var1 + this.field_1758_f) + var4), (double)((float)(var2 + this.field_1757_g) + var4), (double)((float)(var3 + this.field_1756_h) + var4));
-			GL11.glNewList(this.field_1744_C + 2, GL11.GL_COMPILE);
-			RenderItem.renderAABB(AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.field_1752_l - var4), (double)((float)this.field_1751_m - var4), (double)((float)this.field_1750_n - var4), (double)((float)(this.field_1752_l + this.field_1758_f) + var4), (double)((float)(this.field_1751_m + this.field_1757_g) + var4), (double)((float)(this.field_1750_n + this.field_1756_h) + var4)));
+			this.field_1736_v = AxisAlignedBB.getBoundingBox((double)((float)var1 - var4), (double)((float)var2 - var4), (double)((float)var3 - var4), (double)((float)(var1 + this.sizeWidth) + var4), (double)((float)(var2 + this.sizeHeight) + var4), (double)((float)(var3 + this.sizeDepth) + var4));
+			GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
+			RenderItem.renderAABB(AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.field_1752_l - var4), (double)((float)this.field_1751_m - var4), (double)((float)this.field_1750_n - var4), (double)((float)(this.field_1752_l + this.sizeWidth) + var4), (double)((float)(this.field_1751_m + this.sizeHeight) + var4), (double)((float)(this.field_1750_n + this.sizeDepth) + var4)));
 			GL11.glEndList();
-			this.MarkDirty();
+			this.markDirty();
 		}
 	}
 
-	private void func_1203_g() {
+	private void setupGLTranslation() {
 		GL11.glTranslatef((float)this.field_1752_l, (float)this.field_1751_m, (float)this.field_1750_n);
 	}
 
-	public void func_1198_a() {
+	public void updateRenderer() {
 		if(this.needsUpdate) {
-			++field_1762_b;
-			int var1 = this.field_1761_c;
-			int var2 = this.field_1760_d;
-			int var3 = this.field_1759_e;
-			int var4 = this.field_1761_c + this.field_1758_f;
-			int var5 = this.field_1760_d + this.field_1757_g;
-			int var6 = this.field_1759_e + this.field_1756_h;
+			++chunksUpdated;
+			int var1 = this.posX;
+			int var2 = this.posY;
+			int var3 = this.posZ;
+			int var4 = this.posX + this.sizeWidth;
+			int var5 = this.posY + this.sizeHeight;
+			int var6 = this.posZ + this.sizeDepth;
 
 			for(int var7 = 0; var7 < 2; ++var7) {
-				this.field_1748_p[var7] = true;
+				this.skipRenderPass[var7] = true;
 			}
 
 			Chunk.field_1540_a = false;
 			HashSet var21 = new HashSet();
-			var21.addAll(this.field_1745_B);
-			this.field_1745_B.clear();
+			var21.addAll(this.tileEntityRenderers);
+			this.tileEntityRenderers.clear();
 			byte var8 = 1;
 			ChunkCache var9 = new ChunkCache(this.worldObj, var1 - var8, var2 - var8, var3 - var8, var4 + var8, var5 + var8, var6 + var8);
 			RenderBlocks var10 = new RenderBlocks(var9);
@@ -113,26 +113,26 @@ public class WorldRenderer {
 							if(var18 > 0) {
 								if(!var14) {
 									var14 = true;
-									GL11.glNewList(this.field_1744_C + var11, GL11.GL_COMPILE);
+									GL11.glNewList(this.glRenderList + var11, GL11.GL_COMPILE);
 									GL11.glPushMatrix();
-									this.func_1203_g();
+									this.setupGLTranslation();
 									float var19 = 1.000001F;
-									GL11.glTranslatef((float)(-this.field_1756_h) / 2.0F, (float)(-this.field_1757_g) / 2.0F, (float)(-this.field_1756_h) / 2.0F);
+									GL11.glTranslatef((float)(-this.sizeDepth) / 2.0F, (float)(-this.sizeHeight) / 2.0F, (float)(-this.sizeDepth) / 2.0F);
 									GL11.glScalef(var19, var19, var19);
-									GL11.glTranslatef((float)this.field_1756_h / 2.0F, (float)this.field_1757_g / 2.0F, (float)this.field_1756_h / 2.0F);
-									field_1742_D.startDrawingQuads();
-									field_1742_D.setTranslationD((double)(-this.field_1761_c), (double)(-this.field_1760_d), (double)(-this.field_1759_e));
+									GL11.glTranslatef((float)this.sizeDepth / 2.0F, (float)this.sizeHeight / 2.0F, (float)this.sizeDepth / 2.0F);
+									tessellator.startDrawingQuads();
+									tessellator.setTranslationD((double)(-this.posX), (double)(-this.posY), (double)(-this.posZ));
 								}
 
 								if(var11 == 0 && Block.isBlockContainer[var18]) {
 									TileEntity var23 = var9.getBlockTileEntity(var17, var15, var16);
 									if(TileEntityRenderer.instance.hasSpecialRenderer(var23)) {
-										this.field_1745_B.add(var23);
+										this.tileEntityRenderers.add(var23);
 									}
 								}
 
 								Block var24 = Block.blocksList[var18];
-								int var20 = var24.func_234_g();
+								int var20 = var24.getRenderBlockPass();
 								if(var20 != var11) {
 									var12 = true;
 								} else if(var20 == var11) {
@@ -144,16 +144,16 @@ public class WorldRenderer {
 				}
 
 				if(var14) {
-					field_1742_D.draw();
+					tessellator.draw();
 					GL11.glPopMatrix();
 					GL11.glEndList();
-					field_1742_D.setTranslationD(0.0D, 0.0D, 0.0D);
+					tessellator.setTranslationD(0.0D, 0.0D, 0.0D);
 				} else {
 					var13 = false;
 				}
 
 				if(var13) {
-					this.field_1748_p[var11] = false;
+					this.skipRenderPass[var11] = false;
 				}
 
 				if(!var12) {
@@ -162,17 +162,17 @@ public class WorldRenderer {
 			}
 
 			HashSet var22 = new HashSet();
-			var22.addAll(this.field_1745_B);
+			var22.addAll(this.tileEntityRenderers);
 			var22.removeAll(var21);
 			this.field_1737_F.addAll(var22);
-			var21.removeAll(this.field_1745_B);
+			var21.removeAll(this.tileEntityRenderers);
 			this.field_1737_F.removeAll(var21);
 			this.field_1747_A = Chunk.field_1540_a;
-			this.field_1739_E = true;
+			this.isInitialized = true;
 		}
 	}
 
-	public float func_1202_a(Entity var1) {
+	public float distanceToEntity(Entity var1) {
 		float var2 = (float)(var1.posX - (double)this.field_1746_q);
 		float var3 = (float)(var1.posY - (double)this.field_1743_r);
 		float var4 = (float)(var1.posZ - (double)this.field_1741_s);
@@ -181,11 +181,11 @@ public class WorldRenderer {
 
 	public void func_1195_b() {
 		for(int var1 = 0; var1 < 2; ++var1) {
-			this.field_1748_p[var1] = true;
+			this.skipRenderPass[var1] = true;
 		}
 
-		this.field_1749_o = false;
-		this.field_1739_E = false;
+		this.isInFrustrum = false;
+		this.isInitialized = false;
 	}
 
 	public void func_1204_c() {
@@ -193,23 +193,23 @@ public class WorldRenderer {
 		this.worldObj = null;
 	}
 
-	public int func_1200_a(int var1) {
-		return !this.field_1749_o ? -1 : (!this.field_1748_p[var1] ? this.field_1744_C + var1 : -1);
+	public int getGLCallListForPass(int var1) {
+		return !this.isInFrustrum ? -1 : (!this.skipRenderPass[var1] ? this.glRenderList + var1 : -1);
 	}
 
-	public void func_1199_a(ICamera var1) {
-		this.field_1749_o = var1.func_342_a(this.field_1736_v);
+	public void updateInFrustrum(ICamera var1) {
+		this.isInFrustrum = var1.isBoundingBoxInFrustum(this.field_1736_v);
 	}
 
-	public void func_1201_d() {
-		GL11.glCallList(this.field_1744_C + 2);
+	public void callOcclusionQueryList() {
+		GL11.glCallList(this.glRenderList + 2);
 	}
 
-	public boolean func_1196_e() {
-		return !this.field_1739_E ? false : this.field_1748_p[0] && this.field_1748_p[1];
+	public boolean canRender() {
+		return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
 	}
 
-	public void MarkDirty() {
+	public void markDirty() {
 		this.needsUpdate = true;
 	}
 }

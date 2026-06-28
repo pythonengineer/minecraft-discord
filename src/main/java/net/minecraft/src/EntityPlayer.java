@@ -3,28 +3,91 @@ package net.minecraft.src;
 import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public class EntityPlayer extends EntityLiving {
+public abstract class EntityPlayer extends EntityLiving {
 	public InventoryPlayer inventory = new InventoryPlayer(this);
+	public CraftingInventoryCB field_20069_g;
+	public CraftingInventoryCB field_20068_h;
 	public byte field_9371_f = 0;
 	public int score = 0;
 	public float field_775_e;
 	public float field_774_f;
-	public boolean field_9369_j = false;
-	public int field_9368_k = 0;
+	public boolean isSwinging = false;
+	public int swingProgressInt = 0;
 	public String field_771_i;
 	public int dimension;
-	private int field_781_a = 0;
+	public String field_20067_q;
+	public double field_20066_r;
+	public double field_20065_s;
+	public double field_20064_t;
+	public double field_20063_u;
+	public double field_20062_v;
+	public double field_20061_w;
+	private int damageRemainder = 0;
 	public EntityFish fishEntity = null;
 
 	public EntityPlayer(World var1) {
 		super(var1);
+		this.field_20069_g = new CraftingInventoryPlayerCB(this.inventory, !var1.multiplayerWorld);
+		this.field_20068_h = this.field_20069_g;
 		this.yOffset = 1.62F;
 		this.setLocationAndAngles((double)var1.spawnX + 0.5D, (double)(var1.spawnY + 1), (double)var1.spawnZ + 0.5D, 0.0F, 0.0F);
 		this.health = 20;
 		this.field_9351_C = "humanoid";
 		this.field_9353_B = 180.0F;
-		this.field_9310_bf = 20;
+		this.fireResistance = 20;
 		this.texture = "/mob/char.png";
+	}
+
+	public void onUpdate() {
+		super.onUpdate();
+		if(!this.worldObj.multiplayerWorld && this.field_20068_h != null && !this.field_20068_h.func_20120_b(this)) {
+			this.func_20059_m();
+			this.field_20068_h = this.field_20069_g;
+		}
+
+		this.field_20066_r = this.field_20063_u;
+		this.field_20065_s = this.field_20062_v;
+		this.field_20064_t = this.field_20061_w;
+		double var1 = this.posX - this.field_20063_u;
+		double var3 = this.posY - this.field_20062_v;
+		double var5 = this.posZ - this.field_20061_w;
+		double var7 = 10.0D;
+		if(var1 > var7) {
+			this.field_20066_r = this.field_20063_u = this.posX;
+		}
+
+		if(var5 > var7) {
+			this.field_20064_t = this.field_20061_w = this.posZ;
+		}
+
+		if(var3 > var7) {
+			this.field_20065_s = this.field_20062_v = this.posY;
+		}
+
+		if(var1 < -var7) {
+			this.field_20066_r = this.field_20063_u = this.posX;
+		}
+
+		if(var5 < -var7) {
+			this.field_20064_t = this.field_20061_w = this.posZ;
+		}
+
+		if(var3 < -var7) {
+			this.field_20065_s = this.field_20062_v = this.posY;
+		}
+
+		this.field_20063_u += var1 * 0.25D;
+		this.field_20061_w += var5 * 0.25D;
+		this.field_20062_v += var3 * 0.25D;
+	}
+
+	protected void func_20059_m() {
+		this.field_20068_h = this.field_20069_g;
+	}
+
+	public void func_20046_s() {
+		this.field_20067_q = null;
+		this.skinUrl = null;
 	}
 
 	public void func_350_p() {
@@ -41,22 +104,22 @@ public class EntityPlayer extends EntityLiving {
 		this.deathTime = 0;
 	}
 
-	protected void func_418_b_() {
-		if(this.field_9369_j) {
-			++this.field_9368_k;
-			if(this.field_9368_k == 8) {
-				this.field_9368_k = 0;
-				this.field_9369_j = false;
+	protected void updatePlayerActionState() {
+		if(this.isSwinging) {
+			++this.swingProgressInt;
+			if(this.swingProgressInt == 8) {
+				this.swingProgressInt = 0;
+				this.isSwinging = false;
 			}
 		} else {
-			this.field_9368_k = 0;
+			this.swingProgressInt = 0;
 		}
 
-		this.swingProgress = (float)this.field_9368_k / 8.0F;
+		this.swingProgress = (float)this.swingProgressInt / 8.0F;
 	}
 
 	public void onLivingUpdate() {
-		if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.field_9311_be % 20 * 4 == 0) {
+		if(this.worldObj.difficultySetting == 0 && this.health < 20 && this.ticksExisted % 20 * 12 == 0) {
 			this.heal(1);
 		}
 
@@ -80,10 +143,13 @@ public class EntityPlayer extends EntityLiving {
 		this.field_774_f += (var1 - this.field_774_f) * 0.4F;
 		this.field_9328_R += (var2 - this.field_9328_R) * 0.8F;
 		if(this.health > 0) {
-			List var3 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expands(1.0D, 0.0D, 1.0D));
+			List var3 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
 			if(var3 != null) {
 				for(int var4 = 0; var4 < var3.size(); ++var4) {
-					this.func_451_h((Entity)var3.get(var4));
+					Entity var5 = (Entity)var3.get(var4);
+					if(!var5.isDead) {
+						this.func_451_h(var5);
+					}
 				}
 			}
 		}
@@ -94,7 +160,7 @@ public class EntityPlayer extends EntityLiving {
 		var1.onCollideWithPlayer(this);
 	}
 
-	public int func_6417_t() {
+	public int getScore() {
 		return this.score;
 	}
 
@@ -109,8 +175,8 @@ public class EntityPlayer extends EntityLiving {
 
 		this.inventory.dropAllItems();
 		if(var1 != null) {
-			this.motionX = (double)(-MathHelper.cos((this.field_9331_N + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
-			this.motionZ = (double)(-MathHelper.sin((this.field_9331_N + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
+			this.motionX = (double)(-MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
+			this.motionZ = (double)(-MathHelper.sin((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F);
 		} else {
 			this.motionX = this.motionZ = 0.0D;
 		}
@@ -122,6 +188,10 @@ public class EntityPlayer extends EntityLiving {
 		this.score += var2;
 	}
 
+	public void func_20060_w() {
+		this.dropPlayerItemWithRandomChoice(this.inventory.decrStackSize(this.inventory.currentItem, 1), false);
+	}
+
 	public void dropPlayerItem(ItemStack var1) {
 		this.dropPlayerItemWithRandomChoice(var1, false);
 	}
@@ -129,7 +199,7 @@ public class EntityPlayer extends EntityLiving {
 	public void dropPlayerItemWithRandomChoice(ItemStack var1, boolean var2) {
 		if(var1 != null) {
 			EntityItem var3 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F + (double)this.func_373_s(), this.posZ, var1);
-			var3.field_805_c = 40;
+			var3.delayBeforeCanPickup = 40;
 			float var4 = 0.1F;
 			float var5;
 			if(var2) {
@@ -192,17 +262,17 @@ public class EntityPlayer extends EntityLiving {
 	public void displayGUIChest(IInventory var1) {
 	}
 
-	public void displayWorkbenchGUI() {
+	public void displayWorkbenchGUI(int var1, int var2, int var3) {
 	}
 
-	public void func_443_a_(Entity var1, int var2) {
+	public void onItemPickup(Entity var1, int var2) {
 	}
 
 	public float func_373_s() {
 		return 0.12F;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		this.field_9344_ag = 0;
 		if(this.health <= 0) {
 			return false;
@@ -221,16 +291,16 @@ public class EntityPlayer extends EntityLiving {
 				}
 			}
 
-			return var2 == 0 ? false : super.canAttackEntity(var1, var2);
+			return var2 == 0 ? false : super.attackEntityFrom(var1, var2);
 		}
 	}
 
 	protected void damageEntity(int var1) {
 		int var2 = 25 - this.inventory.getTotalArmorValue();
-		int var3 = var1 * var2 + this.field_781_a;
+		int var3 = var1 * var2 + this.damageRemainder;
 		this.inventory.damageArmor(var1);
 		var1 = var3 / 25;
-		this.field_781_a = var3 % 25;
+		this.damageRemainder = var3 % 25;
 		super.damageEntity(var1);
 	}
 
@@ -240,7 +310,7 @@ public class EntityPlayer extends EntityLiving {
 	public void displayGUIEditSign(TileEntitySign var1) {
 	}
 
-	public void func_6415_a_(Entity var1) {
+	public void useCurrentItemOnEntity(Entity var1) {
 		var1.interact(this);
 	}
 
@@ -252,19 +322,19 @@ public class EntityPlayer extends EntityLiving {
 		this.inventory.setInventorySlotContents(this.inventory.currentItem, (ItemStack)null);
 	}
 
-	public double func_388_v() {
+	public double getYOffset() {
 		return (double)(this.yOffset - 0.5F);
 	}
 
-	public void func_457_w() {
-		this.field_9368_k = -1;
-		this.field_9369_j = true;
+	public void swingItem() {
+		this.swingProgressInt = -1;
+		this.isSwinging = true;
 	}
 
 	public void attackTargetEntityWithCurrentItem(Entity var1) {
 		int var2 = this.inventory.getDamageVsEntity(var1);
 		if(var2 > 0) {
-			var1.canAttackEntity(this, var2);
+			var1.attackEntityFrom(this, var2);
 			ItemStack var3 = this.getCurrentEquippedItem();
 			if(var3 != null && var1 instanceof EntityLiving) {
 				var3.hitEntity((EntityLiving)var1);
@@ -277,7 +347,19 @@ public class EntityPlayer extends EntityLiving {
 
 	}
 
-	public void func_9367_r() {
+	public void respawnPlayer() {
+	}
+
+	public void func_20058_b(ItemStack var1) {
+	}
+
+	public void setEntityDead() {
+		super.setEntityDead();
+		this.field_20069_g.onCraftGuiClosed(this);
+		if(this.field_20068_h != null) {
+			this.field_20068_h.onCraftGuiClosed(this);
+		}
+
 	}
 
     public void dropOneItem(boolean flag) {

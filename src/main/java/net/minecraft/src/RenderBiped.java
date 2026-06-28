@@ -10,7 +10,7 @@ public class RenderBiped extends RenderLiving {
 		this.field_4013_a = var1;
 	}
 
-	protected void func_6331_b(EntityLiving var1, float var2) {
+	protected void renderEquippedItems(EntityLiving var1, float var2) {
 		ItemStack var3 = var1.getHeldItem();
 		if(var3 != null) {
 			GL11.glPushMatrix();

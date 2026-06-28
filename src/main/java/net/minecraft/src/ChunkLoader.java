@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
-
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class ChunkLoader implements IChunkLoader {

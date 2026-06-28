@@ -87,9 +87,13 @@ public class BlockFurnace extends BlockContainer {
 	}
 
 	public boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
-		TileEntityFurnace var6 = (TileEntityFurnace)var1.getBlockTileEntity(var2, var3, var4);
-		var5.displayGUIFurnace(var6);
-		return true;
+		if(var1.multiplayerWorld) {
+			return true;
+		} else {
+			TileEntityFurnace var6 = (TileEntityFurnace)var1.getBlockTileEntity(var2, var3, var4);
+			var5.displayGUIFurnace(var6);
+			return true;
+		}
 	}
 
 	public static void updateFurnaceBlockState(boolean var0, World var1, int var2, int var3, int var4) {

@@ -7,7 +7,7 @@ public class RenderMinecart extends Render {
 	protected ModelBase a;
 
 	public RenderMinecart() {
-		this.field_9246_c = 0.5F;
+		this.shadowSize = 0.5F;
 		this.a = new ModelMinecart();
 	}
 

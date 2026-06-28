@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class BlockPortal extends BlockBreakable {
 	public BlockPortal(int var1, int var2) {
-		super(var1, var2, Material.field_4260_x, false);
+		super(var1, var2, Material.portal, false);
 	}
 
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4) {
@@ -126,13 +126,13 @@ public class BlockPortal extends BlockBreakable {
 		return 0;
 	}
 
-	public int func_234_g() {
+	public int getRenderBlockPass() {
 		return 1;
 	}
 
 	public void onEntityCollidedWithBlock(World var1, int var2, int var3, int var4, Entity var5) {
 		if(!var1.multiplayerWorld) {
-			var5.func_4039_q();
+			var5.setInPortal();
 		}
 	}
 

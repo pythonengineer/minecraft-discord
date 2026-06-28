@@ -12,15 +12,20 @@ public class GuiSelectWorld extends GuiScreen {
 	}
 
 	public void initGui() {
-		for(int var2 = 0; var2 < 5; ++var2) {
-			NBTTagCompound var3 = World.func_629_a("World" + (var2 + 1));
-			if(var3 == null) {
-				this.controlList.add(new GuiButton(var2, this.width / 2 - 100, this.height / 6 + 24 * var2, "- empty -"));
+		StringTranslate var1 = StringTranslate.func_20162_a();
+		this.screenTitle = var1.func_20163_a("selectWorld.title");
+		String var2 = var1.func_20163_a("selectWorld.empty");
+		String var3 = var1.func_20163_a("selectWorld.world");
+
+		for(int var5 = 0; var5 < 5; ++var5) {
+			NBTTagCompound var6 = World.func_629_a("World" + (var5 + 1));
+			if(var6 == null) {
+				this.controlList.add(new GuiButton(var5, this.width / 2 - 100, this.height / 6 + 24 * var5, "- " + var2 + " -"));
 			} else {
-				String var4 = "World " + (var2 + 1);
-				long var5 = var3.getLong("SizeOnDisk");
-				var4 = var4 + " (" + (float)(var5 / 1024L * 100L / 1024L) / 100.0F + " MB)";
-				this.controlList.add(new GuiButton(var2, this.width / 2 - 100, this.height / 6 + 24 * var2, var4));
+				String var7 = var3 + " " + (var5 + 1);
+				long var8 = var6.getLong("SizeOnDisk");
+				var7 = var7 + " (" + (float)(var8 / 1024L * 100L / 1024L) / 100.0F + " MB)";
+				this.controlList.add(new GuiButton(var5, this.width / 2 - 100, this.height / 6 + 24 * var5, var7));
 			}
 		}
 
@@ -32,8 +37,9 @@ public class GuiSelectWorld extends GuiScreen {
 	}
 
 	public void initGui2() {
-		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, "Delete world..."));
-		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, "Cancel"));
+		StringTranslate var1 = StringTranslate.func_20162_a();
+		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, var1.func_20163_a("selectWorld.delete")));
+		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, var1.func_20163_a("gui.cancel")));
 	}
 
 	protected void actionPerformed(GuiButton var1) {
@@ -53,7 +59,7 @@ public class GuiSelectWorld extends GuiScreen {
 		this.mc.displayGuiScreen((GuiScreen)null);
 		if(!this.selected) {
 			this.selected = true;
-			this.mc.field_6327_b = new PlayerControllerSP(this.mc);
+			this.mc.playerController = new PlayerControllerSP(this.mc);
 			this.mc.func_6247_b("World" + var1);
 			this.mc.displayGuiScreen((GuiScreen)null);
 		}

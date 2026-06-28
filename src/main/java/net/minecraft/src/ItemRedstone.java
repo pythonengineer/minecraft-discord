@@ -30,7 +30,7 @@ public class ItemRedstone extends Item {
 			++var4;
 		}
 
-		if(var3.getBlockId(var4, var5, var6) != 0) {
+		if(!var3.func_20084_d(var4, var5, var6)) {
 			return false;
 		} else {
 			if(Block.redstoneWire.canPlaceBlockAt(var3, var4, var5, var6)) {

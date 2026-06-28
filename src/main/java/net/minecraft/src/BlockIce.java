@@ -9,7 +9,7 @@ public class BlockIce extends BlockBreakable {
 		this.setTickOnLoad(true);
 	}
 
-	public int func_234_g() {
+	public int getRenderBlockPass() {
 		return 1;
 	}
 
@@ -19,7 +19,7 @@ public class BlockIce extends BlockBreakable {
 
 	public void onBlockRemoval(World var1, int var2, int var3, int var4) {
 		Material var5 = var1.getBlockMaterial(var2, var3 - 1, var4);
-		if(var5.func_880_c() || var5.getIsLiquid()) {
+		if(var5.getIsSolid() || var5.getIsLiquid()) {
 			var1.setBlockWithNotify(var2, var3, var4, Block.waterStill.blockID);
 		}
 

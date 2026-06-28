@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityFX extends Entity {
@@ -9,9 +10,9 @@ public class EntityFX extends Entity {
 	protected int field_666_f = 0;
 	protected float field_665_g;
 	protected float field_664_h;
-	protected float field_663_i;
-	protected float field_662_j;
-	protected float field_661_k;
+	protected float particleRed;
+	protected float particleBlue;
+	protected float particleGreen;
 	public static double field_660_l;
 	public static double field_659_m;
 	public static double field_658_n;
@@ -21,7 +22,7 @@ public class EntityFX extends Entity {
 		this.setSize(0.2F, 0.2F);
 		this.yOffset = this.height / 2.0F;
 		this.setPosition(var2, var4, var6);
-		this.field_663_i = this.field_662_j = this.field_661_k = 1.0F;
+		this.particleRed = this.particleBlue = this.particleGreen = 1.0F;
 		this.motionX = var8 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
 		this.motionY = var10 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
 		this.motionZ = var12 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.4F);
@@ -81,7 +82,7 @@ public class EntityFX extends Entity {
 		float var14 = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)var2 - field_659_m);
 		float var15 = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)var2 - field_658_n);
 		float var16 = this.getEntityBrightness(var2);
-		var1.setColorOpaque_F(this.field_663_i * var16, this.field_662_j * var16, this.field_661_k * var16);
+		var1.setColorOpaque_F(this.particleRed * var16, this.particleBlue * var16, this.particleGreen * var16);
 		var1.addVertexWithUV((double)(var13 - var3 * var12 - var6 * var12), (double)(var14 - var4 * var12), (double)(var15 - var5 * var12 - var7 * var12), (double)var8, (double)var11);
 		var1.addVertexWithUV((double)(var13 - var3 * var12 + var6 * var12), (double)(var14 + var4 * var12), (double)(var15 - var5 * var12 + var7 * var12), (double)var8, (double)var10);
 		var1.addVertexWithUV((double)(var13 + var3 * var12 + var6 * var12), (double)(var14 + var4 * var12), (double)(var15 + var5 * var12 + var7 * var12), (double)var9, (double)var10);

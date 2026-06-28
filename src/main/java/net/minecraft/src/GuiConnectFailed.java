@@ -4,9 +4,15 @@ public class GuiConnectFailed extends GuiScreen {
 	private String errorMessage;
 	private String errorDetail;
 
-	public GuiConnectFailed(String var1, String var2) {
-		this.errorMessage = var1;
-		this.errorDetail = var2;
+	public GuiConnectFailed(String var1, String var2, Object... var3) {
+		StringTranslate var4 = StringTranslate.func_20162_a();
+		this.errorMessage = var4.func_20163_a(var1);
+		if(var3 != null) {
+			this.errorDetail = var4.func_20160_a(var2, var3);
+		} else {
+			this.errorDetail = var4.func_20163_a(var2);
+		}
+
 	}
 
 	public void updateScreen() {
@@ -16,8 +22,9 @@ public class GuiConnectFailed extends GuiScreen {
 	}
 
 	public void initGui() {
+		StringTranslate var1 = StringTranslate.func_20162_a();
 		this.controlList.clear();
-		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, "Back to title screen"));
+		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, var1.func_20163_a("gui.toMenu")));
 	}
 
 	protected void actionPerformed(GuiButton var1) {

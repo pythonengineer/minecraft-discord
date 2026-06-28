@@ -1,5 +1,6 @@
 package net.minecraft.src;
 
+import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 
 public class GuiMultiplayer extends GuiScreen {
@@ -16,19 +17,25 @@ public class GuiMultiplayer extends GuiScreen {
 	}
 
 	public void initGui() {
+		StringTranslate var1 = StringTranslate.func_20162_a();
+		Keyboard.enableRepeatEvents(true);
 		this.controlList.clear();
-		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, "Connect"));
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, "Cancel"));
-		this.serverAddress = this.mc.gameSettings.field_12259_z.replaceAll("_", ":");
+		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, var1.func_20163_a("multiplayer.connect")));
+		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, var1.func_20163_a("gui.cancel")));
+		this.serverAddress = this.mc.gameSettings.lastServer.replaceAll("_", ":");
 		if(this.serverAddress.length() == 0) {
-	        if(this.mc.field_9234_V != null) {
-	            this.serverAddress = this.mc.field_9234_V;
-	            if(this.mc.field_9233_W != 0) {
-	                this.serverAddress += ":" + this.mc.field_9233_W;
+	        if(this.mc.serverName != null) {
+	            this.serverAddress = this.mc.serverName;
+	            if(this.mc.serverPort != 0) {
+	                this.serverAddress += ":" + this.mc.serverPort;
 	            }
 	        }
 		}
 		((GuiButton)this.controlList.get(0)).enabled = this.serverAddress.length() > 0;
+	}
+
+	public void onGuiClosed() {
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	protected void actionPerformed(GuiButton var1) {
@@ -36,7 +43,7 @@ public class GuiMultiplayer extends GuiScreen {
 			if(var1.id == 1) {
 				this.mc.displayGuiScreen(this.updateCounter);
 			} else if(var1.id == 0) {
-				this.mc.gameSettings.field_12259_z = this.serverAddress.replaceAll(":", "_");
+				this.mc.gameSettings.lastServer = this.serverAddress.replaceAll(":", "_");
 				this.mc.gameSettings.saveOptions();
                 String s = this.serverAddress.trim();
                 String proto = "ws";
@@ -89,7 +96,7 @@ public class GuiMultiplayer extends GuiScreen {
 			this.serverAddress = this.serverAddress.substring(0, this.serverAddress.length() - 1);
 		}
 
-		if(" !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(var1) >= 0 && this.serverAddress.length() < 64) {
+		if(FontAllowedCharacters.field_20157_a.indexOf(var1) >= 0 && this.serverAddress.length() < 64) {
 			this.serverAddress = this.serverAddress + var1;
 		}
 
@@ -97,18 +104,19 @@ public class GuiMultiplayer extends GuiScreen {
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
+		StringTranslate var4 = StringTranslate.func_20162_a();
 		this.drawDefaultBackground();
-		this.drawCenteredString(this.fontRenderer, "Play Multiplayer", this.width / 2, this.height / 4 - 60 + 20, 16777215);
-		this.drawString(this.fontRenderer, "Minecraft Multiplayer is currently not finished, but there", this.width / 2 - 140, this.height / 4 - 60 + 60 + 0, 10526880);
-		this.drawString(this.fontRenderer, "is some buggy early testing going on.", this.width / 2 - 140, this.height / 4 - 60 + 60 + 9, 10526880);
-		this.drawString(this.fontRenderer, "Enter the IP of a server to connect to it:", this.width / 2 - 140, this.height / 4 - 60 + 60 + 36, 10526880);
-		int var4 = this.width / 2 - 100;
-		int var5 = this.height / 4 - 10 + 50 + 18;
-		short var6 = 200;
-		byte var7 = 20;
-		this.drawRect(var4 - 1, var5 - 1, var4 + var6 + 1, var5 + var7 + 1, -6250336);
-		this.drawRect(var4, var5, var4 + var6, var5 + var7, -16777216);
-		this.drawString(this.fontRenderer, this.serverAddress + (this.parentScreen / 6 % 2 == 0 ? "_" : ""), var4 + 4, var5 + (var7 - 8) / 2, 14737632);
+		this.drawCenteredString(this.fontRenderer, var4.func_20163_a("multiplayer.title"), this.width / 2, this.height / 4 - 60 + 20, 16777215);
+		this.drawString(this.fontRenderer, var4.func_20163_a("multiplayer.info1"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 0, 10526880);
+		this.drawString(this.fontRenderer, var4.func_20163_a("multiplayer.info2"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 9, 10526880);
+		this.drawString(this.fontRenderer, var4.func_20163_a("multiplayer.ipinfo"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 36, 10526880);
+		int var5 = this.width / 2 - 100;
+		int var6 = this.height / 4 - 10 + 50 + 18;
+		short var7 = 200;
+		byte var8 = 20;
+		this.drawRect(var5 - 1, var6 - 1, var5 + var7 + 1, var6 + var8 + 1, -6250336);
+		this.drawRect(var5, var6, var5 + var7, var6 + var8, -16777216);
+		this.drawString(this.fontRenderer, this.serverAddress + (this.parentScreen / 6 % 2 == 0 ? "_" : ""), var5 + 4, var6 + (var8 - 8) / 2, 14737632);
 		super.drawScreen(var1, var2, var3);
 	}
 
@@ -119,7 +127,7 @@ public class GuiMultiplayer extends GuiScreen {
         case CLIPBOARD_PASTE:
             String string = GuiScreen.getClipboardString();
             for (char c : string.toCharArray()) {
-                if(" !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(c) >= 0 && this.serverAddress.length() < 64) {
+                if(FontAllowedCharacters.field_20157_a.indexOf(c) >= 0 && this.serverAddress.length() < 64) {
                     this.serverAddress = this.serverAddress + c;
                 }
             }

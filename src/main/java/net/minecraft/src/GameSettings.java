@@ -1,21 +1,19 @@
 package net.minecraft.src;
 
 import java.io.BufferedReader;
+import java.io.PrintWriter;
+import net.minecraft.client.Minecraft;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.EaglerOutputStream;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
-import net.minecraft.client.Minecraft;
 
 public class GameSettings {
-    private static final String[] GUI_SCALES = new String[]{"AUTO", "SMALL",
-            "NORMAL", "LARGE" };
-	private static final String[] RENDER_DISTANCES = new String[]{"FAR", "NORMAL", "SHORT", "TINY"};
-	private static final String[] DIFFICULTY_LEVELS = new String[]{"Peaceful", "Easy", "Normal", "Hard"};
+    private static final String[] GUI_SCALES = new String[]{"options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"};
+	private static final String[] field_20105_z = new String[]{"options.renderDistance.far", "options.renderDistance.normal", "options.renderDistance.short", "options.renderDistance.tiny"};
+	private static final String[] field_20106_A = new String[]{"options.difficulty.peaceful", "options.difficulty.easy", "options.difficulty.normal", "options.difficulty.hard"};
 	public float musicVolume = 1.0F;
 	public float soundVolume = 1.0F;
 	public float mouseSensitivity = 0.5F;
@@ -28,22 +26,21 @@ public class GameSettings {
     public boolean touchscreen;
     public int guiScale = 3;
 	public String skin = "Default";
-	public KeyBinding keyBindForward = new KeyBinding("Forward", 17);
-	public KeyBinding keyBindLeft = new KeyBinding("Left", 30);
-	public KeyBinding keyBindBack = new KeyBinding("Back", 31);
-	public KeyBinding keyBindRight = new KeyBinding("Right", 32);
-	public KeyBinding keyBindJump = new KeyBinding("Jump", 57);
-	public KeyBinding keyBindInventory = new KeyBinding("Inventory", 23);
-	public KeyBinding keyBindDrop = new KeyBinding("Drop", 16);
-	public KeyBinding keyBindChat = new KeyBinding("Chat", 20);
-	public KeyBinding keyBindToggleFog = new KeyBinding("Toggle fog", 33);
-	public KeyBinding keyBindSneak = new KeyBinding("Sneak", 42);
+	public KeyBinding keyBindForward = new KeyBinding("key.forward", 17);
+	public KeyBinding keyBindLeft = new KeyBinding("key.left", 30);
+	public KeyBinding keyBindBack = new KeyBinding("key.back", 31);
+	public KeyBinding keyBindRight = new KeyBinding("key.right", 32);
+	public KeyBinding keyBindJump = new KeyBinding("key.jump", 57);
+	public KeyBinding keyBindInventory = new KeyBinding("key.inventory", 23);
+	public KeyBinding keyBindDrop = new KeyBinding("key.drop", 16);
+	public KeyBinding keyBindChat = new KeyBinding("key.chat", 20);
+	public KeyBinding keyBindToggleFog = new KeyBinding("key.fog", 33);
+	public KeyBinding keyBindSneak = new KeyBinding("key.sneak", 42);
 	public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog};
 	protected Minecraft mc;
-	public int numberOfOptions = 11;
 	public int difficulty = 2;
 	public boolean thirdPersonView = false;
-	public String field_12259_z = "";
+	public String lastServer = "";
 
 	public GameSettings(Minecraft var1) {
 		this.mc = var1;
@@ -53,8 +50,13 @@ public class GameSettings {
 	public GameSettings() {
 	}
 
-	public String getKeyBinding(int var1) {
-		return this.keyBindings[var1].keyDescription + ": " + Keyboard.getKeyName(this.keyBindings[var1].keyCode);
+	public String func_20102_a(int var1) {
+		StringTranslate var2 = StringTranslate.func_20162_a();
+		return var2.func_20163_a(this.keyBindings[var1].keyDescription);
+	}
+
+	public String getOptionDisplayString(int var1) {
+		return Keyboard.getKeyName(this.keyBindings[var1].keyCode);
 	}
 
 	public void setKeyBinding(int var1, int var2) {
@@ -62,71 +64,92 @@ public class GameSettings {
 		this.saveOptions();
 	}
 
-	public void setOptionFloatValue(int var1, float var2) {
-		if(var1 == 0) {
+	public void setOptionFloatValue(EnumOptions var1, float var2) {
+		if(var1 == EnumOptions.MUSIC) {
 			this.musicVolume = var2;
 			this.mc.sndManager.onSoundOptionsChanged();
 		}
 
-		if(var1 == 1) {
+		if(var1 == EnumOptions.SOUND) {
 			this.soundVolume = var2;
 			this.mc.sndManager.onSoundOptionsChanged();
 		}
 
-		if(var1 == 3) {
+		if(var1 == EnumOptions.SENSITIVITY) {
 			this.mouseSensitivity = var2;
 		}
 
 	}
 
-	public void setOptionValue(int var1, int var2) {
-		if(var1 == 2) {
+	public void setOptionValue(EnumOptions var1, int var2) {
+		if(var1 == EnumOptions.INVERT_MOUSE) {
 			this.invertMouse = !this.invertMouse;
 		}
 
-		if(var1 == 4) {
+		if(var1 == EnumOptions.RENDER_DISTANCE) {
 			this.renderDistance = this.renderDistance + var2 & 3;
 		}
 
-		if(var1 == 5) {
+		if(var1 == EnumOptions.VIEW_BOBBING) {
 			this.viewBobbing = !this.viewBobbing;
 		}
 
-		if(var1 == 6) {
+		if(var1 == EnumOptions.ANAGLYPH) {
 			this.anaglyph = !this.anaglyph;
 			this.mc.renderEngine.refreshTextures();
 		}
 
-		if(var1 == 7) {
+		if(var1 == EnumOptions.LIMIT_FRAMERATE) {
 			this.limitFramerate = !this.limitFramerate;
 		}
 
-		if(var1 == 8) {
+		if(var1 == EnumOptions.DIFFICULTY) {
 			this.difficulty = this.difficulty + var2 & 3;
 		}
 
-		if(var1 == 9) {
+		if(var1 == EnumOptions.GRAPHICS) {
 			this.fancyGraphics = !this.fancyGraphics;
-			this.mc.field_6323_f.func_958_a();
+			this.mc.renderGlobal.loadRenderers();
 		}
 
-        if(var1 == 10) {
+        if(var1 == EnumOptions.GUI_SCALE) {
             this.guiScale = this.guiScale + var2 & 3;
         }
 
 		this.saveOptions();
 	}
 
-	public int getOptionControlType(int var1) {
-		return var1 == 0 ? 1 : (var1 == 1 ? 1 : (var1 == 3 ? 1 : 0));
+	public float func_20104_a(EnumOptions var1) {
+		return var1 == EnumOptions.MUSIC ? this.musicVolume : (var1 == EnumOptions.SOUND ? this.soundVolume : (var1 == EnumOptions.SENSITIVITY ? this.mouseSensitivity : 0.0F));
 	}
 
-	public float getOptionFloatValue(int var1) {
-		return var1 == 0 ? this.musicVolume : (var1 == 1 ? this.soundVolume : (var1 == 3 ? this.mouseSensitivity : 0.0F));
+	public boolean func_20103_b(EnumOptions var1) {
+		switch(EnumOptionsMappingHelper.field_20155_a[var1.ordinal()]) {
+		case 1:
+			return this.invertMouse;
+		case 2:
+			return this.viewBobbing;
+		case 3:
+			return this.anaglyph;
+		case 4:
+			return this.limitFramerate;
+		default:
+			return false;
+		}
 	}
 
-	public String getOptionDisplayString(int var1) {
-		return var1 == 0 ? "Music: " + (this.musicVolume > 0.0F ? (int)(this.musicVolume * 100.0F) + "%" : "OFF") : (var1 == 1 ? "Sound: " + (this.soundVolume > 0.0F ? (int)(this.soundVolume * 100.0F) + "%" : "OFF") : (var1 == 2 ? "Invert mouse: " + (this.invertMouse ? "ON" : "OFF") : (var1 == 3 ? (this.mouseSensitivity == 0.0F ? "Sensitivity: *yawn*" : (this.mouseSensitivity == 1.0F ? "Sensitivity: HYPERSPEED!!!" : "Sensitivity: " + (int)(this.mouseSensitivity * 200.0F) + "%")) : (var1 == 4 ? "Render distance: " + RENDER_DISTANCES[this.renderDistance] : (var1 == 5 ? "View bobbing: " + (this.viewBobbing ? "ON" : "OFF") : (var1 == 6 ? "3d anaglyph: " + (this.anaglyph ? "ON" : "OFF") : (var1 == 7 ? "Limit framerate: " + (this.limitFramerate ? "ON" : "OFF") : (var1 == 8 ? "Difficulty: " + DIFFICULTY_LEVELS[this.difficulty] : (var1 == 9 ? "Graphics: " + (this.fancyGraphics ? "FANCY" : "FAST") : (var1 == 10 ? "GUI Scale: " + GUI_SCALES[this.guiScale] : ""))))))))));
+	public String getKeyBinding(EnumOptions var1) {
+		StringTranslate var2 = StringTranslate.func_20162_a();
+		String var3 = var2.func_20163_a(var1.func_20138_d()) + ": ";
+		if(var1.func_20136_a()) {
+			float var5 = this.func_20104_a(var1);
+			return var1 == EnumOptions.SENSITIVITY ? (var5 == 0.0F ? var3 + var2.func_20163_a("options.sensitivity.min") : (var5 == 1.0F ? var3 + var2.func_20163_a("options.sensitivity.max") : var3 + (int)(var5 * 200.0F) + "%")) : (var5 == 0.0F ? var3 + var2.func_20163_a("options.off") : var3 + (int)(var5 * 100.0F) + "%");
+		} else if(var1.func_20140_b()) {
+			boolean var4 = this.func_20103_b(var1);
+			return var4 ? var3 + var2.func_20163_a("options.on") : var3 + var2.func_20163_a("options.off");
+		} else {
+			return var1 == EnumOptions.RENDER_DISTANCE ? var3 + var2.func_20163_a(field_20105_z[this.renderDistance]) : (var1 == EnumOptions.DIFFICULTY ? var3 + var2.func_20163_a(field_20106_A[this.difficulty]) : (var1 == EnumOptions.GRAPHICS ? (this.fancyGraphics ? var3 + var2.func_20163_a("options.graphics.fancy") : var3 + var2.func_20163_a("options.graphics.fast")) : (var1 == EnumOptions.GUI_SCALE ? var3 + var2.func_20163_a(GUI_SCALES[this.guiScale]) : var3)));
+		}
 	}
 
 	public void loadOptions() {
@@ -198,7 +221,7 @@ public class GameSettings {
 
 				if(var3[0].equals("lastServer")) {
 				    if(var3.length > 1) {
-					    this.field_12259_z = var3[1];
+					    this.lastServer = var3[1];
 				    }
 				}
 
@@ -237,7 +260,7 @@ public class GameSettings {
 			var1.println("fancyGraphics:" + this.fancyGraphics);
             var1.println("guiScale:" + this.guiScale);
 			var1.println("skin:" + this.skin);
-			var1.println("lastServer:" + this.field_12259_z);
+			var1.println("lastServer:" + this.lastServer);
 
 			for(int var2 = 0; var2 < this.keyBindings.length; ++var2) {
 				var1.println("key_" + this.keyBindings[var2].keyDescription + ":" + this.keyBindings[var2].keyCode);

@@ -21,7 +21,7 @@ public class EntityBoat extends Entity {
 		this.field_807_a = 0;
 		this.field_806_b = 0;
 		this.field_808_c = 1;
-		this.field_618_ad = true;
+		this.preventEntitySpawning = true;
 		this.setSize(1.5F, 0.6F);
 		this.yOffset = this.height / 2.0F;
 		this.entityWalks = false;
@@ -50,16 +50,16 @@ public class EntityBoat extends Entity {
 		this.prevPosZ = var6;
 	}
 
-	public double func_402_h() {
+	public double getMountedYOffset() {
 		return (double)this.height * 0.0D - (double)0.3F;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		if(!this.worldObj.multiplayerWorld && !this.isDead) {
 			this.field_808_c = -this.field_808_c;
 			this.field_806_b = 10;
 			this.field_807_a += var2 * 10;
-			this.func_9281_M();
+			this.setBeenAttacked();
 			if(this.field_807_a > 40) {
 				int var3;
 				for(var3 = 0; var3 < 3; ++var3) {
@@ -79,7 +79,7 @@ public class EntityBoat extends Entity {
 		}
 	}
 
-	public void func_9280_g() {
+	public void performHurtAnimation() {
 		this.field_808_c = -this.field_808_c;
 		this.field_806_b = 10;
 		this.field_807_a += this.field_807_a * 10;
@@ -225,7 +225,7 @@ public class EntityBoat extends Entity {
 				}
 			}
 
-			if(this.field_9297_aI && var8 > 0.15D) {
+			if(this.isCollidedHorizontally && var8 > 0.15D) {
 				if(!this.worldObj.multiplayerWorld) {
 					this.setEntityDead();
 
@@ -270,7 +270,7 @@ public class EntityBoat extends Entity {
 
 			this.rotationYaw = (float)((double)this.rotationYaw + var16);
 			this.setRotation(this.rotationYaw, this.rotationPitch);
-			List var18 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expands((double)0.2F, 0.0D, (double)0.2F));
+			List var18 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
 			if(var18 != null && var18.size() > 0) {
 				for(int var26 = 0; var26 < var18.size(); ++var26) {
 					Entity var20 = (Entity)var18.get(var26);
@@ -291,7 +291,7 @@ public class EntityBoat extends Entity {
 		if(this.riddenByEntity != null) {
 			double var1 = Math.cos((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
 			double var3 = Math.sin((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
-			this.riddenByEntity.setPosition(this.posX + var1, this.posY + this.func_402_h() + this.riddenByEntity.func_388_v(), this.posZ + var3);
+			this.riddenByEntity.setPosition(this.posX + var1, this.posY + this.getMountedYOffset() + this.riddenByEntity.getYOffset(), this.posZ + var3);
 		}
 	}
 

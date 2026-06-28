@@ -6,7 +6,7 @@ public class EntityExplodeFX extends EntityFX {
 		this.motionX = var8 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.05F);
 		this.motionY = var10 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.05F);
 		this.motionZ = var12 + (double)((float)(Math.random() * 2.0D - 1.0D) * 0.05F);
-		this.field_663_i = this.field_662_j = this.field_661_k = this.rand.nextFloat() * 0.3F + 0.7F;
+		this.particleRed = this.particleBlue = this.particleGreen = this.rand.nextFloat() * 0.3F + 0.7F;
 		this.field_665_g = this.rand.nextFloat() * this.rand.nextFloat() * 6.0F + 1.0F;
 		this.field_666_f = (int)(16.0D / ((double)this.rand.nextFloat() * 0.8D + 0.2D)) + 2;
 	}

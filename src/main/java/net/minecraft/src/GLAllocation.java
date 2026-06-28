@@ -2,7 +2,6 @@ package net.minecraft.src;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;

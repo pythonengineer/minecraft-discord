@@ -7,7 +7,7 @@ public class GuiGameOver extends GuiScreen {
 		this.controlList.clear();
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 72, "Respawn"));
 		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 96, "Title menu"));
-		if(this.mc.field_6320_i == null) {
+		if(this.mc.session == null) {
 			((GuiButton)this.controlList.get(1)).enabled = false;
 		}
 
@@ -21,7 +21,7 @@ public class GuiGameOver extends GuiScreen {
 		}
 
 		if(var1.id == 1) {
-			this.mc.thePlayer.func_9367_r();
+			this.mc.thePlayer.respawnPlayer();
 			this.mc.displayGuiScreen((GuiScreen)null);
 		}
 
@@ -38,7 +38,7 @@ public class GuiGameOver extends GuiScreen {
 		GL11.glScalef(2.0F, 2.0F, 2.0F);
 		this.drawCenteredString(this.fontRenderer, "Game over!", this.width / 2 / 2, 30, 16777215);
 		GL11.glPopMatrix();
-		this.drawCenteredString(this.fontRenderer, "Score: &e" + this.mc.thePlayer.func_6417_t(), this.width / 2, 100, 16777215);
+		this.drawCenteredString(this.fontRenderer, "Score: &e" + this.mc.thePlayer.getScore(), this.width / 2, 100, 16777215);
 		super.drawScreen(var1, var2, var3);
 	}
 

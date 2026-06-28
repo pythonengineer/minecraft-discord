@@ -5,10 +5,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import net.lax1dude.eaglercraft.EagRuntime;
 
 public abstract class Packet {
 	private static Map packetIdToClassMap = new HashMap();
 	private static Map packetClassToIdMap = new HashMap();
+	public final long field_20018_j = EagRuntime.currentTimeMillis();
 	public boolean isChunkDataPacket = false;
 
 	static void addIdClassMapping(int var0, Class var1) {
@@ -83,7 +85,6 @@ public abstract class Packet {
 		addIdClassMapping(14, Packet14BlockDig.class);
 		addIdClassMapping(15, Packet15Place.class);
 		addIdClassMapping(16, Packet16BlockItemSwitch.class);
-		addIdClassMapping(17, Packet17AddToInventory.class);
 		addIdClassMapping(18, Packet18ArmAnimation.class);
 		addIdClassMapping(20, Packet20NamedEntitySpawn.class);
 		addIdClassMapping(21, Packet21PickupSpawn.class);
@@ -103,8 +104,15 @@ public abstract class Packet {
 		addIdClassMapping(51, Packet51MapChunk.class);
 		addIdClassMapping(52, Packet52MultiBlockChange.class);
 		addIdClassMapping(53, Packet53BlockChange.class);
-		addIdClassMapping(59, Packet59ComplexEntity.class);
 		addIdClassMapping(60, Packet60.class);
+		addIdClassMapping(100, Packet100.class);
+		addIdClassMapping(101, Packet101.class);
+		addIdClassMapping(102, Packet102.class);
+		addIdClassMapping(103, Packet103.class);
+		addIdClassMapping(104, Packet104.class);
+		addIdClassMapping(105, Packet105.class);
+		addIdClassMapping(106, Packet106.class);
+		addIdClassMapping(130, Packet130.class);
 		addIdClassMapping(255, Packet255KickDisconnect.class);
 	}
 }

@@ -22,8 +22,9 @@ public class GuiConnecting extends GuiScreen {
 	}
 
 	public void initGui() {
+		StringTranslate var1 = StringTranslate.func_20162_a();
 		this.controlList.clear();
-		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, "Cancel"));
+		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, var1.func_20163_a("gui.cancel")));
 	}
 
 	protected void actionPerformed(GuiButton var1) {
@@ -40,11 +41,12 @@ public class GuiConnecting extends GuiScreen {
 
 	public void drawScreen(int var1, int var2, float var3) {
 		this.drawDefaultBackground();
+		StringTranslate var4 = StringTranslate.func_20162_a();
 		if(this.clientHandler == null) {
-			this.drawCenteredString(this.fontRenderer, "Connecting to the server...", this.width / 2, this.height / 2 - 50, 16777215);
+			this.drawCenteredString(this.fontRenderer, var4.func_20163_a("connect.connecting"), this.width / 2, this.height / 2 - 50, 16777215);
 			this.drawCenteredString(this.fontRenderer, "", this.width / 2, this.height / 2 - 10, 16777215);
 		} else {
-			this.drawCenteredString(this.fontRenderer, "Logging in...", this.width / 2, this.height / 2 - 50, 16777215);
+			this.drawCenteredString(this.fontRenderer, var4.func_20163_a("connect.authorizing"), this.width / 2, this.height / 2 - 50, 16777215);
 			this.drawCenteredString(this.fontRenderer, this.clientHandler.field_1209_a, this.width / 2, this.height / 2 - 10, 16777215);
 		}
 

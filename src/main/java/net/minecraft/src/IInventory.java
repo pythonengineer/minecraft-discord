@@ -14,4 +14,6 @@ public interface IInventory {
 	int getInventoryStackLimit();
 
 	void onInventoryChanged();
+
+	boolean func_20070_a_(EntityPlayer var1);
 }

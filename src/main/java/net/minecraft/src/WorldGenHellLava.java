@@ -37,23 +37,23 @@ public class WorldGenHellLava extends WorldGenerator {
 			}
 
 			int var7 = 0;
-			if(var1.getBlockId(var3 - 1, var4, var5) == 0) {
+			if(var1.func_20084_d(var3 - 1, var4, var5)) {
 				++var7;
 			}
 
-			if(var1.getBlockId(var3 + 1, var4, var5) == 0) {
+			if(var1.func_20084_d(var3 + 1, var4, var5)) {
 				++var7;
 			}
 
-			if(var1.getBlockId(var3, var4, var5 - 1) == 0) {
+			if(var1.func_20084_d(var3, var4, var5 - 1)) {
 				++var7;
 			}
 
-			if(var1.getBlockId(var3, var4, var5 + 1) == 0) {
+			if(var1.func_20084_d(var3, var4, var5 + 1)) {
 				++var7;
 			}
 
-			if(var1.getBlockId(var3, var4 - 1, var5) == 0) {
+			if(var1.func_20084_d(var3, var4 - 1, var5)) {
 				++var7;
 			}
 

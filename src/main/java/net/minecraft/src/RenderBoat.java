@@ -7,7 +7,7 @@ public class RenderBoat extends Render {
 	protected ModelBase field_198_d;
 
 	public RenderBoat() {
-		this.field_9246_c = 0.5F;
+		this.shadowSize = 0.5F;
 		this.field_198_d = new ModelBoat();
 	}
 

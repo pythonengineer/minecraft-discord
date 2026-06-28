@@ -2,9 +2,9 @@ package net.minecraft.src;
 
 public class TileEntityFurnace extends TileEntity implements IInventory {
 	private ItemStack[] furnaceItemStacks = new ItemStack[3];
-	private int furnaceBurnTime = 0;
-	private int currentItemBurnTime = 0;
-	private int furnaceCookTime = 0;
+	public int furnaceBurnTime = 0;
+	public int currentItemBurnTime = 0;
+	public int furnaceCookTime = 0;
 
 	public int getSizeInventory() {
 		return this.furnaceItemStacks.length;
@@ -43,7 +43,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 	}
 
 	public String getInvName() {
-		return "Chest";
+		return "Furnace";
 	}
 
 	public void readFromNBT(NBTTagCompound var1) {
@@ -183,6 +183,10 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 			int var2 = var1.getItem().shiftedIndex;
 			return var2 < 256 && Block.blocksList[var2].blockMaterial == Material.wood ? 300 : (var2 == Item.stick.shiftedIndex ? 100 : (var2 == Item.coal.shiftedIndex ? 1600 : (var2 == Item.bucketLava.shiftedIndex ? 20000 : 0)));
 		}
+	}
+
+	public boolean func_20070_a_(EntityPlayer var1) {
+		return this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;
 	}
 
     public static boolean isItemFuel(ItemStack parItemStack) {

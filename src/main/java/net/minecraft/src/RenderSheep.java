@@ -3,7 +3,7 @@ package net.minecraft.src;
 public class RenderSheep extends RenderLiving {
 	public RenderSheep(ModelBase var1, ModelBase var2, float var3) {
 		super(var1, var3);
-		this.func_4013_a(var2);
+		this.setRenderPassModel(var2);
 	}
 
 	protected boolean a(EntitySheep var1, int var2) {
@@ -11,7 +11,7 @@ public class RenderSheep extends RenderLiving {
 		return var2 == 0 && !var1.sheared;
 	}
 
-	protected boolean func_166_a(EntityLiving var1, int var2) {
+	protected boolean shouldRenderPass(EntityLiving var1, int var2) {
 		return this.a((EntitySheep)var1, var2);
 	}
 }

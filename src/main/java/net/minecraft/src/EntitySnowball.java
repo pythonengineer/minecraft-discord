@@ -19,7 +19,7 @@ public class EntitySnowball extends Entity {
 		this.setSize(0.25F, 0.25F);
 	}
 
-	public boolean func_384_a(double var1) {
+	public boolean isInRangeToRenderDist(double var1) {
 		double var3 = this.boundingBox.getAverageEdgeLength() * 4.0D;
 		var3 *= 64.0D;
 		return var1 < var3 * var3;
@@ -123,14 +123,14 @@ public class EntitySnowball extends Entity {
 
 		if(!this.worldObj.multiplayerWorld) {
 			Entity var4 = null;
-			List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expands(1.0D, 1.0D, 1.0D));
+			List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
 			double var6 = 0.0D;
 
 			for(int var8 = 0; var8 < var5.size(); ++var8) {
 				Entity var9 = (Entity)var5.get(var8);
 				if(var9.canBeCollidedWith() && (var9 != this.field_811_g || this.field_809_i >= 5)) {
 					float var10 = 0.3F;
-					AxisAlignedBB var11 = var9.boundingBox.expands((double)var10, (double)var10, (double)var10);
+					AxisAlignedBB var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
 					MovingObjectPosition var12 = var11.func_1169_a(var15, var2);
 					if(var12 != null) {
 						double var13 = var15.distanceTo(var12.hitVec);
@@ -148,7 +148,7 @@ public class EntitySnowball extends Entity {
 		}
 
 		if(var3 != null) {
-			if(var3.entityHit != null && var3.entityHit.canAttackEntity(this.field_811_g, 0)) {
+			if(var3.entityHit != null && var3.entityHit.attackEntityFrom(this.field_811_g, 0)) {
 			}
 
 			for(int var16 = 0; var16 < 8; ++var16) {
@@ -220,7 +220,7 @@ public class EntitySnowball extends Entity {
 	public void onCollideWithPlayer(EntityPlayer var1) {
 		if(this.field_812_f && this.field_811_g == var1 && this.field_817_a <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-			var1.func_443_a_(this, 1);
+			var1.onItemPickup(this, 1);
 			this.setEntityDead();
 		}
 

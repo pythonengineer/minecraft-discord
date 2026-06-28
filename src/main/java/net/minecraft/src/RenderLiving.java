@@ -5,15 +5,15 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class RenderLiving extends Render {
 	protected ModelBase e;
-	protected ModelBase field_6332_f;
+	protected ModelBase renderPassModel;
 
 	public RenderLiving(ModelBase var1, float var2) {
 		this.e = var1;
-		this.field_9246_c = var2;
+		this.shadowSize = var2;
 	}
 
-	public void func_4013_a(ModelBase var1) {
-		this.field_6332_f = var1;
+	public void setRenderPassModel(ModelBase var1) {
+		this.renderPassModel = var1;
 	}
 
 	public void a(EntityLiving var1, double var2, double var4, double var6, float var8, float var9) {
@@ -21,12 +21,12 @@ public class RenderLiving extends Render {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		this.e.field_1244_k = this.func_167_c(var1, var9);
 		this.e.field_1243_l = var1.ridingEntity != null || var1.field_9300_bu;
-		if(this.field_6332_f != null) {
-			this.field_6332_f.field_1243_l = this.e.field_1243_l;
+		if(this.renderPassModel != null) {
+			this.renderPassModel.field_1243_l = this.e.field_1243_l;
 		}
 
 		try {
-			float var10 = var1.field_734_o + (var1.field_735_n - var1.field_734_o) * var9;
+			float var10 = var1.prevRenderYawOffset + (var1.renderYawOffset - var1.prevRenderYawOffset) * var9;
 			float var11 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var9;
 			float var12 = var1.prevRotationPitch + (var1.rotationPitch - var1.prevRotationPitch) * var9;
 			GL11.glTranslatef((float)var2, (float)var4, (float)var6);
@@ -46,7 +46,7 @@ public class RenderLiving extends Render {
 			var14 = 1.0F / 16.0F;
 			GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 			GL11.glScalef(-1.0F, -1.0F, 1.0F);
-			this.func_6330_a(var1, var9);
+			this.preRenderCallback(var1, var9);
 			GL11.glTranslatef(0.0F, -24.0F * var14 - 0.0078125F, 0.0F);
 			float var15 = var1.field_705_Q + (var1.field_704_R - var1.field_705_Q) * var9;
 			float var16 = var1.field_703_S - var1.field_704_R * (1.0F - var9);
@@ -54,21 +54,21 @@ public class RenderLiving extends Render {
 				var15 = 1.0F;
 			}
 
-			this.func_140_a(var1.skinUrl, var1.getEntityTexture());
+			this.func_140_a(var1.field_20047_bv, var1.getEntityTexture());
 			GL11.glEnable(GL11.GL_ALPHA_TEST);
 			this.e.render(var16, var15, var13, var11 - var10, var12, var14);
 
 			for(int var17 = 0; var17 < 4; ++var17) {
-				if(this.func_166_a(var1, var17)) {
-					this.field_6332_f.render(var16, var15, var13, var11 - var10, var12, var14);
+				if(this.shouldRenderPass(var1, var17)) {
+					this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 					GL11.glDisable(GL11.GL_BLEND);
 					GL11.glEnable(GL11.GL_ALPHA_TEST);
 				}
 			}
 
-			this.func_6331_b(var1, var9);
+			this.renderEquippedItems(var1, var9);
 			float var25 = var1.getEntityBrightness(var9);
-			int var18 = this.func_173_a(var1, var25, var9);
+			int var18 = this.getColorMultiplier(var1, var25, var9);
 			if((var18 >> 24 & 255) > 0 || var1.hurtTime > 0 || var1.deathTime > 0) {
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -80,9 +80,9 @@ public class RenderLiving extends Render {
 					this.e.render(var16, var15, var13, var11 - var10, var12, var14);
 
 					for(int var19 = 0; var19 < 4; ++var19) {
-						if(this.func_166_a(var1, var19)) {
+						if(this.shouldRenderPass(var1, var19)) {
 							GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
-							this.field_6332_f.render(var16, var15, var13, var11 - var10, var12, var14);
+							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
 					}
 				}
@@ -96,9 +96,9 @@ public class RenderLiving extends Render {
 					this.e.render(var16, var15, var13, var11 - var10, var12, var14);
 
 					for(int var23 = 0; var23 < 4; ++var23) {
-						if(this.func_166_a(var1, var23)) {
+						if(this.shouldRenderPass(var1, var23)) {
 							GL11.glColor4f(var26, var20, var21, var22);
-							this.field_6332_f.render(var16, var15, var13, var11 - var10, var12, var14);
+							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
 					}
 				}
@@ -123,13 +123,13 @@ public class RenderLiving extends Render {
 	}
 
 	protected float func_170_d(EntityLiving var1, float var2) {
-		return (float)var1.field_9311_be + var2;
+		return (float)var1.ticksExisted + var2;
 	}
 
-	protected void func_6331_b(EntityLiving var1, float var2) {
+	protected void renderEquippedItems(EntityLiving var1, float var2) {
 	}
 
-	protected boolean func_166_a(EntityLiving var1, int var2) {
+	protected boolean shouldRenderPass(EntityLiving var1, int var2) {
 		return false;
 	}
 
@@ -137,11 +137,11 @@ public class RenderLiving extends Render {
 		return 90.0F;
 	}
 
-	protected int func_173_a(EntityLiving var1, float var2, float var3) {
+	protected int getColorMultiplier(EntityLiving var1, float var2, float var3) {
 		return 0;
 	}
 
-	protected void func_6330_a(EntityLiving var1, float var2) {
+	protected void preRenderCallback(EntityLiving var1, float var2) {
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {

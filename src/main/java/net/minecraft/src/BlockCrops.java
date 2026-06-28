@@ -92,7 +92,7 @@ public class BlockCrops extends BlockFlower {
 					float var9 = var1.rand.nextFloat() * var7 + (1.0F - var7) * 0.5F;
 					float var10 = var1.rand.nextFloat() * var7 + (1.0F - var7) * 0.5F;
 					EntityItem var11 = new EntityItem(var1, (double)((float)var2 + var8), (double)((float)var3 + var9), (double)((float)var4 + var10), new ItemStack(Item.seeds));
-					var11.field_805_c = 10;
+					var11.delayBeforeCanPickup = 10;
 					var1.entityJoinedWorld(var11);
 				}
 			}

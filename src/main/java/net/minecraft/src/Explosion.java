@@ -59,7 +59,7 @@ public class Explosion {
 							int var24 = MathHelper.floor_double(var19);
 							int var25 = this.field_12249_i.getBlockId(var22, var23, var24);
 							if(var25 > 0) {
-								var14 -= (Block.blocksList[var25].func_227_a(this.field_12253_e) + 0.3F) * var21;
+								var14 -= (Block.blocksList[var25].getExplosionResistance(this.field_12253_e) + 0.3F) * var21;
 							}
 
 							if(var14 > 0.0F) {
@@ -98,7 +98,7 @@ public class Explosion {
 				var19 /= var39;
 				double var40 = (double)this.field_12249_i.func_675_a(var31, var33.boundingBox);
 				double var41 = (1.0D - var13) * var40;
-				var33.canAttackEntity(this.field_12253_e, (int)((var41 * var41 + var41) / 2.0D * 8.0D * (double)this.field_12252_f + 1.0D));
+				var33.attackEntityFrom(this.field_12253_e, (int)((var41 * var41 + var41) / 2.0D * 8.0D * (double)this.field_12252_f + 1.0D));
 				var33.motionX += var15 * var41;
 				var33.motionY += var17 * var41;
 				var33.motionZ += var19 * var41;

@@ -35,4 +35,8 @@ public class InventoryCraftResult implements IInventory {
 
 	public void onInventoryChanged() {
 	}
+
+	public boolean func_20070_a_(EntityPlayer var1) {
+		return true;
+	}
 }

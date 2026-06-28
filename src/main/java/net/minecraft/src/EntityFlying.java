@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityFlying extends EntityLiving {
@@ -9,7 +10,7 @@ public class EntityFlying extends EntityLiving {
 	protected void fall(float var1) {
 	}
 
-	public void func_435_b(float var1, float var2) {
+	public void moveEntityWithHeading(float var1, float var2) {
 		if(this.handleWaterMovement()) {
 			this.func_351_a(var1, var2, 0.02F);
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);

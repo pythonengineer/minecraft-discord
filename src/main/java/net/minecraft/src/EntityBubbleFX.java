@@ -1,12 +1,13 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityBubbleFX extends EntityFX {
 	public EntityBubbleFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12) {
 		super(var1, var2, var4, var6, var8, var10, var12);
-		this.field_663_i = 1.0F;
-		this.field_662_j = 1.0F;
-		this.field_661_k = 1.0F;
+		this.particleRed = 1.0F;
+		this.particleBlue = 1.0F;
+		this.particleGreen = 1.0F;
 		this.field_670_b = 32;
 		this.setSize(0.02F, 0.02F);
 		this.field_665_g *= this.rand.nextFloat() * 0.6F + 0.2F;

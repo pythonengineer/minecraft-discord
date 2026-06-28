@@ -82,7 +82,7 @@ public class AxisAlignedBB {
 		return getBoundingBoxFromPool(var7, var9, var11, var13, var15, var17);
 	}
 
-	public AxisAlignedBB expands(double var1, double var3, double var5) {
+	public AxisAlignedBB expand(double var1, double var3, double var5) {
 		double var7 = this.minX - var1;
 		double var9 = this.minY - var3;
 		double var11 = this.minZ - var5;

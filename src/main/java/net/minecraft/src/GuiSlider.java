@@ -6,9 +6,9 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 public class GuiSlider extends GuiButton {
 	public float sliderValue = 1.0F;
 	public boolean dragging = false;
-	private int idFloat = 0;
+	private EnumOptions idFloat = null;
 
-	public GuiSlider(int var1, int var2, int var3, int var4, String var5, float var6) {
+	public GuiSlider(int var1, int var2, int var3, EnumOptions var4, String var5, float var6) {
 		super(var1, var2, var3, 150, 20, var5);
 		this.idFloat = var4;
 		this.sliderValue = var6;
@@ -31,7 +31,7 @@ public class GuiSlider extends GuiButton {
 				}
 
 				var1.gameSettings.setOptionFloatValue(this.idFloat, this.sliderValue);
-				this.displayString = var1.gameSettings.getOptionDisplayString(this.idFloat);
+				this.displayString = var1.gameSettings.getKeyBinding(this.idFloat);
 			}
 
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -52,7 +52,7 @@ public class GuiSlider extends GuiButton {
 			}
 
 			var1.gameSettings.setOptionFloatValue(this.idFloat, this.sliderValue);
-			this.displayString = var1.gameSettings.getOptionDisplayString(this.idFloat);
+			this.displayString = var1.gameSettings.getKeyBinding(this.idFloat);
 			this.dragging = true;
 			return true;
 		} else {

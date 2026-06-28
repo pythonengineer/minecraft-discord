@@ -12,7 +12,7 @@ public class WorldGenLakes extends WorldGenerator {
 	public boolean generate(World var1, EaglercraftRandom var2, int var3, int var4, int var5) {
 		var3 -= 8;
 
-		for(var5 -= 8; var4 > 0 && var1.getBlockId(var3, var4, var5) == 0; --var4) {
+		for(var5 -= 8; var4 > 0 && var1.func_20084_d(var3, var4, var5); --var4) {
 		}
 
 		var4 -= 4;
@@ -45,10 +45,11 @@ public class WorldGenLakes extends WorldGenerator {
 
 		int var10;
 		int var32;
+		boolean var33;
 		for(var8 = 0; var8 < 16; ++var8) {
 			for(var32 = 0; var32 < 16; ++var32) {
 				for(var10 = 0; var10 < 8; ++var10) {
-					boolean var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
+					var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
 					if(var33) {
 						Material var12 = var1.getBlockMaterial(var3 + var8, var4 + var10, var5 + var32);
 						if(var10 >= 4 && var12.getIsLiquid()) {
@@ -78,6 +79,19 @@ public class WorldGenLakes extends WorldGenerator {
 				for(var10 = 4; var10 < 8; ++var10) {
 					if(var6[(var8 * 16 + var32) * 8 + var10] && var1.getBlockId(var3 + var8, var4 + var10 - 1, var5 + var32) == Block.dirt.blockID && var1.getSavedLightValue(EnumSkyBlock.Sky, var3 + var8, var4 + var10, var5 + var32) > 0) {
 						var1.setBlockWithNotify(var3 + var8, var4 + var10 - 1, var5 + var32, Block.grass.blockID);
+					}
+				}
+			}
+		}
+
+		if(Block.blocksList[this.field_15235_a].blockMaterial == Material.lava) {
+			for(var8 = 0; var8 < 16; ++var8) {
+				for(var32 = 0; var32 < 16; ++var32) {
+					for(var10 = 0; var10 < 8; ++var10) {
+						var33 = !var6[(var8 * 16 + var32) * 8 + var10] && (var8 < 15 && var6[((var8 + 1) * 16 + var32) * 8 + var10] || var8 > 0 && var6[((var8 - 1) * 16 + var32) * 8 + var10] || var32 < 15 && var6[(var8 * 16 + var32 + 1) * 8 + var10] || var32 > 0 && var6[(var8 * 16 + (var32 - 1)) * 8 + var10] || var10 < 7 && var6[(var8 * 16 + var32) * 8 + var10 + 1] || var10 > 0 && var6[(var8 * 16 + var32) * 8 + (var10 - 1)]);
+						if(var33 && (var10 < 4 || var2.nextInt(2) != 0) && var1.getBlockMaterial(var3 + var8, var4 + var10, var5 + var32).func_878_a()) {
+							var1.setBlockWithNotify(var3 + var8, var4 + var10, var5 + var32, Block.stone.blockID);
+						}
 					}
 				}
 			}

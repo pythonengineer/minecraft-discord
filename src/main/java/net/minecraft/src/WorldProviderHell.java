@@ -8,7 +8,7 @@ public class WorldProviderHell extends WorldProvider {
 		this.field_4220_c = true;
 		this.field_6479_d = true;
 		this.field_6478_e = true;
-		this.field_4218_e = -1;
+		this.worldType = -1;
 	}
 
 	public Vec3D func_4096_a(float var1, float var2) {

@@ -6,8 +6,8 @@ import net.lax1dude.eaglercraft.opengl.ImageData;
 
 public class FontRenderer {
 	private int[] charWidth = new int[256];
-	public int field_1308_a = 0;
-	private int field_1310_c;
+	public int fontTextureName = 0;
+	private int fontDisplayLists;
 	private IntBuffer buffer = GLAllocation.createDirectIntBuffer(1024);
 
 	public FontRenderer(GameSettings var1, String var2, RenderEngine var3) {
@@ -57,12 +57,12 @@ public class FontRenderer {
 			this.charWidth[var8] = var11 + 2;
 		}
 
-		this.field_1308_a = var3.allocateAndSetupTexture(var4);
-		this.field_1310_c = GLAllocation.generateDisplayLists(288);
+		this.fontTextureName = var3.allocateAndSetupTexture(var4);
+		this.fontDisplayLists = GLAllocation.generateDisplayLists(288);
 		Tessellator var19 = Tessellator.instance;
 
 		for(var9 = 0; var9 < 256; ++var9) {
-			GL11.glNewList(this.field_1310_c + var9, GL11.GL_COMPILE);
+			GL11.glNewList(this.fontDisplayLists + var9, GL11.GL_COMPILE);
 			var19.startDrawingQuads();
 			var10 = var9 % 16 * 8;
 			var11 = var9 / 16 * 8;
@@ -103,7 +103,7 @@ public class FontRenderer {
 				var22 /= 4;
 			}
 
-			GL11.glNewList(this.field_1310_c + 256 + var9, GL11.GL_COMPILE);
+			GL11.glNewList(this.fontDisplayLists + 256 + var9, GL11.GL_COMPILE);
 			GL11.glColor3f((float)var11 / 255.0F, (float)var12 / 255.0F, (float)var22 / 255.0F);
 			GL11.glEndList();
 		}
@@ -128,7 +128,7 @@ public class FontRenderer {
 				var4 += var6;
 			}
 
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.field_1308_a);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTextureName);
 			float var10 = (float)(var4 >> 16 & 255) / 255.0F;
 			float var7 = (float)(var4 >> 8 & 255) / 255.0F;
 			float var8 = (float)(var4 & 255) / 255.0F;
@@ -150,7 +150,7 @@ public class FontRenderer {
 						var11 = 15;
 					}
 
-					this.buffer.put(this.field_1310_c + 256 + var11 + (var5 ? 16 : 0));
+					this.buffer.put(this.fontDisplayLists + 256 + var11 + (var5 ? 16 : 0));
 					if(this.buffer.remaining() == 0) {
 						this.buffer.flip();
 						GL11.glCallLists(this.buffer);
@@ -158,9 +158,9 @@ public class FontRenderer {
 					}
 				}
 
-				var11 = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(var1.charAt(var6));
+				var11 = FontAllowedCharacters.field_20157_a.indexOf(var1.charAt(var6));
 				if(var11 >= 0) {
-					this.buffer.put(this.field_1310_c + var11 + 32);
+					this.buffer.put(this.fontDisplayLists + var11 + 32);
 				}
 
 				if(this.buffer.remaining() == 0) {
@@ -186,7 +186,7 @@ public class FontRenderer {
 				if(var1.charAt(var3) == 167) {
 					++var3;
 				} else {
-					int var4 = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(var1.charAt(var3));
+					int var4 = FontAllowedCharacters.field_20157_a.indexOf(var1.charAt(var3));
 					if(var4 >= 0) {
 						var2 += this.charWidth[var4 + 32];
 					}

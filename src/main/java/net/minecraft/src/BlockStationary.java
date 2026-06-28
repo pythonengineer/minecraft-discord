@@ -15,12 +15,12 @@ public class BlockStationary extends BlockFluids {
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		super.onNeighborBlockChange(var1, var2, var3, var4, var5);
 		if(var1.getBlockId(var2, var3, var4) == this.blockID) {
-			this.func_15234_j(var1, var2, var3, var4);
+			this.func_20016_j(var1, var2, var3, var4);
 		}
 
 	}
 
-	private void func_15234_j(World var1, int var2, int var3, int var4) {
+	private void func_20016_j(World var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockMetadata(var2, var3, var4);
 		var1.field_1043_h = true;
 		var1.setBlockAndMetadata(var2, var3, var4, this.blockID - 1, var5);
@@ -43,7 +43,7 @@ public class BlockStationary extends BlockFluids {
 						var1.setBlockWithNotify(var2, var3, var4, Block.fire.blockID);
 						return;
 					}
-				} else if(Block.blocksList[var8].blockMaterial.func_880_c()) {
+				} else if(Block.blocksList[var8].blockMaterial.getIsSolid()) {
 					return;
 				}
 			}

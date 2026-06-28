@@ -8,15 +8,15 @@ public class EntityLiving extends Entity {
 	public float field_9365_p;
 	public float field_9364_q;
 	public float field_9363_r;
-	public float field_735_n = 0.0F;
-	public float field_734_o = 0.0F;
+	public float renderYawOffset = 0.0F;
+	public float prevRenderYawOffset = 0.0F;
 	protected float field_9362_u;
 	protected float field_9361_v;
 	protected float field_9360_w;
 	protected float field_9359_x;
 	protected boolean field_9358_y = true;
 	protected String texture = "/mob/char.png";
-	protected boolean field_9355_A = true;
+	protected boolean unusedEntityLivingBoolean = true;
 	protected float field_9353_B = 0.0F;
 	protected String field_9351_C = null;
 	protected float field_9349_D = 1.0F;
@@ -26,11 +26,11 @@ public class EntityLiving extends Entity {
 	public float prevSwingProgress;
 	public float swingProgress;
 	public int health = 10;
-	public int field_9335_K;
+	public int prevHealth;
 	private int a;
 	public int hurtTime;
-	public int field_9332_M;
-	public float field_9331_N = 0.0F;
+	public int maxHurtTime;
+	public float attackedAtYaw = 0.0F;
 	public int deathTime = 0;
 	public int attackTime = 0;
 	public float field_9329_Q;
@@ -50,24 +50,24 @@ public class EntityLiving extends Entity {
 	float field_9348_ae = 0.0F;
 	protected int field_9346_af = 0;
 	protected int field_9344_ag = 0;
-	protected float field_9342_ah;
-	protected float field_9340_ai;
-	protected float field_9338_aj;
+	protected float moveStrafing;
+	protected float moveForward;
+	protected float randomYawVelocity;
 	protected boolean isJumping = false;
-	protected float field_9334_al = 0.0F;
-	protected float field_9333_am = 0.7F;
+	protected float defaultPitch = 0.0F;
+	protected float moveSpeed = 0.7F;
 	private Entity b;
 	private int c = 0;
 
 	public EntityLiving(World var1) {
 		super(var1);
-		this.field_618_ad = true;
+		this.preventEntitySpawning = true;
 		this.field_9363_r = (float)(Math.random() + 1.0D) * 0.01F;
 		this.setPosition(this.posX, this.posY, this.posZ);
 		this.field_9365_p = (float)Math.random() * 12398.0F;
 		this.rotationYaw = (float)(Math.random() * (double)((float)Math.PI) * 2.0D);
 		this.field_9364_q = 1.0F;
-		this.field_9286_aZ = 0.5F;
+		this.stepHeight = 0.5F;
 	}
 
 	public boolean canEntityBeSeen(Entity var1) {
@@ -106,7 +106,7 @@ public class EntityLiving extends Entity {
 		}
 
 		if(this.isEntityAlive() && this.func_345_I()) {
-			this.canAttackEntity((Entity)null, 1);
+			this.attackEntityFrom((Entity)null, 1);
 		}
 
 		if(this.isImmuneToFire || this.worldObj.multiplayerWorld) {
@@ -126,12 +126,12 @@ public class EntityLiving extends Entity {
 					this.worldObj.spawnParticle("bubble", this.posX + (double)var2, this.posY + (double)var3, this.posZ + (double)var4, this.motionX, this.motionY, this.motionZ);
 				}
 
-				this.canAttackEntity((Entity)null, 2);
+				this.attackEntityFrom((Entity)null, 2);
 			}
 
 			this.fire = 0;
 		} else {
-			this.air = this.field_9308_bh;
+			this.air = this.maxAir;
 		}
 
 		this.field_9329_Q = this.field_9328_R;
@@ -163,7 +163,7 @@ public class EntityLiving extends Entity {
 		}
 
 		this.field_9359_x = this.field_9360_w;
-		this.field_734_o = this.field_735_n;
+		this.prevRenderYawOffset = this.renderYawOffset;
 		this.prevRotationYaw = this.rotationYaw;
 		this.prevRotationPitch = this.rotationPitch;
 	}
@@ -201,7 +201,7 @@ public class EntityLiving extends Entity {
 		double var1 = this.posX - this.prevPosX;
 		double var3 = this.posZ - this.prevPosZ;
 		float var5 = MathHelper.sqrt_double(var1 * var1 + var3 * var3);
-		float var6 = this.field_735_n;
+		float var6 = this.renderYawOffset;
 		float var7 = 0.0F;
 		this.field_9362_u = this.field_9361_v;
 		float var8 = 0.0F;
@@ -222,17 +222,17 @@ public class EntityLiving extends Entity {
 		this.field_9361_v += (var8 - this.field_9361_v) * 0.3F;
 
 		float var9;
-		for(var9 = var6 - this.field_735_n; var9 < -180.0F; var9 += 360.0F) {
+		for(var9 = var6 - this.renderYawOffset; var9 < -180.0F; var9 += 360.0F) {
 		}
 
 		while(var9 >= 180.0F) {
 			var9 -= 360.0F;
 		}
 
-		this.field_735_n += var9 * 0.3F;
+		this.renderYawOffset += var9 * 0.3F;
 
 		float var10;
-		for(var10 = this.rotationYaw - this.field_735_n; var10 < -180.0F; var10 += 360.0F) {
+		for(var10 = this.rotationYaw - this.renderYawOffset; var10 < -180.0F; var10 += 360.0F) {
 		}
 
 		while(var10 >= 180.0F) {
@@ -248,9 +248,9 @@ public class EntityLiving extends Entity {
 			var10 = 75.0F;
 		}
 
-		this.field_735_n = this.rotationYaw - var10;
+		this.renderYawOffset = this.rotationYaw - var10;
 		if(var10 * var10 > 2500.0F) {
-			this.field_735_n += var10 * 0.2F;
+			this.renderYawOffset += var10 * 0.2F;
 		}
 
 		if(var11) {
@@ -265,12 +265,12 @@ public class EntityLiving extends Entity {
 			this.prevRotationYaw += 360.0F;
 		}
 
-		while(this.field_735_n - this.field_734_o < -180.0F) {
-			this.field_734_o -= 360.0F;
+		while(this.renderYawOffset - this.prevRenderYawOffset < -180.0F) {
+			this.prevRenderYawOffset -= 360.0F;
 		}
 
-		while(this.field_735_n - this.field_734_o >= 180.0F) {
-			this.field_734_o += 360.0F;
+		while(this.renderYawOffset - this.prevRenderYawOffset >= 180.0F) {
+			this.prevRenderYawOffset += 360.0F;
 		}
 
 		while(this.rotationPitch - this.prevRotationPitch < -180.0F) {
@@ -299,7 +299,7 @@ public class EntityLiving extends Entity {
 		}
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		if(this.worldObj.multiplayerWorld) {
 			return false;
 		} else {
@@ -319,16 +319,16 @@ public class EntityLiving extends Entity {
 					var3 = false;
 				} else {
 					this.field_9346_af = var2;
-					this.field_9335_K = this.health;
+					this.prevHealth = this.health;
 					this.field_9306_bj = this.field_9366_o;
 					this.damageEntity(var2);
-					this.hurtTime = this.field_9332_M = 10;
+					this.hurtTime = this.maxHurtTime = 10;
 				}
 
-				this.field_9331_N = 0.0F;
+				this.attackedAtYaw = 0.0F;
 				if(var3) {
 					this.worldObj.func_9425_a(this, (byte)2);
-					this.func_9281_M();
+					this.setBeenAttacked();
 					if(var1 != null) {
 						double var4 = var1.posX - this.posX;
 
@@ -337,10 +337,10 @@ public class EntityLiving extends Entity {
 							var4 = (Math.random() - Math.random()) * 0.01D;
 						}
 
-						this.field_9331_N = (float)(Math.atan2(var6, var4) * 180.0D / (double)((float)Math.PI)) - this.rotationYaw;
+						this.attackedAtYaw = (float)(Math.atan2(var6, var4) * 180.0D / (double)((float)Math.PI)) - this.rotationYaw;
 						this.func_434_a(var1, var2, var4, var6);
 					} else {
-						this.field_9331_N = (float)((int)(Math.random() * 2.0D) * 180);
+						this.attackedAtYaw = (float)((int)(Math.random() * 2.0D) * 180);
 					}
 				}
 
@@ -359,9 +359,9 @@ public class EntityLiving extends Entity {
 		}
 	}
 
-	public void func_9280_g() {
-		this.hurtTime = this.field_9332_M = 10;
-		this.field_9331_N = 0.0F;
+	public void performHurtAnimation() {
+		this.hurtTime = this.maxHurtTime = 10;
+		this.attackedAtYaw = 0.0F;
 	}
 
 	protected void damageEntity(int var1) {
@@ -426,7 +426,7 @@ public class EntityLiving extends Entity {
 	protected void fall(float var1) {
 		int var2 = (int)Math.ceil((double)(var1 - 3.0F));
 		if(var2 > 0) {
-			this.canAttackEntity((Entity)null, var2);
+			this.attackEntityFrom((Entity)null, var2);
 			int var3 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY - (double)0.2F - (double)this.yOffset), MathHelper.floor_double(this.posZ));
 			if(var3 > 0) {
 				StepSound var4 = Block.blocksList[var3].stepSound;
@@ -436,7 +436,7 @@ public class EntityLiving extends Entity {
 
 	}
 
-	public void func_435_b(float var1, float var2) {
+	public void moveEntityWithHeading(float var1, float var2) {
 		double var3;
 		if(this.handleWaterMovement()) {
 			var3 = this.posY;
@@ -446,7 +446,7 @@ public class EntityLiving extends Entity {
 			this.motionY *= (double)0.8F;
 			this.motionZ *= (double)0.8F;
 			this.motionY -= 0.02D;
-			if(this.field_9297_aI && this.func_403_b(this.motionX, this.motionY + (double)0.6F - this.posY + var3, this.motionZ)) {
+			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + var3, this.motionZ)) {
 				this.motionY = (double)0.3F;
 			}
 		} else if(this.handleLavaMovement()) {
@@ -457,7 +457,7 @@ public class EntityLiving extends Entity {
 			this.motionY *= 0.5D;
 			this.motionZ *= 0.5D;
 			this.motionY -= 0.02D;
-			if(this.field_9297_aI && this.func_403_b(this.motionX, this.motionY + (double)0.6F - this.posY + var3, this.motionZ)) {
+			if(this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + (double)0.6F - this.posY + var3, this.motionZ)) {
 				this.motionY = (double)0.3F;
 			}
 		} else {
@@ -489,7 +489,7 @@ public class EntityLiving extends Entity {
 			}
 
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
-			if(this.field_9297_aI && this.isOnLadder()) {
+			if(this.isCollidedHorizontally && this.isOnLadder()) {
 				this.motionY = 0.2D;
 			}
 
@@ -563,11 +563,11 @@ public class EntityLiving extends Entity {
 
 		if(this.health <= 0) {
 			this.isJumping = false;
-			this.field_9342_ah = 0.0F;
-			this.field_9340_ai = 0.0F;
-			this.field_9338_aj = 0.0F;
+			this.moveStrafing = 0.0F;
+			this.moveForward = 0.0F;
+			this.randomYawVelocity = 0.0F;
 		} else if(!this.field_9343_G) {
-			this.func_418_b_();
+			this.updatePlayerActionState();
 		}
 
 		boolean var9 = this.handleWaterMovement();
@@ -582,11 +582,11 @@ public class EntityLiving extends Entity {
 			}
 		}
 
-		this.field_9342_ah *= 0.98F;
-		this.field_9340_ai *= 0.98F;
-		this.field_9338_aj *= 0.9F;
-		this.func_435_b(this.field_9342_ah, this.field_9340_ai);
-		List var10 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expands((double)0.2F, 0.0D, (double)0.2F));
+		this.moveStrafing *= 0.98F;
+		this.moveForward *= 0.98F;
+		this.randomYawVelocity *= 0.9F;
+		this.moveEntityWithHeading(this.moveStrafing, this.moveForward);
+		List var10 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand((double)0.2F, 0.0D, (double)0.2F));
 		if(var10 != null && var10.size() > 0) {
 			for(int var4 = 0; var4 < var10.size(); ++var4) {
 				Entity var11 = (Entity)var10.get(var4);
@@ -602,7 +602,7 @@ public class EntityLiving extends Entity {
 		this.motionY = (double)0.42F;
 	}
 
-	protected void func_418_b_() {
+	protected void updatePlayerActionState() {
 		++this.field_9344_ag;
 		EntityPlayer var1 = this.worldObj.getClosestPlayerToEntity(this, -1.0D);
 		if(var1 != null) {
@@ -623,8 +623,8 @@ public class EntityLiving extends Entity {
 			}
 		}
 
-		this.field_9342_ah = 0.0F;
-		this.field_9340_ai = 0.0F;
+		this.moveStrafing = 0.0F;
+		this.moveForward = 0.0F;
 		float var10 = 8.0F;
 		if(this.rand.nextFloat() < 0.02F) {
 			var1 = this.worldObj.getClosestPlayerToEntity(this, (double)var10);
@@ -632,7 +632,7 @@ public class EntityLiving extends Entity {
 				this.b = var1;
 				this.c = 10 + this.rand.nextInt(20);
 			} else {
-				this.field_9338_aj = (this.rand.nextFloat() - 0.5F) * 20.0F;
+				this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 20.0F;
 			}
 		}
 
@@ -643,11 +643,11 @@ public class EntityLiving extends Entity {
 			}
 		} else {
 			if(this.rand.nextFloat() < 0.05F) {
-				this.field_9338_aj = (this.rand.nextFloat() - 0.5F) * 20.0F;
+				this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 20.0F;
 			}
 
-			this.rotationYaw += this.field_9338_aj;
-			this.rotationPitch = this.field_9334_al;
+			this.rotationYaw += this.randomYawVelocity;
+			this.rotationPitch = this.defaultPitch;
 		}
 
 		boolean var3 = this.handleWaterMovement();
@@ -704,7 +704,7 @@ public class EntityLiving extends Entity {
 	}
 
 	protected void func_4034_G() {
-		this.canAttackEntity((Entity)null, 4);
+		this.attackEntityFrom((Entity)null, 4);
 	}
 
 	public float getSwingProgress(float var1) {
@@ -760,7 +760,7 @@ public class EntityLiving extends Entity {
 		return this.worldObj.rayTraceBlocks(var4, var6);
 	}
 
-	public int func_6391_i() {
+	public int getMaxSpawnedInChunk() {
 		return 4;
 	}
 
@@ -772,10 +772,10 @@ public class EntityLiving extends Entity {
 		if(var1 == 2) {
 			this.field_704_R = 1.5F;
 			this.field_9306_bj = this.field_9366_o;
-			this.hurtTime = this.field_9332_M = 10;
-			this.field_9331_N = 0.0F;
+			this.hurtTime = this.maxHurtTime = 10;
+			this.attackedAtYaw = 0.0F;
 			this.worldObj.playSoundAtEntity(this, this.getHurtSound(), this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-			this.canAttackEntity((Entity)null, 0);
+			this.attackEntityFrom((Entity)null, 0);
 		} else if(var1 == 3) {
 			this.worldObj.playSoundAtEntity(this, this.getDeathSound(), this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 			this.health = 0;

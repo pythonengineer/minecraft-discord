@@ -130,7 +130,7 @@ public class EffectRenderer {
 		if(var5 != 0) {
 			Block var6 = Block.blocksList[var5];
 			float var7 = 0.1F;
-			double var8 = (double)var1 + this.rand.nextDouble() * (var6.maxX - var6.field_370_bf - (double)(var7 * 2.0F)) + (double)var7 + var6.field_370_bf;
+			double var8 = (double)var1 + this.rand.nextDouble() * (var6.maxX - var6.minX - (double)(var7 * 2.0F)) + (double)var7 + var6.minX;
 			double var10 = (double)var2 + this.rand.nextDouble() * (var6.maxY - var6.minY - (double)(var7 * 2.0F)) + (double)var7 + var6.minY;
 			double var12 = (double)var3 + this.rand.nextDouble() * (var6.maxZ - var6.minZ - (double)(var7 * 2.0F)) + (double)var7 + var6.minZ;
 			if(var4 == 0) {
@@ -150,7 +150,7 @@ public class EffectRenderer {
 			}
 
 			if(var4 == 4) {
-				var8 = (double)var1 + var6.field_370_bf - (double)var7;
+				var8 = (double)var1 + var6.minX - (double)var7;
 			}
 
 			if(var4 == 5) {

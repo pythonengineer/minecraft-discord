@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import net.lax1dude.eaglercraft.EagUtils;
 import net.lax1dude.eaglercraft.internal.IWebSocketClient;
+import net.lax1dude.eaglercraft.EagRuntime;
 
 public class NetworkManager {
 	public static final Object threadSyncObject = new Object();
@@ -28,9 +28,11 @@ public class NetworkManager {
 	private Thread readThread;
 	private boolean isTerminating = false;
 	private String terminationReason = "";
+	private Object[] field_20101_t;
 	private int timeSinceLastRead = 0;
 	private int sendQueueByteLength = 0;
-	private int chunkDataSendCounter = 0;
+	public int chunkDataSendCounter = 0;
+	private int field_20100_w = 0;
 
 	public NetworkManager(IWebSocketClient var1, String var2, NetHandler var3) throws IOException {
 		this.field_12258_e = var1;
@@ -63,7 +65,7 @@ public class NetworkManager {
 			boolean var1 = true;
 			Packet var2;
 			Object var3;
-			if(!this.dataPackets.isEmpty()) {
+			if(!this.dataPackets.isEmpty() && (this.chunkDataSendCounter == 0 || EagRuntime.currentTimeMillis() - ((Packet)this.dataPackets.get(0)).field_20018_j >= (long)this.chunkDataSendCounter)) {
 				var1 = false;
 				var3 = this.sendQueueLock;
 				synchronized(var3) {
@@ -74,7 +76,7 @@ public class NetworkManager {
 				Packet.writePacket(var2, this.socketOutputStream);
 			}
 
-			if((var1 || this.chunkDataSendCounter-- <= 0) && !this.chunkDataPackets.isEmpty()) {
+			if((var1 || this.field_20100_w-- <= 0) && !this.chunkDataPackets.isEmpty() && (this.chunkDataSendCounter == 0 || EagRuntime.currentTimeMillis() - ((Packet)this.chunkDataPackets.get(0)).field_20018_j >= (long)this.chunkDataSendCounter)) {
 				var1 = false;
 				var3 = this.sendQueueLock;
 				synchronized(var3) {
@@ -83,7 +85,7 @@ public class NetworkManager {
 				}
 
 				Packet.writePacket(var2, this.socketOutputStream);
-				this.chunkDataSendCounter = 50;
+				this.field_20100_w = 50;
 			}
 
 			if(var1) {
@@ -103,7 +105,7 @@ public class NetworkManager {
 			if(var1 != null) {
 				this.readPackets.add(var1);
 			} else {
-				this.networkShutdown("End of stream");
+				this.networkShutdown("disconnect.endOfStream", new Object[0]);
 			}
 		} catch (Exception var2) {
 			if(!this.isTerminating) {
@@ -115,32 +117,33 @@ public class NetworkManager {
 
 	private void onNetworkError(Exception var1) {
 		var1.printStackTrace();
-		this.networkShutdown("Internal exception: " + var1.toString());
+		this.networkShutdown("disconnect.genericReason", new Object[]{"Internal exception: " + var1.toString()});
 	}
 
-	public void networkShutdown(String var1) {
+	public void networkShutdown(String var1, Object... var2) {
 		if(this.isRunning) {
 			this.isTerminating = true;
 			this.terminationReason = var1;
+			this.field_20101_t = var2;
 			(new NetworkMasterThread(this)).start();
 			this.isRunning = false;
 
 			try {
 				this.socketInputStream.close();
 				this.socketInputStream = null;
-			} catch (Throwable var5) {
+			} catch (Throwable var6) {
 			}
 
 			try {
 				this.socketOutputStream.close();
 				this.socketOutputStream = null;
-			} catch (Throwable var4) {
+			} catch (Throwable var5) {
 			}
 
 			try {
 				this.field_12258_e.close();
 				this.field_12258_e = null;
-			} catch (Throwable var3) {
+			} catch (Throwable var4) {
 			}
 
 		}
@@ -148,12 +151,12 @@ public class NetworkManager {
 
 	public void processReadPackets() {
 		if(this.sendQueueByteLength > 1048576) {
-			this.networkShutdown("Send buffer overflow");
+			this.networkShutdown("disconnect.overflow", new Object[0]);
 		}
 
 		if(this.readPackets.isEmpty()) {
 			if(this.timeSinceLastRead++ == 1200) {
-				this.networkShutdown("Timed out");
+				this.networkShutdown("disconnect.timeout", new Object[0]);
 			}
 		} else {
 			this.timeSinceLastRead = 0;
@@ -167,7 +170,7 @@ public class NetworkManager {
 		}
 
 		if(this.isTerminating && this.readPackets.isEmpty()) {
-			this.netHandler.handleErrorMessage(this.terminationReason);
+			this.netHandler.handleErrorMessage(this.terminationReason, this.field_20101_t);
 		}
 
 	}

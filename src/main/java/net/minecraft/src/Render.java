@@ -7,7 +7,7 @@ public abstract class Render {
 	protected RenderManager renderManager;
 	private ModelBase unusedModelBiped = new ModelBiped();
 	private RenderBlocks unusedRenderBlocks = new RenderBlocks();
-	protected float field_9246_c = 0.0F;
+	protected float shadowSize = 0.0F;
 	protected float field_194_c = 1.0F;
 
 	public abstract void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9);
@@ -17,9 +17,15 @@ public abstract class Render {
 		var2.bindTexture(var2.getTexture(var1));
 	}
 
-	protected void func_140_a(String var1, String var2) {
+	protected boolean func_140_a(String var1, String var2) {
 		RenderEngine var3 = this.renderManager.renderEngine;
-		var3.bindTexture(var3.getTextureForDownloadableImage(var1, var2));
+		int var4 = var3.getTextureForDownloadableImage(var1, var2);
+		if(var4 >= 0) {
+			var3.bindTexture(var4);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private void renderEntityOnFire(Entity var1, double var2, double var4, double var6, float var8) {
@@ -69,7 +75,7 @@ public abstract class Render {
 		var10.bindTexture(var10.getTexture("%clamp%/misc/shadow.png"));
 		World var11 = this.getWorldFromRenderManager();
 		GL11.glDepthMask(false);
-		float var12 = this.field_9246_c;
+		float var12 = this.shadowSize;
 		double var13 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var9;
 		double var15 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var9 + (double)var1.func_392_h_();
 		double var17 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var9;
@@ -116,7 +122,7 @@ public abstract class Render {
 				}
 
 				var19.setColorRGBA_F(1.0F, 1.0F, 1.0F, (float)var20);
-				double var22 = (double)var8 + var1.field_370_bf + var13;
+				double var22 = (double)var8 + var1.minX + var13;
 				double var24 = (double)var8 + var1.maxX + var13;
 				double var26 = (double)var9 + var1.minY + var15 + 1.0D / 64.0D;
 				double var28 = (double)var10 + var1.minZ + var17;
@@ -209,7 +215,7 @@ public abstract class Render {
 	}
 
 	public void doRenderShadowAndFire(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		if(this.renderManager.options.fancyGraphics && this.field_9246_c > 0.0F) {
+		if(this.renderManager.options.fancyGraphics && this.shadowSize > 0.0F) {
 			double var10 = this.renderManager.func_851_a(var1.posX, var1.posY, var1.posZ);
 			float var12 = (float)((1.0D - var10 / 256.0D) * (double)this.field_194_c);
 			if(var12 > 0.0F) {

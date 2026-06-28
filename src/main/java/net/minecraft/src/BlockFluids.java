@@ -11,7 +11,7 @@ public abstract class BlockFluids extends Block {
 		this.setTickOnLoad(true);
 	}
 
-	public static float func_288_b(int var0) {
+	public static float setFluidHeight(int var0) {
 		if(var0 >= 8) {
 			var0 = 0;
 		}
@@ -100,7 +100,7 @@ public abstract class BlockFluids extends Block {
 			int var11 = this.func_289_b(var1, var8, var3, var10);
 			int var12;
 			if(var11 < 0) {
-				if(!var1.getBlockMaterial(var8, var3, var10).func_880_c()) {
+				if(!var1.getBlockMaterial(var8, var3, var10).getIsSolid()) {
 					var11 = this.func_289_b(var1, var8, var3 - 1, var10);
 					if(var11 >= 0) {
 						var12 = var11 - (var6 - 8);
@@ -177,7 +177,7 @@ public abstract class BlockFluids extends Block {
 		super.updateTick(var1, var2, var3, var4, var5);
 	}
 
-	public int func_234_g() {
+	public int getRenderBlockPass() {
 		return this.blockMaterial == Material.water ? 1 : 0;
 	}
 

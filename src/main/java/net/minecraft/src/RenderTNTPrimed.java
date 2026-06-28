@@ -6,7 +6,7 @@ public class RenderTNTPrimed extends Render {
 	private RenderBlocks field_196_d = new RenderBlocks();
 
 	public RenderTNTPrimed() {
-		this.field_9246_c = 0.5F;
+		this.shadowSize = 0.5F;
 	}
 
 	public void a(EntityTNTPrimed var1, double var2, double var4, double var6, float var8, float var9) {

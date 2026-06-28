@@ -18,14 +18,14 @@ public class ItemFishingRod extends Item {
 		if(var3.fishEntity != null) {
 			int var4 = var3.fishEntity.func_4043_i();
 			var1.damageItem(var4);
-			var3.func_457_w();
+			var3.swingItem();
 		} else {
 			var2.playSoundAtEntity(var3, "random.bow", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 			if(!var2.multiplayerWorld) {
 				var2.entityJoinedWorld(new EntityFish(var2, var3));
 			}
 
-			var3.func_457_w();
+			var3.swingItem();
 		}
 
 		return var1;

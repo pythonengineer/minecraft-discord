@@ -26,18 +26,17 @@ public class PlayerControllerMP extends PlayerController {
 	public boolean sendBlockRemoved(int var1, int var2, int var3, int var4) {
 		this.field_9438_k.addToSendQueue(new Packet14BlockDig(3, var1, var2, var3, var4));
 		int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		this.mc.theWorld.getBlockMetadata(var1, var2, var3);
-		boolean var7 = super.sendBlockRemoved(var1, var2, var3, var4);
-		ItemStack var8 = this.mc.thePlayer.getCurrentEquippedItem();
-		if(var8 != null) {
-			var8.hitBlock(var5, var1, var2, var3);
-			if(var8.stackSize == 0) {
-				var8.func_1097_a(this.mc.thePlayer);
+		boolean var6 = super.sendBlockRemoved(var1, var2, var3, var4);
+		ItemStack var7 = this.mc.thePlayer.getCurrentEquippedItem();
+		if(var7 != null) {
+			var7.hitBlock(var5, var1, var2, var3);
+			if(var7.stackSize == 0) {
+				var7.func_1097_a(this.mc.thePlayer);
 				this.mc.thePlayer.destroyCurrentEquippedItem();
 			}
 		}
 
-		return var7;
+		return var6;
 	}
 
 	public void clickBlock(int var1, int var2, int var3, int var4) {
@@ -48,7 +47,7 @@ public class PlayerControllerMP extends PlayerController {
 			Block.blocksList[var5].onBlockClicked(this.mc.theWorld, var1, var2, var3, this.mc.thePlayer);
 		}
 
-		if(var5 > 0 && Block.blocksList[var5].func_225_a(this.mc.thePlayer) >= 1.0F) {
+		if(var5 > 0 && Block.blocksList[var5].blockStrength(this.mc.thePlayer) >= 1.0F) {
 			this.sendBlockRemoved(var1, var2, var3, var4);
 		}
 
@@ -77,9 +76,9 @@ public class PlayerControllerMP extends PlayerController {
 				}
 
 				Block var6 = Block.blocksList[var5];
-				this.field_9442_f += var6.func_225_a(this.mc.thePlayer);
+				this.field_9442_f += var6.blockStrength(this.mc.thePlayer);
 				if(this.field_9441_h % 4.0F == 0.0F && var6 != null) {
-					this.mc.sndManager.func_336_b(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.func_1147_b() + 1.0F) / 8.0F, var6.stepSound.func_1144_c() * 0.5F);
+					this.mc.sndManager.playSound(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.func_1147_b() + 1.0F) / 8.0F, var6.stepSound.func_1144_c() * 0.5F);
 				}
 
 				++this.field_9441_h;
@@ -102,14 +101,14 @@ public class PlayerControllerMP extends PlayerController {
 		}
 	}
 
-	public void func_6467_a(float var1) {
+	public void setPartialTime(float var1) {
 		if(this.field_9442_f <= 0.0F) {
 			this.mc.ingameGUI.field_6446_b = 0.0F;
-			this.mc.field_6323_f.field_1450_i = 0.0F;
+			this.mc.renderGlobal.field_1450_i = 0.0F;
 		} else {
 			float var2 = this.field_1080_g + (this.field_9442_f - this.field_1080_g) * var1;
 			this.mc.ingameGUI.field_6446_b = var2;
-			this.mc.field_6323_f.field_1450_i = var2;
+			this.mc.renderGlobal.field_1450_i = var2;
 		}
 
 	}
@@ -122,40 +121,37 @@ public class PlayerControllerMP extends PlayerController {
 		super.func_717_a(var1);
 	}
 
-	public void func_6474_c() {
+	public void updateController() {
 		this.func_730_e();
 		this.field_1080_g = this.field_9442_f;
 		this.mc.sndManager.func_4033_c();
 	}
 
 	private void func_730_e() {
-		ItemStack var1 = this.mc.thePlayer.inventory.getCurrentItem();
-		int var2 = 0;
-		if(var1 != null) {
-			var2 = var1.itemID;
-		}
-
-		if(var2 != this.field_1075_l) {
-			this.field_1075_l = var2;
-			this.field_9438_k.addToSendQueue(new Packet16BlockItemSwitch(0, this.field_1075_l));
+		int var1 = this.mc.thePlayer.inventory.currentItem;
+		if(var1 != this.field_1075_l) {
+			this.field_1075_l = var1;
+			this.field_9438_k.addToSendQueue(new Packet16BlockItemSwitch(this.field_1075_l));
 		}
 
 	}
 
 	public boolean sendPlaceBlock(EntityPlayer var1, World var2, ItemStack var3, int var4, int var5, int var6, int var7) {
 		this.func_730_e();
-		this.field_9438_k.addToSendQueue(new Packet15Place(var3 != null ? var3.itemID : -1, var4, var5, var6, var7));
-		return super.sendPlaceBlock(var1, var2, var3, var4, var5, var6, var7);
+		boolean var8 = super.sendPlaceBlock(var1, var2, var3, var4, var5, var6, var7);
+		this.field_9438_k.addToSendQueue(new Packet15Place(var4, var5, var6, var7, var1.inventory.getCurrentItem()));
+		return var8;
 	}
 
 	public boolean sendUseItem(EntityPlayer var1, World var2, ItemStack var3) {
 		this.func_730_e();
-		this.field_9438_k.addToSendQueue(new Packet15Place(var3 != null ? var3.itemID : -1, -1, -1, -1, 255));
-		return super.sendUseItem(var1, var2, var3);
+		boolean var4 = super.sendUseItem(var1, var2, var3);
+		this.field_9438_k.addToSendQueue(new Packet15Place(-1, -1, -1, 255, var1.inventory.getCurrentItem()));
+		return var4;
 	}
 
 	public EntityPlayer func_4087_b(World var1) {
-		return new EntityClientPlayerMP(this.mc, var1, this.mc.field_6320_i, this.field_9438_k);
+		return new EntityClientPlayerMP(this.mc, var1, this.mc.session, this.field_9438_k);
 	}
 
 	public void func_6472_b(EntityPlayer var1, Entity var2) {
@@ -167,6 +163,18 @@ public class PlayerControllerMP extends PlayerController {
 	public void func_6475_a(EntityPlayer var1, Entity var2) {
 		this.func_730_e();
 		this.field_9438_k.addToSendQueue(new Packet7(var1.field_620_ab, var2.field_620_ab, 0));
-		var1.func_6415_a_(var2);
+		var1.useCurrentItemOnEntity(var2);
+	}
+
+	public ItemStack func_20085_a(int var1, int var2, int var3, int mode, EntityPlayer var4) {
+		short var5 = var4.field_20068_h.func_20111_a(var4.inventory);
+		ItemStack var6 = super.func_20085_a(var1, var2, var3, mode, var4);
+		this.field_9438_k.addToSendQueue(new Packet102(var1, var2, var3, var6, var5));
+		return var6;
+	}
+
+	public void func_20086_a(int var1, EntityPlayer var2) {
+		if(var1 != -9999) {
+		}
 	}
 }

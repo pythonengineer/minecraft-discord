@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
@@ -172,7 +171,7 @@ public class RenderEngine {
 			var3.textureSetupComplete = true;
 		}
 
-		return var3 != null && var3.textureName >= 0 ? var3.textureName : this.getTexture(var2);
+		return var3 != null && var3.textureName >= 0 ? var3.textureName : (var2 == null ? -1 : this.getTexture(var2));
 	}
 
 	public ThreadDownloadImageData obtainImageData(String var1, ImageBuffer var2) {

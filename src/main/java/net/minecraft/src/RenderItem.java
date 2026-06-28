@@ -9,7 +9,7 @@ public class RenderItem extends Render {
 	private EaglercraftRandom random = new EaglercraftRandom();
 
 	public RenderItem() {
-		this.field_9246_c = 0.15F;
+		this.shadowSize = 0.15F;
 		this.field_194_c = 12.0F / 16.0F;
 	}
 

@@ -25,7 +25,7 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
 			GL11.glTranslatef(0.0F, -0.4F, 0.0F);
 			GL11.glScalef(var10, var10, var10);
 			var9.setLocationAndAngles(var2, var4, var6, 0.0F, 0.0F);
-			RenderManager.instance.func_853_a(var9, 0.0D, 0.0D, 0.0D, 0.0F, var8);
+			RenderManager.instance.renderEntityWithPosYaw(var9, 0.0D, 0.0D, 0.0D, 0.0F, var8);
 		}
 
 		GL11.glPopMatrix();

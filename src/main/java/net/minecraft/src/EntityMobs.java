@@ -1,8 +1,9 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityMobs extends EntityCreature implements IMobs {
-	protected int field_762_e = 2;
+	protected int attackStrength = 2;
 
 	public EntityMobs(World var1) {
 		super(var1);
@@ -31,8 +32,8 @@ public class EntityMobs extends EntityCreature implements IMobs {
 		return var1 != null && this.canEntityBeSeen(var1) ? var1 : null;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
-		if(super.canAttackEntity(var1, var2)) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
+		if(super.attackEntityFrom(var1, var2)) {
 			if(this.riddenByEntity != var1 && this.ridingEntity != var1) {
 				if(var1 != this) {
 					this.playerToAttack = var1;
@@ -50,12 +51,12 @@ public class EntityMobs extends EntityCreature implements IMobs {
 	protected void attackEntity(Entity var1, float var2) {
 		if((double)var2 < 2.5D && var1.boundingBox.maxY > this.boundingBox.minY && var1.boundingBox.minY < this.boundingBox.maxY) {
 			this.attackTime = 20;
-			var1.canAttackEntity(this, this.field_762_e);
+			var1.attackEntityFrom(this, this.attackStrength);
 		}
 
 	}
 
-	protected float func_439_a(int var1, int var2, int var3) {
+	protected float getBlockPathWeight(int var1, int var2, int var3) {
 		return 0.5F - this.worldObj.getLightBrightness(var1, var2, var3);
 	}
 

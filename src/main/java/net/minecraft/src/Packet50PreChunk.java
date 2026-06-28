@@ -9,6 +9,10 @@ public class Packet50PreChunk extends Packet {
 	public int yPosition;
 	public boolean mode;
 
+	public Packet50PreChunk() {
+		this.isChunkDataPacket = false;
+	}
+
 	public void readPacketData(DataInputStream var1) throws IOException {
 		this.xPosition = var1.readInt();
 		this.yPosition = var1.readInt();

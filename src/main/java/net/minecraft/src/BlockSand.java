@@ -23,7 +23,7 @@ public class BlockSand extends Block {
 
 	private void tryToFall(World var1, int var2, int var3, int var4) {
 		if(canFallBelow(var1, var2, var3 - 1, var4) && var3 >= 0) {
-			EntityFallingSand var8 = new EntityFallingSand(var1, (float)var2 + 0.5F, (float)var3 + 0.5F, (float)var4 + 0.5F, this.blockID);
+			EntityFallingSand var8 = new EntityFallingSand(var1, (double)((float)var2 + 0.5F), (double)((float)var3 + 0.5F), (double)((float)var4 + 0.5F), this.blockID);
 			if(fallInstantly) {
 				while(!var8.isDead) {
 					var8.onUpdate();

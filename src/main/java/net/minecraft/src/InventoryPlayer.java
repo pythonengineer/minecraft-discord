@@ -1,13 +1,12 @@
 package net.minecraft.src;
 
 public class InventoryPlayer implements IInventory {
-	public ItemStack[] mainInventory = new ItemStack[37];
+	public ItemStack[] mainInventory = new ItemStack[36];
 	public ItemStack[] armorInventory = new ItemStack[4];
-	public ItemStack[] craftingInventory = new ItemStack[4];
 	public int currentItem = 0;
 	private EntityPlayer player;
-	public ItemStack draggingItemStack;
-	public boolean field_845_f = false;
+	private ItemStack field_20077_f;
+	public boolean inventoryChanged = false;
 
 	public InventoryPlayer(EntityPlayer var1) {
 		this.player = var1;
@@ -178,11 +177,6 @@ public class InventoryPlayer implements IInventory {
 			var3 = this.armorInventory;
 		}
 
-		if(var1 >= var3.length) {
-			var1 -= var3.length;
-			var3 = this.craftingInventory;
-		}
-
 		var3[var1] = var2;
 	}
 
@@ -216,36 +210,25 @@ public class InventoryPlayer implements IInventory {
 			}
 		}
 
-		for(var2 = 0; var2 < this.craftingInventory.length; ++var2) {
-			if(this.craftingInventory[var2] != null) {
-				var3 = new NBTTagCompound();
-				var3.setByte("Slot", (byte)(var2 + 80));
-				this.craftingInventory[var2].writeToNBT(var3);
-				var1.setTag(var3);
-			}
-		}
-
 		return var1;
 	}
 
 	public void readFromNBT(NBTTagList var1) {
 		this.mainInventory = new ItemStack[36];
 		this.armorInventory = new ItemStack[4];
-		this.craftingInventory = new ItemStack[4];
 
 		for(int var2 = 0; var2 < var1.tagCount(); ++var2) {
 			NBTTagCompound var3 = (NBTTagCompound)var1.tagAt(var2);
 			int var4 = var3.getByte("Slot") & 255;
-			if(var4 >= 0 && var4 < this.mainInventory.length) {
-				this.mainInventory[var4] = new ItemStack(var3);
-			}
+			ItemStack var5 = new ItemStack(var3);
+			if(var5.getItem() != null) {
+				if(var4 >= 0 && var4 < this.mainInventory.length) {
+					this.mainInventory[var4] = var5;
+				}
 
-			if(var4 >= 80 && var4 < this.craftingInventory.length + 80) {
-				this.craftingInventory[var4 - 80] = new ItemStack(var3);
-			}
-
-			if(var4 >= 100 && var4 < this.armorInventory.length + 100) {
-				this.armorInventory[var4 - 100] = new ItemStack(var3);
+				if(var4 >= 100 && var4 < this.armorInventory.length + 100) {
+					this.armorInventory[var4 - 100] = var5;
+				}
 			}
 		}
 
@@ -260,11 +243,6 @@ public class InventoryPlayer implements IInventory {
 		if(var1 >= var2.length) {
 			var1 -= var2.length;
 			var2 = this.armorInventory;
-		}
-
-		if(var1 >= var2.length) {
-			var1 -= var2.length;
-			var2 = this.craftingInventory;
 		}
 
 		return var2[var1];
@@ -352,52 +330,19 @@ public class InventoryPlayer implements IInventory {
 	}
 
 	public void onInventoryChanged() {
-		this.field_845_f = true;
+		this.inventoryChanged = true;
 	}
 
-	public boolean compareInventory(InventoryPlayer var1) {
-		int var2;
-		for(var2 = 0; var2 < this.mainInventory.length; ++var2) {
-			if(!this.compareItemStack(var1.mainInventory[var2], this.mainInventory[var2])) {
-				return false;
-			}
-		}
-
-		for(var2 = 0; var2 < this.armorInventory.length; ++var2) {
-			if(!this.compareItemStack(var1.armorInventory[var2], this.armorInventory[var2])) {
-				return false;
-			}
-		}
-
-		for(var2 = 0; var2 < this.craftingInventory.length; ++var2) {
-			if(!this.compareItemStack(var1.craftingInventory[var2], this.craftingInventory[var2])) {
-				return false;
-			}
-		}
-
-		return true;
+	public void func_20076_b(ItemStack var1) {
+		this.field_20077_f = var1;
+		this.player.func_20058_b(var1);
 	}
 
-	private boolean compareItemStack(ItemStack var1, ItemStack var2) {
-		return var1 == null && var2 == null ? true : (var1 != null && var2 != null ? var1.itemID == var2.itemID && var1.stackSize == var2.stackSize && var1.itemDamage == var2.itemDamage : false);
+	public ItemStack func_20075_i() {
+		return this.field_20077_f;
 	}
 
-	public InventoryPlayer copyInventory() {
-		InventoryPlayer var1 = new InventoryPlayer((EntityPlayer)null);
-
-		int var2;
-		for(var2 = 0; var2 < this.mainInventory.length; ++var2) {
-			var1.mainInventory[var2] = this.mainInventory[var2] != null ? this.mainInventory[var2].copy() : null;
-		}
-
-		for(var2 = 0; var2 < this.armorInventory.length; ++var2) {
-			var1.armorInventory[var2] = this.armorInventory[var2] != null ? this.armorInventory[var2].copy() : null;
-		}
-
-		for(var2 = 0; var2 < this.craftingInventory.length; ++var2) {
-			var1.craftingInventory[var2] = this.craftingInventory[var2] != null ? this.craftingInventory[var2].copy() : null;
-		}
-
-		return var1;
+	public boolean func_20070_a_(EntityPlayer var1) {
+		return this.player.isDead ? false : var1.getDistanceSqToEntity(this.player) <= 64.0D;
 	}
 }

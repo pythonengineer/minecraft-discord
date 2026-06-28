@@ -1,76 +1,76 @@
 package net.minecraft.src;
 
 public class MovementInputFromOptions extends MovementInput {
-	private boolean[] field_1179_f = new boolean[10];
-	private GameSettings field_1178_g;
+	private boolean[] movementKeyStates = new boolean[10];
+	private GameSettings gameSettings;
 
 	public MovementInputFromOptions(GameSettings var1) {
-		this.field_1178_g = var1;
+		this.gameSettings = var1;
 	}
 
-	public void func_796_a(int var1, boolean var2) {
+	public void checkKeyForMovementInput(int var1, boolean var2) {
 		byte var3 = -1;
-		if(var1 == this.field_1178_g.keyBindForward.keyCode) {
+		if(var1 == this.gameSettings.keyBindForward.keyCode) {
 			var3 = 0;
 		}
 
-		if(var1 == this.field_1178_g.keyBindBack.keyCode) {
+		if(var1 == this.gameSettings.keyBindBack.keyCode) {
 			var3 = 1;
 		}
 
-		if(var1 == this.field_1178_g.keyBindLeft.keyCode) {
+		if(var1 == this.gameSettings.keyBindLeft.keyCode) {
 			var3 = 2;
 		}
 
-		if(var1 == this.field_1178_g.keyBindRight.keyCode) {
+		if(var1 == this.gameSettings.keyBindRight.keyCode) {
 			var3 = 3;
 		}
 
-		if(var1 == this.field_1178_g.keyBindJump.keyCode) {
+		if(var1 == this.gameSettings.keyBindJump.keyCode) {
 			var3 = 4;
 		}
 
-		if(var1 == this.field_1178_g.keyBindSneak.keyCode) {
+		if(var1 == this.gameSettings.keyBindSneak.keyCode) {
 			var3 = 5;
 		}
 
 		if(var3 >= 0) {
-			this.field_1179_f[var3] = var2;
+			this.movementKeyStates[var3] = var2;
 		}
 
 	}
 
-	public void func_798_a() {
+	public void resetKeyState() {
 		for(int var1 = 0; var1 < 10; ++var1) {
-			this.field_1179_f[var1] = false;
+			this.movementKeyStates[var1] = false;
 		}
 
 	}
 
-	public void func_797_a(EntityPlayer var1) {
-		this.field_1174_a = 0.0F;
-		this.field_1173_b = 0.0F;
-		if(this.field_1179_f[0]) {
-			++this.field_1173_b;
+	public void updatePlayerMoveState(EntityPlayer var1) {
+		this.moveStrafe = 0.0F;
+		this.moveForward = 0.0F;
+		if(this.movementKeyStates[0]) {
+			++this.moveForward;
 		}
 
-		if(this.field_1179_f[1]) {
-			--this.field_1173_b;
+		if(this.movementKeyStates[1]) {
+			--this.moveForward;
 		}
 
-		if(this.field_1179_f[2]) {
-			++this.field_1174_a;
+		if(this.movementKeyStates[2]) {
+			++this.moveStrafe;
 		}
 
-		if(this.field_1179_f[3]) {
-			--this.field_1174_a;
+		if(this.movementKeyStates[3]) {
+			--this.moveStrafe;
 		}
 
-		this.field_1176_d = this.field_1179_f[4];
-		this.field_1175_e = this.field_1179_f[5];
-		if(this.field_1175_e) {
-			this.field_1174_a = (float)((double)this.field_1174_a * 0.3D);
-			this.field_1173_b = (float)((double)this.field_1173_b * 0.3D);
+		this.jump = this.movementKeyStates[4];
+		this.sneak = this.movementKeyStates[5];
+		if(this.sneak) {
+			this.moveStrafe = (float)((double)this.moveStrafe * 0.3D);
+			this.moveForward = (float)((double)this.moveForward * 0.3D);
 		}
 
 	}

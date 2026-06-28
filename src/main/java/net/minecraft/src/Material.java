@@ -24,7 +24,7 @@ public class Material {
 	public static final Material cactus = new Material();
 	public static final Material clay = new Material();
 	public static final Material pumpkin = new Material();
-	public static final Material field_4260_x = new Material();
+	public static final Material portal = new Material();
 	private boolean canBurn;
 
 	public boolean getIsLiquid() {
@@ -39,7 +39,7 @@ public class Material {
 		return true;
 	}
 
-	public boolean func_880_c() {
+	public boolean getIsSolid() {
 		return true;
 	}
 

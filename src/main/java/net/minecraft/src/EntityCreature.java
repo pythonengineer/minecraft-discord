@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityCreature extends EntityLiving {
@@ -10,7 +11,7 @@ public class EntityCreature extends EntityLiving {
 		super(var1);
 	}
 
-	protected void func_418_b_() {
+	protected void updatePlayerActionState() {
 		this.hasAttacked = false;
 		float var1 = 16.0F;
 		if(this.playerToAttack == null) {
@@ -39,7 +40,7 @@ public class EntityCreature extends EntityLiving {
 					int var8 = MathHelper.floor_double(this.posX + (double)this.rand.nextInt(13) - 6.0D);
 					int var9 = MathHelper.floor_double(this.posY + (double)this.rand.nextInt(7) - 3.0D);
 					int var10 = MathHelper.floor_double(this.posZ + (double)this.rand.nextInt(13) - 6.0D);
-					float var11 = this.func_439_a(var8, var9, var10);
+					float var11 = this.getBlockPathWeight(var8, var9, var10);
 					if(var11 > var6) {
 						var6 = var11;
 						var3 = var8;
@@ -83,7 +84,7 @@ public class EntityCreature extends EntityLiving {
 				float var14 = (float)(Math.atan2(var28, var27) * 180.0D / (double)((float)Math.PI)) - 90.0F;
 				float var15 = var14 - this.rotationYaw;
 
-				for(this.field_9340_ai = this.field_9333_am; var15 < -180.0F; var15 += 360.0F) {
+				for(this.moveForward = this.moveSpeed; var15 < -180.0F; var15 += 360.0F) {
 				}
 
 				while(var15 >= 180.0F) {
@@ -105,8 +106,8 @@ public class EntityCreature extends EntityLiving {
 					float var20 = this.rotationYaw;
 					this.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / (double)((float)Math.PI)) - 90.0F;
 					var15 = (var20 - this.rotationYaw + 90.0F) * (float)Math.PI / 180.0F;
-					this.field_9342_ah = -MathHelper.sin(var15) * this.field_9340_ai * 1.0F;
-					this.field_9340_ai = MathHelper.cos(var15) * this.field_9340_ai * 1.0F;
+					this.moveStrafing = -MathHelper.sin(var15) * this.moveForward * 1.0F;
+					this.moveForward = MathHelper.cos(var15) * this.moveForward * 1.0F;
 				}
 
 				if(var12 > 0.0D) {
@@ -118,7 +119,7 @@ public class EntityCreature extends EntityLiving {
 				this.faceEntity(this.playerToAttack, 30.0F);
 			}
 
-			if(this.field_9297_aI) {
+			if(this.isCollidedHorizontally) {
 				this.isJumping = true;
 			}
 
@@ -127,7 +128,7 @@ public class EntityCreature extends EntityLiving {
 			}
 
 		} else {
-			super.func_418_b_();
+			super.updatePlayerActionState();
 			this.pathToEntity = null;
 		}
 	}
@@ -135,7 +136,7 @@ public class EntityCreature extends EntityLiving {
 	protected void attackEntity(Entity var1, float var2) {
 	}
 
-	protected float func_439_a(int var1, int var2, int var3) {
+	protected float getBlockPathWeight(int var1, int var2, int var3) {
 		return 0.0F;
 	}
 
@@ -147,6 +148,6 @@ public class EntityCreature extends EntityLiving {
 		int var1 = MathHelper.floor_double(this.posX);
 		int var2 = MathHelper.floor_double(this.boundingBox.minY);
 		int var3 = MathHelper.floor_double(this.posZ);
-		return super.getCanSpawnHere() && this.func_439_a(var1, var2, var3) >= 0.0F;
+		return super.getCanSpawnHere() && this.getBlockPathWeight(var1, var2, var3) >= 0.0F;
 	}
 }

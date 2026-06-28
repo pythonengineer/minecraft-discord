@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
@@ -18,12 +17,12 @@ public class RenderGlobal implements IWorldAccess {
 	public List field_1458_a = new ArrayList();
 	private World worldObj;
 	private RenderEngine renderEngine;
-	private List field_1446_m = new ArrayList();
-	private WorldRenderer[] field_1445_n;
-	private WorldRenderer[] field_1444_o;
-	private int field_1443_p;
-	private int field_1442_q;
-	private int field_1441_r;
+	private List worldRenderersToUpdate = new ArrayList();
+	private WorldRenderer[] sortedWorldRenderers;
+	private WorldRenderer[] worldRenderers;
+	private int renderChunksWide;
+	private int renderChunksTall;
+	private int renderChunksDeep;
 	private int field_1440_s;
 	private Minecraft mc;
 	private RenderBlocks field_1438_u;
@@ -39,7 +38,7 @@ public class RenderGlobal implements IWorldAccess {
 	private int field_1428_E;
 	private int field_1427_F;
 	private int field_1426_G;
-	private int field_1425_H = -1;
+	private int renderDistance = -1;
 	private int field_1424_I = 2;
 	private int field_1423_J;
 	private int field_1422_K;
@@ -181,63 +180,63 @@ public class RenderGlobal implements IWorldAccess {
 		this.field_1438_u = new RenderBlocks(var1);
 		if(var1 != null) {
 			var1.addWorldAccess(this);
-			this.func_958_a();
+			this.loadRenderers();
 		}
 
 	}
 
-	public void func_958_a() {
+	public void loadRenderers() {
 		Block.leaves.setGraphicsLevel(this.mc.gameSettings.fancyGraphics);
-		this.field_1425_H = this.mc.gameSettings.renderDistance;
+		this.renderDistance = this.mc.gameSettings.renderDistance;
 		int var1;
-		if(this.field_1444_o != null) {
-			for(var1 = 0; var1 < this.field_1444_o.length; ++var1) {
-				this.field_1444_o[var1].func_1204_c();
+		if(this.worldRenderers != null) {
+			for(var1 = 0; var1 < this.worldRenderers.length; ++var1) {
+				this.worldRenderers[var1].func_1204_c();
 			}
 		}
 
-		var1 = 64 << 3 - this.field_1425_H;
+		var1 = 64 << 3 - this.renderDistance;
 		if(var1 > 400) {
 			var1 = 400;
 		}
 
-		this.field_1443_p = var1 / 16 + 1;
-		this.field_1442_q = 8;
-		this.field_1441_r = var1 / 16 + 1;
-		this.field_1444_o = new WorldRenderer[this.field_1443_p * this.field_1442_q * this.field_1441_r];
-		this.field_1445_n = new WorldRenderer[this.field_1443_p * this.field_1442_q * this.field_1441_r];
+		this.renderChunksWide = var1 / 16 + 1;
+		this.renderChunksTall = 8;
+		this.renderChunksDeep = var1 / 16 + 1;
+		this.worldRenderers = new WorldRenderer[this.renderChunksWide * this.renderChunksTall * this.renderChunksDeep];
+		this.sortedWorldRenderers = new WorldRenderer[this.renderChunksWide * this.renderChunksTall * this.renderChunksDeep];
 		int var2 = 0;
 		int var3 = 0;
 		this.field_1431_B = 0;
 		this.field_1430_C = 0;
 		this.field_1429_D = 0;
-		this.field_1428_E = this.field_1443_p;
-		this.field_1427_F = this.field_1442_q;
-		this.field_1426_G = this.field_1441_r;
+		this.field_1428_E = this.renderChunksWide;
+		this.field_1427_F = this.renderChunksTall;
+		this.field_1426_G = this.renderChunksDeep;
 
 		int var4;
-		for(var4 = 0; var4 < this.field_1446_m.size(); ++var4) {
-			((WorldRenderer)this.field_1446_m.get(var4)).needsUpdate = false;
+		for(var4 = 0; var4 < this.worldRenderersToUpdate.size(); ++var4) {
+			((WorldRenderer)this.worldRenderersToUpdate.get(var4)).needsUpdate = false;
 		}
 
-		this.field_1446_m.clear();
+		this.worldRenderersToUpdate.clear();
 		this.field_1458_a.clear();
 
-		for(var4 = 0; var4 < this.field_1443_p; ++var4) {
-			for(int var5 = 0; var5 < this.field_1442_q; ++var5) {
-				for(int var6 = 0; var6 < this.field_1441_r; ++var6) {
-					this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4] = new WorldRenderer(this.worldObj, this.field_1458_a, var4 * 16, var5 * 16, var6 * 16, 16, this.field_1440_s + var2);
+		for(var4 = 0; var4 < this.renderChunksWide; ++var4) {
+			for(int var5 = 0; var5 < this.renderChunksTall; ++var5) {
+				for(int var6 = 0; var6 < this.renderChunksDeep; ++var6) {
+					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4] = new WorldRenderer(this.worldObj, this.field_1458_a, var4 * 16, var5 * 16, var6 * 16, 16, this.field_1440_s + var2);
 					if(this.field_1436_w) {
-						this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4].field_1732_z = this.field_1437_v.get(var3);
+						this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].field_1732_z = this.field_1437_v.get(var3);
 					}
 
-					this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4].field_1733_y = false;
-					this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4].field_1734_x = true;
-					this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4].field_1749_o = true;
-					this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4].field_1735_w = var3++;
-					this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4].MarkDirty();
-					this.field_1445_n[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4] = this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4];
-					this.field_1446_m.add(this.field_1444_o[(var6 * this.field_1442_q + var5) * this.field_1443_p + var4]);
+					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].isWaitingOnOcclusionQuery = false;
+					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].isVisible = true;
+					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].isInFrustrum = true;
+					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].field_1735_w = var3++;
+					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].markDirty();
+					this.sortedWorldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4] = this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4];
+					this.worldRenderersToUpdate.add(this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4]);
 					var2 += 3;
 				}
 			}
@@ -246,7 +245,7 @@ public class RenderGlobal implements IWorldAccess {
 		if(this.worldObj != null) {
 			EntityPlayerSP var7 = this.mc.thePlayer;
 			this.func_956_b(MathHelper.floor_double(var7.posX), MathHelper.floor_double(var7.posY), MathHelper.floor_double(var7.posZ));
-			Arrays.sort(this.field_1445_n, new EntitySorter(var7));
+			Arrays.sort(this.sortedWorldRenderers, new EntitySorter(var7));
 		}
 
 		this.field_1424_I = 2;
@@ -262,9 +261,9 @@ public class RenderGlobal implements IWorldAccess {
 			this.field_1422_K = 0;
 			this.field_1421_L = 0;
 			EntityPlayerSP var4 = this.mc.thePlayer;
-			RenderManager.field_1232_b = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var3;
-			RenderManager.field_1231_c = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var3;
-			RenderManager.field_1230_d = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var3;
+			RenderManager.renderPosX = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var3;
+			RenderManager.renderPosY = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var3;
+			RenderManager.renderPosZ = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var3;
 			TileEntityRenderer.staticPlayerX = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var3;
 			TileEntityRenderer.staticPlayerY = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var3;
 			TileEntityRenderer.staticPlayerZ = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var3;
@@ -274,9 +273,9 @@ public class RenderGlobal implements IWorldAccess {
 			int var6;
 			for(var6 = 0; var6 < var5.size(); ++var6) {
 				Entity var7 = (Entity)var5.get(var6);
-				if(var7.func_390_a(var1) && var2.func_342_a(var7.boundingBox) && (var7 != this.mc.thePlayer || this.mc.gameSettings.thirdPersonView)) {
+				if(var7.isInRangeToRenderVec3D(var1) && var2.isBoundingBoxInFrustum(var7.boundingBox) && (var7 != this.mc.thePlayer || this.mc.gameSettings.thirdPersonView)) {
 					++this.field_1422_K;
-					RenderManager.instance.func_854_a(var7, var3);
+					RenderManager.instance.renderEntity(var7, var3);
 				}
 			}
 
@@ -305,10 +304,10 @@ public class RenderGlobal implements IWorldAccess {
 		this.field_1428_E = Integer.MIN_VALUE;
 		this.field_1427_F = Integer.MIN_VALUE;
 		this.field_1426_G = Integer.MIN_VALUE;
-		int var4 = this.field_1443_p * 16;
+		int var4 = this.renderChunksWide * 16;
 		int var5 = var4 / 2;
 
-		for(int var6 = 0; var6 < this.field_1443_p; ++var6) {
+		for(int var6 = 0; var6 < this.renderChunksWide; ++var6) {
 			int var7 = var6 * 16;
 			int var8 = var7 + var5 - var1;
 			if(var8 < 0) {
@@ -325,7 +324,7 @@ public class RenderGlobal implements IWorldAccess {
 				this.field_1428_E = var7;
 			}
 
-			for(int var9 = 0; var9 < this.field_1441_r; ++var9) {
+			for(int var9 = 0; var9 < this.renderChunksDeep; ++var9) {
 				int var10 = var9 * 16;
 				int var11 = var10 + var5 - var3;
 				if(var11 < 0) {
@@ -342,7 +341,7 @@ public class RenderGlobal implements IWorldAccess {
 					this.field_1426_G = var10;
 				}
 
-				for(int var12 = 0; var12 < this.field_1442_q; ++var12) {
+				for(int var12 = 0; var12 < this.renderChunksTall; ++var12) {
 					int var13 = var12 * 16;
 					if(var13 < this.field_1430_C) {
 						this.field_1430_C = var13;
@@ -352,11 +351,11 @@ public class RenderGlobal implements IWorldAccess {
 						this.field_1427_F = var13;
 					}
 
-					WorldRenderer var14 = this.field_1444_o[(var9 * this.field_1442_q + var12) * this.field_1443_p + var6];
+					WorldRenderer var14 = this.worldRenderers[(var9 * this.renderChunksTall + var12) * this.renderChunksWide + var6];
 					boolean var15 = var14.needsUpdate;
 					var14.func_1197_a(var7, var13, var10);
 					if(!var15 && var14.needsUpdate) {
-						this.field_1446_m.add(var14);
+						this.worldRenderersToUpdate.add(var14);
 					}
 				}
 			}
@@ -365,8 +364,8 @@ public class RenderGlobal implements IWorldAccess {
 	}
 
 	public int func_943_a(EntityPlayer var1, int var2, double var3) {
-		if(this.mc.gameSettings.renderDistance != this.field_1425_H) {
-			this.func_958_a();
+		if(this.mc.gameSettings.renderDistance != this.renderDistance) {
+			this.loadRenderers();
 		}
 
 		if(var2 == 0) {
@@ -388,7 +387,7 @@ public class RenderGlobal implements IWorldAccess {
 			this.field_1452_g = var1.posY;
 			this.field_1451_h = var1.posZ;
 			this.func_956_b(MathHelper.floor_double(var1.posX), MathHelper.floor_double(var1.posY), MathHelper.floor_double(var1.posZ));
-			Arrays.sort(this.field_1445_n, new EntitySorter(var1));
+			Arrays.sort(this.sortedWorldRenderers, new EntitySorter(var1));
 		}
 
 		byte var17 = 0;
@@ -399,7 +398,7 @@ public class RenderGlobal implements IWorldAccess {
 			this.func_962_a(var18, var19);
 
 			for(int var20 = var18; var20 < var19; ++var20) {
-				this.field_1445_n[var20].field_1734_x = true;
+				this.sortedWorldRenderers[var20].isVisible = true;
 			}
 
 			var33 = var17 + this.func_952_a(var18, var19, var2, var3);
@@ -407,8 +406,8 @@ public class RenderGlobal implements IWorldAccess {
 			do {
 				int var34 = var19;
 				var19 *= 2;
-				if(var19 > this.field_1445_n.length) {
-					var19 = this.field_1445_n.length;
+				if(var19 > this.sortedWorldRenderers.length) {
+					var19 = this.sortedWorldRenderers.length;
 				}
 
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -424,18 +423,18 @@ public class RenderGlobal implements IWorldAccess {
 				float var22 = 0.0F;
 
 				for(int var23 = var34; var23 < var19; ++var23) {
-					if(this.field_1445_n[var23].func_1196_e()) {
-						this.field_1445_n[var23].field_1749_o = false;
+					if(this.sortedWorldRenderers[var23].canRender()) {
+						this.sortedWorldRenderers[var23].isInFrustrum = false;
 					} else {
-						if(!this.field_1445_n[var23].field_1749_o) {
-							this.field_1445_n[var23].field_1734_x = true;
+						if(!this.sortedWorldRenderers[var23].isInFrustrum) {
+							this.sortedWorldRenderers[var23].isVisible = true;
 						}
 
-						if(this.field_1445_n[var23].field_1749_o && !this.field_1445_n[var23].field_1733_y) {
-							float var24 = MathHelper.sqrt_float(this.field_1445_n[var23].func_1202_a(var1));
+						if(this.sortedWorldRenderers[var23].isInFrustrum && !this.sortedWorldRenderers[var23].isWaitingOnOcclusionQuery) {
+							float var24 = MathHelper.sqrt_float(this.sortedWorldRenderers[var23].distanceToEntity(var1));
 							int var25 = (int)(1.0F + var24 / 128.0F);
 							if(this.field_1435_x % var25 == var23 % var25) {
-								WorldRenderer var26 = this.field_1445_n[var23];
+								WorldRenderer var26 = this.sortedWorldRenderers[var23];
 								float var27 = (float)((double)var26.field_1755_i - var5);
 								float var28 = (float)((double)var26.field_1754_j - var7);
 								float var29 = (float)((double)var26.field_1753_k - var9);
@@ -449,10 +448,10 @@ public class RenderGlobal implements IWorldAccess {
 									var22 += var32;
 								}
 
-                                GL11.glBeginQueryARB(GL11.GL_ANY_SAMPLES_PASSED, this.field_1445_n[var23].field_1732_z);
-								this.field_1445_n[var23].func_1201_d();
-                                GL11.glEndQueryARB(GL11.GL_ANY_SAMPLES_PASSED);
-								this.field_1445_n[var23].field_1733_y = true;
+								GL11.glBeginQueryARB(GL11.GL_ANY_SAMPLES_PASSED, this.sortedWorldRenderers[var23].field_1732_z);
+								this.sortedWorldRenderers[var23].callOcclusionQueryList();
+								GL11.glEndQueryARB(GL11.GL_ANY_SAMPLES_PASSED);
+								this.sortedWorldRenderers[var23].isWaitingOnOcclusionQuery = true;
 							}
 						}
 					}
@@ -465,9 +464,9 @@ public class RenderGlobal implements IWorldAccess {
 				GL11.glEnable(GL11.GL_ALPHA_TEST);
 				GL11.glEnable(GL11.GL_FOG);
 				var33 += this.func_952_a(var34, var19, var2, var3);
-			} while(var19 < this.field_1445_n.length);
+			} while(var19 < this.sortedWorldRenderers.length);
 		} else {
-			var33 = var17 + this.func_952_a(0, this.field_1445_n.length, var2, var3);
+			var33 = var17 + this.func_952_a(0, this.sortedWorldRenderers.length, var2, var3);
 		}
 
 		return var33;
@@ -475,14 +474,14 @@ public class RenderGlobal implements IWorldAccess {
 
 	private void func_962_a(int var1, int var2) {
 		for(int var3 = var1; var3 < var2; ++var3) {
-			if(this.field_1445_n[var3].field_1733_y) {
+			if(this.sortedWorldRenderers[var3].isWaitingOnOcclusionQuery) {
 				this.field_1456_c.clear();
-                GL11.glGetQueryObjectuARB(this.field_1445_n[var3].field_1732_z, GL11.GL_QUERY_RESULT_AVAILABLE, this.field_1456_c);
+				GL11.glGetQueryObjectuARB(this.sortedWorldRenderers[var3].field_1732_z, GL11.GL_QUERY_RESULT_AVAILABLE, this.field_1456_c);
 				if(this.field_1456_c.get(0) != 0) {
-					this.field_1445_n[var3].field_1733_y = false;
+					this.sortedWorldRenderers[var3].isWaitingOnOcclusionQuery = false;
 					this.field_1456_c.clear();
-                    GL11.glGetQueryObjectuARB(this.field_1445_n[var3].field_1732_z, GL11.GL_QUERY_RESULT, this.field_1456_c);
-					this.field_1445_n[var3].field_1734_x = this.field_1456_c.get(0) != 0;
+					GL11.glGetQueryObjectuARB(this.sortedWorldRenderers[var3].field_1732_z, GL11.GL_QUERY_RESULT, this.field_1456_c);
+					this.sortedWorldRenderers[var3].isVisible = this.field_1456_c.get(0) != 0;
 				}
 			}
 		}
@@ -496,21 +495,21 @@ public class RenderGlobal implements IWorldAccess {
 		for(int var7 = var1; var7 < var2; ++var7) {
 			if(var3 == 0) {
 				++this.field_1420_M;
-				if(this.field_1445_n[var7].field_1748_p[var3]) {
+				if(this.sortedWorldRenderers[var7].skipRenderPass[var3]) {
 					++this.field_1416_Q;
-				} else if(!this.field_1445_n[var7].field_1749_o) {
+				} else if(!this.sortedWorldRenderers[var7].isInFrustrum) {
 					++this.field_1419_N;
-				} else if(this.field_1436_w && !this.field_1445_n[var7].field_1734_x) {
+				} else if(this.field_1436_w && !this.sortedWorldRenderers[var7].isVisible) {
 					++this.field_1418_O;
 				} else {
 					++this.field_1417_P;
 				}
 			}
 
-			if(!this.field_1445_n[var7].field_1748_p[var3] && this.field_1445_n[var7].field_1749_o && this.field_1445_n[var7].field_1734_x) {
-				int var8 = this.field_1445_n[var7].func_1200_a(var3);
+			if(!this.sortedWorldRenderers[var7].skipRenderPass[var3] && this.sortedWorldRenderers[var7].isInFrustrum && this.sortedWorldRenderers[var7].isVisible) {
+				int var8 = this.sortedWorldRenderers[var7].getGLCallListForPass(var3);
 				if(var8 >= 0) {
-					this.field_1415_R.add(this.field_1445_n[var7]);
+					this.field_1415_R.add(this.sortedWorldRenderers[var7]);
 					++var6;
 				}
 			}
@@ -542,7 +541,7 @@ public class RenderGlobal implements IWorldAccess {
 				this.field_1414_S[var17].func_861_a(var16.field_1755_i, var16.field_1754_j, var16.field_1753_k, var20, var10, var12);
 			}
 
-			this.field_1414_S[var17].func_858_a(var16.func_1200_a(var3));
+			this.field_1414_S[var17].func_858_a(var16.getGLCallListForPass(var3));
 		}
 
 		this.func_944_a(var3, var4);
@@ -851,16 +850,16 @@ public class RenderGlobal implements IWorldAccess {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 
-	public boolean func_948_a(EntityPlayer var1, boolean var2) {
-		Collections.sort(this.field_1446_m, new RenderSorter(var1));
-		int var3 = this.field_1446_m.size() - 1;
-		int var4 = this.field_1446_m.size();
+	public boolean updateRenderers(EntityPlayer var1, boolean var2) {
+		Collections.sort(this.worldRenderersToUpdate, new RenderSorter(var1));
+		int var3 = this.worldRenderersToUpdate.size() - 1;
+		int var4 = this.worldRenderersToUpdate.size();
 
 		for(int var5 = 0; var5 < var4; ++var5) {
-			WorldRenderer var6 = (WorldRenderer)this.field_1446_m.get(var3 - var5);
+			WorldRenderer var6 = (WorldRenderer)this.worldRenderersToUpdate.get(var3 - var5);
 			if(!var2) {
-				if(var6.func_1202_a(var1) > 1024.0F) {
-					if(var6.field_1749_o) {
+				if(var6.distanceToEntity(var1) > 1024.0F) {
+					if(var6.isInFrustrum) {
 						if(var5 >= 3) {
 							return false;
 						}
@@ -868,16 +867,16 @@ public class RenderGlobal implements IWorldAccess {
 						return false;
 					}
 				}
-			} else if(!var6.field_1749_o) {
+			} else if(!var6.isInFrustrum) {
 				continue;
 			}
 
-			var6.func_1198_a();
-			this.field_1446_m.remove(var6);
+			var6.updateRenderer();
+			this.worldRenderersToUpdate.remove(var6);
 			var6.needsUpdate = false;
 		}
 
-		return this.field_1446_m.size() == 0;
+		return this.worldRenderersToUpdate.size() == 0;
 	}
 
 	public void func_959_a(EntityPlayer var1, MovingObjectPosition var2, int var3, ItemStack var4, float var5) {
@@ -975,7 +974,7 @@ public class RenderGlobal implements IWorldAccess {
 				double var8 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var5;
 				double var10 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var5;
 				double var12 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var5;
-				this.drawOutlinedBoundingBox(Block.blocksList[var7].getSelectedBoundingBoxFromPool(this.worldObj, var2.blockX, var2.blockY, var2.blockZ).expands((double)var6, (double)var6, (double)var6).getOffsetBoundingBox(-var8, -var10, -var12));
+				this.drawOutlinedBoundingBox(Block.blocksList[var7].getSelectedBoundingBoxFromPool(this.worldObj, var2.blockX, var2.blockY, var2.blockZ).expand((double)var6, (double)var6, (double)var6).getOffsetBoundingBox(-var8, -var10, -var12));
 			}
 
 			GL11.glDepthMask(true);
@@ -1108,30 +1107,30 @@ public class RenderGlobal implements IWorldAccess {
 		int var12 = MathHelper.bucketInt(var6, 16);
 
 		for(int var13 = var7; var13 <= var10; ++var13) {
-			int var14 = var13 % this.field_1443_p;
+			int var14 = var13 % this.renderChunksWide;
 			if(var14 < 0) {
-				var14 += this.field_1443_p;
+				var14 += this.renderChunksWide;
 			}
 
 			for(int var15 = var8; var15 <= var11; ++var15) {
-				int var16 = var15 % this.field_1442_q;
+				int var16 = var15 % this.renderChunksTall;
 				if(var16 < 0) {
-					var16 += this.field_1442_q;
+					var16 += this.renderChunksTall;
 				}
 
 				for(int var17 = var9; var17 <= var12; ++var17) {
-					int var18 = var17 % this.field_1441_r;
+					int var18 = var17 % this.renderChunksDeep;
 					if(var18 < 0) {
-						var18 += this.field_1441_r;
+						var18 += this.renderChunksDeep;
 					}
 
-					int var19 = (var18 * this.field_1442_q + var16) * this.field_1443_p + var14;
-					WorldRenderer var20 = this.field_1444_o[var19];
+					int var19 = (var18 * this.renderChunksTall + var16) * this.renderChunksWide + var14;
+					WorldRenderer var20 = this.worldRenderers[var19];
 					if(!var20.needsUpdate) {
-						this.field_1446_m.add(var20);
+						this.worldRenderersToUpdate.add(var20);
 					}
 
-					var20.MarkDirty();
+					var20.markDirty();
 				}
 			}
 		}
@@ -1142,14 +1141,14 @@ public class RenderGlobal implements IWorldAccess {
 		this.func_949_a(var1 - 1, var2 - 1, var3 - 1, var1 + 1, var2 + 1, var3 + 1);
 	}
 
-	public void func_937_b(int var1, int var2, int var3, int var4, int var5, int var6) {
+	public void markBlockRangeNeedsUpdate(int var1, int var2, int var3, int var4, int var5, int var6) {
 		this.func_949_a(var1 - 1, var2 - 1, var3 - 1, var4 + 1, var5 + 1, var6 + 1);
 	}
 
 	public void func_960_a(ICamera var1, float var2) {
-		for(int var3 = 0; var3 < this.field_1444_o.length; ++var3) {
-			if(!this.field_1444_o[var3].func_1196_e() && (!this.field_1444_o[var3].field_1749_o || (var3 + this.field_1449_j & 15) == 0)) {
-				this.field_1444_o[var3].func_1199_a(var1);
+		for(int var3 = 0; var3 < this.worldRenderers.length; ++var3) {
+			if(!this.worldRenderers[var3].canRender() && (!this.worldRenderers[var3].isInFrustrum || (var3 + this.field_1449_j & 15) == 0)) {
+				this.worldRenderers[var3].updateInFrustrum(var1);
 			}
 		}
 
@@ -1171,7 +1170,7 @@ public class RenderGlobal implements IWorldAccess {
 		}
 
 		if(this.mc.thePlayer.getDistanceSq(var2, var4, var6) < (double)(var10 * var10)) {
-			this.mc.sndManager.func_336_b(var1, (float)var2, (float)var4, (float)var6, var8, var9);
+			this.mc.sndManager.playSound(var1, (float)var2, (float)var4, (float)var6, var8, var9);
 		}
 
 	}
@@ -1182,33 +1181,38 @@ public class RenderGlobal implements IWorldAccess {
 		double var18 = this.mc.thePlayer.posZ - var6;
 		if(var14 * var14 + var16 * var16 + var18 * var18 <= 256.0D) {
 			if(var1 == "bubble") {
-				this.mc.field_6321_h.func_1192_a(new EntityBubbleFX(this.worldObj, var2, var4, var6, var8, var10, var12));
+				this.mc.effectRenderer.func_1192_a(new EntityBubbleFX(this.worldObj, var2, var4, var6, var8, var10, var12));
 			} else if(var1 == "smoke") {
-				this.mc.field_6321_h.func_1192_a(new EntitySmokeFX(this.worldObj, var2, var4, var6));
+				this.mc.effectRenderer.func_1192_a(new EntitySmokeFX(this.worldObj, var2, var4, var6));
 			} else if(var1 == "portal") {
-				this.mc.field_6321_h.func_1192_a(new EntityPortalFX(this.worldObj, var2, var4, var6, var8, var10, var12));
+				this.mc.effectRenderer.func_1192_a(new EntityPortalFX(this.worldObj, var2, var4, var6, var8, var10, var12));
 			} else if(var1 == "explode") {
-				this.mc.field_6321_h.func_1192_a(new EntityExplodeFX(this.worldObj, var2, var4, var6, var8, var10, var12));
+				this.mc.effectRenderer.func_1192_a(new EntityExplodeFX(this.worldObj, var2, var4, var6, var8, var10, var12));
 			} else if(var1 == "flame") {
-				this.mc.field_6321_h.func_1192_a(new EntityFlameFX(this.worldObj, var2, var4, var6, var8, var10, var12));
+				this.mc.effectRenderer.func_1192_a(new EntityFlameFX(this.worldObj, var2, var4, var6, var8, var10, var12));
 			} else if(var1 == "lava") {
-				this.mc.field_6321_h.func_1192_a(new EntityLavaFX(this.worldObj, var2, var4, var6));
+				this.mc.effectRenderer.func_1192_a(new EntityLavaFX(this.worldObj, var2, var4, var6));
 			} else if(var1 == "splash") {
-				this.mc.field_6321_h.func_1192_a(new EntitySplashFX(this.worldObj, var2, var4, var6, var8, var10, var12));
+				this.mc.effectRenderer.func_1192_a(new EntitySplashFX(this.worldObj, var2, var4, var6, var8, var10, var12));
 			} else if(var1 == "largesmoke") {
-				this.mc.field_6321_h.func_1192_a(new EntitySmokeFX(this.worldObj, var2, var4, var6, 2.5F));
+				this.mc.effectRenderer.func_1192_a(new EntitySmokeFX(this.worldObj, var2, var4, var6, 2.5F));
 			} else if(var1 == "reddust") {
-				this.mc.field_6321_h.func_1192_a(new EntityReddustFX(this.worldObj, var2, var4, var6));
+				this.mc.effectRenderer.func_1192_a(new EntityReddustFX(this.worldObj, var2, var4, var6));
 			} else if(var1 == "snowballpoof") {
-				this.mc.field_6321_h.func_1192_a(new EntitySlimeFX(this.worldObj, var2, var4, var6, Item.snowball));
+				this.mc.effectRenderer.func_1192_a(new EntitySlimeFX(this.worldObj, var2, var4, var6, Item.snowball));
 			} else if(var1 == "slime") {
-				this.mc.field_6321_h.func_1192_a(new EntitySlimeFX(this.worldObj, var2, var4, var6, Item.slimeBall));
+				this.mc.effectRenderer.func_1192_a(new EntitySlimeFX(this.worldObj, var2, var4, var6, Item.slimeBall));
 			}
 
 		}
 	}
 
 	public void obtainEntitySkin(Entity var1) {
+		var1.func_20046_s();
+		if(var1.field_20047_bv != null) {
+			this.renderEngine.obtainImageData(var1.field_20047_bv, new ImageBufferDownload());
+		}
+
 		if(var1.skinUrl != null) {
 			this.renderEngine.obtainImageData(var1.skinUrl, new ImageBufferDownload());
 		}
@@ -1216,20 +1220,24 @@ public class RenderGlobal implements IWorldAccess {
 	}
 
 	public void releaseEntitySkin(Entity var1) {
+		if(var1.field_20047_bv != null) {
+			this.renderEngine.releaseImageData(var1.field_20047_bv);
+		}
+
 		if(var1.skinUrl != null) {
 			this.renderEngine.releaseImageData(var1.skinUrl);
 		}
 
 	}
 
-	public void func_936_e() {
-		for(int var1 = 0; var1 < this.field_1444_o.length; ++var1) {
-			if(this.field_1444_o[var1].field_1747_A) {
-				if(!this.field_1444_o[var1].needsUpdate) {
-					this.field_1446_m.add(this.field_1444_o[var1]);
+	public void updateAllRenderers() {
+		for(int var1 = 0; var1 < this.worldRenderers.length; ++var1) {
+			if(this.worldRenderers[var1].field_1747_A) {
+				if(!this.worldRenderers[var1].needsUpdate) {
+					this.worldRenderersToUpdate.add(this.worldRenderers[var1]);
 				}
 
-				this.field_1444_o[var1].MarkDirty();
+				this.worldRenderers[var1].markDirty();
 			}
 		}
 

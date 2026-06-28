@@ -12,9 +12,9 @@ public class EntityFlameFX extends EntityFX {
 		var10000 = var4 + (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
 		var10000 = var6 + (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
 		this.field_672_a = this.field_665_g;
-		this.field_663_i = this.field_662_j = this.field_661_k = 1.0F;
+		this.particleRed = this.particleBlue = this.particleGreen = 1.0F;
 		this.field_666_f = (int)(8.0D / (Math.random() * 0.8D + 0.2D)) + 4;
-		this.field_9314_ba = true;
+		this.noClip = true;
 		this.field_670_b = 48;
 	}
 

@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityTNTPrimed extends Entity {
@@ -7,7 +8,7 @@ public class EntityTNTPrimed extends Entity {
 	public EntityTNTPrimed(World var1) {
 		super(var1);
 		this.fuse = 0;
-		this.field_618_ad = true;
+		this.preventEntitySpawning = true;
 		this.setSize(0.98F, 0.98F);
 		this.yOffset = this.height / 2.0F;
 	}
@@ -56,7 +57,7 @@ public class EntityTNTPrimed extends Entity {
 
 	private void explode() {
 		float var1 = 4.0F;
-		this.worldObj.func_12243_a((Entity)null, this.posX, this.posY, this.posZ, var1);
+		this.worldObj.createExplosion((Entity)null, this.posX, this.posY, this.posZ, var1);
 	}
 
 	protected void writeEntityToNBT(NBTTagCompound var1) {

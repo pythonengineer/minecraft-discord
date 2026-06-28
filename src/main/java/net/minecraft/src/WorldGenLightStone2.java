@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class WorldGenLightStone2 extends WorldGenerator {
 	public boolean generate(World var1, EaglercraftRandom var2, int var3, int var4, int var5) {
-		if(var1.getBlockId(var3, var4, var5) != 0) {
+		if(!var1.func_20084_d(var3, var4, var5)) {
 			return false;
 		} else if(var1.getBlockId(var3, var4 + 1, var5) != Block.bloodStone.blockID) {
 			return false;

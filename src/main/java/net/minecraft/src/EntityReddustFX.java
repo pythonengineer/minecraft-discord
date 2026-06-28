@@ -12,14 +12,14 @@ public class EntityReddustFX extends EntityFX {
 		this.motionX *= (double)0.1F;
 		this.motionY *= (double)0.1F;
 		this.motionZ *= (double)0.1F;
-		this.field_663_i = (float)(Math.random() * (double)0.3F) + 0.7F;
-		this.field_662_j = this.field_661_k = (float)(Math.random() * (double)0.1F);
+		this.particleRed = (float)(Math.random() * (double)0.3F) + 0.7F;
+		this.particleBlue = this.particleGreen = (float)(Math.random() * (double)0.1F);
 		this.field_665_g *= 12.0F / 16.0F;
 		this.field_665_g *= var8;
 		this.field_673_a = this.field_665_g;
 		this.field_666_f = (int)(8.0D / (Math.random() * 0.8D + 0.2D));
 		this.field_666_f = (int)((float)this.field_666_f * var8);
-		this.field_9314_ba = false;
+		this.noClip = false;
 	}
 
 	public void func_406_a(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7) {

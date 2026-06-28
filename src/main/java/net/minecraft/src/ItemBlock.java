@@ -54,4 +54,8 @@ public class ItemBlock extends Item {
 			return true;
 		}
 	}
+
+	public String func_20009_a() {
+		return Block.blocksList[this.blockID].func_20013_i();
+	}
 }

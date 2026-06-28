@@ -43,7 +43,7 @@ public class ChunkProviderIso implements IChunkProvider {
 	private synchronized Chunk func_543_c(int var1, int var2) {
 		try {
 			return this.chunkLoader.loadChunk(this.worldObj, var1, var2);
-		} catch (IOException var4) {
+		} catch (Exception var4) {
 			var4.printStackTrace();
 			return null;
 		}

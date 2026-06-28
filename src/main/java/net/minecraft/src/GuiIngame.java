@@ -2,7 +2,6 @@ package net.minecraft.src;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
@@ -34,7 +33,7 @@ public class GuiIngame extends Gui {
 		int var6 = var5.getScaledWidth();
 		int var7 = var5.getScaledHeight();
 		FontRenderer var8 = this.mc.fontRenderer;
-		this.mc.field_9243_r.func_905_b();
+		this.mc.entityRenderer.func_905_b();
 		GL11.glEnable(GL11.GL_BLEND);
 		if(this.mc.gameSettings.fancyGraphics) {
 			this.func_4064_a(this.mc.thePlayer.getEntityBrightness(var1), var6, var7);
@@ -45,7 +44,7 @@ public class GuiIngame extends Gui {
 			this.func_4063_a(var6, var7);
 		}
 
-		float var10 = this.mc.thePlayer.field_4133_d + (this.mc.thePlayer.field_4134_c - this.mc.thePlayer.field_4133_d) * var1;
+		float var10 = this.mc.thePlayer.prevTimeInPortal + (this.mc.thePlayer.timeInPortal - this.mc.thePlayer.prevTimeInPortal) * var1;
 		if(var10 > 0.0F) {
 			this.func_4065_b(var10, var6, var7);
 		}
@@ -83,12 +82,12 @@ public class GuiIngame extends Gui {
 		}
 
 		int var13 = this.mc.thePlayer.health;
-		int var14 = this.mc.thePlayer.field_9335_K;
+		int var14 = this.mc.thePlayer.prevHealth;
 		this.rand.setSeed((long)(this.updateCounter * 312871));
 		int var15;
 		int var16;
 		int var17;
-		if(this.mc.field_6327_b.func_6469_d()) {
+		if(this.mc.playerController.shouldDrawHUD()) {
 			var15 = this.mc.thePlayer.getPlayerArmorValue();
 
 			int var18;
@@ -182,7 +181,7 @@ public class GuiIngame extends Gui {
 
 		String var23;
 		if(Keyboard.isKeyDown(Keyboard.KEY_F3)) {
-			var8.drawStringWithShadow("Minecraft Alpha v1.2.6 (" + this.mc.field_6292_I + ")", 2, 2, 16777215);
+			var8.drawStringWithShadow("Minecraft Beta 1.1_02 (" + this.mc.debug + ")", 2, 2, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6241_m(), 2, 12, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6262_n(), 2, 22, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6245_o(), 2, 32, 16777215);
@@ -190,7 +189,7 @@ public class GuiIngame extends Gui {
 			this.drawString(var8, "y: " + this.mc.thePlayer.posY, 2, 72, 14737632);
 			this.drawString(var8, "z: " + this.mc.thePlayer.posZ, 2, 80, 14737632);
 		} else {
-			var8.drawStringWithShadow("Minecraft Alpha v1.2.6", 2, 2, 16777215);
+			var8.drawStringWithShadow("Minecraft Beta 1.1_02", 2, 2, 16777215);
 		}
 
 		if(this.field_9419_j > 0) {
@@ -478,7 +477,7 @@ public class GuiIngame extends Gui {
                 } else if (currentHotbarSlotTouch == 9) {
                     hotbarSlotTouchAlreadySelected = false;
                     currentHotbarSlotTouch = 69;
-                    this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer.inventory, this.mc.thePlayer.inventory.craftingInventory));
+                    this.mc.displayGuiScreen(new GuiInventory(this.mc.thePlayer));
                 }
                 return true;
             }

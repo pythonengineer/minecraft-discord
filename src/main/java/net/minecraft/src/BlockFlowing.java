@@ -11,11 +11,11 @@ public class BlockFlowing extends BlockFluids {
 		super(var1, var2);
 	}
 
-	private void func_15233_j(World var1, int var2, int var3, int var4) {
+	private void func_20015_j(World var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockMetadata(var2, var3, var4);
 		var1.setBlockAndMetadata(var2, var3, var4, this.blockID + 1, var5);
 		var1.func_701_b(var2, var3, var4, var2, var3, var4);
-		var1.func_665_h(var2, var3, var4);
+		var1.markBlockNeedsUpdate(var2, var3, var4);
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
@@ -71,10 +71,10 @@ public class BlockFlowing extends BlockFluids {
 					var1.notifyBlocksOfNeighborChange(var2, var3, var4, this.blockID);
 				}
 			} else if(var8) {
-				this.func_15233_j(var1, var2, var3, var4);
+				this.func_20015_j(var1, var2, var3, var4);
 			}
 		} else {
-			this.func_15233_j(var1, var2, var3, var4);
+			this.func_20015_j(var1, var2, var3, var4);
 		}
 
 		if(this.func_298_m(var1, var2, var3 - 1, var4)) {

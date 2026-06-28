@@ -2,7 +2,6 @@ package net.minecraft.src;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-
 import net.lax1dude.eaglercraft.minecraft.EntityConstructor;
 
 public class EntityList {

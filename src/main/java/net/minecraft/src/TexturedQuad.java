@@ -33,8 +33,8 @@ public class TexturedQuad {
 	}
 
 	public void func_808_a(Tessellator var1, float var2) {
-		Vec3D var3 = this.field_1195_a[1].vector3D.func_1262_a(this.field_1195_a[0].vector3D);
-		Vec3D var4 = this.field_1195_a[1].vector3D.func_1262_a(this.field_1195_a[2].vector3D);
+		Vec3D var3 = this.field_1195_a[1].vector3D.subtract(this.field_1195_a[0].vector3D);
+		Vec3D var4 = this.field_1195_a[1].vector3D.subtract(this.field_1195_a[2].vector3D);
 		Vec3D var5 = var4.crossProduct(var3).normalize();
 		var1.startDrawingQuads();
 		if(this.field_1196_c) {

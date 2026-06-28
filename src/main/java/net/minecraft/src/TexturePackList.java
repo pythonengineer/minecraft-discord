@@ -13,11 +13,11 @@ public class TexturePackList {
 	public TexturePackBase selectedTexturePack;
 	private Map field_6538_d = new HashMap();
 	private Minecraft mc;
-	private String field_6535_g;
+	private String currentTexturePack;
 
 	public TexturePackList(Minecraft var1) {
 		this.mc = var1;
-		this.field_6535_g = var1.gameSettings.skin;
+		this.currentTexturePack = var1.gameSettings.skin;
 		this.func_6532_a();
 		this.selectedTexturePack.func_6482_a();
 	}
@@ -27,9 +27,9 @@ public class TexturePackList {
 			return false;
 		} else {
 			this.selectedTexturePack.closeTexturePackFile();
-			this.field_6535_g = var1.texturePackFileName;
+			this.currentTexturePack = var1.texturePackFileName;
 			this.selectedTexturePack = var1;
-			this.mc.gameSettings.skin = this.field_6535_g;
+			this.mc.gameSettings.skin = this.currentTexturePack;
 			this.mc.gameSettings.saveOptions();
 			this.selectedTexturePack.func_6482_a();
 			return true;
@@ -40,6 +40,7 @@ public class TexturePackList {
 		ArrayList var1 = new ArrayList();
 		this.selectedTexturePack = null;
 		var1.add(this.defaultTexturePack);
+
 		if(this.selectedTexturePack == null) {
 			this.selectedTexturePack = this.defaultTexturePack;
 		}

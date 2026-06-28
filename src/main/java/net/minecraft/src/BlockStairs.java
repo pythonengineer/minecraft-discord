@@ -82,12 +82,12 @@ public class BlockStairs extends Block {
 		return this.modelBlock.getBlockBrightness(var1, var2, var3, var4);
 	}
 
-	public float func_227_a(Entity var1) {
-		return this.modelBlock.func_227_a(var1);
+	public float getExplosionResistance(Entity var1) {
+		return this.modelBlock.getExplosionResistance(var1);
 	}
 
-	public int func_234_g() {
-		return this.modelBlock.func_234_g();
+	public int getRenderBlockPass() {
+		return this.modelBlock.getRenderBlockPass();
 	}
 
 	public int idDropped(int var1, EaglercraftRandom var2) {

@@ -7,7 +7,7 @@ public class NetHandler {
 	public void func_4114_b(Packet var1) {
 	}
 
-	public void handleErrorMessage(String var1) {
+	public void handleErrorMessage(String var1, Object[] var2) {
 	}
 
 	public void handleKickDisconnect(Packet255KickDisconnect var1) {
@@ -74,10 +74,6 @@ public class NetHandler {
 		this.func_4114_b(var1);
 	}
 
-	public void handleAddToInventory(Packet17AddToInventory var1) {
-		this.func_4114_b(var1);
-	}
-
 	public void handleVehicleSpawn(Packet23VehicleSpawn var1) {
 		this.func_4114_b(var1);
 	}
@@ -95,14 +91,6 @@ public class NetHandler {
 	}
 
 	public void handleUpdateTime(Packet4UpdateTime var1) {
-		this.func_4114_b(var1);
-	}
-
-	public void handlePlayerInventory(Packet5PlayerInventory var1) {
-		this.func_4114_b(var1);
-	}
-
-	public void handleComplexEntity(Packet59ComplexEntity var1) {
 		this.func_4114_b(var1);
 	}
 
@@ -135,6 +123,42 @@ public class NetHandler {
 	}
 
 	public void func_12245_a(Packet60 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20087_a(Packet100 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20092_a(Packet101 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20091_a(Packet102 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20088_a(Packet103 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20094_a(Packet104 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20093_a(Packet130 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20090_a(Packet105 var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void handlePlayerInventory(Packet5PlayerInventory var1) {
+		this.func_4114_b(var1);
+	}
+
+	public void func_20089_a(Packet106 var1) {
 		this.func_4114_b(var1);
 	}
 }

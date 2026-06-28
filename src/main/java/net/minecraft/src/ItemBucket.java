@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class ItemBucket extends Item {
@@ -27,7 +28,7 @@ public class ItemBucket extends Item {
 		float var20 = var14 * var16;
 		double var21 = 5.0D;
 		Vec3D var23 = var13.addVector((double)var18 * var21, (double)var17 * var21, (double)var20 * var21);
-		MovingObjectPosition var24 = var2.rayTraceBlocks(var13, var23, this.isFull == 0);
+		MovingObjectPosition var24 = var2.rayTraceBlocks_do(var13, var23, this.isFull == 0);
 		if(var24 == null) {
 			return var1;
 		} else {
@@ -78,7 +79,7 @@ public class ItemBucket extends Item {
 						++var25;
 					}
 
-					if(var2.getBlockId(var25, var26, var27) == 0 || !var2.getBlockMaterial(var25, var26, var27).func_878_a()) {
+					if(var2.func_20084_d(var25, var26, var27) || !var2.getBlockMaterial(var25, var26, var27).func_878_a()) {
 						if(var2.worldProvider.field_6479_d && this.isFull == Block.waterStill.blockID) {
 							var2.playSoundEffect(var7 + 0.5D, var9 + 0.5D, var11 + 0.5D, "random.fizz", 0.5F, 2.6F + (var2.rand.nextFloat() - var2.rand.nextFloat()) * 0.8F);
 

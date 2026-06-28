@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityRainFX extends EntityFX {
@@ -7,9 +8,9 @@ public class EntityRainFX extends EntityFX {
 		this.motionX *= (double)0.3F;
 		this.motionY = (double)((float)Math.random() * 0.2F + 0.1F);
 		this.motionZ *= (double)0.3F;
-		this.field_663_i = 1.0F;
-		this.field_662_j = 1.0F;
-		this.field_661_k = 1.0F;
+		this.particleRed = 1.0F;
+		this.particleBlue = 1.0F;
+		this.particleGreen = 1.0F;
 		this.field_670_b = 19 + this.rand.nextInt(4);
 		this.setSize(0.01F, 0.01F);
 		this.field_664_h = 0.06F;
@@ -44,7 +45,7 @@ public class EntityRainFX extends EntityFX {
 
 		Material var1 = this.worldObj.getBlockMaterial(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ));
 		if(var1.getIsLiquid() || var1.func_878_a()) {
-			double var2 = (double)((float)(MathHelper.floor_double(this.posY) + 1) - BlockFluids.func_288_b(this.worldObj.getBlockMetadata(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))));
+			double var2 = (double)((float)(MathHelper.floor_double(this.posY) + 1) - BlockFluids.setFluidHeight(this.worldObj.getBlockMetadata(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ))));
 			if(this.posY < var2) {
 				this.setEntityDead();
 			}

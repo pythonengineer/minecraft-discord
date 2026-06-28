@@ -1,11 +1,11 @@
 package net.minecraft.src;
 
-public class SlotCrafting extends SlotInventory {
+public class SlotCrafting extends Slot {
 	private final IInventory craftMatrix;
 
-	public SlotCrafting(GuiContainer var1, IInventory var2, IInventory var3, int var4, int var5, int var6) {
-		super(var1, var3, var4, var5, var6);
-		this.craftMatrix = var2;
+	public SlotCrafting(IInventory var1, IInventory var2, int var3, int var4, int var5) {
+		super(var2, var3, var4, var5);
+		this.craftMatrix = var1;
 	}
 
 	public boolean isItemValid(ItemStack var1) {

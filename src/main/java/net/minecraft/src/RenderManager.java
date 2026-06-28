@@ -9,9 +9,9 @@ public class RenderManager {
 	private Map entityRenderMap = new HashMap();
 	public static RenderManager instance = new RenderManager();
 	private FontRenderer field_1218_p;
-	public static double field_1232_b;
-	public static double field_1231_c;
-	public static double field_1230_d;
+	public static double renderPosX;
+	public static double renderPosY;
+	public static double renderPosZ;
 	public RenderEngine renderEngine;
 	public ItemRenderer field_4236_f;
 	public World worldObj;
@@ -40,7 +40,8 @@ public class RenderManager {
 		this.entityRenderMap.put(Entity.class, new RenderEntity());
 		this.entityRenderMap.put(EntityPainting.class, new RenderPainting());
 		this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
-		this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball());
+		this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball(Item.snowball.getIconIndex((ItemStack)null)));
+		this.entityRenderMap.put(EntityEgg.class, new RenderSnowball(Item.egg.getIconIndex((ItemStack)null)));
 		this.entityRenderMap.put(EntityFireball.class, new RenderFireball());
 		this.entityRenderMap.put(EntityItem.class, new RenderItem());
 		this.entityRenderMap.put(EntityTNTPrimed.class, new RenderTNTPrimed());
@@ -57,18 +58,18 @@ public class RenderManager {
 
 	}
 
-	public Render func_4117_a(Class var1) {
+	public Render getEntityClassRenderObject(Class var1) {
 		Render var2 = (Render)this.entityRenderMap.get(var1);
 		if(var2 == null && var1 != Entity.class) {
-			var2 = this.func_4117_a(var1.getSuperclass());
+			var2 = this.getEntityClassRenderObject(var1.getSuperclass());
 			this.entityRenderMap.put(var1, var2);
 		}
 
 		return var2;
 	}
 
-	public Render func_855_a(Entity var1) {
-		return this.func_4117_a(var1.getClass());
+	public Render getEntityRenderObject(Entity var1) {
+		return this.getEntityClassRenderObject(var1.getClass());
 	}
 
 	public void func_857_a(World var1, RenderEngine var2, FontRenderer var3, EntityPlayer var4, GameSettings var5, float var6) {
@@ -84,18 +85,18 @@ public class RenderManager {
 		this.field_1220_n = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var6;
 	}
 
-	public void func_854_a(Entity var1, float var2) {
+	public void renderEntity(Entity var1, float var2) {
 		double var3 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var2;
 		double var5 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var2;
 		double var7 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var2;
 		float var9 = var1.prevRotationYaw + (var1.rotationYaw - var1.prevRotationYaw) * var2;
 		float var10 = var1.getEntityBrightness(var2);
 		GL11.glColor3f(var10, var10, var10);
-		this.func_853_a(var1, var3 - field_1232_b, var5 - field_1231_c, var7 - field_1230_d, var9, var2);
+		this.renderEntityWithPosYaw(var1, var3 - renderPosX, var5 - renderPosY, var7 - renderPosZ, var9, var2);
 	}
 
-	public void func_853_a(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		Render var10 = this.func_855_a(var1);
+	public void renderEntityWithPosYaw(Entity var1, double var2, double var4, double var6, float var8, float var9) {
+		Render var10 = this.getEntityRenderObject(var1);
 		if(var10 != null) {
 			var10.doRender(var1, var2, var4, var6, var8, var9);
 			var10.doRenderShadowAndFire(var1, var2, var4, var6, var8, var9);

@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class MapGenCaves extends MapGenBase {
 	protected void func_870_a(int var1, int var2, byte[] var3, double var4, double var6, double var8) {
-		this.func_869_a(var1, var2, var3, var4, var6, var8, 1.0F + this.field_1305_b.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+		this.func_869_a(var1, var2, var3, var4, var6, var8, 1.0F + this.rand.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
 	}
 
 	protected void func_869_a(int var1, int var2, byte[] var3, double var4, double var6, double var8, float var10, float var11, float var12, int var13, int var14, double var15) {
@@ -13,7 +13,7 @@ public class MapGenCaves extends MapGenBase {
 		double var19 = (double)(var2 * 16 + 8);
 		float var21 = 0.0F;
 		float var22 = 0.0F;
-		EaglercraftRandom var23 = new EaglercraftRandom(this.field_1305_b.nextLong());
+		EaglercraftRandom var23 = new EaglercraftRandom(this.rand.nextLong());
 		if(var14 <= 0) {
 			int var24 = this.field_1306_a * 16 - 16;
 			var14 = var24 - var23.nextInt(var24 / 4);
@@ -159,25 +159,25 @@ public class MapGenCaves extends MapGenBase {
 	}
 
 	protected void func_868_a(World var1, int var2, int var3, int var4, int var5, byte[] var6) {
-		int var7 = this.field_1305_b.nextInt(this.field_1305_b.nextInt(this.field_1305_b.nextInt(40) + 1) + 1);
-		if(this.field_1305_b.nextInt(15) != 0) {
+		int var7 = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(40) + 1) + 1);
+		if(this.rand.nextInt(15) != 0) {
 			var7 = 0;
 		}
 
 		for(int var8 = 0; var8 < var7; ++var8) {
-			double var9 = (double)(var2 * 16 + this.field_1305_b.nextInt(16));
-			double var11 = (double)this.field_1305_b.nextInt(this.field_1305_b.nextInt(120) + 8);
-			double var13 = (double)(var3 * 16 + this.field_1305_b.nextInt(16));
+			double var9 = (double)(var2 * 16 + this.rand.nextInt(16));
+			double var11 = (double)this.rand.nextInt(this.rand.nextInt(120) + 8);
+			double var13 = (double)(var3 * 16 + this.rand.nextInt(16));
 			int var15 = 1;
-			if(this.field_1305_b.nextInt(4) == 0) {
+			if(this.rand.nextInt(4) == 0) {
 				this.func_870_a(var4, var5, var6, var9, var11, var13);
-				var15 += this.field_1305_b.nextInt(4);
+				var15 += this.rand.nextInt(4);
 			}
 
 			for(int var16 = 0; var16 < var15; ++var16) {
-				float var17 = this.field_1305_b.nextFloat() * (float)Math.PI * 2.0F;
-				float var18 = (this.field_1305_b.nextFloat() - 0.5F) * 2.0F / 8.0F;
-				float var19 = this.field_1305_b.nextFloat() * 2.0F + this.field_1305_b.nextFloat();
+				float var17 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+				float var18 = (this.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
+				float var19 = this.rand.nextFloat() * 2.0F + this.rand.nextFloat();
 				this.func_869_a(var4, var5, var6, var9, var11, var13, var19, var17, var18, 0, 0, 1.0D);
 			}
 		}

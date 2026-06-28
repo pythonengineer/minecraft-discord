@@ -9,7 +9,7 @@ public class EntitySheep extends EntityAnimals {
 		this.setSize(0.9F, 1.3F);
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		if(!this.worldObj.multiplayerWorld && !this.sheared && var1 instanceof EntityLiving) {
 			this.sheared = true;
 			int var3 = 1 + this.rand.nextInt(3);
@@ -22,7 +22,7 @@ public class EntitySheep extends EntityAnimals {
 			}
 		}
 
-		return super.canAttackEntity(var1, var2);
+		return super.attackEntityFrom(var1, var2);
 	}
 
 	public void writeEntityToNBT(NBTTagCompound var1) {

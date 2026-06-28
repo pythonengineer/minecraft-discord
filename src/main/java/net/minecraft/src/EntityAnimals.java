@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public abstract class EntityAnimals extends EntityCreature {
@@ -6,7 +7,7 @@ public abstract class EntityAnimals extends EntityCreature {
 		super(var1);
 	}
 
-	protected float func_439_a(int var1, int var2, int var3) {
+	protected float getBlockPathWeight(int var1, int var2, int var3) {
 		return this.worldObj.getBlockId(var1, var2 - 1, var3) == Block.grass.blockID ? 10.0F : this.worldObj.getLightBrightness(var1, var2, var3) - 0.5F;
 	}
 

@@ -20,7 +20,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.CollectPreconditions.checkNonnegative;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.primitives.Ints;
@@ -84,5 +86,22 @@ public final class Lists {
 
         // TODO(kevinb): Figure out the right behavior, and document it
         return Ints.saturatedCast(5L + arraySize + (arraySize / 10));
+    }
+
+    /**
+     * Creates a <i>mutable</i> {@code ArrayList} instance containing the given
+     * elements.
+     *
+     * <p>
+     * <b>Note:</b> if mutability is not required and the elements are non-null, use
+     * {@link ImmutableList#copyOf(Iterator)} instead.
+     *
+     * @param elements the elements that the list should contain, in order
+     * @return a new {@code ArrayList} containing those elements
+     */
+    public static <E> ArrayList<E> newArrayList(Iterator<? extends E> elements) {
+        ArrayList<E> list = newArrayList();
+        Iterators.addAll(list, elements);
+        return list;
     }
 }

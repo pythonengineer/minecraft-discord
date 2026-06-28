@@ -25,7 +25,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 	double[] field_4182_g;
 	double[] field_4181_h;
 	int[][] field_914_i = new int[32][32];
-	private double[] field_4178_w;
+	private double[] generatedTemperatures;
 
 	public ChunkProviderGenerate(World var1, long var2) {
 		this.worldObj = var1;
@@ -119,7 +119,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 
 		for(int var8 = 0; var8 < 16; ++var8) {
 			for(int var9 = 0; var9 < 16; ++var9) {
-				MobSpawnerBase var10 = var4[var8 * 16 + var9];
+				MobSpawnerBase var10 = var4[var8 + var9 * 16];
 				boolean var11 = this.field_905_r[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 0.0D;
 				boolean var12 = this.field_904_s[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 3.0D;
 				int var13 = (int)(this.field_903_t[var8 + var9 * 16] / 3.0D + 3.0D + this.rand.nextDouble() * 0.25D);
@@ -515,15 +515,15 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			(new WorldGenLiquids(Block.lavaStill.blockID)).generate(this.worldObj, this.rand, var18, var19, var20);
 		}
 
-		this.field_4178_w = this.worldObj.func_4075_a().getTemperatures(this.field_4178_w, var4 + 8, var5 + 8, 16, 16);
+		this.generatedTemperatures = this.worldObj.func_4075_a().getTemperatures(this.generatedTemperatures, var4 + 8, var5 + 8, 16, 16);
 
 		for(var17 = var4 + 8; var17 < var4 + 8 + 16; ++var17) {
 			for(var18 = var5 + 8; var18 < var5 + 8 + 16; ++var18) {
 				var19 = var17 - (var4 + 8);
 				var20 = var18 - (var5 + 8);
-				int var21 = this.worldObj.func_4083_e(var17, var18);
-				double var22 = this.field_4178_w[var19 * 16 + var20] - (double)(var21 - 64) / 64.0D * 0.3D;
-				if(var22 < 0.5D && var21 > 0 && var21 < 128 && this.worldObj.getBlockId(var17, var21, var18) == 0 && this.worldObj.getBlockMaterial(var17, var21 - 1, var18).func_880_c() && this.worldObj.getBlockMaterial(var17, var21 - 1, var18) != Material.ice) {
+				int var21 = this.worldObj.findTopSolidBlock(var17, var18);
+				double var22 = this.generatedTemperatures[var19 * 16 + var20] - (double)(var21 - 64) / 64.0D * 0.3D;
+				if(var22 < 0.5D && var21 > 0 && var21 < 128 && this.worldObj.func_20084_d(var17, var21, var18) && this.worldObj.getBlockMaterial(var17, var21 - 1, var18).getIsSolid() && this.worldObj.getBlockMaterial(var17, var21 - 1, var18) != Material.ice) {
 					this.worldObj.setBlockWithNotify(var17, var21, var18, Block.snow.blockID);
 				}
 			}

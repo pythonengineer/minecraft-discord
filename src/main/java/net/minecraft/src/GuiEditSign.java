@@ -9,6 +9,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 	private TileEntitySign entitySign;
 	private int updateCounter;
 	private int editLine = 0;
+	private static final String field_20083_l = FontAllowedCharacters.field_20157_a;
 
 	public GuiEditSign(TileEntitySign var1) {
 		this.entitySign = var1;
@@ -22,6 +23,10 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 
 	public void onGuiClosed() {
 		Keyboard.enableRepeatEvents(false);
+		if(this.mc.theWorld.multiplayerWorld) {
+			this.mc.func_20001_q().addToSendQueue(new Packet130(this.entitySign.xCoord, this.entitySign.yCoord, this.entitySign.zCoord, this.entitySign.signText));
+		}
+
 	}
 
 	public void updateScreen0() {
@@ -51,7 +56,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 			this.entitySign.signText[this.editLine] = this.entitySign.signText[this.editLine].substring(0, this.entitySign.signText[this.editLine].length() - 1);
 		}
 
-		if(" !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\'abcdefghijklmnopqrstuvwxyz{|}~\u2302\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb".indexOf(var1) >= 0 && this.entitySign.signText[this.editLine].length() < 15) {
+		if(field_20083_l.indexOf(var1) >= 0 && this.entitySign.signText[this.editLine].length() < 15) {
 			this.entitySign.signText[this.editLine] = this.entitySign.signText[this.editLine] + var1;
 		}
 
@@ -96,6 +101,6 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 		TileEntityRenderer.instance.renderTileEntityAt(this.entitySign, -0.5D, -0.75D, -0.5D, 0.0F);
 		this.entitySign.lineBeingEdited = -1;
 		GL11.glPopMatrix();
-		super.drawScreen(var1, var2, var3);
+		super.drawScreen0(var1, var2, var3);
 	}
 }

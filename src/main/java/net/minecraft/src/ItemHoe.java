@@ -29,7 +29,7 @@ public class ItemHoe extends Item {
 						float var15 = 1.2F;
 						float var16 = var3.rand.nextFloat() * var13 + (1.0F - var13) * 0.5F;
 						EntityItem var17 = new EntityItem(var3, (double)((float)var4 + var14), (double)((float)var5 + var15), (double)((float)var6 + var16), new ItemStack(Item.seeds));
-						var17.field_805_c = 10;
+						var17.delayBeforeCanPickup = 10;
 						var3.entityJoinedWorld(var17);
 					}
 				}

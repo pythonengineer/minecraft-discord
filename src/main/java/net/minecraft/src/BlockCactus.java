@@ -9,7 +9,7 @@ public class BlockCactus extends Block {
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		if(var1.getBlockId(var2, var3 + 1, var4) == 0) {
+		if(var1.func_20084_d(var2, var3 + 1, var4)) {
 			int var6;
 			for(var6 = 1; var1.getBlockId(var2, var3 - var6, var4) == this.blockID; ++var6) {
 			}
@@ -81,6 +81,6 @@ public class BlockCactus extends Block {
 	}
 
 	public void onEntityCollidedWithBlock(World var1, int var2, int var3, int var4, Entity var5) {
-		var5.canAttackEntity((Entity)null, 1);
+		var5.attackEntityFrom((Entity)null, 1);
 	}
 }

@@ -129,4 +129,20 @@ public final class ItemStack {
 	public ItemStack copy() {
 		return new ItemStack(this.itemID, this.stackSize, this.itemDamage);
 	}
+
+	public static boolean func_20107_a(ItemStack var0, ItemStack var1) {
+		return var0 == null && var1 == null ? true : (var0 != null && var1 != null ? var0.func_20108_a(var1) : false);
+	}
+
+	private boolean func_20108_a(ItemStack var1) {
+		return this.stackSize != var1.stackSize ? false : (this.itemID != var1.itemID ? false : this.itemDamage == var1.itemDamage);
+	}
+
+	public String func_20109_f() {
+		return Item.itemsList[this.itemID].func_20009_a();
+	}
+
+	public String toString() {
+		return this.stackSize + "x" + Item.itemsList[this.itemID].func_20009_a() + "@" + this.itemDamage;
+	}
 }

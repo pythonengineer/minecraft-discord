@@ -66,7 +66,7 @@ class ThreadDownloadImage extends Thread {
         if(this.buffer == null) {
             this.imageData.image = tex;
         } else {
-            this.imageData.image = this.buffer.func_883_a(tex);
+            this.imageData.image = this.buffer.parseUserSkin(tex);
         }
     }
 }

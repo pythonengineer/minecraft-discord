@@ -14,7 +14,7 @@ public class RenderZombieSimple extends RenderLiving {
 		GL11.glScalef(this.field_204_f, this.field_204_f, this.field_204_f);
 	}
 
-	protected void func_6330_a(EntityLiving var1, float var2) {
+	protected void preRenderCallback(EntityLiving var1, float var2) {
 		this.a((EntityZombieSimple)var1, var2);
 	}
 }

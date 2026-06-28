@@ -20,7 +20,7 @@ public class RenderGhast extends RenderLiving {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	protected void func_6330_a(EntityLiving var1, float var2) {
+	protected void preRenderCallback(EntityLiving var1, float var2) {
 		this.a((EntityGhast)var1, var2);
 	}
 }

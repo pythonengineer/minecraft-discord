@@ -22,14 +22,14 @@ class ThreadConnectToServer extends Thread {
 				return;
 			}
 
-			GuiConnecting.getNetClientHandler(this.connectingGui).addToSendQueue(new Packet2Handshake(this.mc.field_6320_i.inventory));
+			GuiConnecting.getNetClientHandler(this.connectingGui).addToSendQueue(new Packet2Handshake(this.mc.session.playerName));
 		} catch (Exception var4) {
 			if(GuiConnecting.isCancelled(this.connectingGui)) {
 				return;
 			}
 
 			var4.printStackTrace();
-			this.mc.displayGuiScreen(new GuiConnectFailed("Failed to connect to the server", var4.toString()));
+			this.mc.displayGuiScreen(new GuiConnectFailed("connect.failed", "disconnect.genericReason", new Object[]{var4.toString()}));
 		}
 
 	}

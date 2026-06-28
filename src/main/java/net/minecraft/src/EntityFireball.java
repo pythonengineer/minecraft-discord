@@ -22,7 +22,7 @@ public class EntityFireball extends Entity {
 		this.setSize(1.0F, 1.0F);
 	}
 
-	public boolean func_384_a(double var1) {
+	public boolean isInRangeToRenderDist(double var1) {
 		double var3 = this.boundingBox.getAverageEdgeLength() * 4.0D;
 		var3 *= 64.0D;
 		return var1 < var3 * var3;
@@ -83,14 +83,14 @@ public class EntityFireball extends Entity {
 		}
 
 		Entity var4 = null;
-		List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expands(1.0D, 1.0D, 1.0D));
+		List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
 		double var6 = 0.0D;
 
 		for(int var8 = 0; var8 < var5.size(); ++var8) {
 			Entity var9 = (Entity)var5.get(var8);
 			if(var9.canBeCollidedWith() && (var9 != this.field_9397_j || this.field_9395_l >= 25)) {
 				float var10 = 0.3F;
-				AxisAlignedBB var11 = var9.boundingBox.expands((double)var10, (double)var10, (double)var10);
+				AxisAlignedBB var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
 				MovingObjectPosition var12 = var11.func_1169_a(var15, var2);
 				if(var12 != null) {
 					double var13 = var15.distanceTo(var12.hitVec);
@@ -107,7 +107,7 @@ public class EntityFireball extends Entity {
 		}
 
 		if(var3 != null) {
-			if(var3.entityHit != null && var3.entityHit.canAttackEntity(this.field_9397_j, 0)) {
+			if(var3.entityHit != null && var3.entityHit.attackEntityFrom(this.field_9397_j, 0)) {
 			}
 
 			this.worldObj.func_12244_a((Entity)null, this.posX, this.posY, this.posZ, 1.0F, true);
@@ -183,8 +183,8 @@ public class EntityFireball extends Entity {
 		return 1.0F;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
-		this.func_9281_M();
+	public boolean attackEntityFrom(Entity var1, int var2) {
+		this.setBeenAttacked();
 		if(var1 != null) {
 			Vec3D var3 = var1.func_4037_H();
 			if(var3 != null) {

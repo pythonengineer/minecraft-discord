@@ -24,7 +24,7 @@ public class WorldGenDungeons extends WorldGenerator {
 						return false;
 					}
 
-					if((var10 == var3 - var7 - 1 || var10 == var3 + var7 + 1 || var12 == var5 - var8 - 1 || var12 == var5 + var8 + 1) && var11 == var4 && var1.getBlockId(var10, var11, var12) == 0 && var1.getBlockId(var10, var11 + 1, var12) == 0) {
+					if((var10 == var3 - var7 - 1 || var10 == var3 + var7 + 1 || var12 == var5 - var8 - 1 || var12 == var5 + var8 + 1) && var11 == var4 && var1.func_20084_d(var10, var11, var12) && var1.func_20084_d(var10, var11 + 1, var12)) {
 						++var9;
 					}
 				}
@@ -55,7 +55,7 @@ public class WorldGenDungeons extends WorldGenerator {
 				for(var11 = 0; var11 < 3; ++var11) {
 					var12 = var3 + var2.nextInt(var7 * 2 + 1) - var7;
 					int var14 = var5 + var2.nextInt(var8 * 2 + 1) - var8;
-					if(var1.getBlockId(var12, var4, var14) == 0) {
+					if(var1.func_20084_d(var12, var4, var14)) {
 						int var15 = 0;
 						if(var1.getBlockMaterial(var12 - 1, var4, var14).func_878_a()) {
 							++var15;

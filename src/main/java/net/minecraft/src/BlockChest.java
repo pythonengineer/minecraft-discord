@@ -3,7 +3,7 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class BlockChest extends BlockContainer {
-	private EaglercraftRandom field_457_a = new EaglercraftRandom();
+	private EaglercraftRandom random = new EaglercraftRandom();
 
 	protected BlockChest(int var1) {
 		super(var1, Material.wood);
@@ -132,12 +132,12 @@ public class BlockChest extends BlockContainer {
 		for(int var6 = 0; var6 < var5.getSizeInventory(); ++var6) {
 			ItemStack var7 = var5.getStackInSlot(var6);
 			if(var7 != null) {
-				float var8 = this.field_457_a.nextFloat() * 0.8F + 0.1F;
-				float var9 = this.field_457_a.nextFloat() * 0.8F + 0.1F;
-				float var10 = this.field_457_a.nextFloat() * 0.8F + 0.1F;
+				float var8 = this.random.nextFloat() * 0.8F + 0.1F;
+				float var9 = this.random.nextFloat() * 0.8F + 0.1F;
+				float var10 = this.random.nextFloat() * 0.8F + 0.1F;
 
 				while(var7.stackSize > 0) {
-					int var11 = this.field_457_a.nextInt(21) + 10;
+					int var11 = this.random.nextInt(21) + 10;
 					if(var11 > var7.stackSize) {
 						var11 = var7.stackSize;
 					}
@@ -145,9 +145,9 @@ public class BlockChest extends BlockContainer {
 					var7.stackSize -= var11;
 					EntityItem var12 = new EntityItem(var1, (double)((float)var2 + var8), (double)((float)var3 + var9), (double)((float)var4 + var10), new ItemStack(var7.itemID, var11, var7.itemDamage));
 					float var13 = 0.05F;
-					var12.motionX = (double)((float)this.field_457_a.nextGaussian() * var13);
-					var12.motionY = (double)((float)this.field_457_a.nextGaussian() * var13 + 0.2F);
-					var12.motionZ = (double)((float)this.field_457_a.nextGaussian() * var13);
+					var12.motionX = (double)((float)this.random.nextGaussian() * var13);
+					var12.motionY = (double)((float)this.random.nextGaussian() * var13 + 0.2F);
+					var12.motionZ = (double)((float)this.random.nextGaussian() * var13);
 					var1.entityJoinedWorld(var12);
 				}
 			}
@@ -185,8 +185,12 @@ public class BlockChest extends BlockContainer {
 				var6 = new InventoryLargeChest("Large chest", (IInventory)var6, (TileEntityChest)var1.getBlockTileEntity(var2, var3, var4 + 1));
 			}
 
-			var5.displayGUIChest((IInventory)var6);
-			return true;
+			if(var1.multiplayerWorld) {
+				return true;
+			} else {
+				var5.displayGUIChest((IInventory)var6);
+				return true;
+			}
 		}
 	}
 

@@ -52,7 +52,7 @@ public class Vec3D {
 		return this;
 	}
 
-	public Vec3D func_1262_a(Vec3D var1) {
+	public Vec3D subtract(Vec3D var1) {
 		return createVector(var1.xCoord - this.xCoord, var1.yCoord - this.yCoord, var1.zCoord - this.zCoord);
 	}
 

@@ -7,7 +7,7 @@ public class ImageBufferDownload implements ImageBuffer {
 	private int imageWidth;
 	private int imageHeight;
 
-	public ImageData func_883_a(ImageData var1) {
+	public ImageData parseUserSkin(ImageData var1) {
 		if(var1 == null) {
 			return null;
 		} else {

@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntitySlime extends EntityLiving implements IMobs {
@@ -56,7 +57,7 @@ public class EntitySlime extends EntityLiving implements IMobs {
 		this.field_768_a *= 0.6F;
 	}
 
-	protected void func_418_b_() {
+	protected void updatePlayerActionState() {
 		EntityPlayer var1 = this.worldObj.getClosestPlayerToEntity(this, 16.0D);
 		if(var1 != null) {
 			this.faceEntity(var1, 10.0F);
@@ -74,12 +75,12 @@ public class EntitySlime extends EntityLiving implements IMobs {
 			}
 
 			this.field_768_a = 1.0F;
-			this.field_9342_ah = 1.0F - this.rand.nextFloat() * 2.0F;
-			this.field_9340_ai = (float)(1 * this.field_770_c);
+			this.moveStrafing = 1.0F - this.rand.nextFloat() * 2.0F;
+			this.moveForward = (float)(1 * this.field_770_c);
 		} else {
 			this.isJumping = false;
 			if(this.onGround) {
-				this.field_9342_ah = this.field_9340_ai = 0.0F;
+				this.moveStrafing = this.moveForward = 0.0F;
 			}
 		}
 
@@ -101,7 +102,7 @@ public class EntitySlime extends EntityLiving implements IMobs {
 	}
 
 	public void onCollideWithPlayer(EntityPlayer var1) {
-		if(this.field_770_c > 1 && this.canEntityBeSeen(var1) && (double)this.getDistanceToEntity(var1) < 0.6D * (double)this.field_770_c && var1.canAttackEntity(this, this.field_770_c)) {
+		if(this.field_770_c > 1 && this.canEntityBeSeen(var1) && (double)this.getDistanceToEntity(var1) < 0.6D * (double)this.field_770_c && var1.attackEntityFrom(this, this.field_770_c)) {
 			this.worldObj.playSoundAtEntity(this, "mob.slimeattack", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 		}
 

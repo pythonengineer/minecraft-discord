@@ -74,11 +74,11 @@ public class BlockTorch extends Block {
 			var1.setBlockMetadataWithNotify(var2, var3, var4, 5);
 		}
 
-		this.func_271_h(var1, var2, var3, var4);
+		this.dropTorchIfCantStay(var1, var2, var3, var4);
 	}
 
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-		if(this.func_271_h(var1, var2, var3, var4)) {
+		if(this.dropTorchIfCantStay(var1, var2, var3, var4)) {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			boolean var7 = false;
 			if(!var1.isBlockOpaqueCube(var2 - 1, var3, var4) && var6 == 1) {
@@ -109,7 +109,7 @@ public class BlockTorch extends Block {
 
 	}
 
-	private boolean func_271_h(World var1, int var2, int var3, int var4) {
+	private boolean dropTorchIfCantStay(World var1, int var2, int var3, int var4) {
 		if(!this.canPlaceBlockAt(var1, var2, var3, var4)) {
 			this.dropBlockAsItem(var1, var2, var3, var4, var1.getBlockMetadata(var2, var3, var4));
 			var1.setBlockWithNotify(var2, var3, var4, 0);

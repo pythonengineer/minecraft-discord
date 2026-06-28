@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 public class RenderSpider extends RenderLiving {
 	public RenderSpider() {
 		super(new ModelSpider(), 1.0F);
-		this.func_4013_a(new ModelSpider());
+		this.setRenderPassModel(new ModelSpider());
 	}
 
 	protected float a(EntitySpider var1) {
@@ -32,7 +32,7 @@ public class RenderSpider extends RenderLiving {
 		return this.a((EntitySpider)var1);
 	}
 
-	protected boolean func_166_a(EntityLiving var1, int var2) {
+	protected boolean shouldRenderPass(EntityLiving var1, int var2) {
 		return this.a((EntitySpider)var1, var2);
 	}
 }

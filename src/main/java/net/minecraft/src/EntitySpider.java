@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntitySpider extends EntityMobs {
@@ -6,10 +7,10 @@ public class EntitySpider extends EntityMobs {
 		super(var1);
 		this.texture = "/mob/spider.png";
 		this.setSize(1.4F, 0.9F);
-		this.field_9333_am = 0.8F;
+		this.moveSpeed = 0.8F;
 	}
 
-	public double func_402_h() {
+	public double getMountedYOffset() {
 		return (double)this.height * 0.75D - 0.5D;
 	}
 

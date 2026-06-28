@@ -10,7 +10,7 @@ public class WorldProvider {
 	public boolean field_6479_d = false;
 	public boolean field_6478_e = false;
 	public float[] lightBrightnessTable = new float[16];
-	public int field_4218_e = 0;
+	public int worldType = 0;
 	private float[] field_4217_f = new float[4];
 
 	public final void registerWorld(World var1) {

@@ -1006,11 +1006,11 @@ public class RenderBlocks {
 			} else {
 				int var12 = this.blockAccess.getBlockMetadata(var8, var2, var10);
 				if(var12 >= 8 || var12 == 0) {
-					var6 += BlockFluids.func_288_b(var12) * 10.0F;
+					var6 += BlockFluids.setFluidHeight(var12) * 10.0F;
 					var5 += 10;
 				}
 
-				var6 += BlockFluids.func_288_b(var12);
+				var6 += BlockFluids.setFluidHeight(var12);
 				++var5;
 			}
 		}
@@ -1148,7 +1148,7 @@ public class RenderBlocks {
 
 		if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
 			var27 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
-			if(var1.field_370_bf > 0.0D) {
+			if(var1.minX > 0.0D) {
 				var27 = var26;
 			}
 
@@ -1247,7 +1247,7 @@ public class RenderBlocks {
 
 		if(this.renderAllFaces || var1.shouldSideBeRendered(this.blockAccess, var2 - 1, var3, var4, 4)) {
 			var28 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
-			if(var1.field_370_bf > 0.0D) {
+			if(var1.minX > 0.0D) {
 				var28 = var27;
 			}
 
@@ -1433,7 +1433,7 @@ public class RenderBlocks {
 		var7 = true;
 		this.flipTexture = false;
 		var13 = var1.getBlockBrightness(this.blockAccess, var2 - 1, var3, var4);
-		if(var6.field_370_bf > 0.0D) {
+		if(var6.minX > 0.0D) {
 			var13 = var12;
 		}
 
@@ -1481,11 +1481,11 @@ public class RenderBlocks {
 
 		int var10 = (var8 & 15) << 4;
 		int var11 = var8 & 240;
-		double var12 = ((double)var10 + var1.field_370_bf * 16.0D) / 256.0D;
+		double var12 = ((double)var10 + var1.minX * 16.0D) / 256.0D;
 		double var14 = ((double)var10 + var1.maxX * 16.0D - 0.01D) / 256.0D;
 		double var16 = ((double)var11 + var1.minZ * 16.0D) / 256.0D;
 		double var18 = ((double)var11 + var1.maxZ * 16.0D - 0.01D) / 256.0D;
-		if(var1.field_370_bf < 0.0D || var1.maxX > 1.0D) {
+		if(var1.minX < 0.0D || var1.maxX > 1.0D) {
 			var12 = (double)(((float)var10 + 0.0F) / 256.0F);
 			var14 = (double)(((float)var10 + 15.99F) / 256.0F);
 		}
@@ -1495,7 +1495,7 @@ public class RenderBlocks {
 			var18 = (double)(((float)var11 + 15.99F) / 256.0F);
 		}
 
-		double var20 = var2 + var1.field_370_bf;
+		double var20 = var2 + var1.minX;
 		double var22 = var2 + var1.maxX;
 		double var24 = var4 + var1.minY;
 		double var26 = var6 + var1.minZ;
@@ -1514,11 +1514,11 @@ public class RenderBlocks {
 
 		int var10 = (var8 & 15) << 4;
 		int var11 = var8 & 240;
-		double var12 = ((double)var10 + var1.field_370_bf * 16.0D) / 256.0D;
+		double var12 = ((double)var10 + var1.minX * 16.0D) / 256.0D;
 		double var14 = ((double)var10 + var1.maxX * 16.0D - 0.01D) / 256.0D;
 		double var16 = ((double)var11 + var1.minZ * 16.0D) / 256.0D;
 		double var18 = ((double)var11 + var1.maxZ * 16.0D - 0.01D) / 256.0D;
-		if(var1.field_370_bf < 0.0D || var1.maxX > 1.0D) {
+		if(var1.minX < 0.0D || var1.maxX > 1.0D) {
 			var12 = (double)(((float)var10 + 0.0F) / 256.0F);
 			var14 = (double)(((float)var10 + 15.99F) / 256.0F);
 		}
@@ -1528,7 +1528,7 @@ public class RenderBlocks {
 			var18 = (double)(((float)var11 + 15.99F) / 256.0F);
 		}
 
-		double var20 = var2 + var1.field_370_bf;
+		double var20 = var2 + var1.minX;
 		double var22 = var2 + var1.maxX;
 		double var24 = var4 + var1.maxY;
 		double var26 = var6 + var1.minZ;
@@ -1547,7 +1547,7 @@ public class RenderBlocks {
 
 		int var10 = (var8 & 15) << 4;
 		int var11 = var8 & 240;
-		double var12 = ((double)var10 + var1.field_370_bf * 16.0D) / 256.0D;
+		double var12 = ((double)var10 + var1.minX * 16.0D) / 256.0D;
 		double var14 = ((double)var10 + var1.maxX * 16.0D - 0.01D) / 256.0D;
 		double var16 = ((double)var11 + var1.minY * 16.0D) / 256.0D;
 		double var18 = ((double)var11 + var1.maxY * 16.0D - 0.01D) / 256.0D;
@@ -1558,7 +1558,7 @@ public class RenderBlocks {
 			var14 = var20;
 		}
 
-		if(var1.field_370_bf < 0.0D || var1.maxX > 1.0D) {
+		if(var1.minX < 0.0D || var1.maxX > 1.0D) {
 			var12 = (double)(((float)var10 + 0.0F) / 256.0F);
 			var14 = (double)(((float)var10 + 15.99F) / 256.0F);
 		}
@@ -1568,7 +1568,7 @@ public class RenderBlocks {
 			var18 = (double)(((float)var11 + 15.99F) / 256.0F);
 		}
 
-		var20 = var2 + var1.field_370_bf;
+		var20 = var2 + var1.minX;
 		double var22 = var2 + var1.maxX;
 		double var24 = var4 + var1.minY;
 		double var26 = var4 + var1.maxY;
@@ -1587,7 +1587,7 @@ public class RenderBlocks {
 
 		int var10 = (var8 & 15) << 4;
 		int var11 = var8 & 240;
-		double var12 = ((double)var10 + var1.field_370_bf * 16.0D) / 256.0D;
+		double var12 = ((double)var10 + var1.minX * 16.0D) / 256.0D;
 		double var14 = ((double)var10 + var1.maxX * 16.0D - 0.01D) / 256.0D;
 		double var16 = ((double)var11 + var1.minY * 16.0D) / 256.0D;
 		double var18 = ((double)var11 + var1.maxY * 16.0D - 0.01D) / 256.0D;
@@ -1598,7 +1598,7 @@ public class RenderBlocks {
 			var14 = var20;
 		}
 
-		if(var1.field_370_bf < 0.0D || var1.maxX > 1.0D) {
+		if(var1.minX < 0.0D || var1.maxX > 1.0D) {
 			var12 = (double)(((float)var10 + 0.0F) / 256.0F);
 			var14 = (double)(((float)var10 + 15.99F) / 256.0F);
 		}
@@ -1608,7 +1608,7 @@ public class RenderBlocks {
 			var18 = (double)(((float)var11 + 15.99F) / 256.0F);
 		}
 
-		var20 = var2 + var1.field_370_bf;
+		var20 = var2 + var1.minX;
 		double var22 = var2 + var1.maxX;
 		double var24 = var4 + var1.minY;
 		double var26 = var4 + var1.maxY;
@@ -1648,7 +1648,7 @@ public class RenderBlocks {
 			var18 = (double)(((float)var11 + 15.99F) / 256.0F);
 		}
 
-		var20 = var2 + var1.field_370_bf;
+		var20 = var2 + var1.minX;
 		double var22 = var4 + var1.minY;
 		double var24 = var4 + var1.maxY;
 		double var26 = var6 + var1.minZ;

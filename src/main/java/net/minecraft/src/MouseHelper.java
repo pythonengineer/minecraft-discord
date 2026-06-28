@@ -20,7 +20,7 @@ public class MouseHelper {
 		Mouse.setGrabbed(false);
 	}
 
-	public void func_772_c() {
+	public void mouseXYChange() {
 		this.field_1114_a = PointerInputAbstraction.getDX();
 		this.field_1113_b = PointerInputAbstraction.getDY();
 	}

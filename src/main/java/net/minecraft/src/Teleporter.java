@@ -112,8 +112,8 @@ public class Teleporter {
 
 				label293:
 				for(var20 = 127; var20 >= 0; --var20) {
-					if(var1.getBlockId(var14, var20, var17) == 0) {
-						while(var20 > 0 && var1.getBlockId(var14, var20 - 1, var17) == 0) {
+					if(var1.func_20084_d(var14, var20, var17)) {
+						while(var20 > 0 && var1.func_20084_d(var14, var20 - 1, var17)) {
 							--var20;
 						}
 
@@ -131,7 +131,7 @@ public class Teleporter {
 										var27 = var14 + (var25 - 1) * var22 + var24 * var23;
 										var28 = var20 + var26;
 										int var29 = var17 + (var25 - 1) * var23 - var24 * var22;
-										if(var26 < 0 && !var1.getBlockMaterial(var27, var28, var29).func_878_a() || var26 >= 0 && var1.getBlockId(var27, var28, var29) != 0) {
+										if(var26 < 0 && !var1.getBlockMaterial(var27, var28, var29).func_878_a() || var26 >= 0 && !var1.func_20084_d(var27, var28, var29)) {
 											continue label293;
 										}
 									}
@@ -162,8 +162,8 @@ public class Teleporter {
 
 					label231:
 					for(var20 = 127; var20 >= 0; --var20) {
-						if(var1.getBlockId(var14, var20, var17) == 0) {
-							while(var1.getBlockId(var14, var20 - 1, var17) == 0) {
+						if(var1.func_20084_d(var14, var20, var17)) {
+							while(var1.func_20084_d(var14, var20 - 1, var17)) {
 								--var20;
 							}
 
@@ -176,7 +176,7 @@ public class Teleporter {
 										var26 = var14 + (var24 - 1) * var22;
 										var27 = var20 + var25;
 										var28 = var17 + (var24 - 1) * var23;
-										if(var25 < 0 && !var1.getBlockMaterial(var26, var27, var28).func_878_a() || var25 >= 0 && var1.getBlockId(var26, var27, var28) != 0) {
+										if(var25 < 0 && !var1.getBlockMaterial(var26, var27, var28).func_878_a() || var25 >= 0 && !var1.func_20084_d(var26, var27, var28)) {
 											continue label231;
 										}
 									}

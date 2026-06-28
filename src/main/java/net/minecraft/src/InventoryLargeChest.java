@@ -44,4 +44,8 @@ public class InventoryLargeChest implements IInventory {
 		this.upperChest.onInventoryChanged();
 		this.lowerChest.onInventoryChanged();
 	}
+
+	public boolean func_20070_a_(EntityPlayer var1) {
+		return this.upperChest.func_20070_a_(var1) && this.lowerChest.func_20070_a_(var1);
+	}
 }

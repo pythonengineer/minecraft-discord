@@ -8,11 +8,11 @@ public class Packet8 extends Packet {
 	public int healthMP;
 
 	public void readPacketData(DataInputStream var1) throws IOException {
-		this.healthMP = var1.readByte();
+		this.healthMP = var1.readShort();
 	}
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
-		var1.writeByte(this.healthMP);
+		var1.writeShort(this.healthMP);
 	}
 
 	public void processPacket(NetHandler var1) {
@@ -20,6 +20,6 @@ public class Packet8 extends Packet {
 	}
 
 	public int getPacketSize() {
-		return 1;
+		return 2;
 	}
 }

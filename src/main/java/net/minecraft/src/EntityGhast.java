@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityGhast extends EntityFlying implements IMobs {
@@ -18,7 +19,7 @@ public class EntityGhast extends EntityFlying implements IMobs {
 		this.isImmuneToFire = true;
 	}
 
-	protected void func_418_b_() {
+	protected void updatePlayerActionState() {
 		if(this.worldObj.difficultySetting == 0) {
 			this.setEntityDead();
 		}
@@ -63,7 +64,7 @@ public class EntityGhast extends EntityFlying implements IMobs {
 			double var11 = this.field_4123_g.posX - this.posX;
 			double var13 = this.field_4123_g.boundingBox.minY + (double)(this.field_4123_g.height / 2.0F) - (this.posY + (double)(this.height / 2.0F));
 			double var15 = this.field_4123_g.posZ - this.posZ;
-			this.field_735_n = this.rotationYaw = -((float)Math.atan2(var11, var15)) * 180.0F / (float)Math.PI;
+			this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(var11, var15)) * 180.0F / (float)Math.PI;
 			if(this.canEntityBeSeen(this.field_4123_g)) {
 				if(this.field_4124_f == 10) {
 					this.worldObj.playSoundAtEntity(this, "mob.ghast.charge", this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
@@ -85,7 +86,7 @@ public class EntityGhast extends EntityFlying implements IMobs {
 				--this.field_4124_f;
 			}
 		} else {
-			this.field_735_n = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
+			this.renderYawOffset = this.rotationYaw = -((float)Math.atan2(this.motionX, this.motionZ)) * 180.0F / (float)Math.PI;
 			if(this.field_4124_f > 0) {
 				--this.field_4124_f;
 			}
@@ -134,7 +135,7 @@ public class EntityGhast extends EntityFlying implements IMobs {
 		return this.rand.nextInt(20) == 0 && super.getCanSpawnHere() && this.worldObj.difficultySetting > 0;
 	}
 
-	public int func_6391_i() {
+	public int getMaxSpawnedInChunk() {
 		return 1;
 	}
 }

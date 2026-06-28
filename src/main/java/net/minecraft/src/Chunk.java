@@ -389,16 +389,16 @@ public class Chunk {
 				var4 = this.entities.length - 1;
 			}
 
-			var1.field_621_aZ = true;
-			var1.field_657_ba = this.xPosition;
-			var1.field_656_bb = var4;
-			var1.field_654_bc = this.zPosition;
+			var1.addedToChunk = true;
+			var1.chunkCoordX = this.xPosition;
+			var1.chunkCoordY = var4;
+			var1.chunkCoordZ = this.zPosition;
 			this.entities[var4].add(var1);
 		}
 	}
 
 	public void func_1015_b(Entity var1) {
-		this.func_1016_a(var1, var1.field_656_bb);
+		this.func_1016_a(var1, var1.chunkCoordY);
 	}
 
 	public void func_1016_a(Entity var1, int var2) {
@@ -543,7 +543,19 @@ public class Chunk {
 	}
 
 	public boolean needsSaving(boolean var1) {
-		return this.neverSave ? false : (this.hasEntities && this.worldObj.worldTime != this.lastSaveTime ? true : this.isModified);
+		if(this.neverSave) {
+			return false;
+		} else {
+			if(var1) {
+				if(this.hasEntities && this.worldObj.worldTime != this.lastSaveTime) {
+					return true;
+				}
+			} else if(this.hasEntities && this.worldObj.worldTime >= this.lastSaveTime + 600L) {
+				return true;
+			}
+
+			return this.isModified;
+		}
 	}
 
 	public int func_1004_a(byte[] var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8) {

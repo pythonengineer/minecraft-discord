@@ -3,16 +3,16 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class RenderSlime extends RenderLiving {
-	private ModelBase field_205_f;
+	private ModelBase scaleAmount;
 
 	public RenderSlime(ModelBase var1, ModelBase var2, float var3) {
 		super(var1, var3);
-		this.field_205_f = var2;
+		this.scaleAmount = var2;
 	}
 
 	protected boolean a(EntitySlime var1, int var2) {
 		if(var2 == 0) {
-			this.func_4013_a(this.field_205_f);
+			this.setRenderPassModel(this.scaleAmount);
 			GL11.glEnable(GL11.GL_NORMALIZE);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -34,11 +34,11 @@ public class RenderSlime extends RenderLiving {
 		GL11.glScalef(var4 * var5, 1.0F / var4 * var5, var4 * var5);
 	}
 
-	protected void func_6330_a(EntityLiving var1, float var2) {
+	protected void preRenderCallback(EntityLiving var1, float var2) {
 		this.a((EntitySlime)var1, var2);
 	}
 
-	protected boolean func_166_a(EntityLiving var1, int var2) {
+	protected boolean shouldRenderPass(EntityLiving var1, int var2) {
 		return this.a((EntitySlime)var1, var2);
 	}
 }

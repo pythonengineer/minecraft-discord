@@ -174,9 +174,9 @@ public class EntityPainting extends Entity {
 		return true;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		this.setEntityDead();
-		this.func_9281_M();
+		this.setBeenAttacked();
 		this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
 		return true;
 	}

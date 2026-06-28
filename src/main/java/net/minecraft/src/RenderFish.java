@@ -42,7 +42,7 @@ public class RenderFish extends Render {
 			double var32 = var1.field_4097_b.prevPosY + (var1.field_4097_b.posY - var1.field_4097_b.prevPosY) * (double)var9 - var26 * 0.5D;
 			double var34 = var1.field_4097_b.prevPosZ + (var1.field_4097_b.posZ - var1.field_4097_b.prevPosZ) * (double)var9 - var22 * 0.7D + var24 * 0.5D * var28;
 			if(this.renderManager.options.thirdPersonView) {
-				var20 = (var1.field_4097_b.field_734_o + (var1.field_4097_b.field_735_n - var1.field_4097_b.field_734_o) * var9) * (float)Math.PI / 180.0F;
+				var20 = (var1.field_4097_b.prevRenderYawOffset + (var1.field_4097_b.renderYawOffset - var1.field_4097_b.prevRenderYawOffset) * var9) * (float)Math.PI / 180.0F;
 				var22 = (double)MathHelper.sin(var20);
 				var24 = (double)MathHelper.cos(var20);
 				var30 = var1.field_4097_b.prevPosX + (var1.field_4097_b.posX - var1.field_4097_b.prevPosX) * (double)var9 - var24 * 0.35D - var22 * 0.85D;

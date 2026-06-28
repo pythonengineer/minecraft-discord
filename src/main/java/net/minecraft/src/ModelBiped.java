@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class ModelBiped extends ModelBase {
@@ -9,6 +10,8 @@ public class ModelBiped extends ModelBase {
 	public ModelRenderer bipedLeftArm;
 	public ModelRenderer bipedRightLeg;
 	public ModelRenderer bipedLeftLeg;
+	public ModelRenderer field_20098_h;
+	public ModelRenderer field_20097_i;
 	public boolean field_1279_h;
 	public boolean field_1278_i;
 	public boolean field_1277_j;
@@ -25,6 +28,10 @@ public class ModelBiped extends ModelBase {
 		this.field_1279_h = false;
 		this.field_1278_i = false;
 		this.field_1277_j = false;
+		this.field_20097_i = new ModelRenderer(0, 0);
+		this.field_20097_i.addBox(-5.0F, 0.0F, -1.0F, 10, 16, 1, var1);
+		this.field_20098_h = new ModelRenderer(24, 0);
+		this.field_20098_h.addBox(-3.0F, -6.0F, -1.0F, 6, 6, 1, var1);
 		this.bipedHead = new ModelRenderer(0, 0);
 		this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1);
 		this.bipedHead.setPosition(0.0F, 0.0F + var2, 0.0F);
@@ -138,5 +145,17 @@ public class ModelBiped extends ModelBase {
 		this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(var3 * 0.09F) * 0.05F + 0.05F;
 		this.bipedRightArm.rotateAngleX += MathHelper.sin(var3 * 0.067F) * 0.05F;
 		this.bipedLeftArm.rotateAngleX -= MathHelper.sin(var3 * 0.067F) * 0.05F;
+	}
+
+	public void func_20095_a(float var1) {
+		this.field_20098_h.rotateAngleY = this.bipedHead.rotateAngleY;
+		this.field_20098_h.rotateAngleX = this.bipedHead.rotateAngleX;
+		this.field_20098_h.offsetX = 0.0F;
+		this.field_20098_h.offsetY = 0.0F;
+		this.field_20098_h.render(var1);
+	}
+
+	public void func_20096_b(float var1) {
+		this.field_20097_i.render(var1);
 	}
 }

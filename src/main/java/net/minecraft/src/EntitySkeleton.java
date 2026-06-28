@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntitySkeleton extends EntityMobs {
@@ -43,7 +44,7 @@ public class EntitySkeleton extends EntityMobs {
 				float var10 = MathHelper.sqrt_double(var3 * var3 + var5 * var5) * 0.2F;
 				this.worldObj.playSoundAtEntity(this, "random.bow", 1.0F, 1.0F / (this.rand.nextFloat() * 0.4F + 0.8F));
 				this.worldObj.entityJoinedWorld(var7);
-				var7.func_408_a(var3, var8 + (double)var10, var5, 0.6F, 12.0F);
+				var7.setArrowHeading(var3, var8 + (double)var10, var5, 0.6F, 12.0F);
 				this.attackTime = 30;
 			}
 

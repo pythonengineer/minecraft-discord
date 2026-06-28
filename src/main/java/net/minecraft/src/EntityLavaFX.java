@@ -9,11 +9,11 @@ public class EntityLavaFX extends EntityFX {
 		this.motionY *= (double)0.8F;
 		this.motionZ *= (double)0.8F;
 		this.motionY = (double)(this.rand.nextFloat() * 0.4F + 0.05F);
-		this.field_663_i = this.field_662_j = this.field_661_k = 1.0F;
+		this.particleRed = this.particleBlue = this.particleGreen = 1.0F;
 		this.field_665_g *= this.rand.nextFloat() * 2.0F + 0.2F;
 		this.field_674_a = this.field_665_g;
 		this.field_666_f = (int)(16.0D / (Math.random() * 0.8D + 0.2D));
-		this.field_9314_ba = false;
+		this.noClip = false;
 		this.field_670_b = 49;
 	}
 

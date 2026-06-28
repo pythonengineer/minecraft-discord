@@ -14,12 +14,12 @@ public class CraftingManager {
 	}
 
 	private CraftingManager() {
-		(new RecipesTools()).func_1122_a(this);
-		(new RecipesWeapons()).func_766_a(this);
-		(new RecipesIngots()).func_810_a(this);
-		(new RecipesFood()).func_976_a(this);
-		(new RecipesCrafting()).func_1051_a(this);
-		(new RecipesArmor()).func_1148_a(this);
+		(new RecipesTools()).addRecipes(this);
+		(new RecipesWeapons()).addRecipes(this);
+		(new RecipesIngots()).addRecipes(this);
+		(new RecipesFood()).addRecipes(this);
+		(new RecipesCrafting()).addRecipes(this);
+		(new RecipesArmor()).addRecipes(this);
 		this.addRecipe(new ItemStack(Item.paper, 3), new Object[]{"###", Character.valueOf('#'), Item.reed});
 		this.addRecipe(new ItemStack(Item.book, 1), new Object[]{"#", "#", "#", Character.valueOf('#'), Item.paper});
 		this.addRecipe(new ItemStack(Block.fence, 2), new Object[]{"###", "###", Character.valueOf('#'), Item.stick});

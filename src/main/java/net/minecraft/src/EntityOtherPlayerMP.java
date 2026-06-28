@@ -1,4 +1,5 @@
 package net.minecraft.src;
+
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityOtherPlayerMP extends EntityPlayer {
@@ -14,17 +15,17 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 		super(var1);
 		this.field_771_i = var2;
 		this.yOffset = 0.0F;
-		this.field_9286_aZ = 0.0F;
+		this.stepHeight = 0.0F;
 		if(var2 != null && var2.length() > 0) {
-			this.skinUrl = var2;
-			System.out.println("Loading texture " + this.skinUrl);
+			this.field_20047_bv = var2;
+			System.out.println("Loading texture " + this.field_20047_bv);
 		}
 
-		this.field_9314_ba = true;
-		this.field_619_ac = 10.0D;
+		this.noClip = true;
+		this.renderDistanceWeight = 10.0D;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		return true;
 	}
 
@@ -57,7 +58,7 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 	}
 
 	public void onLivingUpdate() {
-		super.func_418_b_();
+		super.updatePlayerActionState();
 		if(this.field_785_bg > 0) {
 			double var1 = this.posX + (this.field_784_bh - this.posX) / (double)this.field_785_bg;
 			double var3 = this.posY + (this.field_783_bi - this.posY) / (double)this.field_785_bg;
@@ -97,7 +98,21 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 		this.field_9328_R += (var2 - this.field_9328_R) * 0.8F;
 	}
 
-	public boolean func_381_o() {
+	public boolean isSneaking() {
 		return this.field_12240_bw;
+	}
+
+	public void func_20045_c(int var1, int var2) {
+		ItemStack var3 = null;
+		if(var2 >= 0) {
+			var3 = new ItemStack(var2);
+		}
+
+		if(var1 == 0) {
+			this.inventory.mainInventory[this.inventory.currentItem] = var3;
+		} else {
+			this.inventory.armorInventory[var1 - 1] = var3;
+		}
+
 	}
 }

@@ -39,7 +39,7 @@ public class EntityFish extends Entity {
 		this.setSize(0.25F, 0.25F);
 	}
 
-	public boolean func_384_a(double var1) {
+	public boolean isInRangeToRenderDist(double var1) {
 		double var3 = this.boundingBox.getAverageEdgeLength() * 4.0D;
 		var3 *= 64.0D;
 		return var1 < var3 * var3;
@@ -191,7 +191,7 @@ public class EntityFish extends Entity {
 			}
 
 			Entity var4 = null;
-			List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expands(1.0D, 1.0D, 1.0D));
+			List var5 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1.0D, 1.0D, 1.0D));
 			double var6 = 0.0D;
 
 			double var13;
@@ -199,7 +199,7 @@ public class EntityFish extends Entity {
 				Entity var9 = (Entity)var5.get(var8);
 				if(var9.canBeCollidedWith() && (var9 != this.field_4097_b || this.field_4089_j >= 5)) {
 					float var10 = 0.3F;
-					AxisAlignedBB var11 = var9.boundingBox.expands((double)var10, (double)var10, (double)var10);
+					AxisAlignedBB var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
 					MovingObjectPosition var12 = var11.func_1169_a(var20, var2);
 					if(var12 != null) {
 						var13 = var20.distanceTo(var12.hitVec);
@@ -217,7 +217,7 @@ public class EntityFish extends Entity {
 
 			if(var3 != null) {
 				if(var3.entityHit != null) {
-					if(var3.entityHit.canAttackEntity(this.field_4097_b, 0)) {
+					if(var3.entityHit.attackEntityFrom(this.field_4097_b, 0)) {
 						this.field_4096_c = var3.entityHit;
 					}
 				} else {
@@ -248,7 +248,7 @@ public class EntityFish extends Entity {
 				this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
 				this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
 				float var25 = 0.92F;
-				if(this.onGround || this.field_9297_aI) {
+				if(this.onGround || this.isCollidedHorizontally) {
 					var25 = 0.5F;
 				}
 

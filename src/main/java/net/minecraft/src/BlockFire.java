@@ -115,7 +115,7 @@ public class BlockFire extends Block {
 
 	private int getChanceOfNeighborsEncouragingFire(World var1, int var2, int var3, int var4) {
 		byte var5 = 0;
-		if(var1.getBlockId(var2, var3, var4) != 0) {
+		if(!var1.func_20084_d(var2, var3, var4)) {
 			return 0;
 		} else {
 			int var6 = this.getChanceToEncourageFire(var1, var2 + 1, var3, var4, var5);

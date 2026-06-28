@@ -122,7 +122,7 @@ class MinecartTrackLogic {
 		return var1;
 	}
 
-	private boolean func_787_c(MinecartTrackLogic var1) {
+	private boolean handleKeyPress(MinecartTrackLogic var1) {
 		if(this.func_793_b(var1)) {
 			return true;
 		} else if(this.field_1161_g.size() == 2) {
@@ -199,7 +199,7 @@ class MinecartTrackLogic {
 			return false;
 		} else {
 			var4.func_785_b();
-			return var4.func_787_c(this);
+			return var4.handleKeyPress(this);
 		}
 	}
 
@@ -309,7 +309,7 @@ class MinecartTrackLogic {
 			MinecartTrackLogic var8 = this.func_795_a((ChunkPosition)this.field_1161_g.get(var7));
 			if(var8 != null) {
 				var8.func_785_b();
-				if(var8.func_787_c(this)) {
+				if(var8.handleKeyPress(this)) {
 					var8.func_788_d(this);
 				}
 			}

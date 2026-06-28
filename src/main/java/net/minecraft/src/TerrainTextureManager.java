@@ -1,7 +1,6 @@
 package net.minecraft.src;
 
 import java.util.Arrays;
-
 import net.lax1dude.eaglercraft.opengl.ImageData;
 
 public class TerrainTextureManager {

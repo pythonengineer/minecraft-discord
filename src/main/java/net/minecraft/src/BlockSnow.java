@@ -23,7 +23,7 @@ public class BlockSnow extends Block {
 
 	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockId(var2, var3 - 1, var4);
-		return var5 != 0 && Block.blocksList[var5].isOpaqueCube() ? var1.getBlockMaterial(var2, var3 - 1, var4).func_880_c() : false;
+		return var5 != 0 && Block.blocksList[var5].isOpaqueCube() ? var1.getBlockMaterial(var2, var3 - 1, var4).getIsSolid() : false;
 	}
 
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
@@ -47,7 +47,7 @@ public class BlockSnow extends Block {
 		double var10 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
 		double var12 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
 		EntityItem var14 = new EntityItem(var1, (double)var2 + var8, (double)var3 + var10, (double)var4 + var12, new ItemStack(var6));
-		var14.field_805_c = 10;
+		var14.delayBeforeCanPickup = 10;
 		var1.entityJoinedWorld(var14);
 		var1.setBlockWithNotify(var2, var3, var4, 0);
 	}

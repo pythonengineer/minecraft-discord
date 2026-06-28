@@ -1,7 +1,6 @@
 package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
-
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
@@ -17,7 +16,7 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 		this.mc = var1;
 	}
 
-	public void func_596_a(String var1) {
+	public void printText(String var1) {
 		this.field_1005_e = false;
 		this.func_597_c(var1);
 	}

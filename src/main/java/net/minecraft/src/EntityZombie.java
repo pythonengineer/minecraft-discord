@@ -6,8 +6,8 @@ public class EntityZombie extends EntityMobs {
 	public EntityZombie(World var1) {
 		super(var1);
 		this.texture = "/mob/zombie.png";
-		this.field_9333_am = 0.5F;
-		this.field_762_e = 5;
+		this.moveSpeed = 0.5F;
+		this.attackStrength = 5;
 	}
 
 	public void onLivingUpdate() {

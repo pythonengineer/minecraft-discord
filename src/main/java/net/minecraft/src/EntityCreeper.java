@@ -52,7 +52,7 @@ public class EntityCreeper extends EntityMobs {
 		super.onUpdate();
 	}
 
-	protected void func_418_b_() {
+	protected void updatePlayerActionState() {
 		if(this.field_12241_e != this.creeperState) {
 			this.field_12241_e = this.creeperState;
 			if(this.creeperState > 0) {
@@ -64,7 +64,7 @@ public class EntityCreeper extends EntityMobs {
 
 		this.lastActiveTime = this.timeSinceIgnited;
 		if(this.worldObj.multiplayerWorld) {
-			super.func_418_b_();
+			super.updatePlayerActionState();
 		} else {
 			if(this.timeSinceIgnited > 0 && this.creeperState < 0) {
 				--this.timeSinceIgnited;
@@ -74,7 +74,7 @@ public class EntityCreeper extends EntityMobs {
 				this.creeperState = 2;
 			}
 
-			super.func_418_b_();
+			super.updatePlayerActionState();
 			if(this.creeperState != 1) {
 				this.creeperState = -1;
 			}
@@ -107,7 +107,7 @@ public class EntityCreeper extends EntityMobs {
 			this.creeperState = 1;
 			++this.timeSinceIgnited;
 			if(this.timeSinceIgnited == this.fuseTime) {
-				this.worldObj.func_12243_a(this, this.posX, this.posY, this.posZ, 3.0F);
+				this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
 				this.setEntityDead();
 			}
 

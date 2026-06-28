@@ -9,7 +9,7 @@ public class MaterialLogic extends Material {
 		return false;
 	}
 
-	public boolean func_880_c() {
+	public boolean getIsSolid() {
 		return false;
 	}
 }

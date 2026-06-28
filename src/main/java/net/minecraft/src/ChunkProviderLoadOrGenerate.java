@@ -119,7 +119,7 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 			try {
 				var1.lastSaveTime = this.worldObj.worldTime;
 				this.chunkLoader.saveChunk(this.worldObj, var1);
-			} catch (IOException var3) {
+			} catch (Exception var3) {
 				var3.printStackTrace();
 			}
 

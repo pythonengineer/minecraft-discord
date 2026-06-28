@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityClientPlayerMP extends EntityPlayerSP {
-	private NetClientHandler field_797_bg;
+	public NetClientHandler field_797_bg;
 	private int field_9380_bx = 0;
 	private double field_9379_by;
 	private double field_9378_bz;
@@ -12,7 +12,6 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 	private double field_9376_bB;
 	private float field_9385_bC;
 	private float field_9384_bD;
-	private InventoryPlayer field_9383_bE = new InventoryPlayer((EntityPlayer)null);
 	private boolean field_9382_bF = false;
 	private boolean field_9381_bG = false;
 	private int field_12242_bI = 0;
@@ -22,7 +21,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 		this.field_797_bg = var4;
 	}
 
-	public boolean canAttackEntity(Entity var1, int var2) {
+	public boolean attackEntityFrom(Entity var1, int var2) {
 		return false;
 	}
 
@@ -45,7 +44,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 			this.field_9380_bx = 0;
 		}
 
-		boolean var1 = this.func_381_o();
+		boolean var1 = this.isSneaking();
 		if(var1 != this.field_9381_bG) {
 			if(var1) {
 				this.field_797_bg.addToSendQueue(new Packet18ArmAnimation(this, 104));
@@ -105,42 +104,37 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
 	}
 
-	private void sendInventoryChanged() {
-		if(!this.inventory.compareInventory(this.field_9383_bE)) {
-			this.field_797_bg.addToSendQueue(new Packet5PlayerInventory(-1, this.inventory.mainInventory));
-			this.field_797_bg.addToSendQueue(new Packet5PlayerInventory(-2, this.inventory.craftingInventory));
-			this.field_797_bg.addToSendQueue(new Packet5PlayerInventory(-3, this.inventory.armorInventory));
-			this.field_9383_bE = this.inventory.copyInventory();
-		}
+	public void func_20060_w() {
+		this.field_797_bg.addToSendQueue(new Packet14BlockDig(4, 0, 0, 0, 0));
+	}
 
+	private void sendInventoryChanged() {
 	}
 
 	protected void joinEntityItemWithWorld(EntityItem var1) {
-		Packet21PickupSpawn var2 = new Packet21PickupSpawn(var1);
-		this.field_797_bg.addToSendQueue(var2);
-		var1.posX = (double)var2.xPosition / 32.0D;
-		var1.posY = (double)var2.yPosition / 32.0D;
-		var1.posZ = (double)var2.zPosition / 32.0D;
-		var1.motionX = (double)var2.rotation / 128.0D;
-		var1.motionY = (double)var2.pitch / 128.0D;
-		var1.motionZ = (double)var2.roll / 128.0D;
 	}
 
 	public void sendChatMessage(String var1) {
 		this.field_797_bg.addToSendQueue(new Packet3Chat(var1));
 	}
 
-	public void func_457_w() {
-		super.func_457_w();
+	public void swingItem() {
+		super.swingItem();
 		this.field_797_bg.addToSendQueue(new Packet18ArmAnimation(this, 1));
 	}
 
-	public void func_9367_r() {
+	public void respawnPlayer() {
 		this.sendInventoryChanged();
 		this.field_797_bg.addToSendQueue(new Packet9());
 	}
 
 	protected void damageEntity(int var1) {
 		this.health -= var1;
+	}
+
+	public void func_20059_m() {
+		this.field_797_bg.addToSendQueue(new Packet101(this.field_20068_h.unusedList));
+		this.inventory.func_20076_b((ItemStack)null);
+		super.func_20059_m();
 	}
 }

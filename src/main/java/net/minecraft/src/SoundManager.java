@@ -20,7 +20,7 @@ public class SoundManager {
     private SoundPoolEntry playingMusic;
     private SoundPoolEntry playingStreaming;
 
-	public void func_340_a(GameSettings var1) {
+	public void loadSoundSettings(GameSettings var1) {
 		this.soundPoolStreaming.field_1657_b = false;
 		this.options = var1;
         sndManager = new EaglercraftSoundManager();
@@ -97,10 +97,10 @@ public class SoundManager {
 				}
 
                 this.playingMusic = this.soundPoolMusic.getRandomSound();
-                this.playingMusic.playStatic = true;
                 if(this.playingMusic != null) {
 					this.field_583_i = this.rand.nextInt(12000) + 12000;
 					this.playingMusic.volume = this.options.musicVolume;
+	                this.playingMusic.playStatic = true;
                     this.play(this.playingMusic);
 				}
 			}
@@ -136,7 +136,7 @@ public class SoundManager {
 		}
 	}
 
-	public void func_336_b(String var1, float var2, float var3, float var4, float var5, float var6) {
+	public void playSound(String var1, float var2, float var3, float var4, float var5, float var6) {
 		if(this.options.soundVolume != 0.0F) {
 			SoundPoolEntry var7 = this.soundPoolSounds.getRandomSoundFromSoundPool(var1);
 			if(var7 != null && var5 > 0.0F) {

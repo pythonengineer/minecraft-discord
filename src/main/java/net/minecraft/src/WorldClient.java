@@ -3,16 +3,14 @@ package net.minecraft.src;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class WorldClient extends World {
 	private LinkedList field_1057_z = new LinkedList();
 	private NetClientHandler sendQueue;
 	private ChunkProviderClient C;
-	private boolean D = false;
 	private MCHashTable field_1055_D = new MCHashTable();
-	private Set F = new HashSet();
+	private Set E = new HashSet();
 	private Set field_1053_F = new HashSet();
 
 	public WorldClient(NetClientHandler var1, long var2, int var4) {
@@ -31,7 +29,7 @@ public class WorldClient extends World {
 			this.skylightSubtracted = var1;
 
 			for(var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
-				((IWorldAccess)this.worldAccesses.get(var2)).func_936_e();
+				((IWorldAccess)this.worldAccesses.get(var2)).updateAllRenderers();
 			}
 		}
 
@@ -48,7 +46,7 @@ public class WorldClient extends World {
 			WorldBlockPositionType var4 = (WorldBlockPositionType)this.field_1057_z.get(var2);
 			if(--var4.field_1206_d == 0) {
 				super.setBlockAndMetadata(var4.field_1202_a, var4.field_1201_b, var4.field_1207_c, var4.field_1205_e, var4.field_1204_f);
-				super.func_665_h(var4.field_1202_a, var4.field_1201_b, var4.field_1207_c);
+				super.markBlockNeedsUpdate(var4.field_1202_a, var4.field_1201_b, var4.field_1207_c);
 				this.field_1057_z.remove(var2--);
 			}
 		}
@@ -101,7 +99,7 @@ public class WorldClient extends World {
 
 	public boolean entityJoinedWorld(Entity var1) {
 		boolean var2 = super.entityJoinedWorld(var1);
-		this.F.add(var1);
+		this.E.add(var1);
 		if(!var2) {
 			this.field_1053_F.add(var1);
 		}
@@ -111,7 +109,7 @@ public class WorldClient extends World {
 
 	public void setEntityDead(Entity var1) {
 		super.setEntityDead(var1);
-		this.F.remove(var1);
+		this.E.remove(var1);
 	}
 
 	protected void obtainEntitySkin(Entity var1) {
@@ -124,7 +122,7 @@ public class WorldClient extends World {
 
 	protected void releaseEntitySkin(Entity var1) {
 		super.releaseEntitySkin(var1);
-		if(this.F.contains(var1)) {
+		if(this.E.contains(var1)) {
 			this.field_1053_F.add(var1);
 		}
 
@@ -136,7 +134,7 @@ public class WorldClient extends World {
 			this.setEntityDead(var3);
 		}
 
-		this.F.add(var2);
+		this.E.add(var2);
 		var2.field_620_ab = var1;
 		if(!this.entityJoinedWorld(var2)) {
 			this.field_1053_F.add(var2);
@@ -149,10 +147,10 @@ public class WorldClient extends World {
 		return (Entity)this.field_1055_D.lookup(var1);
 	}
 
-	public Entity func_710_c(int var1) {
+	public Entity removeEntityFromWorld(int var1) {
 		Entity var2 = (Entity)this.field_1055_D.removeObject(var1);
 		if(var2 != null) {
-			this.F.remove(var2);
+			this.E.remove(var2);
 			this.setEntityDead(var2);
 		}
 
@@ -199,12 +197,6 @@ public class WorldClient extends World {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	public void func_698_b(int var1, int var2, int var3, TileEntity var4) {
-		if(!this.D) {
-			this.sendQueue.addToSendQueue(new Packet59ComplexEntity(var1, var2, var3, var4));
 		}
 	}
 

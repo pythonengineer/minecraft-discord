@@ -6,8 +6,8 @@ public class PlayerControllerSP extends PlayerController {
 	private int field_1074_c = -1;
 	private int field_1073_d = -1;
 	private int field_1072_e = -1;
-	private float field_1071_f = 0.0F;
-	private float field_1070_g = 0.0F;
+	private float curBlockDamage = 0.0F;
+	private float prevBlockDamage = 0.0F;
 	private float field_1069_h = 0.0F;
 	private int field_1068_i = 0;
 
@@ -42,18 +42,18 @@ public class PlayerControllerSP extends PlayerController {
 
 	public void clickBlock(int var1, int var2, int var3, int var4) {
 		int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		if(var5 > 0 && this.field_1071_f == 0.0F) {
+		if(var5 > 0 && this.curBlockDamage == 0.0F) {
 			Block.blocksList[var5].onBlockClicked(this.mc.theWorld, var1, var2, var3, this.mc.thePlayer);
 		}
 
-		if(var5 > 0 && Block.blocksList[var5].func_225_a(this.mc.thePlayer) >= 1.0F) {
+		if(var5 > 0 && Block.blocksList[var5].blockStrength(this.mc.thePlayer) >= 1.0F) {
 			this.sendBlockRemoved(var1, var2, var3, var4);
 		}
 
 	}
 
 	public void func_6468_a() {
-		this.field_1071_f = 0.0F;
+		this.curBlockDamage = 0.0F;
 		this.field_1068_i = 0;
 	}
 
@@ -68,22 +68,22 @@ public class PlayerControllerSP extends PlayerController {
 				}
 
 				Block var6 = Block.blocksList[var5];
-				this.field_1071_f += var6.func_225_a(this.mc.thePlayer);
+				this.curBlockDamage += var6.blockStrength(this.mc.thePlayer);
 				if(this.field_1069_h % 4.0F == 0.0F && var6 != null) {
-					this.mc.sndManager.func_336_b(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.func_1147_b() + 1.0F) / 8.0F, var6.stepSound.func_1144_c() * 0.5F);
+					this.mc.sndManager.playSound(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.func_1147_b() + 1.0F) / 8.0F, var6.stepSound.func_1144_c() * 0.5F);
 				}
 
 				++this.field_1069_h;
-				if(this.field_1071_f >= 1.0F) {
+				if(this.curBlockDamage >= 1.0F) {
 					this.sendBlockRemoved(var1, var2, var3, var4);
-					this.field_1071_f = 0.0F;
-					this.field_1070_g = 0.0F;
+					this.curBlockDamage = 0.0F;
+					this.prevBlockDamage = 0.0F;
 					this.field_1069_h = 0.0F;
 					this.field_1068_i = 5;
 				}
 			} else {
-				this.field_1071_f = 0.0F;
-				this.field_1070_g = 0.0F;
+				this.curBlockDamage = 0.0F;
+				this.prevBlockDamage = 0.0F;
 				this.field_1069_h = 0.0F;
 				this.field_1074_c = var1;
 				this.field_1073_d = var2;
@@ -93,14 +93,14 @@ public class PlayerControllerSP extends PlayerController {
 		}
 	}
 
-	public void func_6467_a(float var1) {
-		if(this.field_1071_f <= 0.0F) {
+	public void setPartialTime(float var1) {
+		if(this.curBlockDamage <= 0.0F) {
 			this.mc.ingameGUI.field_6446_b = 0.0F;
-			this.mc.field_6323_f.field_1450_i = 0.0F;
+			this.mc.renderGlobal.field_1450_i = 0.0F;
 		} else {
-			float var2 = this.field_1070_g + (this.field_1071_f - this.field_1070_g) * var1;
+			float var2 = this.prevBlockDamage + (this.curBlockDamage - this.prevBlockDamage) * var1;
 			this.mc.ingameGUI.field_6446_b = var2;
-			this.mc.field_6323_f.field_1450_i = var2;
+			this.mc.renderGlobal.field_1450_i = var2;
 		}
 
 	}
@@ -113,8 +113,8 @@ public class PlayerControllerSP extends PlayerController {
 		super.func_717_a(var1);
 	}
 
-	public void func_6474_c() {
-		this.field_1070_g = this.field_1071_f;
+	public void updateController() {
+		this.prevBlockDamage = this.curBlockDamage;
 		this.mc.sndManager.func_4033_c();
 	}
 }

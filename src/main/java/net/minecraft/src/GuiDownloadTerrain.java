@@ -32,7 +32,8 @@ public class GuiDownloadTerrain extends GuiScreen {
 
 	public void drawScreen(int var1, int var2, float var3) {
 		this.drawBackground(0);
-		this.drawCenteredString(this.fontRenderer, "Downloading terrain", this.width / 2, this.height / 2 - 50, 16777215);
+		StringTranslate var4 = StringTranslate.func_20162_a();
+		this.drawCenteredString(this.fontRenderer, var4.func_20163_a("multiplayer.downloadingTerrain"), this.width / 2, this.height / 2 - 50, 16777215);
 		super.drawScreen(var1, var2, var3);
 	}
 }
