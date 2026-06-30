@@ -7,7 +7,7 @@ public class BlockMobSpawner extends BlockContainer {
 		super(var1, var2, Material.rock);
 	}
 
-	protected TileEntity SetBlockEntity() {
+	protected TileEntity getBlockEntity() {
 		return new TileEntityMobSpawner();
 	}
 

@@ -46,7 +46,7 @@ public class BlockSnow extends Block {
 		double var8 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
 		double var10 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
 		double var12 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
-		EntityItem var14 = new EntityItem(var1, (double)var2 + var8, (double)var3 + var10, (double)var4 + var12, new ItemStack(var6));
+		EntityItem var14 = new EntityItem(var1, (double)var2 + var8, (double)var3 + var10, (double)var4 + var12, new ItemStack(var6, 1, 0));
 		var14.delayBeforeCanPickup = 10;
 		var1.entityJoinedWorld(var14);
 		var1.setBlockWithNotify(var2, var3, var4, 0);

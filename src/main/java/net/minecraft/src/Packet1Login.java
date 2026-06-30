@@ -8,8 +8,8 @@ public class Packet1Login extends Packet {
 	public int protocolVersion;
 	public String username;
 	public String password;
-	public long field_4074_d;
-	public byte field_4073_e;
+	public long mapSeed;
+	public byte dimension;
 
 	public Packet1Login() {
 	}
@@ -24,16 +24,16 @@ public class Packet1Login extends Packet {
 		this.protocolVersion = var1.readInt();
 		this.username = var1.readUTF();
 		this.password = var1.readUTF();
-		this.field_4074_d = var1.readLong();
-		this.field_4073_e = var1.readByte();
+		this.mapSeed = var1.readLong();
+		this.dimension = var1.readByte();
 	}
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
 		var1.writeInt(this.protocolVersion);
 		var1.writeUTF(this.username);
 		var1.writeUTF(this.password);
-		var1.writeLong(this.field_4074_d);
-		var1.writeByte(this.field_4073_e);
+		var1.writeLong(this.mapSeed);
+		var1.writeByte(this.dimension);
 	}
 
 	public void processPacket(NetHandler var1) {

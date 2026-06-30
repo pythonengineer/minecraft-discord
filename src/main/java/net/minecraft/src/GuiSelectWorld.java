@@ -12,10 +12,10 @@ public class GuiSelectWorld extends GuiScreen {
 	}
 
 	public void initGui() {
-		StringTranslate var1 = StringTranslate.func_20162_a();
-		this.screenTitle = var1.func_20163_a("selectWorld.title");
-		String var2 = var1.func_20163_a("selectWorld.empty");
-		String var3 = var1.func_20163_a("selectWorld.world");
+		StringTranslate var1 = StringTranslate.getInstance();
+		this.screenTitle = var1.translateKey("selectWorld.title");
+		String var2 = var1.translateKey("selectWorld.empty");
+		String var3 = var1.translateKey("selectWorld.world");
 
 		for(int var5 = 0; var5 < 5; ++var5) {
 			NBTTagCompound var6 = World.func_629_a("World" + (var5 + 1));
@@ -37,9 +37,9 @@ public class GuiSelectWorld extends GuiScreen {
 	}
 
 	public void initGui2() {
-		StringTranslate var1 = StringTranslate.func_20162_a();
-		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, var1.func_20163_a("selectWorld.delete")));
-		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, var1.func_20163_a("gui.cancel")));
+		StringTranslate var1 = StringTranslate.getInstance();
+		this.controlList.add(new GuiButton(5, this.width / 2 - 100, this.height / 6 + 120 + 12, var1.translateKey("selectWorld.delete")));
+		this.controlList.add(new GuiButton(6, this.width / 2 - 100, this.height / 6 + 168, var1.translateKey("gui.cancel")));
 	}
 
 	protected void actionPerformed(GuiButton var1) {
@@ -60,7 +60,7 @@ public class GuiSelectWorld extends GuiScreen {
 		if(!this.selected) {
 			this.selected = true;
 			this.mc.playerController = new PlayerControllerSP(this.mc);
-			this.mc.func_6247_b("World" + var1);
+			this.mc.startWorld("World" + var1);
 			this.mc.displayGuiScreen((GuiScreen)null);
 		}
 	}

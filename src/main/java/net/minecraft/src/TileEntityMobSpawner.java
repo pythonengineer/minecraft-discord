@@ -2,12 +2,20 @@ package net.minecraft.src;
 
 public class TileEntityMobSpawner extends TileEntity {
 	public int delay = -1;
-	public String entityID = "Pig";
-	public double field_831_c;
-	public double field_830_d = 0.0D;
+	private String mobID = "Pig";
+	public double yaw;
+	public double yaw2 = 0.0D;
 
 	public TileEntityMobSpawner() {
 		this.delay = 20;
+	}
+
+	public String getMobID() {
+		return this.mobID;
+	}
+
+	public void setMobID(String var1) {
+		this.mobID = var1;
 	}
 
 	public boolean anyPlayerInRange() {
@@ -15,7 +23,7 @@ public class TileEntityMobSpawner extends TileEntity {
 	}
 
 	public void updateEntity() {
-		this.field_830_d = this.field_831_c;
+		this.yaw2 = this.yaw;
 		if(this.anyPlayerInRange()) {
 			double var1 = (double)((float)this.xCoord + this.worldObj.rand.nextFloat());
 			double var3 = (double)((float)this.yCoord + this.worldObj.rand.nextFloat());
@@ -23,8 +31,8 @@ public class TileEntityMobSpawner extends TileEntity {
 			this.worldObj.spawnParticle("smoke", var1, var3, var5, 0.0D, 0.0D, 0.0D);
 			this.worldObj.spawnParticle("flame", var1, var3, var5, 0.0D, 0.0D, 0.0D);
 
-			for(this.field_831_c += (double)(1000.0F / ((float)this.delay + 200.0F)); this.field_831_c > 360.0D; this.field_830_d -= 360.0D) {
-				this.field_831_c -= 360.0D;
+			for(this.yaw += (double)(1000.0F / ((float)this.delay + 200.0F)); this.yaw > 360.0D; this.yaw2 -= 360.0D) {
+				this.yaw -= 360.0D;
 			}
 
 			if(this.delay == -1) {
@@ -37,7 +45,7 @@ public class TileEntityMobSpawner extends TileEntity {
 				byte var7 = 4;
 
 				for(int var8 = 0; var8 < var7; ++var8) {
-					EntityLiving var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(this.entityID, this.worldObj));
+					EntityLiving var9 = (EntityLiving)((EntityLiving)EntityList.createEntityByName(this.mobID, this.worldObj));
 					if(var9 == null) {
 						return;
 					}
@@ -81,13 +89,13 @@ public class TileEntityMobSpawner extends TileEntity {
 
 	public void readFromNBT(NBTTagCompound var1) {
 		super.readFromNBT(var1);
-		this.entityID = var1.getString("EntityId");
+		this.mobID = var1.getString("EntityId");
 		this.delay = var1.getShort("Delay");
 	}
 
 	public void writeToNBT(NBTTagCompound var1) {
 		super.writeToNBT(var1);
-		var1.setString("EntityId", this.entityID);
+		var1.setString("EntityId", this.mobID);
 		var1.setShort("Delay", (short)this.delay);
 	}
 }

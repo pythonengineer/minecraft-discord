@@ -2234,7 +2234,7 @@ public class GL11 {
         matrix.m23 *= z;
     }
 
-    public static void glScalef(double x, double y, double z) {
+    public static void glScaled(double x, double y, double z) {
         Matrix4f matrix = getMatrixIncr();
         matrix.m00 *= x;
         matrix.m01 *= x;

@@ -39,7 +39,6 @@ public class GuiMainMenu extends GuiScreen {
 		} catch (Exception var4) {
 		}
 
-		this.splashText = "Finally beta!";
 	}
 
 	public void updateScreen() {
@@ -70,16 +69,16 @@ public class GuiMainMenu extends GuiScreen {
 			this.splashText = "Happy new year!";
 		}
 
-		StringTranslate var2 = StringTranslate.func_20162_a();
+		StringTranslate var2 = StringTranslate.getInstance();
 		int var4 = this.height / 4 + 48;
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, var4, var2.func_20163_a("menu.singleplayer")));
-		this.controlList.add(new GuiButton(2, this.width / 2 - 100, var4 + 24, var2.func_20163_a("menu.multiplayer")));
-		this.controlList.add(new GuiButton(3, this.width / 2 - 100, var4 + 48, var2.func_20163_a("menu.mods")));
-		if(this.mc.field_6317_l) {
-			this.controlList.add(new GuiButton(0, this.width / 2 - 100, var4 + 72, var2.func_20163_a("menu.options")));
+		this.controlList.add(new GuiButton(1, this.width / 2 - 100, var4, var2.translateKey("menu.singleplayer")));
+		this.controlList.add(new GuiButton(2, this.width / 2 - 100, var4 + 24, var2.translateKey("menu.multiplayer")));
+		this.controlList.add(new GuiButton(3, this.width / 2 - 100, var4 + 48, var2.translateKey("menu.mods")));
+		if(this.mc.hideQuitButton) {
+			this.controlList.add(new GuiButton(0, this.width / 2 - 100, var4 + 72, var2.translateKey("menu.options")));
 		} else {
-			this.controlList.add(new GuiButton(0, this.width / 2 - 100, var4 + 72 + 12, 98, 20, var2.func_20163_a("menu.options")));
-			this.controlList.add(new GuiButton(4, this.width / 2 + 2, var4 + 72 + 12, 98, 20, var2.func_20163_a("menu.quit")));
+			this.controlList.add(new GuiButton(0, this.width / 2 - 100, var4 + 72 + 12, 98, 20, var2.translateKey("menu.options")));
+			this.controlList.add(new GuiButton(4, this.width / 2 + 2, var4 + 72 + 12, 98, 20, var2.translateKey("menu.quit")));
 		}
 
 		if(this.mc.session == null) {
@@ -126,7 +125,7 @@ public class GuiMainMenu extends GuiScreen {
 		GL11.glScalef(var5, var5, var5);
 		this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, 16776960);
 		GL11.glPopMatrix();
-		this.drawString(this.fontRenderer, "Minecraft Beta 1.1_02", 2, 2, 5263440);
+		this.drawString(this.fontRenderer, "Minecraft Beta 1.2_02", 2, 2, 5263440);
 		String var6 = "Copyright Mojang AB. Do not distribute.";
 		this.drawString(this.fontRenderer, var6, this.width - this.fontRenderer.getStringWidth(var6) - 2, this.height - 10, 16777215);
 		super.drawScreen(var1, var2, var3);

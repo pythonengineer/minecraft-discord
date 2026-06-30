@@ -6,7 +6,7 @@ public class WorldProviderHell extends WorldProvider {
 	public void registerWorldChunkManager() {
 		this.worldChunkMgr = new WorldChunkManagerHell(MobSpawnerBase.hell, 1.0D, 0.0D);
 		this.field_4220_c = true;
-		this.field_6479_d = true;
+		this.isHellWorld = true;
 		this.field_6478_e = true;
 		this.worldType = -1;
 	}
@@ -35,7 +35,7 @@ public class WorldProviderHell extends WorldProvider {
 	}
 
 	public boolean canCoordinateBeSpawn(int var1, int var2) {
-		int var3 = this.worldObj.func_614_g(var1, var2);
+		int var3 = this.worldObj.getFirstUncoveredBlock(var1, var2);
 		return var3 == Block.bedrock.blockID ? false : (var3 == 0 ? false : Block.opaqueCubeLookup[var3]);
 	}
 
@@ -43,7 +43,7 @@ public class WorldProviderHell extends WorldProvider {
 		return 0.5F;
 	}
 
-	public boolean func_6477_d() {
+	public boolean canRespawnHere() {
 		return false;
 	}
 }

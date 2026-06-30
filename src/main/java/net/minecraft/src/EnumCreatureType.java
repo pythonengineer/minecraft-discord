@@ -1,14 +1,35 @@
 package net.minecraft.src;
 
 public enum EnumCreatureType {
-	monster(IMobs.class, 100),
-	creature(EntityAnimals.class, 20);
+	monster(IMobs.class, 70, Material.air, false),
+	creature(EntityAnimals.class, 15, Material.air, true),
+	waterCreature(EntityWaterMob.class, 5, Material.water, true);
 
-	public final Class field_4278_c;
-	public final int maxNumberOfEntityType;
+	private final Class creatureClass;
+	private final int maxNumberOfCreature;
+	private final Material creatureMaterial;
+	private final boolean field_21172_g;
 
-	private EnumCreatureType(Class var3, int var4) {
-		this.field_4278_c = var3;
-		this.maxNumberOfEntityType = var4;
+	private EnumCreatureType(Class var3, int var4, Material var5, boolean var6) {
+		this.creatureClass = var3;
+		this.maxNumberOfCreature = var4;
+		this.creatureMaterial = var5;
+		this.field_21172_g = var6;
+	}
+
+	public Class getCreatureClass() {
+		return this.creatureClass;
+	}
+
+	public int getMaxNumberOfCreature() {
+		return this.maxNumberOfCreature;
+	}
+
+	public Material getCreatureMaterial() {
+		return this.creatureMaterial;
+	}
+
+	public boolean func_21168_d() {
+		return this.field_21172_g;
 	}
 }

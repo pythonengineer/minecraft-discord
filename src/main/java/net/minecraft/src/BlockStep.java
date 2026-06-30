@@ -3,11 +3,11 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class BlockStep extends Block {
-	private boolean a;
+	private boolean blockType;
 
 	public BlockStep(int var1, boolean var2) {
 		super(var1, 6, Material.rock);
-		this.a = var2;
+		this.blockType = var2;
 		if(!var2) {
 			this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.5F, 1.0F);
 		}
@@ -20,7 +20,7 @@ public class BlockStep extends Block {
 	}
 
 	public boolean isOpaqueCube() {
-		return this.a;
+		return this.blockType;
 	}
 
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
@@ -46,7 +46,7 @@ public class BlockStep extends Block {
 	}
 
 	public boolean renderAsNormalBlock() {
-		return this.a;
+		return this.blockType;
 	}
 
 	public boolean shouldSideBeRendered(IBlockAccess var1, int var2, int var3, int var4, int var5) {

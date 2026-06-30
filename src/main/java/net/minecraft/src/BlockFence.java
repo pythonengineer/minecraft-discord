@@ -12,7 +12,7 @@ public class BlockFence extends Block {
 	}
 
 	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return var1.getBlockId(var2, var3 - 1, var4) == this.blockID ? false : (!var1.getBlockMaterial(var2, var3 - 1, var4).func_878_a() ? false : super.canPlaceBlockAt(var1, var2, var3, var4));
+		return var1.getBlockId(var2, var3 - 1, var4) == this.blockID ? false : (!var1.getBlockMaterial(var2, var3 - 1, var4).isSolid() ? false : super.canPlaceBlockAt(var1, var2, var3, var4));
 	}
 
 	public boolean isOpaqueCube() {

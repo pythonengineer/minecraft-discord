@@ -72,7 +72,7 @@ public class TerrainTextureManager {
 			int var5 = var3 + 16;
 			int var6 = var4 + 16;
 			Chunk var7 = var2.getChunkFromChunkCoords(var1.field_1354_c, var1.field_1353_d);
-			if(var7.field_1524_q) {
+			if(var7.func_21167_h()) {
 				var1.field_1351_f = true;
 				var1.field_1352_e = true;
 			} else {

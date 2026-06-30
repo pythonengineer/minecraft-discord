@@ -158,7 +158,7 @@ public class FontRenderer {
 					}
 				}
 
-				var11 = FontAllowedCharacters.field_20157_a.indexOf(var1.charAt(var6));
+				var11 = FontAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var6));
 				if(var11 >= 0) {
 					this.buffer.put(this.fontDisplayLists + var11 + 32);
 				}
@@ -186,7 +186,7 @@ public class FontRenderer {
 				if(var1.charAt(var3) == 167) {
 					++var3;
 				} else {
-					int var4 = FontAllowedCharacters.field_20157_a.indexOf(var1.charAt(var3));
+					int var4 = FontAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var3));
 					if(var4 >= 0) {
 						var2 += this.charWidth[var4 + 32];
 					}

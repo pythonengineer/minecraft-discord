@@ -1,7 +1,7 @@
 package net.minecraft.src;
 
 public class MovingObjectPosition {
-	public int typeOfHit;
+	public EnumMovingObjectType typeOfHit;
 	public int blockX;
 	public int blockY;
 	public int blockZ;
@@ -10,7 +10,7 @@ public class MovingObjectPosition {
 	public Entity entityHit;
 
 	public MovingObjectPosition(int var1, int var2, int var3, int var4, Vec3D var5) {
-		this.typeOfHit = 0;
+		this.typeOfHit = EnumMovingObjectType.TILE;
 		this.blockX = var1;
 		this.blockY = var2;
 		this.blockZ = var3;
@@ -19,7 +19,7 @@ public class MovingObjectPosition {
 	}
 
 	public MovingObjectPosition(Entity var1) {
-		this.typeOfHit = 1;
+		this.typeOfHit = EnumMovingObjectType.ENTITY;
 		this.entityHit = var1;
 		this.hitVec = Vec3D.createVector(var1.posX, var1.posY, var1.posZ);
 	}

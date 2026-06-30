@@ -23,14 +23,12 @@ public class ChunkProviderIso implements IChunkProvider {
 
 		try {
 			if(!this.chunkExists(var1, var2)) {
-				Chunk var4 = this.func_543_c(var1, var2);
+				Object var4 = this.func_543_c(var1, var2);
 				if(var4 == null) {
-					var4 = new Chunk(this.worldObj, this.field_899_a, var1, var2);
-					var4.field_1524_q = true;
-					var4.neverSave = true;
+					var4 = new EmptyChunk(this.worldObj, this.field_899_a, var1, var2);
 				}
 
-				this.chunks[var3] = var4;
+				this.chunks[var3] = (Chunk)var4;
 			}
 
 			return this.chunks[var3];
@@ -62,5 +60,9 @@ public class ChunkProviderIso implements IChunkProvider {
 
 	public boolean func_536_b() {
 		return false;
+	}
+
+	public String toString() {
+		return "ReadOnlyChunkCache";
 	}
 }

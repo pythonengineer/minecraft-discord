@@ -121,7 +121,7 @@ public class EntityList {
         addMapping(EntitySnowball.class, EntitySnowball::new, "Snowball", 11);
         addMapping(EntityItem.class, EntityItem::new, "Item", 1);
         addMapping(EntityPainting.class, EntityPainting::new, "Painting", 9);
-        addMapping(EntityLiving.class, EntityLiving::new, "Mob", 48);
+        addMapping(EntityLiving.class, null, "Mob", 48);
         addMapping(EntityMobs.class, EntityMobs::new, "Monster", 49);
         addMapping(EntityCreeper.class, EntityCreeper::new, "Creeper", 50);
         addMapping(EntitySkeleton.class, EntitySkeleton::new, "Skeleton", 51);
@@ -135,6 +135,7 @@ public class EntityList {
         addMapping(EntitySheep.class, EntitySheep::new, "Sheep", 91);
         addMapping(EntityCow.class, EntityCow::new, "Cow", 92);
         addMapping(EntityChicken.class, EntityChicken::new, "Chicken", 93);
+        addMapping(EntitySquid.class, EntitySquid::new, "Squid", 94);
         addMapping(EntityTNTPrimed.class, EntityTNTPrimed::new, "PrimedTnt", 20);
         addMapping(EntityFallingSand.class, EntityFallingSand::new, "FallingSand", 21);
         addMapping(EntityMinecart.class, EntityMinecart::new, "Minecart", 40);

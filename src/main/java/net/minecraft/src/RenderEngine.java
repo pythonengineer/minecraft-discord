@@ -16,7 +16,7 @@ public class RenderEngine {
 	private HashMap textureNameToImageMap = new HashMap();
 	private IntBuffer singleIntBuffer = GLAllocation.createDirectIntBuffer(1);
 	private ByteBuffer imageData = GLAllocation.createDirectByteBuffer(1048576);
-	private List field_1604_f = new ArrayList();
+	private List textureList = new ArrayList();
 	private Map urlToImageDataMap = new HashMap();
 	private GameSettings options;
 	private boolean clampTexture = false;
@@ -201,8 +201,8 @@ public class RenderEngine {
 	}
 
 	public void registerTextureFX(TextureFX var1) {
-		this.field_1604_f.add(var1);
-		var1.func_783_a();
+		this.textureList.add(var1);
+		var1.onTick();
 	}
 
 	public void func_1067_a() {
@@ -218,18 +218,18 @@ public class RenderEngine {
 		int var10;
 		int var11;
 		int var12;
-		for(var1 = 0; var1 < this.field_1604_f.size(); ++var1) {
-			var2 = (TextureFX)this.field_1604_f.get(var1);
-			var2.field_1131_c = this.options.anaglyph;
-			var2.func_783_a();
+		for(var1 = 0; var1 < this.textureList.size(); ++var1) {
+			var2 = (TextureFX)this.textureList.get(var1);
+			var2.anaglyphEnabled = this.options.anaglyph;
+			var2.onTick();
 			this.imageData.clear();
-			this.imageData.put(var2.field_1127_a);
-			this.imageData.position(0).limit(var2.field_1127_a.length);
-			var2.func_782_a(this);
+			this.imageData.put(var2.imageData);
+			this.imageData.position(0).limit(var2.imageData.length);
+			var2.bindImage(this);
 
-			for(var3 = 0; var3 < var2.field_1129_e; ++var3) {
-				for(var4 = 0; var4 < var2.field_1129_e; ++var4) {
-					GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, var2.field_1126_b % 16 * 16 + var3 * 16, var2.field_1126_b / 16 * 16 + var4 * 16, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
+			for(var3 = 0; var3 < var2.tileSize; ++var3) {
+				for(var4 = 0; var4 < var2.tileSize; ++var4) {
+					GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, var2.iconIndex % 16 * 16 + var3 * 16, var2.iconIndex / 16 * 16 + var4 * 16, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
 					if(useMipmaps) {
 						for(var5 = 1; var5 <= 4; ++var5) {
 							var6 = 16 >> var5 - 1;
@@ -246,19 +246,19 @@ public class RenderEngine {
 								}
 							}
 
-							GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, var5, var2.field_1126_b % 16 * var7, var2.field_1126_b / 16 * var7, var7, var7, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.imageData);
+							GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, var5, var2.iconIndex % 16 * var7, var2.iconIndex / 16 * var7, var7, var7, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, this.imageData);
 						}
 					}
 				}
 			}
 		}
 
-		for(var1 = 0; var1 < this.field_1604_f.size(); ++var1) {
-			var2 = (TextureFX)this.field_1604_f.get(var1);
+		for(var1 = 0; var1 < this.textureList.size(); ++var1) {
+			var2 = (TextureFX)this.textureList.get(var1);
 			if(var2.field_1130_d > 0) {
 				this.imageData.clear();
-				this.imageData.put(var2.field_1127_a);
-				this.imageData.position(0).limit(var2.field_1127_a.length);
+				this.imageData.put(var2.imageData);
+				this.imageData.position(0).limit(var2.imageData.length);
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2.field_1130_d);
 				GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 16, 16, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)this.imageData);
 				if(useMipmaps) {

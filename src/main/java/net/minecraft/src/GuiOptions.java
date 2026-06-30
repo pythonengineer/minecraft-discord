@@ -11,29 +11,29 @@ public class GuiOptions extends GuiScreen {
 	}
 
 	public void initGui() {
-		StringTranslate var1 = StringTranslate.func_20162_a();
-		this.screenTitle = var1.func_20163_a("options.title");
+		StringTranslate var1 = StringTranslate.getInstance();
+		this.screenTitle = var1.translateKey("options.title");
 		EnumOptions[] var2 = EnumOptions.values();
 		int var3 = var2.length;
 
 		for(int var4 = 0; var4 < var3; ++var4) {
 			EnumOptions var5 = var2[var4];
-			int var6 = var5.func_20135_c();
-			if(!var5.func_20136_a()) {
-				this.controlList.add(new GuiSmallButton(var5.func_20135_c(), this.width / 2 - 155 + var6 % 2 * 160, this.height / 7 + 22 * (var6 >> 1), var5, this.options.getKeyBinding(var5)));
+			int var6 = var5.returnEnumOrdinal();
+			if(!var5.getEnumFloat()) {
+				this.controlList.add(new GuiSmallButton(var5.returnEnumOrdinal(), this.width / 2 - 155 + var6 % 2 * 160, this.height / 7 + 22 * (var6 >> 1), var5, this.options.getKeyBinding(var5)));
 			} else {
-				this.controlList.add(new GuiSlider(var5.func_20135_c(), this.width / 2 - 155 + var6 % 2 * 160, this.height / 7 + 22 * (var6 >> 1), var5, this.options.getKeyBinding(var5), this.options.func_20104_a(var5)));
+				this.controlList.add(new GuiSlider(var5.returnEnumOrdinal(), this.width / 2 - 155 + var6 % 2 * 160, this.height / 7 + 22 * (var6 >> 1), var5, this.options.getKeyBinding(var5), this.options.getOptionFloatValue(var5)));
 			}
 		}
 
-		this.controlList.add(new GuiButton(100, this.width / 2 - 100, this.height / 6 + 120 + 12, var1.func_20163_a("options.controls")));
-		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, var1.func_20163_a("gui.done")));
+		this.controlList.add(new GuiButton(100, this.width / 2 - 100, this.height / 6 + 120 + 12, var1.translateKey("options.controls")));
+		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, var1.translateKey("gui.done")));
 	}
 
 	protected void actionPerformed(GuiButton var1) {
 		if(var1.enabled) {
 			if(var1.id < 100 && var1 instanceof GuiSmallButton) {
-				this.options.setOptionValue(((GuiSmallButton)var1).func_20078_a(), 1);
+				this.options.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
 				var1.displayString = this.options.getKeyBinding(EnumOptions.func_20137_a(var1.id));
 			}
 

@@ -27,16 +27,16 @@ public class ModelChicken extends ModelBase {
 		this.field_1288_b.addBox(-3.0F, -4.0F, -3.0F, 6, 8, 6, 0.0F);
 		this.field_1288_b.setPosition(0.0F, (float)(0 + var1), 0.0F);
 		this.field_1295_c = new ModelRenderer(26, 0);
-		this.field_1295_c.func_921_a(-1.0F, 0.0F, -3.0F, 3, 5, 3);
+		this.field_1295_c.addBox(-1.0F, 0.0F, -3.0F, 3, 5, 3);
 		this.field_1295_c.setPosition(-2.0F, (float)(3 + var1), 1.0F);
 		this.field_1294_d = new ModelRenderer(26, 0);
-		this.field_1294_d.func_921_a(-1.0F, 0.0F, -3.0F, 3, 5, 3);
+		this.field_1294_d.addBox(-1.0F, 0.0F, -3.0F, 3, 5, 3);
 		this.field_1294_d.setPosition(1.0F, (float)(3 + var1), 1.0F);
 		this.field_1293_e = new ModelRenderer(24, 13);
-		this.field_1293_e.func_921_a(0.0F, 0.0F, -3.0F, 1, 4, 6);
+		this.field_1293_e.addBox(0.0F, 0.0F, -3.0F, 1, 4, 6);
 		this.field_1293_e.setPosition(-4.0F, (float)(-3 + var1), 0.0F);
 		this.field_1292_f = new ModelRenderer(24, 13);
-		this.field_1292_f.func_921_a(-1.0F, 0.0F, -3.0F, 1, 4, 6);
+		this.field_1292_f.addBox(-1.0F, 0.0F, -3.0F, 1, 4, 6);
 		this.field_1292_f.setPosition(4.0F, (float)(-3 + var1), 0.0F);
 	}
 

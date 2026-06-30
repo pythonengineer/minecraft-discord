@@ -29,13 +29,13 @@ public class BlockSoil extends Block {
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		if(var5.nextInt(5) == 0) {
-			if(this.func_274_i(var1, var2, var3, var4)) {
+			if(this.isWaterNearby(var1, var2, var3, var4)) {
 				var1.setBlockMetadataWithNotify(var2, var3, var4, 7);
 			} else {
 				int var6 = var1.getBlockMetadata(var2, var3, var4);
 				if(var6 > 0) {
 					var1.setBlockMetadataWithNotify(var2, var3, var4, var6 - 1);
-				} else if(!this.func_275_h(var1, var2, var3, var4)) {
+				} else if(!this.isCropsNearby(var1, var2, var3, var4)) {
 					var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
 				}
 			}
@@ -50,7 +50,7 @@ public class BlockSoil extends Block {
 
 	}
 
-	private boolean func_275_h(World var1, int var2, int var3, int var4) {
+	private boolean isCropsNearby(World var1, int var2, int var3, int var4) {
 		byte var5 = 0;
 
 		for(int var6 = var2 - var5; var6 <= var2 + var5; ++var6) {
@@ -64,7 +64,7 @@ public class BlockSoil extends Block {
 		return false;
 	}
 
-	private boolean func_274_i(World var1, int var2, int var3, int var4) {
+	private boolean isWaterNearby(World var1, int var2, int var3, int var4) {
 		for(int var5 = var2 - 4; var5 <= var2 + 4; ++var5) {
 			for(int var6 = var3; var6 <= var3 + 1; ++var6) {
 				for(int var7 = var4 - 4; var7 <= var4 + 4; ++var7) {
@@ -81,7 +81,7 @@ public class BlockSoil extends Block {
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		super.onNeighborBlockChange(var1, var2, var3, var4, var5);
 		Material var6 = var1.getBlockMaterial(var2, var3 + 1, var4);
-		if(var6.func_878_a()) {
+		if(var6.isSolid()) {
 			var1.setBlockWithNotify(var2, var3, var4, Block.dirt.blockID);
 		}
 

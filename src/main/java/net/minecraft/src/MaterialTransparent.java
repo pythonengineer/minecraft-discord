@@ -1,7 +1,7 @@
 package net.minecraft.src;
 
 public class MaterialTransparent extends Material {
-	public boolean func_878_a() {
+	public boolean isSolid() {
 		return false;
 	}
 

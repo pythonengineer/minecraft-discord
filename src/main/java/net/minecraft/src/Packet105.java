@@ -5,24 +5,24 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Packet105 extends Packet {
-	public int field_20032_a;
-	public int field_20031_b;
-	public int field_20033_c;
+	public int windowId;
+	public int progressBar;
+	public int progressBarValue;
 
 	public void processPacket(NetHandler var1) {
 		var1.func_20090_a(this);
 	}
 
 	public void readPacketData(DataInputStream var1) throws IOException {
-		this.field_20032_a = var1.readByte();
-		this.field_20031_b = var1.readShort();
-		this.field_20033_c = var1.readShort();
+		this.windowId = var1.readByte();
+		this.progressBar = var1.readShort();
+		this.progressBarValue = var1.readShort();
 	}
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
-		var1.writeByte(this.field_20032_a);
-		var1.writeShort(this.field_20031_b);
-		var1.writeShort(this.field_20033_c);
+		var1.writeByte(this.windowId);
+		var1.writeShort(this.progressBar);
+		var1.writeShort(this.progressBarValue);
 	}
 
 	public int getPacketSize() {

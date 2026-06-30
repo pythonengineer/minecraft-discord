@@ -27,11 +27,14 @@ public class EntityBoat extends Entity {
 		this.entityWalks = false;
 	}
 
+	protected void entityInit() {
+	}
+
 	public AxisAlignedBB func_383_b_(Entity var1) {
 		return var1.boundingBox;
 	}
 
-	public AxisAlignedBB func_372_f_() {
+	public AxisAlignedBB getBoundingBox() {
 		return this.boundingBox;
 	}
 
@@ -127,7 +130,7 @@ public class EntityBoat extends Entity {
 			double var5 = this.boundingBox.minY + (this.boundingBox.maxY - this.boundingBox.minY) * (double)(var4 + 0) / (double)var1 - 0.125D;
 			double var7 = this.boundingBox.minY + (this.boundingBox.maxY - this.boundingBox.minY) * (double)(var4 + 1) / (double)var1 - 0.125D;
 			AxisAlignedBB var9 = AxisAlignedBB.getBoundingBoxFromPool(this.boundingBox.minX, var5, this.boundingBox.minZ, this.boundingBox.maxX, var7, this.boundingBox.maxZ);
-			if(this.worldObj.func_707_b(var9, Material.water)) {
+			if(this.worldObj.isAABBInMaterial(var9, Material.water)) {
 				var2 += 1.0D / (double)var1;
 			}
 		}
@@ -287,7 +290,7 @@ public class EntityBoat extends Entity {
 		}
 	}
 
-	public void func_366_i_() {
+	public void updateRiderPosition() {
 		if(this.riddenByEntity != null) {
 			double var1 = Math.cos((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
 			double var3 = Math.sin((double)this.rotationYaw * Math.PI / 180.0D) * 0.4D;
@@ -301,7 +304,7 @@ public class EntityBoat extends Entity {
 	protected void readEntityFromNBT(NBTTagCompound var1) {
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 

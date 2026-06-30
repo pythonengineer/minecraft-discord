@@ -61,7 +61,7 @@ public class TexturePortalFX extends TextureFX {
 
 	}
 
-	public void func_783_a() {
+	public void onTick() {
 		++this.field_4227_g;
 		byte[] var1 = this.field_4226_h[this.field_4227_g & 31];
 
@@ -70,7 +70,7 @@ public class TexturePortalFX extends TextureFX {
 			int var4 = var1[var2 * 4 + 1] & 255;
 			int var5 = var1[var2 * 4 + 2] & 255;
 			int var6 = var1[var2 * 4 + 3] & 255;
-			if(this.field_1131_c) {
+			if(this.anaglyphEnabled) {
 				int var7 = (var3 * 30 + var4 * 59 + var5 * 11) / 100;
 				int var8 = (var3 * 30 + var4 * 70) / 100;
 				int var9 = (var3 * 30 + var5 * 70) / 100;
@@ -79,10 +79,10 @@ public class TexturePortalFX extends TextureFX {
 				var5 = var9;
 			}
 
-			this.field_1127_a[var2 * 4 + 0] = (byte)var3;
-			this.field_1127_a[var2 * 4 + 1] = (byte)var4;
-			this.field_1127_a[var2 * 4 + 2] = (byte)var5;
-			this.field_1127_a[var2 * 4 + 3] = (byte)var6;
+			this.imageData[var2 * 4 + 0] = (byte)var3;
+			this.imageData[var2 * 4 + 1] = (byte)var4;
+			this.imageData[var2 * 4 + 2] = (byte)var5;
+			this.imageData[var2 * 4 + 3] = (byte)var6;
 		}
 
 	}

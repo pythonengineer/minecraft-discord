@@ -4,32 +4,30 @@ public final class ItemStack {
 	public int stackSize;
 	public int animationsToGo;
 	public int itemID;
-	public int itemDamage;
+	private int itemDamage;
 
 	public ItemStack(Block var1) {
 		this((Block)var1, 1);
 	}
 
 	public ItemStack(Block var1, int var2) {
-		this(var1.blockID, var2);
+		this(var1.blockID, var2, 0);
+	}
+
+	public ItemStack(Block var1, int var2, int var3) {
+		this(var1.blockID, var2, var3);
 	}
 
 	public ItemStack(Item var1) {
-		this((Item)var1, 1);
+		this(var1.shiftedIndex, 1, 0);
 	}
 
 	public ItemStack(Item var1, int var2) {
-		this(var1.shiftedIndex, var2);
+		this(var1.shiftedIndex, var2, 0);
 	}
 
-	public ItemStack(int var1) {
-		this(var1, 1);
-	}
-
-	public ItemStack(int var1, int var2) {
-		this.stackSize = 0;
-		this.itemID = var1;
-		this.stackSize = var2;
+	public ItemStack(Item var1, int var2, int var3) {
+		this(var1.shiftedIndex, var2, var3);
 	}
 
 	public ItemStack(int var1, int var2, int var3) {
@@ -86,21 +84,47 @@ public final class ItemStack {
 		return this.getItem().getItemStackLimit();
 	}
 
+	public boolean func_21180_d() {
+		return this.getMaxStackSize() > 1 && (!this.isItemStackDamageable() || !this.isItemDamaged());
+	}
+
+	public boolean isItemStackDamageable() {
+		return Item.itemsList[this.itemID].getMaxDamage() > 0;
+	}
+
+	public boolean getHasSubtypes() {
+		return Item.itemsList[this.itemID].getHasSubtypes();
+	}
+
+	public boolean isItemDamaged() {
+		return this.isItemStackDamageable() && this.itemDamage > 0;
+	}
+
+	public int getItemDamageForDisplay() {
+		return this.itemDamage;
+	}
+
+	public int getItemDamage() {
+		return this.itemDamage;
+	}
+
 	public int getMaxDamage() {
 		return Item.itemsList[this.itemID].getMaxDamage();
 	}
 
 	public void damageItem(int var1) {
-		this.itemDamage += var1;
-		if(this.itemDamage > this.getMaxDamage()) {
-			--this.stackSize;
-			if(this.stackSize < 0) {
-				this.stackSize = 0;
+		if(this.isItemStackDamageable()) {
+			this.itemDamage += var1;
+			if(this.itemDamage > this.getMaxDamage()) {
+				--this.stackSize;
+				if(this.stackSize < 0) {
+					this.stackSize = 0;
+				}
+
+				this.itemDamage = 0;
 			}
 
-			this.itemDamage = 0;
 		}
-
 	}
 
 	public void hitEntity(EntityLiving var1) {
@@ -123,26 +147,30 @@ public final class ItemStack {
 	}
 
 	public void useItemOnEntity(EntityLiving var1) {
-		Item.itemsList[this.itemID].func_4019_b(this, var1);
+		Item.itemsList[this.itemID].saddleEntity(this, var1);
 	}
 
 	public ItemStack copy() {
 		return new ItemStack(this.itemID, this.stackSize, this.itemDamage);
 	}
 
-	public static boolean func_20107_a(ItemStack var0, ItemStack var1) {
-		return var0 == null && var1 == null ? true : (var0 != null && var1 != null ? var0.func_20108_a(var1) : false);
+	public static boolean areItemStacksEqual(ItemStack var0, ItemStack var1) {
+		return var0 == null && var1 == null ? true : (var0 != null && var1 != null ? var0.isItemStackEqual(var1) : false);
 	}
 
-	private boolean func_20108_a(ItemStack var1) {
+	private boolean isItemStackEqual(ItemStack var1) {
 		return this.stackSize != var1.stackSize ? false : (this.itemID != var1.itemID ? false : this.itemDamage == var1.itemDamage);
 	}
 
+	public boolean isItemEqual(ItemStack var1) {
+		return this.itemID == var1.itemID && this.itemDamage == var1.itemDamage;
+	}
+
 	public String func_20109_f() {
-		return Item.itemsList[this.itemID].func_20009_a();
+		return Item.itemsList[this.itemID].getItemNameIS(this);
 	}
 
 	public String toString() {
-		return this.stackSize + "x" + Item.itemsList[this.itemID].func_20009_a() + "@" + this.itemDamage;
+		return this.stackSize + "x" + Item.itemsList[this.itemID].getItemName() + "@" + this.itemDamage;
 	}
 }

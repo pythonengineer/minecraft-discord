@@ -6,9 +6,9 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class ItemRenderer {
 	private Minecraft mc;
-	private ItemStack field_9451_b = null;
-	private float field_9453_c = 0.0F;
-	private float field_9452_d = 0.0F;
+	private ItemStack itemToRender = null;
+	private float equippedProgress = 0.0F;
+	private float prevEquippedProgress = 0.0F;
 	private RenderBlocks field_1357_e = new RenderBlocks();
 	private int field_20099_f = -1;
 
@@ -20,7 +20,7 @@ public class ItemRenderer {
 		GL11.glPushMatrix();
 		if(var1.itemID < 256 && RenderBlocks.func_1219_a(Block.blocksList[var1.itemID].getRenderType())) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-			this.field_1357_e.func_1227_a(Block.blocksList[var1.itemID]);
+			this.field_1357_e.func_1227_a(Block.blocksList[var1.itemID], var1.getItemDamage());
 		} else {
 			if(var1.itemID < 256) {
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
@@ -125,7 +125,7 @@ public class ItemRenderer {
 	}
 
 	public void renderItemInFirstPerson(float var1) {
-		float var2 = this.field_9452_d + (this.field_9453_c - this.field_9452_d) * var1;
+		float var2 = this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * var1;
 		EntityPlayerSP var3 = this.mc.thePlayer;
 		GL11.glPushMatrix();
 		GL11.glRotatef(var3.prevRotationPitch + (var3.rotationPitch - var3.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
@@ -134,9 +134,9 @@ public class ItemRenderer {
 		GL11.glPopMatrix();
 		float var4 = this.mc.theWorld.getLightBrightness(MathHelper.floor_double(var3.posX), MathHelper.floor_double(var3.posY), MathHelper.floor_double(var3.posZ));
 		GL11.glColor4f(var4, var4, var4, 1.0F);
-		ItemStack var5 = this.field_9451_b;
+		ItemStack var5 = this.itemToRender;
 		if(var3.fishEntity != null) {
-			var5 = new ItemStack(Item.stick.shiftedIndex);
+			var5 = new ItemStack(Item.stick);
 		}
 
 		float var6;
@@ -182,7 +182,7 @@ public class ItemRenderer {
 			var9 = MathHelper.sin(MathHelper.sqrt_float(var7) * (float)Math.PI);
 			GL11.glRotatef(var9 * 70.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(-var8 * 20.0F, 0.0F, 0.0F, 1.0F);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTextureForDownloadableImage(this.mc.thePlayer.field_20047_bv, this.mc.thePlayer.getEntityTexture()));
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTextureForDownloadableImage(this.mc.thePlayer.skinUrl, this.mc.thePlayer.getEntityTexture()));
 			GL11.glTranslatef(-1.0F, 3.6F, 3.5F);
 			GL11.glRotatef(120.0F, 0.0F, 0.0F, 1.0F);
 			GL11.glRotatef(200.0F, 1.0F, 0.0F, 0.0F);
@@ -204,7 +204,7 @@ public class ItemRenderer {
 	public void renderOverlays(float var1) {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		int var2;
-		if(this.mc.thePlayer.fire > 0 || this.mc.thePlayer.field_9299_bv) {
+		if(this.mc.thePlayer.func_21062_U()) {
 			var2 = this.mc.renderEngine.getTexture("/terrain.png");
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2);
 			this.renderFireInFirstPerson(var1);
@@ -319,23 +319,23 @@ public class ItemRenderer {
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 
-	public void func_895_a() {
-		this.field_9452_d = this.field_9453_c;
+	public void updateEquippedItem() {
+		this.prevEquippedProgress = this.equippedProgress;
 		EntityPlayerSP var1 = this.mc.thePlayer;
 		ItemStack var2 = var1.inventory.getCurrentItem();
-		boolean var4 = this.field_20099_f == var1.inventory.currentItem && var2 == this.field_9451_b;
-		if(this.field_9451_b == null && var2 == null) {
+		boolean var4 = this.field_20099_f == var1.inventory.currentItem && var2 == this.itemToRender;
+		if(this.itemToRender == null && var2 == null) {
 			var4 = true;
 		}
 
-		if(var2 != null && this.field_9451_b != null && var2 != this.field_9451_b && var2.itemID == this.field_9451_b.itemID) {
-			this.field_9451_b = var2;
+		if(var2 != null && this.itemToRender != null && var2 != this.itemToRender && var2.itemID == this.itemToRender.itemID) {
+			this.itemToRender = var2;
 			var4 = true;
 		}
 
 		float var5 = 0.4F;
 		float var6 = var4 ? 1.0F : 0.0F;
-		float var7 = var6 - this.field_9453_c;
+		float var7 = var6 - this.equippedProgress;
 		if(var7 < -var5) {
 			var7 = -var5;
 		}
@@ -344,19 +344,19 @@ public class ItemRenderer {
 			var7 = var5;
 		}
 
-		this.field_9453_c += var7;
-		if(this.field_9453_c < 0.1F) {
-			this.field_9451_b = var2;
+		this.equippedProgress += var7;
+		if(this.equippedProgress < 0.1F) {
+			this.itemToRender = var2;
 			this.field_20099_f = var1.inventory.currentItem;
 		}
 
 	}
 
 	public void func_9449_b() {
-		this.field_9453_c = 0.0F;
+		this.equippedProgress = 0.0F;
 	}
 
 	public void func_9450_c() {
-		this.field_9453_c = 0.0F;
+		this.equippedProgress = 0.0F;
 	}
 }

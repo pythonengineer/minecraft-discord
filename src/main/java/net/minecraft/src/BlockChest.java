@@ -143,7 +143,7 @@ public class BlockChest extends BlockContainer {
 					}
 
 					var7.stackSize -= var11;
-					EntityItem var12 = new EntityItem(var1, (double)((float)var2 + var8), (double)((float)var3 + var9), (double)((float)var4 + var10), new ItemStack(var7.itemID, var11, var7.itemDamage));
+					EntityItem var12 = new EntityItem(var1, (double)((float)var2 + var8), (double)((float)var3 + var9), (double)((float)var4 + var10), new ItemStack(var7.itemID, var11, var7.getItemDamage()));
 					float var13 = 0.05F;
 					var12.motionX = (double)((float)this.random.nextGaussian() * var13);
 					var12.motionY = (double)((float)this.random.nextGaussian() * var13 + 0.2F);
@@ -194,7 +194,7 @@ public class BlockChest extends BlockContainer {
 		}
 	}
 
-	protected TileEntity SetBlockEntity() {
+	protected TileEntity getBlockEntity() {
 		return new TileEntityChest();
 	}
 }

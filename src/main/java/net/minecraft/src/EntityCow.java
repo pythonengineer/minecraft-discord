@@ -1,8 +1,6 @@
 package net.minecraft.src;
 
 public class EntityCow extends EntityAnimals {
-	public boolean unusedBoolean = false;
-
 	public EntityCow(World var1) {
 		super(var1);
 		this.texture = "/mob/cow.png";

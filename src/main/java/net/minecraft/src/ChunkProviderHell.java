@@ -3,7 +3,7 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class ChunkProviderHell implements IChunkProvider {
-	private EaglercraftRandom field_4170_h;
+	private EaglercraftRandom hellRNG;
 	private NoiseGeneratorOctaves field_4169_i;
 	private NoiseGeneratorOctaves field_4168_j;
 	private NoiseGeneratorOctaves field_4167_k;
@@ -25,14 +25,14 @@ public class ChunkProviderHell implements IChunkProvider {
 
 	public ChunkProviderHell(World var1, long var2) {
 		this.field_4164_n = var1;
-		this.field_4170_h = new EaglercraftRandom(var2);
-		this.field_4169_i = new NoiseGeneratorOctaves(this.field_4170_h, 16);
-		this.field_4168_j = new NoiseGeneratorOctaves(this.field_4170_h, 16);
-		this.field_4167_k = new NoiseGeneratorOctaves(this.field_4170_h, 8);
-		this.field_4166_l = new NoiseGeneratorOctaves(this.field_4170_h, 4);
-		this.field_4165_m = new NoiseGeneratorOctaves(this.field_4170_h, 4);
-		this.field_4177_a = new NoiseGeneratorOctaves(this.field_4170_h, 10);
-		this.field_4176_b = new NoiseGeneratorOctaves(this.field_4170_h, 16);
+		this.hellRNG = new EaglercraftRandom(var2);
+		this.field_4169_i = new NoiseGeneratorOctaves(this.hellRNG, 16);
+		this.field_4168_j = new NoiseGeneratorOctaves(this.hellRNG, 16);
+		this.field_4167_k = new NoiseGeneratorOctaves(this.hellRNG, 8);
+		this.field_4166_l = new NoiseGeneratorOctaves(this.hellRNG, 4);
+		this.field_4165_m = new NoiseGeneratorOctaves(this.hellRNG, 4);
+		this.field_4177_a = new NoiseGeneratorOctaves(this.hellRNG, 10);
+		this.field_4176_b = new NoiseGeneratorOctaves(this.hellRNG, 16);
 	}
 
 	public void func_4059_a(int var1, int var2, byte[] var3) {
@@ -103,24 +103,24 @@ public class ChunkProviderHell implements IChunkProvider {
 	public void func_4058_b(int var1, int var2, byte[] var3) {
 		byte var4 = 64;
 		double var5 = 1.0D / 32.0D;
-		this.field_4162_p = this.field_4166_l.func_807_a(this.field_4162_p, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var5, var5, 1.0D);
-		this.field_4161_q = this.field_4166_l.func_807_a(this.field_4161_q, (double)(var2 * 16), 109.0134D, (double)(var1 * 16), 16, 1, 16, var5, 1.0D, var5);
-		this.field_4160_r = this.field_4165_m.func_807_a(this.field_4160_r, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var5 * 2.0D, var5 * 2.0D, var5 * 2.0D);
+		this.field_4162_p = this.field_4166_l.generateNoiseOctaves(this.field_4162_p, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var5, var5, 1.0D);
+		this.field_4161_q = this.field_4166_l.generateNoiseOctaves(this.field_4161_q, (double)(var2 * 16), 109.0134D, (double)(var1 * 16), 16, 1, 16, var5, 1.0D, var5);
+		this.field_4160_r = this.field_4165_m.generateNoiseOctaves(this.field_4160_r, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var5 * 2.0D, var5 * 2.0D, var5 * 2.0D);
 
 		for(int var7 = 0; var7 < 16; ++var7) {
 			for(int var8 = 0; var8 < 16; ++var8) {
-				boolean var9 = this.field_4162_p[var7 + var8 * 16] + this.field_4170_h.nextDouble() * 0.2D > 0.0D;
-				boolean var10 = this.field_4161_q[var7 + var8 * 16] + this.field_4170_h.nextDouble() * 0.2D > 0.0D;
-				int var11 = (int)(this.field_4160_r[var7 + var8 * 16] / 3.0D + 3.0D + this.field_4170_h.nextDouble() * 0.25D);
+				boolean var9 = this.field_4162_p[var7 + var8 * 16] + this.hellRNG.nextDouble() * 0.2D > 0.0D;
+				boolean var10 = this.field_4161_q[var7 + var8 * 16] + this.hellRNG.nextDouble() * 0.2D > 0.0D;
+				int var11 = (int)(this.field_4160_r[var7 + var8 * 16] / 3.0D + 3.0D + this.hellRNG.nextDouble() * 0.25D);
 				int var12 = -1;
 				byte var13 = (byte)Block.bloodStone.blockID;
 				byte var14 = (byte)Block.bloodStone.blockID;
 
 				for(int var15 = 127; var15 >= 0; --var15) {
 					int var16 = (var7 * 16 + var8) * 128 + var15;
-					if(var15 >= 127 - this.field_4170_h.nextInt(5)) {
+					if(var15 >= 127 - this.hellRNG.nextInt(5)) {
 						var3[var16] = (byte)Block.bedrock.blockID;
-					} else if(var15 <= 0 + this.field_4170_h.nextInt(5)) {
+					} else if(var15 <= 0 + this.hellRNG.nextInt(5)) {
 						var3[var16] = (byte)Block.bedrock.blockID;
 					} else {
 						byte var17 = var3[var16];
@@ -174,14 +174,12 @@ public class ChunkProviderHell implements IChunkProvider {
 	}
 
 	public Chunk provideChunk(int var1, int var2) {
-		this.field_4170_h.setSeed((long)var1 * 341873128712L + (long)var2 * 132897987541L);
+		this.hellRNG.setSeed((long)var1 * 341873128712L + (long)var2 * 132897987541L);
 		byte[] var3 = new byte[-Short.MIN_VALUE];
 		this.func_4059_a(var1, var2, var3);
 		this.func_4058_b(var1, var2, var3);
 		this.field_4159_s.func_867_a(this, this.field_4164_n, var1, var2, var3);
 		Chunk var4 = new Chunk(this.field_4164_n, var3, var1, var2);
-		var4.func_1024_c();
-		var4.func_4143_d();
 		return var4;
 	}
 
@@ -192,11 +190,11 @@ public class ChunkProviderHell implements IChunkProvider {
 
 		double var8 = 684.412D;
 		double var10 = 2053.236D;
-		this.field_4172_f = this.field_4177_a.func_807_a(this.field_4172_f, (double)var2, (double)var3, (double)var4, var5, 1, var7, 1.0D, 0.0D, 1.0D);
-		this.field_4171_g = this.field_4176_b.func_807_a(this.field_4171_g, (double)var2, (double)var3, (double)var4, var5, 1, var7, 100.0D, 0.0D, 100.0D);
-		this.field_4175_c = this.field_4167_k.func_807_a(this.field_4175_c, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8 / 80.0D, var10 / 60.0D, var8 / 80.0D);
-		this.field_4174_d = this.field_4169_i.func_807_a(this.field_4174_d, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
-		this.field_4173_e = this.field_4168_j.func_807_a(this.field_4173_e, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
+		this.field_4172_f = this.field_4177_a.generateNoiseOctaves(this.field_4172_f, (double)var2, (double)var3, (double)var4, var5, 1, var7, 1.0D, 0.0D, 1.0D);
+		this.field_4171_g = this.field_4176_b.generateNoiseOctaves(this.field_4171_g, (double)var2, (double)var3, (double)var4, var5, 1, var7, 100.0D, 0.0D, 100.0D);
+		this.field_4175_c = this.field_4167_k.generateNoiseOctaves(this.field_4175_c, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8 / 80.0D, var10 / 60.0D, var8 / 80.0D);
+		this.field_4174_d = this.field_4169_i.generateNoiseOctaves(this.field_4174_d, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
+		this.field_4173_e = this.field_4168_j.generateNoiseOctaves(this.field_4173_e, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
 		int var12 = 0;
 		int var13 = 0;
 		double[] var14 = new double[var6];
@@ -307,50 +305,50 @@ public class ChunkProviderHell implements IChunkProvider {
 		int var8;
 		int var9;
 		for(var6 = 0; var6 < 8; ++var6) {
-			var7 = var4 + this.field_4170_h.nextInt(16) + 8;
-			var8 = this.field_4170_h.nextInt(120) + 4;
-			var9 = var5 + this.field_4170_h.nextInt(16) + 8;
-			(new WorldGenHellLava(Block.lavaStill.blockID)).generate(this.field_4164_n, this.field_4170_h, var7, var8, var9);
+			var7 = var4 + this.hellRNG.nextInt(16) + 8;
+			var8 = this.hellRNG.nextInt(120) + 4;
+			var9 = var5 + this.hellRNG.nextInt(16) + 8;
+			(new WorldGenHellLava(Block.lavaStill.blockID)).generate(this.field_4164_n, this.hellRNG, var7, var8, var9);
 		}
 
-		var6 = this.field_4170_h.nextInt(this.field_4170_h.nextInt(10) + 1) + 1;
+		var6 = this.hellRNG.nextInt(this.hellRNG.nextInt(10) + 1) + 1;
 
 		int var10;
 		for(var7 = 0; var7 < var6; ++var7) {
-			var8 = var4 + this.field_4170_h.nextInt(16) + 8;
-			var9 = this.field_4170_h.nextInt(120) + 4;
-			var10 = var5 + this.field_4170_h.nextInt(16) + 8;
-			(new WorldGenFire()).generate(this.field_4164_n, this.field_4170_h, var8, var9, var10);
+			var8 = var4 + this.hellRNG.nextInt(16) + 8;
+			var9 = this.hellRNG.nextInt(120) + 4;
+			var10 = var5 + this.hellRNG.nextInt(16) + 8;
+			(new WorldGenFire()).generate(this.field_4164_n, this.hellRNG, var8, var9, var10);
 		}
 
-		var6 = this.field_4170_h.nextInt(this.field_4170_h.nextInt(10) + 1);
+		var6 = this.hellRNG.nextInt(this.hellRNG.nextInt(10) + 1);
 
 		for(var7 = 0; var7 < var6; ++var7) {
-			var8 = var4 + this.field_4170_h.nextInt(16) + 8;
-			var9 = this.field_4170_h.nextInt(120) + 4;
-			var10 = var5 + this.field_4170_h.nextInt(16) + 8;
-			(new WorldGenLightStone1()).generate(this.field_4164_n, this.field_4170_h, var8, var9, var10);
+			var8 = var4 + this.hellRNG.nextInt(16) + 8;
+			var9 = this.hellRNG.nextInt(120) + 4;
+			var10 = var5 + this.hellRNG.nextInt(16) + 8;
+			(new WorldGenLightStone1()).generate(this.field_4164_n, this.hellRNG, var8, var9, var10);
 		}
 
 		for(var7 = 0; var7 < 10; ++var7) {
-			var8 = var4 + this.field_4170_h.nextInt(16) + 8;
-			var9 = this.field_4170_h.nextInt(128);
-			var10 = var5 + this.field_4170_h.nextInt(16) + 8;
-			(new WorldGenLightStone2()).generate(this.field_4164_n, this.field_4170_h, var8, var9, var10);
+			var8 = var4 + this.hellRNG.nextInt(16) + 8;
+			var9 = this.hellRNG.nextInt(128);
+			var10 = var5 + this.hellRNG.nextInt(16) + 8;
+			(new WorldGenLightStone2()).generate(this.field_4164_n, this.hellRNG, var8, var9, var10);
 		}
 
-		if(this.field_4170_h.nextInt(1) == 0) {
-			var7 = var4 + this.field_4170_h.nextInt(16) + 8;
-			var8 = this.field_4170_h.nextInt(128);
-			var9 = var5 + this.field_4170_h.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.mushroomBrown.blockID)).generate(this.field_4164_n, this.field_4170_h, var7, var8, var9);
+		if(this.hellRNG.nextInt(1) == 0) {
+			var7 = var4 + this.hellRNG.nextInt(16) + 8;
+			var8 = this.hellRNG.nextInt(128);
+			var9 = var5 + this.hellRNG.nextInt(16) + 8;
+			(new WorldGenFlowers(Block.mushroomBrown.blockID)).generate(this.field_4164_n, this.hellRNG, var7, var8, var9);
 		}
 
-		if(this.field_4170_h.nextInt(1) == 0) {
-			var7 = var4 + this.field_4170_h.nextInt(16) + 8;
-			var8 = this.field_4170_h.nextInt(128);
-			var9 = var5 + this.field_4170_h.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.field_4164_n, this.field_4170_h, var7, var8, var9);
+		if(this.hellRNG.nextInt(1) == 0) {
+			var7 = var4 + this.hellRNG.nextInt(16) + 8;
+			var8 = this.hellRNG.nextInt(128);
+			var9 = var5 + this.hellRNG.nextInt(16) + 8;
+			(new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.field_4164_n, this.hellRNG, var7, var8, var9);
 		}
 
 		BlockSand.fallInstantly = false;
@@ -366,5 +364,9 @@ public class ChunkProviderHell implements IChunkProvider {
 
 	public boolean func_536_b() {
 		return true;
+	}
+
+	public String toString() {
+		return "HellRandomLevelSource";
 	}
 }

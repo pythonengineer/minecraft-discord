@@ -5,7 +5,7 @@ public class InventoryPlayer implements IInventory {
 	public ItemStack[] armorInventory = new ItemStack[4];
 	public int currentItem = 0;
 	private EntityPlayer player;
-	private ItemStack field_20077_f;
+	private ItemStack itemStack;
 	public boolean inventoryChanged = false;
 
 	public InventoryPlayer(EntityPlayer var1) {
@@ -26,9 +26,9 @@ public class InventoryPlayer implements IInventory {
 		return -1;
 	}
 
-	private int getFirstPartialMatchingStack(int var1) {
+	private int func_21105_c(ItemStack var1) {
 		for(int var2 = 0; var2 < this.mainInventory.length; ++var2) {
-			if(this.mainInventory[var2] != null && this.mainInventory[var2].itemID == var1 && this.mainInventory[var2].stackSize < this.mainInventory[var2].getMaxStackSize() && this.mainInventory[var2].stackSize < this.getInventoryStackLimit()) {
+			if(this.mainInventory[var2] != null && this.mainInventory[var2].itemID == var1.itemID && this.mainInventory[var2].func_21180_d() && this.mainInventory[var2].stackSize < this.mainInventory[var2].getMaxStackSize() && this.mainInventory[var2].stackSize < this.getInventoryStackLimit() && (!this.mainInventory[var2].getHasSubtypes() || this.mainInventory[var2].getItemDamage() == var1.getItemDamage())) {
 				return var2;
 			}
 		}
@@ -71,35 +71,37 @@ public class InventoryPlayer implements IInventory {
 
 	}
 
-	private int addItemsToInventory(int var1, int var2) {
-		int var3 = this.getFirstPartialMatchingStack(var1);
-		if(var3 < 0) {
-			var3 = this.getFirstEmptyStack();
+	private int func_21106_d(ItemStack var1) {
+		int var2 = var1.itemID;
+		int var3 = var1.stackSize;
+		int var4 = this.func_21105_c(var1);
+		if(var4 < 0) {
+			var4 = this.getFirstEmptyStack();
 		}
 
-		if(var3 < 0) {
-			return var2;
+		if(var4 < 0) {
+			return var3;
 		} else {
-			if(this.mainInventory[var3] == null) {
-				this.mainInventory[var3] = new ItemStack(var1, 0);
+			if(this.mainInventory[var4] == null) {
+				this.mainInventory[var4] = new ItemStack(var2, 0, var1.getItemDamage());
 			}
 
-			int var4 = var2;
-			if(var2 > this.mainInventory[var3].getMaxStackSize() - this.mainInventory[var3].stackSize) {
-				var4 = this.mainInventory[var3].getMaxStackSize() - this.mainInventory[var3].stackSize;
+			int var5 = var3;
+			if(var3 > this.mainInventory[var4].getMaxStackSize() - this.mainInventory[var4].stackSize) {
+				var5 = this.mainInventory[var4].getMaxStackSize() - this.mainInventory[var4].stackSize;
 			}
 
-			if(var4 > this.getInventoryStackLimit() - this.mainInventory[var3].stackSize) {
-				var4 = this.getInventoryStackLimit() - this.mainInventory[var3].stackSize;
+			if(var5 > this.getInventoryStackLimit() - this.mainInventory[var4].stackSize) {
+				var5 = this.getInventoryStackLimit() - this.mainInventory[var4].stackSize;
 			}
 
-			if(var4 == 0) {
-				return var2;
+			if(var5 == 0) {
+				return var3;
 			} else {
-				var2 -= var4;
-				this.mainInventory[var3].stackSize += var4;
-				this.mainInventory[var3].animationsToGo = 5;
-				return var2;
+				var3 -= var5;
+				this.mainInventory[var4].stackSize += var5;
+				this.mainInventory[var4].animationsToGo = 5;
+				return var3;
 			}
 		}
 	}
@@ -127,8 +129,8 @@ public class InventoryPlayer implements IInventory {
 	}
 
 	public boolean addItemStackToInventory(ItemStack var1) {
-		if(var1.itemDamage == 0) {
-			var1.stackSize = this.addItemsToInventory(var1.itemID, var1.stackSize);
+		if(!var1.isItemDamaged()) {
+			var1.stackSize = this.func_21106_d(var1);
 			if(var1.stackSize == 0) {
 				return true;
 			}
@@ -282,11 +284,11 @@ public class InventoryPlayer implements IInventory {
 		for(int var4 = 0; var4 < this.armorInventory.length; ++var4) {
 			if(this.armorInventory[var4] != null && this.armorInventory[var4].getItem() instanceof ItemArmor) {
 				int var5 = this.armorInventory[var4].getMaxDamage();
-				int var6 = this.armorInventory[var4].itemDamage;
+				int var6 = this.armorInventory[var4].getItemDamageForDisplay();
 				int var7 = var5 - var6;
 				var2 += var7;
 				var3 += var5;
-				int var8 = ((ItemArmor)this.armorInventory[var4].getItem()).damageReduceAmmount;
+				int var8 = ((ItemArmor)this.armorInventory[var4].getItem()).damageReduceAmount;
 				var1 += var8;
 			}
 		}
@@ -333,16 +335,16 @@ public class InventoryPlayer implements IInventory {
 		this.inventoryChanged = true;
 	}
 
-	public void func_20076_b(ItemStack var1) {
-		this.field_20077_f = var1;
-		this.player.func_20058_b(var1);
+	public void setItemStack(ItemStack var1) {
+		this.itemStack = var1;
+		this.player.onItemStackChanged(var1);
 	}
 
-	public ItemStack func_20075_i() {
-		return this.field_20077_f;
+	public ItemStack getItemStack() {
+		return this.itemStack;
 	}
 
-	public boolean func_20070_a_(EntityPlayer var1) {
+	public boolean canInteractWith(EntityPlayer var1) {
 		return this.player.isDead ? false : var1.getDistanceSqToEntity(this.player) <= 64.0D;
 	}
 }

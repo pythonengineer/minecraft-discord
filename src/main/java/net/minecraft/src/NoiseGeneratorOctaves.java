@@ -28,7 +28,7 @@ public class NoiseGeneratorOctaves extends NoiseGenerator {
 		return var5;
 	}
 
-	public double[] func_807_a(double[] var1, double var2, double var4, double var6, int var8, int var9, int var10, double var11, double var13, double var15) {
+	public double[] generateNoiseOctaves(double[] var1, double var2, double var4, double var6, int var8, int var9, int var10, double var11, double var13, double var15) {
 		if(var1 == null) {
 			var1 = new double[var8 * var9 * var10];
 		} else {
@@ -48,6 +48,6 @@ public class NoiseGeneratorOctaves extends NoiseGenerator {
 	}
 
 	public double[] func_4109_a(double[] var1, int var2, int var3, int var4, int var5, double var6, double var8, double var10) {
-		return this.func_807_a(var1, (double)var2, 10.0D, (double)var3, var4, 1, var5, var6, 1.0D, var8);
+		return this.generateNoiseOctaves(var1, (double)var2, 10.0D, (double)var3, var4, 1, var5, var6, 1.0D, var8);
 	}
 }

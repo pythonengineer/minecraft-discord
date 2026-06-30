@@ -7,17 +7,17 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 public class RenderPainting extends Render {
 	private EaglercraftRandom rand = new EaglercraftRandom();
 
-	public void a(EntityPainting var1, double var2, double var4, double var6, float var8, float var9) {
+	public void func_158_a(EntityPainting var1, double var2, double var4, double var6, float var8, float var9) {
 		this.rand.setSeed(187L);
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
 		GL11.glRotatef(var8, 0.0F, 1.0F, 0.0F);
 		GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 		this.loadTexture("/art/kz.png");
-		EnumArt var10 = var1.field_690_b;
+		EnumArt var10 = var1.art;
 		float var11 = 1.0F / 16.0F;
 		GL11.glScalef(var11, var11, var11);
-		this.func_159_a(var1, var10.field_1623_z, var10.field_1636_A, var10.field_1634_B, var10.field_1632_C);
+		this.func_159_a(var1, var10.sizeX, var10.sizeY, var10.offsetX, var10.offsetY);
 		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 		GL11.glPopMatrix();
 	}
@@ -93,19 +93,19 @@ public class RenderPainting extends Render {
 		int var4 = MathHelper.floor_double(var1.posX);
 		int var5 = MathHelper.floor_double(var1.posY + (double)(var3 / 16.0F));
 		int var6 = MathHelper.floor_double(var1.posZ);
-		if(var1.field_691_a == 0) {
+		if(var1.direction == 0) {
 			var4 = MathHelper.floor_double(var1.posX + (double)(var2 / 16.0F));
 		}
 
-		if(var1.field_691_a == 1) {
+		if(var1.direction == 1) {
 			var6 = MathHelper.floor_double(var1.posZ - (double)(var2 / 16.0F));
 		}
 
-		if(var1.field_691_a == 2) {
+		if(var1.direction == 2) {
 			var4 = MathHelper.floor_double(var1.posX - (double)(var2 / 16.0F));
 		}
 
-		if(var1.field_691_a == 3) {
+		if(var1.direction == 3) {
 			var6 = MathHelper.floor_double(var1.posZ + (double)(var2 / 16.0F));
 		}
 
@@ -114,6 +114,6 @@ public class RenderPainting extends Render {
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.a((EntityPainting)var1, var2, var4, var6, var8, var9);
+		this.func_158_a((EntityPainting)var1, var2, var4, var6, var8, var9);
 	}
 }

@@ -16,15 +16,15 @@ public class GuiControls extends GuiScreen {
 	}
 
 	public void initGui() {
-		StringTranslate var1 = StringTranslate.func_20162_a();
+		StringTranslate var1 = StringTranslate.getInstance();
 		int var2 = this.func_20080_j();
 
 		for(int var3 = 0; var3 < this.options.keyBindings.length; ++var3) {
 			this.controlList.add(new GuiSmallButton(var3, var2 + var3 % 2 * 160, this.height / 6 + 24 * (var3 >> 1), 70, 20, this.options.getOptionDisplayString(var3)));
 		}
 
-		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, var1.func_20163_a("gui.done")));
-		this.screenTitle = var1.func_20163_a("controls.title");
+		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, var1.translateKey("gui.done")));
+		this.screenTitle = var1.translateKey("controls.title");
 	}
 
 	protected void actionPerformed(GuiButton var1) {
@@ -58,7 +58,7 @@ public class GuiControls extends GuiScreen {
 		int var4 = this.func_20080_j();
 
 		for(int var5 = 0; var5 < this.options.keyBindings.length; ++var5) {
-			this.drawString(this.fontRenderer, this.options.func_20102_a(var5), var4 + var5 % 2 * 160 + 70 + 6, this.height / 6 + 24 * (var5 >> 1) + 7, -1);
+			this.drawString(this.fontRenderer, this.options.getKeyBindingDescription(var5), var4 + var5 % 2 * 160 + 70 + 6, this.height / 6 + 24 * (var5 >> 1) + 7, -1);
 		}
 
 		super.drawScreen(var1, var2, var3);

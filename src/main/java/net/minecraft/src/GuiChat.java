@@ -7,7 +7,7 @@ import net.lax1dude.eaglercraft.minecraft.GuiScreenVisualViewport;
 public class GuiChat extends GuiScreenVisualViewport {
 	private String message = "";
 	private int updateCounter = 0;
-	private static final String field_20082_i = FontAllowedCharacters.field_20157_a;
+	private static final String field_20082_i = FontAllowedCharacters.allowedCharacters;
 
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);

@@ -115,6 +115,6 @@ public class PlayerControllerSP extends PlayerController {
 
 	public void updateController() {
 		this.prevBlockDamage = this.curBlockDamage;
-		this.mc.sndManager.func_4033_c();
+		this.mc.sndManager.playRandomMusicIfReady();
 	}
 }

@@ -14,12 +14,12 @@ public class EntityPlayerSP extends EntityPlayer {
 		super(var2);
 		this.mc = var1;
 		this.dimension = var4;
-		if(var3 != null && var3.playerName != null && var3.playerName.length() > 0) {
-			this.field_20047_bv = var3.playerName;
-	        this.field_771_i = var3.playerName;
-			System.out.println("Loading texture " + this.field_20047_bv);
+		if(var3 != null && var3.username != null && var3.username.length() > 0) {
+			this.skinUrl = var3.username;
+	        this.username = var3.username;
+			System.out.println("Loading texture " + this.skinUrl);
 		} else {
-            this.field_771_i = "";
+            this.username = "";
 		}
 	}
 
@@ -61,8 +61,8 @@ public class EntityPlayerSP extends EntityPlayer {
 		}
 
 		this.movementInput.updatePlayerMoveState(this);
-		if(this.movementInput.sneak && this.field_9287_aY < 0.2F) {
-			this.field_9287_aY = 0.2F;
+		if(this.movementInput.sneak && this.ySize < 0.2F) {
+			this.ySize = 0.2F;
 		}
 
 		super.onLivingUpdate();
@@ -107,26 +107,16 @@ public class EntityPlayerSP extends EntityPlayer {
 		this.mc.displayGuiScreen(new GuiFurnace(this.inventory, var1));
 	}
 
+	public void displayGUIDispenser(TileEntityDispenser var1) {
+		this.mc.displayGuiScreen(new GuiDispenser(this.inventory, var1));
+	}
+
 	public void onItemPickup(Entity var1, int var2) {
-		this.mc.effectRenderer.func_1192_a(new EntityPickupFX(this.mc.theWorld, var1, this, -0.5F));
+		this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, var1, this, -0.5F));
 	}
 
 	public int getPlayerArmorValue() {
 		return this.inventory.getTotalArmorValue();
-	}
-
-	public void useCurrentItemOnEntity(Entity var1) {
-		if(!var1.interact(this)) {
-			ItemStack var2 = this.getCurrentEquippedItem();
-			if(var2 != null && var1 instanceof EntityLiving) {
-				var2.useItemOnEntity((EntityLiving)var1);
-				if(var2.stackSize <= 0) {
-					var2.func_1097_a(this);
-					this.destroyCurrentEquippedItem();
-				}
-			}
-
-		}
 	}
 
 	public void sendChatMessage(String var1) {

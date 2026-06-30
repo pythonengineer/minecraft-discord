@@ -6,14 +6,14 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 public abstract class EntityPlayer extends EntityLiving {
 	public InventoryPlayer inventory = new InventoryPlayer(this);
 	public CraftingInventoryCB field_20069_g;
-	public CraftingInventoryCB field_20068_h;
+	public CraftingInventoryCB craftingInventory;
 	public byte field_9371_f = 0;
 	public int score = 0;
 	public float field_775_e;
 	public float field_774_f;
 	public boolean isSwinging = false;
 	public int swingProgressInt = 0;
-	public String field_771_i;
+	public String username;
 	public int dimension;
 	public String field_20067_q;
 	public double field_20066_r;
@@ -28,7 +28,7 @@ public abstract class EntityPlayer extends EntityLiving {
 	public EntityPlayer(World var1) {
 		super(var1);
 		this.field_20069_g = new CraftingInventoryPlayerCB(this.inventory, !var1.multiplayerWorld);
-		this.field_20068_h = this.field_20069_g;
+		this.craftingInventory = this.field_20069_g;
 		this.yOffset = 1.62F;
 		this.setLocationAndAngles((double)var1.spawnX + 0.5D, (double)(var1.spawnY + 1), (double)var1.spawnZ + 0.5D, 0.0F, 0.0F);
 		this.health = 20;
@@ -40,9 +40,9 @@ public abstract class EntityPlayer extends EntityLiving {
 
 	public void onUpdate() {
 		super.onUpdate();
-		if(!this.worldObj.multiplayerWorld && this.field_20068_h != null && !this.field_20068_h.func_20120_b(this)) {
+		if(!this.worldObj.multiplayerWorld && this.craftingInventory != null && !this.craftingInventory.func_20120_b(this)) {
 			this.func_20059_m();
-			this.field_20068_h = this.field_20069_g;
+			this.craftingInventory = this.field_20069_g;
 		}
 
 		this.field_20066_r = this.field_20063_u;
@@ -82,16 +82,16 @@ public abstract class EntityPlayer extends EntityLiving {
 	}
 
 	protected void func_20059_m() {
-		this.field_20068_h = this.field_20069_g;
+		this.craftingInventory = this.field_20069_g;
 	}
 
-	public void func_20046_s() {
+	public void updateCloak() {
 		this.field_20067_q = null;
-		this.skinUrl = null;
+		this.cloakUrl = null;
 	}
 
-	public void func_350_p() {
-		super.func_350_p();
+	public void updateRidden() {
+		super.updateRidden();
 		this.field_775_e = this.field_774_f;
 		this.field_774_f = 0.0F;
 	}
@@ -169,7 +169,7 @@ public abstract class EntityPlayer extends EntityLiving {
 		this.setSize(0.2F, 0.2F);
 		this.setPosition(this.posX, this.posY, this.posZ);
 		this.motionY = (double)0.1F;
-		if(this.field_771_i.equals("Notch")) {
+		if(this.username.equals("Notch")) {
 			this.dropPlayerItemWithRandomChoice(new ItemStack(Item.appleRed, 1), true);
 		}
 
@@ -198,7 +198,7 @@ public abstract class EntityPlayer extends EntityLiving {
 
 	public void dropPlayerItemWithRandomChoice(ItemStack var1, boolean var2) {
 		if(var1 != null) {
-			EntityItem var3 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F + (double)this.func_373_s(), this.posZ, var1);
+			EntityItem var3 = new EntityItem(this.worldObj, this.posX, this.posY - (double)0.3F + (double)this.getEyeHeight(), this.posZ, var1);
 			var3.delayBeforeCanPickup = 40;
 			float var4 = 0.1F;
 			float var5;
@@ -268,7 +268,7 @@ public abstract class EntityPlayer extends EntityLiving {
 	public void onItemPickup(Entity var1, int var2) {
 	}
 
-	public float func_373_s() {
+	public float getEyeHeight() {
 		return 0.12F;
 	}
 
@@ -307,11 +307,24 @@ public abstract class EntityPlayer extends EntityLiving {
 	public void displayGUIFurnace(TileEntityFurnace var1) {
 	}
 
+	public void displayGUIDispenser(TileEntityDispenser var1) {
+	}
+
 	public void displayGUIEditSign(TileEntitySign var1) {
 	}
 
 	public void useCurrentItemOnEntity(Entity var1) {
-		var1.interact(this);
+		if(!var1.interact(this)) {
+			ItemStack var2 = this.getCurrentEquippedItem();
+			if(var2 != null && var1 instanceof EntityLiving) {
+				var2.useItemOnEntity((EntityLiving)var1);
+				if(var2.stackSize <= 0) {
+					var2.func_1097_a(this);
+					this.destroyCurrentEquippedItem();
+				}
+	        }
+		}
+
 	}
 
 	public ItemStack getCurrentEquippedItem() {
@@ -350,14 +363,14 @@ public abstract class EntityPlayer extends EntityLiving {
 	public void respawnPlayer() {
 	}
 
-	public void func_20058_b(ItemStack var1) {
+	public void onItemStackChanged(ItemStack var1) {
 	}
 
 	public void setEntityDead() {
 		super.setEntityDead();
 		this.field_20069_g.onCraftGuiClosed(this);
-		if(this.field_20068_h != null) {
-			this.field_20068_h.onCraftGuiClosed(this);
+		if(this.craftingInventory != null) {
+			this.craftingInventory.onCraftGuiClosed(this);
 		}
 
 	}

@@ -3,18 +3,18 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class RenderBiped extends RenderLiving {
-	protected ModelBiped field_4013_a;
+	protected ModelBiped modelBipedMain;
 
 	public RenderBiped(ModelBiped var1, float var2) {
 		super(var1, var2);
-		this.field_4013_a = var1;
+		this.modelBipedMain = var1;
 	}
 
 	protected void renderEquippedItems(EntityLiving var1, float var2) {
 		ItemStack var3 = var1.getHeldItem();
 		if(var3 != null) {
 			GL11.glPushMatrix();
-			this.field_4013_a.bipedRightArm.func_926_b(1.0F / 16.0F);
+			this.modelBipedMain.bipedRightArm.func_926_b(1.0F / 16.0F);
 			GL11.glTranslatef(-(1.0F / 16.0F), 7.0F / 16.0F, 1.0F / 16.0F);
 			float var4;
 			if(var3.itemID < 256 && RenderBlocks.func_1219_a(Block.blocksList[var3.itemID].getRenderType())) {
@@ -39,7 +39,7 @@ public class RenderBiped extends RenderLiving {
 				GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
 			}
 
-			this.renderManager.field_4236_f.renderItem(var3);
+			this.renderManager.itemRenderer.renderItem(var3);
 			GL11.glPopMatrix();
 		}
 

@@ -28,7 +28,7 @@ public class ItemBoat extends Item {
 		if(var24 == null) {
 			return var1;
 		} else {
-			if(var24.typeOfHit == 0) {
+			if(var24.typeOfHit == EnumMovingObjectType.TILE) {
 				int var25 = var24.blockX;
 				int var26 = var24.blockY;
 				int var27 = var24.blockZ;

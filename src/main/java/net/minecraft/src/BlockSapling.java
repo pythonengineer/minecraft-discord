@@ -16,16 +16,21 @@ public class BlockSapling extends BlockFlower {
 			if(var6 < 15) {
 				var1.setBlockMetadataWithNotify(var2, var3, var4, var6 + 1);
 			} else {
-				var1.setBlock(var2, var3, var4, 0);
-				Object var7 = new WorldGenTrees();
-				if(var5.nextInt(10) == 0) {
-					var7 = new WorldGenBigTree();
-				}
-
-				if(!((WorldGenerator)var7).generate(var1, var5, var2, var3, var4)) {
-					var1.setBlock(var2, var3, var4, this.blockID);
-				}
+				this.func_21028_c(var1, var2, var3, var4, var5);
 			}
+		}
+
+	}
+
+	public void func_21028_c(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
+		var1.setBlock(var2, var3, var4, 0);
+		Object var6 = new WorldGenTrees();
+		if(var5.nextInt(10) == 0) {
+			var6 = new WorldGenBigTree();
+		}
+
+		if(!((WorldGenerator)var6).generate(var1, var5, var2, var3, var4)) {
+			var1.setBlock(var2, var3, var4, this.blockID);
 		}
 
 	}

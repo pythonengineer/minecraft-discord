@@ -3,13 +3,13 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class BlockPumpkin extends Block {
-	private boolean field_4072_a;
+	private boolean blockType;
 
 	protected BlockPumpkin(int var1, int var2, boolean var3) {
 		super(var1, Material.pumpkin);
 		this.blockIndexInTexture = var2;
 		this.setTickOnLoad(true);
-		this.field_4072_a = var3;
+		this.blockType = var3;
 	}
 
 	public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
@@ -19,7 +19,7 @@ public class BlockPumpkin extends Block {
 			return this.blockIndexInTexture;
 		} else {
 			int var3 = this.blockIndexInTexture + 1 + 16;
-			if(this.field_4072_a) {
+			if(this.blockType) {
 				++var3;
 			}
 

@@ -3,13 +3,15 @@ package net.minecraft.src;
 public class EntityCreeper extends EntityMobs {
 	int timeSinceIgnited;
 	int lastActiveTime;
-	int fuseTime = 30;
-	int creeperState = -1;
-	int field_12241_e = -1;
 
 	public EntityCreeper(World var1) {
 		super(var1);
 		this.texture = "/mob/creeper.png";
+	}
+
+	protected void entityInit() {
+		super.entityInit();
+		this.dataWatcher.addObject(16, Byte.valueOf((byte)-1));
 	}
 
 	public void writeEntityToNBT(NBTTagCompound var1) {
@@ -20,66 +22,25 @@ public class EntityCreeper extends EntityMobs {
 		super.readEntityFromNBT(var1);
 	}
 
-	public void func_9282_a(byte var1) {
-		super.func_9282_a(var1);
-		if(var1 == 4) {
-			if(this.timeSinceIgnited == 0) {
-				this.worldObj.playSoundAtEntity(this, "random.fuse", 1.0F, 0.5F);
-			}
-
-			this.creeperState = 1;
-		}
-
-		if(var1 == 5) {
-			this.creeperState = -1;
-		}
-
-	}
-
 	public void onUpdate() {
 		this.lastActiveTime = this.timeSinceIgnited;
 		if(this.worldObj.multiplayerWorld) {
-			this.timeSinceIgnited += this.creeperState;
+			int var1 = this.func_21091_q();
+			if(var1 > 0 && this.timeSinceIgnited == 0) {
+				this.worldObj.playSoundAtEntity(this, "random.fuse", 1.0F, 0.5F);
+			}
+
+			this.timeSinceIgnited += var1;
 			if(this.timeSinceIgnited < 0) {
 				this.timeSinceIgnited = 0;
 			}
 
-			if(this.timeSinceIgnited >= this.fuseTime) {
-				this.timeSinceIgnited = this.fuseTime;
+			if(this.timeSinceIgnited >= 30) {
+				this.timeSinceIgnited = 30;
 			}
 		}
 
 		super.onUpdate();
-	}
-
-	protected void updatePlayerActionState() {
-		if(this.field_12241_e != this.creeperState) {
-			this.field_12241_e = this.creeperState;
-			if(this.creeperState > 0) {
-				this.worldObj.func_9425_a(this, (byte)4);
-			} else {
-				this.worldObj.func_9425_a(this, (byte)5);
-			}
-		}
-
-		this.lastActiveTime = this.timeSinceIgnited;
-		if(this.worldObj.multiplayerWorld) {
-			super.updatePlayerActionState();
-		} else {
-			if(this.timeSinceIgnited > 0 && this.creeperState < 0) {
-				--this.timeSinceIgnited;
-			}
-
-			if(this.creeperState >= 0) {
-				this.creeperState = 2;
-			}
-
-			super.updatePlayerActionState();
-			if(this.creeperState != 1) {
-				this.creeperState = -1;
-			}
-		}
-
 	}
 
 	protected String getHurtSound() {
@@ -99,28 +60,43 @@ public class EntityCreeper extends EntityMobs {
 	}
 
 	protected void attackEntity(Entity var1, float var2) {
-		if(this.creeperState <= 0 && var2 < 3.0F || this.creeperState > 0 && var2 < 7.0F) {
+		int var3 = this.func_21091_q();
+		if(var3 <= 0 && var2 < 3.0F || var3 > 0 && var2 < 7.0F) {
 			if(this.timeSinceIgnited == 0) {
 				this.worldObj.playSoundAtEntity(this, "random.fuse", 1.0F, 0.5F);
 			}
 
-			this.creeperState = 1;
+			this.func_21090_e(1);
 			++this.timeSinceIgnited;
-			if(this.timeSinceIgnited == this.fuseTime) {
+			if(this.timeSinceIgnited >= 30) {
 				this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, 3.0F);
 				this.setEntityDead();
 			}
 
 			this.hasAttacked = true;
+		} else {
+			this.func_21090_e(-1);
+			--this.timeSinceIgnited;
+			if(this.timeSinceIgnited < 0) {
+				this.timeSinceIgnited = 0;
+			}
 		}
 
 	}
 
 	public float func_440_b(float var1) {
-		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * var1) / (float)(this.fuseTime - 2);
+		return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * var1) / 28.0F;
 	}
 
 	protected int getDropItemId() {
 		return Item.gunpowder.shiftedIndex;
+	}
+
+	private int func_21091_q() {
+		return this.dataWatcher.getWatchableObjectByte(16);
+	}
+
+	private void func_21090_e(int var1) {
+		this.dataWatcher.updateObject(16, Byte.valueOf((byte)var1));
 	}
 }

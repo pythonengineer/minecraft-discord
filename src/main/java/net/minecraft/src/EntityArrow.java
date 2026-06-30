@@ -30,7 +30,7 @@ public class EntityArrow extends Entity {
 		super(var1);
 		this.field_682_g = var2;
 		this.setSize(0.5F, 0.5F);
-		this.setLocationAndAngles(var2.posX, var2.posY + (double)var2.func_373_s(), var2.posZ, var2.rotationYaw, var2.rotationPitch);
+		this.setLocationAndAngles(var2.posX, var2.posY + (double)var2.getEyeHeight(), var2.posZ, var2.rotationYaw, var2.rotationPitch);
 		this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
 		this.posY -= (double)0.1F;
 		this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
@@ -40,6 +40,9 @@ public class EntityArrow extends Entity {
 		this.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI));
 		this.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI));
 		this.setArrowHeading(this.motionX, this.motionY, this.motionZ, 1.5F, 1.0F);
+	}
+
+	protected void entityInit() {
 	}
 
 	public void setArrowHeading(double var1, double var3, double var5, float var7, float var8) {
@@ -234,7 +237,7 @@ public class EntityArrow extends Entity {
 
 	public void onCollideWithPlayer(EntityPlayer var1) {
 		if(!this.worldObj.multiplayerWorld) {
-			if(this.inGround && this.field_682_g == var1 && this.arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+			if(this.inGround && this.field_682_g == var1 && this.arrowShake <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow, 1))) {
 				this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 				var1.onItemPickup(this, 1);
 				this.setEntityDead();
@@ -243,7 +246,7 @@ public class EntityArrow extends Entity {
 		}
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 }

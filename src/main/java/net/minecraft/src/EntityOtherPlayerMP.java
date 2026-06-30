@@ -9,16 +9,16 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 	private double field_782_bj;
 	private double field_780_bk;
 	private double field_786_bl;
-	float a = 0.0F;
+	float field_20924_a = 0.0F;
 
 	public EntityOtherPlayerMP(World var1, String var2) {
 		super(var1);
-		this.field_771_i = var2;
+		this.username = var2;
 		this.yOffset = 0.0F;
 		this.stepHeight = 0.0F;
 		if(var2 != null && var2.length() > 0) {
-			this.field_20047_bv = var2;
-			System.out.println("Loading texture " + this.field_20047_bv);
+			this.skinUrl = var2;
+			System.out.println("Loading texture " + this.skinUrl);
 		}
 
 		this.noClip = true;
@@ -53,7 +53,7 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 		this.field_703_S += this.field_704_R;
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 
@@ -98,20 +98,16 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 		this.field_9328_R += (var2 - this.field_9328_R) * 0.8F;
 	}
 
-	public boolean isSneaking() {
-		return this.field_12240_bw;
-	}
-
-	public void func_20045_c(int var1, int var2) {
-		ItemStack var3 = null;
+	public void func_20045_c(int var1, int var2, int var3) {
+		ItemStack var4 = null;
 		if(var2 >= 0) {
-			var3 = new ItemStack(var2);
+			var4 = new ItemStack(var2, 1, var3);
 		}
 
 		if(var1 == 0) {
-			this.inventory.mainInventory[this.inventory.currentItem] = var3;
+			this.inventory.mainInventory[this.inventory.currentItem] = var4;
 		} else {
-			this.inventory.armorInventory[var1 - 1] = var3;
+			this.inventory.armorInventory[var1 - 1] = var4;
 		}
 
 	}

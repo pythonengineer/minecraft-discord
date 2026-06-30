@@ -12,12 +12,12 @@ public class TextureCompassFX extends TextureFX {
 	public TextureCompassFX(Minecraft var1) {
 		super(Item.compass.getIconIndex((ItemStack)null));
 		this.mc = var1;
-		this.field_1128_f = 1;
+		this.tileImage = 1;
 
 		try {
 			ImageData var2 = ImageData.loadImageFile("/assets/gui/items.png");
-			int var3 = this.field_1126_b % 16 * 16;
-			int var4 = this.field_1126_b / 16 * 16;
+			int var3 = this.iconIndex % 16 * 16;
+			int var4 = this.iconIndex / 16 * 16;
 			var2.getRGB(var3, var4, 16, 16, this.field_4230_h, 0, 16);
 		} catch (Exception var5) {
 			var5.printStackTrace();
@@ -25,13 +25,13 @@ public class TextureCompassFX extends TextureFX {
 
 	}
 
-	public void func_783_a() {
+	public void onTick() {
 		for(int var1 = 0; var1 < 256; ++var1) {
 			int var2 = this.field_4230_h[var1] >> 24 & 255;
 			int var3 = this.field_4230_h[var1] >> 16 & 255;
 			int var4 = this.field_4230_h[var1] >> 8 & 255;
 			int var5 = this.field_4230_h[var1] >> 0 & 255;
-			if(this.field_1131_c) {
+			if(this.anaglyphEnabled) {
 				int var6 = (var3 * 30 + var4 * 59 + var5 * 11) / 100;
 				int var7 = (var3 * 30 + var4 * 70) / 100;
 				int var8 = (var3 * 30 + var5 * 70) / 100;
@@ -40,10 +40,10 @@ public class TextureCompassFX extends TextureFX {
 				var5 = var8;
 			}
 
-			this.field_1127_a[var1 * 4 + 0] = (byte)var3;
-			this.field_1127_a[var1 * 4 + 1] = (byte)var4;
-			this.field_1127_a[var1 * 4 + 2] = (byte)var5;
-			this.field_1127_a[var1 * 4 + 3] = (byte)var2;
+			this.imageData[var1 * 4 + 0] = (byte)var3;
+			this.imageData[var1 * 4 + 1] = (byte)var4;
+			this.imageData[var1 * 4 + 2] = (byte)var5;
+			this.imageData[var1 * 4 + 3] = (byte)var2;
 		}
 
 		double var20 = 0.0D;
@@ -98,7 +98,7 @@ public class TextureCompassFX extends TextureFX {
 			var14 = 100;
 			var15 = 100;
 			var16 = 255;
-			if(this.field_1131_c) {
+			if(this.anaglyphEnabled) {
 				var17 = (var13 * 30 + var14 * 59 + var15 * 11) / 100;
 				var18 = (var13 * 30 + var14 * 70) / 100;
 				var19 = (var13 * 30 + var15 * 70) / 100;
@@ -107,10 +107,10 @@ public class TextureCompassFX extends TextureFX {
 				var15 = var19;
 			}
 
-			this.field_1127_a[var12 * 4 + 0] = (byte)var13;
-			this.field_1127_a[var12 * 4 + 1] = (byte)var14;
-			this.field_1127_a[var12 * 4 + 2] = (byte)var15;
-			this.field_1127_a[var12 * 4 + 3] = (byte)var16;
+			this.imageData[var12 * 4 + 0] = (byte)var13;
+			this.imageData[var12 * 4 + 1] = (byte)var14;
+			this.imageData[var12 * 4 + 2] = (byte)var15;
+			this.imageData[var12 * 4 + 3] = (byte)var16;
 		}
 
 		for(var9 = -8; var9 <= 16; ++var9) {
@@ -121,7 +121,7 @@ public class TextureCompassFX extends TextureFX {
 			var14 = var9 >= 0 ? 20 : 100;
 			var15 = var9 >= 0 ? 20 : 100;
 			var16 = 255;
-			if(this.field_1131_c) {
+			if(this.anaglyphEnabled) {
 				var17 = (var13 * 30 + var14 * 59 + var15 * 11) / 100;
 				var18 = (var13 * 30 + var14 * 70) / 100;
 				var19 = (var13 * 30 + var15 * 70) / 100;
@@ -130,10 +130,10 @@ public class TextureCompassFX extends TextureFX {
 				var15 = var19;
 			}
 
-			this.field_1127_a[var12 * 4 + 0] = (byte)var13;
-			this.field_1127_a[var12 * 4 + 1] = (byte)var14;
-			this.field_1127_a[var12 * 4 + 2] = (byte)var15;
-			this.field_1127_a[var12 * 4 + 3] = (byte)var16;
+			this.imageData[var12 * 4 + 0] = (byte)var13;
+			this.imageData[var12 * 4 + 1] = (byte)var14;
+			this.imageData[var12 * 4 + 2] = (byte)var15;
+			this.imageData[var12 * 4 + 3] = (byte)var16;
 		}
 
 	}

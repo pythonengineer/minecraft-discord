@@ -28,7 +28,7 @@ public class GuiIngameMenu extends GuiScreen {
 				this.mc.theWorld.sendQuittingDisconnectingPacket();
 			}
 
-			this.mc.func_6261_a((World)null);
+			this.mc.changeWorld1((World)null);
 			this.mc.displayGuiScreen(new GuiMainMenu());
 		}
 

@@ -30,6 +30,10 @@ public class BlockCrops extends BlockFlower {
 
 	}
 
+	public void func_21027_c_(World var1, int var2, int var3, int var4) {
+		var1.setBlockMetadataWithNotify(var2, var3, var4, 7);
+	}
+
 	private float getGrowthRate(World var1, int var2, int var3, int var4) {
 		float var5 = 1.0F;
 		int var6 = var1.getBlockId(var2, var3, var4 - 1);

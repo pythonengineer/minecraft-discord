@@ -4,14 +4,14 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class RenderBoat extends Render {
-	protected ModelBase field_198_d;
+	protected ModelBase modelBoat;
 
 	public RenderBoat() {
 		this.shadowSize = 0.5F;
-		this.field_198_d = new ModelBoat();
+		this.modelBoat = new ModelBoat();
 	}
 
-	public void a(EntityBoat var1, double var2, double var4, double var6, float var8, float var9) {
+	public void func_157_a(EntityBoat var1, double var2, double var4, double var6, float var8, float var9) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
 		GL11.glRotatef(180.0F - var8, 0.0F, 1.0F, 0.0F);
@@ -31,11 +31,11 @@ public class RenderBoat extends Render {
 		GL11.glScalef(1.0F / var12, 1.0F / var12, 1.0F / var12);
 		this.loadTexture("/item/boat.png");
 		GL11.glScalef(-1.0F, -1.0F, 1.0F);
-		this.field_198_d.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 1.0F / 16.0F);
+		this.modelBoat.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 1.0F / 16.0F);
 		GL11.glPopMatrix();
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.a((EntityBoat)var1, var2, var4, var6, var8, var9);
+		this.func_157_a((EntityBoat)var1, var2, var4, var6, var8, var9);
 	}
 }

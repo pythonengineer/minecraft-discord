@@ -9,9 +9,9 @@ public class RenderSorter implements Comparator {
 		this.field_4274_a = var1;
 	}
 
-	public int a(WorldRenderer var1, WorldRenderer var2) {
-		boolean var3 = var1.isInFrustrum;
-		boolean var4 = var2.isInFrustrum;
+	public int func_993_a(WorldRenderer var1, WorldRenderer var2) {
+		boolean var3 = var1.isInFrustum;
+		boolean var4 = var2.isInFrustum;
 		if(var3 && !var4) {
 			return 1;
 		} else if(var4 && !var3) {
@@ -24,6 +24,6 @@ public class RenderSorter implements Comparator {
 	}
 
 	public int compare(Object var1, Object var2) {
-		return this.a((WorldRenderer)var1, (WorldRenderer)var2);
+		return this.func_993_a((WorldRenderer)var1, (WorldRenderer)var2);
 	}
 }

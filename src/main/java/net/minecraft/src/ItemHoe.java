@@ -1,16 +1,16 @@
 package net.minecraft.src;
 
 public class ItemHoe extends Item {
-	public ItemHoe(int var1, int var2) {
+	public ItemHoe(int var1, EnumToolMaterial var2) {
 		super(var1);
 		this.maxStackSize = 1;
-		this.maxDamage = 32 << var2;
+		this.maxDamage = var2.getMaxUses();
 	}
 
 	public boolean onItemUse(ItemStack var1, EntityPlayer var2, World var3, int var4, int var5, int var6, int var7) {
 		int var8 = var3.getBlockId(var4, var5, var6);
 		Material var9 = var3.getBlockMaterial(var4, var5 + 1, var6);
-		if((var9.func_878_a() || var8 != Block.grass.blockID) && var8 != Block.dirt.blockID) {
+		if((var9.isSolid() || var8 != Block.grass.blockID) && var8 != Block.dirt.blockID) {
 			return false;
 		} else {
 			Block var10 = Block.tilledField;

@@ -11,12 +11,12 @@ public class ChunkProviderGenerate implements IChunkProvider {
 	private NoiseGeneratorOctaves field_908_o;
 	public NoiseGeneratorOctaves field_922_a;
 	public NoiseGeneratorOctaves field_921_b;
-	public NoiseGeneratorOctaves field_920_c;
+	public NoiseGeneratorOctaves mobSpawnerNoise;
 	private World worldObj;
 	private double[] field_4180_q;
-	private double[] field_905_r = new double[256];
-	private double[] field_904_s = new double[256];
-	private double[] field_903_t = new double[256];
+	private double[] sandNoise = new double[256];
+	private double[] gravelNoise = new double[256];
+	private double[] stoneNoise = new double[256];
 	private MapGenBase field_902_u = new MapGenCaves();
 	private MobSpawnerBase[] biomesForGeneration;
 	double[] field_4185_d;
@@ -37,7 +37,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		this.field_908_o = new NoiseGeneratorOctaves(this.rand, 4);
 		this.field_922_a = new NoiseGeneratorOctaves(this.rand, 10);
 		this.field_921_b = new NoiseGeneratorOctaves(this.rand, 16);
-		this.field_920_c = new NoiseGeneratorOctaves(this.rand, 8);
+		this.mobSpawnerNoise = new NoiseGeneratorOctaves(this.rand, 8);
 	}
 
 	public void generateTerrain(int var1, int var2, byte[] var3, MobSpawnerBase[] var4, double[] var5) {
@@ -80,7 +80,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 								int var55 = 0;
 								if(var13 * 8 + var32 < var7) {
 									if(var53 < 0.5D && var13 * 8 + var32 >= var7 - 1) {
-										var55 = Block.blockIce.blockID;
+										var55 = Block.ice.blockID;
 									} else {
 										var55 = Block.waterMoving.blockID;
 									}
@@ -113,16 +113,16 @@ public class ChunkProviderGenerate implements IChunkProvider {
 	public void replaceBlocksForBiome(int var1, int var2, byte[] var3, MobSpawnerBase[] var4) {
 		byte var5 = 64;
 		double var6 = 1.0D / 32.0D;
-		this.field_905_r = this.field_909_n.func_807_a(this.field_905_r, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var6, var6, 1.0D);
-		this.field_904_s = this.field_909_n.func_807_a(this.field_904_s, (double)(var2 * 16), 109.0134D, (double)(var1 * 16), 16, 1, 16, var6, 1.0D, var6);
-		this.field_903_t = this.field_908_o.func_807_a(this.field_903_t, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var6 * 2.0D, var6 * 2.0D, var6 * 2.0D);
+		this.sandNoise = this.field_909_n.generateNoiseOctaves(this.sandNoise, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var6, var6, 1.0D);
+		this.gravelNoise = this.field_909_n.generateNoiseOctaves(this.gravelNoise, (double)(var2 * 16), 109.0134D, (double)(var1 * 16), 16, 1, 16, var6, 1.0D, var6);
+		this.stoneNoise = this.field_908_o.generateNoiseOctaves(this.stoneNoise, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var6 * 2.0D, var6 * 2.0D, var6 * 2.0D);
 
 		for(int var8 = 0; var8 < 16; ++var8) {
 			for(int var9 = 0; var9 < 16; ++var9) {
 				MobSpawnerBase var10 = var4[var8 + var9 * 16];
-				boolean var11 = this.field_905_r[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 0.0D;
-				boolean var12 = this.field_904_s[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 3.0D;
-				int var13 = (int)(this.field_903_t[var8 + var9 * 16] / 3.0D + 3.0D + this.rand.nextDouble() * 0.25D);
+				boolean var11 = this.sandNoise[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 0.0D;
+				boolean var12 = this.gravelNoise[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 3.0D;
+				int var13 = (int)(this.stoneNoise[var8 + var9 * 16] / 3.0D + 3.0D + this.rand.nextDouble() * 0.25D);
 				int var14 = -1;
 				byte var15 = var10.topBlock;
 				byte var16 = var10.fillerBlock;
@@ -186,8 +186,8 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		this.rand.setSeed((long)var1 * 341873128712L + (long)var2 * 132897987541L);
 		byte[] var3 = new byte[-Short.MIN_VALUE];
 		Chunk var4 = new Chunk(this.worldObj, var3, var1, var2);
-		this.biomesForGeneration = this.worldObj.func_4075_a().loadBlockGeneratorData(this.biomesForGeneration, var1 * 16, var2 * 16, 16, 16);
-		double[] var5 = this.worldObj.func_4075_a().temperature;
+		this.biomesForGeneration = this.worldObj.getWorldChunkManager().loadBlockGeneratorData(this.biomesForGeneration, var1 * 16, var2 * 16, 16, 16);
+		double[] var5 = this.worldObj.getWorldChunkManager().temperature;
 		this.generateTerrain(var1, var2, var3, this.biomesForGeneration, var5);
 		this.replaceBlocksForBiome(var1, var2, var3, this.biomesForGeneration);
 		this.field_902_u.func_867_a(this, this.worldObj, var1, var2, var3);
@@ -202,13 +202,13 @@ public class ChunkProviderGenerate implements IChunkProvider {
 
 		double var8 = 684.412D;
 		double var10 = 684.412D;
-		double[] var12 = this.worldObj.func_4075_a().temperature;
-		double[] var13 = this.worldObj.func_4075_a().humidity;
+		double[] var12 = this.worldObj.getWorldChunkManager().temperature;
+		double[] var13 = this.worldObj.getWorldChunkManager().humidity;
 		this.field_4182_g = this.field_922_a.func_4109_a(this.field_4182_g, var2, var4, var5, var7, 1.121D, 1.121D, 0.5D);
 		this.field_4181_h = this.field_921_b.func_4109_a(this.field_4181_h, var2, var4, var5, var7, 200.0D, 200.0D, 0.5D);
-		this.field_4185_d = this.field_910_m.func_807_a(this.field_4185_d, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8 / 80.0D, var10 / 160.0D, var8 / 80.0D);
-		this.field_4184_e = this.field_912_k.func_807_a(this.field_4184_e, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
-		this.field_4183_f = this.field_911_l.func_807_a(this.field_4183_f, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
+		this.field_4185_d = this.field_910_m.generateNoiseOctaves(this.field_4185_d, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8 / 80.0D, var10 / 160.0D, var8 / 80.0D);
+		this.field_4184_e = this.field_912_k.generateNoiseOctaves(this.field_4184_e, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
+		this.field_4183_f = this.field_911_l.generateNoiseOctaves(this.field_4183_f, (double)var2, (double)var3, (double)var4, var5, var6, var7, var8, var10, var8);
 		int var14 = 0;
 		int var15 = 0;
 		int var16 = 16 / var5;
@@ -303,7 +303,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		BlockSand.fallInstantly = true;
 		int var4 = var2 * 16;
 		int var5 = var3 * 16;
-		MobSpawnerBase var6 = this.worldObj.func_4075_a().func_4073_a(var4 + 16, var5 + 16);
+		MobSpawnerBase var6 = this.worldObj.getWorldChunkManager().func_4073_a(var4 + 16, var5 + 16);
 		this.rand.setSeed(this.worldObj.randomSeed);
 		long var7 = this.rand.nextLong() / 2L * 2L + 1L;
 		long var9 = this.rand.nextLong() / 2L * 2L + 1L;
@@ -392,8 +392,15 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			(new WorldGenMinable(Block.oreDiamond.blockID, 7)).generate(this.worldObj, this.rand, var14, var15, var16);
 		}
 
+		for(var13 = 0; var13 < 1; ++var13) {
+			var14 = var4 + this.rand.nextInt(16);
+			var15 = this.rand.nextInt(16) + this.rand.nextInt(16);
+			var16 = var5 + this.rand.nextInt(16);
+			(new WorldGenMinable(Block.oreLapis.blockID, 6)).generate(this.worldObj, this.rand, var14, var15, var16);
+		}
+
 		var11 = 0.5D;
-		var13 = (int)((this.field_920_c.func_806_a((double)var4 * var11, (double)var5 * var11) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
+		var13 = (int)((this.mobSpawnerNoise.func_806_a((double)var4 * var11, (double)var5 * var11) / 8.0D + this.rand.nextDouble() * 4.0D + 4.0D) / 3.0D);
 		var14 = 0;
 		if(this.rand.nextInt(10) == 0) {
 			++var14;
@@ -427,104 +434,95 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			var14 -= 20;
 		}
 
-		Object var24 = new WorldGenTrees();
-		if(this.rand.nextInt(10) == 0) {
-			var24 = new WorldGenBigTree();
-		}
-
-		if(var6 == MobSpawnerBase.rainforest && this.rand.nextInt(3) == 0) {
-			var24 = new WorldGenBigTree();
-		}
-
 		int var17;
-		int var18;
-		for(var16 = 0; var16 < var14; ++var16) {
-			var17 = var4 + this.rand.nextInt(16) + 8;
-			var18 = var5 + this.rand.nextInt(16) + 8;
-			((WorldGenerator)var24).func_517_a(1.0D, 1.0D, 1.0D);
-			((WorldGenerator)var24).generate(this.worldObj, this.rand, var17, this.worldObj.getHeightValue(var17, var18), var18);
+		for(var15 = 0; var15 < var14; ++var15) {
+			var16 = var4 + this.rand.nextInt(16) + 8;
+			var17 = var5 + this.rand.nextInt(16) + 8;
+			WorldGenerator var18 = var6.getRandomWorldGenForTrees(this.rand);
+			var18.func_517_a(1.0D, 1.0D, 1.0D);
+			var18.generate(this.worldObj, this.rand, var16, this.worldObj.getHeightValue(var16, var17), var17);
 		}
 
-		int var19;
-		for(var16 = 0; var16 < 2; ++var16) {
-			var17 = var4 + this.rand.nextInt(16) + 8;
-			var18 = this.rand.nextInt(128);
-			var19 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.plantYellow.blockID)).generate(this.worldObj, this.rand, var17, var18, var19);
+		int var23;
+		for(var15 = 0; var15 < 2; ++var15) {
+			var16 = var4 + this.rand.nextInt(16) + 8;
+			var17 = this.rand.nextInt(128);
+			var23 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenFlowers(Block.plantYellow.blockID)).generate(this.worldObj, this.rand, var16, var17, var23);
 		}
 
 		if(this.rand.nextInt(2) == 0) {
-			var16 = var4 + this.rand.nextInt(16) + 8;
-			var17 = this.rand.nextInt(128);
-			var18 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.plantRed.blockID)).generate(this.worldObj, this.rand, var16, var17, var18);
+			var15 = var4 + this.rand.nextInt(16) + 8;
+			var16 = this.rand.nextInt(128);
+			var17 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenFlowers(Block.plantRed.blockID)).generate(this.worldObj, this.rand, var15, var16, var17);
 		}
 
 		if(this.rand.nextInt(4) == 0) {
-			var16 = var4 + this.rand.nextInt(16) + 8;
-			var17 = this.rand.nextInt(128);
-			var18 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.mushroomBrown.blockID)).generate(this.worldObj, this.rand, var16, var17, var18);
+			var15 = var4 + this.rand.nextInt(16) + 8;
+			var16 = this.rand.nextInt(128);
+			var17 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenFlowers(Block.mushroomBrown.blockID)).generate(this.worldObj, this.rand, var15, var16, var17);
 		}
 
 		if(this.rand.nextInt(8) == 0) {
-			var16 = var4 + this.rand.nextInt(16) + 8;
-			var17 = this.rand.nextInt(128);
-			var18 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.worldObj, this.rand, var16, var17, var18);
+			var15 = var4 + this.rand.nextInt(16) + 8;
+			var16 = this.rand.nextInt(128);
+			var17 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.worldObj, this.rand, var15, var16, var17);
 		}
 
-		for(var16 = 0; var16 < 10; ++var16) {
-			var17 = var4 + this.rand.nextInt(16) + 8;
-			var18 = this.rand.nextInt(128);
-			var19 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenReed()).generate(this.worldObj, this.rand, var17, var18, var19);
+		for(var15 = 0; var15 < 10; ++var15) {
+			var16 = var4 + this.rand.nextInt(16) + 8;
+			var17 = this.rand.nextInt(128);
+			var23 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenReed()).generate(this.worldObj, this.rand, var16, var17, var23);
 		}
 
 		if(this.rand.nextInt(32) == 0) {
-			var16 = var4 + this.rand.nextInt(16) + 8;
-			var17 = this.rand.nextInt(128);
-			var18 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenPumpkin()).generate(this.worldObj, this.rand, var16, var17, var18);
+			var15 = var4 + this.rand.nextInt(16) + 8;
+			var16 = this.rand.nextInt(128);
+			var17 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenPumpkin()).generate(this.worldObj, this.rand, var15, var16, var17);
 		}
 
-		var16 = 0;
+		var15 = 0;
 		if(var6 == MobSpawnerBase.desert) {
-			var16 += 10;
+			var15 += 10;
 		}
 
-		int var20;
-		for(var17 = 0; var17 < var16; ++var17) {
-			var18 = var4 + this.rand.nextInt(16) + 8;
-			var19 = this.rand.nextInt(128);
-			var20 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenCactus()).generate(this.worldObj, this.rand, var18, var19, var20);
+		int var19;
+		for(var16 = 0; var16 < var15; ++var16) {
+			var17 = var4 + this.rand.nextInt(16) + 8;
+			var23 = this.rand.nextInt(128);
+			var19 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenCactus()).generate(this.worldObj, this.rand, var17, var23, var19);
 		}
 
-		for(var17 = 0; var17 < 50; ++var17) {
-			var18 = var4 + this.rand.nextInt(16) + 8;
-			var19 = this.rand.nextInt(this.rand.nextInt(120) + 8);
-			var20 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenLiquids(Block.waterStill.blockID)).generate(this.worldObj, this.rand, var18, var19, var20);
+		for(var16 = 0; var16 < 50; ++var16) {
+			var17 = var4 + this.rand.nextInt(16) + 8;
+			var23 = this.rand.nextInt(this.rand.nextInt(120) + 8);
+			var19 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenLiquids(Block.waterStill.blockID)).generate(this.worldObj, this.rand, var17, var23, var19);
 		}
 
-		for(var17 = 0; var17 < 20; ++var17) {
-			var18 = var4 + this.rand.nextInt(16) + 8;
-			var19 = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(112) + 8) + 8);
-			var20 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenLiquids(Block.lavaStill.blockID)).generate(this.worldObj, this.rand, var18, var19, var20);
+		for(var16 = 0; var16 < 20; ++var16) {
+			var17 = var4 + this.rand.nextInt(16) + 8;
+			var23 = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(112) + 8) + 8);
+			var19 = var5 + this.rand.nextInt(16) + 8;
+			(new WorldGenLiquids(Block.lavaStill.blockID)).generate(this.worldObj, this.rand, var17, var23, var19);
 		}
 
-		this.generatedTemperatures = this.worldObj.func_4075_a().getTemperatures(this.generatedTemperatures, var4 + 8, var5 + 8, 16, 16);
+		this.generatedTemperatures = this.worldObj.getWorldChunkManager().getTemperatures(this.generatedTemperatures, var4 + 8, var5 + 8, 16, 16);
 
-		for(var17 = var4 + 8; var17 < var4 + 8 + 16; ++var17) {
-			for(var18 = var5 + 8; var18 < var5 + 8 + 16; ++var18) {
-				var19 = var17 - (var4 + 8);
-				var20 = var18 - (var5 + 8);
-				int var21 = this.worldObj.findTopSolidBlock(var17, var18);
-				double var22 = this.generatedTemperatures[var19 * 16 + var20] - (double)(var21 - 64) / 64.0D * 0.3D;
-				if(var22 < 0.5D && var21 > 0 && var21 < 128 && this.worldObj.func_20084_d(var17, var21, var18) && this.worldObj.getBlockMaterial(var17, var21 - 1, var18).getIsSolid() && this.worldObj.getBlockMaterial(var17, var21 - 1, var18) != Material.ice) {
-					this.worldObj.setBlockWithNotify(var17, var21, var18, Block.snow.blockID);
+		for(var16 = var4 + 8; var16 < var4 + 8 + 16; ++var16) {
+			for(var17 = var5 + 8; var17 < var5 + 8 + 16; ++var17) {
+				var23 = var16 - (var4 + 8);
+				var19 = var17 - (var5 + 8);
+				int var20 = this.worldObj.findTopSolidBlock(var16, var17);
+				double var21 = this.generatedTemperatures[var23 * 16 + var19] - (double)(var20 - 64) / 64.0D * 0.3D;
+				if(var21 < 0.5D && var20 > 0 && var20 < 128 && this.worldObj.isAirBlock(var16, var20, var17) && this.worldObj.getBlockMaterial(var16, var20 - 1, var17).getIsSolid() && this.worldObj.getBlockMaterial(var16, var20 - 1, var17) != Material.ice) {
+					this.worldObj.setBlockWithNotify(var16, var20, var17, Block.snow.blockID);
 				}
 			}
 		}
@@ -542,5 +540,9 @@ public class ChunkProviderGenerate implements IChunkProvider {
 
 	public boolean func_536_b() {
 		return true;
+	}
+
+	public String toString() {
+		return "RandomLevelSource";
 	}
 }

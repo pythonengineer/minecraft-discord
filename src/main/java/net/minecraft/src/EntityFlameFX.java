@@ -11,21 +11,21 @@ public class EntityFlameFX extends EntityFX {
 		double var10000 = var2 + (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
 		var10000 = var4 + (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
 		var10000 = var6 + (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
-		this.field_672_a = this.field_665_g;
-		this.particleRed = this.particleBlue = this.particleGreen = 1.0F;
-		this.field_666_f = (int)(8.0D / (Math.random() * 0.8D + 0.2D)) + 4;
+		this.field_672_a = this.particleScale;
+		this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
+		this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.2D)) + 4;
 		this.noClip = true;
-		this.field_670_b = 48;
+		this.particleTextureIndex = 48;
 	}
 
-	public void func_406_a(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7) {
-		float var8 = ((float)this.e + var2) / (float)this.field_666_f;
-		this.field_665_g = this.field_672_a * (1.0F - var8 * var8 * 0.5F);
-		super.func_406_a(var1, var2, var3, var4, var5, var6, var7);
+	public void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7) {
+		float var8 = ((float)this.particleAge + var2) / (float)this.particleMaxAge;
+		this.particleScale = this.field_672_a * (1.0F - var8 * var8 * 0.5F);
+		super.renderParticle(var1, var2, var3, var4, var5, var6, var7);
 	}
 
 	public float getEntityBrightness(float var1) {
-		float var2 = ((float)this.e + var1) / (float)this.field_666_f;
+		float var2 = ((float)this.particleAge + var1) / (float)this.particleMaxAge;
 		if(var2 < 0.0F) {
 			var2 = 0.0F;
 		}
@@ -42,7 +42,7 @@ public class EntityFlameFX extends EntityFX {
 		this.prevPosX = this.posX;
 		this.prevPosY = this.posY;
 		this.prevPosZ = this.posZ;
-		if(this.e++ >= this.field_666_f) {
+		if(this.particleAge++ >= this.particleMaxAge) {
 			this.setEntityDead();
 		}
 

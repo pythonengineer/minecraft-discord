@@ -15,5 +15,5 @@ public interface IInventory {
 
 	void onInventoryChanged();
 
-	boolean func_20070_a_(EntityPlayer var1);
+	boolean canInteractWith(EntityPlayer var1);
 }

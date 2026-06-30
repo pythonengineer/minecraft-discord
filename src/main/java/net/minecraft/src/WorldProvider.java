@@ -7,7 +7,7 @@ public class WorldProvider {
 	public World worldObj;
 	public WorldChunkManager worldChunkMgr;
 	public boolean field_4220_c = false;
-	public boolean field_6479_d = false;
+	public boolean isHellWorld = false;
 	public boolean field_6478_e = false;
 	public float[] lightBrightnessTable = new float[16];
 	public int worldType = 0;
@@ -42,7 +42,7 @@ public class WorldProvider {
 	}
 
 	public boolean canCoordinateBeSpawn(int var1, int var2) {
-		int var3 = this.worldObj.func_614_g(var1, var2);
+		int var3 = this.worldObj.getFirstUncoveredBlock(var1, var2);
 		return var3 == Block.sand.blockID;
 	}
 
@@ -100,7 +100,7 @@ public class WorldProvider {
 		return Vec3D.createVector((double)var4, (double)var5, (double)var6);
 	}
 
-	public boolean func_6477_d() {
+	public boolean canRespawnHere() {
 		return true;
 	}
 

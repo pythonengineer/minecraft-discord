@@ -64,7 +64,7 @@ public class CraftingInventoryFurnaceCB extends CraftingInventoryCB {
 	}
 
 	public boolean func_20120_b(EntityPlayer var1) {
-		return this.field_20127_a.func_20070_a_(var1);
+		return this.field_20127_a.canInteractWith(var1);
 	}
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
@@ -78,7 +78,7 @@ public class CraftingInventoryFurnaceCB extends CraftingInventoryCB {
                     return null;
                 }
             } else if (i != 1 && i != 0) {
-                if (TileEntityFurnace.getSmeltingResultItem(itemstack1.itemID) != -1) {
+                if (FurnaceRecipes.smelting().getSmeltingResult(itemstack1.itemID) != null) {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
                         return null;
                     }

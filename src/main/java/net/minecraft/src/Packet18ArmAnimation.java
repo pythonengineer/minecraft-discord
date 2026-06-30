@@ -12,7 +12,7 @@ public class Packet18ArmAnimation extends Packet {
 	}
 
 	public Packet18ArmAnimation(Entity var1, int var2) {
-		this.entityId = var1.field_620_ab;
+		this.entityId = var1.entityId;
 		this.animate = var2;
 	}
 

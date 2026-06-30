@@ -14,14 +14,14 @@ public class BlockFlowing extends BlockFluids {
 	private void func_20015_j(World var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockMetadata(var2, var3, var4);
 		var1.setBlockAndMetadata(var2, var3, var4, this.blockID + 1, var5);
-		var1.func_701_b(var2, var3, var4, var2, var3, var4);
+		var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
 		var1.markBlockNeedsUpdate(var2, var3, var4);
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		int var6 = this.func_290_h(var1, var2, var3, var4);
 		byte var7 = 1;
-		if(this.blockMaterial == Material.lava && !var1.worldProvider.field_6479_d) {
+		if(this.blockMaterial == Material.lava && !var1.worldProvider.isHellWorld) {
 			var7 = 2;
 		}
 
@@ -224,7 +224,7 @@ public class BlockFlowing extends BlockFluids {
 				return false;
 			} else {
 				Material var6 = Block.blocksList[var5].blockMaterial;
-				return var6.func_878_a();
+				return var6.isSolid();
 			}
 		} else {
 			return true;

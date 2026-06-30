@@ -5,20 +5,20 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Packet28 extends Packet {
-	public int field_6367_a;
-	public int field_6366_b;
-	public int field_6369_c;
-	public int field_6368_d;
+	public int entityId;
+	public int motionX;
+	public int motionY;
+	public int motionZ;
 
 	public Packet28() {
 	}
 
 	public Packet28(Entity var1) {
-		this(var1.field_620_ab, var1.motionX, var1.motionY, var1.motionZ);
+		this(var1.entityId, var1.motionX, var1.motionY, var1.motionZ);
 	}
 
 	public Packet28(int var1, double var2, double var4, double var6) {
-		this.field_6367_a = var1;
+		this.entityId = var1;
 		double var8 = 3.9D;
 		if(var2 < -var8) {
 			var2 = -var8;
@@ -44,23 +44,23 @@ public class Packet28 extends Packet {
 			var6 = var8;
 		}
 
-		this.field_6366_b = (int)(var2 * 8000.0D);
-		this.field_6369_c = (int)(var4 * 8000.0D);
-		this.field_6368_d = (int)(var6 * 8000.0D);
+		this.motionX = (int)(var2 * 8000.0D);
+		this.motionY = (int)(var4 * 8000.0D);
+		this.motionZ = (int)(var6 * 8000.0D);
 	}
 
 	public void readPacketData(DataInputStream var1) throws IOException {
-		this.field_6367_a = var1.readInt();
-		this.field_6366_b = var1.readShort();
-		this.field_6369_c = var1.readShort();
-		this.field_6368_d = var1.readShort();
+		this.entityId = var1.readInt();
+		this.motionX = var1.readShort();
+		this.motionY = var1.readShort();
+		this.motionZ = var1.readShort();
 	}
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
-		var1.writeInt(this.field_6367_a);
-		var1.writeShort(this.field_6366_b);
-		var1.writeShort(this.field_6369_c);
-		var1.writeShort(this.field_6368_d);
+		var1.writeInt(this.entityId);
+		var1.writeShort(this.motionX);
+		var1.writeShort(this.motionY);
+		var1.writeShort(this.motionZ);
 	}
 
 	public void processPacket(NetHandler var1) {

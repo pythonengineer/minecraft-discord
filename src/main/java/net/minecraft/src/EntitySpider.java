@@ -68,4 +68,8 @@ public class EntitySpider extends EntityMobs {
 	protected int getDropItemId() {
 		return Item.silk.shiftedIndex;
 	}
+
+	public boolean isOnLadder() {
+		return this.isCollidedHorizontally;
+	}
 }

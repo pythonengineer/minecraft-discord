@@ -16,15 +16,15 @@ public class WorldGenDungeons extends WorldGenerator {
 			for(var11 = var4 - 1; var11 <= var4 + var6 + 1; ++var11) {
 				for(var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12) {
 					Material var13 = var1.getBlockMaterial(var10, var11, var12);
-					if(var11 == var4 - 1 && !var13.func_878_a()) {
+					if(var11 == var4 - 1 && !var13.isSolid()) {
 						return false;
 					}
 
-					if(var11 == var4 + var6 + 1 && !var13.func_878_a()) {
+					if(var11 == var4 + var6 + 1 && !var13.isSolid()) {
 						return false;
 					}
 
-					if((var10 == var3 - var7 - 1 || var10 == var3 + var7 + 1 || var12 == var5 - var8 - 1 || var12 == var5 + var8 + 1) && var11 == var4 && var1.func_20084_d(var10, var11, var12) && var1.func_20084_d(var10, var11 + 1, var12)) {
+					if((var10 == var3 - var7 - 1 || var10 == var3 + var7 + 1 || var12 == var5 - var8 - 1 || var12 == var5 + var8 + 1) && var11 == var4 && var1.isAirBlock(var10, var11, var12) && var1.isAirBlock(var10, var11 + 1, var12)) {
 						++var9;
 					}
 				}
@@ -37,9 +37,9 @@ public class WorldGenDungeons extends WorldGenerator {
 					for(var12 = var5 - var8 - 1; var12 <= var5 + var8 + 1; ++var12) {
 						if(var10 != var3 - var7 - 1 && var11 != var4 - 1 && var12 != var5 - var8 - 1 && var10 != var3 + var7 + 1 && var11 != var4 + var6 + 1 && var12 != var5 + var8 + 1) {
 							var1.setBlockWithNotify(var10, var11, var12, 0);
-						} else if(var11 >= 0 && !var1.getBlockMaterial(var10, var11 - 1, var12).func_878_a()) {
+						} else if(var11 >= 0 && !var1.getBlockMaterial(var10, var11 - 1, var12).isSolid()) {
 							var1.setBlockWithNotify(var10, var11, var12, 0);
-						} else if(var1.getBlockMaterial(var10, var11, var12).func_878_a()) {
+						} else if(var1.getBlockMaterial(var10, var11, var12).isSolid()) {
 							if(var11 == var4 - 1 && var2.nextInt(4) != 0) {
 								var1.setBlockWithNotify(var10, var11, var12, Block.cobblestoneMossy.blockID);
 							} else {
@@ -55,21 +55,21 @@ public class WorldGenDungeons extends WorldGenerator {
 				for(var11 = 0; var11 < 3; ++var11) {
 					var12 = var3 + var2.nextInt(var7 * 2 + 1) - var7;
 					int var14 = var5 + var2.nextInt(var8 * 2 + 1) - var8;
-					if(var1.func_20084_d(var12, var4, var14)) {
+					if(var1.isAirBlock(var12, var4, var14)) {
 						int var15 = 0;
-						if(var1.getBlockMaterial(var12 - 1, var4, var14).func_878_a()) {
+						if(var1.getBlockMaterial(var12 - 1, var4, var14).isSolid()) {
 							++var15;
 						}
 
-						if(var1.getBlockMaterial(var12 + 1, var4, var14).func_878_a()) {
+						if(var1.getBlockMaterial(var12 + 1, var4, var14).isSolid()) {
 							++var15;
 						}
 
-						if(var1.getBlockMaterial(var12, var4, var14 - 1).func_878_a()) {
+						if(var1.getBlockMaterial(var12, var4, var14 - 1).isSolid()) {
 							++var15;
 						}
 
-						if(var1.getBlockMaterial(var12, var4, var14 + 1).func_878_a()) {
+						if(var1.getBlockMaterial(var12, var4, var14 + 1).isSolid()) {
 							++var15;
 						}
 
@@ -97,7 +97,7 @@ public class WorldGenDungeons extends WorldGenerator {
 
 			var1.setBlockWithNotify(var3, var4, var5, Block.mobSpawner.blockID);
 			TileEntityMobSpawner var19 = (TileEntityMobSpawner)var1.getBlockTileEntity(var3, var4, var5);
-			var19.entityID = this.pickMobSpawner(var2);
+			var19.setMobID(this.pickMobSpawner(var2));
 			return true;
 		} else {
 			return false;

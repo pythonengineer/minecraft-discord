@@ -29,6 +29,9 @@ public class EntityItem extends Entity {
 		this.yOffset = this.height / 2.0F;
 	}
 
+	protected void entityInit() {
+	}
+
 	public void onUpdate() {
 		super.onUpdate();
 		if(this.delayBeforeCanPickup > 0) {
@@ -47,7 +50,6 @@ public class EntityItem extends Entity {
 		}
 
 		this.func_466_g(this.posX, this.posY, this.posZ);
-		this.handleWaterMovement();
 		this.moveEntity(this.motionX, this.motionY, this.motionZ);
 		float var1 = 0.98F;
 		if(this.onGround) {
@@ -74,7 +76,7 @@ public class EntityItem extends Entity {
 	}
 
 	public boolean handleWaterMovement() {
-		return this.worldObj.func_682_a(this.boundingBox, Material.water, this);
+		return this.worldObj.handleMaterialAcceleration(this.boundingBox, Material.water, this);
 	}
 
 	private boolean func_466_g(double var1, double var3, double var5) {

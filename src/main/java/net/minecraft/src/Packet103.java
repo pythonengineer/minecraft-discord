@@ -5,42 +5,42 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Packet103 extends Packet {
-	public int field_20042_a;
-	public int field_20041_b;
-	public ItemStack field_20043_c;
+	public int windowId;
+	public int itemSlot;
+	public ItemStack myItemStack;
 
 	public void processPacket(NetHandler var1) {
 		var1.func_20088_a(this);
 	}
 
 	public void readPacketData(DataInputStream var1) throws IOException {
-		this.field_20042_a = var1.readByte();
-		this.field_20041_b = var1.readShort();
+		this.windowId = var1.readByte();
+		this.itemSlot = var1.readShort();
 		short var2 = var1.readShort();
 		if(var2 >= 0) {
 			byte var3 = var1.readByte();
-			byte var4 = var1.readByte();
-			this.field_20043_c = new ItemStack(var2, var3, var4);
+			short var4 = var1.readShort();
+			this.myItemStack = new ItemStack(var2, var3, var4);
 		} else {
-			this.field_20043_c = null;
+			this.myItemStack = null;
 		}
 
 	}
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
-		var1.writeByte(this.field_20042_a);
-		var1.writeShort(this.field_20041_b);
-		if(this.field_20043_c == null) {
+		var1.writeByte(this.windowId);
+		var1.writeShort(this.itemSlot);
+		if(this.myItemStack == null) {
 			var1.writeShort(-1);
 		} else {
-			var1.writeShort(this.field_20043_c.itemID);
-			var1.writeByte(this.field_20043_c.stackSize);
-			var1.writeByte(this.field_20043_c.itemDamage);
+			var1.writeShort(this.myItemStack.itemID);
+			var1.writeByte(this.myItemStack.stackSize);
+			var1.writeShort(this.myItemStack.getItemDamage());
 		}
 
 	}
 
 	public int getPacketSize() {
-		return 7;
+		return 8;
 	}
 }

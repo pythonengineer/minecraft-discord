@@ -18,10 +18,10 @@ public class BlockFurnace extends BlockContainer {
 
 	public void onBlockAdded(World var1, int var2, int var3, int var4) {
 		super.onBlockAdded(var1, var2, var3, var4);
-		this.func_284_h(var1, var2, var3, var4);
+		this.setDefaultDirection(var1, var2, var3, var4);
 	}
 
-	private void func_284_h(World var1, int var2, int var3, int var4) {
+	private void setDefaultDirection(World var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockId(var2, var3, var4 - 1);
 		int var6 = var1.getBlockId(var2, var3, var4 + 1);
 		int var7 = var1.getBlockId(var2 - 1, var3, var4);
@@ -48,9 +48,9 @@ public class BlockFurnace extends BlockContainer {
 
 	public int getBlockTexture(IBlockAccess var1, int var2, int var3, int var4, int var5) {
 		if(var5 == 1) {
-			return Block.stone.blockIndexInTexture;
+			return this.blockIndexInTexture + 17;
 		} else if(var5 == 0) {
-			return Block.stone.blockIndexInTexture;
+			return this.blockIndexInTexture + 17;
 		} else {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			return var5 != var6 ? this.blockIndexInTexture : (this.isActive ? this.blockIndexInTexture + 16 : this.blockIndexInTexture - 1);
@@ -83,7 +83,7 @@ public class BlockFurnace extends BlockContainer {
 	}
 
 	public int getBlockTextureFromSide(int var1) {
-		return var1 == 1 ? Block.stone.blockID : (var1 == 0 ? Block.stone.blockID : (var1 == 3 ? this.blockIndexInTexture - 1 : this.blockIndexInTexture));
+		return var1 == 1 ? this.blockIndexInTexture + 17 : (var1 == 0 ? this.blockIndexInTexture + 17 : (var1 == 3 ? this.blockIndexInTexture - 1 : this.blockIndexInTexture));
 	}
 
 	public boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
@@ -109,7 +109,7 @@ public class BlockFurnace extends BlockContainer {
 		var1.setBlockTileEntity(var2, var3, var4, var6);
 	}
 
-	protected TileEntity SetBlockEntity() {
+	protected TileEntity getBlockEntity() {
 		return new TileEntityFurnace();
 	}
 

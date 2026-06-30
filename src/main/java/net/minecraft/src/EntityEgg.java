@@ -19,6 +19,9 @@ public class EntityEgg extends Entity {
 		this.setSize(0.25F, 0.25F);
 	}
 
+	protected void entityInit() {
+	}
+
 	public boolean isInRangeToRenderDist(double var1) {
 		double var3 = this.boundingBox.getAverageEdgeLength() * 4.0D;
 		var3 *= 64.0D;
@@ -29,7 +32,7 @@ public class EntityEgg extends Entity {
 		super(var1);
 		this.field_20051_g = var2;
 		this.setSize(0.25F, 0.25F);
-		this.setLocationAndAngles(var2.posX, var2.posY + (double)var2.func_373_s(), var2.posZ, var2.rotationYaw, var2.rotationPitch);
+		this.setLocationAndAngles(var2.posX, var2.posY + (double)var2.getEyeHeight(), var2.posZ, var2.rotationYaw, var2.rotationPitch);
 		this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
 		this.posY -= (double)0.1F;
 		this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
@@ -231,7 +234,7 @@ public class EntityEgg extends Entity {
 	}
 
 	public void onCollideWithPlayer(EntityPlayer var1) {
-		if(this.field_20052_f && this.field_20051_g == var1 && this.field_20057_a <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+		if(this.field_20052_f && this.field_20051_g == var1 && this.field_20057_a <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow, 1))) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			var1.onItemPickup(this, 1);
 			this.setEntityDead();
@@ -239,7 +242,7 @@ public class EntityEgg extends Entity {
 
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 }

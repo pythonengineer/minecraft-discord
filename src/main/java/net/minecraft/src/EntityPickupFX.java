@@ -18,7 +18,7 @@ public class EntityPickupFX extends EntityFX {
 		this.field_676_r = var4;
 	}
 
-	public void func_406_a(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7) {
+	public void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7) {
 		float var8 = ((float)this.field_678_p + var2) / (float)this.field_677_q;
 		var8 *= var8;
 		double var9 = this.field_675_a.posX;
@@ -34,9 +34,9 @@ public class EntityPickupFX extends EntityFX {
 		int var28 = MathHelper.floor_double(var23 + (double)(this.yOffset / 2.0F));
 		int var29 = MathHelper.floor_double(var25);
 		float var30 = this.worldObj.getLightBrightness(var27, var28, var29);
-		var21 -= field_660_l;
-		var23 -= field_659_m;
-		var25 -= field_658_n;
+		var21 -= interpPosX;
+		var23 -= interpPosY;
+		var25 -= interpPosZ;
 		GL11.glColor4f(var30, var30, var30, 1.0F);
 		RenderManager.instance.renderEntityWithPosYaw(this.field_675_a, (double)((float)var21), (double)((float)var23), (double)((float)var25), this.field_675_a.rotationYaw, var2);
 	}
@@ -49,7 +49,7 @@ public class EntityPickupFX extends EntityFX {
 
 	}
 
-	public int func_404_c() {
+	public int getFXLayer() {
 		return 3;
 	}
 }

@@ -90,11 +90,11 @@ public class PlayerController {
 	}
 
 	public ItemStack func_20085_a(int var1, int var2, int var3, int mode, EntityPlayer var4) {
-		return var4.field_20068_h.func_20116_a(var2, var3, mode, var4);
+		return var4.craftingInventory.func_20116_a(var2, var3, mode, var4);
 	}
 
 	public void func_20086_a(int var1, EntityPlayer var2) {
-		var2.field_20068_h.onCraftGuiClosed(var2);
-		var2.field_20068_h = var2.field_20069_g;
+		var2.craftingInventory.onCraftGuiClosed(var2);
+		var2.craftingInventory = var2.field_20069_g;
 	}
 }

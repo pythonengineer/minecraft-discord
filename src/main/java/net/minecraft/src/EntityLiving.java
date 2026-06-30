@@ -3,10 +3,9 @@ package net.minecraft.src;
 import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public class EntityLiving extends Entity {
+public abstract class EntityLiving extends Entity {
 	public int field_9366_o = 20;
 	public float field_9365_p;
-	public float field_9364_q;
 	public float field_9363_r;
 	public float renderYawOffset = 0.0F;
 	public float prevRenderYawOffset = 0.0F;
@@ -20,14 +19,14 @@ public class EntityLiving extends Entity {
 	protected float field_9353_B = 0.0F;
 	protected String field_9351_C = null;
 	protected float field_9349_D = 1.0F;
-	protected int field_9347_E = 0;
+	protected int scoreValue = 0;
 	protected float field_9345_F = 0.0F;
 	public boolean field_9343_G = false;
 	public float prevSwingProgress;
 	public float swingProgress;
 	public int health = 10;
 	public int prevHealth;
-	private int a;
+	private int field_4121_a;
 	public int hurtTime;
 	public int maxHurtTime;
 	public float attackedAtYaw = 0.0F;
@@ -56,8 +55,8 @@ public class EntityLiving extends Entity {
 	protected boolean isJumping = false;
 	protected float defaultPitch = 0.0F;
 	protected float moveSpeed = 0.7F;
-	private Entity b;
-	private int c = 0;
+	private Entity field_4120_b;
+	private int field_4127_c = 0;
 
 	public EntityLiving(World var1) {
 		super(var1);
@@ -66,12 +65,14 @@ public class EntityLiving extends Entity {
 		this.setPosition(this.posX, this.posY, this.posZ);
 		this.field_9365_p = (float)Math.random() * 12398.0F;
 		this.rotationYaw = (float)(Math.random() * (double)((float)Math.PI) * 2.0D);
-		this.field_9364_q = 1.0F;
 		this.stepHeight = 0.5F;
 	}
 
+	protected void entityInit() {
+	}
+
 	public boolean canEntityBeSeen(Entity var1) {
-		return this.worldObj.rayTraceBlocks(Vec3D.createVector(this.posX, this.posY + (double)this.func_373_s(), this.posZ), Vec3D.createVector(var1.posX, var1.posY + (double)var1.func_373_s(), var1.posZ)) == null;
+		return this.worldObj.rayTraceBlocks(Vec3D.createVector(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), Vec3D.createVector(var1.posX, var1.posY + (double)var1.getEyeHeight(), var1.posZ)) == null;
 	}
 
 	public String getEntityTexture() {
@@ -86,7 +87,7 @@ public class EntityLiving extends Entity {
 		return !this.isDead;
 	}
 
-	public float func_373_s() {
+	public float getEyeHeight() {
 		return this.height * 0.85F;
 	}
 
@@ -94,11 +95,11 @@ public class EntityLiving extends Entity {
 		return 80;
 	}
 
-	public void func_391_y() {
+	public void onEntityUpdate() {
 		this.prevSwingProgress = this.swingProgress;
-		super.func_391_y();
-		if(this.rand.nextInt(1000) < this.a++) {
-			this.a = -this.func_421_b();
+		super.onEntityUpdate();
+		if(this.rand.nextInt(1000) < this.field_4121_a++) {
+			this.field_4121_a = -this.func_421_b();
 			String var1 = this.getLivingSound();
 			if(var1 != null) {
 				this.worldObj.playSoundAtEntity(this, var1, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
@@ -114,7 +115,7 @@ public class EntityLiving extends Entity {
 		}
 
 		int var8;
-		if(this.isEntityAlive() && this.isInsideOfMaterial(Material.water)) {
+		if(this.isEntityAlive() && this.isInsideOfMaterial(Material.water) && !this.canBreatheUnderwater()) {
 			--this.air;
 			if(this.air == -20) {
 				this.air = 0;
@@ -179,8 +180,8 @@ public class EntityLiving extends Entity {
 
 	}
 
-	public void func_350_p() {
-		super.func_350_p();
+	public void updateRidden() {
+		super.updateRidden();
 		this.field_9362_u = this.field_9361_v;
 		this.field_9361_v = 0.0F;
 	}
@@ -338,7 +339,7 @@ public class EntityLiving extends Entity {
 						}
 
 						this.attackedAtYaw = (float)(Math.atan2(var6, var4) * 180.0D / (double)((float)Math.PI)) - this.rotationYaw;
-						this.func_434_a(var1, var2, var4, var6);
+						this.knockBack(var1, var2, var4, var6);
 					} else {
 						this.attackedAtYaw = (float)((int)(Math.random() * 2.0D) * 180);
 					}
@@ -384,7 +385,7 @@ public class EntityLiving extends Entity {
 		return "random.hurt";
 	}
 
-	public void func_434_a(Entity var1, int var2, double var3, double var5) {
+	public void knockBack(Entity var1, int var2, double var3, double var5) {
 		float var7 = MathHelper.sqrt_double(var3 * var3 + var5 * var5);
 		float var8 = 0.4F;
 		this.motionX /= 2.0D;
@@ -400,23 +401,28 @@ public class EntityLiving extends Entity {
 	}
 
 	public void onDeath(Entity var1) {
-		if(this.field_9347_E > 0 && var1 != null) {
-			var1.addToPlayerScore(this, this.field_9347_E);
+		if(this.scoreValue > 0 && var1 != null) {
+			var1.addToPlayerScore(this, this.scoreValue);
 		}
 
 		this.field_9327_S = true;
 		if(!this.worldObj.multiplayerWorld) {
-			int var2 = this.getDropItemId();
-			if(var2 > 0) {
-				int var3 = this.rand.nextInt(3);
-
-				for(int var4 = 0; var4 < var3; ++var4) {
-					this.dropItem(var2, 1);
-				}
-			}
+			this.func_21066_o();
 		}
 
 		this.worldObj.func_9425_a(this, (byte)3);
+	}
+
+	protected void func_21066_o() {
+		int var1 = this.getDropItemId();
+		if(var1 > 0) {
+			int var2 = this.rand.nextInt(3);
+
+			for(int var3 = 0; var3 < var2; ++var3) {
+				this.dropItem(var1, 1);
+			}
+		}
+
 	}
 
 	protected int getDropItemId() {
@@ -440,7 +446,7 @@ public class EntityLiving extends Entity {
 		double var3;
 		if(this.handleWaterMovement()) {
 			var3 = this.posY;
-			this.func_351_a(var1, var2, 0.02F);
+			this.moveFlying(var1, var2, 0.02F);
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= (double)0.8F;
 			this.motionY *= (double)0.8F;
@@ -451,7 +457,7 @@ public class EntityLiving extends Entity {
 			}
 		} else if(this.handleLavaMovement()) {
 			var3 = this.posY;
-			this.func_351_a(var1, var2, 0.02F);
+			this.moveFlying(var1, var2, 0.02F);
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= 0.5D;
 			this.motionY *= 0.5D;
@@ -471,7 +477,7 @@ public class EntityLiving extends Entity {
 			}
 
 			float var9 = 0.16277136F / (var8 * var8 * var8);
-			this.func_351_a(var1, var2, this.onGround ? 0.1F * var9 : 0.02F);
+			this.moveFlying(var1, var2, this.onGround ? 0.1F * var9 : 0.02F);
 			var8 = 0.91F;
 			if(this.onGround) {
 				var8 = 546.0F * 0.1F * 0.1F * 0.1F;
@@ -540,6 +546,10 @@ public class EntityLiving extends Entity {
 		return !this.isDead && this.health > 0;
 	}
 
+	public boolean canBreatheUnderwater() {
+		return false;
+	}
+
 	public void onLivingUpdate() {
 		if(this.field_9324_Y > 0) {
 			double var1 = this.posX + (this.field_9323_Z - this.posX) / (double)this.field_9324_Y;
@@ -578,7 +588,7 @@ public class EntityLiving extends Entity {
 			} else if(var2) {
 				this.motionY += (double)0.04F;
 			} else if(this.onGround) {
-				this.func_424_C();
+				this.jump();
 			}
 		}
 
@@ -598,7 +608,7 @@ public class EntityLiving extends Entity {
 
 	}
 
-	protected void func_424_C() {
+	protected void jump() {
 		this.motionY = (double)0.42F;
 	}
 
@@ -629,17 +639,17 @@ public class EntityLiving extends Entity {
 		if(this.rand.nextFloat() < 0.02F) {
 			var1 = this.worldObj.getClosestPlayerToEntity(this, (double)var10);
 			if(var1 != null) {
-				this.b = var1;
-				this.c = 10 + this.rand.nextInt(20);
+				this.field_4120_b = var1;
+				this.field_4127_c = 10 + this.rand.nextInt(20);
 			} else {
 				this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 20.0F;
 			}
 		}
 
-		if(this.b != null) {
-			this.faceEntity(this.b, 10.0F);
-			if(this.c-- <= 0 || this.b.isDead || this.b.getDistanceSqToEntity(this) > (double)(var10 * var10)) {
-				this.b = null;
+		if(this.field_4120_b != null) {
+			this.faceEntity(this.field_4120_b, 10.0F);
+			if(this.field_4127_c-- <= 0 || this.field_4120_b.isDead || this.field_4120_b.getDistanceSqToEntity(this) > (double)(var10 * var10)) {
+				this.field_4120_b = null;
 			}
 		} else {
 			if(this.rand.nextFloat() < 0.05F) {
@@ -664,9 +674,9 @@ public class EntityLiving extends Entity {
 		double var5;
 		if(var1 instanceof EntityLiving) {
 			EntityLiving var9 = (EntityLiving)var1;
-			var5 = var9.posY + (double)var9.func_373_s() - (this.posY + (double)this.func_373_s());
+			var5 = var9.posY + (double)var9.getEyeHeight() - (this.posY + (double)this.getEyeHeight());
 		} else {
-			var5 = (var1.boundingBox.minY + var1.boundingBox.maxY) / 2.0D - (this.posY + (double)this.func_373_s());
+			var5 = (var1.boundingBox.minY + var1.boundingBox.maxY) / 2.0D - (this.posY + (double)this.getEyeHeight());
 		}
 
 		double var13 = (double)MathHelper.sqrt_double(var3 * var3 + var7 * var7);
@@ -703,7 +713,7 @@ public class EntityLiving extends Entity {
 		return this.worldObj.checkIfAABBIsClear(this.boundingBox) && this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).size() == 0 && !this.worldObj.getIsAnyLiquid(this.boundingBox);
 	}
 
-	protected void func_4034_G() {
+	protected void kill() {
 		this.attackEntityFrom((Entity)null, 4);
 	}
 
@@ -727,7 +737,7 @@ public class EntityLiving extends Entity {
 		}
 	}
 
-	public Vec3D func_4037_H() {
+	public Vec3D getLookVec() {
 		return this.getLook(1.0F);
 	}
 
@@ -768,7 +778,7 @@ public class EntityLiving extends Entity {
 		return null;
 	}
 
-	public void func_9282_a(byte var1) {
+	public void handleHealthUpdate(byte var1) {
 		if(var1 == 2) {
 			this.field_704_R = 1.5F;
 			this.field_9306_bj = this.field_9366_o;
@@ -781,7 +791,7 @@ public class EntityLiving extends Entity {
 			this.health = 0;
 			this.onDeath((Entity)null);
 		} else {
-			super.func_9282_a(var1);
+			super.handleHealthUpdate(var1);
 		}
 
 	}

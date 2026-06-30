@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 public class TileEntitySignRenderer extends TileEntitySpecialRenderer {
 	private SignModel signModel = new SignModel();
 
-	public void a(TileEntitySign var1, double var2, double var4, double var6, float var8) {
+	public void renderTileEntitySignAt(TileEntitySign var1, double var2, double var4, double var6, float var8) {
 		Block var9 = var1.getBlockType();
 		GL11.glPushMatrix();
 		float var10 = 2.0F / 3.0F;
@@ -65,6 +65,6 @@ public class TileEntitySignRenderer extends TileEntitySpecialRenderer {
 	}
 
 	public void renderTileEntityAt(TileEntity var1, double var2, double var4, double var6, float var8) {
-		this.a((TileEntitySign)var1, var2, var4, var6, var8);
+		this.renderTileEntitySignAt((TileEntitySign)var1, var2, var4, var6, var8);
 	}
 }

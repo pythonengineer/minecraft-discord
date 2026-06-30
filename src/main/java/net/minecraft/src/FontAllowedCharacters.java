@@ -5,9 +5,9 @@ import java.io.InputStreamReader;
 import net.lax1dude.eaglercraft.EagRuntime;
 
 public class FontAllowedCharacters {
-	public static final String field_20157_a = func_20156_a();
+	public static final String allowedCharacters = getAllowedCharacters();
 
-	private static String func_20156_a() {
+	private static String getAllowedCharacters() {
 		String var0 = "";
 
 		try {

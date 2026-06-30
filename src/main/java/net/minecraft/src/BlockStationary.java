@@ -24,7 +24,7 @@ public class BlockStationary extends BlockFluids {
 		int var5 = var1.getBlockMetadata(var2, var3, var4);
 		var1.field_1043_h = true;
 		var1.setBlockAndMetadata(var2, var3, var4, this.blockID - 1, var5);
-		var1.func_701_b(var2, var3, var4, var2, var3, var4);
+		var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
 		var1.scheduleBlockUpdate(var2, var3, var4, this.blockID - 1);
 		var1.field_1043_h = false;
 	}

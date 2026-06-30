@@ -13,7 +13,7 @@ public class RenderItem extends Render {
 		this.field_194_c = 12.0F / 16.0F;
 	}
 
-	public void a(EntityItem var1, double var2, double var4, double var6, float var8, float var9) {
+	public void func_165_a(EntityItem var1, double var2, double var4, double var6, float var8, float var9) {
 		this.random.setSeed(187L);
 		ItemStack var10 = var1.item;
 		GL11.glPushMatrix();
@@ -56,7 +56,7 @@ public class RenderItem extends Render {
 					GL11.glTranslatef(var16, var17, var18);
 				}
 
-				this.renderBlocks.func_1227_a(Block.blocksList[var10.itemID]);
+				this.renderBlocks.func_1227_a(Block.blocksList[var10.itemID], var10.getItemDamage());
 				GL11.glPopMatrix();
 			}
 		} else {
@@ -116,7 +116,7 @@ public class RenderItem extends Render {
 				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				GL11.glScalef(1.0F, 1.0F, 1.0F);
-				this.renderBlocks.func_1227_a(var7);
+				this.renderBlocks.func_1227_a(var7, var3.getItemDamage());
 				GL11.glPopMatrix();
 			} else if(var3.getIconIndex() >= 0) {
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -152,9 +152,9 @@ public class RenderItem extends Render {
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 			}
 
-			if(stack.itemDamage > 0) {
-				int var11 = 13 - stack.itemDamage * 13 / stack.getMaxDamage();
-				int var7 = 255 - stack.itemDamage * 255 / stack.getMaxDamage();
+			if(stack.isItemDamaged()) {
+				int var11 = (int)Math.round(13.0D - (double)stack.getItemDamageForDisplay() * 13.0D / (double)stack.getMaxDamage());
+				int var7 = (int)Math.round(255.0D - (double)stack.getItemDamageForDisplay() * 255.0D / (double)stack.getMaxDamage());
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -197,6 +197,6 @@ public class RenderItem extends Render {
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.a((EntityItem)var1, var2, var4, var6, var8, var9);
+		this.func_165_a((EntityItem)var1, var2, var4, var6, var8, var9);
 	}
 }

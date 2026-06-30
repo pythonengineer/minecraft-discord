@@ -91,6 +91,13 @@ mob/zombie3.ogg
 mob/zombiedeath.ogg
 mob/zombiehurt1.ogg
 mob/zombiehurt2.ogg
+note/bass.ogg
+note/bassattack.ogg
+note/bd.ogg
+note/harp.ogg
+note/hat.ogg
+note/pling.ogg
+note/snare.ogg
 portal/portal.ogg
 portal/travel.ogg
 portal/trigger.ogg

@@ -13,16 +13,18 @@ public class Packet21PickupSpawn extends Packet {
 	public byte rotation;
 	public byte pitch;
 	public byte roll;
-	public int itemId;
+	public int itemID;
 	public int count;
+	public int itemDamage;
 
 	public Packet21PickupSpawn() {
 	}
 
 	public Packet21PickupSpawn(EntityItem var1) {
-		this.entityId = var1.field_620_ab;
-		this.itemId = var1.item.itemID;
+		this.entityId = var1.entityId;
+		this.itemID = var1.item.itemID;
 		this.count = var1.item.stackSize;
+		this.itemDamage = var1.item.getItemDamage();
 		this.xPosition = MathHelper.floor_double(var1.posX * 32.0D);
 		this.yPosition = MathHelper.floor_double(var1.posY * 32.0D);
 		this.zPosition = MathHelper.floor_double(var1.posZ * 32.0D);
@@ -33,8 +35,9 @@ public class Packet21PickupSpawn extends Packet {
 
 	public void readPacketData(DataInputStream var1) throws IOException {
 		this.entityId = var1.readInt();
-		this.itemId = var1.readShort();
+		this.itemID = var1.readShort();
 		this.count = var1.readByte();
+		this.itemDamage = var1.readShort();
 		this.xPosition = var1.readInt();
 		this.yPosition = var1.readInt();
 		this.zPosition = var1.readInt();
@@ -45,8 +48,9 @@ public class Packet21PickupSpawn extends Packet {
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
 		var1.writeInt(this.entityId);
-		var1.writeShort(this.itemId);
+		var1.writeShort(this.itemID);
 		var1.writeByte(this.count);
+		var1.writeShort(this.itemDamage);
 		var1.writeInt(this.xPosition);
 		var1.writeInt(this.yPosition);
 		var1.writeInt(this.zPosition);
@@ -60,6 +64,6 @@ public class Packet21PickupSpawn extends Packet {
 	}
 
 	public int getPacketSize() {
-		return 22;
+		return 24;
 	}
 }

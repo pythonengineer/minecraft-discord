@@ -23,7 +23,7 @@ public class WorldRenderer {
 	public int field_1752_l;
 	public int field_1751_m;
 	public int field_1750_n;
-	public boolean isInFrustrum = false;
+	public boolean isInFrustum = false;
 	public boolean[] skipRenderPass = new boolean[2];
 	public int field_1746_q;
 	public int field_1743_r;
@@ -66,7 +66,7 @@ public class WorldRenderer {
 			this.field_1755_i = var1 - this.field_1752_l;
 			this.field_1754_j = var2 - this.field_1751_m;
 			this.field_1753_k = var3 - this.field_1750_n;
-			float var4 = 2.0F;
+			float var4 = 6.0F;
 			this.field_1736_v = AxisAlignedBB.getBoundingBox((double)((float)var1 - var4), (double)((float)var2 - var4), (double)((float)var3 - var4), (double)((float)(var1 + this.sizeWidth) + var4), (double)((float)(var2 + this.sizeHeight) + var4), (double)((float)(var3 + this.sizeDepth) + var4));
 			GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
 			RenderItem.renderAABB(AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.field_1752_l - var4), (double)((float)this.field_1751_m - var4), (double)((float)this.field_1750_n - var4), (double)((float)(this.field_1752_l + this.sizeWidth) + var4), (double)((float)(this.field_1751_m + this.sizeHeight) + var4), (double)((float)(this.field_1750_n + this.sizeDepth) + var4)));
@@ -93,7 +93,7 @@ public class WorldRenderer {
 				this.skipRenderPass[var7] = true;
 			}
 
-			Chunk.field_1540_a = false;
+			Chunk.isLit = false;
 			HashSet var21 = new HashSet();
 			var21.addAll(this.tileEntityRenderers);
 			this.tileEntityRenderers.clear();
@@ -167,7 +167,7 @@ public class WorldRenderer {
 			this.field_1737_F.addAll(var22);
 			var21.removeAll(this.tileEntityRenderers);
 			this.field_1737_F.removeAll(var21);
-			this.field_1747_A = Chunk.field_1540_a;
+			this.field_1747_A = Chunk.isLit;
 			this.isInitialized = true;
 		}
 	}
@@ -184,7 +184,7 @@ public class WorldRenderer {
 			this.skipRenderPass[var1] = true;
 		}
 
-		this.isInFrustrum = false;
+		this.isInFrustum = false;
 		this.isInitialized = false;
 	}
 
@@ -194,11 +194,11 @@ public class WorldRenderer {
 	}
 
 	public int getGLCallListForPass(int var1) {
-		return !this.isInFrustrum ? -1 : (!this.skipRenderPass[var1] ? this.glRenderList + var1 : -1);
+		return !this.isInFrustum ? -1 : (!this.skipRenderPass[var1] ? this.glRenderList + var1 : -1);
 	}
 
 	public void updateInFrustrum(ICamera var1) {
-		this.isInFrustrum = var1.isBoundingBoxInFrustum(this.field_1736_v);
+		this.isInFrustum = var1.isBoundingBoxInFrustum(this.field_1736_v);
 	}
 
 	public void callOcclusionQueryList() {

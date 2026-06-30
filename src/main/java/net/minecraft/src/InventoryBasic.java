@@ -3,33 +3,33 @@ package net.minecraft.src;
 import java.util.List;
 
 public class InventoryBasic implements IInventory {
-	private String field_20072_a;
-	private int field_20071_b;
-	private ItemStack[] field_20074_c;
+	private String inventoryTitle;
+	private int slotsCount;
+	private ItemStack[] inventoryContents;
 	private List field_20073_d;
 
 	public InventoryBasic(String var1, int var2) {
-		this.field_20072_a = var1;
-		this.field_20071_b = var2;
-		this.field_20074_c = new ItemStack[var2];
+		this.inventoryTitle = var1;
+		this.slotsCount = var2;
+		this.inventoryContents = new ItemStack[var2];
 	}
 
 	public ItemStack getStackInSlot(int var1) {
-		return this.field_20074_c[var1];
+		return this.inventoryContents[var1];
 	}
 
 	public ItemStack decrStackSize(int var1, int var2) {
-		if(this.field_20074_c[var1] != null) {
+		if(this.inventoryContents[var1] != null) {
 			ItemStack var3;
-			if(this.field_20074_c[var1].stackSize <= var2) {
-				var3 = this.field_20074_c[var1];
-				this.field_20074_c[var1] = null;
+			if(this.inventoryContents[var1].stackSize <= var2) {
+				var3 = this.inventoryContents[var1];
+				this.inventoryContents[var1] = null;
 				this.onInventoryChanged();
 				return var3;
 			} else {
-				var3 = this.field_20074_c[var1].splitStack(var2);
-				if(this.field_20074_c[var1].stackSize == 0) {
-					this.field_20074_c[var1] = null;
+				var3 = this.inventoryContents[var1].splitStack(var2);
+				if(this.inventoryContents[var1].stackSize == 0) {
+					this.inventoryContents[var1] = null;
 				}
 
 				this.onInventoryChanged();
@@ -41,7 +41,7 @@ public class InventoryBasic implements IInventory {
 	}
 
 	public void setInventorySlotContents(int var1, ItemStack var2) {
-		this.field_20074_c[var1] = var2;
+		this.inventoryContents[var1] = var2;
 		if(var2 != null && var2.stackSize > this.getInventoryStackLimit()) {
 			var2.stackSize = this.getInventoryStackLimit();
 		}
@@ -50,11 +50,11 @@ public class InventoryBasic implements IInventory {
 	}
 
 	public int getSizeInventory() {
-		return this.field_20071_b;
+		return this.slotsCount;
 	}
 
 	public String getInvName() {
-		return this.field_20072_a;
+		return this.inventoryTitle;
 	}
 
 	public int getInventoryStackLimit() {
@@ -70,7 +70,7 @@ public class InventoryBasic implements IInventory {
 
 	}
 
-	public boolean func_20070_a_(EntityPlayer var1) {
+	public boolean canInteractWith(EntityPlayer var1) {
 		return true;
 	}
 }

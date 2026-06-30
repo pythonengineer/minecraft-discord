@@ -34,11 +34,11 @@ public class NextTickListEntry implements Comparable {
 		return this;
 	}
 
-	public int a(NextTickListEntry var1) {
+	public int comparer(NextTickListEntry var1) {
 		return this.scheduledTime < var1.scheduledTime ? -1 : (this.scheduledTime > var1.scheduledTime ? 1 : (this.tickEntryID < var1.tickEntryID ? -1 : (this.tickEntryID > var1.tickEntryID ? 1 : 0)));
 	}
 
 	public int compareTo(Object var1) {
-		return this.a((NextTickListEntry)var1);
+		return this.comparer((NextTickListEntry)var1);
 	}
 }

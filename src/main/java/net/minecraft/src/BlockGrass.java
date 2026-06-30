@@ -21,9 +21,9 @@ public class BlockGrass extends Block {
 	}
 
 	public int colorMultiplier(IBlockAccess var1, int var2, int var3, int var4) {
-		var1.func_4075_a().func_4069_a(var2, var4, 1, 1);
-		double var5 = var1.func_4075_a().temperature[0];
-		double var7 = var1.func_4075_a().humidity[0];
+		var1.getWorldChunkManager().func_4069_a(var2, var4, 1, 1);
+		double var5 = var1.getWorldChunkManager().temperature[0];
+		double var7 = var1.getWorldChunkManager().humidity[0];
 		return ColorizerGrass.func_4147_a(var5, var7);
 	}
 

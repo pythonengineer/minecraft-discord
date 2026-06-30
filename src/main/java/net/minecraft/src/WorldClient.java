@@ -8,9 +8,9 @@ import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 public class WorldClient extends World {
 	private LinkedList field_1057_z = new LinkedList();
 	private NetClientHandler sendQueue;
-	private ChunkProviderClient C;
+	private ChunkProviderClient field_20915_C;
 	private MCHashTable field_1055_D = new MCHashTable();
-	private Set E = new HashSet();
+	private Set field_20914_E = new HashSet();
 	private Set field_1053_F = new HashSet();
 
 	public WorldClient(NetClientHandler var1, long var2, int var4) {
@@ -63,12 +63,12 @@ public class WorldClient extends World {
 
 	}
 
-	protected IChunkProvider func_4081_a(VFile2 var1) {
-		this.C = new ChunkProviderClient(this);
-		return this.C;
+	protected IChunkProvider getChunkProvider(VFile2 var1) {
+		this.field_20915_C = new ChunkProviderClient(this);
+		return this.field_20915_C;
 	}
 
-	public void func_4076_b() {
+	public void setSpawnLocation() {
 		this.spawnX = 8;
 		this.spawnY = 64;
 		this.spawnZ = 8;
@@ -86,20 +86,20 @@ public class WorldClient extends World {
 
 	public void func_713_a(int var1, int var2, boolean var3) {
 		if(var3) {
-			this.C.func_538_d(var1, var2);
+			this.field_20915_C.func_538_d(var1, var2);
 		} else {
-			this.C.func_539_c(var1, var2);
+			this.field_20915_C.func_539_c(var1, var2);
 		}
 
 		if(!var3) {
-			this.func_701_b(var1 * 16, 0, var2 * 16, var1 * 16 + 15, 128, var2 * 16 + 15);
+			this.markBlocksDirty(var1 * 16, 0, var2 * 16, var1 * 16 + 15, 128, var2 * 16 + 15);
 		}
 
 	}
 
 	public boolean entityJoinedWorld(Entity var1) {
 		boolean var2 = super.entityJoinedWorld(var1);
-		this.E.add(var1);
+		this.field_20914_E.add(var1);
 		if(!var2) {
 			this.field_1053_F.add(var1);
 		}
@@ -109,7 +109,7 @@ public class WorldClient extends World {
 
 	public void setEntityDead(Entity var1) {
 		super.setEntityDead(var1);
-		this.E.remove(var1);
+		this.field_20914_E.remove(var1);
 	}
 
 	protected void obtainEntitySkin(Entity var1) {
@@ -122,7 +122,7 @@ public class WorldClient extends World {
 
 	protected void releaseEntitySkin(Entity var1) {
 		super.releaseEntitySkin(var1);
-		if(this.E.contains(var1)) {
+		if(this.field_20914_E.contains(var1)) {
 			this.field_1053_F.add(var1);
 		}
 
@@ -134,8 +134,8 @@ public class WorldClient extends World {
 			this.setEntityDead(var3);
 		}
 
-		this.E.add(var2);
-		var2.field_620_ab = var1;
+		this.field_20914_E.add(var2);
+		var2.entityId = var1;
 		if(!this.entityJoinedWorld(var2)) {
 			this.field_1053_F.add(var2);
 		}
@@ -150,7 +150,7 @@ public class WorldClient extends World {
 	public Entity removeEntityFromWorld(int var1) {
 		Entity var2 = (Entity)this.field_1055_D.removeObject(var1);
 		if(var2 != null) {
-			this.E.remove(var2);
+			this.field_20914_E.remove(var2);
 			this.setEntityDead(var2);
 		}
 

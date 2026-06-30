@@ -9,11 +9,11 @@ public class EntitySorter implements Comparator {
 		this.field_1594_a = var1;
 	}
 
-	public int a(WorldRenderer var1, WorldRenderer var2) {
+	public int func_1063_a(WorldRenderer var1, WorldRenderer var2) {
 		return var1.distanceToEntity(this.field_1594_a) < var2.distanceToEntity(this.field_1594_a) ? -1 : 1;
 	}
 
 	public int compare(Object var1, Object var2) {
-		return this.a((WorldRenderer)var1, (WorldRenderer)var2);
+		return this.func_1063_a((WorldRenderer)var1, (WorldRenderer)var2);
 	}
 }

@@ -24,8 +24,11 @@ public class BlockLog extends Block {
 				for(int var8 = -var5; var8 <= var5; ++var8) {
 					for(int var9 = -var5; var9 <= var5; ++var9) {
 						int var10 = var1.getBlockId(var2 + var7, var3 + var8, var4 + var9);
-						if(var10 == Block.leaves.blockID && var1.getBlockMetadata(var2 + var7, var3 + var8, var4 + var9) != 7) {
-							var1.setBlockMetadata(var2 + var7, var3 + var8, var4 + var9, 7);
+						if(var10 == Block.leaves.blockID) {
+							int var11 = var1.getBlockMetadata(var2 + var7, var3 + var8, var4 + var9);
+							if((var11 & 4) == 0) {
+								var1.setBlockMetadata(var2 + var7, var3 + var8, var4 + var9, var11 | 4);
+							}
 						}
 					}
 				}
@@ -34,7 +37,11 @@ public class BlockLog extends Block {
 
 	}
 
-	public int getBlockTextureFromSide(int var1) {
-		return var1 == 1 ? 21 : (var1 == 0 ? 21 : 20);
+	public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
+		return var1 == 1 ? 21 : (var1 == 0 ? 21 : (var2 == 1 ? 116 : (var2 == 2 ? 117 : 20)));
+	}
+
+	protected int damageDropped(int var1) {
+		return var1;
 	}
 }

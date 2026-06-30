@@ -25,13 +25,14 @@ public class Material {
 	public static final Material clay = new Material();
 	public static final Material pumpkin = new Material();
 	public static final Material portal = new Material();
+	public static final Material field_21150_y = new Material();
 	private boolean canBurn;
 
 	public boolean getIsLiquid() {
 		return false;
 	}
 
-	public boolean func_878_a() {
+	public boolean isSolid() {
 		return true;
 	}
 

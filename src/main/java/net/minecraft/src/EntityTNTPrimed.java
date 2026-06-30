@@ -27,6 +27,9 @@ public class EntityTNTPrimed extends Entity {
 		this.prevPosZ = var6;
 	}
 
+	protected void entityInit() {
+	}
+
 	public boolean canBeCollidedWith() {
 		return !this.isDead;
 	}
@@ -68,7 +71,7 @@ public class EntityTNTPrimed extends Entity {
 		this.fuse = var1.getByte("Fuse");
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 }

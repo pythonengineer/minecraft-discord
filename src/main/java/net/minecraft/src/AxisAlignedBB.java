@@ -96,7 +96,7 @@ public class AxisAlignedBB {
 		return getBoundingBoxFromPool(this.minX + var1, this.minY + var3, this.minZ + var5, this.maxX + var1, this.maxY + var3, this.maxZ + var5);
 	}
 
-	public double func_1163_a(AxisAlignedBB var1, double var2) {
+	public double calculateXOffset(AxisAlignedBB var1, double var2) {
 		if(var1.maxY > this.minY && var1.minY < this.maxY) {
 			if(var1.maxZ > this.minZ && var1.minZ < this.maxZ) {
 				double var4;
@@ -123,7 +123,7 @@ public class AxisAlignedBB {
 		}
 	}
 
-	public double func_1172_b(AxisAlignedBB var1, double var2) {
+	public double calculateYOffset(AxisAlignedBB var1, double var2) {
 		if(var1.maxX > this.minX && var1.minX < this.maxX) {
 			if(var1.maxZ > this.minZ && var1.minZ < this.maxZ) {
 				double var4;
@@ -150,7 +150,7 @@ public class AxisAlignedBB {
 		}
 	}
 
-	public double func_1162_c(AxisAlignedBB var1, double var2) {
+	public double calculateZOffset(AxisAlignedBB var1, double var2) {
 		if(var1.maxX > this.minX && var1.minX < this.maxX) {
 			if(var1.maxY > this.minY && var1.minY < this.maxY) {
 				double var4;
@@ -313,5 +313,9 @@ public class AxisAlignedBB {
 		this.maxX = var1.maxX;
 		this.maxY = var1.maxY;
 		this.maxZ = var1.maxZ;
+	}
+
+	public String toString() {
+		return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
 	}
 }

@@ -4,24 +4,24 @@ import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 
 public class GuiMultiplayer extends GuiScreen {
-	private GuiScreen updateCounter;
-	private int parentScreen = 0;
+	private GuiScreen parentScreen;
+	private int updateCounter = 0;
 	private String serverAddress = "";
 
 	public GuiMultiplayer(GuiScreen var1) {
-		this.updateCounter = var1;
+		this.parentScreen = var1;
 	}
 
 	public void updateScreen() {
-		++this.parentScreen;
+		++this.updateCounter;
 	}
 
 	public void initGui() {
-		StringTranslate var1 = StringTranslate.func_20162_a();
+		StringTranslate var1 = StringTranslate.getInstance();
 		Keyboard.enableRepeatEvents(true);
 		this.controlList.clear();
-		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, var1.func_20163_a("multiplayer.connect")));
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, var1.func_20163_a("gui.cancel")));
+		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, var1.translateKey("multiplayer.connect")));
+		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, var1.translateKey("gui.cancel")));
 		this.serverAddress = this.mc.gameSettings.lastServer.replaceAll("_", ":");
 		if(this.serverAddress.length() == 0) {
 	        if(this.mc.serverName != null) {
@@ -41,7 +41,7 @@ public class GuiMultiplayer extends GuiScreen {
 	protected void actionPerformed(GuiButton var1) {
 		if(var1.enabled) {
 			if(var1.id == 1) {
-				this.mc.displayGuiScreen(this.updateCounter);
+				this.mc.displayGuiScreen(this.parentScreen);
 			} else if(var1.id == 0) {
 				this.mc.gameSettings.lastServer = this.serverAddress.replaceAll(":", "_");
 				this.mc.gameSettings.saveOptions();
@@ -96,7 +96,7 @@ public class GuiMultiplayer extends GuiScreen {
 			this.serverAddress = this.serverAddress.substring(0, this.serverAddress.length() - 1);
 		}
 
-		if(FontAllowedCharacters.field_20157_a.indexOf(var1) >= 0 && this.serverAddress.length() < 64) {
+		if(FontAllowedCharacters.allowedCharacters.indexOf(var1) >= 0 && this.serverAddress.length() < 64) {
 			this.serverAddress = this.serverAddress + var1;
 		}
 
@@ -104,19 +104,19 @@ public class GuiMultiplayer extends GuiScreen {
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
-		StringTranslate var4 = StringTranslate.func_20162_a();
+		StringTranslate var4 = StringTranslate.getInstance();
 		this.drawDefaultBackground();
-		this.drawCenteredString(this.fontRenderer, var4.func_20163_a("multiplayer.title"), this.width / 2, this.height / 4 - 60 + 20, 16777215);
-		this.drawString(this.fontRenderer, var4.func_20163_a("multiplayer.info1"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 0, 10526880);
-		this.drawString(this.fontRenderer, var4.func_20163_a("multiplayer.info2"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 9, 10526880);
-		this.drawString(this.fontRenderer, var4.func_20163_a("multiplayer.ipinfo"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 36, 10526880);
+		this.drawCenteredString(this.fontRenderer, var4.translateKey("multiplayer.title"), this.width / 2, this.height / 4 - 60 + 20, 16777215);
+		this.drawString(this.fontRenderer, var4.translateKey("multiplayer.info1"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 0, 10526880);
+		this.drawString(this.fontRenderer, var4.translateKey("multiplayer.info2"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 9, 10526880);
+		this.drawString(this.fontRenderer, var4.translateKey("multiplayer.ipinfo"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 36, 10526880);
 		int var5 = this.width / 2 - 100;
 		int var6 = this.height / 4 - 10 + 50 + 18;
 		short var7 = 200;
 		byte var8 = 20;
 		this.drawRect(var5 - 1, var6 - 1, var5 + var7 + 1, var6 + var8 + 1, -6250336);
 		this.drawRect(var5, var6, var5 + var7, var6 + var8, -16777216);
-		this.drawString(this.fontRenderer, this.serverAddress + (this.parentScreen / 6 % 2 == 0 ? "_" : ""), var5 + 4, var6 + (var8 - 8) / 2, 14737632);
+		this.drawString(this.fontRenderer, this.serverAddress + (this.updateCounter / 6 % 2 == 0 ? "_" : ""), var5 + 4, var6 + (var8 - 8) / 2, 14737632);
 		super.drawScreen(var1, var2, var3);
 	}
 
@@ -127,7 +127,7 @@ public class GuiMultiplayer extends GuiScreen {
         case CLIPBOARD_PASTE:
             String string = GuiScreen.getClipboardString();
             for (char c : string.toCharArray()) {
-                if(FontAllowedCharacters.field_20157_a.indexOf(c) >= 0 && this.serverAddress.length() < 64) {
+                if(FontAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && this.serverAddress.length() < 64) {
                     this.serverAddress = this.serverAddress + c;
                 }
             }

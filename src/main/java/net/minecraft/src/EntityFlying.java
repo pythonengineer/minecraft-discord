@@ -12,13 +12,13 @@ public class EntityFlying extends EntityLiving {
 
 	public void moveEntityWithHeading(float var1, float var2) {
 		if(this.handleWaterMovement()) {
-			this.func_351_a(var1, var2, 0.02F);
+			this.moveFlying(var1, var2, 0.02F);
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= (double)0.8F;
 			this.motionY *= (double)0.8F;
 			this.motionZ *= (double)0.8F;
 		} else if(this.handleLavaMovement()) {
-			this.func_351_a(var1, var2, 0.02F);
+			this.moveFlying(var1, var2, 0.02F);
 			this.moveEntity(this.motionX, this.motionY, this.motionZ);
 			this.motionX *= 0.5D;
 			this.motionY *= 0.5D;
@@ -34,7 +34,7 @@ public class EntityFlying extends EntityLiving {
 			}
 
 			float var8 = 0.16277136F / (var3 * var3 * var3);
-			this.func_351_a(var1, var2, this.onGround ? 0.1F * var8 : 0.02F);
+			this.moveFlying(var1, var2, this.onGround ? 0.1F * var8 : 0.02F);
 			var3 = 0.91F;
 			if(this.onGround) {
 				var3 = 546.0F * 0.1F * 0.1F * 0.1F;

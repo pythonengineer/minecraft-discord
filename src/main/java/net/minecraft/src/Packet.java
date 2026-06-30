@@ -10,7 +10,7 @@ import net.lax1dude.eaglercraft.EagRuntime;
 public abstract class Packet {
 	private static Map packetIdToClassMap = new HashMap();
 	private static Map packetClassToIdMap = new HashMap();
-	public final long field_20018_j = EagRuntime.currentTimeMillis();
+	public final long creationTimeMillis = EagRuntime.currentTimeMillis();
 	public boolean isChunkDataPacket = false;
 
 	static void addIdClassMapping(int var0, Class var1) {
@@ -86,11 +86,13 @@ public abstract class Packet {
 		addIdClassMapping(15, Packet15Place.class);
 		addIdClassMapping(16, Packet16BlockItemSwitch.class);
 		addIdClassMapping(18, Packet18ArmAnimation.class);
+		addIdClassMapping(19, Packet19.class);
 		addIdClassMapping(20, Packet20NamedEntitySpawn.class);
 		addIdClassMapping(21, Packet21PickupSpawn.class);
 		addIdClassMapping(22, Packet22Collect.class);
 		addIdClassMapping(23, Packet23VehicleSpawn.class);
 		addIdClassMapping(24, Packet24MobSpawn.class);
+		addIdClassMapping(25, Packet25.class);
 		addIdClassMapping(28, Packet28.class);
 		addIdClassMapping(29, Packet29DestroyEntity.class);
 		addIdClassMapping(30, Packet30Entity.class);
@@ -100,10 +102,12 @@ public abstract class Packet {
 		addIdClassMapping(34, Packet34EntityTeleport.class);
 		addIdClassMapping(38, Packet38.class);
 		addIdClassMapping(39, Packet39.class);
+		addIdClassMapping(40, Packet40.class);
 		addIdClassMapping(50, Packet50PreChunk.class);
 		addIdClassMapping(51, Packet51MapChunk.class);
 		addIdClassMapping(52, Packet52MultiBlockChange.class);
 		addIdClassMapping(53, Packet53BlockChange.class);
+		addIdClassMapping(54, Packet54.class);
 		addIdClassMapping(60, Packet60.class);
 		addIdClassMapping(100, Packet100.class);
 		addIdClassMapping(101, Packet101.class);

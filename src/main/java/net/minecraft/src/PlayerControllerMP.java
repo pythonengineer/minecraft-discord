@@ -124,7 +124,7 @@ public class PlayerControllerMP extends PlayerController {
 	public void updateController() {
 		this.func_730_e();
 		this.field_1080_g = this.field_9442_f;
-		this.mc.sndManager.func_4033_c();
+		this.mc.sndManager.playRandomMusicIfReady();
 	}
 
 	private void func_730_e() {
@@ -138,15 +138,15 @@ public class PlayerControllerMP extends PlayerController {
 
 	public boolean sendPlaceBlock(EntityPlayer var1, World var2, ItemStack var3, int var4, int var5, int var6, int var7) {
 		this.func_730_e();
-		boolean var8 = super.sendPlaceBlock(var1, var2, var3, var4, var5, var6, var7);
 		this.field_9438_k.addToSendQueue(new Packet15Place(var4, var5, var6, var7, var1.inventory.getCurrentItem()));
+		boolean var8 = super.sendPlaceBlock(var1, var2, var3, var4, var5, var6, var7);
 		return var8;
 	}
 
 	public boolean sendUseItem(EntityPlayer var1, World var2, ItemStack var3) {
 		this.func_730_e();
-		boolean var4 = super.sendUseItem(var1, var2, var3);
 		this.field_9438_k.addToSendQueue(new Packet15Place(-1, -1, -1, 255, var1.inventory.getCurrentItem()));
+		boolean var4 = super.sendUseItem(var1, var2, var3);
 		return var4;
 	}
 
@@ -156,18 +156,18 @@ public class PlayerControllerMP extends PlayerController {
 
 	public void func_6472_b(EntityPlayer var1, Entity var2) {
 		this.func_730_e();
-		this.field_9438_k.addToSendQueue(new Packet7(var1.field_620_ab, var2.field_620_ab, 1));
+		this.field_9438_k.addToSendQueue(new Packet7(var1.entityId, var2.entityId, 1));
 		var1.attackTargetEntityWithCurrentItem(var2);
 	}
 
 	public void func_6475_a(EntityPlayer var1, Entity var2) {
 		this.func_730_e();
-		this.field_9438_k.addToSendQueue(new Packet7(var1.field_620_ab, var2.field_620_ab, 0));
+		this.field_9438_k.addToSendQueue(new Packet7(var1.entityId, var2.entityId, 0));
 		var1.useCurrentItemOnEntity(var2);
 	}
 
 	public ItemStack func_20085_a(int var1, int var2, int var3, int mode, EntityPlayer var4) {
-		short var5 = var4.field_20068_h.func_20111_a(var4.inventory);
+		short var5 = var4.craftingInventory.func_20111_a(var4.inventory);
 		ItemStack var6 = super.func_20085_a(var1, var2, var3, mode, var4);
 		this.field_9438_k.addToSendQueue(new Packet102(var1, var2, var3, var6, var5));
 		return var6;

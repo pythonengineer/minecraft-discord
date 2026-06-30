@@ -7,11 +7,11 @@ public class ItemSaddle extends Item {
 		this.maxDamage = 64;
 	}
 
-	public void func_4019_b(ItemStack var1, EntityLiving var2) {
+	public void saddleEntity(ItemStack var1, EntityLiving var2) {
 		if(var2 instanceof EntityPig) {
 			EntityPig var3 = (EntityPig)var2;
-			if(!var3.rideable) {
-				var3.rideable = true;
+			if(!var3.func_21068_q()) {
+				var3.func_21069_a(true);
 				--var1.stackSize;
 			}
 		}
@@ -19,6 +19,6 @@ public class ItemSaddle extends Item {
 	}
 
 	public void hitEntity(ItemStack var1, EntityLiving var2) {
-		this.func_4019_b(var1, var2);
+		this.saddleEntity(var1, var2);
 	}
 }

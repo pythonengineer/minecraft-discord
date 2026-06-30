@@ -4,12 +4,12 @@ import java.util.List;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntitySnowball extends Entity {
-	private int field_816_b = -1;
-	private int field_815_c = -1;
-	private int field_814_d = -1;
-	private int field_813_e = 0;
-	private boolean field_812_f = false;
-	public int field_817_a = 0;
+	private int xTileSnowball = -1;
+	private int yTileSnowball = -1;
+	private int zTileSnowball = -1;
+	private int inTileSnowball = 0;
+	private boolean inGroundSnowball = false;
+	public int shakeSnowball = 0;
 	private EntityLiving field_811_g;
 	private int field_810_h;
 	private int field_809_i = 0;
@@ -17,6 +17,9 @@ public class EntitySnowball extends Entity {
 	public EntitySnowball(World var1) {
 		super(var1);
 		this.setSize(0.25F, 0.25F);
+	}
+
+	protected void entityInit() {
 	}
 
 	public boolean isInRangeToRenderDist(double var1) {
@@ -29,7 +32,7 @@ public class EntitySnowball extends Entity {
 		super(var1);
 		this.field_811_g = var2;
 		this.setSize(0.25F, 0.25F);
-		this.setLocationAndAngles(var2.posX, var2.posY + (double)var2.func_373_s(), var2.posZ, var2.rotationYaw, var2.rotationPitch);
+		this.setLocationAndAngles(var2.posX, var2.posY + (double)var2.getEyeHeight(), var2.posZ, var2.rotationYaw, var2.rotationPitch);
 		this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
 		this.posY -= (double)0.1F;
 		this.posZ -= (double)(MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
@@ -87,13 +90,13 @@ public class EntitySnowball extends Entity {
 		this.lastTickPosY = this.posY;
 		this.lastTickPosZ = this.posZ;
 		super.onUpdate();
-		if(this.field_817_a > 0) {
-			--this.field_817_a;
+		if(this.shakeSnowball > 0) {
+			--this.shakeSnowball;
 		}
 
-		if(this.field_812_f) {
-			int var1 = this.worldObj.getBlockId(this.field_816_b, this.field_815_c, this.field_814_d);
-			if(var1 == this.field_813_e) {
+		if(this.inGroundSnowball) {
+			int var1 = this.worldObj.getBlockId(this.xTileSnowball, this.yTileSnowball, this.zTileSnowball);
+			if(var1 == this.inTileSnowball) {
 				++this.field_810_h;
 				if(this.field_810_h == 1200) {
 					this.setEntityDead();
@@ -102,7 +105,7 @@ public class EntitySnowball extends Entity {
 				return;
 			}
 
-			this.field_812_f = false;
+			this.inGroundSnowball = false;
 			this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionY *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
@@ -200,25 +203,25 @@ public class EntitySnowball extends Entity {
 	}
 
 	public void writeEntityToNBT(NBTTagCompound var1) {
-		var1.setShort("xTile", (short)this.field_816_b);
-		var1.setShort("yTile", (short)this.field_815_c);
-		var1.setShort("zTile", (short)this.field_814_d);
-		var1.setByte("inTile", (byte)this.field_813_e);
-		var1.setByte("shake", (byte)this.field_817_a);
-		var1.setByte("inGround", (byte)(this.field_812_f ? 1 : 0));
+		var1.setShort("xTile", (short)this.xTileSnowball);
+		var1.setShort("yTile", (short)this.yTileSnowball);
+		var1.setShort("zTile", (short)this.zTileSnowball);
+		var1.setByte("inTile", (byte)this.inTileSnowball);
+		var1.setByte("shake", (byte)this.shakeSnowball);
+		var1.setByte("inGround", (byte)(this.inGroundSnowball ? 1 : 0));
 	}
 
 	public void readEntityFromNBT(NBTTagCompound var1) {
-		this.field_816_b = var1.getShort("xTile");
-		this.field_815_c = var1.getShort("yTile");
-		this.field_814_d = var1.getShort("zTile");
-		this.field_813_e = var1.getByte("inTile") & 255;
-		this.field_817_a = var1.getByte("shake") & 255;
-		this.field_812_f = var1.getByte("inGround") == 1;
+		this.xTileSnowball = var1.getShort("xTile");
+		this.yTileSnowball = var1.getShort("yTile");
+		this.zTileSnowball = var1.getShort("zTile");
+		this.inTileSnowball = var1.getByte("inTile") & 255;
+		this.shakeSnowball = var1.getByte("shake") & 255;
+		this.inGroundSnowball = var1.getByte("inGround") == 1;
 	}
 
 	public void onCollideWithPlayer(EntityPlayer var1) {
-		if(this.field_812_f && this.field_811_g == var1 && this.field_817_a <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow.shiftedIndex, 1))) {
+		if(this.inGroundSnowball && this.field_811_g == var1 && this.shakeSnowball <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow, 1))) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			var1.onItemPickup(this, 1);
 			this.setEntityDead();
@@ -226,7 +229,7 @@ public class EntitySnowball extends Entity {
 
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 }

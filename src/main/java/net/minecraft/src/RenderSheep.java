@@ -1,17 +1,26 @@
 package net.minecraft.src;
 
+import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
+
 public class RenderSheep extends RenderLiving {
 	public RenderSheep(ModelBase var1, ModelBase var2, float var3) {
 		super(var1, var3);
 		this.setRenderPassModel(var2);
 	}
 
-	protected boolean a(EntitySheep var1, int var2) {
-		this.loadTexture("/mob/sheep_fur.png");
-		return var2 == 0 && !var1.sheared;
+	protected boolean func_176_a(EntitySheep var1, int var2, float var3) {
+		if(var2 == 0 && !var1.func_21072_p()) {
+			this.loadTexture("/mob/sheep_fur.png");
+			float var4 = var1.getEntityBrightness(var3);
+			int var5 = var1.getFleeceColor();
+			GL11.glColor3f(var4 * EntitySheep.field_21075_a[var5][0], var4 * EntitySheep.field_21075_a[var5][1], var4 * EntitySheep.field_21075_a[var5][2]);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	protected boolean shouldRenderPass(EntityLiving var1, int var2) {
-		return this.a((EntitySheep)var1, var2);
+	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {
+		return this.func_176_a((EntitySheep)var1, var2, var3);
 	}
 }

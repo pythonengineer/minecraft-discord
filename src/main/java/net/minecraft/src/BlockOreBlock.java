@@ -7,6 +7,6 @@ public class BlockOreBlock extends Block {
 	}
 
 	public int getBlockTextureFromSide(int var1) {
-		return this.blockIndexInTexture - 16;
+		return this.blockIndexInTexture;
 	}
 }

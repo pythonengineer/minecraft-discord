@@ -19,8 +19,8 @@ public class Packet20NamedEntitySpawn extends Packet {
 	}
 
 	public Packet20NamedEntitySpawn(EntityPlayer var1) {
-		this.entityId = var1.field_620_ab;
-		this.name = var1.field_771_i;
+		this.entityId = var1.entityId;
+		this.name = var1.username;
 		this.xPosition = MathHelper.floor_double(var1.posX * 32.0D);
 		this.yPosition = MathHelper.floor_double(var1.posY * 32.0D);
 		this.zPosition = MathHelper.floor_double(var1.posZ * 32.0D);

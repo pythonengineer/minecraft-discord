@@ -11,18 +11,30 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	int lastQueriedChunkXPos = -999999999;
 	int lastQueriedChunkZPos = -999999999;
 	private Chunk lastQueriedChunk;
+	private int field_21113_i;
+	private int field_21112_j;
 
 	public ChunkProviderLoadOrGenerate(World var1, IChunkLoader var2, IChunkProvider var3) {
-		this.blankChunk = new Chunk(var1, new byte[-Short.MIN_VALUE], 0, 0);
-		this.blankChunk.field_1524_q = true;
-		this.blankChunk.neverSave = true;
+		this.blankChunk = new EmptyChunk(var1, new byte[-Short.MIN_VALUE], 0, 0);
 		this.worldObj = var1;
 		this.chunkLoader = var2;
 		this.chunkProvider = var3;
 	}
 
+	public void func_21110_c(int var1, int var2) {
+		this.field_21113_i = var1;
+		this.field_21112_j = var2;
+	}
+
+	public boolean func_21111_d(int var1, int var2) {
+		byte var3 = 15;
+		return var1 >= this.field_21113_i - var3 && var2 >= this.field_21112_j - var3 && var1 <= this.field_21113_i + var3 && var2 <= this.field_21112_j + var3;
+	}
+
 	public boolean chunkExists(int var1, int var2) {
-		if(var1 == this.lastQueriedChunkXPos && var2 == this.lastQueriedChunkZPos && this.lastQueriedChunk != null) {
+		if(!this.func_21111_d(var1, var2)) {
+			return false;
+		} else if(var1 == this.lastQueriedChunkXPos && var2 == this.lastQueriedChunkZPos && this.lastQueriedChunk != null) {
 			return true;
 		} else {
 			int var3 = var1 & 31;
@@ -35,6 +47,8 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	public Chunk provideChunk(int var1, int var2) {
 		if(var1 == this.lastQueriedChunkXPos && var2 == this.lastQueriedChunkZPos && this.lastQueriedChunk != null) {
 			return this.lastQueriedChunk;
+		} else if(!this.worldObj.field_9430_x && !this.func_21111_d(var1, var2)) {
+			return this.blankChunk;
 		} else {
 			int var3 = var1 & 31;
 			int var4 = var2 & 31;
@@ -87,7 +101,7 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
 	private Chunk func_542_c(int var1, int var2) {
 		if(this.chunkLoader == null) {
-			return null;
+			return this.blankChunk;
 		} else {
 			try {
 				Chunk var3 = this.chunkLoader.loadChunk(this.worldObj, var1, var2);
@@ -98,7 +112,7 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 				return var3;
 			} catch (Exception var4) {
 				var4.printStackTrace();
-				return null;
+				return this.blankChunk;
 			}
 		}
 	}
@@ -197,5 +211,9 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 
 	public boolean func_536_b() {
 		return true;
+	}
+
+	public String toString() {
+		return "ChunkCache: " + this.chunks.length;
 	}
 }

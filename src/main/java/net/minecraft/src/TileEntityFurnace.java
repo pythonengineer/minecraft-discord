@@ -150,17 +150,17 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		if(this.furnaceItemStacks[0] == null) {
 			return false;
 		} else {
-			int var1 = TileEntityFurnace.getSmeltingResultItem(this.furnaceItemStacks[0].getItem().shiftedIndex);
-			return var1 < 0 ? false : (this.furnaceItemStacks[2] == null ? true : (this.furnaceItemStacks[2].itemID != var1 ? false : (this.furnaceItemStacks[2].stackSize < this.getInventoryStackLimit() && this.furnaceItemStacks[2].stackSize < this.furnaceItemStacks[2].getMaxStackSize() ? true : this.furnaceItemStacks[2].stackSize < Item.itemsList[var1].getItemStackLimit())));
+			ItemStack var1 = FurnaceRecipes.smelting().getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
+			return var1 == null ? false : (this.furnaceItemStacks[2] == null ? true : (!this.furnaceItemStacks[2].isItemEqual(var1) ? false : (this.furnaceItemStacks[2].stackSize < this.getInventoryStackLimit() && this.furnaceItemStacks[2].stackSize < this.furnaceItemStacks[2].getMaxStackSize() ? true : this.furnaceItemStacks[2].stackSize < var1.getMaxStackSize())));
 		}
 	}
 
 	public void smeltItem() {
 		if(this.canSmelt()) {
-			int var1 = TileEntityFurnace.getSmeltingResultItem(this.furnaceItemStacks[0].getItem().shiftedIndex);
+			ItemStack var1 = FurnaceRecipes.smelting().getSmeltingResult(this.furnaceItemStacks[0].getItem().shiftedIndex);
 			if(this.furnaceItemStacks[2] == null) {
-				this.furnaceItemStacks[2] = new ItemStack(var1, 1);
-			} else if(this.furnaceItemStacks[2].itemID == var1) {
+				this.furnaceItemStacks[2] = var1.copy();
+			} else if(this.furnaceItemStacks[2].itemID == var1.itemID) {
 				++this.furnaceItemStacks[2].stackSize;
 			}
 
@@ -172,10 +172,6 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		}
 	}
 
-	public static int getSmeltingResultItem(int var1) {
-		return var1 == Block.oreIron.blockID ? Item.ingotIron.shiftedIndex : (var1 == Block.oreGold.blockID ? Item.ingotGold.shiftedIndex : (var1 == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (var1 == Block.sand.blockID ? Block.glass.blockID : (var1 == Item.porkRaw.shiftedIndex ? Item.porkCooked.shiftedIndex : (var1 == Item.fishRaw.shiftedIndex ? Item.fishCooked.shiftedIndex : (var1 == Block.cobblestone.blockID ? Block.stone.blockID : (var1 == Item.clay.shiftedIndex ? Item.brick.shiftedIndex : -1)))))));
-	}
-
 	private static int getItemBurnTime(ItemStack var1) {
 		if(var1 == null) {
 			return 0;
@@ -185,7 +181,7 @@ public class TileEntityFurnace extends TileEntity implements IInventory {
 		}
 	}
 
-	public boolean func_20070_a_(EntityPlayer var1) {
+	public boolean canInteractWith(EntityPlayer var1) {
 		return this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;
 	}
 

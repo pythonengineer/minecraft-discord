@@ -81,7 +81,7 @@ public class TileEntityChest extends TileEntity implements IInventory {
 		return 64;
 	}
 
-	public boolean func_20070_a_(EntityPlayer var1) {
+	public boolean canInteractWith(EntityPlayer var1) {
 		return this.worldObj.getBlockTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false : var1.getDistanceSq((double)this.xCoord + 0.5D, (double)this.yCoord + 0.5D, (double)this.zCoord + 0.5D) <= 64.0D;
 	}
 }

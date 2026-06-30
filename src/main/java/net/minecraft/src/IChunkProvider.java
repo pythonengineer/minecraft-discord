@@ -12,4 +12,6 @@ public interface IChunkProvider {
 	boolean func_532_a();
 
 	boolean func_536_b();
+
+	String toString();
 }

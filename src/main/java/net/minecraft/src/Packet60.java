@@ -8,42 +8,42 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Packet60 extends Packet {
-	public double field_12236_a;
-	public double field_12235_b;
-	public double field_12239_c;
-	public float field_12238_d;
-	public Set field_12237_e;
+	public double explosionX;
+	public double explosionY;
+	public double explosionZ;
+	public float explosionSize;
+	public Set destroyedBlockPositions;
 
 	public void readPacketData(DataInputStream var1) throws IOException {
-		this.field_12236_a = var1.readDouble();
-		this.field_12235_b = var1.readDouble();
-		this.field_12239_c = var1.readDouble();
-		this.field_12238_d = var1.readFloat();
+		this.explosionX = var1.readDouble();
+		this.explosionY = var1.readDouble();
+		this.explosionZ = var1.readDouble();
+		this.explosionSize = var1.readFloat();
 		int var2 = var1.readInt();
-		this.field_12237_e = new HashSet();
-		int var3 = (int)this.field_12236_a;
-		int var4 = (int)this.field_12235_b;
-		int var5 = (int)this.field_12239_c;
+		this.destroyedBlockPositions = new HashSet();
+		int var3 = (int)this.explosionX;
+		int var4 = (int)this.explosionY;
+		int var5 = (int)this.explosionZ;
 
 		for(int var6 = 0; var6 < var2; ++var6) {
 			int var7 = var1.readByte() + var3;
 			int var8 = var1.readByte() + var4;
 			int var9 = var1.readByte() + var5;
-			this.field_12237_e.add(new ChunkPosition(var7, var8, var9));
+			this.destroyedBlockPositions.add(new ChunkPosition(var7, var8, var9));
 		}
 
 	}
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
-		var1.writeDouble(this.field_12236_a);
-		var1.writeDouble(this.field_12235_b);
-		var1.writeDouble(this.field_12239_c);
-		var1.writeFloat(this.field_12238_d);
-		var1.writeInt(this.field_12237_e.size());
-		int var2 = (int)this.field_12236_a;
-		int var3 = (int)this.field_12235_b;
-		int var4 = (int)this.field_12239_c;
-		Iterator var5 = this.field_12237_e.iterator();
+		var1.writeDouble(this.explosionX);
+		var1.writeDouble(this.explosionY);
+		var1.writeDouble(this.explosionZ);
+		var1.writeFloat(this.explosionSize);
+		var1.writeInt(this.destroyedBlockPositions.size());
+		int var2 = (int)this.explosionX;
+		int var3 = (int)this.explosionY;
+		int var4 = (int)this.explosionZ;
+		Iterator var5 = this.destroyedBlockPositions.iterator();
 
 		while(var5.hasNext()) {
 			ChunkPosition var6 = (ChunkPosition)var5.next();
@@ -62,6 +62,6 @@ public class Packet60 extends Packet {
 	}
 
 	public int getPacketSize() {
-		return 32 + this.field_12237_e.size() * 3;
+		return 32 + this.destroyedBlockPositions.size() * 3;
 	}
 }

@@ -5,10 +5,10 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class MapGenCaves extends MapGenBase {
 	protected void func_870_a(int var1, int var2, byte[] var3, double var4, double var6, double var8) {
-		this.func_869_a(var1, var2, var3, var4, var6, var8, 1.0F + this.rand.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+		this.releaseEntitySkin(var1, var2, var3, var4, var6, var8, 1.0F + this.rand.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
 	}
 
-	protected void func_869_a(int var1, int var2, byte[] var3, double var4, double var6, double var8, float var10, float var11, float var12, int var13, int var14, double var15) {
+	protected void releaseEntitySkin(int var1, int var2, byte[] var3, double var4, double var6, double var8, float var10, float var11, float var12, int var13, int var14, double var15) {
 		double var17 = (double)(var1 * 16 + 8);
 		double var19 = (double)(var2 * 16 + 8);
 		float var21 = 0.0F;
@@ -48,8 +48,8 @@ public class MapGenCaves extends MapGenBase {
 			var22 += (var23.nextFloat() - var23.nextFloat()) * var23.nextFloat() * 2.0F;
 			var21 += (var23.nextFloat() - var23.nextFloat()) * var23.nextFloat() * 4.0F;
 			if(!var52 && var13 == var25 && var10 > 1.0F) {
-				this.func_869_a(var1, var2, var3, var4, var6, var8, var23.nextFloat() * 0.5F + 0.5F, var11 - (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
-				this.func_869_a(var1, var2, var3, var4, var6, var8, var23.nextFloat() * 0.5F + 0.5F, var11 + (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
+				this.releaseEntitySkin(var1, var2, var3, var4, var6, var8, var23.nextFloat() * 0.5F + 0.5F, var11 - (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
+				this.releaseEntitySkin(var1, var2, var3, var4, var6, var8, var23.nextFloat() * 0.5F + 0.5F, var11 + (float)Math.PI * 0.5F, var12 / 3.0F, var13, var14, 1.0D);
 				return;
 			}
 
@@ -122,28 +122,29 @@ public class MapGenCaves extends MapGenBase {
 								double var44 = ((double)(var43 + var2 * 16) + 0.5D - var8) / var27;
 								int var46 = (var40 * 16 + var43) * 128 + var36;
 								boolean var47 = false;
+								if(var57 * var57 + var44 * var44 < 1.0D) {
+									for(int var48 = var36 - 1; var48 >= var54; --var48) {
+										double var49 = ((double)var48 + 0.5D - var6) / var29;
+										if(var49 > -0.7D && var57 * var57 + var49 * var49 + var44 * var44 < 1.0D) {
+											byte var51 = var3[var46];
+											if(var51 == Block.grass.blockID) {
+												var47 = true;
+											}
 
-								for(int var48 = var36 - 1; var48 >= var54; --var48) {
-									double var49 = ((double)var48 + 0.5D - var6) / var29;
-									if(var49 > -0.7D && var57 * var57 + var49 * var49 + var44 * var44 < 1.0D) {
-										byte var51 = var3[var46];
-										if(var51 == Block.grass.blockID) {
-											var47 = true;
-										}
-
-										if(var51 == Block.stone.blockID || var51 == Block.dirt.blockID || var51 == Block.grass.blockID) {
-											if(var48 < 10) {
-												var3[var46] = (byte)Block.lavaStill.blockID;
-											} else {
-												var3[var46] = 0;
-												if(var47 && var3[var46 - 1] == Block.dirt.blockID) {
-													var3[var46 - 1] = (byte)Block.grass.blockID;
+											if(var51 == Block.stone.blockID || var51 == Block.dirt.blockID || var51 == Block.grass.blockID) {
+												if(var48 < 10) {
+													var3[var46] = (byte)Block.lavaStill.blockID;
+												} else {
+													var3[var46] = 0;
+													if(var47 && var3[var46 - 1] == Block.dirt.blockID) {
+														var3[var46 - 1] = (byte)Block.grass.blockID;
+													}
 												}
 											}
 										}
-									}
 
-									--var46;
+										--var46;
+									}
 								}
 							}
 						}
@@ -178,7 +179,7 @@ public class MapGenCaves extends MapGenBase {
 				float var17 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
 				float var18 = (this.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
 				float var19 = this.rand.nextFloat() * 2.0F + this.rand.nextFloat();
-				this.func_869_a(var4, var5, var6, var9, var11, var13, var19, var17, var18, 0, 0, 1.0D);
+				this.releaseEntitySkin(var4, var5, var6, var9, var11, var13, var19, var17, var18, 0, 0, 1.0D);
 			}
 		}
 

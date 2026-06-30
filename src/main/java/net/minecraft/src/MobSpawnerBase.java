@@ -1,25 +1,28 @@
 package net.minecraft.src;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
+
 public class MobSpawnerBase {
-	public static final MobSpawnerBase rainforest = (new MobSpawnerBase()).func_4123_b(588342).setBiomeName("Rainforest").func_4124_a(2094168);
-	public static final MobSpawnerBase swampland = (new MobSpawnerSwamp()).func_4123_b(522674).setBiomeName("Swampland").func_4124_a(9154376);
-	public static final MobSpawnerBase seasonalForest = (new MobSpawnerBase()).func_4123_b(10215459).setBiomeName("Seasonal Forest");
-	public static final MobSpawnerBase forest = (new MobSpawnerBase()).func_4123_b(353825).setBiomeName("Forest").func_4124_a(5159473);
-	public static final MobSpawnerBase savanna = (new MobSpawnerDesert()).func_4123_b(14278691).setBiomeName("Savanna");
-	public static final MobSpawnerBase shrubland = (new MobSpawnerBase()).func_4123_b(10595616).setBiomeName("Shrubland");
-	public static final MobSpawnerBase taiga = (new MobSpawnerBase()).func_4123_b(3060051).setBiomeName("Taiga").func_4122_b().func_4124_a(8107825);
-	public static final MobSpawnerBase desert = (new MobSpawnerDesert()).func_4123_b(16421912).setBiomeName("Desert");
-	public static final MobSpawnerBase plains = (new MobSpawnerDesert()).func_4123_b(16767248).setBiomeName("Plains");
-	public static final MobSpawnerBase iceDesert = (new MobSpawnerDesert()).func_4123_b(16772499).setBiomeName("Ice Desert").func_4122_b().func_4124_a(12899129);
-	public static final MobSpawnerBase tundra = (new MobSpawnerBase()).func_4123_b(5762041).setBiomeName("Tundra").func_4122_b().func_4124_a(12899129);
-	public static final MobSpawnerBase hell = (new MobSpawnerHell()).func_4123_b(16711680).setBiomeName("Hell");
+	public static final MobSpawnerBase rainforest = (new MobSpawnerRainforest()).setColor(588342).setBiomeName("Rainforest").func_4124_a(2094168);
+	public static final MobSpawnerBase swampland = (new MobSpawnerSwamp()).setColor(522674).setBiomeName("Swampland").func_4124_a(9154376);
+	public static final MobSpawnerBase seasonalForest = (new MobSpawnerBase()).setColor(10215459).setBiomeName("Seasonal Forest");
+	public static final MobSpawnerBase forest = (new MobSpawnerForest()).setColor(353825).setBiomeName("Forest").func_4124_a(5159473);
+	public static final MobSpawnerBase savanna = (new MobSpawnerDesert()).setColor(14278691).setBiomeName("Savanna");
+	public static final MobSpawnerBase shrubland = (new MobSpawnerBase()).setColor(10595616).setBiomeName("Shrubland");
+	public static final MobSpawnerBase taiga = (new MobSpawnerTaiga()).setColor(3060051).setBiomeName("Taiga").doesNothingForMobSpawnerBase().func_4124_a(8107825);
+	public static final MobSpawnerBase desert = (new MobSpawnerDesert()).setColor(16421912).setBiomeName("Desert");
+	public static final MobSpawnerBase plains = (new MobSpawnerDesert()).setColor(16767248).setBiomeName("Plains");
+	public static final MobSpawnerBase iceDesert = (new MobSpawnerDesert()).setColor(16772499).setBiomeName("Ice Desert").doesNothingForMobSpawnerBase().func_4124_a(12899129);
+	public static final MobSpawnerBase tundra = (new MobSpawnerBase()).setColor(5762041).setBiomeName("Tundra").doesNothingForMobSpawnerBase().func_4124_a(12899129);
+	public static final MobSpawnerBase hell = (new MobSpawnerHell()).setColor(16711680).setBiomeName("Hell");
 	public String biomeName;
-	public int field_6503_n;
+	public int color;
 	public byte topBlock = (byte)Block.grass.blockID;
 	public byte fillerBlock = (byte)Block.dirt.blockID;
 	public int field_6502_q = 5169201;
 	protected Class[] biomeMonsters = new Class[]{EntitySpider.class, EntityZombie.class, EntitySkeleton.class, EntityCreeper.class};
 	protected Class[] biomeCreatures = new Class[]{EntitySheep.class, EntityPig.class, EntityChicken.class, EntityCow.class};
+	protected Class[] biomeWaterCreatures = new Class[]{EntitySquid.class};
 	private static MobSpawnerBase[] biomeLookupTable = new MobSpawnerBase[4096];
 
 	public static void generateBiomeLookup() {
@@ -33,7 +36,11 @@ public class MobSpawnerBase {
 		iceDesert.topBlock = iceDesert.fillerBlock = (byte)Block.sand.blockID;
 	}
 
-	protected MobSpawnerBase func_4122_b() {
+	public WorldGenerator getRandomWorldGenForTrees(EaglercraftRandom var1) {
+		return (WorldGenerator)(var1.nextInt(10) == 0 ? new WorldGenBigTree() : new WorldGenTrees());
+	}
+
+	protected MobSpawnerBase doesNothingForMobSpawnerBase() {
 		return this;
 	}
 
@@ -47,8 +54,8 @@ public class MobSpawnerBase {
 		return this;
 	}
 
-	protected MobSpawnerBase func_4123_b(int var1) {
-		this.field_6503_n = var1;
+	protected MobSpawnerBase setColor(int var1) {
+		this.color = var1;
 		return this;
 	}
 
@@ -77,7 +84,7 @@ public class MobSpawnerBase {
 	}
 
 	public Class[] getEntitiesForType(EnumCreatureType var1) {
-		return var1 == EnumCreatureType.monster ? this.biomeMonsters : (var1 == EnumCreatureType.creature ? this.biomeCreatures : null);
+		return var1 == EnumCreatureType.monster ? this.biomeMonsters : (var1 == EnumCreatureType.creature ? this.biomeCreatures : (var1 == EnumCreatureType.waterCreature ? this.biomeWaterCreatures : null));
 	}
 
 	static {

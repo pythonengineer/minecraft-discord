@@ -91,7 +91,7 @@ public class BlockPressurePlate extends Block {
 			var1.setBlockMetadataWithNotify(var2, var3, var4, 1);
 			var1.notifyBlocksOfNeighborChange(var2, var3, var4, this.blockID);
 			var1.notifyBlocksOfNeighborChange(var2, var3 - 1, var4, this.blockID);
-			var1.func_701_b(var2, var3, var4, var2, var3, var4);
+			var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
 			var1.playSoundEffect((double)var2 + 0.5D, (double)var3 + 0.1D, (double)var4 + 0.5D, "random.click", 0.3F, 0.6F);
 		}
 
@@ -99,7 +99,7 @@ public class BlockPressurePlate extends Block {
 			var1.setBlockMetadataWithNotify(var2, var3, var4, 0);
 			var1.notifyBlocksOfNeighborChange(var2, var3, var4, this.blockID);
 			var1.notifyBlocksOfNeighborChange(var2, var3 - 1, var4, this.blockID);
-			var1.func_701_b(var2, var3, var4, var2, var3, var4);
+			var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
 			var1.playSoundEffect((double)var2 + 0.5D, (double)var3 + 0.1D, (double)var4 + 0.5D, "random.click", 0.3F, 0.5F);
 		}
 

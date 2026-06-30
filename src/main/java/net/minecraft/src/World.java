@@ -17,10 +17,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class World implements IBlockAccess {
-	public boolean field_4214_a;
+	public boolean scheduledUpdatesAreImmediate;
 	private List field_1051_z;
 	public List loadedEntityList;
-	private List field_1024_A;
+	private List unloadedEntityList;
 	private TreeSet scheduledTickTreeSet;
 	private Set scheduledTickSet;
 	public List loadedTileEntityList;
@@ -31,7 +31,7 @@ public class World implements IBlockAccess {
 	protected int field_9437_g;
 	protected int field_9436_h;
 	public boolean field_1043_h;
-	private long field_1054_E;
+	private long lockTimestamp;
 	protected int autosavePeriod;
 	public int difficultySetting;
 	public EaglercraftRandom rand;
@@ -42,7 +42,8 @@ public class World implements IBlockAccess {
 	public final WorldProvider worldProvider;
 	protected List worldAccesses;
 	private IChunkProvider chunkProvider;
-	public VFile2 field_9432_t;
+	public VFile2 worldFile;
+	public VFile2 savePath;
 	public long randomSeed;
 	private NBTTagCompound nbtCompoundPlayer;
 	public long sizeOnDisk;
@@ -50,42 +51,44 @@ public class World implements IBlockAccess {
 	public boolean field_9430_x;
 	private ArrayList field_9428_I;
 	private int field_4204_J;
+	private boolean field_21121_K;
+	private boolean field_21120_L;
 	static int field_9429_y = 0;
 	private Set field_9427_K;
 	private int field_9426_L;
 	private List field_1012_M;
 	public boolean multiplayerWorld;
 
-	public static NBTTagCompound func_629_a(String var1) {
-		VFile2 var2 = new VFile2("saves");
-		VFile2 var3 = new VFile2(var2, var1);
-		VFile2 var4 = new VFile2(var3, "level.dat");
-		if(var4.exists()) {
+    public static NBTTagCompound func_629_a(String var1) {
+        VFile2 var2 = new VFile2("saves");
+        VFile2 var3 = new VFile2(var2, var1);
+        VFile2 var4 = new VFile2(var3, "level.dat");
+        if(var4.exists()) {
             try (InputStream fis = var4.getInputStream()) {
                 return CompressedStreamTools.func_1138_a(fis).getCompoundTag("Data");
             } catch (Exception exception2) {
                 exception2.printStackTrace();
             }
-		}
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static void deleteWorld(String var1) {
-		VFile2 var2 = new VFile2("saves");
-		VFile2 var3 = new VFile2(var2, var1);
-		deleteFiles(var3.listFiles(true));
-		var3.delete();
-	}
+    public static void deleteWorld(String var1) {
+        VFile2 var2 = new VFile2("saves");
+        VFile2 var3 = new VFile2(var2, var1);
+        deleteFiles(var3.listFiles(true));
+        var3.delete();
+    }
 
-	private static void deleteFiles(List<VFile2> files) {
+    private static void deleteFiles(List<VFile2> files) {
         for(int i1 = 0; i1 < files.size(); ++i1) {
             files.get(i1).delete();
         }
 
     }
 
-	public WorldChunkManager func_4075_a() {
+	public WorldChunkManager getWorldChunkManager() {
 		return this.worldProvider.worldChunkMgr;
 	}
 
@@ -94,10 +97,10 @@ public class World implements IBlockAccess {
 	}
 
 	public World(String var1, WorldProvider var2, long var3) {
-		this.field_4214_a = false;
+		this.scheduledUpdatesAreImmediate = false;
 		this.field_1051_z = new ArrayList();
 		this.loadedEntityList = new ArrayList();
-		this.field_1024_A = new ArrayList();
+		this.unloadedEntityList = new ArrayList();
 		this.scheduledTickTreeSet = new TreeSet();
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
@@ -108,7 +111,7 @@ public class World implements IBlockAccess {
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
 		this.field_9436_h = 1013904223;
 		this.field_1043_h = false;
-		this.field_1054_E = EagRuntime.currentTimeMillis();
+		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
 		this.field_1033_r = false;
@@ -117,6 +120,8 @@ public class World implements IBlockAccess {
 		this.sizeOnDisk = 0L;
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
+		this.field_21121_K = true;
+		this.field_21120_L = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
@@ -125,15 +130,15 @@ public class World implements IBlockAccess {
 		this.randomSeed = var3;
 		this.worldProvider = var2;
 		var2.registerWorld(this);
-		this.chunkProvider = this.func_4081_a(this.field_9432_t);
+		this.chunkProvider = this.getChunkProvider(this.savePath);
 		this.calculateInitialSkylight();
 	}
 
 	public World(World var1, WorldProvider var2) {
-		this.field_4214_a = false;
+		this.scheduledUpdatesAreImmediate = false;
 		this.field_1051_z = new ArrayList();
 		this.loadedEntityList = new ArrayList();
-		this.field_1024_A = new ArrayList();
+		this.unloadedEntityList = new ArrayList();
 		this.scheduledTickTreeSet = new TreeSet();
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
@@ -144,7 +149,7 @@ public class World implements IBlockAccess {
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
 		this.field_9436_h = 1013904223;
 		this.field_1043_h = false;
-		this.field_1054_E = EagRuntime.currentTimeMillis();
+		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
 		this.field_1033_r = false;
@@ -153,12 +158,15 @@ public class World implements IBlockAccess {
 		this.sizeOnDisk = 0L;
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
+		this.field_21121_K = true;
+		this.field_21120_L = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
-		this.field_1054_E = var1.field_1054_E;
-		this.field_9432_t = var1.field_9432_t;
+		this.lockTimestamp = var1.lockTimestamp;
+		this.worldFile = var1.worldFile;
+		this.savePath = var1.savePath;
 		this.field_9431_w = var1.field_9431_w;
 		this.randomSeed = var1.randomSeed;
 		this.worldTime = var1.worldTime;
@@ -168,7 +176,7 @@ public class World implements IBlockAccess {
 		this.sizeOnDisk = var1.sizeOnDisk;
 		this.worldProvider = var2;
 		var2.registerWorld(this);
-		this.chunkProvider = this.func_4081_a(this.field_9432_t);
+		this.chunkProvider = this.getChunkProvider(this.savePath);
 		this.calculateInitialSkylight();
 	}
 
@@ -177,10 +185,10 @@ public class World implements IBlockAccess {
 	}
 
 	public World(String var2, long var3, WorldProvider var5) {
-		this.field_4214_a = false;
+		this.scheduledUpdatesAreImmediate = false;
 		this.field_1051_z = new ArrayList();
 		this.loadedEntityList = new ArrayList();
-		this.field_1024_A = new ArrayList();
+		this.unloadedEntityList = new ArrayList();
 		this.scheduledTickTreeSet = new TreeSet();
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
@@ -191,7 +199,7 @@ public class World implements IBlockAccess {
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
 		this.field_9436_h = 1013904223;
 		this.field_1043_h = false;
-		this.field_1054_E = EagRuntime.currentTimeMillis();
+		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
 		this.field_1033_r = false;
@@ -200,23 +208,25 @@ public class World implements IBlockAccess {
 		this.sizeOnDisk = 0L;
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
+		this.field_21121_K = true;
+		this.field_21120_L = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
 		this.field_9431_w = var2;
-		this.field_9432_t = new VFile2("saves", var2);
+        this.savePath = new VFile2("saves", var2);
 
-		VFile2 var6 = new VFile2(this.field_9432_t, "session.lock");
+        VFile2 var6 = new VFile2(this.savePath, "session.lock");
         try (DataOutputStream dos = new DataOutputStream(var6.getOutputStream())) {
-            dos.writeLong(this.field_1054_E);
+            dos.writeLong(this.lockTimestamp);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new RuntimeException("Failed to check session lock, aborting");
         }
 
 		Object var17 = new WorldProvider();
-		VFile2 var18 = new VFile2(this.field_9432_t, "level.dat");
+		VFile2 var18 = new VFile2(this.savePath, "level.dat");
 		this.field_1033_r = !var18.exists();
 		if(var18.exists()) {
             try (InputStream fis = var18.getInputStream()) {
@@ -252,7 +262,7 @@ public class World implements IBlockAccess {
 
 		this.worldProvider = (WorldProvider)var17;
 		this.worldProvider.registerWorld(this);
-		this.chunkProvider = this.func_4081_a(this.field_9432_t);
+		this.chunkProvider = this.getChunkProvider(this.savePath);
 		if(var19) {
 			this.field_9430_x = true;
 			this.spawnX = 0;
@@ -268,25 +278,25 @@ public class World implements IBlockAccess {
 		this.calculateInitialSkylight();
 	}
 
-	protected IChunkProvider func_4081_a(VFile2 var1) {
+	protected IChunkProvider getChunkProvider(VFile2 var1) {
 		return new ChunkProviderLoadOrGenerate(this, this.worldProvider.getChunkLoader(var1), this.worldProvider.getChunkProvider());
 	}
 
-	public void func_4076_b() {
+	public void setSpawnLocation() {
 		if(this.spawnY <= 0) {
 			this.spawnY = 64;
 		}
 
-		while(this.func_614_g(this.spawnX, this.spawnZ) == 0) {
+		while(this.getFirstUncoveredBlock(this.spawnX, this.spawnZ) == 0) {
 			this.spawnX += this.rand.nextInt(8) - this.rand.nextInt(8);
 			this.spawnZ += this.rand.nextInt(8) - this.rand.nextInt(8);
 		}
 
 	}
 
-	public int func_614_g(int var1, int var2) {
+	public int getFirstUncoveredBlock(int var1, int var2) {
 		int var3;
-		for(var3 = 63; !this.func_20084_d(var1, var3 + 1, var2); ++var3) {
+		for(var3 = 63; !this.isAirBlock(var1, var3 + 1, var2); ++var3) {
 		}
 
 		return this.getBlockId(var1, var3, var2);
@@ -302,9 +312,16 @@ public class World implements IBlockAccess {
 				this.nbtCompoundPlayer = null;
 			}
 
+			if(this.chunkProvider instanceof ChunkProviderLoadOrGenerate) {
+				ChunkProviderLoadOrGenerate var2 = (ChunkProviderLoadOrGenerate)this.chunkProvider;
+				int var3 = MathHelper.floor_float((float)((int)var1.posX)) >> 4;
+				int var4 = MathHelper.floor_float((float)((int)var1.posZ)) >> 4;
+				var2.func_21110_c(var3, var4);
+			}
+
 			this.entityJoinedWorld(var1);
-		} catch (Exception var3) {
-			var3.printStackTrace();
+		} catch (Exception var5) {
+			var5.printStackTrace();
 		}
 
 	}
@@ -325,7 +342,7 @@ public class World implements IBlockAccess {
 	}
 
 	private void saveLevel() {
-		this.func_663_l();
+		this.checkSessionLock();
 		NBTTagCompound var1 = new NBTTagCompound();
 		var1.setLong("RandomSeed", this.randomSeed);
 		var1.setInteger("SpawnX", this.spawnX);
@@ -349,10 +366,10 @@ public class World implements IBlockAccess {
 		var3 = new NBTTagCompound();
 		var3.setTag("Data", var1);
 
-        VFile2 var4 = new VFile2(this.field_9432_t, "level.dat_new");
+        VFile2 var4 = new VFile2(this.savePath, "level.dat_new");
         try (OutputStream fos = var4.getOutputStream()) {
-			VFile2 var5 = new VFile2(this.field_9432_t, "level.dat_old");
-			VFile2 var6 = new VFile2(this.field_9432_t, "level.dat");
+			VFile2 var5 = new VFile2(this.savePath, "level.dat_old");
+			VFile2 var6 = new VFile2(this.savePath, "level.dat");
 			CompressedStreamTools.writeGzippedCompoundToOutputStream(var3, fos);
 			if(var5.exists()) {
 				var5.delete();
@@ -389,12 +406,16 @@ public class World implements IBlockAccess {
 		return var1 >= -32000000 && var3 >= -32000000 && var1 < 32000000 && var3 <= 32000000 ? (var2 < 0 ? 0 : (var2 >= 128 ? 0 : this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4).getBlockID(var1 & 15, var2, var3 & 15))) : 0;
 	}
 
-	public boolean func_20084_d(int var1, int var2, int var3) {
+	public boolean isAirBlock(int var1, int var2, int var3) {
 		return this.getBlockId(var1, var2, var3) == 0;
 	}
 
 	public boolean blockExists(int var1, int var2, int var3) {
 		return var2 >= 0 && var2 < 128 ? this.chunkExists(var1 >> 4, var3 >> 4) : false;
+	}
+
+	public boolean doChunksNearChunkExist(int var1, int var2, int var3, int var4) {
+		return this.checkChunksExist(var1 - var4, var2 - var4, var3 - var4, var1 + var4, var2 + var4, var3 + var4);
 	}
 
 	public boolean checkChunksExist(int var1, int var2, int var3, int var4, int var5, int var6) {
@@ -539,17 +560,24 @@ public class World implements IBlockAccess {
 		this.notifyBlocksOfNeighborChange(var1, var2, var3, var4);
 	}
 
-	public void func_680_f(int var1, int var2, int var3, int var4) {
+	public void markBlocksDirtyVertical(int var1, int var2, int var3, int var4) {
 		if(var3 > var4) {
 			int var5 = var4;
 			var4 = var3;
 			var3 = var5;
 		}
 
-		this.func_701_b(var1, var3, var2, var1, var4, var2);
+		this.markBlocksDirty(var1, var3, var2, var1, var4, var2);
 	}
 
-	public void func_701_b(int var1, int var2, int var3, int var4, int var5, int var6) {
+	public void markBlockAsNeedsUpdate(int var1, int var2, int var3) {
+		for(int var4 = 0; var4 < this.worldAccesses.size(); ++var4) {
+			((IWorldAccess)this.worldAccesses.get(var4)).markBlockRangeNeedsUpdate(var1, var2, var3, var1, var2, var3);
+		}
+
+	}
+
+	public void markBlocksDirty(int var1, int var2, int var3, int var4, int var5, int var6) {
 		for(int var7 = 0; var7 < this.worldAccesses.size(); ++var7) {
 			((IWorldAccess)this.worldAccesses.get(var7)).markBlockRangeNeedsUpdate(var1, var2, var3, var4, var5, var6);
 		}
@@ -911,7 +939,8 @@ public class World implements IBlockAccess {
 			return false;
 		} else {
 			if(var1 instanceof EntityPlayer) {
-				this.playerEntities.add((EntityPlayer)var1);
+				EntityPlayer var5 = (EntityPlayer)var1;
+				this.playerEntities.add(var5);
 				System.out.println("Player count: " + this.playerEntities.size());
 			}
 
@@ -937,6 +966,14 @@ public class World implements IBlockAccess {
 	}
 
 	public void setEntityDead(Entity var1) {
+		if(var1.riddenByEntity != null) {
+			var1.riddenByEntity.mountEntity((Entity)null);
+		}
+
+		if(var1.ridingEntity != null) {
+			var1.mountEntity((Entity)null);
+		}
+
 		var1.setEntityDead();
 		if(var1 instanceof EntityPlayer) {
 			this.playerEntities.remove((EntityPlayer)var1);
@@ -978,7 +1015,7 @@ public class World implements IBlockAccess {
 		List var15 = this.getEntitiesWithinAABBExcludingEntity(var1, var2.expand(var14, var14, var14));
 
 		for(int var16 = 0; var16 < var15.size(); ++var16) {
-			AxisAlignedBB var13 = ((Entity)var15.get(var16)).func_372_f_();
+			AxisAlignedBB var13 = ((Entity)var15.get(var16)).getBoundingBox();
 			if(var13 != null && var13.intersectsWith(var2)) {
 				this.field_9428_I.add(var13);
 			}
@@ -1019,8 +1056,8 @@ public class World implements IBlockAccess {
 
 		int var5 = MathHelper.floor_double(var1.posX);
 		int var6 = MathHelper.floor_double(var1.posZ);
-		float var7 = (float)this.func_4075_a().func_4072_b(var5, var6);
-		int var8 = this.func_4075_a().func_4073_a(var5, var6).getSkyColorByTemp(var7);
+		float var7 = (float)this.getWorldChunkManager().func_4072_b(var5, var6);
+		int var8 = this.getWorldChunkManager().func_4073_a(var5, var6).getSkyColorByTemp(var7);
 		float var9 = (float)(var8 >> 16 & 255) / 255.0F;
 		float var10 = (float)(var8 >> 8 & 255) / 255.0F;
 		float var11 = (float)(var8 & 255) / 255.0F;
@@ -1099,7 +1136,7 @@ public class World implements IBlockAccess {
 	public void scheduleBlockUpdate(int var1, int var2, int var3, int var4) {
 		NextTickListEntry var5 = new NextTickListEntry(var1, var2, var3, var4);
 		byte var6 = 8;
-		if(this.field_4214_a) {
+		if(this.scheduledUpdatesAreImmediate) {
 			if(this.checkChunksExist(var5.xCoord - var6, var5.yCoord - var6, var5.zCoord - var6, var5.xCoord + var6, var5.yCoord + var6, var5.zCoord + var6)) {
 				int var7 = this.getBlockId(var5.xCoord, var5.yCoord, var5.zCoord);
 				if(var7 == var5.blockID && var7 > 0) {
@@ -1123,14 +1160,14 @@ public class World implements IBlockAccess {
 	}
 
 	public void func_633_c() {
-		this.loadedEntityList.removeAll(this.field_1024_A);
+		this.loadedEntityList.removeAll(this.unloadedEntityList);
 
 		int var1;
 		Entity var2;
 		int var3;
 		int var4;
-		for(var1 = 0; var1 < this.field_1024_A.size(); ++var1) {
-			var2 = (Entity)this.field_1024_A.get(var1);
+		for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
+			var2 = (Entity)this.unloadedEntityList.get(var1);
 			var3 = var2.chunkCoordX;
 			var4 = var2.chunkCoordZ;
 			if(var2.addedToChunk && this.chunkExists(var3, var4)) {
@@ -1138,11 +1175,11 @@ public class World implements IBlockAccess {
 			}
 		}
 
-		for(var1 = 0; var1 < this.field_1024_A.size(); ++var1) {
-			this.releaseEntitySkin((Entity)this.field_1024_A.get(var1));
+		for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
+			this.releaseEntitySkin((Entity)this.unloadedEntityList.get(var1));
 		}
 
-		this.field_1024_A.clear();
+		this.unloadedEntityList.clear();
 
 		for(var1 = 0; var1 < this.loadedEntityList.size(); ++var1) {
 			var2 = (Entity)this.loadedEntityList.get(var1);
@@ -1185,8 +1222,8 @@ public class World implements IBlockAccess {
 	public void updateEntityWithOptionalForce(Entity var1, boolean var2) {
 		int var3 = MathHelper.floor_double(var1.posX);
 		int var4 = MathHelper.floor_double(var1.posZ);
-		byte var5 = 16;
-		if(var2 || this.checkChunksExist(var3 - var5, 0, var4 - var5, var3 + var5, 128, var4 + var5)) {
+		byte var5 = 32;
+		if(!var2 || this.checkChunksExist(var3 - var5, 0, var4 - var5, var3 + var5, 128, var4 + var5)) {
 			var1.lastTickPosX = var1.posX;
 			var1.lastTickPosY = var1.posY;
 			var1.lastTickPosZ = var1.posZ;
@@ -1194,7 +1231,7 @@ public class World implements IBlockAccess {
 			var1.prevRotationPitch = var1.rotationPitch;
 			if(var2 && var1.addedToChunk) {
 				if(var1.ridingEntity != null) {
-					var1.func_350_p();
+					var1.updateRidden();
 				} else {
 					var1.onUpdate();
 				}
@@ -1301,13 +1338,14 @@ public class World implements IBlockAccess {
 		int var5 = MathHelper.floor_double(var1.maxY + 1.0D);
 		int var6 = MathHelper.floor_double(var1.minZ);
 		int var7 = MathHelper.floor_double(var1.maxZ + 1.0D);
-
-		for(int var8 = var2; var8 < var3; ++var8) {
-			for(int var9 = var4; var9 < var5; ++var9) {
-				for(int var10 = var6; var10 < var7; ++var10) {
-					int var11 = this.getBlockId(var8, var9, var10);
-					if(var11 == Block.fire.blockID || var11 == Block.lavaStill.blockID || var11 == Block.lavaMoving.blockID) {
-						return true;
+		if(this.checkChunksExist(var2, var4, var6, var3, var5, var7)) {
+			for(int var8 = var2; var8 < var3; ++var8) {
+				for(int var9 = var4; var9 < var5; ++var9) {
+					for(int var10 = var6; var10 < var7; ++var10) {
+						int var11 = this.getBlockId(var8, var9, var10);
+						if(var11 == Block.fire.blockID || var11 == Block.lavaStill.blockID || var11 == Block.lavaMoving.blockID) {
+							return true;
+						}
 					}
 				}
 			}
@@ -1316,40 +1354,44 @@ public class World implements IBlockAccess {
 		return false;
 	}
 
-	public boolean func_682_a(AxisAlignedBB var1, Material var2, Entity var3) {
+	public boolean handleMaterialAcceleration(AxisAlignedBB var1, Material var2, Entity var3) {
 		int var4 = MathHelper.floor_double(var1.minX);
 		int var5 = MathHelper.floor_double(var1.maxX + 1.0D);
 		int var6 = MathHelper.floor_double(var1.minY);
 		int var7 = MathHelper.floor_double(var1.maxY + 1.0D);
 		int var8 = MathHelper.floor_double(var1.minZ);
 		int var9 = MathHelper.floor_double(var1.maxZ + 1.0D);
-		boolean var10 = false;
-		Vec3D var11 = Vec3D.createVector(0.0D, 0.0D, 0.0D);
+		if(!this.checkChunksExist(var4, var6, var8, var5, var7, var9)) {
+			return false;
+		} else {
+			boolean var10 = false;
+			Vec3D var11 = Vec3D.createVector(0.0D, 0.0D, 0.0D);
 
-		for(int var12 = var4; var12 < var5; ++var12) {
-			for(int var13 = var6; var13 < var7; ++var13) {
-				for(int var14 = var8; var14 < var9; ++var14) {
-					Block var15 = Block.blocksList[this.getBlockId(var12, var13, var14)];
-					if(var15 != null && var15.blockMaterial == var2) {
-						double var16 = (double)((float)(var13 + 1) - BlockFluids.setFluidHeight(this.getBlockMetadata(var12, var13, var14)));
-						if((double)var7 >= var16) {
-							var10 = true;
-							var15.velocityToAddToEntity(this, var12, var13, var14, var3, var11);
+			for(int var12 = var4; var12 < var5; ++var12) {
+				for(int var13 = var6; var13 < var7; ++var13) {
+					for(int var14 = var8; var14 < var9; ++var14) {
+						Block var15 = Block.blocksList[this.getBlockId(var12, var13, var14)];
+						if(var15 != null && var15.blockMaterial == var2) {
+							double var16 = (double)((float)(var13 + 1) - BlockFluids.setFluidHeight(this.getBlockMetadata(var12, var13, var14)));
+							if((double)var7 >= var16) {
+								var10 = true;
+								var15.velocityToAddToEntity(this, var12, var13, var14, var3, var11);
+							}
 						}
 					}
 				}
 			}
-		}
 
-		if(var11.lengthVector() > 0.0D) {
-			var11 = var11.normalize();
-			double var18 = 0.004D;
-			var3.motionX += var11.xCoord * var18;
-			var3.motionY += var11.yCoord * var18;
-			var3.motionZ += var11.zCoord * var18;
-		}
+			if(var11.lengthVector() > 0.0D) {
+				var11 = var11.normalize();
+				double var18 = 0.004D;
+				var3.motionX += var11.xCoord * var18;
+				var3.motionY += var11.yCoord * var18;
+				var3.motionZ += var11.zCoord * var18;
+			}
 
-		return var10;
+			return var10;
+		}
 	}
 
 	public boolean isMaterialInBB(AxisAlignedBB var1, Material var2) {
@@ -1374,7 +1416,7 @@ public class World implements IBlockAccess {
 		return false;
 	}
 
-	public boolean func_707_b(AxisAlignedBB var1, Material var2) {
+	public boolean isAABBInMaterial(AxisAlignedBB var1, Material var2) {
 		int var3 = MathHelper.floor_double(var1.minX);
 		int var4 = MathHelper.floor_double(var1.maxX + 1.0D);
 		int var5 = MathHelper.floor_double(var1.minY);
@@ -1405,10 +1447,10 @@ public class World implements IBlockAccess {
 	}
 
 	public Explosion createExplosion(Entity var1, double var2, double var4, double var6, float var8) {
-		return this.func_12244_a(var1, var2, var4, var6, var8, false);
+		return this.newExplosion(var1, var2, var4, var6, var8, false);
 	}
 
-	public Explosion func_12244_a(Entity var1, double var2, double var4, double var6, float var8, boolean var9) {
+	public Explosion newExplosion(Entity var1, double var2, double var4, double var6, float var8, boolean var9) {
 		Explosion var10 = new Explosion(this, var1, var2, var4, var6, var8);
 		var10.field_12257_a = var9;
 		var10.func_12248_a();
@@ -1481,6 +1523,10 @@ public class World implements IBlockAccess {
 		return "All: " + this.loadedEntityList.size();
 	}
 
+	public String func_21119_g() {
+		return this.chunkProvider.toString();
+	}
+
 	public TileEntity getBlockTileEntity(int var1, int var2, int var3) {
 		Chunk var4 = this.getChunkFromChunkCoords(var1 >> 4, var3 >> 4);
 		return var4 != null ? var4.getChunkBlockTileEntity(var1 & 15, var2, var3 & 15) : null;
@@ -1518,7 +1564,7 @@ public class World implements IBlockAccess {
 			++this.field_4204_J;
 
 			try {
-				int var1 = 5000;
+				int var1 = 500;
 
 				boolean var2;
 				while(this.field_1051_z.size() > 0) {
@@ -1553,10 +1599,11 @@ public class World implements IBlockAccess {
 				int var10 = (var7 + var4) / 2;
 				if(!this.blockExists(var9, 64, var10)) {
 					--field_9429_y;
-				} else {
+				} else if(!this.getChunkFromBlockCoords(var9, var10).func_21167_h()) {
 					int var11 = this.field_1051_z.size();
+					int var12;
 					if(var8) {
-						int var12 = 4;
+						var12 = 5;
 						if(var12 > var11) {
 							var12 = var11;
 						}
@@ -1571,7 +1618,9 @@ public class World implements IBlockAccess {
 					}
 
 					this.field_1051_z.add(new MetadataChunkBlock(var1, var2, var3, var4, var5, var6, var7));
-					if(this.field_1051_z.size() > 100000) {
+					var12 = 1000000;
+					if(this.field_1051_z.size() > 1000000) {
+						System.out.println("More than " + var12 + " updates, aborting lighting updates");
 						this.field_1051_z.clear();
 					}
 
@@ -1589,8 +1638,13 @@ public class World implements IBlockAccess {
 
 	}
 
+	public void func_21114_a(boolean var1, boolean var2) {
+		this.field_21121_K = var1;
+		this.field_21120_L = var2;
+	}
+
 	public void tick() {
-		SpawnerAnimals.performSpawning(this);
+		SpawnerAnimals.performSpawning(this, this.field_21121_K, this.field_21120_L);
 		this.chunkProvider.func_532_a();
 		int var1 = this.calculateSkylightSubtracted(1.0F);
 		if(var1 != this.skylightSubtracted) {
@@ -1759,7 +1813,7 @@ public class World implements IBlockAccess {
 		return var7;
 	}
 
-	public List func_658_i() {
+	public List getLoadedEntityList() {
 		return this.loadedEntityList;
 	}
 
@@ -1769,7 +1823,7 @@ public class World implements IBlockAccess {
 		}
 
 		for(int var5 = 0; var5 < this.worldAccesses.size(); ++var5) {
-			((IWorldAccess)this.worldAccesses.get(var5)).func_935_a(var1, var2, var3, var4);
+			((IWorldAccess)this.worldAccesses.get(var5)).doNothingWithTileEntity(var1, var2, var3, var4);
 		}
 
 	}
@@ -1797,7 +1851,7 @@ public class World implements IBlockAccess {
 	}
 
 	public void func_632_b(List var1) {
-		this.field_1024_A.addAll(var1);
+		this.unloadedEntityList.addAll(var1);
 	}
 
 	public void func_656_j() {
@@ -1890,7 +1944,7 @@ public class World implements IBlockAccess {
 		return var11;
 	}
 
-	public void func_693_a(int var1, int var2, int var3, int var4, int var5, int var6, byte[] var7) {
+	public void setChunkData(int var1, int var2, int var3, int var4, int var5, int var6, byte[] var7) {
 		int var8 = var1 >> 4;
 		int var9 = var3 >> 4;
 		int var10 = var1 + var4 - 1 >> 4;
@@ -1928,8 +1982,8 @@ public class World implements IBlockAccess {
 					var20 = 16;
 				}
 
-				var12 = this.getChunkFromChunkCoords(var15, var18).func_1004_a(var7, var16, var13, var19, var17, var14, var20, var12);
-				this.func_701_b(var15 * 16 + var16, var13, var18 * 16 + var19, var15 * 16 + var17, var14, var18 * 16 + var20);
+				var12 = this.getChunkFromChunkCoords(var15, var18).setChunkData(var7, var16, var13, var19, var17, var14, var20, var12);
+				this.markBlocksDirty(var15 * 16 + var16, var13, var18 * 16 + var19, var15 * 16 + var17, var14, var18 * 16 + var20);
 			}
 		}
 
@@ -1938,12 +1992,12 @@ public class World implements IBlockAccess {
 	public void sendQuittingDisconnectingPacket() {
 	}
 
-	public void func_663_l() {
-        VFile2 var1 = new VFile2(this.field_9432_t, "session.lock");
+	public void checkSessionLock() {
+        VFile2 var1 = new VFile2(this.savePath, "session.lock");
         try (DataInputStream dis = new DataInputStream(var1.getInputStream())) {
-			if(dis.readLong() != this.field_1054_E) {
-				throw new MinecraftException("The save is being accessed from another location, aborting");
-			}
+            if(dis.readLong() != this.lockTimestamp) {
+                throw new MinecraftException("The save is being accessed from another location, aborting");
+            }
 		} catch (Exception var7) {
 			throw new MinecraftException("Failed to check session lock, aborting");
 		}
@@ -1977,15 +2031,15 @@ public class World implements IBlockAccess {
 	public void func_9425_a(Entity var1, byte var2) {
 	}
 
-	public void func_9424_o() {
-		this.loadedEntityList.removeAll(this.field_1024_A);
+	public void updateEntityList() {
+		this.loadedEntityList.removeAll(this.unloadedEntityList);
 
 		int var1;
 		Entity var2;
 		int var3;
 		int var4;
-		for(var1 = 0; var1 < this.field_1024_A.size(); ++var1) {
-			var2 = (Entity)this.field_1024_A.get(var1);
+		for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
+			var2 = (Entity)this.unloadedEntityList.get(var1);
 			var3 = var2.chunkCoordX;
 			var4 = var2.chunkCoordZ;
 			if(var2.addedToChunk && this.chunkExists(var3, var4)) {
@@ -1993,11 +2047,11 @@ public class World implements IBlockAccess {
 			}
 		}
 
-		for(var1 = 0; var1 < this.field_1024_A.size(); ++var1) {
-			this.releaseEntitySkin((Entity)this.field_1024_A.get(var1));
+		for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
+			this.releaseEntitySkin((Entity)this.unloadedEntityList.get(var1));
 		}
 
-		this.field_1024_A.clear();
+		this.unloadedEntityList.clear();
 
 		for(var1 = 0; var1 < this.loadedEntityList.size(); ++var1) {
 			var2 = (Entity)this.loadedEntityList.get(var1);
@@ -2020,6 +2074,18 @@ public class World implements IBlockAccess {
 				this.loadedEntityList.remove(var1--);
 				this.releaseEntitySkin(var2);
 			}
+		}
+
+	}
+
+	public IChunkProvider func_21118_q() {
+		return this.chunkProvider;
+	}
+
+	public void playNoteAt(int var1, int var2, int var3, int var4, int var5) {
+		int var6 = this.getBlockId(var1, var2, var3);
+		if(var6 > 0) {
+			Block.blocksList[var6].playBlock(this, var1, var2, var3, var4, var5);
 		}
 
 	}

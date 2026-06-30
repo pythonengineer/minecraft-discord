@@ -3,7 +3,7 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityFallingSand extends Entity {
-	public int entityID;
+	public int blockID;
 	public int fallTime = 0;
 
 	public EntityFallingSand(World var1) {
@@ -12,7 +12,7 @@ public class EntityFallingSand extends Entity {
 
 	public EntityFallingSand(World var1, double var2, double var4, double var6, int var8) {
 		super(var1);
-		this.entityID = var8;
+		this.blockID = var8;
 		this.preventEntitySpawning = true;
 		this.setSize(0.98F, 0.98F);
 		this.yOffset = this.height / 2.0F;
@@ -26,12 +26,15 @@ public class EntityFallingSand extends Entity {
 		this.prevPosZ = var6;
 	}
 
+	protected void entityInit() {
+	}
+
 	public boolean canBeCollidedWith() {
 		return !this.isDead;
 	}
 
 	public void onUpdate() {
-		if(this.entityID == 0) {
+		if(this.blockID == 0) {
 			this.setEntityDead();
 		} else {
 			this.prevPosX = this.posX;
@@ -46,7 +49,7 @@ public class EntityFallingSand extends Entity {
 			int var1 = MathHelper.floor_double(this.posX);
 			int var2 = MathHelper.floor_double(this.posY);
 			int var3 = MathHelper.floor_double(this.posZ);
-			if(this.worldObj.getBlockId(var1, var2, var3) == this.entityID) {
+			if(this.worldObj.getBlockId(var1, var2, var3) == this.blockID) {
 				this.worldObj.setBlockWithNotify(var1, var2, var3, 0);
 			}
 
@@ -55,11 +58,11 @@ public class EntityFallingSand extends Entity {
 				this.motionZ *= (double)0.7F;
 				this.motionY *= -0.5D;
 				this.setEntityDead();
-				if(!this.worldObj.canBlockBePlacedAt(this.entityID, var1, var2, var3, true) || !this.worldObj.setBlockWithNotify(var1, var2, var3, this.entityID)) {
-					this.dropItem(this.entityID, 1);
+				if((!this.worldObj.canBlockBePlacedAt(this.blockID, var1, var2, var3, true) || !this.worldObj.setBlockWithNotify(var1, var2, var3, this.blockID)) && !this.worldObj.multiplayerWorld) {
+					this.dropItem(this.blockID, 1);
 				}
-			} else if(this.fallTime > 100) {
-				this.dropItem(this.entityID, 1);
+			} else if(this.fallTime > 100 && !this.worldObj.multiplayerWorld) {
+				this.dropItem(this.blockID, 1);
 				this.setEntityDead();
 			}
 
@@ -67,14 +70,14 @@ public class EntityFallingSand extends Entity {
 	}
 
 	protected void writeEntityToNBT(NBTTagCompound var1) {
-		var1.setByte("Tile", (byte)this.entityID);
+		var1.setByte("Tile", (byte)this.blockID);
 	}
 
 	protected void readEntityFromNBT(NBTTagCompound var1) {
-		this.entityID = var1.getByte("Tile") & 255;
+		this.blockID = var1.getByte("Tile") & 255;
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 

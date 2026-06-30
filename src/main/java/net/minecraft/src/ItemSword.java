@@ -3,15 +3,11 @@ package net.minecraft.src;
 public class ItemSword extends Item {
 	private int weaponDamage;
 
-	public ItemSword(int var1, int var2) {
+	public ItemSword(int var1, EnumToolMaterial var2) {
 		super(var1);
 		this.maxStackSize = 1;
-		this.maxDamage = 32 << var2;
-		if(var2 == 3) {
-			this.maxDamage *= 4;
-		}
-
-		this.weaponDamage = 4 + var2 * 2;
+		this.maxDamage = var2.getMaxUses();
+		this.weaponDamage = 4 + var2.getDamageVsEntity() * 2;
 	}
 
 	public float getStrVsBlock(ItemStack var1, Block var2) {

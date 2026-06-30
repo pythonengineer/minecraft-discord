@@ -37,31 +37,31 @@ public class WorldGenHellLava extends WorldGenerator {
 			}
 
 			int var7 = 0;
-			if(var1.func_20084_d(var3 - 1, var4, var5)) {
+			if(var1.isAirBlock(var3 - 1, var4, var5)) {
 				++var7;
 			}
 
-			if(var1.func_20084_d(var3 + 1, var4, var5)) {
+			if(var1.isAirBlock(var3 + 1, var4, var5)) {
 				++var7;
 			}
 
-			if(var1.func_20084_d(var3, var4, var5 - 1)) {
+			if(var1.isAirBlock(var3, var4, var5 - 1)) {
 				++var7;
 			}
 
-			if(var1.func_20084_d(var3, var4, var5 + 1)) {
+			if(var1.isAirBlock(var3, var4, var5 + 1)) {
 				++var7;
 			}
 
-			if(var1.func_20084_d(var3, var4 - 1, var5)) {
+			if(var1.isAirBlock(var3, var4 - 1, var5)) {
 				++var7;
 			}
 
 			if(var6 == 4 && var7 == 1) {
 				var1.setBlockWithNotify(var3, var4, var5, this.field_4158_a);
-				var1.field_4214_a = true;
+				var1.scheduledUpdatesAreImmediate = true;
 				Block.blocksList[this.field_4158_a].updateTick(var1, var3, var4, var5, var2);
-				var1.field_4214_a = false;
+				var1.scheduledUpdatesAreImmediate = false;
 			}
 
 			return true;

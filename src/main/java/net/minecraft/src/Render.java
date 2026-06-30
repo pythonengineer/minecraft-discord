@@ -17,7 +17,7 @@ public abstract class Render {
 		var2.bindTexture(var2.getTexture(var1));
 	}
 
-	protected boolean func_140_a(String var1, String var2) {
+	protected boolean loadDownloadableImageTexture(String var1, String var2) {
 		RenderEngine var3 = this.renderManager.renderEngine;
 		int var4 = var3.getTextureForDownloadableImage(var1, var2);
 		if(var4 >= 0) {
@@ -77,7 +77,7 @@ public abstract class Render {
 		GL11.glDepthMask(false);
 		float var12 = this.shadowSize;
 		double var13 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var9;
-		double var15 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var9 + (double)var1.func_392_h_();
+		double var15 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var9 + (double)var1.getShadowSize();
 		double var17 = var1.lastTickPosZ + (var1.posZ - var1.lastTickPosZ) * (double)var9;
 		int var19 = MathHelper.floor_double(var13 - (double)var12);
 		int var20 = MathHelper.floor_double(var13 + (double)var12);
@@ -96,7 +96,7 @@ public abstract class Render {
 				for(int var34 = var23; var34 <= var24; ++var34) {
 					int var35 = var11.getBlockId(var32, var33 - 1, var34);
 					if(var35 > 0 && var11.getBlockLightValue(var32, var33, var34) > 3) {
-						this.renderShadowOnBlock(Block.blocksList[var35], var2, var4 + (double)var1.func_392_h_(), var6, var32, var33, var34, var8, var12, var25, var27 + (double)var1.func_392_h_(), var29);
+						this.renderShadowOnBlock(Block.blocksList[var35], var2, var4 + (double)var1.getShadowSize(), var6, var32, var33, var34, var8, var12, var25, var27 + (double)var1.getShadowSize(), var29);
 					}
 				}
 			}
@@ -223,7 +223,7 @@ public abstract class Render {
 			}
 		}
 
-		if(var1.fire > 0 || var1.field_9299_bv) {
+		if(var1.func_21062_U()) {
 			this.renderEntityOnFire(var1, var2, var4, var6, var9);
 		}
 

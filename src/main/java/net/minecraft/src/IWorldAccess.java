@@ -17,5 +17,5 @@ public interface IWorldAccess {
 
 	void playRecord(String var1, int var2, int var3, int var4);
 
-	void func_935_a(int var1, int var2, int var3, TileEntity var4);
+	void doNothingWithTileEntity(int var1, int var2, int var3, TileEntity var4);
 }

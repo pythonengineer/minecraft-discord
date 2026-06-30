@@ -181,15 +181,16 @@ public class GuiIngame extends Gui {
 
 		String var23;
 		if(Keyboard.isKeyDown(Keyboard.KEY_F3)) {
-			var8.drawStringWithShadow("Minecraft Beta 1.1_02 (" + this.mc.debug + ")", 2, 2, 16777215);
+			var8.drawStringWithShadow("Minecraft Beta 1.2_02 (" + this.mc.debug + ")", 2, 2, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6241_m(), 2, 12, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6262_n(), 2, 22, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6245_o(), 2, 32, 16777215);
+			var8.drawStringWithShadow(this.mc.func_21002_o(), 2, 42, 16777215);
 			this.drawString(var8, "x: " + this.mc.thePlayer.posX, 2, 64, 14737632);
 			this.drawString(var8, "y: " + this.mc.thePlayer.posY, 2, 72, 14737632);
 			this.drawString(var8, "z: " + this.mc.thePlayer.posZ, 2, 80, 14737632);
 		} else {
-			var8.drawStringWithShadow("Minecraft Beta 1.1_02", 2, 2, 16777215);
+			var8.drawStringWithShadow("Minecraft Beta 1.2_02", 2, 2, 16777215);
 		}
 
 		if(this.field_9419_j > 0) {

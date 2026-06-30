@@ -999,7 +999,7 @@ public class RenderBlocks {
 
 			Material var11 = this.blockAccess.getBlockMaterial(var8, var2, var10);
 			if(var11 != var4) {
-				if(!var11.func_878_a()) {
+				if(!var11.isSolid()) {
 					++var6;
 					++var5;
 				}
@@ -1726,8 +1726,7 @@ public class RenderBlocks {
 
 	}
 
-	public void func_1227_a(Block var1) {
-		byte var2 = -1;
+	public void func_1227_a(Block var1, int var2) {
 		Tessellator var3 = Tessellator.instance;
 		int var4 = var1.getRenderType();
 		if(var4 == 0) {
@@ -1735,27 +1734,27 @@ public class RenderBlocks {
 			GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 			var3.startDrawingQuads();
 			var3.setNormal(0.0F, -1.0F, 0.0F);
-			this.renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(0));
+			this.renderBottomFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(0, var2));
 			var3.draw();
 			var3.startDrawingQuads();
 			var3.setNormal(0.0F, 1.0F, 0.0F);
-			this.renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(1));
+			this.renderTopFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(1, var2));
 			var3.draw();
 			var3.startDrawingQuads();
 			var3.setNormal(0.0F, 0.0F, -1.0F);
-			this.renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(2));
+			this.renderEastFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(2, var2));
 			var3.draw();
 			var3.startDrawingQuads();
 			var3.setNormal(0.0F, 0.0F, 1.0F);
-			this.renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(3));
+			this.renderWestFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(3, var2));
 			var3.draw();
 			var3.startDrawingQuads();
 			var3.setNormal(-1.0F, 0.0F, 0.0F);
-			this.renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(4));
+			this.renderNorthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(4, var2));
 			var3.draw();
 			var3.startDrawingQuads();
 			var3.setNormal(1.0F, 0.0F, 0.0F);
-			this.renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSide(5));
+			this.renderSouthFace(var1, 0.0D, 0.0D, 0.0D, var1.getBlockTextureFromSideAndMetadata(5, var2));
 			var3.draw();
 			GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 		} else if(var4 == 1) {

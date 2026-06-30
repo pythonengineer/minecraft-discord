@@ -140,7 +140,7 @@ public class BlockLever extends Block {
 			int var7 = var6 & 7;
 			int var8 = 8 - (var6 & 8);
 			var1.setBlockMetadataWithNotify(var2, var3, var4, var7 + var8);
-			var1.func_701_b(var2, var3, var4, var2, var3, var4);
+			var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
 			var1.playSoundEffect((double)var2 + 0.5D, (double)var3 + 0.5D, (double)var4 + 0.5D, "random.click", 0.3F, var8 > 0 ? 0.6F : 0.5F);
 			var1.notifyBlocksOfNeighborChange(var2, var3, var4, this.blockID);
 			if(var7 == 1) {

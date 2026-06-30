@@ -15,111 +15,110 @@ public final class SpawnerAnimals {
 		return new ChunkPosition(var3, var4, var5);
 	}
 
-	public static final int performSpawning(World var0) {
-		eligibleChunksForSpawning.clear();
+	public static final int performSpawning(World var0, boolean var1, boolean var2) {
+		if(!var1 && !var2) {
+			return 0;
+		} else {
+			eligibleChunksForSpawning.clear();
 
-		int var1;
-		for(var1 = 0; var1 < var0.playerEntities.size(); ++var1) {
-			EntityPlayer var2 = (EntityPlayer)var0.playerEntities.get(var1);
-			int var3 = MathHelper.floor_double(var2.posX / 16.0D);
-			int var4 = MathHelper.floor_double(var2.posZ / 16.0D);
-			byte var5 = 8;
+			int var3;
+			int var5;
+			int var6;
+			for(var3 = 0; var3 < var0.playerEntities.size(); ++var3) {
+				EntityPlayer var4 = (EntityPlayer)var0.playerEntities.get(var3);
+				var5 = MathHelper.floor_double(var4.posX / 16.0D);
+				var6 = MathHelper.floor_double(var4.posZ / 16.0D);
+				byte var7 = 8;
 
-			for(int var6 = -var5; var6 <= var5; ++var6) {
-				for(int var7 = -var5; var7 <= var5; ++var7) {
-					eligibleChunksForSpawning.add(new ChunkCoordIntPair(var6 + var3, var7 + var4));
+				for(int var8 = -var7; var8 <= var7; ++var8) {
+					for(int var9 = -var7; var9 <= var7; ++var9) {
+						eligibleChunksForSpawning.add(new ChunkCoordIntPair(var8 + var5, var9 + var6));
+					}
 				}
 			}
-		}
 
-		var1 = 0;
+			var3 = 0;
+			EnumCreatureType[] var32 = EnumCreatureType.values();
+			var5 = var32.length;
 
-		label113:
-		for(int var28 = 0; var28 < EnumCreatureType.values().length; ++var28) {
-			EnumCreatureType var29 = EnumCreatureType.values()[var28];
-			if(var0.countEntities(var29.field_4278_c) <= var29.maxNumberOfEntityType * eligibleChunksForSpawning.size() / 256) {
-				Iterator var30 = eligibleChunksForSpawning.iterator();
+			label112:
+			for(var6 = 0; var6 < var5; ++var6) {
+				EnumCreatureType var33 = var32[var6];
+				if((!var33.func_21168_d() || var2) && (var33.func_21168_d() || var1) && var0.countEntities(var33.getCreatureClass()) <= var33.getMaxNumberOfCreature() * eligibleChunksForSpawning.size() / 256) {
+					Iterator var34 = eligibleChunksForSpawning.iterator();
 
-				label110:
-				while(true) {
-					int var8;
-					int var10;
-					int var11;
-					int var12;
-					Class[] var33;
-					do {
+					label109:
+					while(true) {
+						Class[] var11;
+						int var12;
+						int var14;
+						int var15;
+						int var16;
 						do {
-							ChunkCoordIntPair var31;
 							do {
+								ChunkCoordIntPair var35;
 								do {
 									do {
-										if(!var30.hasNext()) {
-											continue label113;
+										if(!var34.hasNext()) {
+											continue label112;
 										}
 
-										var31 = (ChunkCoordIntPair)var30.next();
-									} while(var0.rand.nextInt(50) != 0);
+										var35 = (ChunkCoordIntPair)var34.next();
+										MobSpawnerBase var10 = var0.getWorldChunkManager().func_4074_a(var35);
+										var11 = var10.getEntitiesForType(var33);
+									} while(var11 == null);
+								} while(var11.length == 0);
 
-									MobSpawnerBase var32 = var0.func_4075_a().func_4074_a(var31);
-									var33 = var32.getEntitiesForType(var29);
-								} while(var33 == null);
-							} while(var33.length == 0);
+								var12 = var0.rand.nextInt(var11.length);
+								ChunkPosition var13 = getRandomSpawningPointInChunk(var0, var35.chunkXPos * 16, var35.chunkZPos * 16);
+								var14 = var13.x;
+								var15 = var13.y;
+								var16 = var13.z;
+							} while(var0.isBlockOpaqueCube(var14, var15, var16));
+						} while(var0.getBlockMaterial(var14, var15, var16) != var33.getCreatureMaterial());
 
-							var8 = var0.rand.nextInt(var33.length);
-							ChunkPosition var9 = getRandomSpawningPointInChunk(var0, var31.chunkXPos * 16, var31.chunkZPos * 16);
-							var10 = var9.x;
-							var11 = var9.y;
-							var12 = var9.z;
-						} while(var0.isBlockOpaqueCube(var10, var11, var12));
-					} while(var0.getBlockMaterial(var10, var11, var12) != Material.air);
+						int var17 = 0;
 
-					int var13 = 0;
+						for(int var18 = 0; var18 < 3; ++var18) {
+							int var19 = var14;
+							int var20 = var15;
+							int var21 = var16;
+							byte var22 = 6;
 
-					for(int var14 = 0; var14 < 3; ++var14) {
-						int var15 = var10;
-						int var16 = var11;
-						int var17 = var12;
-						byte var18 = 6;
-
-						for(int var19 = 0; var19 < 4; ++var19) {
-							var15 += var0.rand.nextInt(var18) - var0.rand.nextInt(var18);
-							var16 += var0.rand.nextInt(1) - var0.rand.nextInt(1);
-							var17 += var0.rand.nextInt(var18) - var0.rand.nextInt(var18);
-							if(var0.isBlockOpaqueCube(var15, var16 - 1, var17) && !var0.isBlockOpaqueCube(var15, var16, var17) && !var0.getBlockMaterial(var15, var16, var17).getIsLiquid() && !var0.isBlockOpaqueCube(var15, var16 + 1, var17)) {
-								float var20 = (float)var15 + 0.5F;
-								float var21 = (float)var16;
-								float var22 = (float)var17 + 0.5F;
-								if(var0.getClosestPlayer((double)var20, (double)var21, (double)var22, 24.0D) == null) {
-									float var23 = var20 - (float)var0.spawnX;
-									float var24 = var21 - (float)var0.spawnY;
-									float var25 = var22 - (float)var0.spawnZ;
-									float var26 = var23 * var23 + var24 * var24 + var25 * var25;
-									if(var26 >= 576.0F) {
-										EntityLiving var34;
-										try {
-										    var34 = (EntityLiving)EntityList.createEntityByClassUnsafe(var33[var8], var0);
-										} catch (Exception var27) {
-											var27.printStackTrace();
-											return var1;
-										}
-
-										var34.setLocationAndAngles((double)var20, (double)var21, (double)var22, var0.rand.nextFloat() * 360.0F, 0.0F);
-										if(var34.getCanSpawnHere()) {
-											++var13;
-											var0.entityJoinedWorld(var34);
-											if(var34 instanceof EntitySpider && var0.rand.nextInt(100) == 0) {
-												EntitySkeleton var35 = new EntitySkeleton(var0);
-												var35.setLocationAndAngles((double)var20, (double)var21, (double)var22, var34.rotationYaw, 0.0F);
-												var0.entityJoinedWorld(var35);
-												var35.mountEntity(var34);
+							for(int var23 = 0; var23 < 4; ++var23) {
+								var19 += var0.rand.nextInt(var22) - var0.rand.nextInt(var22);
+								var20 += var0.rand.nextInt(1) - var0.rand.nextInt(1);
+								var21 += var0.rand.nextInt(var22) - var0.rand.nextInt(var22);
+								if(func_21203_a(var33, var0, var19, var20, var21)) {
+									float var24 = (float)var19 + 0.5F;
+									float var25 = (float)var20;
+									float var26 = (float)var21 + 0.5F;
+									if(var0.getClosestPlayer((double)var24, (double)var25, (double)var26, 24.0D) == null) {
+										float var27 = var24 - (float)var0.spawnX;
+										float var28 = var25 - (float)var0.spawnY;
+										float var29 = var26 - (float)var0.spawnZ;
+										float var30 = var27 * var27 + var28 * var28 + var29 * var29;
+										if(var30 >= 576.0F) {
+											EntityLiving var36;
+											try {
+										    var36 = (EntityLiving)EntityList.createEntityByClassUnsafe(var11[var12], var0);
+											} catch (Exception var31) {
+												var31.printStackTrace();
+												return var3;
 											}
 
-											if(var13 >= var34.getMaxSpawnedInChunk()) {
-												continue label110;
+											var36.setLocationAndAngles((double)var24, (double)var25, (double)var26, var0.rand.nextFloat() * 360.0F, 0.0F);
+											if(var36.getCanSpawnHere()) {
+												++var17;
+												var0.entityJoinedWorld(var36);
+												func_21204_a(var36, var0, var24, var25, var26);
+												if(var17 >= var36.getMaxSpawnedInChunk()) {
+													continue label109;
+												}
 											}
-										}
 
-										var1 += var13;
+											var3 += var17;
+										}
 									}
 								}
 							}
@@ -127,8 +126,24 @@ public final class SpawnerAnimals {
 					}
 				}
 			}
+
+			return var3;
+		}
+	}
+
+	private static boolean func_21203_a(EnumCreatureType var0, World var1, int var2, int var3, int var4) {
+		return var0.getCreatureMaterial() == Material.water ? var1.getBlockMaterial(var2, var3, var4).getIsLiquid() && !var1.isBlockOpaqueCube(var2, var3 + 1, var4) : var1.isBlockOpaqueCube(var2, var3 - 1, var4) && !var1.isBlockOpaqueCube(var2, var3, var4) && !var1.getBlockMaterial(var2, var3, var4).getIsLiquid() && !var1.isBlockOpaqueCube(var2, var3 + 1, var4);
+	}
+
+	private static void func_21204_a(EntityLiving var0, World var1, float var2, float var3, float var4) {
+		if(var0 instanceof EntitySpider && var1.rand.nextInt(100) == 0) {
+			EntitySkeleton var5 = new EntitySkeleton(var1);
+			var5.setLocationAndAngles((double)var2, (double)var3, (double)var4, var0.rotationYaw, 0.0F);
+			var1.entityJoinedWorld(var5);
+			var5.mountEntity(var0);
+		} else if(var0 instanceof EntitySheep) {
+			((EntitySheep)var0).setFleeceColor(EntitySheep.func_21070_a(var1.rand));
 		}
 
-		return var1;
 	}
 }

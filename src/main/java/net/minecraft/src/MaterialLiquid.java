@@ -9,7 +9,7 @@ public class MaterialLiquid extends Material {
 		return false;
 	}
 
-	public boolean func_878_a() {
+	public boolean isSolid() {
 		return false;
 	}
 }

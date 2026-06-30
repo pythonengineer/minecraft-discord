@@ -5,84 +5,84 @@ import java.util.List;
 
 class MinecartTrackLogic {
 	private World worldObj;
-	private int field_1165_c;
-	private int field_1164_d;
-	private int field_1163_e;
-	private int field_1162_f;
-	private List field_1161_g;
-	final BlockMinecartTrack field_1160_a;
+	private int trackX;
+	private int trackY;
+	private int trackZ;
+	private int trackMetadata;
+	private List connectedTracks;
+	final BlockMinecartTrack minecartTrack;
 
 	public MinecartTrackLogic(BlockMinecartTrack var1, World var2, int var3, int var4, int var5) {
-		this.field_1160_a = var1;
-		this.field_1161_g = new ArrayList();
+		this.minecartTrack = var1;
+		this.connectedTracks = new ArrayList();
 		this.worldObj = var2;
-		this.field_1165_c = var3;
-		this.field_1164_d = var4;
-		this.field_1163_e = var5;
-		this.field_1162_f = var2.getBlockMetadata(var3, var4, var5);
-		this.func_789_a();
+		this.trackX = var3;
+		this.trackY = var4;
+		this.trackZ = var5;
+		this.trackMetadata = var2.getBlockMetadata(var3, var4, var5);
+		this.calculateConnectedTracks();
 	}
 
-	private void func_789_a() {
-		this.field_1161_g.clear();
-		if(this.field_1162_f == 0) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e - 1));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e + 1));
-		} else if(this.field_1162_f == 1) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c - 1, this.field_1164_d, this.field_1163_e));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c + 1, this.field_1164_d, this.field_1163_e));
-		} else if(this.field_1162_f == 2) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c - 1, this.field_1164_d, this.field_1163_e));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c + 1, this.field_1164_d + 1, this.field_1163_e));
-		} else if(this.field_1162_f == 3) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c - 1, this.field_1164_d + 1, this.field_1163_e));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c + 1, this.field_1164_d, this.field_1163_e));
-		} else if(this.field_1162_f == 4) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d + 1, this.field_1163_e - 1));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e + 1));
-		} else if(this.field_1162_f == 5) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e - 1));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d + 1, this.field_1163_e + 1));
-		} else if(this.field_1162_f == 6) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c + 1, this.field_1164_d, this.field_1163_e));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e + 1));
-		} else if(this.field_1162_f == 7) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c - 1, this.field_1164_d, this.field_1163_e));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e + 1));
-		} else if(this.field_1162_f == 8) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c - 1, this.field_1164_d, this.field_1163_e));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e - 1));
-		} else if(this.field_1162_f == 9) {
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c + 1, this.field_1164_d, this.field_1163_e));
-			this.field_1161_g.add(new ChunkPosition(this.field_1165_c, this.field_1164_d, this.field_1163_e - 1));
+	private void calculateConnectedTracks() {
+		this.connectedTracks.clear();
+		if(this.trackMetadata == 0) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
+		} else if(this.trackMetadata == 1) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
+			this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
+		} else if(this.trackMetadata == 2) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
+			this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY + 1, this.trackZ));
+		} else if(this.trackMetadata == 3) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY + 1, this.trackZ));
+			this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
+		} else if(this.trackMetadata == 4) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY + 1, this.trackZ - 1));
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
+		} else if(this.trackMetadata == 5) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY + 1, this.trackZ + 1));
+		} else if(this.trackMetadata == 6) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
+		} else if(this.trackMetadata == 7) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ + 1));
+		} else if(this.trackMetadata == 8) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX - 1, this.trackY, this.trackZ));
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
+		} else if(this.trackMetadata == 9) {
+			this.connectedTracks.add(new ChunkPosition(this.trackX + 1, this.trackY, this.trackZ));
+			this.connectedTracks.add(new ChunkPosition(this.trackX, this.trackY, this.trackZ - 1));
 		}
 
 	}
 
 	private void func_785_b() {
-		for(int var1 = 0; var1 < this.field_1161_g.size(); ++var1) {
-			MinecartTrackLogic var2 = this.func_795_a((ChunkPosition)this.field_1161_g.get(var1));
-			if(var2 != null && var2.func_793_b(this)) {
-				this.field_1161_g.set(var1, new ChunkPosition(var2.field_1165_c, var2.field_1164_d, var2.field_1163_e));
+		for(int var1 = 0; var1 < this.connectedTracks.size(); ++var1) {
+			MinecartTrackLogic var2 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(var1));
+			if(var2 != null && var2.isConnectedTo(this)) {
+				this.connectedTracks.set(var1, new ChunkPosition(var2.trackX, var2.trackY, var2.trackZ));
 			} else {
-				this.field_1161_g.remove(var1--);
+				this.connectedTracks.remove(var1--);
 			}
 		}
 
 	}
 
-	private boolean func_784_a(int var1, int var2, int var3) {
-		return this.worldObj.getBlockId(var1, var2, var3) == this.field_1160_a.blockID ? true : (this.worldObj.getBlockId(var1, var2 + 1, var3) == this.field_1160_a.blockID ? true : this.worldObj.getBlockId(var1, var2 - 1, var3) == this.field_1160_a.blockID);
+	private boolean isMinecartTrack(int var1, int var2, int var3) {
+		return this.worldObj.getBlockId(var1, var2, var3) == this.minecartTrack.blockID ? true : (this.worldObj.getBlockId(var1, var2 + 1, var3) == this.minecartTrack.blockID ? true : this.worldObj.getBlockId(var1, var2 - 1, var3) == this.minecartTrack.blockID);
 	}
 
-	private MinecartTrackLogic func_795_a(ChunkPosition var1) {
-		return this.worldObj.getBlockId(var1.x, var1.y, var1.z) == this.field_1160_a.blockID ? new MinecartTrackLogic(this.field_1160_a, this.worldObj, var1.x, var1.y, var1.z) : (this.worldObj.getBlockId(var1.x, var1.y + 1, var1.z) == this.field_1160_a.blockID ? new MinecartTrackLogic(this.field_1160_a, this.worldObj, var1.x, var1.y + 1, var1.z) : (this.worldObj.getBlockId(var1.x, var1.y - 1, var1.z) == this.field_1160_a.blockID ? new MinecartTrackLogic(this.field_1160_a, this.worldObj, var1.x, var1.y - 1, var1.z) : null));
+	private MinecartTrackLogic getMinecartTrackLogic(ChunkPosition var1) {
+		return this.worldObj.getBlockId(var1.x, var1.y, var1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, var1.x, var1.y, var1.z) : (this.worldObj.getBlockId(var1.x, var1.y + 1, var1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, var1.x, var1.y + 1, var1.z) : (this.worldObj.getBlockId(var1.x, var1.y - 1, var1.z) == this.minecartTrack.blockID ? new MinecartTrackLogic(this.minecartTrack, this.worldObj, var1.x, var1.y - 1, var1.z) : null));
 	}
 
-	private boolean func_793_b(MinecartTrackLogic var1) {
-		for(int var2 = 0; var2 < this.field_1161_g.size(); ++var2) {
-			ChunkPosition var3 = (ChunkPosition)this.field_1161_g.get(var2);
-			if(var3.x == var1.field_1165_c && var3.z == var1.field_1163_e) {
+	private boolean isConnectedTo(MinecartTrackLogic var1) {
+		for(int var2 = 0; var2 < this.connectedTracks.size(); ++var2) {
+			ChunkPosition var3 = (ChunkPosition)this.connectedTracks.get(var2);
+			if(var3.x == var1.trackX && var3.z == var1.trackZ) {
 				return true;
 			}
 		}
@@ -91,8 +91,8 @@ class MinecartTrackLogic {
 	}
 
 	private boolean func_794_b(int var1, int var2, int var3) {
-		for(int var4 = 0; var4 < this.field_1161_g.size(); ++var4) {
-			ChunkPosition var5 = (ChunkPosition)this.field_1161_g.get(var4);
+		for(int var4 = 0; var4 < this.connectedTracks.size(); ++var4) {
+			ChunkPosition var5 = (ChunkPosition)this.connectedTracks.get(var4);
 			if(var5.x == var1 && var5.z == var3) {
 				return true;
 			}
@@ -101,21 +101,21 @@ class MinecartTrackLogic {
 		return false;
 	}
 
-	private int func_790_c() {
+	private int getAdjacentTracks() {
 		int var1 = 0;
-		if(this.func_784_a(this.field_1165_c, this.field_1164_d, this.field_1163_e - 1)) {
+		if(this.isMinecartTrack(this.trackX, this.trackY, this.trackZ - 1)) {
 			++var1;
 		}
 
-		if(this.func_784_a(this.field_1165_c, this.field_1164_d, this.field_1163_e + 1)) {
+		if(this.isMinecartTrack(this.trackX, this.trackY, this.trackZ + 1)) {
 			++var1;
 		}
 
-		if(this.func_784_a(this.field_1165_c - 1, this.field_1164_d, this.field_1163_e)) {
+		if(this.isMinecartTrack(this.trackX - 1, this.trackY, this.trackZ)) {
 			++var1;
 		}
 
-		if(this.func_784_a(this.field_1165_c + 1, this.field_1164_d, this.field_1163_e)) {
+		if(this.isMinecartTrack(this.trackX + 1, this.trackY, this.trackZ)) {
 			++var1;
 		}
 
@@ -123,24 +123,24 @@ class MinecartTrackLogic {
 	}
 
 	private boolean handleKeyPress(MinecartTrackLogic var1) {
-		if(this.func_793_b(var1)) {
+		if(this.isConnectedTo(var1)) {
 			return true;
-		} else if(this.field_1161_g.size() == 2) {
+		} else if(this.connectedTracks.size() == 2) {
 			return false;
-		} else if(this.field_1161_g.size() == 0) {
+		} else if(this.connectedTracks.size() == 0) {
 			return true;
 		} else {
-			ChunkPosition var2 = (ChunkPosition)this.field_1161_g.get(0);
-			return var1.field_1164_d == this.field_1164_d && var2.y == this.field_1164_d ? true : true;
+			ChunkPosition var2 = (ChunkPosition)this.connectedTracks.get(0);
+			return var1.trackY == this.trackY && var2.y == this.trackY ? true : true;
 		}
 	}
 
 	private void func_788_d(MinecartTrackLogic var1) {
-		this.field_1161_g.add(new ChunkPosition(var1.field_1165_c, var1.field_1164_d, var1.field_1163_e));
-		boolean var2 = this.func_794_b(this.field_1165_c, this.field_1164_d, this.field_1163_e - 1);
-		boolean var3 = this.func_794_b(this.field_1165_c, this.field_1164_d, this.field_1163_e + 1);
-		boolean var4 = this.func_794_b(this.field_1165_c - 1, this.field_1164_d, this.field_1163_e);
-		boolean var5 = this.func_794_b(this.field_1165_c + 1, this.field_1164_d, this.field_1163_e);
+		this.connectedTracks.add(new ChunkPosition(var1.trackX, var1.trackY, var1.trackZ));
+		boolean var2 = this.func_794_b(this.trackX, this.trackY, this.trackZ - 1);
+		boolean var3 = this.func_794_b(this.trackX, this.trackY, this.trackZ + 1);
+		boolean var4 = this.func_794_b(this.trackX - 1, this.trackY, this.trackZ);
+		boolean var5 = this.func_794_b(this.trackX + 1, this.trackY, this.trackZ);
 		byte var6 = -1;
 		if(var2 || var3) {
 			var6 = 0;
@@ -167,21 +167,21 @@ class MinecartTrackLogic {
 		}
 
 		if(var6 == 0) {
-			if(this.worldObj.getBlockId(this.field_1165_c, this.field_1164_d + 1, this.field_1163_e - 1) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ - 1) == this.minecartTrack.blockID) {
 				var6 = 4;
 			}
 
-			if(this.worldObj.getBlockId(this.field_1165_c, this.field_1164_d + 1, this.field_1163_e + 1) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ + 1) == this.minecartTrack.blockID) {
 				var6 = 5;
 			}
 		}
 
 		if(var6 == 1) {
-			if(this.worldObj.getBlockId(this.field_1165_c + 1, this.field_1164_d + 1, this.field_1163_e) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX + 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
 				var6 = 2;
 			}
 
-			if(this.worldObj.getBlockId(this.field_1165_c - 1, this.field_1164_d + 1, this.field_1163_e) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX - 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
 				var6 = 3;
 			}
 		}
@@ -190,11 +190,11 @@ class MinecartTrackLogic {
 			var6 = 0;
 		}
 
-		this.worldObj.setBlockMetadataWithNotify(this.field_1165_c, this.field_1164_d, this.field_1163_e, var6);
+		this.worldObj.setBlockMetadataWithNotify(this.trackX, this.trackY, this.trackZ, var6);
 	}
 
 	private boolean func_786_c(int var1, int var2, int var3) {
-		MinecartTrackLogic var4 = this.func_795_a(new ChunkPosition(var1, var2, var3));
+		MinecartTrackLogic var4 = this.getMinecartTrackLogic(new ChunkPosition(var1, var2, var3));
 		if(var4 == null) {
 			return false;
 		} else {
@@ -204,10 +204,10 @@ class MinecartTrackLogic {
 	}
 
 	public void func_792_a(boolean var1) {
-		boolean var2 = this.func_786_c(this.field_1165_c, this.field_1164_d, this.field_1163_e - 1);
-		boolean var3 = this.func_786_c(this.field_1165_c, this.field_1164_d, this.field_1163_e + 1);
-		boolean var4 = this.func_786_c(this.field_1165_c - 1, this.field_1164_d, this.field_1163_e);
-		boolean var5 = this.func_786_c(this.field_1165_c + 1, this.field_1164_d, this.field_1163_e);
+		boolean var2 = this.func_786_c(this.trackX, this.trackY, this.trackZ - 1);
+		boolean var3 = this.func_786_c(this.trackX, this.trackY, this.trackZ + 1);
+		boolean var4 = this.func_786_c(this.trackX - 1, this.trackY, this.trackZ);
+		boolean var5 = this.func_786_c(this.trackX + 1, this.trackY, this.trackZ);
 		byte var6 = -1;
 		if((var2 || var3) && !var4 && !var5) {
 			var6 = 0;
@@ -278,21 +278,21 @@ class MinecartTrackLogic {
 		}
 
 		if(var6 == 0) {
-			if(this.worldObj.getBlockId(this.field_1165_c, this.field_1164_d + 1, this.field_1163_e - 1) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ - 1) == this.minecartTrack.blockID) {
 				var6 = 4;
 			}
 
-			if(this.worldObj.getBlockId(this.field_1165_c, this.field_1164_d + 1, this.field_1163_e + 1) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX, this.trackY + 1, this.trackZ + 1) == this.minecartTrack.blockID) {
 				var6 = 5;
 			}
 		}
 
 		if(var6 == 1) {
-			if(this.worldObj.getBlockId(this.field_1165_c + 1, this.field_1164_d + 1, this.field_1163_e) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX + 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
 				var6 = 2;
 			}
 
-			if(this.worldObj.getBlockId(this.field_1165_c - 1, this.field_1164_d + 1, this.field_1163_e) == this.field_1160_a.blockID) {
+			if(this.worldObj.getBlockId(this.trackX - 1, this.trackY + 1, this.trackZ) == this.minecartTrack.blockID) {
 				var6 = 3;
 			}
 		}
@@ -301,12 +301,12 @@ class MinecartTrackLogic {
 			var6 = 0;
 		}
 
-		this.field_1162_f = var6;
-		this.func_789_a();
-		this.worldObj.setBlockMetadataWithNotify(this.field_1165_c, this.field_1164_d, this.field_1163_e, var6);
+		this.trackMetadata = var6;
+		this.calculateConnectedTracks();
+		this.worldObj.setBlockMetadataWithNotify(this.trackX, this.trackY, this.trackZ, var6);
 
-		for(int var7 = 0; var7 < this.field_1161_g.size(); ++var7) {
-			MinecartTrackLogic var8 = this.func_795_a((ChunkPosition)this.field_1161_g.get(var7));
+		for(int var7 = 0; var7 < this.connectedTracks.size(); ++var7) {
+			MinecartTrackLogic var8 = this.getMinecartTrackLogic((ChunkPosition)this.connectedTracks.get(var7));
 			if(var8 != null) {
 				var8.func_785_b();
 				if(var8.handleKeyPress(this)) {
@@ -317,7 +317,7 @@ class MinecartTrackLogic {
 
 	}
 
-	static int func_791_a(MinecartTrackLogic var0) {
-		return var0.func_790_c();
+	static int getNAdjacentTracks(MinecartTrackLogic var0) {
+		return var0.getAdjacentTracks();
 	}
 }

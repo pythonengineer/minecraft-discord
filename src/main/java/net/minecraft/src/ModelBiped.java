@@ -4,8 +4,8 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class ModelBiped extends ModelBase {
 	public ModelRenderer bipedHead;
-	public ModelRenderer field_1285_b;
-	public ModelRenderer field_1284_c;
+	public ModelRenderer bipedHeadwear;
+	public ModelRenderer bipedBody;
 	public ModelRenderer bipedRightArm;
 	public ModelRenderer bipedLeftArm;
 	public ModelRenderer bipedRightLeg;
@@ -35,12 +35,12 @@ public class ModelBiped extends ModelBase {
 		this.bipedHead = new ModelRenderer(0, 0);
 		this.bipedHead.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1);
 		this.bipedHead.setPosition(0.0F, 0.0F + var2, 0.0F);
-		this.field_1285_b = new ModelRenderer(32, 0);
-		this.field_1285_b.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1 + 0.5F);
-		this.field_1285_b.setPosition(0.0F, 0.0F + var2, 0.0F);
-		this.field_1284_c = new ModelRenderer(16, 16);
-		this.field_1284_c.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, var1);
-		this.field_1284_c.setPosition(0.0F, 0.0F + var2, 0.0F);
+		this.bipedHeadwear = new ModelRenderer(32, 0);
+		this.bipedHeadwear.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1 + 0.5F);
+		this.bipedHeadwear.setPosition(0.0F, 0.0F + var2, 0.0F);
+		this.bipedBody = new ModelRenderer(16, 16);
+		this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, var1);
+		this.bipedBody.setPosition(0.0F, 0.0F + var2, 0.0F);
 		this.bipedRightArm = new ModelRenderer(40, 16);
 		this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, var1);
 		this.bipedRightArm.setPosition(-5.0F, 2.0F + var2, 0.0F);
@@ -60,19 +60,19 @@ public class ModelBiped extends ModelBase {
 	public void render(float var1, float var2, float var3, float var4, float var5, float var6) {
 		this.setRotationAngles(var1, var2, var3, var4, var5, var6);
 		this.bipedHead.render(var6);
-		this.field_1284_c.render(var6);
+		this.bipedBody.render(var6);
 		this.bipedRightArm.render(var6);
 		this.bipedLeftArm.render(var6);
 		this.bipedRightLeg.render(var6);
 		this.bipedLeftLeg.render(var6);
-		this.field_1285_b.render(var6);
+		this.bipedHeadwear.render(var6);
 	}
 
 	public void setRotationAngles(float var1, float var2, float var3, float var4, float var5, float var6) {
 		this.bipedHead.rotateAngleY = var4 / (180.0F / (float)Math.PI);
 		this.bipedHead.rotateAngleX = var5 / (180.0F / (float)Math.PI);
-		this.field_1285_b.rotateAngleY = this.bipedHead.rotateAngleY;
-		this.field_1285_b.rotateAngleX = this.bipedHead.rotateAngleX;
+		this.bipedHeadwear.rotateAngleY = this.bipedHead.rotateAngleY;
+		this.bipedHeadwear.rotateAngleX = this.bipedHead.rotateAngleX;
 		this.bipedRightArm.rotateAngleX = MathHelper.cos(var1 * 0.6662F + (float)Math.PI) * 2.0F * var2 * 0.5F;
 		this.bipedLeftArm.rotateAngleX = MathHelper.cos(var1 * 0.6662F) * 2.0F * var2 * 0.5F;
 		this.bipedRightArm.rotateAngleZ = 0.0F;
@@ -100,29 +100,29 @@ public class ModelBiped extends ModelBase {
 
 		this.bipedRightArm.rotateAngleY = 0.0F;
 		this.bipedLeftArm.rotateAngleY = 0.0F;
-		if(this.field_1244_k > -9990.0F) {
-			float var7 = this.field_1244_k;
-			this.field_1284_c.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(var7) * (float)Math.PI * 2.0F) * 0.2F;
-			this.bipedRightArm.offsetZ = MathHelper.sin(this.field_1284_c.rotateAngleY) * 5.0F;
-			this.bipedRightArm.offsetX = -MathHelper.cos(this.field_1284_c.rotateAngleY) * 5.0F;
-			this.bipedLeftArm.offsetZ = -MathHelper.sin(this.field_1284_c.rotateAngleY) * 5.0F;
-			this.bipedLeftArm.offsetX = MathHelper.cos(this.field_1284_c.rotateAngleY) * 5.0F;
-			this.bipedRightArm.rotateAngleY += this.field_1284_c.rotateAngleY;
-			this.bipedLeftArm.rotateAngleY += this.field_1284_c.rotateAngleY;
-			this.bipedLeftArm.rotateAngleX += this.field_1284_c.rotateAngleY;
-			var7 = 1.0F - this.field_1244_k;
+		if(this.onGround > -9990.0F) {
+			float var7 = this.onGround;
+			this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(var7) * (float)Math.PI * 2.0F) * 0.2F;
+			this.bipedRightArm.offsetZ = MathHelper.sin(this.bipedBody.rotateAngleY) * 5.0F;
+			this.bipedRightArm.offsetX = -MathHelper.cos(this.bipedBody.rotateAngleY) * 5.0F;
+			this.bipedLeftArm.offsetZ = -MathHelper.sin(this.bipedBody.rotateAngleY) * 5.0F;
+			this.bipedLeftArm.offsetX = MathHelper.cos(this.bipedBody.rotateAngleY) * 5.0F;
+			this.bipedRightArm.rotateAngleY += this.bipedBody.rotateAngleY;
+			this.bipedLeftArm.rotateAngleY += this.bipedBody.rotateAngleY;
+			this.bipedLeftArm.rotateAngleX += this.bipedBody.rotateAngleY;
+			var7 = 1.0F - this.onGround;
 			var7 *= var7;
 			var7 *= var7;
 			var7 = 1.0F - var7;
 			float var8 = MathHelper.sin(var7 * (float)Math.PI);
-			float var9 = MathHelper.sin(this.field_1244_k * (float)Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * (12.0F / 16.0F);
+			float var9 = MathHelper.sin(this.onGround * (float)Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * (12.0F / 16.0F);
 			this.bipedRightArm.rotateAngleX = (float)((double)this.bipedRightArm.rotateAngleX - ((double)var8 * 1.2D + (double)var9));
-			this.bipedRightArm.rotateAngleY += this.field_1284_c.rotateAngleY * 2.0F;
-			this.bipedRightArm.rotateAngleZ = MathHelper.sin(this.field_1244_k * (float)Math.PI) * -0.4F;
+			this.bipedRightArm.rotateAngleY += this.bipedBody.rotateAngleY * 2.0F;
+			this.bipedRightArm.rotateAngleZ = MathHelper.sin(this.onGround * (float)Math.PI) * -0.4F;
 		}
 
 		if(this.field_1277_j) {
-			this.field_1284_c.rotateAngleX = 0.5F;
+			this.bipedBody.rotateAngleX = 0.5F;
 			this.bipedRightLeg.rotateAngleX -= 0.0F;
 			this.bipedLeftLeg.rotateAngleX -= 0.0F;
 			this.bipedRightArm.rotateAngleX += 0.4F;
@@ -133,7 +133,7 @@ public class ModelBiped extends ModelBase {
 			this.bipedLeftLeg.offsetY = 9.0F;
 			this.bipedHead.offsetY = 1.0F;
 		} else {
-			this.field_1284_c.rotateAngleX = 0.0F;
+			this.bipedBody.rotateAngleX = 0.0F;
 			this.bipedRightLeg.offsetZ = 0.0F;
 			this.bipedLeftLeg.offsetZ = 0.0F;
 			this.bipedRightLeg.offsetY = 12.0F;

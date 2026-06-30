@@ -70,7 +70,7 @@ public class ChunkLoader implements IChunkLoader {
 	}
 
 	public void saveChunk(World var1, Chunk var2) throws IOException {
-		var1.func_663_l();
+		var1.checkSessionLock();
 		VFile2 var3 = this.chunkFileForXZ(var2.xPosition, var2.zPosition);
 		if(var3.exists()) {
 			var1.sizeOnDisk -= var3.length();
@@ -78,7 +78,7 @@ public class ChunkLoader implements IChunkLoader {
 
 		try {
 			VFile2 var4 = new VFile2(this.saveDir, "tmp_chunk.dat");
-            OutputStream var5 = var4.getOutputStream();
+			OutputStream var5 = var4.getOutputStream();
 			NBTTagCompound var6 = new NBTTagCompound();
 			NBTTagCompound var7 = new NBTTagCompound();
 			var6.setTag("Level", var7);
@@ -98,7 +98,7 @@ public class ChunkLoader implements IChunkLoader {
 	}
 
 	public void storeChunkInCompound(Chunk var1, World var2, NBTTagCompound var3) {
-		var2.func_663_l();
+		var2.checkSessionLock();
 		var3.setInteger("xPos", var1.xPosition);
 		var3.setInteger("zPos", var1.zPosition);
 		var3.setLong("LastUpdate", var2.worldTime);
@@ -120,7 +120,7 @@ public class ChunkLoader implements IChunkLoader {
 				Entity var7 = (Entity)var6.next();
 				var1.hasEntities = true;
 				var8 = new NBTTagCompound();
-				if(var7.func_358_c(var8)) {
+				if(var7.addEntityID(var8)) {
 					var4.setTag(var8);
 				}
 			}

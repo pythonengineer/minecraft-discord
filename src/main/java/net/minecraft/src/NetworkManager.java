@@ -15,7 +15,7 @@ public class NetworkManager {
 	public static int numReadThreads;
 	public static int numWriteThreads;
 	private Object sendQueueLock = new Object();
-	private IWebSocketClient field_12258_e;
+	private IWebSocketClient networkSocket;
 	private DataInputStream socketInputStream;
 	private DataOutputStream socketOutputStream;
 	private boolean isRunning = true;
@@ -35,7 +35,7 @@ public class NetworkManager {
 	private int field_20100_w = 0;
 
 	public NetworkManager(IWebSocketClient var1, String var2, NetHandler var3) throws IOException {
-		this.field_12258_e = var1;
+		this.networkSocket = var1;
 		this.netHandler = var3;
 		this.socketInputStream = new DataInputStream(var1.getInputStream());
 		this.socketOutputStream = new DataOutputStream(var1.getOutputStream());
@@ -65,7 +65,7 @@ public class NetworkManager {
 			boolean var1 = true;
 			Packet var2;
 			Object var3;
-			if(!this.dataPackets.isEmpty() && (this.chunkDataSendCounter == 0 || EagRuntime.currentTimeMillis() - ((Packet)this.dataPackets.get(0)).field_20018_j >= (long)this.chunkDataSendCounter)) {
+			if(!this.dataPackets.isEmpty() && (this.chunkDataSendCounter == 0 || EagRuntime.currentTimeMillis() - ((Packet)this.dataPackets.get(0)).creationTimeMillis >= (long)this.chunkDataSendCounter)) {
 				var1 = false;
 				var3 = this.sendQueueLock;
 				synchronized(var3) {
@@ -76,7 +76,7 @@ public class NetworkManager {
 				Packet.writePacket(var2, this.socketOutputStream);
 			}
 
-			if((var1 || this.field_20100_w-- <= 0) && !this.chunkDataPackets.isEmpty() && (this.chunkDataSendCounter == 0 || EagRuntime.currentTimeMillis() - ((Packet)this.chunkDataPackets.get(0)).field_20018_j >= (long)this.chunkDataSendCounter)) {
+			if((var1 || this.field_20100_w-- <= 0) && !this.chunkDataPackets.isEmpty() && (this.chunkDataSendCounter == 0 || EagRuntime.currentTimeMillis() - ((Packet)this.chunkDataPackets.get(0)).creationTimeMillis >= (long)this.chunkDataSendCounter)) {
 				var1 = false;
 				var3 = this.sendQueueLock;
 				synchronized(var3) {
@@ -141,8 +141,8 @@ public class NetworkManager {
 			}
 
 			try {
-				this.field_12258_e.close();
-				this.field_12258_e = null;
+				this.networkSocket.close();
+				this.networkSocket = null;
 			} catch (Throwable var4) {
 			}
 

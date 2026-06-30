@@ -4,20 +4,16 @@ public class ItemTool extends Item {
 	private Block[] blocksEffectiveAgainst;
 	private float efficiencyOnProperMaterial = 4.0F;
 	private int damageVsEntity;
-	protected int ingredientQuality;
+	protected EnumToolMaterial toolMaterial;
 
-	public ItemTool(int var1, int var2, int var3, Block[] var4) {
+	protected ItemTool(int var1, int var2, EnumToolMaterial var3, Block[] var4) {
 		super(var1);
-		this.ingredientQuality = var3;
+		this.toolMaterial = var3;
 		this.blocksEffectiveAgainst = var4;
 		this.maxStackSize = 1;
-		this.maxDamage = 32 << var3;
-		if(var3 == 3) {
-			this.maxDamage *= 4;
-		}
-
-		this.efficiencyOnProperMaterial = (float)((var3 + 1) * 2);
-		this.damageVsEntity = var2 + var3;
+		this.maxDamage = var3.getMaxUses();
+		this.efficiencyOnProperMaterial = var3.getEfficiencyOnProperMaterial();
+		this.damageVsEntity = var2 + var3.getDamageVsEntity();
 	}
 
 	public float getStrVsBlock(ItemStack var1, Block var2) {

@@ -1,9 +1,13 @@
 package net.minecraft.src;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class BlockRedstoneWire extends Block {
 	private boolean wiresProvidePower = true;
+	private Set field_21031_b = new HashSet();
 
 	public BlockRedstoneWire(int var1, int var2) {
 		super(var1, var2, Material.circuits);
@@ -35,101 +39,128 @@ public class BlockRedstoneWire extends Block {
 	}
 
 	private void updateAndPropagateCurrentStrength(World var1, int var2, int var3, int var4) {
-		int var5 = var1.getBlockMetadata(var2, var3, var4);
-		int var6 = 0;
+		this.func_21030_a(var1, var2, var3, var4, var2, var3, var4);
+		ArrayList var5 = new ArrayList(this.field_21031_b);
+		this.field_21031_b.clear();
+
+		for(int var6 = 0; var6 < var5.size(); ++var6) {
+			ChunkPosition var7 = (ChunkPosition)var5.get(var6);
+			var1.notifyBlocksOfNeighborChange(var7.x, var7.y, var7.z, this.blockID);
+		}
+
+	}
+
+	private void func_21030_a(World var1, int var2, int var3, int var4, int var5, int var6, int var7) {
+		int var8 = var1.getBlockMetadata(var2, var3, var4);
+		int var9 = 0;
 		this.wiresProvidePower = false;
-		boolean var7 = var1.isBlockIndirectlyGettingPowered(var2, var3, var4);
+		boolean var10 = var1.isBlockIndirectlyGettingPowered(var2, var3, var4);
 		this.wiresProvidePower = true;
-		int var8;
-		int var9;
-		int var10;
-		if(var7) {
-			var6 = 15;
+		int var11;
+		int var12;
+		int var13;
+		if(var10) {
+			var9 = 15;
 		} else {
-			for(var8 = 0; var8 < 4; ++var8) {
-				var9 = var2;
-				var10 = var4;
-				if(var8 == 0) {
-					var9 = var2 - 1;
+			for(var11 = 0; var11 < 4; ++var11) {
+				var12 = var2;
+				var13 = var4;
+				if(var11 == 0) {
+					var12 = var2 - 1;
 				}
 
-				if(var8 == 1) {
-					++var9;
+				if(var11 == 1) {
+					++var12;
 				}
 
-				if(var8 == 2) {
-					var10 = var4 - 1;
+				if(var11 == 2) {
+					var13 = var4 - 1;
 				}
 
-				if(var8 == 3) {
-					++var10;
+				if(var11 == 3) {
+					++var13;
 				}
 
-				var6 = this.getMaxCurrentStrength(var1, var9, var3, var10, var6);
-				if(var1.isBlockOpaqueCube(var9, var3, var10) && !var1.isBlockOpaqueCube(var2, var3 + 1, var4)) {
-					var6 = this.getMaxCurrentStrength(var1, var9, var3 + 1, var10, var6);
-				} else if(!var1.isBlockOpaqueCube(var9, var3, var10)) {
-					var6 = this.getMaxCurrentStrength(var1, var9, var3 - 1, var10, var6);
+				if(var12 != var5 || var3 != var6 || var13 != var7) {
+					var9 = this.getMaxCurrentStrength(var1, var12, var3, var13, var9);
+				}
+
+				if(var1.isBlockOpaqueCube(var12, var3, var13) && !var1.isBlockOpaqueCube(var2, var3 + 1, var4)) {
+					if(var12 != var5 || var3 + 1 != var6 || var13 != var7) {
+						var9 = this.getMaxCurrentStrength(var1, var12, var3 + 1, var13, var9);
+					}
+				} else if(!var1.isBlockOpaqueCube(var12, var3, var13) && (var12 != var5 || var3 - 1 != var6 || var13 != var7)) {
+					var9 = this.getMaxCurrentStrength(var1, var12, var3 - 1, var13, var9);
 				}
 			}
 
-			if(var6 > 0) {
-				--var6;
+			if(var9 > 0) {
+				--var9;
 			} else {
-				var6 = 0;
+				var9 = 0;
 			}
 		}
 
-		if(var5 != var6) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, var6);
-			var1.func_701_b(var2, var3, var4, var2, var3, var4);
-			if(var6 > 0) {
-				--var6;
+		if(var8 != var9) {
+			var1.field_1043_h = true;
+			var1.setBlockMetadataWithNotify(var2, var3, var4, var9);
+			var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
+			var1.field_1043_h = false;
+
+			for(var11 = 0; var11 < 4; ++var11) {
+				var12 = var2;
+				var13 = var4;
+				int var14 = var3 - 1;
+				if(var11 == 0) {
+					var12 = var2 - 1;
+				}
+
+				if(var11 == 1) {
+					++var12;
+				}
+
+				if(var11 == 2) {
+					var13 = var4 - 1;
+				}
+
+				if(var11 == 3) {
+					++var13;
+				}
+
+				if(var1.isBlockOpaqueCube(var12, var3, var13)) {
+					var14 += 2;
+				}
+
+				boolean var15 = false;
+				int var16 = this.getMaxCurrentStrength(var1, var12, var3, var13, -1);
+				var9 = var1.getBlockMetadata(var2, var3, var4);
+				if(var9 > 0) {
+					--var9;
+				}
+
+				if(var16 >= 0 && var16 != var9) {
+					this.func_21030_a(var1, var12, var3, var13, var2, var3, var4);
+				}
+
+				var16 = this.getMaxCurrentStrength(var1, var12, var14, var13, -1);
+				var9 = var1.getBlockMetadata(var2, var3, var4);
+				if(var9 > 0) {
+					--var9;
+				}
+
+				if(var16 >= 0 && var16 != var9) {
+					this.func_21030_a(var1, var12, var14, var13, var2, var3, var4);
+				}
 			}
 
-			for(var8 = 0; var8 < 4; ++var8) {
-				var9 = var2;
-				var10 = var4;
-				int var11 = var3 - 1;
-				if(var8 == 0) {
-					var9 = var2 - 1;
-				}
-
-				if(var8 == 1) {
-					++var9;
-				}
-
-				if(var8 == 2) {
-					var10 = var4 - 1;
-				}
-
-				if(var8 == 3) {
-					++var10;
-				}
-
-				if(var1.isBlockOpaqueCube(var9, var3, var10)) {
-					var11 += 2;
-				}
-
-				int var12 = this.getMaxCurrentStrength(var1, var9, var3, var10, -1);
-				if(var12 >= 0 && var12 != var6) {
-					this.updateAndPropagateCurrentStrength(var1, var9, var3, var10);
-				}
-
-				var12 = this.getMaxCurrentStrength(var1, var9, var11, var10, -1);
-				if(var12 >= 0 && var12 != var6) {
-					this.updateAndPropagateCurrentStrength(var1, var9, var11, var10);
-				}
-			}
-
-			if(var5 == 0 || var6 == 0) {
-				var1.notifyBlocksOfNeighborChange(var2, var3, var4, this.blockID);
-				var1.notifyBlocksOfNeighborChange(var2 - 1, var3, var4, this.blockID);
-				var1.notifyBlocksOfNeighborChange(var2 + 1, var3, var4, this.blockID);
-				var1.notifyBlocksOfNeighborChange(var2, var3, var4 - 1, this.blockID);
-				var1.notifyBlocksOfNeighborChange(var2, var3, var4 + 1, this.blockID);
-				var1.notifyBlocksOfNeighborChange(var2, var3 - 1, var4, this.blockID);
-				var1.notifyBlocksOfNeighborChange(var2, var3 + 1, var4, this.blockID);
+			if(var8 == 0 || var9 == 0) {
+				this.field_21031_b.add(new ChunkPosition(var2, var3, var4));
+				this.field_21031_b.add(new ChunkPosition(var2 - 1, var3, var4));
+				this.field_21031_b.add(new ChunkPosition(var2 + 1, var3, var4));
+				this.field_21031_b.add(new ChunkPosition(var2, var3 - 1, var4));
+				this.field_21031_b.add(new ChunkPosition(var2, var3 + 1, var4));
+				this.field_21031_b.add(new ChunkPosition(var2, var3, var4 - 1));
+				this.field_21031_b.add(new ChunkPosition(var2, var3, var4 + 1));
 			}
 		}
 

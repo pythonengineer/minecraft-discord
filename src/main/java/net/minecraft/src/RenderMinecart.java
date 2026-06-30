@@ -4,14 +4,14 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class RenderMinecart extends Render {
-	protected ModelBase a;
+	protected ModelBase modelMinecart;
 
 	public RenderMinecart() {
 		this.shadowSize = 0.5F;
-		this.a = new ModelMinecart();
+		this.modelMinecart = new ModelMinecart();
 	}
 
-	public void a(EntityMinecart var1, double var2, double var4, double var6, float var8, float var9) {
+	public void func_152_a(EntityMinecart var1, double var2, double var4, double var6, float var8, float var9) {
 		GL11.glPushMatrix();
 		double var10 = var1.lastTickPosX + (var1.posX - var1.lastTickPosX) * (double)var9;
 		double var12 = var1.lastTickPosY + (var1.posY - var1.lastTickPosY) * (double)var9;
@@ -44,26 +44,26 @@ public class RenderMinecart extends Render {
 		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
 		GL11.glRotatef(180.0F - var8, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(-var19, 0.0F, 0.0F, 1.0F);
-		float var23 = (float)var1.b - var9;
-		float var24 = (float)var1.a - var9;
+		float var23 = (float)var1.field_20911_b - var9;
+		float var24 = (float)var1.field_20910_a - var9;
 		if(var24 < 0.0F) {
 			var24 = 0.0F;
 		}
 
 		if(var23 > 0.0F) {
-			GL11.glRotatef(MathHelper.sin(var23) * var23 * var24 / 10.0F * (float)var1.c, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(MathHelper.sin(var23) * var23 * var24 / 10.0F * (float)var1.field_20912_c, 1.0F, 0.0F, 0.0F);
 		}
 
-		if(var1.d != 0) {
+		if(var1.minecartType != 0) {
 			this.loadTexture("/terrain.png");
 			float var25 = 12.0F / 16.0F;
 			GL11.glScalef(var25, var25, var25);
 			GL11.glTranslatef(0.0F, 5.0F / 16.0F, 0.0F);
 			GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-			if(var1.d == 1) {
-				(new RenderBlocks()).func_1227_a(Block.crate);
-			} else if(var1.d == 2) {
-				(new RenderBlocks()).func_1227_a(Block.stoneOvenIdle);
+			if(var1.minecartType == 1) {
+				(new RenderBlocks()).func_1227_a(Block.crate, 0);
+			} else if(var1.minecartType == 2) {
+				(new RenderBlocks()).func_1227_a(Block.stoneOvenIdle, 0);
 			}
 
 			GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
@@ -73,11 +73,11 @@ public class RenderMinecart extends Render {
 
 		this.loadTexture("/item/cart.png");
 		GL11.glScalef(-1.0F, -1.0F, 1.0F);
-		this.a.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 1.0F / 16.0F);
+		this.modelMinecart.render(0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 1.0F / 16.0F);
 		GL11.glPopMatrix();
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.a((EntityMinecart)var1, var2, var4, var6, var8, var9);
+		this.func_152_a((EntityMinecart)var1, var2, var4, var6, var8, var9);
 	}
 }

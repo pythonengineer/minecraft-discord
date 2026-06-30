@@ -65,7 +65,7 @@ public class BlockSign extends BlockContainer {
 		return false;
 	}
 
-	protected TileEntity SetBlockEntity() {
+	protected TileEntity getBlockEntity() {
 		try {
 			return (TileEntity)this.signEntityClass.newInstance();
 		} catch (Exception var2) {
@@ -80,25 +80,25 @@ public class BlockSign extends BlockContainer {
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		boolean var6 = false;
 		if(this.isFreestanding) {
-			if(!var1.getBlockMaterial(var2, var3 - 1, var4).func_878_a()) {
+			if(!var1.getBlockMaterial(var2, var3 - 1, var4).isSolid()) {
 				var6 = true;
 			}
 		} else {
 			int var7 = var1.getBlockMetadata(var2, var3, var4);
 			var6 = true;
-			if(var7 == 2 && var1.getBlockMaterial(var2, var3, var4 + 1).func_878_a()) {
+			if(var7 == 2 && var1.getBlockMaterial(var2, var3, var4 + 1).isSolid()) {
 				var6 = false;
 			}
 
-			if(var7 == 3 && var1.getBlockMaterial(var2, var3, var4 - 1).func_878_a()) {
+			if(var7 == 3 && var1.getBlockMaterial(var2, var3, var4 - 1).isSolid()) {
 				var6 = false;
 			}
 
-			if(var7 == 4 && var1.getBlockMaterial(var2 + 1, var3, var4).func_878_a()) {
+			if(var7 == 4 && var1.getBlockMaterial(var2 + 1, var3, var4).isSolid()) {
 				var6 = false;
 			}
 
-			if(var7 == 5 && var1.getBlockMaterial(var2 - 1, var3, var4).func_878_a()) {
+			if(var7 == 5 && var1.getBlockMaterial(var2 - 1, var3, var4).isSolid()) {
 				var6 = false;
 			}
 		}

@@ -23,20 +23,21 @@ public enum EnumArt {
 	Fighters("Fighters", 64, 32, 0, 96),
 	Pointer("Pointer", 64, 64, 0, 192),
 	Pigscene("Pigscene", 64, 64, 64, 192),
+	BurningSkull("BurningSkull", 64, 64, 128, 192),
 	Skeleton("Skeleton", 64, 48, 192, 64),
 	DonkeyKong("DonkeyKong", 64, 48, 192, 112);
 
-	public final String field_1624_y;
-	public final int field_1623_z;
-	public final int field_1636_A;
-	public final int field_1634_B;
-	public final int field_1632_C;
+	public final String title;
+	public final int sizeX;
+	public final int sizeY;
+	public final int offsetX;
+	public final int offsetY;
 
 	private EnumArt(String var3, int var4, int var5, int var6, int var7) {
-		this.field_1624_y = var3;
-		this.field_1623_z = var4;
-		this.field_1636_A = var5;
-		this.field_1634_B = var6;
-		this.field_1632_C = var7;
+		this.title = var3;
+		this.sizeX = var4;
+		this.sizeY = var5;
+		this.offsetX = var6;
+		this.offsetY = var7;
 	}
 }

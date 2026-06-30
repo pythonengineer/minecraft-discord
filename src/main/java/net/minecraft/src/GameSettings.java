@@ -12,8 +12,8 @@ import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 
 public class GameSettings {
     private static final String[] GUI_SCALES = new String[]{"options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"};
-	private static final String[] field_20105_z = new String[]{"options.renderDistance.far", "options.renderDistance.normal", "options.renderDistance.short", "options.renderDistance.tiny"};
-	private static final String[] field_20106_A = new String[]{"options.difficulty.peaceful", "options.difficulty.easy", "options.difficulty.normal", "options.difficulty.hard"};
+	private static final String[] RENDER_DISTANCES = new String[]{"options.renderDistance.far", "options.renderDistance.normal", "options.renderDistance.short", "options.renderDistance.tiny"};
+	private static final String[] DIFFICULTIES = new String[]{"options.difficulty.peaceful", "options.difficulty.easy", "options.difficulty.normal", "options.difficulty.hard"};
 	public float musicVolume = 1.0F;
 	public float soundVolume = 1.0F;
 	public float mouseSensitivity = 0.5F;
@@ -50,9 +50,9 @@ public class GameSettings {
 	public GameSettings() {
 	}
 
-	public String func_20102_a(int var1) {
-		StringTranslate var2 = StringTranslate.func_20162_a();
-		return var2.func_20163_a(this.keyBindings[var1].keyDescription);
+	public String getKeyBindingDescription(int var1) {
+		StringTranslate var2 = StringTranslate.getInstance();
+		return var2.translateKey(this.keyBindings[var1].keyDescription);
 	}
 
 	public String getOptionDisplayString(int var1) {
@@ -119,12 +119,12 @@ public class GameSettings {
 		this.saveOptions();
 	}
 
-	public float func_20104_a(EnumOptions var1) {
+	public float getOptionFloatValue(EnumOptions var1) {
 		return var1 == EnumOptions.MUSIC ? this.musicVolume : (var1 == EnumOptions.SOUND ? this.soundVolume : (var1 == EnumOptions.SENSITIVITY ? this.mouseSensitivity : 0.0F));
 	}
 
-	public boolean func_20103_b(EnumOptions var1) {
-		switch(EnumOptionsMappingHelper.field_20155_a[var1.ordinal()]) {
+	public boolean getOptionOrdinalValue(EnumOptions var1) {
+		switch(EnumOptionsMappingHelper.enumOptionsMappingHelperArray[var1.ordinal()]) {
 		case 1:
 			return this.invertMouse;
 		case 2:
@@ -139,25 +139,25 @@ public class GameSettings {
 	}
 
 	public String getKeyBinding(EnumOptions var1) {
-		StringTranslate var2 = StringTranslate.func_20162_a();
-		String var3 = var2.func_20163_a(var1.func_20138_d()) + ": ";
-		if(var1.func_20136_a()) {
-			float var5 = this.func_20104_a(var1);
-			return var1 == EnumOptions.SENSITIVITY ? (var5 == 0.0F ? var3 + var2.func_20163_a("options.sensitivity.min") : (var5 == 1.0F ? var3 + var2.func_20163_a("options.sensitivity.max") : var3 + (int)(var5 * 200.0F) + "%")) : (var5 == 0.0F ? var3 + var2.func_20163_a("options.off") : var3 + (int)(var5 * 100.0F) + "%");
-		} else if(var1.func_20140_b()) {
-			boolean var4 = this.func_20103_b(var1);
-			return var4 ? var3 + var2.func_20163_a("options.on") : var3 + var2.func_20163_a("options.off");
+		StringTranslate var2 = StringTranslate.getInstance();
+		String var3 = var2.translateKey(var1.getEnumString()) + ": ";
+		if(var1.getEnumFloat()) {
+			float var5 = this.getOptionFloatValue(var1);
+			return var1 == EnumOptions.SENSITIVITY ? (var5 == 0.0F ? var3 + var2.translateKey("options.sensitivity.min") : (var5 == 1.0F ? var3 + var2.translateKey("options.sensitivity.max") : var3 + (int)(var5 * 200.0F) + "%")) : (var5 == 0.0F ? var3 + var2.translateKey("options.off") : var3 + (int)(var5 * 100.0F) + "%");
+		} else if(var1.getEnumBoolean()) {
+			boolean var4 = this.getOptionOrdinalValue(var1);
+			return var4 ? var3 + var2.translateKey("options.on") : var3 + var2.translateKey("options.off");
 		} else {
-			return var1 == EnumOptions.RENDER_DISTANCE ? var3 + var2.func_20163_a(field_20105_z[this.renderDistance]) : (var1 == EnumOptions.DIFFICULTY ? var3 + var2.func_20163_a(field_20106_A[this.difficulty]) : (var1 == EnumOptions.GRAPHICS ? (this.fancyGraphics ? var3 + var2.func_20163_a("options.graphics.fancy") : var3 + var2.func_20163_a("options.graphics.fast")) : (var1 == EnumOptions.GUI_SCALE ? var3 + var2.func_20163_a(GUI_SCALES[this.guiScale]) : var3)));
+			return var1 == EnumOptions.RENDER_DISTANCE ? var3 + var2.translateKey(RENDER_DISTANCES[this.renderDistance]) : (var1 == EnumOptions.DIFFICULTY ? var3 + var2.translateKey(DIFFICULTIES[this.difficulty]) : (var1 == EnumOptions.GRAPHICS ? (this.fancyGraphics ? var3 + var2.translateKey("options.graphics.fancy") : var3 + var2.translateKey("options.graphics.fast")) : (var1 == EnumOptions.GUI_SCALE ? var3 + var2.translateKey(GUI_SCALES[this.guiScale]) : var3)));
 		}
 	}
 
 	public void loadOptions() {
 		try {
             byte[] options = EagRuntime.getStorage("g");
-			if(options == null) {
-				return;
-			}
+            if(options == null) {
+                return;
+            }
 
             BufferedReader var1 = new BufferedReader(
                     new InputStreamReader(new EaglerInputStream(options)));

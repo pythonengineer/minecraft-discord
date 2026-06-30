@@ -35,7 +35,7 @@ public class NoiseGenerator2 {
 
 	}
 
-	private static int func_4155_a(double var0) {
+	private static int wrap(double var0) {
 		return var0 > 0.0D ? (int)var0 : (int)var0 - 1;
 	}
 
@@ -52,8 +52,8 @@ public class NoiseGenerator2 {
 			for(int var18 = 0; var18 < var7; ++var18) {
 				double var19 = (var4 + (double)var18) * var10 + this.field_4291_b;
 				double var27 = (var16 + var19) * field_4294_f;
-				int var29 = func_4155_a(var16 + var27);
-				int var30 = func_4155_a(var19 + var27);
+				int var29 = wrap(var16 + var27);
+				int var30 = wrap(var19 + var27);
 				double var31 = (double)(var29 + var30) * field_4293_g;
 				double var33 = (double)var29 - var31;
 				double var35 = (double)var30 - var31;

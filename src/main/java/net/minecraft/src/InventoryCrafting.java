@@ -2,21 +2,31 @@ package net.minecraft.src;
 
 public class InventoryCrafting implements IInventory {
 	private ItemStack[] stackList;
-	private int nbrSlots;
+	private int field_21104_b;
 	private CraftingInventoryCB eventHandler;
 
 	public InventoryCrafting(CraftingInventoryCB var1, int var2, int var3) {
-		this.nbrSlots = var2 * var3;
-		this.stackList = new ItemStack[this.nbrSlots];
+		int var4 = var2 * var3;
+		this.stackList = new ItemStack[var4];
 		this.eventHandler = var1;
+		this.field_21104_b = var2;
 	}
 
 	public int getSizeInventory() {
-		return this.nbrSlots;
+		return this.stackList.length;
 	}
 
 	public ItemStack getStackInSlot(int var1) {
-		return this.stackList[var1];
+		return var1 >= this.getSizeInventory() ? null : this.stackList[var1];
+	}
+
+	public ItemStack func_21103_b(int var1, int var2) {
+		if(var1 >= 0 && var1 < this.field_21104_b) {
+			int var3 = var1 + var2 * this.field_21104_b;
+			return this.getStackInSlot(var3);
+		} else {
+			return null;
+		}
 	}
 
 	public String getInvName() {
@@ -57,7 +67,7 @@ public class InventoryCrafting implements IInventory {
 	public void onInventoryChanged() {
 	}
 
-	public boolean func_20070_a_(EntityPlayer var1) {
+	public boolean canInteractWith(EntityPlayer var1) {
 		return true;
 	}
 }

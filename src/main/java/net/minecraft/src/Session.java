@@ -5,13 +5,13 @@ import java.util.List;
 
 public class Session {
 	public static List registeredBlocksList = new ArrayList();
-	public String playerName;
-	public String field_6543_c;
-	public String field_6542_d;
+	public String username;
+	public String sessionId;
+	public String mpPassParameter;
 
 	public Session(String var1, String var2) {
-		this.playerName = var1;
-		this.field_6543_c = var2;
+		this.username = var1;
+		this.sessionId = var2;
 	}
 
 	static {

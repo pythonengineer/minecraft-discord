@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Packet106 extends Packet {
-	public int field_20029_a;
+	public int windowId;
 	public short field_20028_b;
 	public boolean field_20030_c;
 
@@ -13,7 +13,7 @@ public class Packet106 extends Packet {
 	}
 
 	public Packet106(int var1, short var2, boolean var3) {
-		this.field_20029_a = var1;
+		this.windowId = var1;
 		this.field_20028_b = var2;
 		this.field_20030_c = var3;
 	}
@@ -23,13 +23,13 @@ public class Packet106 extends Packet {
 	}
 
 	public void readPacketData(DataInputStream var1) throws IOException {
-		this.field_20029_a = var1.readByte();
+		this.windowId = var1.readByte();
 		this.field_20028_b = var1.readShort();
 		this.field_20030_c = var1.readByte() != 0;
 	}
 
 	public void writePacketData(DataOutputStream var1) throws IOException {
-		var1.writeByte(this.field_20029_a);
+		var1.writeByte(this.windowId);
 		var1.writeShort(this.field_20028_b);
 		var1.writeByte(this.field_20030_c ? 1 : 0);
 	}

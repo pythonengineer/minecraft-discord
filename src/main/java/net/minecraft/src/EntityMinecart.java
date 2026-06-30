@@ -5,11 +5,11 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class EntityMinecart extends Entity implements IInventory {
 	private ItemStack[] cargoItems;
-	public int a;
-	public int b;
-	public int c;
+	public int field_20910_a;
+	public int field_20911_b;
+	public int field_20912_c;
 	private boolean field_856_i;
-	public int d;
+	public int minecartType;
 	public int fuel;
 	public double pushX;
 	public double pushZ;
@@ -27,9 +27,9 @@ public class EntityMinecart extends Entity implements IInventory {
 	public EntityMinecart(World var1) {
 		super(var1);
 		this.cargoItems = new ItemStack[36];
-		this.a = 0;
-		this.b = 0;
-		this.c = 1;
+		this.field_20910_a = 0;
+		this.field_20911_b = 0;
+		this.field_20912_c = 1;
 		this.field_856_i = false;
 		this.preventEntitySpawning = true;
 		this.setSize(0.98F, 0.7F);
@@ -37,11 +37,14 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.entityWalks = false;
 	}
 
+	protected void entityInit() {
+	}
+
 	public AxisAlignedBB func_383_b_(Entity var1) {
 		return var1.boundingBox;
 	}
 
-	public AxisAlignedBB func_372_f_() {
+	public AxisAlignedBB getBoundingBox() {
 		return null;
 	}
 
@@ -58,7 +61,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.prevPosX = var2;
 		this.prevPosY = var4;
 		this.prevPosZ = var6;
-		this.d = var8;
+		this.minecartType = var8;
 	}
 
 	public double getMountedYOffset() {
@@ -67,15 +70,15 @@ public class EntityMinecart extends Entity implements IInventory {
 
 	public boolean attackEntityFrom(Entity var1, int var2) {
 		if(!this.worldObj.multiplayerWorld && !this.isDead) {
-			this.c = -this.c;
-			this.b = 10;
+			this.field_20912_c = -this.field_20912_c;
+			this.field_20911_b = 10;
 			this.setBeenAttacked();
-			this.a += var2 * 10;
-			if(this.a > 40) {
+			this.field_20910_a += var2 * 10;
+			if(this.field_20910_a > 40) {
 				this.dropItemWithOffset(Item.minecartEmpty.shiftedIndex, 1, 0.0F);
-				if(this.d == 1) {
+				if(this.minecartType == 1) {
 					this.dropItemWithOffset(Block.crate.blockID, 1, 0.0F);
-				} else if(this.d == 2) {
+				} else if(this.minecartType == 2) {
 					this.dropItemWithOffset(Block.stoneOvenIdle.blockID, 1, 0.0F);
 				}
 
@@ -90,9 +93,9 @@ public class EntityMinecart extends Entity implements IInventory {
 
 	public void performHurtAnimation() {
 		System.out.println("Animating hurt");
-		this.c = -this.c;
-		this.b = 10;
-		this.a += this.a * 10;
+		this.field_20912_c = -this.field_20912_c;
+		this.field_20911_b = 10;
+		this.field_20910_a += this.field_20910_a * 10;
 	}
 
 	public boolean canBeCollidedWith() {
@@ -114,7 +117,7 @@ public class EntityMinecart extends Entity implements IInventory {
 					}
 
 					var2.stackSize -= var6;
-					EntityItem var7 = new EntityItem(this.worldObj, this.posX + (double)var3, this.posY + (double)var4, this.posZ + (double)var5, new ItemStack(var2.itemID, var6, var2.itemDamage));
+					EntityItem var7 = new EntityItem(this.worldObj, this.posX + (double)var3, this.posY + (double)var4, this.posZ + (double)var5, new ItemStack(var2.itemID, var6, var2.getItemDamage()));
 					float var8 = 0.05F;
 					var7.motionX = (double)((float)this.rand.nextGaussian() * var8);
 					var7.motionY = (double)((float)this.rand.nextGaussian() * var8 + 0.2F);
@@ -128,12 +131,12 @@ public class EntityMinecart extends Entity implements IInventory {
 	}
 
 	public void onUpdate() {
-		if(this.b > 0) {
-			--this.b;
+		if(this.field_20911_b > 0) {
+			--this.field_20911_b;
 		}
 
-		if(this.a > 0) {
-			--this.a;
+		if(this.field_20910_a > 0) {
+			--this.field_20910_a;
 		}
 
 		double var7;
@@ -273,7 +276,7 @@ public class EntityMinecart extends Entity implements IInventory {
 					this.motionY *= 0.0D;
 					this.motionZ *= (double)0.997F;
 				} else {
-					if(this.d == 2) {
+					if(this.minecartType == 2) {
 						var36 = (double)MathHelper.sqrt_double(this.pushX * this.pushX + this.pushZ * this.pushZ);
 						if(var36 > 0.01D) {
 							var6 = true;
@@ -317,7 +320,7 @@ public class EntityMinecart extends Entity implements IInventory {
 					this.motionZ = var20 * (double)(var48 - var3);
 				}
 
-				if(this.d == 2) {
+				if(this.minecartType == 2) {
 					double var39 = (double)MathHelper.sqrt_double(this.pushX * this.pushX + this.pushZ * this.pushZ);
 					if(var39 > 0.01D && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.001D) {
 						this.pushX /= var39;
@@ -504,12 +507,12 @@ public class EntityMinecart extends Entity implements IInventory {
 	}
 
 	protected void writeEntityToNBT(NBTTagCompound var1) {
-		var1.setInteger("Type", this.d);
-		if(this.d == 2) {
+		var1.setInteger("Type", this.minecartType);
+		if(this.minecartType == 2) {
 			var1.setDouble("PushX", this.pushX);
 			var1.setDouble("PushZ", this.pushZ);
 			var1.setShort("Fuel", (short)this.fuel);
-		} else if(this.d == 1) {
+		} else if(this.minecartType == 1) {
 			NBTTagList var2 = new NBTTagList();
 
 			for(int var3 = 0; var3 < this.cargoItems.length; ++var3) {
@@ -527,12 +530,12 @@ public class EntityMinecart extends Entity implements IInventory {
 	}
 
 	protected void readEntityFromNBT(NBTTagCompound var1) {
-		this.d = var1.getInteger("Type");
-		if(this.d == 2) {
+		this.minecartType = var1.getInteger("Type");
+		if(this.minecartType == 2) {
 			this.pushX = var1.getDouble("PushX");
 			this.pushZ = var1.getDouble("PushZ");
 			this.fuel = var1.getShort("Fuel");
-		} else if(this.d == 1) {
+		} else if(this.minecartType == 1) {
 			NBTTagList var2 = var1.getTagList("Items");
 			this.cargoItems = new ItemStack[this.getSizeInventory()];
 
@@ -547,14 +550,14 @@ public class EntityMinecart extends Entity implements IInventory {
 
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 
 	public void applyEntityCollision(Entity var1) {
 		if(!this.worldObj.multiplayerWorld) {
 			if(var1 != this.riddenByEntity) {
-				if(var1 instanceof EntityLiving && !(var1 instanceof EntityPlayer) && this.d == 0 && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01D && this.riddenByEntity == null && var1.ridingEntity == null) {
+				if(var1 instanceof EntityLiving && !(var1 instanceof EntityPlayer) && this.minecartType == 0 && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01D && this.riddenByEntity == null && var1.ridingEntity == null) {
 					var1.mountEntity(this);
 				}
 
@@ -581,13 +584,13 @@ public class EntityMinecart extends Entity implements IInventory {
 					if(var1 instanceof EntityMinecart) {
 						double var10 = var1.motionX + this.motionX;
 						double var12 = var1.motionZ + this.motionZ;
-						if(((EntityMinecart)var1).d == 2 && this.d != 2) {
+						if(((EntityMinecart)var1).minecartType == 2 && this.minecartType != 2) {
 							this.motionX *= (double)0.2F;
 							this.motionZ *= (double)0.2F;
 							this.addVelocity(var1.motionX - var2, 0.0D, var1.motionZ - var4);
 							var1.motionX *= (double)0.7F;
 							var1.motionZ *= (double)0.7F;
-						} else if(((EntityMinecart)var1).d != 2 && this.d == 2) {
+						} else if(((EntityMinecart)var1).minecartType != 2 && this.minecartType == 2) {
 							var1.motionX *= (double)0.2F;
 							var1.motionZ *= (double)0.2F;
 							var1.addVelocity(this.motionX + var2, 0.0D, this.motionZ + var4);
@@ -661,7 +664,7 @@ public class EntityMinecart extends Entity implements IInventory {
 	}
 
 	public boolean interact(EntityPlayer var1) {
-		if(this.d == 0) {
+		if(this.minecartType == 0) {
 			if(this.riddenByEntity != null && this.riddenByEntity instanceof EntityPlayer && this.riddenByEntity != var1) {
 				return true;
 			}
@@ -669,11 +672,11 @@ public class EntityMinecart extends Entity implements IInventory {
 			if(!this.worldObj.multiplayerWorld) {
 				var1.mountEntity(this);
 			}
-		} else if(this.d == 1) {
+		} else if(this.minecartType == 1) {
 			if(!this.worldObj.multiplayerWorld) {
 				var1.displayGUIChest(this);
 			}
-		} else if(this.d == 2) {
+		} else if(this.minecartType == 2) {
 			ItemStack var2 = var1.inventory.getCurrentItem();
 			if(var2 != null && var2.itemID == Item.coal.shiftedIndex) {
 				if(--var2.stackSize == 0) {
@@ -708,7 +711,7 @@ public class EntityMinecart extends Entity implements IInventory {
 		this.field_9407_s = this.motionZ = var5;
 	}
 
-	public boolean func_20070_a_(EntityPlayer var1) {
+	public boolean canInteractWith(EntityPlayer var1) {
 		return this.isDead ? false : var1.getDistanceSqToEntity(this) <= 64.0D;
 	}
 }

@@ -22,6 +22,9 @@ public class EntityFireball extends Entity {
 		this.setSize(1.0F, 1.0F);
 	}
 
+	protected void entityInit() {
+	}
+
 	public boolean isInRangeToRenderDist(double var1) {
 		double var3 = this.boundingBox.getAverageEdgeLength() * 4.0D;
 		var3 *= 64.0D;
@@ -110,7 +113,7 @@ public class EntityFireball extends Entity {
 			if(var3.entityHit != null && var3.entityHit.attackEntityFrom(this.field_9397_j, 0)) {
 			}
 
-			this.worldObj.func_12244_a((Entity)null, this.posX, this.posY, this.posZ, 1.0F, true);
+			this.worldObj.newExplosion((Entity)null, this.posX, this.posY, this.posZ, 1.0F, true);
 			this.setEntityDead();
 		}
 
@@ -179,14 +182,14 @@ public class EntityFireball extends Entity {
 		return true;
 	}
 
-	public float func_4035_j_() {
+	public float getCollisionBorderSize() {
 		return 1.0F;
 	}
 
 	public boolean attackEntityFrom(Entity var1, int var2) {
 		this.setBeenAttacked();
 		if(var1 != null) {
-			Vec3D var3 = var1.func_4037_H();
+			Vec3D var3 = var1.getLookVec();
 			if(var3 != null) {
 				this.motionX = var3.xCoord;
 				this.motionY = var3.yCoord;
@@ -202,7 +205,7 @@ public class EntityFireball extends Entity {
 		}
 	}
 
-	public float func_392_h_() {
+	public float getShadowSize() {
 		return 0.0F;
 	}
 }

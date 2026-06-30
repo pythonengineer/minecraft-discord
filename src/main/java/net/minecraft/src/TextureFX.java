@@ -3,24 +3,24 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class TextureFX {
-	public byte[] field_1127_a = new byte[1024];
-	public int field_1126_b;
-	public boolean field_1131_c = false;
+	public byte[] imageData = new byte[1024];
+	public int iconIndex;
+	public boolean anaglyphEnabled = false;
 	public int field_1130_d = 0;
-	public int field_1129_e = 1;
-	public int field_1128_f = 0;
+	public int tileSize = 1;
+	public int tileImage = 0;
 
 	public TextureFX(int var1) {
-		this.field_1126_b = var1;
+		this.iconIndex = var1;
 	}
 
-	public void func_783_a() {
+	public void onTick() {
 	}
 
-	public void func_782_a(RenderEngine var1) {
-		if(this.field_1128_f == 0) {
+	public void bindImage(RenderEngine var1) {
+		if(this.tileImage == 0) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var1.getTexture("/terrain.png"));
-		} else if(this.field_1128_f == 1) {
+		} else if(this.tileImage == 1) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var1.getTexture("/gui/items.png"));
 		}
 

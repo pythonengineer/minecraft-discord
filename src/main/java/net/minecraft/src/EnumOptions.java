@@ -13,9 +13,9 @@ public enum EnumOptions {
 	GRAPHICS("options.graphics", false, false),
     GUI_SCALE("options.guiScale", false, false);
 
-	private final boolean field_20144_k;
-	private final boolean field_20143_l;
-	private final String field_20142_m;
+	private final boolean enumFloat;
+	private final boolean enumBoolean;
+	private final String enumString;
 
 	public static EnumOptions func_20137_a(int var0) {
 		EnumOptions[] var1 = values();
@@ -23,7 +23,7 @@ public enum EnumOptions {
 
 		for(int var3 = 0; var3 < var2; ++var3) {
 			EnumOptions var4 = var1[var3];
-			if(var4.func_20135_c() == var0) {
+			if(var4.returnEnumOrdinal() == var0) {
 				return var4;
 			}
 		}
@@ -32,24 +32,24 @@ public enum EnumOptions {
 	}
 
 	private EnumOptions(String var3, boolean var4, boolean var5) {
-		this.field_20142_m = var3;
-		this.field_20144_k = var4;
-		this.field_20143_l = var5;
+		this.enumString = var3;
+		this.enumFloat = var4;
+		this.enumBoolean = var5;
 	}
 
-	public boolean func_20136_a() {
-		return this.field_20144_k;
+	public boolean getEnumFloat() {
+		return this.enumFloat;
 	}
 
-	public boolean func_20140_b() {
-		return this.field_20143_l;
+	public boolean getEnumBoolean() {
+		return this.enumBoolean;
 	}
 
-	public int func_20135_c() {
+	public int returnEnumOrdinal() {
 		return this.ordinal();
 	}
 
-	public String func_20138_d() {
-		return this.field_20142_m;
+	public String getEnumString() {
+		return this.enumString;
 	}
 }

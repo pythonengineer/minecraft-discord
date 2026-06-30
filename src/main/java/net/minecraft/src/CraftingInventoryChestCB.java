@@ -29,7 +29,7 @@ public class CraftingInventoryChestCB extends CraftingInventoryCB {
 	}
 
 	public boolean func_20120_b(EntityPlayer var1) {
-		return this.field_20125_a.func_20070_a_(var1);
+		return this.field_20125_a.canInteractWith(var1);
 	}
 
     public ItemStack transferStackInSlot(EntityPlayer var1, int i) {

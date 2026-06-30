@@ -13,9 +13,7 @@ public class ChunkProviderClient implements IChunkProvider {
 	private World worldObj;
 
 	public ChunkProviderClient(World var1) {
-		this.blankChunk = new Chunk(var1, new byte[-Short.MIN_VALUE], 0, 0);
-		this.blankChunk.field_1524_q = true;
-		this.blankChunk.neverSave = true;
+		this.blankChunk = new EmptyChunk(var1, new byte[-Short.MIN_VALUE], 0, 0);
 		this.worldObj = var1;
 	}
 
@@ -26,7 +24,7 @@ public class ChunkProviderClient implements IChunkProvider {
 
 	public void func_539_c(int var1, int var2) {
 		Chunk var3 = this.provideChunk(var1, var2);
-		if(!var3.field_1524_q) {
+		if(!var3.func_21167_h()) {
 			var3.onChunkUnload();
 		}
 
@@ -63,5 +61,9 @@ public class ChunkProviderClient implements IChunkProvider {
 	}
 
 	public void populate(IChunkProvider var1, int var2, int var3) {
+	}
+
+	public String toString() {
+		return "MultiplayerChunkCache: " + this.chunkMapping.size();
 	}
 }

@@ -8,7 +8,7 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class Chunk {
-	public static boolean field_1540_a;
+	public static boolean isLit;
 	public byte[] blocks;
 	public boolean isChunkLoaded;
 	public World worldObj;
@@ -24,7 +24,6 @@ public class Chunk {
 	public boolean isTerrainPopulated;
 	public boolean isModified;
 	public boolean neverSave;
-	public boolean field_1524_q;
 	public boolean hasEntities;
 	public long lastSaveTime;
 
@@ -33,7 +32,6 @@ public class Chunk {
 		this.entities = new List[8];
 		this.isTerrainPopulated = false;
 		this.isModified = false;
-		this.field_1524_q = false;
 		this.hasEntities = false;
 		this.lastSaveTime = 0L;
 		this.worldObj = var1;
@@ -94,10 +92,29 @@ public class Chunk {
 		int var3;
 		for(var2 = 0; var2 < 16; ++var2) {
 			for(var3 = 0; var3 < 16; ++var3) {
-				this.heightMap[var3 << 4 | var2] = -128;
-				this.func_1003_g(var2, 127, var3);
-				if((this.heightMap[var3 << 4 | var2] & 255) < var1) {
-					var1 = this.heightMap[var3 << 4 | var2] & 255;
+				int var4 = 127;
+
+				int var5;
+				for(var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.lightOpacity[this.blocks[var5 + var4 - 1]] == 0; --var4) {
+				}
+
+				this.heightMap[var3 << 4 | var2] = (byte)var4;
+				if(var4 < var1) {
+					var1 = var4;
+				}
+
+				if(!this.worldObj.worldProvider.field_6478_e) {
+					int var6 = 15;
+					int var7 = 127;
+
+					do {
+						var6 -= Block.lightOpacity[this.blocks[var5 + var7]];
+						if(var6 > 0) {
+							this.skylightMap.setNibble(var2, var7, var3, var6);
+						}
+
+						--var7;
+					} while(var7 > 0 && var6 > 0);
 				}
 			}
 		}
@@ -170,11 +187,12 @@ public class Chunk {
 		int var4 = this.worldObj.getHeightValue(var1, var2);
 		if(var4 > var3) {
 			this.worldObj.func_616_a(EnumSkyBlock.Sky, var1, var3, var2, var1, var4, var2);
+			this.isModified = true;
 		} else if(var4 < var3) {
 			this.worldObj.func_616_a(EnumSkyBlock.Sky, var1, var4, var2, var1, var3, var2);
+			this.isModified = true;
 		}
 
-		this.isModified = true;
 	}
 
 	private void func_1003_g(int var1, int var2, int var3) {
@@ -188,7 +206,7 @@ public class Chunk {
 		}
 
 		if(var5 != var4) {
-			this.worldObj.func_680_f(var1, var3, var5, var4);
+			this.worldObj.markBlocksDirtyVertical(var1, var3, var5, var4);
 			this.heightMap[var3 << 4 | var1] = (byte)var5;
 			int var7;
 			int var8;
@@ -284,11 +302,11 @@ public class Chunk {
 
 			this.worldObj.func_616_a(EnumSkyBlock.Block, var9, var2, var10, var9, var2, var10);
 			this.func_996_c(var1, var3);
+			this.data.setNibble(var1, var2, var3, var5);
 			if(var4 != 0) {
 				Block.blocksList[var4].onBlockAdded(this.worldObj, var9, var2, var10);
 			}
 
-			this.data.setNibble(var1, var2, var3, var5);
 			this.isModified = true;
 			return true;
 		}
@@ -359,7 +377,7 @@ public class Chunk {
 	public int getBlockLightValue(int var1, int var2, int var3, int var4) {
 		int var5 = this.skylightMap.getNibble(var1, var2, var3);
 		if(var5 > 0) {
-			field_1540_a = true;
+			isLit = true;
 		}
 
 		var5 -= var4;
@@ -372,29 +390,27 @@ public class Chunk {
 	}
 
 	public void addEntity(Entity var1) {
-		if(!this.field_1524_q) {
-			this.hasEntities = true;
-			int var2 = MathHelper.floor_double(var1.posX / 16.0D);
+		this.hasEntities = true;
+		int var2 = MathHelper.floor_double(var1.posX / 16.0D);
 			int var3 = MathHelper.floor_double(var1.posZ / 16.0D);
 			if(var2 != this.xPosition || var3 != this.zPosition) {
 				System.out.println("Wrong location! " + var1);
 			}
 
 			int var4 = MathHelper.floor_double(var1.posY / 16.0D);
-			if(var4 < 0) {
-				var4 = 0;
-			}
-
-			if(var4 >= this.entities.length) {
-				var4 = this.entities.length - 1;
-			}
-
-			var1.addedToChunk = true;
-			var1.chunkCoordX = this.xPosition;
-			var1.chunkCoordY = var4;
-			var1.chunkCoordZ = this.zPosition;
-			this.entities[var4].add(var1);
+		if(var4 < 0) {
+			var4 = 0;
 		}
+
+		if(var4 >= this.entities.length) {
+			var4 = this.entities.length - 1;
+		}
+
+		var1.addedToChunk = true;
+		var1.chunkCoordX = this.xPosition;
+		var1.chunkCoordY = var4;
+		var1.chunkCoordZ = this.zPosition;
+		this.entities[var4].add(var1);
 	}
 
 	public void func_1015_b(Entity var1) {
@@ -558,7 +574,7 @@ public class Chunk {
 		}
 	}
 
-	public int func_1004_a(byte[] var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8) {
+	public int setChunkData(byte[] var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8) {
 		int var9;
 		int var10;
 		int var11;
@@ -606,5 +622,9 @@ public class Chunk {
 
 	public EaglercraftRandom func_997_a(long var1) {
 		return new EaglercraftRandom(this.worldObj.randomSeed + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ var1);
+	}
+
+	public boolean func_21167_h() {
+		return false;
 	}
 }

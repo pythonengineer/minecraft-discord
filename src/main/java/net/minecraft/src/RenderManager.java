@@ -13,7 +13,7 @@ public class RenderManager {
 	public static double renderPosY;
 	public static double renderPosZ;
 	public RenderEngine renderEngine;
-	public ItemRenderer field_4236_f;
+	public ItemRenderer itemRenderer;
 	public World worldObj;
 	public EntityPlayer field_1226_h;
 	public float field_1225_i;
@@ -36,6 +36,7 @@ public class RenderManager {
 		this.entityRenderMap.put(EntityPlayer.class, new RenderPlayer());
 		this.entityRenderMap.put(EntityZombieSimple.class, new RenderZombieSimple(new ModelZombie(), 0.5F, 6.0F));
 		this.entityRenderMap.put(EntityGhast.class, new RenderGhast());
+		this.entityRenderMap.put(EntitySquid.class, new RenderSquid(new ModelSquid(), 0.7F));
 		this.entityRenderMap.put(EntityLiving.class, new RenderLiving(new ModelBiped(), 0.5F));
 		this.entityRenderMap.put(Entity.class, new RenderEntity());
 		this.entityRenderMap.put(EntityPainting.class, new RenderPainting());

@@ -26,7 +26,7 @@ public class GuiGameOver extends GuiScreen {
 		}
 
 		if(var1.id == 2) {
-			this.mc.func_6261_a((World)null);
+			this.mc.changeWorld1((World)null);
 			this.mc.displayGuiScreen(new GuiMainMenu());
 		}
 

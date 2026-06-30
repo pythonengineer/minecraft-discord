@@ -19,9 +19,9 @@ public class GuiTexturePacks extends GuiScreen {
 	}
 
 	public void initGui() {
-		StringTranslate var1 = StringTranslate.func_20162_a();
-		this.controlList.add(new GuiSmallButton(5, this.width / 2 - 154, this.height - 48, var1.func_20163_a("texturePack.openFolder")));
-		this.controlList.add(new GuiSmallButton(6, this.width / 2 + 4, this.height - 48, var1.func_20163_a("gui.done")));
+		StringTranslate var1 = StringTranslate.getInstance();
+		this.controlList.add(new GuiSmallButton(5, this.width / 2 - 154, this.height - 48, var1.translateKey("texturePack.openFolder")));
+		this.controlList.add(new GuiSmallButton(6, this.width / 2 + 4, this.height - 48, var1.translateKey("gui.done")));
 		((GuiSmallButton)this.controlList.get(0)).enabled = false;
 		this.mc.texturePackList.func_6532_a();
 		this.field_6459_i = 32;
@@ -177,9 +177,9 @@ public class GuiTexturePacks extends GuiScreen {
 		GL11.glShadeModel(GL11.GL_FLAT);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_BLEND);
-		StringTranslate var19 = StringTranslate.func_20162_a();
-		this.drawCenteredString(this.fontRenderer, var19.func_20163_a("texturePack.title"), this.width / 2, 16, 16777215);
-		this.drawCenteredString(this.fontRenderer, var19.func_20163_a("texturePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);
+		StringTranslate var19 = StringTranslate.getInstance();
+		this.drawCenteredString(this.fontRenderer, var19.translateKey("texturePack.title"), this.width / 2, 16, 16777215);
+		this.drawCenteredString(this.fontRenderer, var19.translateKey("texturePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);
 		super.drawScreen(var1, var2, var3);
 	}
 

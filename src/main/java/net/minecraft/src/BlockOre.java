@@ -8,10 +8,14 @@ public class BlockOre extends Block {
 	}
 
 	public int idDropped(int var1, EaglercraftRandom var2) {
-		return this.blockID == Block.oreCoal.blockID ? Item.coal.shiftedIndex : (this.blockID == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : this.blockID);
+		return this.blockID == Block.oreCoal.blockID ? Item.coal.shiftedIndex : (this.blockID == Block.oreDiamond.blockID ? Item.diamond.shiftedIndex : (this.blockID == Block.oreLapis.blockID ? Item.dyePowder.shiftedIndex : this.blockID));
 	}
 
 	public int quantityDropped(EaglercraftRandom var1) {
-		return 1;
+		return this.blockID == Block.oreLapis.blockID ? 4 + var1.nextInt(5) : 1;
+	}
+
+	protected int damageDropped(int var1) {
+		return this.blockID == Block.oreLapis.blockID ? 4 : 0;
 	}
 }

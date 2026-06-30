@@ -12,6 +12,14 @@ public class ColorizerFoliage {
 		return field_6529_a[var5 << 8 | var4];
 	}
 
+	public static int func_21175_a() {
+		return 6396257;
+	}
+
+	public static int func_21174_b() {
+		return 8431445;
+	}
+
 	static {
 		try {
 			ImageData var0 = ImageData.loadImageFile("/assets/misc/foliagecolor.png");

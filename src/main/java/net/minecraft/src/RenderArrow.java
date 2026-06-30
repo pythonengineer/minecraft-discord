@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class RenderArrow extends Render {
-	public void a(EntityArrow var1, double var2, double var4, double var6, float var8, float var9) {
+	public void func_154_a(EntityArrow var1, double var2, double var4, double var6, float var8, float var9) {
 		this.loadTexture("/item/arrows.png");
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
@@ -62,6 +62,6 @@ public class RenderArrow extends Render {
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.a((EntityArrow)var1, var2, var4, var6, var8, var9);
+		this.func_154_a((EntityArrow)var1, var2, var4, var6, var8, var9);
 	}
 }

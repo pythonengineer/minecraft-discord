@@ -13,12 +13,12 @@ public class TextureWatchFX extends TextureFX {
 	public TextureWatchFX(Minecraft var1) {
 		super(Item.pocketSundial.getIconIndex((ItemStack)null));
 		this.field_4225_g = var1;
-		this.field_1128_f = 1;
+		this.tileImage = 1;
 
 		try {
 			ImageData var2 = ImageData.loadImageFile("/assets/gui/items.png");
-			int var3 = this.field_1126_b % 16 * 16;
-			int var4 = this.field_1126_b / 16 * 16;
+			int var3 = this.iconIndex % 16 * 16;
+			int var4 = this.iconIndex / 16 * 16;
 			var2.getRGB(var3, var4, 16, 16, this.field_4224_h, 0, 16);
 			var2 = ImageData.loadImageFile("/assets/misc/dial.png");
 			var2.getRGB(0, 0, 16, 16, this.field_4223_i, 0, 16);
@@ -28,7 +28,7 @@ public class TextureWatchFX extends TextureFX {
 
 	}
 
-	public void func_783_a() {
+	public void onTick() {
 		double var1 = 0.0D;
 		if(this.field_4225_g.theWorld != null && this.field_4225_g.thePlayer != null) {
 			float var3 = this.field_4225_g.theWorld.getCelestialAngle(1.0F);
@@ -78,7 +78,7 @@ public class TextureWatchFX extends TextureFX {
 				var13 = (this.field_4223_i[var21] >> 0 & 255) * var18 / 255;
 			}
 
-			if(this.field_1131_c) {
+			if(this.anaglyphEnabled) {
 				int var23 = (var11 * 30 + var12 * 59 + var13 * 11) / 100;
 				int var15 = (var11 * 30 + var12 * 70) / 100;
 				int var24 = (var11 * 30 + var13 * 70) / 100;
@@ -87,10 +87,10 @@ public class TextureWatchFX extends TextureFX {
 				var13 = var24;
 			}
 
-			this.field_1127_a[var9 * 4 + 0] = (byte)var11;
-			this.field_1127_a[var9 * 4 + 1] = (byte)var12;
-			this.field_1127_a[var9 * 4 + 2] = (byte)var13;
-			this.field_1127_a[var9 * 4 + 3] = (byte)var10;
+			this.imageData[var9 * 4 + 0] = (byte)var11;
+			this.imageData[var9 * 4 + 1] = (byte)var12;
+			this.imageData[var9 * 4 + 2] = (byte)var13;
+			this.imageData[var9 * 4 + 3] = (byte)var10;
 		}
 
 	}

@@ -42,23 +42,7 @@ public class CraftingInventoryPlayerCB extends CraftingInventoryCB {
 	}
 
 	public void onCraftMatrixChanged(IInventory var1) {
-		int[] var2 = new int[9];
-
-		for(int var3 = 0; var3 < 3; ++var3) {
-			for(int var4 = 0; var4 < 3; ++var4) {
-				int var5 = -1;
-				if(var3 < 2 && var4 < 2) {
-					ItemStack var6 = this.craftMatrix.getStackInSlot(var3 + var4 * 2);
-					if(var6 != null) {
-						var5 = var6.itemID;
-					}
-				}
-
-				var2[var3 + var4 * 3] = var5;
-			}
-		}
-
-		this.craftResult.setInventorySlotContents(0, CraftingManager.getInstance().craft(var2));
+		this.craftResult.setInventorySlotContents(0, CraftingManager.getInstance().findMatchingRecipe(this.craftMatrix));
 	}
 
 	public void onCraftGuiClosed(EntityPlayer var1) {

@@ -8,7 +8,7 @@ public class WorldGenCactus extends WorldGenerator {
 			int var7 = var3 + var2.nextInt(8) - var2.nextInt(8);
 			int var8 = var4 + var2.nextInt(4) - var2.nextInt(4);
 			int var9 = var5 + var2.nextInt(8) - var2.nextInt(8);
-			if(var1.func_20084_d(var7, var8, var9)) {
+			if(var1.isAirBlock(var7, var8, var9)) {
 				int var10 = 1 + var2.nextInt(var2.nextInt(3) + 1);
 
 				for(int var11 = 0; var11 < var10; ++var11) {

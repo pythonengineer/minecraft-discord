@@ -4,11 +4,11 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class RenderLiving extends Render {
-	protected ModelBase e;
+	protected ModelBase field_20920_e;
 	protected ModelBase renderPassModel;
 
 	public RenderLiving(ModelBase var1, float var2) {
-		this.e = var1;
+		this.field_20920_e = var1;
 		this.shadowSize = var2;
 	}
 
@@ -16,13 +16,13 @@ public class RenderLiving extends Render {
 		this.renderPassModel = var1;
 	}
 
-	public void a(EntityLiving var1, double var2, double var4, double var6, float var8, float var9) {
+	public void doRenderLiving(EntityLiving var1, double var2, double var4, double var6, float var8, float var9) {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_CULL_FACE);
-		this.e.field_1244_k = this.func_167_c(var1, var9);
-		this.e.field_1243_l = var1.ridingEntity != null || var1.field_9300_bu;
+		this.field_20920_e.onGround = this.func_167_c(var1, var9);
+		this.field_20920_e.field_1243_l = var1.func_21063_V();
 		if(this.renderPassModel != null) {
-			this.renderPassModel.field_1243_l = this.e.field_1243_l;
+			this.renderPassModel.field_1243_l = this.field_20920_e.field_1243_l;
 		}
 
 		try {
@@ -31,19 +31,8 @@ public class RenderLiving extends Render {
 			float var12 = var1.prevRotationPitch + (var1.rotationPitch - var1.prevRotationPitch) * var9;
 			GL11.glTranslatef((float)var2, (float)var4, (float)var6);
 			float var13 = this.func_170_d(var1, var9);
-			GL11.glRotatef(180.0F - var10, 0.0F, 1.0F, 0.0F);
-			float var14;
-			if(var1.deathTime > 0) {
-				var14 = ((float)var1.deathTime + var9 - 1.0F) / 20.0F * 1.6F;
-				var14 = MathHelper.sqrt_float(var14);
-				if(var14 > 1.0F) {
-					var14 = 1.0F;
-				}
-
-				GL11.glRotatef(var14 * this.func_172_a(var1), 0.0F, 0.0F, 1.0F);
-			}
-
-			var14 = 1.0F / 16.0F;
+			this.func_21004_a(var1, var13, var10, var9);
+			float var14 = 1.0F / 16.0F;
 			GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 			GL11.glScalef(-1.0F, -1.0F, 1.0F);
 			this.preRenderCallback(var1, var9);
@@ -54,12 +43,12 @@ public class RenderLiving extends Render {
 				var15 = 1.0F;
 			}
 
-			this.func_140_a(var1.field_20047_bv, var1.getEntityTexture());
+			this.loadDownloadableImageTexture(var1.skinUrl, var1.getEntityTexture());
 			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			this.e.render(var16, var15, var13, var11 - var10, var12, var14);
+			this.field_20920_e.render(var16, var15, var13, var11 - var10, var12, var14);
 
 			for(int var17 = 0; var17 < 4; ++var17) {
-				if(this.shouldRenderPass(var1, var17)) {
+				if(this.shouldRenderPass(var1, var17, var9)) {
 					this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 					GL11.glDisable(GL11.GL_BLEND);
 					GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -77,10 +66,10 @@ public class RenderLiving extends Render {
 				GL11.glDepthFunc(GL11.GL_EQUAL);
 				if(var1.hurtTime > 0 || var1.deathTime > 0) {
 					GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
-					this.e.render(var16, var15, var13, var11 - var10, var12, var14);
+					this.field_20920_e.render(var16, var15, var13, var11 - var10, var12, var14);
 
 					for(int var19 = 0; var19 < 4; ++var19) {
-						if(this.shouldRenderPass(var1, var19)) {
+						if(this.shouldRenderPass(var1, var19, var9)) {
 							GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
 							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
@@ -93,10 +82,10 @@ public class RenderLiving extends Render {
 					float var21 = (float)(var18 & 255) / 255.0F;
 					float var22 = (float)(var18 >> 24 & 255) / 255.0F;
 					GL11.glColor4f(var26, var20, var21, var22);
-					this.e.render(var16, var15, var13, var11 - var10, var12, var14);
+					this.field_20920_e.render(var16, var15, var13, var11 - var10, var12, var14);
 
 					for(int var23 = 0; var23 < 4; ++var23) {
-						if(this.shouldRenderPass(var1, var23)) {
+						if(this.shouldRenderPass(var1, var23, var9)) {
 							GL11.glColor4f(var26, var20, var21, var22);
 							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
@@ -118,6 +107,20 @@ public class RenderLiving extends Render {
 		GL11.glPopMatrix();
 	}
 
+	protected void func_21004_a(EntityLiving var1, float var2, float var3, float var4) {
+		GL11.glRotatef(180.0F - var3, 0.0F, 1.0F, 0.0F);
+		if(var1.deathTime > 0) {
+			float var5 = ((float)var1.deathTime + var4 - 1.0F) / 20.0F * 1.6F;
+			var5 = MathHelper.sqrt_float(var5);
+			if(var5 > 1.0F) {
+				var5 = 1.0F;
+			}
+
+			GL11.glRotatef(var5 * this.func_172_a(var1), 0.0F, 0.0F, 1.0F);
+		}
+
+	}
+
 	protected float func_167_c(EntityLiving var1, float var2) {
 		return var1.getSwingProgress(var2);
 	}
@@ -129,7 +132,7 @@ public class RenderLiving extends Render {
 	protected void renderEquippedItems(EntityLiving var1, float var2) {
 	}
 
-	protected boolean shouldRenderPass(EntityLiving var1, int var2) {
+	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {
 		return false;
 	}
 
@@ -145,6 +148,6 @@ public class RenderLiving extends Render {
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.a((EntityLiving)var1, var2, var4, var6, var8, var9);
+		this.doRenderLiving((EntityLiving)var1, var2, var4, var6, var8, var9);
 	}
 }
