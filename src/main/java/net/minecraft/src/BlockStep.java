@@ -3,6 +3,7 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class BlockStep extends Block {
+	public static final String[] field_22037_a = new String[]{"stone", "sand", "wood", "cobble"};
 	private boolean blockType;
 
 	public BlockStep(int var1, boolean var2) {
@@ -15,17 +16,16 @@ public class BlockStep extends Block {
 		this.setLightOpacity(255);
 	}
 
+	public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
+		return var2 == 0 ? (var1 <= 1 ? 6 : 5) : (var2 == 1 ? (var1 == 0 ? 208 : (var1 == 1 ? 176 : 192)) : (var2 == 2 ? 4 : (var2 == 3 ? 16 : 6)));
+	}
+
 	public int getBlockTextureFromSide(int var1) {
-		return var1 <= 1 ? 6 : 5;
+		return this.getBlockTextureFromSideAndMetadata(var1, 0);
 	}
 
 	public boolean isOpaqueCube() {
 		return this.blockType;
-	}
-
-	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
-		if(this == Block.stairSingle) {
-		}
 	}
 
 	public void onBlockAdded(World var1, int var2, int var3, int var4) {
@@ -34,15 +34,27 @@ public class BlockStep extends Block {
 		}
 
 		int var5 = var1.getBlockId(var2, var3 - 1, var4);
-		if(var5 == stairSingle.blockID) {
-			var1.setBlockWithNotify(var2, var3, var4, 0);
-			var1.setBlockWithNotify(var2, var3 - 1, var4, Block.stairDouble.blockID);
-		}
+		int var6 = var1.getBlockMetadata(var2, var3, var4);
+		int var7 = var1.getBlockMetadata(var2, var3 - 1, var4);
+		if(var6 == var7) {
+			if(var5 == stairSingle.blockID) {
+				var1.setBlockWithNotify(var2, var3, var4, 0);
+				var1.setBlockAndMetadataWithNotify(var2, var3 - 1, var4, Block.stairDouble.blockID, var6);
+			}
 
+		}
 	}
 
 	public int idDropped(int var1, EaglercraftRandom var2) {
 		return Block.stairSingle.blockID;
+	}
+
+	public int quantityDropped(EaglercraftRandom var1) {
+		return this.blockType ? 2 : 1;
+	}
+
+	protected int damageDropped(int var1) {
+		return var1;
 	}
 
 	public boolean renderAsNormalBlock() {

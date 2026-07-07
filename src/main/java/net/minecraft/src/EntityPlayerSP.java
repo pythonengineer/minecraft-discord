@@ -9,6 +9,9 @@ public class EntityPlayerSP extends EntityPlayer {
 	private boolean inPortal = false;
 	public float timeInPortal;
 	public float prevTimeInPortal;
+	private MouseFilter field_21903_bJ = new MouseFilter();
+	private MouseFilter field_21904_bK = new MouseFilter();
+	private MouseFilter field_21902_bL = new MouseFilter();
 
 	public EntityPlayerSP(Minecraft var1, World var2, Session var3, int var4) {
 		super(var2);
@@ -17,10 +20,13 @@ public class EntityPlayerSP extends EntityPlayer {
 		if(var3 != null && var3.username != null && var3.username.length() > 0) {
 			this.skinUrl = var3.username;
 	        this.username = var3.username;
-			System.out.println("Loading texture " + this.skinUrl);
 		} else {
             this.username = "";
 		}
+	}
+
+	public void moveEntity(double var1, double var3, double var5) {
+		super.moveEntity(var1, var3, var5);
 	}
 
 	public void updatePlayerActionState() {
@@ -122,9 +128,6 @@ public class EntityPlayerSP extends EntityPlayer {
 	public void sendChatMessage(String var1) {
 	}
 
-	public void func_6420_o() {
-	}
-
 	public boolean isSneaking() {
 		return this.movementInput.sneak;
 	}
@@ -153,5 +156,12 @@ public class EntityPlayerSP extends EntityPlayer {
 
 	public void respawnPlayer() {
 		this.mc.respawn();
+	}
+
+	public void func_6420_o() {
+	}
+
+	public void func_22055_b(String var1) {
+		this.mc.ingameGUI.func_22064_c(var1);
 	}
 }

@@ -3,9 +3,9 @@ package net.minecraft.src;
 import java.util.Comparator;
 
 public class RenderSorter implements Comparator {
-	private EntityPlayer field_4274_a;
+	private EntityLiving field_4274_a;
 
-	public RenderSorter(EntityPlayer var1) {
+	public RenderSorter(EntityLiving var1) {
 		this.field_4274_a = var1;
 	}
 

@@ -6,7 +6,7 @@ public class PathPoint {
 	public final int xCoord;
 	public final int yCoord;
 	public final int zCoord;
-	public final int hash;
+	private final int hash;
 	int index = -1;
 	float totalPathDistance;
 	float distanceToNext;
@@ -18,7 +18,11 @@ public class PathPoint {
 		this.xCoord = var1;
 		this.yCoord = var2;
 		this.zCoord = var3;
-		this.hash = var1 | var2 << 10 | var3 << 20;
+		this.hash = func_22329_a(var1, var2, var3);
+	}
+
+	public static int func_22329_a(int var0, int var1, int var2) {
+		return var1 & 255 | (var0 & Short.MAX_VALUE) << 8 | (var2 & Short.MAX_VALUE) << 24 | (var0 < 0 ? Integer.MIN_VALUE : 0) | (var2 < 0 ? -Short.MIN_VALUE : 0);
 	}
 
 	public float distanceTo(PathPoint var1) {
@@ -29,7 +33,12 @@ public class PathPoint {
 	}
 
 	public boolean equals(Object var1) {
-		return ((PathPoint)var1).hash == this.hash;
+		if(!(var1 instanceof PathPoint)) {
+			return false;
+		} else {
+			PathPoint var2 = (PathPoint)var1;
+			return this.hash == var2.hash && this.xCoord == var2.xCoord && this.yCoord == var2.yCoord && this.zCoord == var2.zCoord;
+		}
 	}
 
 	public int hashCode() {

@@ -35,7 +35,7 @@ public class StringTranslate {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             EagRuntime.debugPrintStackTrace(e);
         }
 

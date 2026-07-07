@@ -5,8 +5,8 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public abstract class Render {
 	protected RenderManager renderManager;
-	private ModelBase unusedModelBiped = new ModelBiped();
-	private RenderBlocks unusedRenderBlocks = new RenderBlocks();
+	private ModelBase field_195_d = new ModelBiped();
+	private RenderBlocks field_203_d = new RenderBlocks();
 	protected float shadowSize = 0.0F;
 	protected float field_194_c = 1.0F;
 
@@ -47,7 +47,7 @@ public abstract class Render {
 		float var19 = 0.5F;
 		float var20 = 0.0F;
 		float var21 = var1.height / var1.width;
-		GL11.glRotatef(-this.renderManager.field_1225_i, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
 		GL11.glTranslatef(0.0F, 0.0F, -0.4F + (float)((int)var21) * 0.02F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		var17.startDrawingQuads();

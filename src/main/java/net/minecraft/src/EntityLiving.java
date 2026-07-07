@@ -15,7 +15,7 @@ public abstract class EntityLiving extends Entity {
 	protected float field_9359_x;
 	protected boolean field_9358_y = true;
 	protected String texture = "/mob/char.png";
-	protected boolean unusedEntityLivingBoolean = true;
+	protected boolean field_9355_A = true;
 	protected float field_9353_B = 0.0F;
 	protected String field_9351_C = null;
 	protected float field_9349_D = 1.0F;
@@ -95,15 +95,20 @@ public abstract class EntityLiving extends Entity {
 		return 80;
 	}
 
+	public void func_22050_O() {
+		String var1 = this.getLivingSound();
+		if(var1 != null) {
+			this.worldObj.playSoundAtEntity(this, var1, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+		}
+
+	}
+
 	public void onEntityUpdate() {
 		this.prevSwingProgress = this.swingProgress;
 		super.onEntityUpdate();
 		if(this.rand.nextInt(1000) < this.field_4121_a++) {
 			this.field_4121_a = -this.func_421_b();
-			String var1 = this.getLivingSound();
-			if(var1 != null) {
-				this.worldObj.playSoundAtEntity(this, var1, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
-			}
+			this.func_22050_O();
 		}
 
 		if(this.isEntityAlive() && this.func_345_I()) {
@@ -114,13 +119,13 @@ public abstract class EntityLiving extends Entity {
 			this.fire = 0;
 		}
 
-		int var8;
+		int var1;
 		if(this.isEntityAlive() && this.isInsideOfMaterial(Material.water) && !this.canBreatheUnderwater()) {
 			--this.air;
 			if(this.air == -20) {
 				this.air = 0;
 
-				for(var8 = 0; var8 < 8; ++var8) {
+				for(var1 = 0; var1 < 8; ++var1) {
 					float var2 = this.rand.nextFloat() - this.rand.nextFloat();
 					float var3 = this.rand.nextFloat() - this.rand.nextFloat();
 					float var4 = this.rand.nextFloat() - this.rand.nextFloat();
@@ -154,11 +159,11 @@ public abstract class EntityLiving extends Entity {
 				this.func_6392_F();
 				this.setEntityDead();
 
-				for(var8 = 0; var8 < 20; ++var8) {
+				for(var1 = 0; var1 < 20; ++var1) {
+					double var8 = this.rand.nextGaussian() * 0.02D;
 					double var9 = this.rand.nextGaussian() * 0.02D;
-					double var10 = this.rand.nextGaussian() * 0.02D;
 					double var6 = this.rand.nextGaussian() * 0.02D;
-					this.worldObj.spawnParticle("explode", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, var9, var10, var6);
+					this.worldObj.spawnParticle("explode", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, var8, var9, var6);
 				}
 			}
 		}
@@ -571,7 +576,7 @@ public abstract class EntityLiving extends Entity {
 			this.setRotation(this.rotationYaw, this.rotationPitch);
 		}
 
-		if(this.health <= 0) {
+		if(this.func_22049_v()) {
 			this.isJumping = false;
 			this.moveStrafing = 0.0F;
 			this.moveForward = 0.0F;
@@ -606,6 +611,10 @@ public abstract class EntityLiving extends Entity {
 			}
 		}
 
+	}
+
+	protected boolean func_22049_v() {
+		return this.health <= 0;
 	}
 
 	protected void jump() {
@@ -794,5 +803,9 @@ public abstract class EntityLiving extends Entity {
 			super.handleHealthUpdate(var1);
 		}
 
+	}
+
+	public boolean isPlayerSleeping() {
+		return false;
 	}
 }

@@ -2,6 +2,7 @@ package net.minecraft.src;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,7 +22,7 @@ public class GuiMainMenu extends GuiScreen {
 	public GuiMainMenu() {
 		try {
 			ArrayList var1 = new ArrayList();
-			BufferedReader var2 = new BufferedReader(new InputStreamReader(EagRuntime.getResourceStream("/assets/title/splashes.txt")));
+			BufferedReader var2 = new BufferedReader(new InputStreamReader(EagRuntime.getResourceStream("/assets/title/splashes.txt"), Charset.forName("UTF-8")));
 			String var3 = "";
 
 			while(true) {
@@ -125,7 +126,7 @@ public class GuiMainMenu extends GuiScreen {
 		GL11.glScalef(var5, var5, var5);
 		this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, 16776960);
 		GL11.glPopMatrix();
-		this.drawString(this.fontRenderer, "Minecraft Beta 1.2_02", 2, 2, 5263440);
+		this.drawString(this.fontRenderer, "Minecraft Beta 1.3_01", 2, 2, 5263440);
 		String var6 = "Copyright Mojang AB. Do not distribute.";
 		this.drawString(this.fontRenderer, var6, this.width - this.fontRenderer.getStringWidth(var6) - 2, this.height - 10, 16777215);
 		super.drawScreen(var1, var2, var3);

@@ -14,9 +14,9 @@ public class TileEntityRenderer {
 	public static double staticPlayerZ;
 	public RenderEngine renderEngine;
 	public World worldObj;
-	public EntityPlayer entityPlayer;
-	public float playerYaw;
-	public float playerPitch;
+	public EntityLiving field_22270_g;
+	public float field_22269_h;
+	public float field_22268_i;
 	public double playerX;
 	public double playerY;
 	public double playerZ;
@@ -51,13 +51,13 @@ public class TileEntityRenderer {
 		return var1 == null ? null : this.getSpecialRendererForClass(var1.getClass());
 	}
 
-	public void setRenderingContext(World var1, RenderEngine var2, FontRenderer var3, EntityPlayer var4, float var5) {
+	public void func_22267_a(World var1, RenderEngine var2, FontRenderer var3, EntityLiving var4, float var5) {
 		this.worldObj = var1;
 		this.renderEngine = var2;
-		this.entityPlayer = var4;
+		this.field_22270_g = var4;
 		this.fontRenderer = var3;
-		this.playerYaw = var4.prevRotationYaw + (var4.rotationYaw - var4.prevRotationYaw) * var5;
-		this.playerPitch = var4.prevRotationPitch + (var4.rotationPitch - var4.prevRotationPitch) * var5;
+		this.field_22269_h = var4.prevRotationYaw + (var4.rotationYaw - var4.prevRotationYaw) * var5;
+		this.field_22268_i = var4.prevRotationPitch + (var4.rotationPitch - var4.prevRotationPitch) * var5;
 		this.playerX = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var5;
 		this.playerY = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var5;
 		this.playerZ = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var5;

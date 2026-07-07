@@ -18,7 +18,7 @@ public class PlayerController {
 	}
 
 	public boolean sendBlockRemoved(int var1, int var2, int var3, int var4) {
-		this.mc.effectRenderer.func_1186_a(var1, var2, var3);
+		this.mc.effectRenderer.addBlockDestroyEffects(var1, var2, var3);
 		World var5 = this.mc.theWorld;
 		Block var6 = Block.blocksList[var5.getBlockId(var1, var2, var3)];
 		int var7 = var5.getBlockMetadata(var1, var2, var3);
@@ -95,6 +95,6 @@ public class PlayerController {
 
 	public void func_20086_a(int var1, EntityPlayer var2) {
 		var2.craftingInventory.onCraftGuiClosed(var2);
-		var2.craftingInventory = var2.field_20069_g;
+		var2.craftingInventory = var2.inventorySlots;
 	}
 }

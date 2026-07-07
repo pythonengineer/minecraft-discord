@@ -3,17 +3,23 @@ package net.minecraft.src;
 public class EntityReddustFX extends EntityFX {
 	float field_673_a;
 
-	public EntityReddustFX(World var1, double var2, double var4, double var6) {
-		this(var1, var2, var4, var6, 1.0F);
+	public EntityReddustFX(World var1, double var2, double var4, double var6, float var8, float var9, float var10) {
+		this(var1, var2, var4, var6, 1.0F, var8, var9, var10);
 	}
 
-	public EntityReddustFX(World var1, double var2, double var4, double var6, float var8) {
+	public EntityReddustFX(World var1, double var2, double var4, double var6, float var8, float var9, float var10, float var11) {
 		super(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D);
 		this.motionX *= (double)0.1F;
 		this.motionY *= (double)0.1F;
 		this.motionZ *= (double)0.1F;
-		this.particleRed = (float)(Math.random() * (double)0.3F) + 0.7F;
-		this.particleGreen = this.particleBlue = (float)(Math.random() * (double)0.1F);
+		if(var9 == 0.0F) {
+			var9 = 1.0F;
+		}
+
+		float var12 = (float)Math.random() * 0.4F + 0.6F;
+		this.particleRed = ((float)(Math.random() * (double)0.2F) + 0.8F) * var9 * var12;
+		this.particleGreen = ((float)(Math.random() * (double)0.2F) + 0.8F) * var10 * var12;
+		this.particleBlue = ((float)(Math.random() * (double)0.2F) + 0.8F) * var11 * var12;
 		this.particleScale *= 12.0F / 16.0F;
 		this.particleScale *= var8;
 		this.field_673_a = this.particleScale;

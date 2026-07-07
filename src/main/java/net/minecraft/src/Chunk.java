@@ -131,46 +131,6 @@ public class Chunk {
 	}
 
 	public void func_4143_d() {
-		byte var1 = 32;
-
-		for(int var2 = 0; var2 < 16; ++var2) {
-			for(int var3 = 0; var3 < 16; ++var3) {
-				int var4 = var2 << 11 | var3 << 7;
-
-				int var5;
-				int var6;
-				for(var5 = 0; var5 < 128; ++var5) {
-					var6 = Block.lightValue[this.blocks[var4 + var5]];
-					if(var6 > 0) {
-						this.blocklightMap.setNibble(var2, var5, var3, var6);
-					}
-				}
-
-				var5 = 15;
-
-				for(var6 = var1 - 2; var6 < 128 && var5 > 0; this.blocklightMap.setNibble(var2, var6, var3, var5)) {
-					++var6;
-					byte var7 = this.blocks[var4 + var6];
-					int var8 = Block.lightOpacity[var7];
-					int var9 = Block.lightValue[var7];
-					if(var8 == 0) {
-						var8 = 1;
-					}
-
-					var5 -= var8;
-					if(var9 > var5) {
-						var5 = var9;
-					}
-
-					if(var5 < 0) {
-						var5 = 0;
-					}
-				}
-			}
-		}
-
-		this.worldObj.func_616_a(EnumSkyBlock.Block, this.xPosition * 16, var1 - 1, this.zPosition * 16, this.xPosition * 16 + 16, var1 + 1, this.zPosition * 16 + 16);
-		this.isModified = true;
 	}
 
 	private void func_996_c(int var1, int var2) {
@@ -563,10 +523,10 @@ public class Chunk {
 			return false;
 		} else {
 			if(var1) {
-				if(this.hasEntities && this.worldObj.worldTime != this.lastSaveTime) {
+				if(this.hasEntities && this.worldObj.func_22139_r() != this.lastSaveTime) {
 					return true;
 				}
-			} else if(this.hasEntities && this.worldObj.worldTime >= this.lastSaveTime + 600L) {
+			} else if(this.hasEntities && this.worldObj.func_22139_r() >= this.lastSaveTime + 600L) {
 				return true;
 			}
 
@@ -621,7 +581,7 @@ public class Chunk {
 	}
 
 	public EaglercraftRandom func_997_a(long var1) {
-		return new EaglercraftRandom(this.worldObj.randomSeed + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ var1);
+		return new EaglercraftRandom(this.worldObj.func_22138_q() + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ var1);
 	}
 
 	public boolean func_21167_h() {

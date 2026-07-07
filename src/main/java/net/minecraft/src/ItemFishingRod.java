@@ -16,7 +16,7 @@ public class ItemFishingRod extends Item {
 
 	public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3) {
 		if(var3.fishEntity != null) {
-			int var4 = var3.fishEntity.func_4043_i();
+			int var4 = var3.fishEntity.catchFish();
 			var1.damageItem(var4);
 			var3.swingItem();
 		} else {

@@ -334,7 +334,7 @@ public class EntityFish extends Entity {
 		return 0.0F;
 	}
 
-	public int func_4043_i() {
+	public int catchFish() {
 		byte var1 = 0;
 		if(this.field_4096_c != null) {
 			double var2 = this.angler.posX - this.posX;

@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 public class GuiChest extends GuiContainer {
 	private IInventory upperChestInventory;
 	private IInventory lowerChestInventory;
-	private int field_980_m = 0;
+	private int inventoryRows = 0;
 
 	public GuiChest(IInventory var1, IInventory var2) {
 		super(new CraftingInventoryChestCB(var1, var2));
@@ -14,8 +14,8 @@ public class GuiChest extends GuiContainer {
 		this.field_948_f = false;
 		short var3 = 222;
 		int var4 = var3 - 108;
-		this.field_980_m = var2.getSizeInventory() / 9;
-		this.ySize = var4 + this.field_980_m * 18;
+		this.inventoryRows = var2.getSizeInventory() / 9;
+		this.ySize = var4 + this.inventoryRows * 18;
 	}
 
 	protected void drawGuiContainerForegroundLayer() {
@@ -29,7 +29,7 @@ public class GuiChest extends GuiContainer {
 		this.mc.renderEngine.bindTexture(var2);
 		int var3 = (this.width - this.xSize) / 2;
 		int var4 = (this.height - this.ySize) / 2;
-		this.drawTexturedModalRect(var3, var4, 0, 0, this.xSize, this.field_980_m * 18 + 17);
-		this.drawTexturedModalRect(var3, var4 + this.field_980_m * 18 + 17, 0, 126, this.xSize, 96);
+		this.drawTexturedModalRect(var3, var4, 0, 0, this.xSize, this.inventoryRows * 18 + 17);
+		this.drawTexturedModalRect(var3, var4 + this.inventoryRows * 18 + 17, 0, 126, this.xSize, 96);
 	}
 }

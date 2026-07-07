@@ -16,7 +16,7 @@ public class ModelRenderer {
 	private boolean compiled = false;
 	private int displayList = 0;
 	public boolean mirror = false;
-	public boolean field_1403_h = true;
+	public boolean showModel = true;
 	public boolean field_1402_i = false;
 
 	public ModelRenderer(int var1, int var2) {
@@ -70,7 +70,7 @@ public class ModelRenderer {
 		this.faces[5] = new TexturedQuad(new PositionTexureVertex[]{var15, var16, var17, var18}, this.textureOffsetX + var6 + var4 + var6, this.textureOffsetY + var6, this.textureOffsetX + var6 + var4 + var6 + var4, this.textureOffsetY + var6 + var5);
 		if(this.mirror) {
 			for(int var19 = 0; var19 < this.faces.length; ++var19) {
-				this.faces[var19].func_809_a();
+				this.faces[var19].flipFace();
 			}
 		}
 
@@ -84,7 +84,7 @@ public class ModelRenderer {
 
 	public void render(float var1) {
 		if(!this.field_1402_i) {
-			if(this.field_1403_h) {
+			if(this.showModel) {
 				if(!this.compiled) {
 					this.compileDisplayList(var1);
 				}
@@ -122,7 +122,7 @@ public class ModelRenderer {
 
 	public void func_926_b(float var1) {
 		if(!this.field_1402_i) {
-			if(this.field_1403_h) {
+			if(this.showModel) {
 				if(!this.compiled) {
 					this.compileDisplayList(var1);
 				}
@@ -156,7 +156,7 @@ public class ModelRenderer {
 		Tessellator var2 = Tessellator.instance;
 
 		for(int var3 = 0; var3 < this.faces.length; ++var3) {
-			this.faces[var3].func_808_a(var2, var1);
+			this.faces[var3].draw(var2, var1);
 		}
 
 		GL11.glEndList();

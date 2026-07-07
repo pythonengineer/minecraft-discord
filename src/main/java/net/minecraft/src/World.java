@@ -1,20 +1,17 @@
 package net.minecraft.src;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.io.InputStream;
+import java.io.OutputStream;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class World implements IBlockAccess {
 	public boolean scheduledUpdatesAreImmediate;
@@ -25,7 +22,6 @@ public class World implements IBlockAccess {
 	private Set scheduledTickSet;
 	public List loadedTileEntityList;
 	public List playerEntities;
-	public long worldTime;
 	private long field_1019_F;
 	public int skylightSubtracted;
 	protected int field_9437_g;
@@ -35,23 +31,17 @@ public class World implements IBlockAccess {
 	protected int autosavePeriod;
 	public int difficultySetting;
 	public EaglercraftRandom rand;
-	public int spawnX;
-	public int spawnY;
-	public int spawnZ;
-	public boolean field_1033_r;
+	public boolean isNewWorld;
 	public final WorldProvider worldProvider;
 	protected List worldAccesses;
-	private IChunkProvider chunkProvider;
-	public VFile2 worldFile;
-	public VFile2 savePath;
-	public long randomSeed;
-	private NBTTagCompound nbtCompoundPlayer;
-	public long sizeOnDisk;
-	public final String field_9431_w;
+	protected IChunkProvider chunkProvider;
+	protected final ISaveHandler field_22147_p;
+	protected WorldInfo worldinfo;
 	public boolean field_9430_x;
+	private boolean field_22146_A;
 	private ArrayList field_9428_I;
 	private int field_4204_J;
-	private boolean field_21121_K;
+	private boolean spawnHostileMobs;
 	private boolean field_21120_L;
 	static int field_9429_y = 0;
 	private Set field_9427_K;
@@ -59,44 +49,11 @@ public class World implements IBlockAccess {
 	private List field_1012_M;
 	public boolean multiplayerWorld;
 
-    public static NBTTagCompound func_629_a(String var1) {
-        VFile2 var2 = new VFile2("saves");
-        VFile2 var3 = new VFile2(var2, var1);
-        VFile2 var4 = new VFile2(var3, "level.dat");
-        if(var4.exists()) {
-            try (InputStream fis = var4.getInputStream()) {
-                return CompressedStreamTools.func_1138_a(fis).getCompoundTag("Data");
-            } catch (Exception exception2) {
-                exception2.printStackTrace();
-            }
-        }
-
-        return null;
-    }
-
-    public static void deleteWorld(String var1) {
-        VFile2 var2 = new VFile2("saves");
-        VFile2 var3 = new VFile2(var2, var1);
-        deleteFiles(var3.listFiles(true));
-        var3.delete();
-    }
-
-    private static void deleteFiles(List<VFile2> files) {
-        for(int i1 = 0; i1 < files.size(); ++i1) {
-            files.get(i1).delete();
-        }
-
-    }
-
 	public WorldChunkManager getWorldChunkManager() {
 		return this.worldProvider.worldChunkMgr;
 	}
 
-	public World(String var2) {
-		this(var2, (new EaglercraftRandom()).nextLong());
-	}
-
-	public World(String var1, WorldProvider var2, long var3) {
+	public World(ISaveHandler var1, String var2, WorldProvider var3, long var4) {
 		this.scheduledUpdatesAreImmediate = false;
 		this.field_1051_z = new ArrayList();
 		this.loadedEntityList = new ArrayList();
@@ -105,7 +62,6 @@ public class World implements IBlockAccess {
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.playerEntities = new ArrayList();
-		this.worldTime = 0L;
 		this.field_1019_F = 16777215L;
 		this.skylightSubtracted = 0;
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
@@ -114,23 +70,21 @@ public class World implements IBlockAccess {
 		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
-		this.field_1033_r = false;
+		this.isNewWorld = false;
 		this.worldAccesses = new ArrayList();
-		this.randomSeed = 0L;
-		this.sizeOnDisk = 0L;
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
-		this.field_21121_K = true;
+		this.spawnHostileMobs = true;
 		this.field_21120_L = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
-		this.field_9431_w = var1;
-		this.randomSeed = var3;
-		this.worldProvider = var2;
-		var2.registerWorld(this);
-		this.chunkProvider = this.getChunkProvider(this.savePath);
+		this.field_22147_p = var1;
+		this.worldinfo = new WorldInfo(var4, var2);
+		this.worldProvider = var3;
+		var3.registerWorld(this);
+		this.chunkProvider = this.getChunkProvider();
 		this.calculateInitialSkylight();
 	}
 
@@ -143,7 +97,6 @@ public class World implements IBlockAccess {
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.playerEntities = new ArrayList();
-		this.worldTime = 0L;
 		this.field_1019_F = 16777215L;
 		this.skylightSubtracted = 0;
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
@@ -152,39 +105,30 @@ public class World implements IBlockAccess {
 		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
-		this.field_1033_r = false;
+		this.isNewWorld = false;
 		this.worldAccesses = new ArrayList();
-		this.randomSeed = 0L;
-		this.sizeOnDisk = 0L;
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
-		this.field_21121_K = true;
+		this.spawnHostileMobs = true;
 		this.field_21120_L = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
 		this.lockTimestamp = var1.lockTimestamp;
-		this.worldFile = var1.worldFile;
-		this.savePath = var1.savePath;
-		this.field_9431_w = var1.field_9431_w;
-		this.randomSeed = var1.randomSeed;
-		this.worldTime = var1.worldTime;
-		this.spawnX = var1.spawnX;
-		this.spawnY = var1.spawnY;
-		this.spawnZ = var1.spawnZ;
-		this.sizeOnDisk = var1.sizeOnDisk;
+		this.field_22147_p = var1.field_22147_p;
+		this.worldinfo = new WorldInfo(var1.worldinfo);
 		this.worldProvider = var2;
 		var2.registerWorld(this);
-		this.chunkProvider = this.getChunkProvider(this.savePath);
+		this.chunkProvider = this.getChunkProvider();
 		this.calculateInitialSkylight();
 	}
 
-	public World(String var2, long var3) {
-		this(var2, var3, (WorldProvider)null);
+	public World(ISaveHandler var1, String var2, long var3) {
+		this(var1, var2, var3, (WorldProvider)null);
 	}
 
-	public World(String var2, long var3, WorldProvider var5) {
+	public World(ISaveHandler var1, String var2, long var3, WorldProvider var5) {
 		this.scheduledUpdatesAreImmediate = false;
 		this.field_1051_z = new ArrayList();
 		this.loadedEntityList = new ArrayList();
@@ -193,7 +137,6 @@ public class World implements IBlockAccess {
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.playerEntities = new ArrayList();
-		this.worldTime = 0L;
 		this.field_1019_F = 16777215L;
 		this.skylightSubtracted = 0;
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
@@ -202,96 +145,73 @@ public class World implements IBlockAccess {
 		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
-		this.field_1033_r = false;
+		this.isNewWorld = false;
 		this.worldAccesses = new ArrayList();
-		this.randomSeed = 0L;
-		this.sizeOnDisk = 0L;
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
-		this.field_21121_K = true;
+		this.spawnHostileMobs = true;
 		this.field_21120_L = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
-		this.field_9431_w = var2;
-        this.savePath = new VFile2("saves", var2);
-
-        VFile2 var6 = new VFile2(this.savePath, "session.lock");
-        try (DataOutputStream dos = new DataOutputStream(var6.getOutputStream())) {
-            dos.writeLong(this.lockTimestamp);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Failed to check session lock, aborting");
-        }
-
-		Object var17 = new WorldProvider();
-		VFile2 var18 = new VFile2(this.savePath, "level.dat");
-		this.field_1033_r = !var18.exists();
-		if(var18.exists()) {
-            try (InputStream fis = var18.getInputStream()) {
-                NBTTagCompound var8 = CompressedStreamTools.func_1138_a(fis);
-				NBTTagCompound var9 = var8.getCompoundTag("Data");
-				this.randomSeed = var9.getLong("RandomSeed");
-				this.spawnX = var9.getInteger("SpawnX");
-				this.spawnY = var9.getInteger("SpawnY");
-				this.spawnZ = var9.getInteger("SpawnZ");
-				this.worldTime = var9.getLong("Time");
-				this.sizeOnDisk = var9.getLong("SizeOnDisk");
-				if(var9.hasKey("Player")) {
-					this.nbtCompoundPlayer = var9.getCompoundTag("Player");
-					int var10 = this.nbtCompoundPlayer.getInteger("Dimension");
-					if(var10 == -1) {
-						var17 = new WorldProviderHell();
-					}
-				}
-			} catch (Exception var14) {
-				var14.printStackTrace();
-			}
-		}
-
+		this.field_22147_p = var1;
+		this.worldinfo = var1.func_22151_c();
+		this.isNewWorld = this.worldinfo == null;
 		if(var5 != null) {
-			var17 = var5;
+			this.worldProvider = var5;
+		} else if(this.worldinfo != null && this.worldinfo.func_22290_i() == -1) {
+			this.worldProvider = new WorldProviderHell();
+		} else {
+			this.worldProvider = new WorldProvider();
 		}
 
-		boolean var19 = false;
-		if(this.randomSeed == 0L) {
-			this.randomSeed = var3;
-			var19 = true;
+		boolean var6 = false;
+		if(this.worldinfo == null) {
+			this.worldinfo = new WorldInfo(var3, var2);
+			var6 = true;
+		} else {
+			this.worldinfo.func_22287_a(var2);
 		}
 
-		this.worldProvider = (WorldProvider)var17;
 		this.worldProvider.registerWorld(this);
-		this.chunkProvider = this.getChunkProvider(this.savePath);
-		if(var19) {
+		this.chunkProvider = this.getChunkProvider();
+		if(var6) {
 			this.field_9430_x = true;
-			this.spawnX = 0;
-			this.spawnY = 64;
+			int var7 = 0;
+			byte var8 = 64;
 
-			for(this.spawnZ = 0; !this.worldProvider.canCoordinateBeSpawn(this.spawnX, this.spawnZ); this.spawnZ += this.rand.nextInt(64) - this.rand.nextInt(64)) {
-				this.spawnX += this.rand.nextInt(64) - this.rand.nextInt(64);
+			int var9;
+			for(var9 = 0; !this.worldProvider.canCoordinateBeSpawn(var7, var9); var9 += this.rand.nextInt(64) - this.rand.nextInt(64)) {
+				var7 += this.rand.nextInt(64) - this.rand.nextInt(64);
 			}
 
+			this.worldinfo.func_22292_a(var7, var8, var9);
 			this.field_9430_x = false;
 		}
 
 		this.calculateInitialSkylight();
 	}
 
-	protected IChunkProvider getChunkProvider(VFile2 var1) {
-		return new ChunkProviderLoadOrGenerate(this, this.worldProvider.getChunkLoader(var1), this.worldProvider.getChunkProvider());
+	protected IChunkProvider getChunkProvider() {
+		IChunkLoader var1 = this.field_22147_p.func_22149_a(this.worldProvider);
+		return new ChunkProviderLoadOrGenerate(this, var1, this.worldProvider.getChunkProvider());
 	}
 
 	public void setSpawnLocation() {
-		if(this.spawnY <= 0) {
-			this.spawnY = 64;
+		if(this.worldinfo.func_22295_d() <= 0) {
+			this.worldinfo.func_22308_b(64);
 		}
 
-		while(this.getFirstUncoveredBlock(this.spawnX, this.spawnZ) == 0) {
-			this.spawnX += this.rand.nextInt(8) - this.rand.nextInt(8);
-			this.spawnZ += this.rand.nextInt(8) - this.rand.nextInt(8);
+		int var1 = this.worldinfo.func_22293_c();
+
+		int var2;
+		for(var2 = this.worldinfo.func_22300_e(); this.getFirstUncoveredBlock(var1, var2) == 0; var2 += this.rand.nextInt(8) - this.rand.nextInt(8)) {
+			var1 += this.rand.nextInt(8) - this.rand.nextInt(8);
 		}
 
+		this.worldinfo.func_22294_a(var1);
+		this.worldinfo.func_22298_c(var2);
 	}
 
 	public int getFirstUncoveredBlock(int var1, int var2) {
@@ -305,23 +225,24 @@ public class World implements IBlockAccess {
 	public void func_6464_c() {
 	}
 
-	public void func_608_a(EntityPlayer var1) {
+	public void spawnPlayerWithLoadedChunks(EntityPlayer var1) {
 		try {
-			if(this.nbtCompoundPlayer != null) {
-				var1.readFromNBT(this.nbtCompoundPlayer);
-				this.nbtCompoundPlayer = null;
+			NBTTagCompound var2 = this.worldinfo.func_22303_h();
+			if(var2 != null) {
+				var1.readFromNBT(var2);
+				this.worldinfo.func_22309_a((NBTTagCompound)null);
 			}
 
 			if(this.chunkProvider instanceof ChunkProviderLoadOrGenerate) {
-				ChunkProviderLoadOrGenerate var2 = (ChunkProviderLoadOrGenerate)this.chunkProvider;
-				int var3 = MathHelper.floor_float((float)((int)var1.posX)) >> 4;
-				int var4 = MathHelper.floor_float((float)((int)var1.posZ)) >> 4;
-				var2.func_21110_c(var3, var4);
+				ChunkProviderLoadOrGenerate var3 = (ChunkProviderLoadOrGenerate)this.chunkProvider;
+				int var4 = MathHelper.floor_float((float)((int)var1.posX)) >> 4;
+				int var5 = MathHelper.floor_float((float)((int)var1.posZ)) >> 4;
+				var3.func_21110_c(var4, var5);
 			}
 
 			this.entityJoinedWorld(var1);
-		} catch (Exception var5) {
-			var5.printStackTrace();
+		} catch (Exception var6) {
+			var6.printStackTrace();
 		}
 
 	}
@@ -343,51 +264,7 @@ public class World implements IBlockAccess {
 
 	private void saveLevel() {
 		this.checkSessionLock();
-		NBTTagCompound var1 = new NBTTagCompound();
-		var1.setLong("RandomSeed", this.randomSeed);
-		var1.setInteger("SpawnX", this.spawnX);
-		var1.setInteger("SpawnY", this.spawnY);
-		var1.setInteger("SpawnZ", this.spawnZ);
-		var1.setLong("Time", this.worldTime);
-		var1.setLong("SizeOnDisk", this.sizeOnDisk);
-		var1.setLong("LastPlayed", EagRuntime.currentTimeMillis());
-		EntityPlayer var2 = null;
-		if(this.playerEntities.size() > 0) {
-			var2 = (EntityPlayer)this.playerEntities.get(0);
-		}
-
-		NBTTagCompound var3;
-		if(var2 != null) {
-			var3 = new NBTTagCompound();
-			var2.writeToNBT(var3);
-			var1.setCompoundTag("Player", var3);
-		}
-
-		var3 = new NBTTagCompound();
-		var3.setTag("Data", var1);
-
-        VFile2 var4 = new VFile2(this.savePath, "level.dat_new");
-        try (OutputStream fos = var4.getOutputStream()) {
-			VFile2 var5 = new VFile2(this.savePath, "level.dat_old");
-			VFile2 var6 = new VFile2(this.savePath, "level.dat");
-			CompressedStreamTools.writeGzippedCompoundToOutputStream(var3, fos);
-			if(var5.exists()) {
-				var5.delete();
-			}
-
-			var6.renameTo(var5);
-			if(var6.exists()) {
-				var6.delete();
-			}
-
-			var4.renameTo(var6);
-			if(var4.exists()) {
-				var4.delete();
-			}
-		} catch (Exception var7) {
-			var7.printStackTrace();
-		}
-
+		this.field_22147_p.func_22148_a(this.worldinfo, this.playerEntities);
 	}
 
 	public boolean func_650_a(int var1) {
@@ -941,7 +818,7 @@ public class World implements IBlockAccess {
 			if(var1 instanceof EntityPlayer) {
 				EntityPlayer var5 = (EntityPlayer)var1;
 				this.playerEntities.add(var5);
-				System.out.println("Player count: " + this.playerEntities.size());
+				this.func_22140_w();
 			}
 
 			this.getChunkFromChunkCoords(var2, var3).addEntity(var1);
@@ -977,6 +854,7 @@ public class World implements IBlockAccess {
 		var1.setEntityDead();
 		if(var1 instanceof EntityPlayer) {
 			this.playerEntities.remove((EntityPlayer)var1);
+			this.func_22140_w();
 		}
 
 	}
@@ -1068,7 +946,7 @@ public class World implements IBlockAccess {
 	}
 
 	public float getCelestialAngle(float var1) {
-		return this.worldProvider.calculateCelestialAngle(this.worldTime, var1);
+		return this.worldProvider.calculateCelestialAngle(this.worldinfo.getWorldTime(), var1);
 	}
 
 	public Vec3D func_628_d(float var1) {
@@ -1133,26 +1011,26 @@ public class World implements IBlockAccess {
 		return var3 * var3 * 0.5F;
 	}
 
-	public void scheduleBlockUpdate(int var1, int var2, int var3, int var4) {
-		NextTickListEntry var5 = new NextTickListEntry(var1, var2, var3, var4);
-		byte var6 = 8;
+	public void scheduleBlockUpdate(int var1, int var2, int var3, int var4, int var5) {
+		NextTickListEntry var6 = new NextTickListEntry(var1, var2, var3, var4);
+		byte var7 = 8;
 		if(this.scheduledUpdatesAreImmediate) {
-			if(this.checkChunksExist(var5.xCoord - var6, var5.yCoord - var6, var5.zCoord - var6, var5.xCoord + var6, var5.yCoord + var6, var5.zCoord + var6)) {
-				int var7 = this.getBlockId(var5.xCoord, var5.yCoord, var5.zCoord);
-				if(var7 == var5.blockID && var7 > 0) {
-					Block.blocksList[var7].updateTick(this, var5.xCoord, var5.yCoord, var5.zCoord, this.rand);
+			if(this.checkChunksExist(var6.xCoord - var7, var6.yCoord - var7, var6.zCoord - var7, var6.xCoord + var7, var6.yCoord + var7, var6.zCoord + var7)) {
+				int var8 = this.getBlockId(var6.xCoord, var6.yCoord, var6.zCoord);
+				if(var8 == var6.blockID && var8 > 0) {
+					Block.blocksList[var8].updateTick(this, var6.xCoord, var6.yCoord, var6.zCoord, this.rand);
 				}
 			}
 
 		} else {
-			if(this.checkChunksExist(var1 - var6, var2 - var6, var3 - var6, var1 + var6, var2 + var6, var3 + var6)) {
+			if(this.checkChunksExist(var1 - var7, var2 - var7, var3 - var7, var1 + var7, var2 + var7, var3 + var7)) {
 				if(var4 > 0) {
-					var5.setScheduledTime((long)Block.blocksList[var4].tickRate() + this.worldTime);
+					var6.setScheduledTime((long)var5 + this.worldinfo.getWorldTime());
 				}
 
-				if(!this.scheduledTickSet.contains(var5)) {
-					this.scheduledTickSet.add(var5);
-					this.scheduledTickTreeSet.add(var5);
+				if(!this.scheduledTickSet.contains(var6)) {
+					this.scheduledTickSet.add(var6);
+					this.scheduledTickTreeSet.add(var6);
 				}
 			}
 
@@ -1639,27 +1517,42 @@ public class World implements IBlockAccess {
 	}
 
 	public void func_21114_a(boolean var1, boolean var2) {
-		this.field_21121_K = var1;
+		this.spawnHostileMobs = var1;
 		this.field_21120_L = var2;
 	}
 
 	public void tick() {
-		SpawnerAnimals.performSpawning(this, this.field_21121_K, this.field_21120_L);
-		this.chunkProvider.func_532_a();
-		int var1 = this.calculateSkylightSubtracted(1.0F);
-		if(var1 != this.skylightSubtracted) {
-			this.skylightSubtracted = var1;
+		long var2;
+		if(this.func_22142_y()) {
+			boolean var1 = false;
+			if(this.spawnHostileMobs && this.difficultySetting >= 1) {
+				var1 = SpawnerAnimals.func_22390_a(this, this.playerEntities);
+			}
 
-			for(int var2 = 0; var2 < this.worldAccesses.size(); ++var2) {
-				((IWorldAccess)this.worldAccesses.get(var2)).updateAllRenderers();
+			if(!var1) {
+				var2 = this.worldinfo.getWorldTime() + 24000L;
+				this.worldinfo.setWorldTime(var2 - var2 % 24000L);
+				this.func_22141_x();
 			}
 		}
 
-		++this.worldTime;
-		if(this.worldTime % (long)this.autosavePeriod == 0L) {
+		SpawnerAnimals.performSpawning(this, this.spawnHostileMobs, this.field_21120_L);
+		this.chunkProvider.func_532_a();
+		int var4 = this.calculateSkylightSubtracted(1.0F);
+		if(var4 != this.skylightSubtracted) {
+			this.skylightSubtracted = var4;
+
+			for(int var5 = 0; var5 < this.worldAccesses.size(); ++var5) {
+				((IWorldAccess)this.worldAccesses.get(var5)).updateAllRenderers();
+			}
+		}
+
+		var2 = this.worldinfo.getWorldTime() + 1L;
+		if(var2 % (long)this.autosavePeriod == 0L) {
 			this.saveWorld(false, (IProgressUpdate)null);
 		}
 
+		this.worldinfo.setWorldTime(var2);
 		this.TickUpdates(false);
 		this.func_4080_j();
 	}
@@ -1742,7 +1635,7 @@ public class World implements IBlockAccess {
 
 			for(int var3 = 0; var3 < var2; ++var3) {
 				NextTickListEntry var4 = (NextTickListEntry)this.scheduledTickTreeSet.first();
-				if(!var1 && var4.scheduledTime > this.worldTime) {
+				if(!var1 && var4.scheduledTime > this.worldinfo.getWorldTime()) {
 					break;
 				}
 
@@ -1993,21 +1886,30 @@ public class World implements IBlockAccess {
 	}
 
 	public void checkSessionLock() {
-        VFile2 var1 = new VFile2(this.savePath, "session.lock");
-        try (DataInputStream dis = new DataInputStream(var1.getInputStream())) {
-            if(dis.readLong() != this.lockTimestamp) {
-                throw new MinecraftException("The save is being accessed from another location, aborting");
-            }
-		} catch (Exception var7) {
-			throw new MinecraftException("Failed to check session lock, aborting");
-		}
+		this.field_22147_p.func_22150_b();
 	}
 
 	public void setWorldTime(long var1) {
-		this.worldTime = var1;
+		this.worldinfo.setWorldTime(var1);
 	}
 
-	public void func_705_f(Entity var1) {
+	public long func_22138_q() {
+		return this.worldinfo.getRandomSeed();
+	}
+
+	public long func_22139_r() {
+		return this.worldinfo.getWorldTime();
+	}
+
+	public ChunkCoordinates func_22137_s() {
+		return new ChunkCoordinates(this.worldinfo.func_22293_c(), this.worldinfo.func_22295_d(), this.worldinfo.func_22300_e());
+	}
+
+	public void func_22143_a(ChunkCoordinates var1) {
+		this.worldinfo.func_22292_a(var1.field_22395_a, var1.field_22394_b, var1.field_22396_c);
+	}
+
+	public void joinEntityInSurroundings(Entity var1) {
 		int var2 = MathHelper.floor_double(var1.posX / 16.0D);
 		int var3 = MathHelper.floor_double(var1.posZ / 16.0D);
 		byte var4 = 2;
@@ -2088,5 +1990,55 @@ public class World implements IBlockAccess {
 			Block.blocksList[var6].playBlock(this, var1, var2, var3, var4, var5);
 		}
 
+	}
+
+	public WorldInfo func_22144_v() {
+		return this.worldinfo;
+	}
+
+	public void func_22140_w() {
+		this.field_22146_A = !this.playerEntities.isEmpty();
+		Iterator var1 = this.playerEntities.iterator();
+
+		while(var1.hasNext()) {
+			EntityPlayer var2 = (EntityPlayer)var1.next();
+			if(!var2.isPlayerSleeping()) {
+				this.field_22146_A = false;
+				break;
+			}
+		}
+
+	}
+
+	protected void func_22141_x() {
+		this.field_22146_A = false;
+		Iterator var1 = this.playerEntities.iterator();
+
+		while(var1.hasNext()) {
+			EntityPlayer var2 = (EntityPlayer)var1.next();
+			if(var2.isPlayerSleeping()) {
+				var2.func_22056_a(false, false);
+			}
+		}
+
+	}
+
+	public boolean func_22142_y() {
+		if(this.field_22146_A && !this.multiplayerWorld) {
+			Iterator var1 = this.playerEntities.iterator();
+
+			EntityPlayer var2;
+			do {
+				if(!var1.hasNext()) {
+					return true;
+				}
+
+				var2 = (EntityPlayer)var1.next();
+			} while(var2.func_22054_L());
+
+			return false;
+		} else {
+			return false;
+		}
 	}
 }

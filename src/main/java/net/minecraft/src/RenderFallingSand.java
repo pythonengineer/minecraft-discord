@@ -17,7 +17,7 @@ public class RenderFallingSand extends Render {
 		Block var10 = Block.blocksList[var1.blockID];
 		World var11 = var1.func_465_i();
 		GL11.glDisable(GL11.GL_LIGHTING);
-		this.field_197_d.func_1243_a(var10, var11, MathHelper.floor_double(var1.posX), MathHelper.floor_double(var1.posY), MathHelper.floor_double(var1.posZ));
+		this.field_197_d.renderBlockFallingSand(var10, var11, MathHelper.floor_double(var1.posX), MathHelper.floor_double(var1.posY), MathHelper.floor_double(var1.posZ));
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
 	}

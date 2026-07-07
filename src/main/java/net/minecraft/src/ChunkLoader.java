@@ -73,71 +73,73 @@ public class ChunkLoader implements IChunkLoader {
 		var1.checkSessionLock();
 		VFile2 var3 = this.chunkFileForXZ(var2.xPosition, var2.zPosition);
 		if(var3.exists()) {
-			var1.sizeOnDisk -= var3.length();
+			WorldInfo var4 = var1.func_22144_v();
+			var4.func_22297_b(var4.func_22306_g() - var3.length());
 		}
 
 		try {
-			VFile2 var4 = new VFile2(this.saveDir, "tmp_chunk.dat");
-			OutputStream var5 = var4.getOutputStream();
+			VFile2 var10 = new VFile2(this.saveDir, "tmp_chunk.dat");
+			OutputStream var5 = var10.getOutputStream();
 			NBTTagCompound var6 = new NBTTagCompound();
 			NBTTagCompound var7 = new NBTTagCompound();
 			var6.setTag("Level", var7);
-			this.storeChunkInCompound(var2, var1, var7);
+			storeChunkInCompound(var2, var1, var7);
 			CompressedStreamTools.writeGzippedCompoundToOutputStream(var6, var5);
 			var5.close();
 			if(var3.exists()) {
 				var3.delete();
 			}
 
-			var4.renameTo(var3);
-			var1.sizeOnDisk += var3.length();
-		} catch (Exception var8) {
-			var8.printStackTrace();
+			var10.renameTo(var3);
+			WorldInfo var8 = var1.func_22144_v();
+			var8.func_22297_b(var8.func_22306_g() + var3.length());
+		} catch (Exception var9) {
+			var9.printStackTrace();
 		}
 
 	}
 
-	public void storeChunkInCompound(Chunk var1, World var2, NBTTagCompound var3) {
-		var2.checkSessionLock();
-		var3.setInteger("xPos", var1.xPosition);
-		var3.setInteger("zPos", var1.zPosition);
-		var3.setLong("LastUpdate", var2.worldTime);
-		var3.setByteArray("Blocks", var1.blocks);
-		var3.setByteArray("Data", var1.data.data);
-		var3.setByteArray("SkyLight", var1.skylightMap.data);
-		var3.setByteArray("BlockLight", var1.blocklightMap.data);
-		var3.setByteArray("HeightMap", var1.heightMap);
-		var3.setBoolean("TerrainPopulated", var1.isTerrainPopulated);
-		var1.hasEntities = false;
-		NBTTagList var4 = new NBTTagList();
+	public static void storeChunkInCompound(Chunk var0, World var1, NBTTagCompound var2) {
+		var1.checkSessionLock();
+		var2.setInteger("xPos", var0.xPosition);
+		var2.setInteger("zPos", var0.zPosition);
+		var2.setLong("LastUpdate", var1.func_22139_r());
+		var2.setByteArray("Blocks", var0.blocks);
+		var2.setByteArray("Data", var0.data.data);
+		var2.setByteArray("SkyLight", var0.skylightMap.data);
+		var2.setByteArray("BlockLight", var0.blocklightMap.data);
+		var2.setByteArray("HeightMap", var0.heightMap);
+		var2.setBoolean("TerrainPopulated", var0.isTerrainPopulated);
+		var0.hasEntities = false;
+		NBTTagList var3 = new NBTTagList();
 
-		Iterator var6;
-		NBTTagCompound var8;
-		for(int var5 = 0; var5 < var1.entities.length; ++var5) {
-			var6 = var1.entities[var5].iterator();
+		Iterator var5;
+		NBTTagCompound var7;
+		for(int var4 = 0; var4 < var0.entities.length; ++var4) {
+			var5 = var0.entities[var4].iterator();
 
-			while(var6.hasNext()) {
-				Entity var7 = (Entity)var6.next();
-				var1.hasEntities = true;
-				var8 = new NBTTagCompound();
-				if(var7.addEntityID(var8)) {
-					var4.setTag(var8);
+			while(var5.hasNext()) {
+				Entity var6 = (Entity)var5.next();
+				var0.hasEntities = true;
+				var7 = new NBTTagCompound();
+				if(var6.addEntityID(var7)) {
+					var3.setTag(var7);
 				}
 			}
 		}
 
-		var3.setTag("Entities", var4);
-		NBTTagList var9 = new NBTTagList();
-		var6 = var1.chunkTileEntityMap.values().iterator();
+		var2.setTag("Entities", var3);
+		NBTTagList var8 = new NBTTagList();
+		var5 = var0.chunkTileEntityMap.values().iterator();
 
-		while(var6.hasNext()) {
-			TileEntity var10 = (TileEntity)var6.next();
-			var8 = new NBTTagCompound();
-			var10.writeToNBT(var8);
-			var9.setTag(var8);
+		while(var5.hasNext()) {
+			TileEntity var9 = (TileEntity)var5.next();
+			var7 = new NBTTagCompound();
+			var9.writeToNBT(var7);
+			var8.setTag(var7);
 		}
 
-		var3.setTag("TileEntities", var9);
+		var2.setTag("TileEntities", var8);
 	}
 
 	public static Chunk loadChunkIntoWorldFromCompound(World var0, NBTTagCompound var1) {

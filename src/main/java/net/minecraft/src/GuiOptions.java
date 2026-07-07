@@ -4,6 +4,7 @@ public class GuiOptions extends GuiScreen {
 	private GuiScreen parentScreen;
 	protected String screenTitle = "Options";
 	private GameSettings options;
+	private static EnumOptions[] field_22135_k = new EnumOptions[]{EnumOptions.MUSIC, EnumOptions.SOUND, EnumOptions.INVERT_MOUSE, EnumOptions.SENSITIVITY, EnumOptions.DIFFICULTY};
 
 	public GuiOptions(GuiScreen var1, GameSettings var2) {
 		this.parentScreen = var1;
@@ -13,19 +14,22 @@ public class GuiOptions extends GuiScreen {
 	public void initGui() {
 		StringTranslate var1 = StringTranslate.getInstance();
 		this.screenTitle = var1.translateKey("options.title");
-		EnumOptions[] var2 = EnumOptions.values();
-		int var3 = var2.length;
+		int var2 = 0;
+		EnumOptions[] var3 = field_22135_k;
+		int var4 = var3.length;
 
-		for(int var4 = 0; var4 < var3; ++var4) {
-			EnumOptions var5 = var2[var4];
-			int var6 = var5.returnEnumOrdinal();
-			if(!var5.getEnumFloat()) {
-				this.controlList.add(new GuiSmallButton(var5.returnEnumOrdinal(), this.width / 2 - 155 + var6 % 2 * 160, this.height / 7 + 22 * (var6 >> 1), var5, this.options.getKeyBinding(var5)));
+		for(int var5 = 0; var5 < var4; ++var5) {
+			EnumOptions var6 = var3[var5];
+			if(!var6.getEnumFloat()) {
+				this.controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.options.getKeyBinding(var6)));
 			} else {
-				this.controlList.add(new GuiSlider(var5.returnEnumOrdinal(), this.width / 2 - 155 + var6 % 2 * 160, this.height / 7 + 22 * (var6 >> 1), var5, this.options.getKeyBinding(var5), this.options.getOptionFloatValue(var5)));
+				this.controlList.add(new GuiSlider(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.options.getKeyBinding(var6), this.options.getOptionFloatValue(var6)));
 			}
+
+			++var2;
 		}
 
+		this.controlList.add(new GuiButton(101, this.width / 2 - 100, this.height / 6 + 96 + 12, var1.translateKey("options.video")));
 		this.controlList.add(new GuiButton(100, this.width / 2 - 100, this.height / 6 + 120 + 12, var1.translateKey("options.controls")));
 		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, var1.translateKey("gui.done")));
 	}
@@ -35,6 +39,11 @@ public class GuiOptions extends GuiScreen {
 			if(var1.id < 100 && var1 instanceof GuiSmallButton) {
 				this.options.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
 				var1.displayString = this.options.getKeyBinding(EnumOptions.func_20137_a(var1.id));
+			}
+
+			if(var1.id == 101) {
+				this.mc.gameSettings.saveOptions();
+				this.mc.displayGuiScreen(new GuiVideoSettings(this, this.options));
 			}
 
 			if(var1.id == 100) {

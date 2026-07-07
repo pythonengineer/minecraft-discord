@@ -7,7 +7,7 @@ public class GuiInventory extends GuiContainer {
 	private float ySize_lo;
 
 	public GuiInventory(EntityPlayer var1) {
-		super(var1.field_20069_g);
+		super(var1.inventorySlots);
 		this.field_948_f = true;
 	}
 

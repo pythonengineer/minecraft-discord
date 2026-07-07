@@ -32,7 +32,7 @@ public class NetworkManager {
 	private int timeSinceLastRead = 0;
 	private int sendQueueByteLength = 0;
 	public int chunkDataSendCounter = 0;
-	private int field_20100_w = 0;
+	private int field_20100_w = 50;
 
 	public NetworkManager(IWebSocketClient var1, String var2, NetHandler var3) throws IOException {
 		this.networkSocket = var1;

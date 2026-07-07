@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
-import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 import net.lax1dude.eaglercraft.vector.Matrix4f;
 import net.lax1dude.eaglercraft.vector.Vector4f;
 
 public class RenderGlobal implements IWorldAccess {
-	public List field_1458_a = new ArrayList();
+	public List tileEntities = new ArrayList();
 	private World worldObj;
 	private RenderEngine renderEngine;
 	private List worldRenderersToUpdate = new ArrayList();
@@ -221,12 +221,12 @@ public class RenderGlobal implements IWorldAccess {
 		}
 
 		this.worldRenderersToUpdate.clear();
-		this.field_1458_a.clear();
+		this.tileEntities.clear();
 
 		for(var4 = 0; var4 < this.renderChunksWide; ++var4) {
 			for(int var5 = 0; var5 < this.renderChunksTall; ++var5) {
 				for(int var6 = 0; var6 < this.renderChunksDeep; ++var6) {
-					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4] = new WorldRenderer(this.worldObj, this.field_1458_a, var4 * 16, var5 * 16, var6 * 16, 16, this.field_1440_s + var2);
+					this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4] = new WorldRenderer(this.worldObj, this.tileEntities, var4 * 16, var5 * 16, var6 * 16, 16, this.field_1440_s + var2);
 					if(this.field_1436_w) {
 						this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].field_1732_z = this.field_1437_v.get(var3);
 					}
@@ -244,7 +244,7 @@ public class RenderGlobal implements IWorldAccess {
 		}
 
 		if(this.worldObj != null) {
-			EntityPlayerSP var7 = this.mc.thePlayer;
+			EntityLiving var7 = this.mc.field_22009_h;
 			if(var7 != null) {
 				this.func_956_b(MathHelper.floor_double(var7.posX), MathHelper.floor_double(var7.posY), MathHelper.floor_double(var7.posZ));
 				Arrays.sort(this.sortedWorldRenderers, new EntitySorter(var7));
@@ -258,12 +258,12 @@ public class RenderGlobal implements IWorldAccess {
 		if(this.field_1424_I > 0) {
 			--this.field_1424_I;
 		} else {
-			TileEntityRenderer.instance.setRenderingContext(this.worldObj, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, var3);
-			RenderManager.instance.func_857_a(this.worldObj, this.renderEngine, this.mc.fontRenderer, this.mc.thePlayer, this.mc.gameSettings, var3);
+			TileEntityRenderer.instance.func_22267_a(this.worldObj, this.renderEngine, this.mc.fontRenderer, this.mc.field_22009_h, var3);
+			RenderManager.instance.func_22187_a(this.worldObj, this.renderEngine, this.mc.fontRenderer, this.mc.field_22009_h, this.mc.gameSettings, var3);
 			this.field_1423_J = 0;
 			this.field_1422_K = 0;
 			this.field_1421_L = 0;
-			EntityPlayerSP var4 = this.mc.thePlayer;
+			EntityLiving var4 = this.mc.field_22009_h;
 			RenderManager.renderPosX = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var3;
 			RenderManager.renderPosY = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var3;
 			RenderManager.renderPosZ = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var3;
@@ -276,14 +276,14 @@ public class RenderGlobal implements IWorldAccess {
 			int var6;
 			for(var6 = 0; var6 < var5.size(); ++var6) {
 				Entity var7 = (Entity)var5.get(var6);
-				if(var7.isInRangeToRenderVec3D(var1) && var2.isBoundingBoxInFrustum(var7.boundingBox) && (var7 != this.mc.thePlayer || this.mc.gameSettings.thirdPersonView) && this.worldObj.blockExists(MathHelper.floor_double(var7.posX), MathHelper.floor_double(var7.posY), MathHelper.floor_double(var7.posZ))) {
+				if(var7.isInRangeToRenderVec3D(var1) && var2.isBoundingBoxInFrustum(var7.boundingBox) && (var7 != this.mc.field_22009_h || this.mc.gameSettings.thirdPersonView || this.mc.field_22009_h.isPlayerSleeping()) && this.worldObj.blockExists(MathHelper.floor_double(var7.posX), MathHelper.floor_double(var7.posY), MathHelper.floor_double(var7.posZ))) {
 					++this.field_1422_K;
 					RenderManager.instance.renderEntity(var7, var3);
 				}
 			}
 
-			for(var6 = 0; var6 < this.field_1458_a.size(); ++var6) {
-				TileEntityRenderer.instance.renderTileEntity((TileEntity)this.field_1458_a.get(var6), var3);
+			for(var6 = 0; var6 < this.tileEntities.size(); ++var6) {
+				TileEntityRenderer.instance.renderTileEntity((TileEntity)this.tileEntities.get(var6), var3);
 			}
 
 		}
@@ -366,7 +366,7 @@ public class RenderGlobal implements IWorldAccess {
 
 	}
 
-	public int func_943_a(EntityPlayer var1, int var2, double var3) {
+	public int func_943_a(EntityLiving var1, int var2, double var3) {
 		for(int var5 = 0; var5 < 10; ++var5) {
 			this.field_21156_R = (this.field_21156_R + 1) % this.worldRenderers.length;
 			WorldRenderer var6 = this.worldRenderers[this.field_21156_R];
@@ -526,7 +526,7 @@ public class RenderGlobal implements IWorldAccess {
 			}
 		}
 
-		EntityPlayerSP var19 = this.mc.thePlayer;
+		EntityLiving var19 = this.mc.field_22009_h;
 		double var20 = var19.lastTickPosX + (var19.posX - var19.lastTickPosX) * var4;
 		double var10 = var19.lastTickPosY + (var19.posY - var19.lastTickPosY) * var4;
 		double var12 = var19.lastTickPosZ + (var19.posZ - var19.lastTickPosZ) * var4;
@@ -573,7 +573,7 @@ public class RenderGlobal implements IWorldAccess {
 	public void func_4142_a(float var1) {
 		if(!this.mc.theWorld.worldProvider.field_4220_c) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			Vec3D var2 = this.worldObj.func_4079_a(this.mc.thePlayer, var1);
+			Vec3D var2 = this.worldObj.func_4079_a(this.mc.field_22009_h, var1);
 			float var3 = (float)var2.xCoord;
 			float var4 = (float)var2.yCoord;
 			float var5 = (float)var2.zCoord;
@@ -677,7 +677,7 @@ public class RenderGlobal implements IWorldAccess {
 				this.func_6510_c(var1);
 			} else {
 				GL11.glDisable(GL11.GL_CULL_FACE);
-				float var2 = (float)(this.mc.thePlayer.lastTickPosY + (this.mc.thePlayer.posY - this.mc.thePlayer.lastTickPosY) * (double)var1);
+				float var2 = (float)(this.mc.field_22009_h.lastTickPosY + (this.mc.field_22009_h.posY - this.mc.field_22009_h.lastTickPosY) * (double)var1);
 				byte var3 = 32;
 				int var4 = 256 / var3;
 				Tessellator var5 = Tessellator.instance;
@@ -699,8 +699,8 @@ public class RenderGlobal implements IWorldAccess {
 				}
 
 				var10 = 0.5F / 1024.0F;
-				double var22 = this.mc.thePlayer.prevPosX + (this.mc.thePlayer.posX - this.mc.thePlayer.prevPosX) * (double)var1 + (double)(((float)this.field_1435_x + var1) * 0.03F);
-				double var13 = this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * (double)var1;
+				double var22 = this.mc.field_22009_h.prevPosX + (this.mc.field_22009_h.posX - this.mc.field_22009_h.prevPosX) * (double)var1 + (double)(((float)this.field_1435_x + var1) * 0.03F);
+				double var13 = this.mc.field_22009_h.prevPosZ + (this.mc.field_22009_h.posZ - this.mc.field_22009_h.prevPosZ) * (double)var1;
 				int var15 = MathHelper.floor_double(var22 / 2048.0D);
 				int var16 = MathHelper.floor_double(var13 / 2048.0D);
 				var22 -= (double)(var15 * 2048);
@@ -730,12 +730,12 @@ public class RenderGlobal implements IWorldAccess {
 
 	public void func_6510_c(float var1) {
 		GL11.glDisable(GL11.GL_CULL_FACE);
-		float var2 = (float)(this.mc.thePlayer.lastTickPosY + (this.mc.thePlayer.posY - this.mc.thePlayer.lastTickPosY) * (double)var1);
+		float var2 = (float)(this.mc.field_22009_h.lastTickPosY + (this.mc.field_22009_h.posY - this.mc.field_22009_h.lastTickPosY) * (double)var1);
 		Tessellator var3 = Tessellator.instance;
 		float var4 = 12.0F;
 		float var5 = 4.0F;
-		double var6 = (this.mc.thePlayer.prevPosX + (this.mc.thePlayer.posX - this.mc.thePlayer.prevPosX) * (double)var1 + (double)(((float)this.field_1435_x + var1) * 0.03F)) / (double)var4;
-		double var8 = (this.mc.thePlayer.prevPosZ + (this.mc.thePlayer.posZ - this.mc.thePlayer.prevPosZ) * (double)var1) / (double)var4 + (double)0.33F;
+		double var6 = (this.mc.field_22009_h.prevPosX + (this.mc.field_22009_h.posX - this.mc.field_22009_h.prevPosX) * (double)var1 + (double)(((float)this.field_1435_x + var1) * 0.03F)) / (double)var4;
+		double var8 = (this.mc.field_22009_h.prevPosZ + (this.mc.field_22009_h.posZ - this.mc.field_22009_h.prevPosZ) * (double)var1) / (double)var4 + (double)0.33F;
 		float var10 = 108.0F - var2 + 0.33F;
 		int var11 = MathHelper.floor_double(var6 / 2048.0D);
 		int var12 = MathHelper.floor_double(var8 / 2048.0D);
@@ -861,7 +861,7 @@ public class RenderGlobal implements IWorldAccess {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 
-	public boolean updateRenderers(EntityPlayer var1, boolean var2) {
+	public boolean updateRenderers(EntityLiving var1, boolean var2) {
 		boolean var3 = false;
 		if(var3) {
 			Collections.sort(this.worldRenderersToUpdate, new RenderSorter(var1));
@@ -1271,7 +1271,7 @@ public class RenderGlobal implements IWorldAccess {
 
 	public void playRecord(String var1, int var2, int var3, int var4) {
 		if(var1 != null) {
-			this.mc.ingameGUI.func_553_b("C418 - " + var1);
+			this.mc.ingameGUI.setRecordPlayingMessage("C418 - " + var1);
 		}
 
 		this.mc.sndManager.func_331_a(var1, (float)var2, (float)var3, (float)var4, 1.0F, 1.0F);
@@ -1283,16 +1283,16 @@ public class RenderGlobal implements IWorldAccess {
 			var10 *= var8;
 		}
 
-		if(this.mc.thePlayer.getDistanceSq(var2, var4, var6) < (double)(var10 * var10)) {
+		if(this.mc.field_22009_h.getDistanceSq(var2, var4, var6) < (double)(var10 * var10)) {
 			this.mc.sndManager.playSound(var1, (float)var2, (float)var4, (float)var6, var8, var9);
 		}
 
 	}
 
 	public void spawnParticle(String var1, double var2, double var4, double var6, double var8, double var10, double var12) {
-		double var14 = this.mc.thePlayer.posX - var2;
-		double var16 = this.mc.thePlayer.posY - var4;
-		double var18 = this.mc.thePlayer.posZ - var6;
+		double var14 = this.mc.field_22009_h.posX - var2;
+		double var16 = this.mc.field_22009_h.posY - var4;
+		double var18 = this.mc.field_22009_h.posZ - var6;
 		double var20 = 16.0D;
 		if(var14 * var14 + var16 * var16 + var18 * var18 <= var20 * var20) {
 			if(var1 == "bubble") {
@@ -1314,7 +1314,7 @@ public class RenderGlobal implements IWorldAccess {
 			} else if(var1 == "largesmoke") {
 				this.mc.effectRenderer.addEffect(new EntitySmokeFX(this.worldObj, var2, var4, var6, var8, var10, var12, 2.5F));
 			} else if(var1 == "reddust") {
-				this.mc.effectRenderer.addEffect(new EntityReddustFX(this.worldObj, var2, var4, var6));
+				this.mc.effectRenderer.addEffect(new EntityReddustFX(this.worldObj, var2, var4, var6, (float)var8, (float)var10, (float)var12));
 			} else if(var1 == "snowballpoof") {
 				this.mc.effectRenderer.addEffect(new EntitySlimeFX(this.worldObj, var2, var4, var6, Item.snowball));
 			} else if(var1 == "slime") {

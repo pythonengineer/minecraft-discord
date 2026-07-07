@@ -51,7 +51,7 @@ public class BlockFire extends Block {
 		int var7 = var1.getBlockMetadata(var2, var3, var4);
 		if(var7 < 15) {
 			var1.setBlockMetadataWithNotify(var2, var3, var4, var7 + 1);
-			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
+			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, this.tickRate());
 		}
 
 		if(!var6 && !this.func_263_h(var1, var2, var3, var4)) {
@@ -87,6 +87,15 @@ public class BlockFire extends Block {
 						}
 					}
 				}
+			}
+
+			if(var7 == 15) {
+				this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 1, var5);
+				this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 1, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 1, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 1, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 1, var5);
+				this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 1, var5);
 			}
 
 		}
@@ -156,7 +165,7 @@ public class BlockFire extends Block {
 			if(!var1.isBlockOpaqueCube(var2, var3 - 1, var4) && !this.func_263_h(var1, var2, var3, var4)) {
 				var1.setBlockWithNotify(var2, var3, var4, 0);
 			} else {
-				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
+				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, this.tickRate());
 			}
 		}
 	}

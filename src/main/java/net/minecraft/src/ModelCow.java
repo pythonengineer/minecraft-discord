@@ -14,7 +14,7 @@ public class ModelCow extends ModelQuadraped {
 		this.horn1.addBox(-4.0F, -5.0F, -4.0F, 1, 3, 1, 0.0F);
 		this.horn1.setPosition(0.0F, 3.0F, -7.0F);
 		this.horn2 = new ModelRenderer(22, 0);
-		this.horn2.addBox(4.0F, -5.0F, -4.0F, 1, 3, 1, 0.0F);
+		this.horn2.addBox(3.0F, -5.0F, -4.0F, 1, 3, 1, 0.0F);
 		this.horn2.setPosition(0.0F, 3.0F, -7.0F);
 		this.udders = new ModelRenderer(52, 0);
 		this.udders.addBox(-2.0F, -3.0F, 0.0F, 4, 6, 2, 0.0F);

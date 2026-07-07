@@ -40,7 +40,7 @@ public class Pathfinder {
 
 		while(!this.path.isPathEmpty()) {
 			PathPoint var7 = this.path.dequeue();
-			if(var7.hash == var3.hash) {
+			if(var7.equals(var3)) {
 				return this.createEntityPath(var2, var3);
 			}
 
@@ -111,7 +111,7 @@ public class Pathfinder {
 			var7 = this.openPoint(var2, var3, var4);
 		}
 
-		if(var7 == null && this.getVerticalOffset(var1, var2, var3 + var6, var4, var5) > 0) {
+		if(var7 == null && var6 > 0 && this.getVerticalOffset(var1, var2, var3 + var6, var4, var5) > 0) {
 			var7 = this.openPoint(var2, var3 + var6, var4);
 			var3 += var6;
 		}
@@ -144,7 +144,7 @@ public class Pathfinder {
 	}
 
 	private final PathPoint openPoint(int var1, int var2, int var3) {
-		int var4 = var1 | var2 << 10 | var3 << 20;
+		int var4 = PathPoint.func_22329_a(var1, var2, var3);
 		PathPoint var5 = (PathPoint)this.pointMap.lookup(var4);
 		if(var5 == null) {
 			var5 = new PathPoint(var1, var2, var3);
@@ -158,7 +158,7 @@ public class Pathfinder {
 		for(int var6 = var2; var6 < var2 + var5.xCoord; ++var6) {
 			for(int var7 = var3; var7 < var3 + var5.yCoord; ++var7) {
 				for(int var8 = var4; var8 < var4 + var5.zCoord; ++var8) {
-					Material var9 = this.worldMap.getBlockMaterial(var2, var3, var4);
+					Material var9 = this.worldMap.getBlockMaterial(var6, var7, var8);
 					if(var9.getIsSolid()) {
 						return 0;
 					}

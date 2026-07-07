@@ -38,11 +38,11 @@ public class WorldRenderer {
 	public boolean field_1747_A;
 	private boolean isInitialized = false;
 	public List tileEntityRenderers = new ArrayList();
-	private List field_1737_F;
+	private List tileEntities;
 
 	public WorldRenderer(World var1, List var2, int var3, int var4, int var5, int var6, int var7) {
 		this.worldObj = var1;
-		this.field_1737_F = var2;
+		this.tileEntities = var2;
 		this.sizeWidth = this.sizeHeight = this.sizeDepth = var6;
 		this.field_1740_t = MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth)) / 2.0F;
 		this.glRenderList = var7;
@@ -53,7 +53,7 @@ public class WorldRenderer {
 
 	public void func_1197_a(int var1, int var2, int var3) {
 		if(var1 != this.posX || var2 != this.posY || var3 != this.posZ) {
-			this.func_1195_b();
+			this.setDontDraw();
 			this.posX = var1;
 			this.posY = var2;
 			this.posZ = var3;
@@ -164,9 +164,9 @@ public class WorldRenderer {
 			HashSet var22 = new HashSet();
 			var22.addAll(this.tileEntityRenderers);
 			var22.removeAll(var21);
-			this.field_1737_F.addAll(var22);
+			this.tileEntities.addAll(var22);
 			var21.removeAll(this.tileEntityRenderers);
-			this.field_1737_F.removeAll(var21);
+			this.tileEntities.removeAll(var21);
 			this.field_1747_A = Chunk.isLit;
 			this.isInitialized = true;
 		}
@@ -179,7 +179,7 @@ public class WorldRenderer {
 		return var2 * var2 + var3 * var3 + var4 * var4;
 	}
 
-	public void func_1195_b() {
+	public void setDontDraw() {
 		for(int var1 = 0; var1 < 2; ++var1) {
 			this.skipRenderPass[var1] = true;
 		}
@@ -189,7 +189,7 @@ public class WorldRenderer {
 	}
 
 	public void func_1204_c() {
-		this.func_1195_b();
+		this.setDontDraw();
 		this.worldObj = null;
 	}
 

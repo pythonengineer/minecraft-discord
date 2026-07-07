@@ -90,6 +90,11 @@ public class DataWatcher {
 			var0.writeShort(var3.getItem().shiftedIndex);
 			var0.writeByte(var3.stackSize);
 			var0.writeShort(var3.getItemDamage());
+		case 6:
+			ChunkCoordinates var4 = (ChunkCoordinates)var1.getObject();
+			var0.writeInt(var4.field_22395_a);
+			var0.writeInt(var4.field_22394_b);
+			var0.writeInt(var4.field_22396_c);
 		}
 
 	}
@@ -125,7 +130,12 @@ public class DataWatcher {
 				short var6 = var0.readShort();
 				byte var7 = var0.readByte();
 				short var8 = var0.readShort();
-				var5 = new WatchableObject(var3, var4, new ItemStack(var6, var7, var8));
+				new WatchableObject(var3, var4, new ItemStack(var6, var7, var8));
+			case 6:
+				int var9 = var0.readInt();
+				int var10 = var0.readInt();
+				int var11 = var0.readInt();
+				var5 = new WatchableObject(var3, var4, new ChunkCoordinates(var9, var10, var11));
 			}
 
 			var1.add(var5);
@@ -154,5 +164,6 @@ public class DataWatcher {
 		dataTypes.put(Float.class, Integer.valueOf(3));
 		dataTypes.put(String.class, Integer.valueOf(4));
 		dataTypes.put(ItemStack.class, Integer.valueOf(5));
+		dataTypes.put(ChunkCoordinates.class, Integer.valueOf(6));
 	}
 }

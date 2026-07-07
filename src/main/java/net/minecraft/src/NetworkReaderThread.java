@@ -15,24 +15,24 @@ class NetworkReaderThread extends Thread {
 		}
 
 		while(true) {
-			boolean var11 = false;
+			boolean var12 = false;
 
 			try {
-				var11 = true;
+				var12 = true;
 				if(NetworkManager.isRunning(this.netManager)) {
 					if(!NetworkManager.isServerTerminating(this.netManager)) {
 						NetworkManager.readNetworkPacket(this.netManager);
 						continue;
 					}
 
-					var11 = false;
+					var12 = false;
 					break;
 				}
 
-				var11 = false;
+				var12 = false;
 				break;
 			} finally {
-				if(var11) {
+				if(var12) {
 					Object var5 = NetworkManager.threadSyncObject;
 					synchronized(var5) {
 						--NetworkManager.numReadThreads;

@@ -1,6 +1,7 @@
 package net.minecraft.src;
 
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class MobSpawnerBase {
 	public static final MobSpawnerBase rainforest = (new MobSpawnerRainforest()).setColor(588342).setBiomeName("Rainforest").func_4124_a(2094168);
@@ -20,7 +21,7 @@ public class MobSpawnerBase {
 	public byte topBlock = (byte)Block.grass.blockID;
 	public byte fillerBlock = (byte)Block.dirt.blockID;
 	public int field_6502_q = 5169201;
-	protected Class[] biomeMonsters = new Class[]{EntitySpider.class, EntityZombie.class, EntitySkeleton.class, EntityCreeper.class};
+	protected Class[] biomeMonsters = new Class[]{EntitySpider.class, EntityZombie.class, EntitySkeleton.class, EntityCreeper.class, EntitySlime.class};
 	protected Class[] biomeCreatures = new Class[]{EntitySheep.class, EntityPig.class, EntityChicken.class, EntityCow.class};
 	protected Class[] biomeWaterCreatures = new Class[]{EntitySquid.class};
 	private static MobSpawnerBase[] biomeLookupTable = new MobSpawnerBase[4096];
@@ -80,7 +81,7 @@ public class MobSpawnerBase {
 			var1 = 1.0F;
 		}
 
-		return GuiIngame.HSBtoRGB(224.0F / 360.0F - var1 * 0.05F, 0.5F + var1 * 0.1F, 1.0F);
+		return MathHelper.HSBtoRGB(224.0F / 360.0F - var1 * 0.05F, 0.5F + var1 * 0.1F, 1.0F);
 	}
 
 	public Class[] getEntitiesForType(EnumCreatureType var1) {

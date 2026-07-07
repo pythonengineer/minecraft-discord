@@ -141,7 +141,7 @@ public class BlockDispenser extends BlockContainer {
 		if(var5 > 0 && Block.blocksList[var5].canProvidePower()) {
 			boolean var6 = var1.isBlockIndirectlyGettingPowered(var2, var3, var4) || var1.isBlockIndirectlyGettingPowered(var2, var3 + 1, var4);
 			if(var6) {
-				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
+				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, this.tickRate());
 			}
 		}
 

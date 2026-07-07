@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import com.google.common.collect.Sets;
-
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public abstract class CraftingInventoryCB {
     public List field_20123_d = new ArrayList();
-    public List<Slot> field_20122_e = new ArrayList<Slot>();
+    public List<Slot> slots = new ArrayList<Slot>();
     public int windowId = 0;
     private short field_20917_a = 0;
     protected List field_20121_g = new ArrayList();
@@ -21,14 +19,14 @@ public abstract class CraftingInventoryCB {
     private final Set<Slot> dragSlots = Sets.newHashSet();
 
     protected void func_20117_a(Slot var1) {
-        var1.field_20007_a = this.field_20122_e.size();
-        this.field_20122_e.add(var1);
+        var1.field_20007_a = this.slots.size();
+        this.slots.add(var1);
         this.field_20123_d.add((Object)null);
     }
 
     public void func_20114_a() {
-        for(int var1 = 0; var1 < this.field_20122_e.size(); ++var1) {
-            ItemStack var2 = ((Slot)this.field_20122_e.get(var1)).getStack();
+        for(int var1 = 0; var1 < this.slots.size(); ++var1) {
+            ItemStack var2 = ((Slot)this.slots.get(var1)).getStack();
             ItemStack var3 = (ItemStack)this.field_20123_d.get(var1);
             if(!ItemStack.areItemStacksEqual(var3, var2)) {
                 var3 = var2 == null ? null : var2.copy();
@@ -42,8 +40,8 @@ public abstract class CraftingInventoryCB {
 
     }
 
-    public Slot func_20118_a(int var1) {
-        return (Slot)this.field_20122_e.get(var1);
+    public Slot getSlot(int var1) {
+        return (Slot)this.slots.get(var1);
     }
 
     public ItemStack func_20116_a(int var1, int var2, int mode, EntityPlayer var3) {
@@ -67,7 +65,7 @@ public abstract class CraftingInventoryCB {
                     this.resetDrag();
                 }
             } else if (this.dragEvent == 1) {
-                Slot slot = (Slot) this.field_20122_e.get(slotId);
+                Slot slot = (Slot) this.slots.get(slotId);
                 if (slot != null && canAddItemToSlot(slot, var3.inventory.getItemStack(), true)
                         && slot.isItemValid(var3.inventory.getItemStack())
                         && var3.inventory.getItemStack().stackSize > this.dragSlots.size()
@@ -134,7 +132,7 @@ public abstract class CraftingInventoryCB {
                     return null;
                 }
 
-                Slot slot6 = (Slot) this.field_20122_e.get(slotId);
+                Slot slot6 = (Slot) this.slots.get(slotId);
                 if (slot6 != null) {
                     ItemStack itemstack8 = this.transferStackInSlot(var3, slotId);
                     if (itemstack8 != null) {
@@ -150,7 +148,7 @@ public abstract class CraftingInventoryCB {
                     return null;
                 }
 
-                Slot slot7 = (Slot) this.field_20122_e.get(slotId);
+                Slot slot7 = (Slot) this.slots.get(slotId);
                 if (slot7 != null) {
                     ItemStack itemstack9 = slot7.getStack();
                     ItemStack itemstack10 = var3.inventory.getItemStack();
@@ -224,7 +222,7 @@ public abstract class CraftingInventoryCB {
                 }
             }
         } else if (mode == 2 && clickedButton >= 0 && clickedButton < 9) {
-            Slot slot5 = (Slot) this.field_20122_e.get(slotId);
+            Slot slot5 = (Slot) this.slots.get(slotId);
             ItemStack itemstack7 = inventoryplayer.getStackInSlot(clickedButton);
             boolean flag = itemstack7 == null
                     || slot5.inventory == inventoryplayer && slot5.isItemValid(itemstack7);
@@ -255,30 +253,30 @@ public abstract class CraftingInventoryCB {
             }
         } else if (mode == 3 && false && var3.inventory.getItemStack() == null
                 && slotId >= 0) { // creative mode
-            Slot slot4 = (Slot) this.field_20122_e.get(slotId);
+            Slot slot4 = (Slot) this.slots.get(slotId);
             if (slot4 != null && slot4.getHasStack()) {
                 ItemStack itemstack6 = slot4.getStack().copy();
                 itemstack6.stackSize = itemstack6.getMaxStackSize();
                 var3.inventory.setItemStack(itemstack6);
             }
         } else if (mode == 4 && var3.inventory.getItemStack() == null && slotId >= 0) {
-            Slot slot3 = (Slot) this.field_20122_e.get(slotId);
+            Slot slot3 = (Slot) this.slots.get(slotId);
             if (slot3 != null && slot3.getHasStack()) {
                 ItemStack itemstack5 = slot3.decrStackSize(clickedButton == 0 ? 1 : slot3.getStack().stackSize);
                 slot3.onPickupFromSlot();
                 var3.dropPlayerItem(itemstack5);
             }
         } else if (mode == 6 && slotId >= 0) {
-            Slot slot2 = (Slot) this.field_20122_e.get(slotId);
+            Slot slot2 = (Slot) this.slots.get(slotId);
             ItemStack itemstack4 = var3.inventory.getItemStack();
             if (itemstack4 != null && (slot2 == null || !slot2.getHasStack())) {
-                int i1 = clickedButton == 0 ? 0 : this.field_20122_e.size() - 1;
+                int i1 = clickedButton == 0 ? 0 : this.slots.size() - 1;
                 int j1 = clickedButton == 0 ? 1 : -1;
 
                 for (int l2 = 0; l2 < 2; ++l2) {
-                    for (int i3 = i1; i3 >= 0 && i3 < this.field_20122_e.size()
+                    for (int i3 = i1; i3 >= 0 && i3 < this.slots.size()
                             && itemstack4.stackSize < itemstack4.getMaxStackSize(); i3 += j1) {
-                        Slot slot8 = (Slot) this.field_20122_e.get(i3);
+                        Slot slot8 = (Slot) this.slots.get(i3);
                         if (slot8.getHasStack() && canAddItemToSlot(slot8, itemstack4, true)
                                 && this.canMergeSlot(itemstack4, slot8)
                                 && (l2 != 0 || slot8.getStack().stackSize != slot8.getStack().getMaxStackSize())) {
@@ -315,7 +313,7 @@ public abstract class CraftingInventoryCB {
 
     private List<int[]> planShiftClick(int slotId, int button, EntityPlayer player) {
         List<int[]> clicks = new ArrayList<int[]>();
-        if (slotId < 0 || slotId >= this.field_20122_e.size()) {
+        if (slotId < 0 || slotId >= this.slots.size()) {
             return clicks;
         }
 
@@ -354,7 +352,7 @@ public abstract class CraftingInventoryCB {
             return clicks;
         }
 
-        if (this.field_20122_e.get(slotId) instanceof SlotCrafting) {
+        if (this.slots.get(slotId) instanceof SlotCrafting) {
             return this.planShiftCraft(slotId, before, after, partials, empties);
         }
 
@@ -389,7 +387,7 @@ public abstract class CraftingInventoryCB {
         for (int d = 0; d < dests.size(); ++d) {
             int i = dests.get(d).intValue();
             destCurrent[d] = before[i] == null ? 0 : before[i].stackSize;
-            destLimit[d] = Math.min(((Slot) this.field_20122_e.get(i)).getSlotStackLimit(), maxStack);
+            destLimit[d] = Math.min(((Slot) this.slots.get(i)).getSlotStackLimit(), maxStack);
             totalMoved += (after[i] == null ? 0 : after[i].stackSize) - destCurrent[d];
         }
 
@@ -449,15 +447,15 @@ public abstract class CraftingInventoryCB {
         }
 
         int acc = -1;
-        if (slotId >= 0 && slotId < this.field_20122_e.size()) {
-            Slot s = (Slot) this.field_20122_e.get(slotId);
+        if (slotId >= 0 && slotId < this.slots.size()) {
+            Slot s = (Slot) this.slots.get(slotId);
             if (!s.getHasStack() && s.isItemValid(held)) {
                 acc = slotId;
             }
         }
         if (acc < 0) {
-            for (int i = 0; i < this.field_20122_e.size(); ++i) {
-                Slot s = (Slot) this.field_20122_e.get(i);
+            for (int i = 0; i < this.slots.size(); ++i) {
+                Slot s = (Slot) this.slots.get(i);
                 if (!s.getHasStack() && s.isItemValid(held)) {
                     acc = i;
                     break;
@@ -472,12 +470,12 @@ public abstract class CraftingInventoryCB {
         int accCount = held.stackSize;
 
         for (int pass = 0; pass < 2 && accCount < max; ++pass) {
-            for (int i = 0; i < this.field_20122_e.size() && accCount < max; ++i) {
+            for (int i = 0; i < this.slots.size() && accCount < max; ++i) {
                 if (i == acc) {
                     continue;
                 }
 
-                Slot s = (Slot) this.field_20122_e.get(i);
+                Slot s = (Slot) this.slots.get(i);
                 ItemStack stack = s.getStack();
                 if (stack == null || !sameItem(stack, held)) {
                     continue;
@@ -508,9 +506,9 @@ public abstract class CraftingInventoryCB {
     }
 
     private ItemStack[] snapshotSlots() {
-        ItemStack[] snap = new ItemStack[this.field_20122_e.size()];
+        ItemStack[] snap = new ItemStack[this.slots.size()];
         for (int i = 0; i < snap.length; ++i) {
-            ItemStack s = ((Slot) this.field_20122_e.get(i)).getStack();
+            ItemStack s = ((Slot) this.slots.get(i)).getStack();
             snap[i] = s == null ? null : s.copy();
         }
 
@@ -519,7 +517,7 @@ public abstract class CraftingInventoryCB {
 
     private void restoreSlots(ItemStack[] snap, ItemStack held, EntityPlayer player) {
         for (int i = 0; i < snap.length; ++i) {
-            ((Slot) this.field_20122_e.get(i)).putStack(snap[i] == null ? null : snap[i].copy());
+            ((Slot) this.slots.get(i)).putStack(snap[i] == null ? null : snap[i].copy());
         }
 
         player.inventory.setItemStack(held == null ? null : held.copy());
@@ -542,13 +540,13 @@ public abstract class CraftingInventoryCB {
         this.func_20114_a();
     }
 
-    public void func_20119_a(int var1, ItemStack var2) {
-        this.func_20118_a(var1).putStack(var2);
+    public void putStackInSlot(int var1, ItemStack var2) {
+        this.getSlot(var1).putStack(var2);
     }
 
-    public void func_20115_a(ItemStack[] var1) {
+    public void putStacksInSlots(ItemStack[] var1) {
         for(int var2 = 0; var2 < var1.length; ++var2) {
-            this.func_20118_a(var2).putStack(var1[var2]);
+            this.getSlot(var2).putStack(var1[var2]);
         }
 
     }
@@ -570,7 +568,7 @@ public abstract class CraftingInventoryCB {
     public abstract boolean func_20120_b(EntityPlayer var1);
 
     public ItemStack transferStackInSlot(EntityPlayer var1, int i) {
-        Slot slot = (Slot) this.field_20122_e.get(i);
+        Slot slot = (Slot) this.slots.get(i);
         return slot != null ? slot.getStack() : null;
     }
 
@@ -591,7 +589,7 @@ public abstract class CraftingInventoryCB {
 
         if (true) { //stack.isStackable()) {
             while (stack.stackSize > 0 && (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex)) {
-                Slot slot = (Slot) this.field_20122_e.get(i);
+                Slot slot = (Slot) this.slots.get(i);
                 ItemStack itemstack = slot.getStack();
                 if (itemstack != null && itemstack.getItem() == stack.getItem()
                         && (!stack.getHasSubtypes() || stack.getItemDamage() == itemstack.getItemDamage())) {
@@ -625,7 +623,7 @@ public abstract class CraftingInventoryCB {
             }
 
             while (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex) {
-                Slot slot1 = (Slot) this.field_20122_e.get(i);
+                Slot slot1 = (Slot) this.slots.get(i);
                 ItemStack itemstack1 = slot1.getStack();
                 if (itemstack1 == null) {
                     slot1.putStack(stack.copy());

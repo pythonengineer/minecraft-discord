@@ -481,6 +481,10 @@ public class MathHelper {
         return hsbvals;
     }
 
+    public static boolean func_22282_a(String var0) {
+        return var0 == null || var0.length() == 0;
+    }
+
     static {
         for (int i = 0; i < 65536; ++i) {
             SIN_TABLE[i] = (float)Math.sin((double)i * Math.PI * 2.0D / 65536.0D);

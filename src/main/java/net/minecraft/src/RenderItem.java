@@ -86,7 +86,7 @@ public class RenderItem extends Render {
 					GL11.glTranslatef(var24, var25, var26);
 				}
 
-				GL11.glRotatef(180.0F - this.renderManager.field_1225_i, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
 				var15.startDrawingQuads();
 				var15.setNormal(0.0F, 1.0F, 0.0F);
 				var15.addVertexWithUV((double)(0.0F - var21), (double)(0.0F - var22), 0.0D, (double)var16, (double)var19);

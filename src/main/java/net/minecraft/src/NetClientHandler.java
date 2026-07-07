@@ -314,11 +314,29 @@ public class NetClientHandler extends NetHandler {
 	public void handleArmAnimation(Packet18ArmAnimation var1) {
 		Entity var2 = this.getEntityByID(var1.entityId);
 		if(var2 != null) {
+			EntityPlayer var3;
 			if(var1.animate == 1) {
-				EntityPlayer var3 = (EntityPlayer)var2;
+				var3 = (EntityPlayer)var2;
 				var3.swingItem();
 			} else if(var1.animate == 2) {
 				var2.performHurtAnimation();
+			} else if(var1.animate == 3) {
+				var3 = (EntityPlayer)var2;
+				var3.func_22056_a(false, false);
+			} else if(var1.animate == 4) {
+				var3 = (EntityPlayer)var2;
+				var3.func_6420_o();
+			}
+
+		}
+	}
+
+	public void func_22186_a(Packet17Sleep var1) {
+		Entity var2 = this.getEntityByID(var1.field_22045_a);
+		if(var2 != null) {
+			if(var1.field_22046_e == 0) {
+				EntityPlayer var3 = (EntityPlayer)var2;
+				var3.func_22053_b(var1.field_22044_b, var1.field_22048_c, var1.field_22047_d);
 			}
 
 		}
@@ -326,10 +344,10 @@ public class NetClientHandler extends NetHandler {
 
 	public void handleHandshake(Packet2Handshake var1) {
 		if(var1.username.equals("-")) {
-			this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 8));
+			this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 9));
 		} else {
 			try {
-				this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 8));
+				this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 9));
 			} catch (Exception var5) {
 				var5.printStackTrace();
 				this.netManager.networkShutdown("disconnect.genericReason", new Object[]{"Internal client error: " + var5.toString()});
@@ -369,9 +387,7 @@ public class NetClientHandler extends NetHandler {
 	}
 
 	public void handleSpawnPosition(Packet6SpawnPosition var1) {
-		this.worldClient.spawnX = var1.xPosition;
-		this.worldClient.spawnY = var1.yPosition;
-		this.worldClient.spawnZ = var1.zPosition;
+		this.worldClient.func_22143_a(new ChunkCoordinates(var1.xPosition, var1.yPosition, var1.zPosition));
 	}
 
 	public void func_6497_a(Packet39 var1) {
@@ -437,9 +453,9 @@ public class NetClientHandler extends NetHandler {
 		if(var1.windowId == -1) {
 			this.mc.thePlayer.inventory.setItemStack(var1.myItemStack);
 		} else if(var1.windowId == 0) {
-			this.mc.thePlayer.field_20069_g.func_20119_a(var1.itemSlot, var1.myItemStack);
+			this.mc.thePlayer.inventorySlots.putStackInSlot(var1.itemSlot, var1.myItemStack);
 		} else if(var1.windowId == this.mc.thePlayer.craftingInventory.windowId) {
-			this.mc.thePlayer.craftingInventory.func_20119_a(var1.itemSlot, var1.myItemStack);
+			this.mc.thePlayer.craftingInventory.putStackInSlot(var1.itemSlot, var1.myItemStack);
 		}
 
 	}
@@ -447,7 +463,7 @@ public class NetClientHandler extends NetHandler {
 	public void func_20089_a(Packet106 var1) {
 		CraftingInventoryCB var2 = null;
 		if(var1.windowId == 0) {
-			var2 = this.mc.thePlayer.field_20069_g;
+			var2 = this.mc.thePlayer.inventorySlots;
 		} else if(var1.windowId == this.mc.thePlayer.craftingInventory.windowId) {
 			var2 = this.mc.thePlayer.craftingInventory;
 		}
@@ -465,9 +481,9 @@ public class NetClientHandler extends NetHandler {
 
 	public void func_20094_a(Packet104 var1) {
 		if(var1.windowId == 0) {
-			this.mc.thePlayer.field_20069_g.func_20115_a(var1.itemStack);
+			this.mc.thePlayer.inventorySlots.putStacksInSlots(var1.itemStack);
 		} else if(var1.windowId == this.mc.thePlayer.craftingInventory.windowId) {
-			this.mc.thePlayer.craftingInventory.func_20115_a(var1.itemStack);
+			this.mc.thePlayer.craftingInventory.putStacksInSlots(var1.itemStack);
 		}
 
 	}
@@ -499,7 +515,7 @@ public class NetClientHandler extends NetHandler {
 	public void handlePlayerInventory(Packet5PlayerInventory var1) {
 		Entity var2 = this.getEntityByID(var1.entityID);
 		if(var2 != null) {
-			var2.func_20045_c(var1.slot, var1.itemID, var1.itemDamage);
+			var2.outfitWithItem(var1.slot, var1.itemID, var1.itemDamage);
 		}
 
 	}

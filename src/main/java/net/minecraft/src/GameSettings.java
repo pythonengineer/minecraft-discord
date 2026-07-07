@@ -25,6 +25,7 @@ public class GameSettings {
 	public boolean fancyGraphics = true;
     public boolean touchscreen;
     public int guiScale = 3;
+	public boolean field_22278_j = true;
 	public String skin = "Default";
 	public KeyBinding keyBindForward = new KeyBinding("key.forward", 17);
 	public KeyBinding keyBindLeft = new KeyBinding("key.left", 30);
@@ -39,8 +40,15 @@ public class GameSettings {
 	public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog};
 	protected Minecraft mc;
 	public int difficulty = 2;
+	public boolean field_22277_y = false;
 	public boolean thirdPersonView = false;
+	public boolean showDebugInfo = false;
 	public String lastServer = "";
+	public boolean field_22275_C = false;
+	public boolean field_22274_D = false;
+	public boolean field_22273_E = false;
+	public float field_22272_F = 1.0F;
+	public float field_22271_G = 1.0F;
 
 	public GameSettings(Minecraft var1) {
 		this.mc = var1;
@@ -112,6 +120,11 @@ public class GameSettings {
 			this.mc.renderGlobal.loadRenderers();
 		}
 
+		if(var1 == EnumOptions.AMBIENT_OCCLUSION) {
+			this.field_22278_j = !this.field_22278_j;
+			this.mc.renderGlobal.loadRenderers();
+		}
+
         if(var1 == EnumOptions.GUI_SCALE) {
             this.guiScale = this.guiScale + var2 & 3;
         }
@@ -133,6 +146,8 @@ public class GameSettings {
 			return this.anaglyph;
 		case 4:
 			return this.limitFramerate;
+		case 5:
+			return this.field_22278_j;
 		default:
 			return false;
 		}
@@ -215,14 +230,16 @@ public class GameSettings {
 					this.fancyGraphics = var3[1].equals("true");
 				}
 
+				if(var3[0].equals("ao")) {
+					this.field_22278_j = var3[1].equals("true");
+				}
+
 				if(var3[0].equals("skin")) {
 					this.skin = var3[1];
 				}
 
-				if(var3[0].equals("lastServer")) {
-				    if(var3.length > 1) {
-					    this.lastServer = var3[1];
-				    }
+				if(var3[0].equals("lastServer") && var3.length >= 2) {
+					this.lastServer = var3[1];
 				}
 
 				for(int var4 = 0; var4 < this.keyBindings.length; ++var4) {
@@ -259,6 +276,7 @@ public class GameSettings {
 			var1.println("difficulty:" + this.difficulty);
 			var1.println("fancyGraphics:" + this.fancyGraphics);
             var1.println("guiScale:" + this.guiScale);
+			var1.println("ao:" + this.field_22278_j);
 			var1.println("skin:" + this.skin);
 			var1.println("lastServer:" + this.lastServer);
 

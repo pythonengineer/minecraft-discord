@@ -23,8 +23,8 @@ public class RenderSnowball extends Render {
 		float var15 = 1.0F;
 		float var16 = 0.5F;
 		float var17 = 0.25F;
-		GL11.glRotatef(180.0F - this.renderManager.field_1225_i, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(-this.renderManager.field_1224_j, 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
 		var10.startDrawingQuads();
 		var10.setNormal(0.0F, 1.0F, 0.0F);
 		var10.addVertexWithUV((double)(0.0F - var16), (double)(0.0F - var17), 0.0D, (double)var11, (double)var14);

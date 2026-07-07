@@ -1,0 +1,175 @@
+package net.minecraft.src;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
+import net.lax1dude.eaglercraft.EaglerZLIB;
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import net.lax1dude.eaglercraft.util.MathHelper;
+
+public class SaveConverterMcRegion extends SaveFormatOld {
+	public SaveConverterMcRegion(VFile2 var1) {
+		super(var1);
+	}
+
+	public String func_22178_a() {
+		return "Scaevolus\' McRegion";
+	}
+
+	public List func_22176_b() {
+		ArrayList var1 = new ArrayList();
+		List<VFile2> var2 = this.field_22180_a.listFiles(true);
+		List<VFile2> var3 = var2;
+		int var4 = var2.size();
+
+		for(int var5 = 0; var5 < var4; ++var5) {
+			VFile2 var6 = var3.get(var5);
+			if(var6.getName().equalsIgnoreCase("level.dat")) {
+				String var7 = var6.getDirectory();
+				WorldInfo var8 = this.func_22173_b(var7);
+				if(var8 != null) {
+					boolean var9 = var8.func_22296_k() != 19132;
+					String var10 = var8.getWorldName();
+					if(var10 == null || MathHelper.func_22282_a(var10)) {
+						var10 = var7;
+					}
+
+					var1.add(new SaveFormatComparator(var7, var10, var8.func_22301_l(), var8.func_22306_g(), var9));
+				}
+			}
+		}
+
+		return var1;
+	}
+
+	public void func_22177_c() {
+		RegionFileCache.func_22192_a();
+	}
+
+	public ISaveHandler func_22174_a(String var1, boolean var2) {
+		return new SaveOldDir(this.field_22180_a, var1, var2);
+	}
+
+	public boolean func_22175_a(String var1) {
+		WorldInfo var2 = this.func_22173_b(var1);
+		return var2 != null && var2.func_22296_k() == 0;
+	}
+
+	public boolean func_22171_a(String var1, IProgressUpdate var2) {
+		var2.setLoadingProgress(0);
+		ArrayList var3 = new ArrayList();
+		ArrayList var4 = new ArrayList();
+		ArrayList var5 = new ArrayList();
+		ArrayList var6 = new ArrayList();
+		VFile2 var7 = new VFile2(this.field_22180_a, var1);
+		VFile2 var8 = new VFile2(var7, "DIM-1");
+		System.out.println("Scanning folders...");
+		this.func_22183_a(var7, var3, var4);
+		if(var8.exists()) {
+			this.func_22183_a(var8, var5, var6);
+		}
+
+		int var9 = var3.size() + var5.size() + var4.size() + var6.size();
+		System.out.println("Total conversion count is " + var9);
+		this.func_22181_a(var7, var3, 0, var9, var2);
+		this.func_22181_a(var8, var5, var3.size(), var9, var2);
+		WorldInfo var10 = this.func_22173_b(var1);
+		var10.func_22289_d(19132);
+		ISaveHandler var11 = this.func_22174_a(var1, false);
+		var11.func_22152_a(var10);
+		this.func_22182_a(var4, var3.size() + var5.size(), var9, var2);
+		if(var8.exists()) {
+			this.func_22182_a(var6, var3.size() + var5.size() + var4.size(), var9, var2);
+		}
+
+		return true;
+	}
+
+	private void func_22183_a(VFile2 var1, ArrayList var2, ArrayList var3) {
+		ChunkFolderPattern var4 = new ChunkFolderPattern((Empty2)null);
+		ChunkFilePattern var5 = new ChunkFilePattern((Empty2)null);
+		String[] var6 = VFile2.splitPath(var1.getPath());
+		int var7 = var6.length;
+		HashSet var8 = new HashSet();
+		List<VFile2> var9 = var1.listFiles(true);
+		int var10 = var9.size();
+
+		for(int var11 = 0; var11 < var10; ++var11) {
+			VFile2 var12 = var9.get(var11);
+			String[] var13 = VFile2.splitPath(var12.getPath());
+			if(var13.length != var7 + 3) {
+				continue;
+			}
+
+			VFile2 var14 = new VFile2(var1, var13[var7]);
+			VFile2 var15 = new VFile2(var14, var13[var7 + 1]);
+			if(var4.accept(var14) && var4.accept(var15) && var5.accept(var12, var12.getName())) {
+				var2.add(new FileMatcher(var12));
+				if(var8.add(var14.getPath())) {
+					var3.add(var14);
+				}
+			}
+		}
+
+	}
+
+	private void func_22181_a(VFile2 var1, ArrayList var2, int var3, int var4, IProgressUpdate var5) {
+		Collections.sort(var2);
+		byte[] var6 = new byte[4096];
+		Iterator var7 = var2.iterator();
+
+		while(var7.hasNext()) {
+			FileMatcher var8 = (FileMatcher)var7.next();
+			int var9 = var8.func_22323_b();
+			int var10 = var8.func_22321_c();
+			RegionFile var11 = RegionFileCache.func_22193_a(var1, var9, var10);
+			if(!var11.func_22202_c(var9 & 31, var10 & 31)) {
+	            try (InputStream fis = var8.func_22324_a().getInputStream()) {
+					DataInputStream var12 = new DataInputStream(EaglerZLIB.newGZIPInputStream(fis));
+					DataOutputStream var13 = var11.func_22205_b(var9 & 31, var10 & 31);
+					boolean var14 = false;
+
+					while(true) {
+						int var17 = var12.read(var6);
+						if(var17 == -1) {
+							var13.close();
+							var12.close();
+							break;
+						}
+
+						var13.write(var6, 0, var17);
+					}
+				} catch (Exception var15) {
+					var15.printStackTrace();
+				}
+			}
+
+			++var3;
+			int var16 = (int)Math.round(100.0D * (double)var3 / (double)var4);
+			var5.setLoadingProgress(var16);
+		}
+
+		RegionFileCache.func_22192_a();
+	}
+
+	private void func_22182_a(ArrayList var1, int var2, int var3, IProgressUpdate var4) {
+		Iterator var5 = var1.iterator();
+
+		while(var5.hasNext()) {
+			VFile2 var6 = (VFile2)var5.next();
+			List<VFile2> var7 = var6.listFiles(true);
+			func_22179_a(var7);
+			var6.delete();
+			++var2;
+			int var8 = (int)Math.round(100.0D * (double)var2 / (double)var3);
+			var4.setLoadingProgress(var8);
+		}
+
+	}
+}

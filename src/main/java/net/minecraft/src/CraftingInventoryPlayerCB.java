@@ -3,7 +3,7 @@ package net.minecraft.src;
 public class CraftingInventoryPlayerCB extends CraftingInventoryCB {
 	public InventoryCrafting craftMatrix;
 	public IInventory craftResult;
-	public boolean field_20124_c;
+	public boolean isSinglePlayer;
 
 	public CraftingInventoryPlayerCB(InventoryPlayer var1) {
 		this(var1, true);
@@ -12,8 +12,8 @@ public class CraftingInventoryPlayerCB extends CraftingInventoryCB {
 	public CraftingInventoryPlayerCB(InventoryPlayer var1, boolean var2) {
 		this.craftMatrix = new InventoryCrafting(this, 2, 2);
 		this.craftResult = new InventoryCraftResult();
-		this.field_20124_c = false;
-		this.field_20124_c = var2;
+		this.isSinglePlayer = false;
+		this.isSinglePlayer = var2;
 		this.func_20117_a(new SlotCrafting(this.craftMatrix, this.craftResult, 0, 144, 36));
 
 		int var3;
@@ -64,7 +64,7 @@ public class CraftingInventoryPlayerCB extends CraftingInventoryCB {
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.field_20122_e.get(i);
+        Slot slot = (Slot) this.slots.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
@@ -81,7 +81,7 @@ public class CraftingInventoryPlayerCB extends CraftingInventoryCB {
                     return null;
                 }
             } else if (itemstack.getItem() instanceof ItemArmor
-                    && !((Slot) this.field_20122_e.get(5 + ((ItemArmor) itemstack.getItem()).armorType))
+                    && !((Slot) this.slots.get(5 + ((ItemArmor) itemstack.getItem()).armorType))
                             .getHasStack()) {
                 int j = 5 + ((ItemArmor) itemstack.getItem()).armorType;
                 if (!this.mergeItemStack(itemstack1, j, j + 1, false)) {

@@ -19,8 +19,8 @@ public class RenderFireball extends Render {
 		float var17 = 1.0F;
 		float var18 = 0.5F;
 		float var19 = 0.25F;
-		GL11.glRotatef(180.0F - this.renderManager.field_1225_i, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(-this.renderManager.field_1224_j, 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
 		var12.startDrawingQuads();
 		var12.setNormal(0.0F, 1.0F, 0.0F);
 		var12.addVertexWithUV((double)(0.0F - var18), (double)(0.0F - var19), 0.0D, (double)var13, (double)var16);

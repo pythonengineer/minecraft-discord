@@ -18,11 +18,15 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 		this.stepHeight = 0.0F;
 		if(var2 != null && var2.length() > 0) {
 			this.skinUrl = var2;
-			System.out.println("Loading texture " + this.skinUrl);
 		}
 
 		this.noClip = true;
+		this.field_22062_y = 0.25F;
 		this.renderDistanceWeight = 10.0D;
+	}
+
+	protected void func_22058_C() {
+		this.yOffset = 0.0F;
 	}
 
 	public boolean attackEntityFrom(Entity var1, int var2) {
@@ -30,7 +34,6 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 	}
 
 	public void setPositionAndRotation2(double var1, double var3, double var5, float var7, float var8, int var9) {
-		this.yOffset = 0.0F;
 		this.field_784_bh = var1;
 		this.field_783_bi = var3;
 		this.field_782_bj = var5;
@@ -98,7 +101,7 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 		this.field_9328_R += (var2 - this.field_9328_R) * 0.8F;
 	}
 
-	public void func_20045_c(int var1, int var2, int var3) {
+	public void outfitWithItem(int var1, int var2, int var3) {
 		ItemStack var4 = null;
 		if(var2 >= 0) {
 			var4 = new ItemStack(var2, 1, var3);
@@ -110,5 +113,8 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 			this.inventory.armorInventory[var1 - 1] = var4;
 		}
 
+	}
+
+	public void func_6420_o() {
 	}
 }

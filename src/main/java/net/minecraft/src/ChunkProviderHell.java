@@ -104,7 +104,7 @@ public class ChunkProviderHell implements IChunkProvider {
 		byte var4 = 64;
 		double var5 = 1.0D / 32.0D;
 		this.field_4162_p = this.field_4166_l.generateNoiseOctaves(this.field_4162_p, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var5, var5, 1.0D);
-		this.field_4161_q = this.field_4166_l.generateNoiseOctaves(this.field_4161_q, (double)(var2 * 16), 109.0134D, (double)(var1 * 16), 16, 1, 16, var5, 1.0D, var5);
+		this.field_4161_q = this.field_4166_l.generateNoiseOctaves(this.field_4161_q, (double)(var1 * 16), 109.0134D, (double)(var2 * 16), 16, 1, 16, var5, 1.0D, var5);
 		this.field_4160_r = this.field_4165_m.generateNoiseOctaves(this.field_4160_r, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var5 * 2.0D, var5 * 2.0D, var5 * 2.0D);
 
 		for(int var7 = 0; var7 < 16; ++var7) {
@@ -117,7 +117,7 @@ public class ChunkProviderHell implements IChunkProvider {
 				byte var14 = (byte)Block.bloodStone.blockID;
 
 				for(int var15 = 127; var15 >= 0; --var15) {
-					int var16 = (var7 * 16 + var8) * 128 + var15;
+					int var16 = (var8 * 16 + var7) * 128 + var15;
 					if(var15 >= 127 - this.hellRNG.nextInt(5)) {
 						var3[var16] = (byte)Block.bedrock.blockID;
 					} else if(var15 <= 0 + this.hellRNG.nextInt(5)) {

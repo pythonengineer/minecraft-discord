@@ -106,7 +106,7 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 			try {
 				Chunk var3 = this.chunkLoader.loadChunk(this.worldObj, var1, var2);
 				if(var3 != null) {
-					var3.lastSaveTime = this.worldObj.worldTime;
+					var3.lastSaveTime = this.worldObj.func_22139_r();
 				}
 
 				return var3;
@@ -131,7 +131,7 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	private void saveChunk(Chunk var1) {
 		if(this.chunkLoader != null) {
 			try {
-				var1.lastSaveTime = this.worldObj.worldTime;
+				var1.lastSaveTime = this.worldObj.func_22139_r();
 				this.chunkLoader.saveChunk(this.worldObj, var1);
 			} catch (Exception var3) {
 				var3.printStackTrace();

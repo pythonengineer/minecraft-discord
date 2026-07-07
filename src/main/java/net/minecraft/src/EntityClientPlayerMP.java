@@ -36,9 +36,6 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 		}
 	}
 
-	public void func_6420_o() {
-	}
-
 	public void func_4056_N() {
 		if(this.field_9380_bx++ == 20) {
 			this.sendInventoryChanged();
@@ -83,7 +80,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 			this.field_12242_bI = 0;
 		} else {
 			this.sendQueue.addToSendQueue(new Packet10Flying(this.onGround));
-			if(this.field_9382_bF == this.onGround && this.field_12242_bI <= 20) {
+			if(this.field_9382_bF == this.onGround && this.field_12242_bI <= 200) {
 				++this.field_12242_bI;
 			} else {
 				this.field_12242_bI = 0;
@@ -105,7 +102,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
 	}
 
-	public void func_20060_w() {
+	public void dropCurrentItem() {
 		this.sendQueue.addToSendQueue(new Packet14BlockDig(4, 0, 0, 0, 0));
 	}
 

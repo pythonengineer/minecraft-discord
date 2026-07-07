@@ -11,6 +11,7 @@ public enum EnumOptions {
 	LIMIT_FRAMERATE("options.limitFramerate", false, true),
 	DIFFICULTY("options.difficulty", false, false),
 	GRAPHICS("options.graphics", false, false),
+	AMBIENT_OCCLUSION("options.ao", false, true),
     GUI_SCALE("options.guiScale", false, false);
 
 	private final boolean enumFloat;

@@ -144,7 +144,7 @@ public class FontRenderer {
 
 			for(var6 = 0; var6 < var1.length(); ++var6) {
 				int var11;
-				for(; var1.charAt(var6) == 167 && var1.length() > var6 + 1; var6 += 2) {
+				for(; var1.length() > var6 + 1 && var1.charAt(var6) == 167; var6 += 2) {
 					var11 = "0123456789abcdef".indexOf(var1.toLowerCase().charAt(var6 + 1));
 					if(var11 < 0 || var11 > 15) {
 						var11 = 15;
@@ -158,9 +158,11 @@ public class FontRenderer {
 					}
 				}
 
-				var11 = FontAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var6));
-				if(var11 >= 0) {
-					this.buffer.put(this.fontDisplayLists + var11 + 32);
+				if(var6 < var1.length()) {
+					var11 = FontAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var6));
+					if(var11 >= 0) {
+						this.buffer.put(this.fontDisplayLists + var11 + 32);
+					}
 				}
 
 				if(this.buffer.remaining() == 0) {

@@ -34,11 +34,7 @@ public class WorldProvider {
 	}
 
 	public IChunkProvider getChunkProvider() {
-		return new ChunkProviderGenerate(this.worldObj, this.worldObj.randomSeed);
-	}
-
-	public IChunkLoader getChunkLoader(VFile2 var1) {
-		return new ChunkLoader(var1, true);
+		return new ChunkProviderGenerate(this.worldObj, this.worldObj.func_22138_q());
 	}
 
 	public boolean canCoordinateBeSpawn(int var1, int var2) {

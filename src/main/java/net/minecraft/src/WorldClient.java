@@ -14,15 +14,13 @@ public class WorldClient extends World {
 	private Set field_1053_F = new HashSet();
 
 	public WorldClient(NetClientHandler var1, long var2, int var4) {
-		super("MpServer", WorldProvider.func_4101_a(var4), var2);
+		super(new SaveHandlerMP(), "MpServer", WorldProvider.func_4101_a(var4), var2);
 		this.sendQueue = var1;
-		this.spawnX = 8;
-		this.spawnY = 64;
-		this.spawnZ = 8;
+		this.func_22143_a(new ChunkCoordinates(8, 64, 8));
 	}
 
 	public void tick() {
-		++this.worldTime;
+		this.setWorldTime(this.func_22139_r() + 1L);
 		int var1 = this.calculateSkylightSubtracted(1.0F);
 		int var2;
 		if(var1 != this.skylightSubtracted) {
@@ -63,21 +61,19 @@ public class WorldClient extends World {
 
 	}
 
-	protected IChunkProvider getChunkProvider(VFile2 var1) {
+	protected IChunkProvider getChunkProvider() {
 		this.field_20915_C = new ChunkProviderClient(this);
 		return this.field_20915_C;
 	}
 
 	public void setSpawnLocation() {
-		this.spawnX = 8;
-		this.spawnY = 64;
-		this.spawnZ = 8;
+		this.func_22143_a(new ChunkCoordinates(8, 64, 8));
 	}
 
 	protected void func_4080_j() {
 	}
 
-	public void scheduleBlockUpdate(int var1, int var2, int var3, int var4) {
+	public void scheduleBlockUpdate(int var1, int var2, int var3, int var4, int var5) {
 	}
 
 	public boolean TickUpdates(boolean var1) {

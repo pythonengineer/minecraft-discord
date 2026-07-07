@@ -2,6 +2,7 @@ package net.minecraft.src;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,8 @@ public abstract class Packet {
 	private static Map packetClassToIdMap = new HashMap();
 	public final long creationTimeMillis = EagRuntime.currentTimeMillis();
 	public boolean isChunkDataPacket = false;
+	private static HashMap field_21906_c;
+	private static int field_21905_d;
 
 	static void addIdClassMapping(int var0, Class var1) {
 		if(packetIdToClassMap.containsKey(Integer.valueOf(var0))) {
@@ -40,18 +43,41 @@ public abstract class Packet {
 	}
 
 	public static Packet readPacket(DataInputStream var0) throws IOException {
-		int var1 = var0.read();
-		if(var1 == -1) {
-			return null;
-		} else {
-			Packet var2 = getNewPacket(var1);
-			if(var2 == null) {
-				throw new IOException("Bad packet id " + var1);
-			} else {
-				var2.readPacketData(var0);
-				return var2;
+		boolean var1 = false;
+		Packet var2 = null;
+		var0.mark(16384);
+
+		int var5;
+		try {
+			var5 = var0.read();
+			if(var5 == -1) {
+				return null;
 			}
+
+			var2 = getNewPacket(var5);
+			if(var2 == null) {
+				throw new IOException("Bad packet id " + var5);
+			}
+
+			var2.readPacketData(var0);
+		} catch (EOFException var4) {
+			System.out.println("Reached end of stream");
+			var0.reset();
+			return null;
 		}
+
+		PacketCounter var3 = (PacketCounter)field_21906_c.get(Integer.valueOf(var5));
+		if(var3 == null) {
+			var3 = new PacketCounter((Empty1)null);
+			field_21906_c.put(Integer.valueOf(var5), var3);
+		}
+
+		var3.func_22236_a(var2.getPacketSize());
+		++field_21905_d;
+		if(field_21905_d % 1000 == 0) {
+		}
+
+		return var2;
 	}
 
 	public static void writePacket(Packet var0, DataOutputStream var1) throws IOException {
@@ -85,6 +111,7 @@ public abstract class Packet {
 		addIdClassMapping(14, Packet14BlockDig.class);
 		addIdClassMapping(15, Packet15Place.class);
 		addIdClassMapping(16, Packet16BlockItemSwitch.class);
+		addIdClassMapping(17, Packet17Sleep.class);
 		addIdClassMapping(18, Packet18ArmAnimation.class);
 		addIdClassMapping(19, Packet19.class);
 		addIdClassMapping(20, Packet20NamedEntitySpawn.class);
@@ -93,6 +120,7 @@ public abstract class Packet {
 		addIdClassMapping(23, Packet23VehicleSpawn.class);
 		addIdClassMapping(24, Packet24MobSpawn.class);
 		addIdClassMapping(25, Packet25.class);
+		addIdClassMapping(27, Packet27.class);
 		addIdClassMapping(28, Packet28.class);
 		addIdClassMapping(29, Packet29DestroyEntity.class);
 		addIdClassMapping(30, Packet30Entity.class);
@@ -118,5 +146,7 @@ public abstract class Packet {
 		addIdClassMapping(106, Packet106.class);
 		addIdClassMapping(130, Packet130.class);
 		addIdClassMapping(255, Packet255KickDisconnect.class);
+		field_21906_c = new HashMap();
+		field_21905_d = 0;
 	}
 }

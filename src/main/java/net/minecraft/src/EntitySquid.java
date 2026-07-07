@@ -63,13 +63,7 @@ public class EntitySquid extends EntityWaterMob {
 	}
 
 	public boolean interact(EntityPlayer var1) {
-		ItemStack var2 = var1.inventory.getCurrentItem();
-		if(var2 != null && var2.itemID == Item.bucketEmpty.shiftedIndex) {
-			var1.inventory.setInventorySlotContents(var1.inventory.currentItem, new ItemStack(Item.bucketMilk));
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
 
 	public boolean handleWaterMovement() {

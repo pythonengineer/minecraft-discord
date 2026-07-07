@@ -167,7 +167,9 @@ public class BlockDoor extends Block {
 			}
 
 			if(var7) {
-				this.dropBlockAsItem(var1, var2, var3, var4, var6);
+				if(!var1.multiplayerWorld) {
+					this.dropBlockAsItem(var1, var2, var3, var4, var6);
+				}
 			} else if(var5 > 0 && Block.blocksList[var5].canProvidePower()) {
 				boolean var8 = var1.isBlockIndirectlyGettingPowered(var2, var3, var4) || var1.isBlockIndirectlyGettingPowered(var2, var3 + 1, var4);
 				this.func_311_a(var1, var2, var3, var4, var8);

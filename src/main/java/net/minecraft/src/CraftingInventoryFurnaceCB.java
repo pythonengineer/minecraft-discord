@@ -69,7 +69,7 @@ public class CraftingInventoryFurnaceCB extends CraftingInventoryCB {
 
     public ItemStack transferStackInSlot(EntityPlayer entityplayer, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.field_20122_e.get(i);
+        Slot slot = (Slot) this.slots.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();

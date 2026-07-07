@@ -30,8 +30,12 @@ public class ChunkCache implements IBlockAccess {
 		} else {
 			int var4 = (var1 >> 4) - this.chunkX;
 			int var5 = (var3 >> 4) - this.chunkZ;
-			Chunk var6 = this.chunkArray[var4][var5];
-			return var6 == null ? 0 : var6.getBlockID(var1 & 15, var2, var3 & 15);
+			if(var4 >= 0 && var4 < this.chunkArray.length && var5 >= 0 && var5 < this.chunkArray[var4].length) {
+				Chunk var6 = this.chunkArray[var4][var5];
+				return var6 == null ? 0 : var6.getBlockID(var1 & 15, var2, var3 & 15);
+			} else {
+				return 0;
+			}
 		}
 	}
 

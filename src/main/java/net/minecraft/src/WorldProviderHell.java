@@ -26,12 +26,7 @@ public class WorldProviderHell extends WorldProvider {
 	}
 
 	public IChunkProvider getChunkProvider() {
-		return new ChunkProviderHell(this.worldObj, this.worldObj.randomSeed);
-	}
-
-	public IChunkLoader getChunkLoader(VFile2 var1) {
-		VFile2 var2 = new VFile2(var1, "DIM-1");
-		return new ChunkLoader(var2, true);
+		return new ChunkProviderHell(this.worldObj, this.worldObj.func_22138_q());
 	}
 
 	public boolean canCoordinateBeSpawn(int var1, int var2) {

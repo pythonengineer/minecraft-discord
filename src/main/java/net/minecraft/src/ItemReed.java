@@ -44,6 +44,7 @@ public class ItemReed extends Item {
 				Block var8 = Block.blocksList[this.field_320_a];
 				if(var3.setBlockWithNotify(var4, var5, var6, this.field_320_a)) {
 					Block.blocksList[this.field_320_a].onBlockPlaced(var3, var4, var5, var6, var7);
+					Block.blocksList[this.field_320_a].onBlockPlacedBy(var3, var4, var5, var6, var2);
 					var3.playSoundEffect((double)((float)var4 + 0.5F), (double)((float)var5 + 0.5F), (double)((float)var6 + 0.5F), var8.stepSound.func_1145_d(), (var8.stepSound.func_1147_b() + 1.0F) / 2.0F, var8.stepSound.func_1144_c() * 0.8F);
 					--var1.stackSize;
 				}

@@ -18,6 +18,10 @@ public class PathEntity {
 		return this.pathIndex >= this.points.length;
 	}
 
+	public PathPoint func_22328_c() {
+		return this.pathLength > 0 ? this.points[this.pathLength - 1] : null;
+	}
+
 	public Vec3D getPosition(Entity var1) {
 		double var2 = (double)this.points[this.pathIndex].xCoord + (double)((int)(var1.width + 1.0F)) * 0.5D;
 		double var4 = (double)this.points[this.pathIndex].yCoord;

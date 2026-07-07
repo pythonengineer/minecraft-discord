@@ -1,0 +1,21 @@
+package net.minecraft.src;
+
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+class ChunkFolderPattern {
+	public static final Pattern field_22392_a = Pattern.compile("[0-9a-z]|([0-9a-z][0-9a-z])");
+
+	private ChunkFolderPattern() {
+	}
+
+	public boolean accept(VFile2 var1) {
+		Matcher var2 = field_22392_a.matcher(var1.getName());
+		return var2.matches();
+	}
+
+	ChunkFolderPattern(Empty2 var1) {
+		this();
+	}
+}

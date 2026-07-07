@@ -34,13 +34,13 @@ public class CraftingInventoryChestCB extends CraftingInventoryCB {
 
     public ItemStack transferStackInSlot(EntityPlayer var1, int i) {
         ItemStack itemstack = null;
-        Slot slot = (Slot) this.field_20122_e.get(i);
+        Slot slot = (Slot) this.slots.get(i);
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
             int size = this.field_20125_a.getSizeInventory() / 9;
             if (i < size * 9) {
-                if (!this.mergeItemStack(itemstack1, size * 9, this.field_20122_e.size(), true)) {
+                if (!this.mergeItemStack(itemstack1, size * 9, this.slots.size(), true)) {
                     return null;
                 }
             } else if (!this.mergeItemStack(itemstack1, 0, size * 9, false)) {

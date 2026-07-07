@@ -15,7 +15,7 @@ public class BlockRedstoneWire extends Block {
 	}
 
 	public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
-		return this.blockIndexInTexture + (var2 > 0 ? 16 : 0);
+		return this.blockIndexInTexture;
 	}
 
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4) {
@@ -323,11 +323,28 @@ public class BlockRedstoneWire extends Block {
 	}
 
 	public void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		if(var1.getBlockMetadata(var2, var3, var4) > 0) {
-			double var6 = (double)var2 + 0.5D + ((double)var5.nextFloat() - 0.5D) * 0.2D;
-			double var8 = (double)((float)var3 + 1.0F / 16.0F);
-			double var10 = (double)var4 + 0.5D + ((double)var5.nextFloat() - 0.5D) * 0.2D;
-			var1.spawnParticle("reddust", var6, var8, var10, 0.0D, 0.0D, 0.0D);
+		int var6 = var1.getBlockMetadata(var2, var3, var4);
+		if(var6 > 0) {
+			double var7 = (double)var2 + 0.5D + ((double)var5.nextFloat() - 0.5D) * 0.2D;
+			double var9 = (double)((float)var3 + 1.0F / 16.0F);
+			double var11 = (double)var4 + 0.5D + ((double)var5.nextFloat() - 0.5D) * 0.2D;
+			float var13 = (float)var6 / 15.0F;
+			float var14 = var13 * 0.6F + 0.4F;
+			if(var6 == 0) {
+				var14 = 0.0F;
+			}
+
+			float var15 = var13 * var13 * 0.7F - 0.5F;
+			float var16 = var13 * var13 * 0.6F - 0.7F;
+			if(var15 < 0.0F) {
+				var15 = 0.0F;
+			}
+
+			if(var16 < 0.0F) {
+				var16 = 0.0F;
+			}
+
+			var1.spawnParticle("reddust", var7, var9, var11, (double)var14, (double)var15, (double)var16);
 		}
 
 	}

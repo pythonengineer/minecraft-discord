@@ -70,8 +70,8 @@ public abstract class GuiContainer extends GuiScreen {
         GL11.glEnable(GL11.GL_RESCALE_NORMAL);
         Slot slot = null;
 
-        for(int i5 = 0; i5 < this.inventorySlots.field_20122_e.size(); ++i5) {
-            Slot slot6 = (Slot)this.inventorySlots.field_20122_e.get(i5);
+        for(int i5 = 0; i5 < this.inventorySlots.slots.size(); ++i5) {
+            Slot slot6 = (Slot)this.inventorySlots.slots.get(i5);
             int i11 = slot6.yDisplayPosition;
             int i10 = slot6.xDisplayPosition;
             ItemStack itemstack = slot6.getStack();
@@ -93,7 +93,7 @@ public abstract class GuiContainer extends GuiScreen {
                             s = "" + itemstack.getItem().getItemStackLimit();
                             itemstack.stackSize = itemstack.getItem().getItemStackLimit();
                         }
-    
+
                         if (itemstack.stackSize > slot6.inventory.getInventoryStackLimit()) {
                             s = "" + slot6.inventory.getInventoryStackLimit();
                             itemstack.stackSize = slot6.inventory.getInventoryStackLimit();
@@ -221,7 +221,7 @@ public abstract class GuiContainer extends GuiScreen {
     protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType) {
         int mode = clickType;
         if (slotIn != null) {
-            slotId = this.inventorySlots.field_20122_e.indexOf(slotIn);
+            slotId = this.inventorySlots.slots.indexOf(slotIn);
         }
 
         if (this.isMultiplayer() && mode != 0) {
@@ -260,9 +260,9 @@ public abstract class GuiContainer extends GuiScreen {
                     long l = EagRuntime.currentTimeMillis();
                     if (this.currentDragTargetSlot == slot) {
                         if (l - this.dragItemDropDelay > 500L) {
-                            this.handleMouseClick(this.clickedSlot, this.inventorySlots.field_20122_e.indexOf(this.clickedSlot), 0, 0);
-                            this.handleMouseClick(slot, this.inventorySlots.field_20122_e.indexOf(slot), 1, 0);
-                            this.handleMouseClick(this.clickedSlot, this.inventorySlots.field_20122_e.indexOf(this.clickedSlot), 0, 0);
+                            this.handleMouseClick(this.clickedSlot, this.inventorySlots.slots.indexOf(this.clickedSlot), 0, 0);
+                            this.handleMouseClick(slot, this.inventorySlots.slots.indexOf(slot), 1, 0);
+                            this.handleMouseClick(this.clickedSlot, this.inventorySlots.slots.indexOf(this.clickedSlot), 0, 0);
                             this.dragItemDropDelay = l + 750L;
                             --this.draggedStack.stackSize;
                         }
@@ -318,7 +318,7 @@ public abstract class GuiContainer extends GuiScreen {
             boolean flag1 = parInt1 < j || parInt2 < k || parInt1 >= j + this.xSize || parInt2 >= k + this.ySize;
             int l = -1;
             if (slot != null) {
-                l = this.inventorySlots.field_20122_e.indexOf(slot);
+                l = this.inventorySlots.slots.indexOf(slot);
             }
 
             if (flag1) {
@@ -380,7 +380,7 @@ public abstract class GuiContainer extends GuiScreen {
         boolean flag = i < l || j < i1 || i >= l + this.xSize || j >= i1 + this.ySize;
         int j1 = -1;
         if (slot != null) {
-            j1 = this.inventorySlots.field_20122_e.indexOf(slot);
+            j1 = this.inventorySlots.slots.indexOf(slot);
         }
 
         if (flag) {
@@ -390,13 +390,13 @@ public abstract class GuiContainer extends GuiScreen {
         if (this.doubleClick && slot != null && k == 0 && this.inventorySlots.canMergeSlot((ItemStack) null, slot)) {
             if (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)) {
                 if (slot != null && slot.inventory != null && this.shiftClickedSlot != null) {
-                    List<Slot> lst = this.inventorySlots.field_20122_e;
+                    List<Slot> lst = this.inventorySlots.slots;
                     for (int n = 0, m = lst.size(); n < m; ++n) {
                         Slot slot2 = lst.get(n);
                         if (slot2 != null && slot2.getHasStack()
                                 && slot2.inventory == slot.inventory
                                 && CraftingInventoryCB.canAddItemToSlot(slot2, this.shiftClickedSlot, true)) {
-                            this.handleMouseClick(slot2, this.inventorySlots.field_20122_e.indexOf(slot2), k, 1);
+                            this.handleMouseClick(slot2, this.inventorySlots.slots.indexOf(slot2), k, 1);
                         }
                     }
                 }
@@ -427,10 +427,10 @@ public abstract class GuiContainer extends GuiScreen {
 
                     boolean flag2 = CraftingInventoryCB.canAddItemToSlot(slot, this.draggedStack, false);
                     if (j1 != -1 && this.draggedStack != null && flag2) {
-                        this.handleMouseClick(this.clickedSlot, this.inventorySlots.field_20122_e.indexOf(this.clickedSlot), k, 0);
+                        this.handleMouseClick(this.clickedSlot, this.inventorySlots.slots.indexOf(this.clickedSlot), k, 0);
                         this.handleMouseClick(slot, j1, 0, 0);
                         if (this.mc.thePlayer.inventory.getItemStack() != null) {
-                            this.handleMouseClick(this.clickedSlot, this.inventorySlots.field_20122_e.indexOf(this.clickedSlot), k, 0);
+                            this.handleMouseClick(this.clickedSlot, this.inventorySlots.slots.indexOf(this.clickedSlot), k, 0);
                             this.touchUpX = i - l;
                             this.touchUpY = j - i1;
                             this.returningStackDestSlot = this.clickedSlot;
@@ -457,7 +457,7 @@ public abstract class GuiContainer extends GuiScreen {
                     this.handleMouseClick((Slot) null, -999, func_94534_d(0, this.dragSplittingLimit), 5);
 
                     for (Slot slot1 : this.dragSplittingSlots) {
-                        this.handleMouseClick(slot1, this.inventorySlots.field_20122_e.indexOf(slot1), func_94534_d(1, this.dragSplittingLimit),
+                        this.handleMouseClick(slot1, this.inventorySlots.slots.indexOf(slot1), func_94534_d(1, this.dragSplittingLimit),
                                 5);
                     }
 
@@ -471,7 +471,7 @@ public abstract class GuiContainer extends GuiScreen {
                     if (flag1) {
                         this.shiftClickedSlot = slot != null && slot.getHasStack() ? slot.getStack() : null;
                     }
-    
+
                     this.handleMouseClick(slot, j1, k, flag1 ? 1 : 0);
                 }
             }
@@ -485,8 +485,8 @@ public abstract class GuiContainer extends GuiScreen {
     }
 
     private Slot getSlotAtPosition(int x, int y) {
-        for(int i3 = 0; i3 < this.inventorySlots.field_20122_e.size(); ++i3) {
-            Slot slot4 = (Slot)this.inventorySlots.field_20122_e.get(i3);
+        for(int i3 = 0; i3 < this.inventorySlots.slots.size(); ++i3) {
+            Slot slot4 = (Slot)this.inventorySlots.slots.get(i3);
             if(this.func_20081_a(slot4, x, y)) {
                 return slot4;
             }
@@ -529,7 +529,7 @@ public abstract class GuiContainer extends GuiScreen {
             CraftingInventoryCB.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, share, existing);
             int target = Math.min(Math.min(share.stackSize, slot.getSlotStackLimit()), heldNow.getMaxStackSize());
             int deposit = target - existing;
-            int idx = this.inventorySlots.field_20122_e.indexOf(slot);
+            int idx = this.inventorySlots.slots.indexOf(slot);
 
             for (int n = 0; n < deposit; ++n) {
                 this.handleMouseClick(slot, idx, 1, 0);

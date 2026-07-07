@@ -22,7 +22,7 @@ public class BlockLeaves extends BlockLeavesBase {
 			var1.getWorldChunkManager().func_4069_a(var2, var4, 1, 1);
 			double var6 = var1.getWorldChunkManager().temperature[0];
 			double var8 = var1.getWorldChunkManager().humidity[0];
-			return ColorizerFoliage.func_4146_a(var6, var8);
+			return ColorizerFoliage.getFoliageColor(var6, var8);
 		}
 	}
 

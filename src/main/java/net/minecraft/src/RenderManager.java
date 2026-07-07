@@ -15,9 +15,9 @@ public class RenderManager {
 	public RenderEngine renderEngine;
 	public ItemRenderer itemRenderer;
 	public World worldObj;
-	public EntityPlayer field_1226_h;
-	public float field_1225_i;
-	public float field_1224_j;
+	public EntityLiving field_22188_h;
+	public float playerViewY;
+	public float playerViewX;
 	public GameSettings options;
 	public double field_1222_l;
 	public double field_1221_m;
@@ -73,14 +73,14 @@ public class RenderManager {
 		return this.getEntityClassRenderObject(var1.getClass());
 	}
 
-	public void func_857_a(World var1, RenderEngine var2, FontRenderer var3, EntityPlayer var4, GameSettings var5, float var6) {
+	public void func_22187_a(World var1, RenderEngine var2, FontRenderer var3, EntityLiving var4, GameSettings var5, float var6) {
 		this.worldObj = var1;
 		this.renderEngine = var2;
 		this.options = var5;
-		this.field_1226_h = var4;
+		this.field_22188_h = var4;
 		this.field_1218_p = var3;
-		this.field_1225_i = var4.prevRotationYaw + (var4.rotationYaw - var4.prevRotationYaw) * var6;
-		this.field_1224_j = var4.prevRotationPitch + (var4.rotationPitch - var4.prevRotationPitch) * var6;
+		this.playerViewY = var4.prevRotationYaw + (var4.rotationYaw - var4.prevRotationYaw) * var6;
+		this.playerViewX = var4.prevRotationPitch + (var4.rotationPitch - var4.prevRotationPitch) * var6;
 		this.field_1222_l = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var6;
 		this.field_1221_m = var4.lastTickPosY + (var4.posY - var4.lastTickPosY) * (double)var6;
 		this.field_1220_n = var4.lastTickPosZ + (var4.posZ - var4.lastTickPosZ) * (double)var6;

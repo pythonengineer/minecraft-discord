@@ -15,17 +15,17 @@ public class BlockStationary extends BlockFluids {
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		super.onNeighborBlockChange(var1, var2, var3, var4, var5);
 		if(var1.getBlockId(var2, var3, var4) == this.blockID) {
-			this.func_20016_j(var1, var2, var3, var4);
+			this.func_22035_j(var1, var2, var3, var4);
 		}
 
 	}
 
-	private void func_20016_j(World var1, int var2, int var3, int var4) {
+	private void func_22035_j(World var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockMetadata(var2, var3, var4);
 		var1.field_1043_h = true;
 		var1.setBlockAndMetadata(var2, var3, var4, this.blockID - 1, var5);
 		var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
-		var1.scheduleBlockUpdate(var2, var3, var4, this.blockID - 1);
+		var1.scheduleBlockUpdate(var2, var3, var4, this.blockID - 1, this.tickRate());
 		var1.field_1043_h = false;
 	}
 

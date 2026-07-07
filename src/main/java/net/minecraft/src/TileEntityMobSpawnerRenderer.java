@@ -5,15 +5,15 @@ import java.util.Map;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
-	private Map field_1412_b = new HashMap();
+	private Map entityHashMap = new HashMap();
 
-	public void func_931_a(TileEntityMobSpawner var1, double var2, double var4, double var6, float var8) {
+	public void renderTileEntityMobSpawner(TileEntityMobSpawner var1, double var2, double var4, double var6, float var8) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)var2 + 0.5F, (float)var4, (float)var6 + 0.5F);
-		Entity var9 = (Entity)this.field_1412_b.get(var1.getMobID());
+		Entity var9 = (Entity)this.entityHashMap.get(var1.getMobID());
 		if(var9 == null) {
 			var9 = EntityList.createEntityByName(var1.getMobID(), (World)null);
-			this.field_1412_b.put(var1.getMobID(), var9);
+			this.entityHashMap.put(var1.getMobID(), var9);
 		}
 
 		if(var9 != null) {
@@ -32,6 +32,6 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer {
 	}
 
 	public void renderTileEntityAt(TileEntity var1, double var2, double var4, double var6, float var8) {
-		this.func_931_a((TileEntityMobSpawner)var1, var2, var4, var6, var8);
+		this.renderTileEntityMobSpawner((TileEntityMobSpawner)var1, var2, var4, var6, var8);
 	}
 }

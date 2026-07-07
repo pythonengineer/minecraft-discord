@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class ModelCreeper extends ModelBase {
 	public ModelRenderer head;
-	public ModelRenderer unusedModel;
+	public ModelRenderer field_1270_b;
 	public ModelRenderer body;
 	public ModelRenderer leg1;
 	public ModelRenderer leg2;
@@ -17,9 +17,9 @@ public class ModelCreeper extends ModelBase {
 		this.head = new ModelRenderer(0, 0);
 		this.head.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1);
 		this.head.setPosition(0.0F, (float)var2, 0.0F);
-		this.unusedModel = new ModelRenderer(32, 0);
-		this.unusedModel.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1 + 0.5F);
-		this.unusedModel.setPosition(0.0F, (float)var2, 0.0F);
+		this.field_1270_b = new ModelRenderer(32, 0);
+		this.field_1270_b.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, var1 + 0.5F);
+		this.field_1270_b.setPosition(0.0F, (float)var2, 0.0F);
 		this.body = new ModelRenderer(16, 16);
 		this.body.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, var1);
 		this.body.setPosition(0.0F, (float)var2, 0.0F);

@@ -30,7 +30,7 @@ public class EffectRenderer {
 		this.fxLayers[var2].add(var1);
 	}
 
-	public void renderEffects() {
+	public void updateEffects() {
 		for(int var1 = 0; var1 < 4; ++var1) {
 			for(int var2 = 0; var2 < this.fxLayers[var1].size(); ++var2) {
 				EntityFX var3 = (EntityFX)this.fxLayers[var1].get(var2);
@@ -43,7 +43,7 @@ public class EffectRenderer {
 
 	}
 
-	public void func_1189_a(Entity var1, float var2) {
+	public void renderParticles(Entity var1, float var2) {
 		float var3 = MathHelper.cos(var1.rotationYaw * (float)Math.PI / 180.0F);
 		float var4 = MathHelper.sin(var1.rotationYaw * (float)Math.PI / 180.0F);
 		float var5 = -var4 * MathHelper.sin(var1.rotationPitch * (float)Math.PI / 180.0F);
@@ -96,7 +96,7 @@ public class EffectRenderer {
 		}
 	}
 
-	public void func_1188_a(World var1) {
+	public void clearEffects(World var1) {
 		this.worldObj = var1;
 
 		for(int var2 = 0; var2 < 4; ++var2) {
@@ -105,7 +105,7 @@ public class EffectRenderer {
 
 	}
 
-	public void func_1186_a(int var1, int var2, int var3) {
+	public void addBlockDestroyEffects(int var1, int var2, int var3) {
 		int var4 = this.worldObj.getBlockId(var1, var2, var3);
 		if(var4 != 0) {
 			Block var5 = Block.blocksList[var4];
@@ -125,7 +125,7 @@ public class EffectRenderer {
 		}
 	}
 
-	public void func_1191_a(int var1, int var2, int var3, int var4) {
+	public void addBlockHitEffects(int var1, int var2, int var3, int var4) {
 		int var5 = this.worldObj.getBlockId(var1, var2, var3);
 		if(var5 != 0) {
 			Block var6 = Block.blocksList[var5];

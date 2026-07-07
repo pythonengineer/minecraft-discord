@@ -104,7 +104,7 @@ public class BlockPressurePlate extends Block {
 		}
 
 		if(var6) {
-			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
+			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, this.tickRate());
 		}
 
 	}

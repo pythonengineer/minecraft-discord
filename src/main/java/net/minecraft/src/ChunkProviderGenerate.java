@@ -114,7 +114,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		byte var5 = 64;
 		double var6 = 1.0D / 32.0D;
 		this.sandNoise = this.field_909_n.generateNoiseOctaves(this.sandNoise, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var6, var6, 1.0D);
-		this.gravelNoise = this.field_909_n.generateNoiseOctaves(this.gravelNoise, (double)(var2 * 16), 109.0134D, (double)(var1 * 16), 16, 1, 16, var6, 1.0D, var6);
+		this.gravelNoise = this.field_909_n.generateNoiseOctaves(this.gravelNoise, (double)(var1 * 16), 109.0134D, (double)(var2 * 16), 16, 1, 16, var6, 1.0D, var6);
 		this.stoneNoise = this.field_908_o.generateNoiseOctaves(this.stoneNoise, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var6 * 2.0D, var6 * 2.0D, var6 * 2.0D);
 
 		for(int var8 = 0; var8 < 16; ++var8) {
@@ -128,7 +128,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 				byte var16 = var10.fillerBlock;
 
 				for(int var17 = 127; var17 >= 0; --var17) {
-					int var18 = (var8 * 16 + var9) * 128 + var17;
+					int var18 = (var9 * 16 + var8) * 128 + var17;
 					if(var17 <= 0 + this.rand.nextInt(5)) {
 						var3[var18] = (byte)Block.bedrock.blockID;
 					} else {
@@ -173,6 +173,10 @@ public class ChunkProviderGenerate implements IChunkProvider {
 							} else if(var14 > 0) {
 								--var14;
 								var3[var18] = var16;
+								if(var14 == 0 && var16 == Block.sand.blockID) {
+									var14 = this.rand.nextInt(4);
+									var16 = (byte)Block.sandStone.blockID;
+								}
 							}
 						}
 					}
@@ -304,10 +308,10 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		int var4 = var2 * 16;
 		int var5 = var3 * 16;
 		MobSpawnerBase var6 = this.worldObj.getWorldChunkManager().func_4073_a(var4 + 16, var5 + 16);
-		this.rand.setSeed(this.worldObj.randomSeed);
+		this.rand.setSeed(this.worldObj.func_22138_q());
 		long var7 = this.rand.nextLong() / 2L * 2L + 1L;
 		long var9 = this.rand.nextLong() / 2L * 2L + 1L;
-		this.rand.setSeed((long)var2 * var7 + (long)var3 * var9 ^ this.worldObj.randomSeed);
+		this.rand.setSeed((long)var2 * var7 + (long)var3 * var9 ^ this.worldObj.func_22138_q());
 		double var11 = 0.25D;
 		int var13;
 		int var14;

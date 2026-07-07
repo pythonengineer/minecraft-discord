@@ -48,7 +48,7 @@ public abstract class Entity {
 	public float stepHeight = 0.0F;
 	public boolean noClip = false;
 	public float entityCollisionReduction = 0.0F;
-	public boolean unusedEntityBoolean = false;
+	public boolean field_9313_bc = false;
 	protected EaglercraftRandom rand = new EaglercraftRandom();
 	public int ticksExisted = 0;
 	public int fireResistance = 1;
@@ -710,11 +710,25 @@ public abstract class Entity {
 		this.motionX = ((NBTTagDouble)var3.tagAt(0)).doubleValue;
 		this.motionY = ((NBTTagDouble)var3.tagAt(1)).doubleValue;
 		this.motionZ = ((NBTTagDouble)var3.tagAt(2)).doubleValue;
+		if(Math.abs(this.motionX) > 10.0D) {
+			this.motionX = 0.0D;
+		}
+
+		if(Math.abs(this.motionY) > 10.0D) {
+			this.motionY = 0.0D;
+		}
+
+		if(Math.abs(this.motionZ) > 10.0D) {
+			this.motionZ = 0.0D;
+		}
+
 		this.prevPosX = this.lastTickPosX = this.posX = ((NBTTagDouble)var2.tagAt(0)).doubleValue;
 		this.prevPosY = this.lastTickPosY = this.posY = ((NBTTagDouble)var2.tagAt(1)).doubleValue;
 		this.prevPosZ = this.lastTickPosZ = this.posZ = ((NBTTagDouble)var2.tagAt(2)).doubleValue;
-		this.prevRotationYaw = this.rotationYaw = ((NBTTagFloat)var4.tagAt(0)).floatValue;
-		this.prevRotationPitch = this.rotationPitch = ((NBTTagFloat)var4.tagAt(1)).floatValue;
+		float var10003 = (float)Math.PI;
+		this.prevRotationYaw = this.rotationYaw = ((NBTTagFloat)var4.tagAt(0)).floatValue % (var10003 * 2.0F);
+		var10003 = (float)Math.PI;
+		this.prevRotationPitch = this.rotationPitch = ((NBTTagFloat)var4.tagAt(1)).floatValue % (var10003 * 2.0F);
 		this.fallDistance = var1.getFloat("FallDistance");
 		this.fire = var1.getShort("Fire");
 		this.air = var1.getShort("Air");
@@ -918,7 +932,7 @@ public abstract class Entity {
 	public void updateCloak() {
 	}
 
-	public void func_20045_c(int var1, int var2, int var3) {
+	public void outfitWithItem(int var1, int var2, int var3) {
 	}
 
 	public boolean func_21062_U() {

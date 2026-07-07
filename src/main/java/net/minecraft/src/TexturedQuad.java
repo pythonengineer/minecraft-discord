@@ -2,14 +2,14 @@ package net.minecraft.src;
 
 public class TexturedQuad {
 	public PositionTexureVertex[] vertexPositions;
-	public int nVertexices;
+	public int nVertices;
 	private boolean invertNormal;
 
 	public TexturedQuad(PositionTexureVertex[] var1) {
-		this.nVertexices = 0;
+		this.nVertices = 0;
 		this.invertNormal = false;
 		this.vertexPositions = var1;
-		this.nVertexices = var1.length;
+		this.nVertices = var1.length;
 	}
 
 	public TexturedQuad(PositionTexureVertex[] var1, int var2, int var3, int var4, int var5) {
@@ -22,7 +22,7 @@ public class TexturedQuad {
 		var1[3] = var1[3].setTexturePosition((float)var4 / 64.0F - var6, (float)var5 / 32.0F - var7);
 	}
 
-	public void func_809_a() {
+	public void flipFace() {
 		PositionTexureVertex[] var1 = new PositionTexureVertex[this.vertexPositions.length];
 
 		for(int var2 = 0; var2 < this.vertexPositions.length; ++var2) {
@@ -32,7 +32,7 @@ public class TexturedQuad {
 		this.vertexPositions = var1;
 	}
 
-	public void func_808_a(Tessellator var1, float var2) {
+	public void draw(Tessellator var1, float var2) {
 		Vec3D var3 = this.vertexPositions[1].vector3D.subtract(this.vertexPositions[0].vector3D);
 		Vec3D var4 = this.vertexPositions[1].vector3D.subtract(this.vertexPositions[2].vector3D);
 		Vec3D var5 = var4.crossProduct(var3).normalize();

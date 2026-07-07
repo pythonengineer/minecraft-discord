@@ -15,13 +15,13 @@ public class WorldChunkManager {
 	}
 
 	public WorldChunkManager(World var1) {
-		this.field_4194_e = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.randomSeed * 9871L), 4);
-		this.field_4193_f = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.randomSeed * 39811L), 4);
-		this.field_4192_g = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.randomSeed * 543321L), 2);
+		this.field_4194_e = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.func_22138_q() * 9871L), 4);
+		this.field_4193_f = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.func_22138_q() * 39811L), 4);
+		this.field_4192_g = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.func_22138_q() * 543321L), 2);
 	}
 
 	public MobSpawnerBase func_4074_a(ChunkCoordIntPair var1) {
-		return this.func_4073_a(var1.chunkXPos, var1.chunkZPos);
+		return this.func_4073_a(var1.chunkXPos >> 4, var1.chunkZPos >> 4);
 	}
 
 	public MobSpawnerBase func_4073_a(int var1, int var2) {
@@ -43,8 +43,8 @@ public class WorldChunkManager {
 			var1 = new double[var4 * var5];
 		}
 
-		var1 = this.field_4194_e.func_4112_a(var1, (double)var2, (double)var3, var4, var4, (double)0.025F, (double)0.025F, 0.25D);
-		this.field_4196_c = this.field_4192_g.func_4112_a(this.field_4196_c, (double)var2, (double)var3, var4, var4, 0.25D, 0.25D, 0.5882352941176471D);
+		var1 = this.field_4194_e.func_4112_a(var1, (double)var2, (double)var3, var4, var5, (double)0.025F, (double)0.025F, 0.25D);
+		this.field_4196_c = this.field_4192_g.func_4112_a(this.field_4196_c, (double)var2, (double)var3, var4, var5, 0.25D, 0.25D, 0.5882352941176471D);
 		int var6 = 0;
 
 		for(int var7 = 0; var7 < var4; ++var7) {

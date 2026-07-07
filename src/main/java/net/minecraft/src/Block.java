@@ -18,7 +18,7 @@ public class Block {
 	public static final boolean[] opaqueCubeLookup = new boolean[256];
 	public static final boolean[] isBlockContainer = new boolean[256];
 	public static final int[] lightOpacity = new int[256];
-	public static final boolean[] unusedBooleanArray = new boolean[256];
+	public static final boolean[] field_340_s = new boolean[256];
 	public static final int[] lightValue = new int[256];
 	public static final Block stone = (new BlockStone(1, 1)).setHardness(1.5F).setResistance(10.0F).setStepSound(soundStoneFootstep).setBlockName("stone");
 	public static final BlockGrass grass = (BlockGrass)(new BlockGrass(2)).setHardness(0.6F).setStepSound(soundGrassFootstep).setBlockName("grass");
@@ -45,7 +45,7 @@ public class Block {
 	public static final Block dispenser = (new BlockDispenser(23)).setHardness(3.5F).setStepSound(soundStoneFootstep).setBlockName("dispenser");
 	public static final Block sandStone = (new BlockSandStone(24)).setStepSound(soundStoneFootstep).setHardness(0.8F).setBlockName("sandStone");
 	public static final Block musicBlock = (new BlockNote(25)).setHardness(0.8F).setBlockName("musicBlock");
-	public static final Block field_9262_S = null;
+	public static final Block field_9262_S = (new BlockBed(26)).setHardness(0.2F).setBlockName("bed");
 	public static final Block field_9261_T = null;
 	public static final Block field_9260_U = null;
 	public static final Block field_9259_V = null;
@@ -74,7 +74,7 @@ public class Block {
 	public static final Block mobSpawner = (new BlockMobSpawner(52, 65)).setHardness(5.0F).setStepSound(soundMetalFootstep).setBlockName("mobSpawner");
 	public static final Block stairCompactPlanks = (new BlockStairs(53, planks)).setBlockName("stairsWood");
 	public static final Block crate = (new BlockChest(54)).setHardness(2.5F).setStepSound(soundWoodFootstep).setBlockName("chest");
-	public static final Block redstoneWire = (new BlockRedstoneWire(55, 84)).setHardness(0.0F).setStepSound(soundPowderFootstep).setBlockName("redstoneDust");
+	public static final Block redstoneWire = (new BlockRedstoneWire(55, 164)).setHardness(0.0F).setStepSound(soundPowderFootstep).setBlockName("redstoneDust");
 	public static final Block oreDiamond = (new BlockOre(56, 50)).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep).setBlockName("oreDiamond");
 	public static final Block blockDiamond = (new BlockOreBlock(57, 24)).setHardness(5.0F).setResistance(10.0F).setStepSound(soundMetalFootstep).setBlockName("blockDiamond");
 	public static final Block workbench = (new BlockWorkbench(58)).setHardness(2.5F).setStepSound(soundWoodFootstep).setBlockName("workbench");
@@ -112,6 +112,8 @@ public class Block {
 	public static final BlockPortal portal = (BlockPortal)(new BlockPortal(90, 14)).setHardness(-1.0F).setStepSound(soundGlassFootstep).setLightValue(12.0F / 16.0F).setBlockName("portal");
 	public static final Block pumpkinLantern = (new BlockPumpkin(91, 102, true)).setHardness(1.0F).setStepSound(soundWoodFootstep).setLightValue(1.0F).setBlockName("litpumpkin");
 	public static final Block cake = (new BlockCake(92, 121)).setHardness(0.5F).setStepSound(soundClothFootstep).setBlockName("cake");
+	public static final Block field_22021_bh = (new BlockRedstoneRepeater(93, false)).setHardness(0.0F).setStepSound(soundWoodFootstep).setBlockName("diode");
+	public static final Block field_22020_bi = (new BlockRedstoneRepeater(94, true)).setHardness(0.0F).setLightValue(10.0F / 16.0F).setStepSound(soundWoodFootstep).setBlockName("diode");
 	public int blockIndexInTexture;
 	public final int blockID;
 	protected float blockHardness;
@@ -141,7 +143,7 @@ public class Block {
 			this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 			opaqueCubeLookup[var1] = this.isOpaqueCube();
 			lightOpacity[var1] = this.isOpaqueCube() ? 255 : 0;
-			unusedBooleanArray[var1] = this.unusedMethod();
+			field_340_s[var1] = !var2.getCanBlockGrass();
 			isBlockContainer[var1] = false;
 		}
 	}
@@ -169,10 +171,6 @@ public class Block {
 	protected Block setResistance(float var1) {
 		this.blockResistance = var1 * 3.0F;
 		return this;
-	}
-
-	private boolean unusedMethod() {
-		return false;
 	}
 
 	public boolean renderAsNormalBlock() {
@@ -503,6 +501,7 @@ public class Block {
 	static {
 		Item.itemsList[cloth.blockID] = (new ItemCloth(cloth.blockID - 256)).setItemName("cloth");
 		Item.itemsList[wood.blockID] = (new ItemLog(wood.blockID - 256)).setItemName("log");
+		Item.itemsList[stairSingle.blockID] = (new ItemSlab(stairSingle.blockID - 256)).setItemName("stoneSlab");
 
 		for(int var0 = 0; var0 < 256; ++var0) {
 			if(blocksList[var0] != null && Item.itemsList[var0] == null) {
@@ -510,5 +509,6 @@ public class Block {
 			}
 		}
 
+		field_340_s[0] = true;
 	}
 }

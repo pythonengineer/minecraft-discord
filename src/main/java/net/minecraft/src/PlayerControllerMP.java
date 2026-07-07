@@ -24,7 +24,6 @@ public class PlayerControllerMP extends PlayerController {
 	}
 
 	public boolean sendBlockRemoved(int var1, int var2, int var3, int var4) {
-		this.field_9438_k.addToSendQueue(new Packet14BlockDig(3, var1, var2, var3, var4));
 		int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
 		boolean var6 = super.sendBlockRemoved(var1, var2, var3, var4);
 		ItemStack var7 = this.mc.thePlayer.getCurrentEquippedItem();
@@ -40,64 +39,67 @@ public class PlayerControllerMP extends PlayerController {
 	}
 
 	public void clickBlock(int var1, int var2, int var3, int var4) {
-		this.field_9439_j = true;
-		this.field_9438_k.addToSendQueue(new Packet14BlockDig(0, var1, var2, var3, var4));
-		int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
-		if(var5 > 0 && this.field_9442_f == 0.0F) {
-			Block.blocksList[var5].onBlockClicked(this.mc.theWorld, var1, var2, var3, this.mc.thePlayer);
-		}
+		if(!this.field_9439_j || var1 != this.field_9445_c || var2 != this.field_9444_d || var3 != this.field_9443_e) {
+			this.field_9438_k.addToSendQueue(new Packet14BlockDig(0, var1, var2, var3, var4));
+			int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
+			if(var5 > 0 && this.field_9442_f == 0.0F) {
+				Block.blocksList[var5].onBlockClicked(this.mc.theWorld, var1, var2, var3, this.mc.thePlayer);
+			}
 
-		if(var5 > 0 && Block.blocksList[var5].blockStrength(this.mc.thePlayer) >= 1.0F) {
-			this.sendBlockRemoved(var1, var2, var3, var4);
+			if(var5 > 0 && Block.blocksList[var5].blockStrength(this.mc.thePlayer) >= 1.0F) {
+				this.sendBlockRemoved(var1, var2, var3, var4);
+			} else {
+				this.field_9439_j = true;
+				this.field_9445_c = var1;
+				this.field_9444_d = var2;
+				this.field_9443_e = var3;
+				this.field_9442_f = 0.0F;
+				this.field_1080_g = 0.0F;
+				this.field_9441_h = 0.0F;
+			}
 		}
 
 	}
 
 	public void func_6468_a() {
-		if(this.field_9439_j) {
-			this.field_9439_j = false;
-			this.field_9438_k.addToSendQueue(new Packet14BlockDig(2, 0, 0, 0, 0));
-			this.field_9442_f = 0.0F;
-			this.field_9440_i = 0;
-		}
+		this.field_9442_f = 0.0F;
+		this.field_9439_j = false;
 	}
 
 	public void sendBlockRemoving(int var1, int var2, int var3, int var4) {
-		this.field_9439_j = true;
-		this.func_730_e();
-		this.field_9438_k.addToSendQueue(new Packet14BlockDig(1, var1, var2, var3, var4));
-		if(this.field_9440_i > 0) {
-			--this.field_9440_i;
-		} else {
-			if(var1 == this.field_9445_c && var2 == this.field_9444_d && var3 == this.field_9443_e) {
-				int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
-				if(var5 == 0) {
-					return;
-				}
-
-				Block var6 = Block.blocksList[var5];
-				this.field_9442_f += var6.blockStrength(this.mc.thePlayer);
-				if(this.field_9441_h % 4.0F == 0.0F && var6 != null) {
-					this.mc.sndManager.playSound(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.func_1147_b() + 1.0F) / 8.0F, var6.stepSound.func_1144_c() * 0.5F);
-				}
-
-				++this.field_9441_h;
-				if(this.field_9442_f >= 1.0000001F) {
-					this.sendBlockRemoved(var1, var2, var3, var4);
-					this.field_9442_f = 0.0F;
-					this.field_1080_g = 0.0F;
-					this.field_9441_h = 0.0F;
-					this.field_9440_i = 5;
-				}
+		if(this.field_9439_j) {
+			this.func_730_e();
+			if(this.field_9440_i > 0) {
+				--this.field_9440_i;
 			} else {
-				this.field_9442_f = 0.0F;
-				this.field_1080_g = 0.0F;
-				this.field_9441_h = 0.0F;
-				this.field_9445_c = var1;
-				this.field_9444_d = var2;
-				this.field_9443_e = var3;
-			}
+				if(var1 == this.field_9445_c && var2 == this.field_9444_d && var3 == this.field_9443_e) {
+					int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
+					if(var5 == 0) {
+						this.field_9439_j = false;
+						return;
+					}
 
+					Block var6 = Block.blocksList[var5];
+					this.field_9442_f += var6.blockStrength(this.mc.thePlayer);
+					if(this.field_9441_h % 4.0F == 0.0F && var6 != null) {
+						this.mc.sndManager.playSound(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.func_1147_b() + 1.0F) / 8.0F, var6.stepSound.func_1144_c() * 0.5F);
+					}
+
+					++this.field_9441_h;
+					if(this.field_9442_f >= 1.0000001F) {
+						this.field_9439_j = false;
+						this.field_9438_k.addToSendQueue(new Packet14BlockDig(2, var1, var2, var3, var4));
+						this.sendBlockRemoved(var1, var2, var3, var4);
+						this.field_9442_f = 0.0F;
+						this.field_1080_g = 0.0F;
+						this.field_9441_h = 0.0F;
+						this.field_9440_i = 5;
+					}
+				} else {
+					this.clickBlock(var1, var2, var3, var4);
+				}
+
+			}
 		}
 	}
 

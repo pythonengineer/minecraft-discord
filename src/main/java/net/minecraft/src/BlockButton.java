@@ -34,35 +34,21 @@ public class BlockButton extends Block {
 		var6 &= 7;
 		if(var5 == 2 && var1.isBlockOpaqueCube(var2, var3, var4 + 1)) {
 			var6 = 4;
-		}
-
-		if(var5 == 3 && var1.isBlockOpaqueCube(var2, var3, var4 - 1)) {
+		} else if(var5 == 3 && var1.isBlockOpaqueCube(var2, var3, var4 - 1)) {
 			var6 = 3;
-		}
-
-		if(var5 == 4 && var1.isBlockOpaqueCube(var2 + 1, var3, var4)) {
+		} else if(var5 == 4 && var1.isBlockOpaqueCube(var2 + 1, var3, var4)) {
 			var6 = 2;
-		}
-
-		if(var5 == 5 && var1.isBlockOpaqueCube(var2 - 1, var3, var4)) {
+		} else if(var5 == 5 && var1.isBlockOpaqueCube(var2 - 1, var3, var4)) {
 			var6 = 1;
+		} else {
+			var6 = this.func_22036_h(var1, var2, var3, var4);
 		}
 
 		var1.setBlockMetadataWithNotify(var2, var3, var4, var6 + var7);
 	}
 
-	public void onBlockAdded(World var1, int var2, int var3, int var4) {
-		if(var1.isBlockOpaqueCube(var2 - 1, var3, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 1);
-		} else if(var1.isBlockOpaqueCube(var2 + 1, var3, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 2);
-		} else if(var1.isBlockOpaqueCube(var2, var3, var4 - 1)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 3);
-		} else if(var1.isBlockOpaqueCube(var2, var3, var4 + 1)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 4);
-		}
-
-		this.func_305_h(var1, var2, var3, var4);
+	private int func_22036_h(World var1, int var2, int var3, int var4) {
+		return var1.isBlockOpaqueCube(var2 - 1, var3, var4) ? 1 : (var1.isBlockOpaqueCube(var2 + 1, var3, var4) ? 2 : (var1.isBlockOpaqueCube(var2, var3, var4 - 1) ? 3 : (var1.isBlockOpaqueCube(var2, var3, var4 + 1) ? 4 : 1)));
 	}
 
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
@@ -132,34 +118,30 @@ public class BlockButton extends Block {
 	}
 
 	public boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
-		if(var1.multiplayerWorld) {
+		int var6 = var1.getBlockMetadata(var2, var3, var4);
+		int var7 = var6 & 7;
+		int var8 = 8 - (var6 & 8);
+		if(var8 == 0) {
 			return true;
 		} else {
-			int var6 = var1.getBlockMetadata(var2, var3, var4);
-			int var7 = var6 & 7;
-			int var8 = 8 - (var6 & 8);
-			if(var8 == 0) {
-				return true;
+			var1.setBlockMetadataWithNotify(var2, var3, var4, var7 + var8);
+			var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
+			var1.playSoundEffect((double)var2 + 0.5D, (double)var3 + 0.5D, (double)var4 + 0.5D, "random.click", 0.3F, 0.6F);
+			var1.notifyBlocksOfNeighborChange(var2, var3, var4, this.blockID);
+			if(var7 == 1) {
+				var1.notifyBlocksOfNeighborChange(var2 - 1, var3, var4, this.blockID);
+			} else if(var7 == 2) {
+				var1.notifyBlocksOfNeighborChange(var2 + 1, var3, var4, this.blockID);
+			} else if(var7 == 3) {
+				var1.notifyBlocksOfNeighborChange(var2, var3, var4 - 1, this.blockID);
+			} else if(var7 == 4) {
+				var1.notifyBlocksOfNeighborChange(var2, var3, var4 + 1, this.blockID);
 			} else {
-				var1.setBlockMetadataWithNotify(var2, var3, var4, var7 + var8);
-				var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
-				var1.playSoundEffect((double)var2 + 0.5D, (double)var3 + 0.5D, (double)var4 + 0.5D, "random.click", 0.3F, 0.6F);
-				var1.notifyBlocksOfNeighborChange(var2, var3, var4, this.blockID);
-				if(var7 == 1) {
-					var1.notifyBlocksOfNeighborChange(var2 - 1, var3, var4, this.blockID);
-				} else if(var7 == 2) {
-					var1.notifyBlocksOfNeighborChange(var2 + 1, var3, var4, this.blockID);
-				} else if(var7 == 3) {
-					var1.notifyBlocksOfNeighborChange(var2, var3, var4 - 1, this.blockID);
-				} else if(var7 == 4) {
-					var1.notifyBlocksOfNeighborChange(var2, var3, var4 + 1, this.blockID);
-				} else {
-					var1.notifyBlocksOfNeighborChange(var2, var3 - 1, var4, this.blockID);
-				}
-
-				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID);
-				return true;
+				var1.notifyBlocksOfNeighborChange(var2, var3 - 1, var4, this.blockID);
 			}
+
+			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, this.tickRate());
+			return true;
 		}
 	}
 

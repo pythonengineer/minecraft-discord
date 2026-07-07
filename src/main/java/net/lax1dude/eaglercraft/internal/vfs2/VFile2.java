@@ -193,6 +193,15 @@ public class VFile2 {
         return i == -1 ? ".." : path.substring(0, i);
     }
 
+    public String getDirectory() {
+        if (path == null) {
+            return null;
+        }
+        int i = path.lastIndexOf(pathSeperator);
+        int j = path.lastIndexOf(pathSeperator, i - 1);
+        return i == -1 ? ".." : (j == -1 ? path.substring(0, i) : path.substring(j + 1, i));
+    }
+
     public int hashCode() {
         return path == null ? 0 : path.hashCode();
     }

@@ -1,11 +1,11 @@
 package net.minecraft.src;
 
 import java.util.List;
+import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.PointerInputAbstraction;
 import net.lax1dude.eaglercraft.internal.buffer.FloatBuffer;
-import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 import net.lax1dude.eaglercraft.lwjgl.opengl.Display;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
@@ -18,19 +18,35 @@ public class EntityRenderer {
 	public ItemRenderer itemRenderer;
 	private int field_1386_j;
 	private Entity field_1385_k = null;
-	private double l = 1.0D;
-	private double m = 0.0D;
-	private double n = 0.0D;
-	private long o = EagRuntime.currentTimeMillis();
-	private EaglercraftRandom p = new EaglercraftRandom();
+	private MouseFilter field_22235_l = new MouseFilter();
+	private MouseFilter field_22234_m = new MouseFilter();
+	private MouseFilter field_22233_n = new MouseFilter();
+	private MouseFilter field_22232_o = new MouseFilter();
+	private MouseFilter field_22231_p = new MouseFilter();
+	private MouseFilter field_22229_q = new MouseFilter();
+	private float field_22228_r = 4.0F;
+	private float field_22227_s = 4.0F;
+	private float field_22226_t = 0.0F;
+	private float field_22225_u = 0.0F;
+	private float field_22224_v = 0.0F;
+	private float field_22223_w = 0.0F;
+	private float field_22222_x = 0.0F;
+	private float field_22221_y = 0.0F;
+	private float field_22220_z = 0.0F;
+	private float field_22230_A = 0.0F;
+	private double field_21155_l = 1.0D;
+	private double field_21154_m = 0.0D;
+	private double field_21153_n = 0.0D;
+	private long field_1384_l = EagRuntime.currentTimeMillis();
+	private EaglercraftRandom random = new EaglercraftRandom();
 	volatile int field_1394_b = 0;
 	volatile int field_1393_c = 0;
 	FloatBuffer field_1392_d = GLAllocation.createDirectFloatBuffer(16);
 	float fogColorRed;
 	float fogColorGreen;
 	float fogColorBlue;
-	private float q;
-	private float r;
+	private float field_1382_n;
+	private float field_1381_o;
 
 	public EntityRenderer(Minecraft var1) {
 		this.mc = var1;
@@ -38,76 +54,87 @@ public class EntityRenderer {
 	}
 
 	public void updateRenderer() {
-		this.q = this.r;
-		float var1 = this.mc.theWorld.getLightBrightness(MathHelper.floor_double(this.mc.thePlayer.posX), MathHelper.floor_double(this.mc.thePlayer.posY), MathHelper.floor_double(this.mc.thePlayer.posZ));
+		this.field_1382_n = this.field_1381_o;
+		this.field_22227_s = this.field_22228_r;
+		this.field_22225_u = this.field_22226_t;
+		this.field_22223_w = this.field_22224_v;
+		this.field_22221_y = this.field_22222_x;
+		this.field_22230_A = this.field_22220_z;
+		if(this.mc.field_22009_h == null) {
+			this.mc.field_22009_h = this.mc.thePlayer;
+		}
+
+		float var1 = this.mc.theWorld.getLightBrightness(MathHelper.floor_double(this.mc.field_22009_h.posX), MathHelper.floor_double(this.mc.field_22009_h.posY), MathHelper.floor_double(this.mc.field_22009_h.posZ));
 		float var2 = (float)(3 - this.mc.gameSettings.renderDistance) / 3.0F;
 		float var3 = var1 * (1.0F - var2) + var2;
-		this.r += (var3 - this.r) * 0.1F;
+		this.field_1381_o += (var3 - this.field_1381_o) * 0.1F;
 		++this.field_1386_j;
 		this.itemRenderer.updateEquippedItem();
-		if(this.mc.isFancyGraphics) {
-			this.renderFancyGraphics();
+		if(this.mc.isRaining) {
+			this.addRainParticles();
 		}
 
 	}
 
 	public void getMouseOver(float var1) {
-		if(this.mc.thePlayer != null) {
-			double var2 = (double)this.mc.playerController.getBlockReachDistance();
-			this.mc.objectMouseOver = this.mc.thePlayer.rayTrace(var2, var1);
-			double var4 = var2;
-			Vec3D var6 = this.mc.thePlayer.getPosition(var1);
-			if(this.mc.objectMouseOver != null) {
-				var4 = this.mc.objectMouseOver.hitVec.distanceTo(var6);
-			}
-
-			if(this.mc.playerController instanceof PlayerControllerTest) {
-				var2 = 32.0D;
-			} else {
-				if(var4 > 3.0D) {
-					var4 = 3.0D;
+		if(this.mc.field_22009_h != null) {
+			if(this.mc.theWorld != null) {
+				double var2 = (double)this.mc.playerController.getBlockReachDistance();
+				this.mc.objectMouseOver = this.mc.field_22009_h.rayTrace(var2, var1);
+				double var4 = var2;
+				Vec3D var6 = this.mc.field_22009_h.getPosition(var1);
+				if(this.mc.objectMouseOver != null) {
+					var4 = this.mc.objectMouseOver.hitVec.distanceTo(var6);
 				}
 
-				var2 = var4;
-			}
+				if(this.mc.playerController instanceof PlayerControllerTest) {
+					var2 = 32.0D;
+				} else {
+					if(var4 > 3.0D) {
+						var4 = 3.0D;
+					}
 
-			Vec3D var7 = this.mc.thePlayer.getLook(var1);
-			Vec3D var8 = var6.addVector(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2);
-			this.field_1385_k = null;
-			float var9 = 1.0F;
-			List var10 = this.mc.theWorld.getEntitiesWithinAABBExcludingEntity(this.mc.thePlayer, this.mc.thePlayer.boundingBox.addCoord(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2).expand((double)var9, (double)var9, (double)var9));
-			double var11 = 0.0D;
+					var2 = var4;
+				}
 
-			for(int var13 = 0; var13 < var10.size(); ++var13) {
-				Entity var14 = (Entity)var10.get(var13);
-				if(var14.canBeCollidedWith()) {
-					float var15 = var14.getCollisionBorderSize();
-					AxisAlignedBB var16 = var14.boundingBox.expand((double)var15, (double)var15, (double)var15);
-					MovingObjectPosition var17 = var16.func_1169_a(var6, var8);
-					if(var16.isVecInside(var6)) {
-						if(0.0D < var11 || var11 == 0.0D) {
-							this.field_1385_k = var14;
-							var11 = 0.0D;
-						}
-					} else if(var17 != null) {
-						double var18 = var6.distanceTo(var17.hitVec);
-						if(var18 < var11 || var11 == 0.0D) {
-							this.field_1385_k = var14;
-							var11 = var18;
+				Vec3D var7 = this.mc.field_22009_h.getLook(var1);
+				Vec3D var8 = var6.addVector(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2);
+				this.field_1385_k = null;
+				float var9 = 1.0F;
+				List var10 = this.mc.theWorld.getEntitiesWithinAABBExcludingEntity(this.mc.field_22009_h, this.mc.field_22009_h.boundingBox.addCoord(var7.xCoord * var2, var7.yCoord * var2, var7.zCoord * var2).expand((double)var9, (double)var9, (double)var9));
+				double var11 = 0.0D;
+
+				for(int var13 = 0; var13 < var10.size(); ++var13) {
+					Entity var14 = (Entity)var10.get(var13);
+					if(var14.canBeCollidedWith()) {
+						float var15 = var14.getCollisionBorderSize();
+						AxisAlignedBB var16 = var14.boundingBox.expand((double)var15, (double)var15, (double)var15);
+						MovingObjectPosition var17 = var16.func_1169_a(var6, var8);
+						if(var16.isVecInside(var6)) {
+							if(0.0D < var11 || var11 == 0.0D) {
+								this.field_1385_k = var14;
+								var11 = 0.0D;
+							}
+						} else if(var17 != null) {
+							double var18 = var6.distanceTo(var17.hitVec);
+							if(var18 < var11 || var11 == 0.0D) {
+								this.field_1385_k = var14;
+								var11 = var18;
+							}
 						}
 					}
 				}
-			}
 
-			if(this.field_1385_k != null && !(this.mc.playerController instanceof PlayerControllerTest)) {
-				this.mc.objectMouseOver = new MovingObjectPosition(this.field_1385_k);
-			}
+				if(this.field_1385_k != null && !(this.mc.playerController instanceof PlayerControllerTest)) {
+					this.mc.objectMouseOver = new MovingObjectPosition(this.field_1385_k);
+				}
 
+			}
 		}
 	}
 
 	private float func_914_d(float var1) {
-		EntityPlayerSP var2 = this.mc.thePlayer;
+		EntityLiving var2 = this.mc.field_22009_h;
 		float var3 = 70.0F;
 		if(var2.isInsideOfMaterial(Material.water)) {
 			var3 = 60.0F;
@@ -118,11 +145,11 @@ public class EntityRenderer {
 			var3 /= (1.0F - 500.0F / (var4 + 500.0F)) * 2.0F + 1.0F;
 		}
 
-		return var3;
+		return var3 + this.field_22221_y + (this.field_22222_x - this.field_22221_y) * var1;
 	}
 
 	private void hurtCameraEffect(float var1) {
-		EntityPlayerSP var2 = this.mc.thePlayer;
+		EntityLiving var2 = this.mc.field_22009_h;
 		float var3 = (float)var2.hurtTime - var1;
 		float var4;
 		if(var2.health <= 0) {
@@ -141,78 +168,99 @@ public class EntityRenderer {
 	}
 
 	private void setupViewBobbing(float var1) {
-		if(!this.mc.gameSettings.thirdPersonView) {
-			EntityPlayerSP var2 = this.mc.thePlayer;
+		if(this.mc.field_22009_h instanceof EntityPlayer) {
+			EntityPlayer var2 = (EntityPlayer)this.mc.field_22009_h;
 			float var3 = var2.distanceWalkedModified - var2.prevDistanceWalkedModified;
-			float var4 = var2.distanceWalkedModified + var3 * var1;
+			float var4 = -(var2.distanceWalkedModified + var3 * var1);
 			float var5 = var2.field_775_e + (var2.field_774_f - var2.field_775_e) * var1;
 			float var6 = var2.field_9329_Q + (var2.field_9328_R - var2.field_9329_Q) * var1;
 			GL11.glTranslatef(MathHelper.sin(var4 * (float)Math.PI) * var5 * 0.5F, -Math.abs(MathHelper.cos(var4 * (float)Math.PI) * var5), 0.0F);
 			GL11.glRotatef(MathHelper.sin(var4 * (float)Math.PI) * var5 * 3.0F, 0.0F, 0.0F, 1.0F);
-			GL11.glRotatef(Math.abs(MathHelper.cos(var4 * (float)Math.PI + 0.2F) * var5) * 5.0F, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(Math.abs(MathHelper.cos(var4 * (float)Math.PI - 0.2F) * var5) * 5.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(var6, 1.0F, 0.0F, 0.0F);
 		}
 	}
 
 	private void orientCamera(float var1) {
-		EntityPlayerSP var2 = this.mc.thePlayer;
-		double var3 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double)var1;
-		double var5 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double)var1;
-		double var7 = var2.prevPosZ + (var2.posZ - var2.prevPosZ) * (double)var1;
-		if(this.mc.gameSettings.thirdPersonView) {
-			double var9 = 4.0D;
-			float var11 = var2.rotationYaw;
-			float var12 = var2.rotationPitch;
-			if(Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-				var12 += 180.0F;
-				var9 += 2.0D;
+		EntityLiving var2 = this.mc.field_22009_h;
+		float var3 = var2.yOffset - 1.62F;
+		double var4 = var2.prevPosX + (var2.posX - var2.prevPosX) * (double)var1;
+		double var6 = var2.prevPosY + (var2.posY - var2.prevPosY) * (double)var1 - (double)var3;
+		double var8 = var2.prevPosZ + (var2.posZ - var2.prevPosZ) * (double)var1;
+		GL11.glRotatef(this.field_22230_A + (this.field_22220_z - this.field_22230_A) * var1, 0.0F, 0.0F, 1.0F);
+		if(var2.isPlayerSleeping()) {
+			var3 = (float)((double)var3 + 1.0D);
+			GL11.glTranslatef(0.0F, 0.3F, 0.0F);
+			if(!this.mc.gameSettings.field_22273_E) {
+				int var10 = this.mc.theWorld.getBlockId(MathHelper.floor_double(var2.posX), MathHelper.floor_double(var2.posY), MathHelper.floor_double(var2.posZ));
+				if(var10 == Block.field_9262_S.blockID) {
+					int var11 = this.mc.theWorld.getBlockMetadata(MathHelper.floor_double(var2.posX), MathHelper.floor_double(var2.posY), MathHelper.floor_double(var2.posZ));
+					int var12 = var11 & 3;
+					GL11.glRotatef((float)(var12 * 90), 0.0F, 1.0F, 0.0F);
+				}
+
+				GL11.glRotatef(var2.prevRotationYaw + (var2.rotationYaw - var2.prevRotationYaw) * var1 + 180.0F, 0.0F, -1.0F, 0.0F);
+				GL11.glRotatef(var2.prevRotationPitch + (var2.rotationPitch - var2.prevRotationPitch) * var1, -1.0F, 0.0F, 0.0F);
 			}
+		} else if(this.mc.gameSettings.thirdPersonView) {
+			double var27 = (double)(this.field_22227_s + (this.field_22228_r - this.field_22227_s) * var1);
+			float var13;
+			float var28;
+			if(this.mc.gameSettings.field_22273_E) {
+				var28 = this.field_22225_u + (this.field_22226_t - this.field_22225_u) * var1;
+				var13 = this.field_22223_w + (this.field_22224_v - this.field_22223_w) * var1;
+				GL11.glTranslatef(0.0F, 0.0F, (float)(-var27));
+				GL11.glRotatef(var13, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(var28, 0.0F, 1.0F, 0.0F);
+			} else {
+				var28 = var2.rotationYaw;
+				var13 = var2.rotationPitch;
+				double var14 = (double)(-MathHelper.sin(var28 / 180.0F * (float)Math.PI) * MathHelper.cos(var13 / 180.0F * (float)Math.PI)) * var27;
+				double var16 = (double)(MathHelper.cos(var28 / 180.0F * (float)Math.PI) * MathHelper.cos(var13 / 180.0F * (float)Math.PI)) * var27;
+				double var18 = (double)(-MathHelper.sin(var13 / 180.0F * (float)Math.PI)) * var27;
 
-			double var13 = (double)(-MathHelper.sin(var11 / 180.0F * (float)Math.PI) * MathHelper.cos(var12 / 180.0F * (float)Math.PI)) * var9;
-			double var15 = (double)(MathHelper.cos(var11 / 180.0F * (float)Math.PI) * MathHelper.cos(var12 / 180.0F * (float)Math.PI)) * var9;
-			double var17 = (double)(-MathHelper.sin(var12 / 180.0F * (float)Math.PI)) * var9;
-
-			for(int var19 = 0; var19 < 8; ++var19) {
-				float var20 = (float)((var19 & 1) * 2 - 1);
-				float var21 = (float)((var19 >> 1 & 1) * 2 - 1);
-				float var22 = (float)((var19 >> 2 & 1) * 2 - 1);
-				var20 *= 0.1F;
-				var21 *= 0.1F;
-				var22 *= 0.1F;
-				MovingObjectPosition var23 = this.mc.theWorld.rayTraceBlocks(Vec3D.createVector(var3 + (double)var20, var5 + (double)var21, var7 + (double)var22), Vec3D.createVector(var3 - var13 + (double)var20 + (double)var22, var5 - var17 + (double)var21, var7 - var15 + (double)var22));
-				if(var23 != null) {
-					double var24 = var23.hitVec.distanceTo(Vec3D.createVector(var3, var5, var7));
-					if(var24 < var9) {
-						var9 = var24;
+				for(int var20 = 0; var20 < 8; ++var20) {
+					float var21 = (float)((var20 & 1) * 2 - 1);
+					float var22 = (float)((var20 >> 1 & 1) * 2 - 1);
+					float var23 = (float)((var20 >> 2 & 1) * 2 - 1);
+					var21 *= 0.1F;
+					var22 *= 0.1F;
+					var23 *= 0.1F;
+					MovingObjectPosition var24 = this.mc.theWorld.rayTraceBlocks(Vec3D.createVector(var4 + (double)var21, var6 + (double)var22, var8 + (double)var23), Vec3D.createVector(var4 - var14 + (double)var21 + (double)var23, var6 - var18 + (double)var22, var8 - var16 + (double)var23));
+					if(var24 != null) {
+						double var25 = var24.hitVec.distanceTo(Vec3D.createVector(var4, var6, var8));
+						if(var25 < var27) {
+							var27 = var25;
+						}
 					}
 				}
-			}
 
-			if(Keyboard.isKeyDown(Keyboard.KEY_F1)) {
-				GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(var2.rotationPitch - var13, 1.0F, 0.0F, 0.0F);
+				GL11.glRotatef(var2.rotationYaw - var28, 0.0F, 1.0F, 0.0F);
+				GL11.glTranslatef(0.0F, 0.0F, (float)(-var27));
+				GL11.glRotatef(var28 - var2.rotationYaw, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(var13 - var2.rotationPitch, 1.0F, 0.0F, 0.0F);
 			}
-
-			GL11.glRotatef(var2.rotationPitch - var12, 1.0F, 0.0F, 0.0F);
-			GL11.glRotatef(var2.rotationYaw - var11, 0.0F, 1.0F, 0.0F);
-			GL11.glTranslatef(0.0F, 0.0F, (float)(-var9));
-			GL11.glRotatef(var11 - var2.rotationYaw, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(var12 - var2.rotationPitch, 1.0F, 0.0F, 0.0F);
 		} else {
 			GL11.glTranslatef(0.0F, 0.0F, -0.1F);
 		}
 
-		GL11.glRotatef(var2.prevRotationPitch + (var2.rotationPitch - var2.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
-		GL11.glRotatef(var2.prevRotationYaw + (var2.rotationYaw - var2.prevRotationYaw) * var1 + 180.0F, 0.0F, 1.0F, 0.0F);
+		if(!this.mc.gameSettings.field_22273_E) {
+			GL11.glRotatef(var2.prevRotationPitch + (var2.rotationPitch - var2.prevRotationPitch) * var1, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(var2.prevRotationYaw + (var2.rotationYaw - var2.prevRotationYaw) * var1 + 180.0F, 0.0F, 1.0F, 0.0F);
+		}
+
+		GL11.glTranslatef(0.0F, var3, 0.0F);
 	}
 
 	public void func_21152_a(double var1, double var3, double var5) {
-		this.l = var1;
-		this.m = var3;
-		this.n = var5;
+		this.field_21155_l = var1;
+		this.field_21154_m = var3;
+		this.field_21153_n = var5;
 	}
 
 	public void func_21151_b() {
-		this.l = 1.0D;
+		this.field_21155_l = 1.0D;
 	}
 
 	private void setupCameraTransform(float var1, int var2) {
@@ -224,9 +272,9 @@ public class EntityRenderer {
 			GL11.glTranslatef((float)(-(var2 * 2 - 1)) * var3, 0.0F, 0.0F);
 		}
 
-		if(this.l != 1.0D) {
-			GL11.glTranslatef((float)this.m, (float)(-this.n), 0.0F);
-			GL11.glScaled(this.l, this.l, 1.0D);
+		if(this.field_21155_l != 1.0D) {
+			GL11.glTranslatef((float)this.field_21154_m, (float)(-this.field_21153_n), 0.0F);
+			GL11.glScaled(this.field_21155_l, this.field_21155_l, 1.0D);
 			GLU.gluPerspective(this.func_914_d(var1), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance);
 		} else {
 			GLU.gluPerspective(this.func_914_d(var1), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance);
@@ -267,12 +315,12 @@ public class EntityRenderer {
 			this.setupViewBobbing(var1);
 		}
 
-		if(!this.mc.gameSettings.thirdPersonView && !Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+		if(!this.mc.gameSettings.thirdPersonView && !this.mc.field_22009_h.isPlayerSleeping() && !this.mc.gameSettings.field_22277_y) {
 			this.itemRenderer.renderItemInFirstPerson(var1);
 		}
 
 		GL11.glPopMatrix();
-		if(!this.mc.gameSettings.thirdPersonView) {
+		if(!this.mc.gameSettings.thirdPersonView && !this.mc.field_22009_h.isPlayerSleeping()) {
 			this.itemRenderer.renderOverlays(var1);
 			this.hurtCameraEffect(var1);
 		}
@@ -285,11 +333,11 @@ public class EntityRenderer {
 
 	public void func_4136_b(float var1) {
 		if(!Display.isActive()) {
-			if(EagRuntime.currentTimeMillis() - this.o > 500L) {
+			if(EagRuntime.currentTimeMillis() - this.field_1384_l > 500L) {
 				this.mc.func_6252_g();
 			}
 		} else {
-			this.o = EagRuntime.currentTimeMillis();
+			this.field_1384_l = EagRuntime.currentTimeMillis();
 		}
 
 		if(this.mc.field_6289_L) {
@@ -303,6 +351,11 @@ public class EntityRenderer {
 				var6 = -1;
 			}
 
+			if(this.mc.gameSettings.field_22274_D) {
+				var4 = this.field_22235_l.func_22386_a(var4, 0.05F * var3);
+				var5 = this.field_22234_m.func_22386_a(var5, 0.05F * var3);
+			}
+
 			this.mc.thePlayer.func_346_d(var4, var5 * (float)var6);
 		}
 
@@ -314,7 +367,7 @@ public class EntityRenderer {
 			int var11 = var9 - PointerInputAbstraction.getY() * var9 / this.mc.displayHeight - 1;
 			if(this.mc.theWorld != null) {
 				this.renderWorld(var1);
-				if(!Keyboard.isKeyDown(Keyboard.KEY_F1)) {
+				if(!this.mc.gameSettings.field_22277_y || this.mc.currentScreen != null) {
 					this.mc.ingameGUI.renderGameOverlay(var1, this.mc.currentScreen != null, var10, var11);
 				}
 			} else {
@@ -335,8 +388,12 @@ public class EntityRenderer {
 	}
 
 	public void renderWorld(float var1) {
+		if(this.mc.field_22009_h == null) {
+			this.mc.field_22009_h = this.mc.thePlayer;
+		}
+
 		this.getMouseOver(var1);
-		EntityPlayerSP var2 = this.mc.thePlayer;
+		EntityLiving var2 = this.mc.field_22009_h;
 		RenderGlobal var3 = this.mc.renderGlobal;
 		EffectRenderer var4 = this.mc.effectRenderer;
 		double var5 = var2.lastTickPosX + (var2.posX - var2.lastTickPosX) * (double)var1;
@@ -373,6 +430,10 @@ public class EntityRenderer {
 
 			GL11.glEnable(GL11.GL_FOG);
 			this.func_4140_a(1);
+			if(this.mc.gameSettings.field_22278_j) {
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+			}
+
 			Frustrum var16 = new Frustrum();
 			var16.setPosition(var5, var7, var9);
 			this.mc.renderGlobal.func_960_a(var16, var1);
@@ -382,16 +443,19 @@ public class EntityRenderer {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
 			RenderHelper.disableStandardItemLighting();
 			var3.func_943_a(var2, 0, (double)var1);
+			GL11.glShadeModel(GL11.GL_FLAT);
 			RenderHelper.enableStandardItemLighting();
 			var3.func_951_a(var2.getPosition(var1), var16, var1);
 			var4.func_1187_b(var2, var1);
 			RenderHelper.disableStandardItemLighting();
 			this.func_4140_a(0);
-			var4.func_1189_a(var2, var1);
-			if(this.mc.objectMouseOver != null && var2.isInsideOfMaterial(Material.water)) {
+			var4.renderParticles(var2, var1);
+			EntityPlayer var17;
+			if(this.mc.objectMouseOver != null && var2.isInsideOfMaterial(Material.water) && var2 instanceof EntityPlayer) {
+				var17 = (EntityPlayer)var2;
 				GL11.glDisable(GL11.GL_ALPHA_TEST);
-                var3.drawSelectionBox(var2, this.mc.objectMouseOver, 0, var2.inventory.getCurrentItem(), var1);
-				var3.func_959_a(var2, this.mc.objectMouseOver, 0, var2.inventory.getCurrentItem(), var1);
+				var3.drawSelectionBox(var17, this.mc.objectMouseOver, 0, var17.inventory.getCurrentItem(), var1);
+				var3.func_959_a(var17, this.mc.objectMouseOver, 0, var17.inventory.getCurrentItem(), var1);
 				GL11.glEnable(GL11.GL_ALPHA_TEST);
 			}
 
@@ -422,10 +486,11 @@ public class EntityRenderer {
 			GL11.glDepthMask(true);
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
-			if(this.l == 1.0D && this.mc.objectMouseOver != null && !var2.isInsideOfMaterial(Material.water)) {
+			if(this.field_21155_l == 1.0D && var2 instanceof EntityPlayer && this.mc.objectMouseOver != null && !var2.isInsideOfMaterial(Material.water)) {
+				var17 = (EntityPlayer)var2;
 				GL11.glDisable(GL11.GL_ALPHA_TEST);
-				var3.drawSelectionBox(var2, this.mc.objectMouseOver, 0, var2.inventory.getCurrentItem(), var1);
-				var3.func_959_a(var2, this.mc.objectMouseOver, 0, var2.inventory.getCurrentItem(), var1);
+				var3.drawSelectionBox(var17, this.mc.objectMouseOver, 0, var17.inventory.getCurrentItem(), var1);
+				var3.func_959_a(var17, this.mc.objectMouseOver, 0, var17.inventory.getCurrentItem(), var1);
 				GL11.glEnable(GL11.GL_ALPHA_TEST);
 			}
 
@@ -438,7 +503,7 @@ public class EntityRenderer {
 			var3.func_4141_b(var1);
 			GL11.glDisable(GL11.GL_FOG);
 			this.func_4140_a(1);
-			if(this.l == 1.0D) {
+			if(this.field_21155_l == 1.0D) {
 				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 				this.func_4135_b(var1, var15);
 			}
@@ -451,9 +516,9 @@ public class EntityRenderer {
 		GL11.glColorMask(true, true, true, false);
 	}
 
-	private void renderFancyGraphics() {
+	private void addRainParticles() {
 		if(this.mc.gameSettings.fancyGraphics) {
-			EntityPlayerSP var1 = this.mc.thePlayer;
+			EntityLiving var1 = this.mc.field_22009_h;
 			World var2 = this.mc.theWorld;
 			int var3 = MathHelper.floor_double(var1.posX);
 			int var4 = MathHelper.floor_double(var1.posY);
@@ -461,13 +526,13 @@ public class EntityRenderer {
 			byte var6 = 16;
 
 			for(int var7 = 0; var7 < 150; ++var7) {
-				int var8 = var3 + this.p.nextInt(var6) - this.p.nextInt(var6);
-				int var9 = var5 + this.p.nextInt(var6) - this.p.nextInt(var6);
+				int var8 = var3 + this.random.nextInt(var6) - this.random.nextInt(var6);
+				int var9 = var5 + this.random.nextInt(var6) - this.random.nextInt(var6);
 				int var10 = var2.func_696_e(var8, var9);
 				int var11 = var2.getBlockId(var8, var10 - 1, var9);
 				if(var10 <= var4 + var6 && var10 >= var4 - var6) {
-					float var12 = this.p.nextFloat();
-					float var13 = this.p.nextFloat();
+					float var12 = this.random.nextFloat();
+					float var13 = this.random.nextFloat();
 					if(var11 > 0) {
 						this.mc.effectRenderer.addEffect(new EntityRainFX(var2, (double)((float)var8 + var12), (double)((float)var10 + 0.1F) - Block.blocksList[var11].minY, (double)((float)var9 + var13)));
 					}
@@ -492,10 +557,10 @@ public class EntityRenderer {
 
 	private void updateFogColor(float var1) {
 		World var2 = this.mc.theWorld;
-		EntityPlayerSP var3 = this.mc.thePlayer;
+		EntityLiving var3 = this.mc.field_22009_h;
 		float var4 = 1.0F / (float)(4 - this.mc.gameSettings.renderDistance);
 		var4 = 1.0F - (float)Math.pow((double)var4, 0.25D);
-		Vec3D var5 = var2.func_4079_a(this.mc.thePlayer, var1);
+		Vec3D var5 = var2.func_4079_a(this.mc.field_22009_h, var1);
 		float var6 = (float)var5.xCoord;
 		float var7 = (float)var5.yCoord;
 		float var8 = (float)var5.zCoord;
@@ -516,7 +581,7 @@ public class EntityRenderer {
 			this.fogColorBlue = 0.0F;
 		}
 
-		float var10 = this.q + (this.r - this.q) * var1;
+		float var10 = this.field_1382_n + (this.field_1381_o - this.field_1382_n) * var1;
 		this.fogColorRed *= var10;
 		this.fogColorGreen *= var10;
 		this.fogColorBlue *= var10;
@@ -533,7 +598,7 @@ public class EntityRenderer {
 	}
 
 	private void func_4140_a(int var1) {
-		EntityPlayerSP var2 = this.mc.thePlayer;
+		EntityLiving var2 = this.mc.field_22009_h;
 		GL11.glFog(GL11.GL_FOG_COLOR, this.func_908_a(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 1.0F));
 		GL11.glNormal3f(0.0F, -1.0F, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

@@ -177,4 +177,10 @@ public class NetHandler {
 	public void func_21145_a(Packet54 var1) {
 		this.registerPacket(var1);
 	}
+
+	public void func_22186_a(Packet17Sleep var1) {
+	}
+
+	public void func_22185_a(Packet27 var1) {
+	}
 }

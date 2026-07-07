@@ -49,7 +49,7 @@ public class EntityMobs extends EntityCreature implements IMobs {
 	}
 
 	protected void attackEntity(Entity var1, float var2) {
-		if((double)var2 < 2.5D && var1.boundingBox.maxY > this.boundingBox.minY && var1.boundingBox.minY < this.boundingBox.maxY) {
+		if((double)var2 < 1.5D && var1.boundingBox.maxY > this.boundingBox.minY && var1.boundingBox.minY < this.boundingBox.maxY) {
 			this.attackTime = 20;
 			var1.attackEntityFrom(this, this.attackStrength);
 		}

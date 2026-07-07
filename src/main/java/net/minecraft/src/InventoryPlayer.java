@@ -26,7 +26,7 @@ public class InventoryPlayer implements IInventory {
 		return -1;
 	}
 
-	private int func_21105_c(ItemStack var1) {
+	private int storeItemStack(ItemStack var1) {
 		for(int var2 = 0; var2 < this.mainInventory.length; ++var2) {
 			if(this.mainInventory[var2] != null && this.mainInventory[var2].itemID == var1.itemID && this.mainInventory[var2].func_21180_d() && this.mainInventory[var2].stackSize < this.mainInventory[var2].getMaxStackSize() && this.mainInventory[var2].stackSize < this.getInventoryStackLimit() && (!this.mainInventory[var2].getHasSubtypes() || this.mainInventory[var2].getItemDamage() == var1.getItemDamage())) {
 				return var2;
@@ -74,7 +74,7 @@ public class InventoryPlayer implements IInventory {
 	private int func_21106_d(ItemStack var1) {
 		int var2 = var1.itemID;
 		int var3 = var1.stackSize;
-		int var4 = this.func_21105_c(var1);
+		int var4 = this.storeItemStack(var1);
 		if(var4 < 0) {
 			var4 = this.getFirstEmptyStack();
 		}

@@ -52,22 +52,6 @@ public class BlockLever extends Block {
 		var1.setBlockMetadataWithNotify(var2, var3, var4, var6 + var7);
 	}
 
-	public void onBlockAdded(World var1, int var2, int var3, int var4) {
-		if(var1.isBlockOpaqueCube(var2 - 1, var3, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 1);
-		} else if(var1.isBlockOpaqueCube(var2 + 1, var3, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 2);
-		} else if(var1.isBlockOpaqueCube(var2, var3, var4 - 1)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 3);
-		} else if(var1.isBlockOpaqueCube(var2, var3, var4 + 1)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 4);
-		} else if(var1.isBlockOpaqueCube(var2, var3 - 1, var4)) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, 5 + var1.rand.nextInt(2));
-		}
-
-		this.checkIfAttachedToBlock(var1, var2, var3, var4);
-	}
-
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		if(this.checkIfAttachedToBlock(var1, var2, var3, var4)) {
 			int var6 = var1.getBlockMetadata(var2, var3, var4) & 7;

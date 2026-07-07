@@ -27,19 +27,19 @@ public class Packet51MapChunk extends Packet {
 		this.xSize = var1.read() + 1;
 		this.ySize = var1.read() + 1;
 		this.zSize = var1.read() + 1;
-		int var2 = var1.readInt();
-		byte[] var3 = new byte[var2];
-		var1.readFully(var3);
+		this.chunkSize = var1.readInt();
+		byte[] var2 = new byte[this.chunkSize];
+		var1.readFully(var2);
 		this.chunk = new byte[this.xSize * this.ySize * this.zSize * 5 / 2];
-		Inflater var4 = new Inflater();
-		var4.setInput(var3);
+		Inflater var3 = new Inflater();
+		var3.setInput(var2);
 
 		try {
-			var4.inflate(this.chunk);
-		} catch (DataFormatException var9) {
+			var3.inflate(this.chunk);
+		} catch (DataFormatException var8) {
 			throw new IOException("Bad compressed data format");
 		} finally {
-			var4.end();
+			var3.end();
 		}
 
 	}
