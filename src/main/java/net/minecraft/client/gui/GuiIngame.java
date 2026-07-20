@@ -167,6 +167,25 @@ public class GuiIngame extends Gui {
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 
+        if(this.recordPlayingUpFor > 0) {
+            float f23 = (float)this.recordPlayingUpFor - renderPartialTick;
+            int i14 = (int)(f23 * 256.0F / 20.0F);
+            if(i14 > 255) {
+                i14 = 255;
+            }
+
+            if(i14 > 0) {
+                GL11.glPushMatrix();
+                GL11.glTranslatef((float)(scaledWidth / 2), (float)(scaledHeight - 48), 0.0F);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                int i15 = HSBtoRGB(f23 / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
+                this.mc.fontRenderer.drawString(this.recordPlaying, -this.mc.fontRenderer.getStringWidth(this.recordPlaying) / 2, -4, i15 + (i14 << 24));
+                GL11.glDisable(GL11.GL_BLEND);
+                GL11.glPopMatrix();
+            }
+        }
+
         onEndHotbarDraw();
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -185,25 +204,6 @@ public class GuiIngame extends Gui {
             this.mc.fontRenderer.drawStringWithShadow(this.mc.debugInfoEntities(), 2, 32, 0xFFFFFF);
         } else {
             this.mc.fontRenderer.drawStringWithShadow("Minecraft Alpha v1.0.15", 2, 2, 0xFFFFFF);
-        }
-
-        if(this.recordPlayingUpFor > 0) {
-            float f23 = (float)this.recordPlayingUpFor - renderPartialTick;
-            int i14 = (int)(f23 * 256.0F / 20.0F);
-            if(i14 > 255) {
-                i14 = 255;
-            }
-
-            if(i14 > 0) {
-                GL11.glPushMatrix();
-                GL11.glTranslatef((float)(scaledWidth / 2), (float)(scaledHeight - 48), 0.0F);
-                GL11.glEnable(GL11.GL_BLEND);
-                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                int i15 = HSBtoRGB(f23 / 50.0F, 0.7F, 0.6F) & 0xFFFFFF;
-                this.mc.fontRenderer.drawString(this.recordPlaying, -this.mc.fontRenderer.getStringWidth(this.recordPlaying) / 2, -4, i15 + (i14 << 24));
-                GL11.glDisable(GL11.GL_BLEND);
-                GL11.glPopMatrix();
-            }
         }
 
         onEndTouchGUI();
