@@ -168,6 +168,25 @@ public class GuiIngame extends Gui {
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 
+		if(this.field_9419_j > 0) {
+			float var25 = (float)this.field_9419_j - var1;
+			var16 = (int)(var25 * 256.0F / 20.0F);
+			if(var16 > 255) {
+				var16 = 255;
+			}
+
+			if(var16 > 0) {
+				GL11.glPushMatrix();
+				GL11.glTranslatef((float)(var6 / 2), (float)(var7 - 48), 0.0F);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				var17 = HSBtoRGB(var25 / 50.0F, 0.7F, 0.6F) & 16777215;
+				var8.drawString(this.field_9420_i, -var8.getStringWidth(this.field_9420_i) / 2, -4, var17 + (var16 << 24));
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glPopMatrix();
+			}
+		}
+
         onEndHotbarDraw();
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -190,25 +209,6 @@ public class GuiIngame extends Gui {
 			this.drawString(var8, "z: " + this.mc.thePlayer.posZ, 2, 80, 14737632);
 		} else {
 			var8.drawStringWithShadow("Minecraft Beta 1.1_02", 2, 2, 16777215);
-		}
-
-		if(this.field_9419_j > 0) {
-			float var25 = (float)this.field_9419_j - var1;
-			var16 = (int)(var25 * 256.0F / 20.0F);
-			if(var16 > 255) {
-				var16 = 255;
-			}
-
-			if(var16 > 0) {
-				GL11.glPushMatrix();
-				GL11.glTranslatef((float)(var6 / 2), (float)(var7 - 48), 0.0F);
-				GL11.glEnable(GL11.GL_BLEND);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				var17 = HSBtoRGB(var25 / 50.0F, 0.7F, 0.6F) & 16777215;
-				var8.drawString(this.field_9420_i, -var8.getStringWidth(this.field_9420_i) / 2, -4, var17 + (var16 << 24));
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glPopMatrix();
-			}
 		}
 
         onEndTouchGUI();
