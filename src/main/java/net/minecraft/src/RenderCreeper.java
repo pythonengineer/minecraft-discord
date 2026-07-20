@@ -4,12 +4,14 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class RenderCreeper extends RenderLiving {
+	private ModelBase field_27008_a = new ModelCreeper(2.0F);
+
 	public RenderCreeper() {
 		super(new ModelCreeper(), 0.5F);
 	}
 
 	protected void updateCreeperScale(EntityCreeper var1, float var2) {
-		float var4 = var1.func_440_b(var2);
+		float var4 = var1.setCreeperFlashTime(var2);
 		float var5 = 1.0F + MathHelper.sin(var4 * 100.0F) * var4 * 0.01F;
 		if(var4 < 0.0F) {
 			var4 = 0.0F;
@@ -27,7 +29,7 @@ public class RenderCreeper extends RenderLiving {
 	}
 
 	protected int updateCreeperColorMultiplier(EntityCreeper var1, float var2, float var3) {
-		float var5 = var1.func_440_b(var3);
+		float var5 = var1.setCreeperFlashTime(var3);
 		if((int)(var5 * 10.0F) % 2 == 0) {
 			return 0;
 		} else {
@@ -47,11 +49,55 @@ public class RenderCreeper extends RenderLiving {
 		}
 	}
 
+	protected boolean func_27006_a(EntityCreeper var1, int var2, float var3) {
+		if(var1.func_27022_s()) {
+			if(var2 == 1) {
+				float var4 = (float)var1.ticksExisted + var3;
+				this.loadTexture("/armor/power.png");
+				GL11.glMatrixMode(GL11.GL_TEXTURE);
+				GL11.glLoadIdentity();
+				float var5 = var4 * 0.01F;
+				float var6 = var4 * 0.01F;
+				GL11.glTranslatef(var5, var6, 0.0F);
+				this.setRenderPassModel(this.field_27008_a);
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glEnable(GL11.GL_BLEND);
+				float var7 = 0.5F;
+				GL11.glColor4f(var7, var7, var7, 1.0F);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+				return true;
+			}
+
+			if(var2 == 2) {
+				GL11.glMatrixMode(GL11.GL_TEXTURE);
+				GL11.glLoadIdentity();
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_BLEND);
+			}
+		}
+
+		return false;
+	}
+
+	protected boolean func_27007_b(EntityCreeper var1, int var2, float var3) {
+		return false;
+	}
+
 	protected void preRenderCallback(EntityLiving var1, float var2) {
 		this.updateCreeperScale((EntityCreeper)var1, var2);
 	}
 
 	protected int getColorMultiplier(EntityLiving var1, float var2, float var3) {
 		return this.updateCreeperColorMultiplier((EntityCreeper)var1, var2, var3);
+	}
+
+	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {
+		return this.func_27006_a((EntityCreeper)var1, var2, var3);
+	}
+
+	protected boolean func_27005_b(EntityLiving var1, int var2, float var3) {
+		return this.func_27007_b((EntityCreeper)var1, var2, var3);
 	}
 }

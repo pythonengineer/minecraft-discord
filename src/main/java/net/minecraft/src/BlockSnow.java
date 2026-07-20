@@ -10,7 +10,8 @@ public class BlockSnow extends Block {
 	}
 
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4) {
-		return null;
+		int var5 = var1.getBlockMetadata(var2, var3, var4) & 7;
+		return var5 >= 3 ? AxisAlignedBB.getBoundingBoxFromPool((double)var2 + this.minX, (double)var3 + this.minY, (double)var4 + this.minZ, (double)var2 + this.maxX, (double)((float)var3 + 0.5F), (double)var4 + this.maxZ) : null;
 	}
 
 	public boolean isOpaqueCube() {
@@ -19,6 +20,12 @@ public class BlockSnow extends Block {
 
 	public boolean renderAsNormalBlock() {
 		return false;
+	}
+
+	public void setBlockBoundsBasedOnState(IBlockAccess var1, int var2, int var3, int var4) {
+		int var5 = var1.getBlockMetadata(var2, var3, var4) & 7;
+		float var6 = (float)(2 * (1 + var5)) / 16.0F;
+		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, var6, 1.0F);
 	}
 
 	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
@@ -40,16 +47,17 @@ public class BlockSnow extends Block {
 		}
 	}
 
-	public void harvestBlock(World var1, int var2, int var3, int var4, int var5) {
-		int var6 = Item.snowball.shiftedIndex;
-		float var7 = 0.7F;
-		double var8 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
-		double var10 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
-		double var12 = (double)(var1.rand.nextFloat() * var7) + (double)(1.0F - var7) * 0.5D;
-		EntityItem var14 = new EntityItem(var1, (double)var2 + var8, (double)var3 + var10, (double)var4 + var12, new ItemStack(var6, 1, 0));
-		var14.delayBeforeCanPickup = 10;
-		var1.entityJoinedWorld(var14);
-		var1.setBlockWithNotify(var2, var3, var4, 0);
+	public void harvestBlock(World var1, EntityPlayer var2, int var3, int var4, int var5, int var6) {
+		int var7 = Item.snowball.shiftedIndex;
+		float var8 = 0.7F;
+		double var9 = (double)(var1.rand.nextFloat() * var8) + (double)(1.0F - var8) * 0.5D;
+		double var11 = (double)(var1.rand.nextFloat() * var8) + (double)(1.0F - var8) * 0.5D;
+		double var13 = (double)(var1.rand.nextFloat() * var8) + (double)(1.0F - var8) * 0.5D;
+		EntityItem var15 = new EntityItem(var1, (double)var3 + var9, (double)var4 + var11, (double)var5 + var13, new ItemStack(var7, 1, 0));
+		var15.delayBeforeCanPickup = 10;
+		var1.entityJoinedWorld(var15);
+		var1.setBlockWithNotify(var3, var4, var5, 0);
+		var2.addStat(StatList.field_25159_y[this.blockID], 1);
 	}
 
 	public int idDropped(int var1, EaglercraftRandom var2) {
@@ -69,7 +77,6 @@ public class BlockSnow extends Block {
 	}
 
 	public boolean shouldSideBeRendered(IBlockAccess var1, int var2, int var3, int var4, int var5) {
-		Material var6 = var1.getBlockMaterial(var2, var3, var4);
-		return var5 == 1 ? true : (var6 == this.blockMaterial ? false : super.shouldSideBeRendered(var1, var2, var3, var4, var5));
+		return var5 == 1 ? true : super.shouldSideBeRendered(var1, var2, var3, var4, var5);
 	}
 }

@@ -20,7 +20,6 @@ public class EntityTNTPrimed extends Entity {
 		this.motionX = (double)(-MathHelper.sin(var8 * (float)Math.PI / 180.0F) * 0.02F);
 		this.motionY = (double)0.2F;
 		this.motionZ = (double)(-MathHelper.cos(var8 * (float)Math.PI / 180.0F) * 0.02F);
-		this.entityWalks = false;
 		this.fuse = 80;
 		this.prevPosX = var2;
 		this.prevPosY = var4;
@@ -28,6 +27,10 @@ public class EntityTNTPrimed extends Entity {
 	}
 
 	protected void entityInit() {
+	}
+
+	protected boolean canTriggerWalking() {
+		return false;
 	}
 
 	public boolean canBeCollidedWith() {

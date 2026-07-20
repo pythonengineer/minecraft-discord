@@ -25,7 +25,7 @@ public class EntityOtherPlayerMP extends EntityPlayer {
 		this.renderDistanceWeight = 10.0D;
 	}
 
-	protected void func_22058_C() {
+	protected void resetHeight() {
 		this.yOffset = 0.0F;
 	}
 

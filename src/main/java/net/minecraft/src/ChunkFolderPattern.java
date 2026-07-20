@@ -11,8 +11,8 @@ class ChunkFolderPattern {
 	}
 
 	public boolean accept(VFile2 var1) {
-		Matcher var2 = field_22392_a.matcher(var1.getName());
-		return var2.matches();
+			Matcher var2 = field_22392_a.matcher(var1.getName());
+			return var2.matches();
 	}
 
 	ChunkFolderPattern(Empty2 var1) {

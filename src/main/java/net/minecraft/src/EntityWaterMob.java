@@ -21,7 +21,7 @@ public class EntityWaterMob extends EntityCreature {
 		return this.worldObj.checkIfAABBIsClear(this.boundingBox);
 	}
 
-	public int func_421_b() {
+	public int getTalkInterval() {
 		return 120;
 	}
 }

@@ -8,12 +8,16 @@ public class WorldInfo {
 	private int spawnY;
 	private int spawnZ;
 	private long worldTime;
-	private long field_22315_f;
+	private long lastTimePlayed;
 	private long sizeOnDisk;
-	private NBTTagCompound field_22313_h;
-	private int field_22312_i;
+	private NBTTagCompound playerTag;
+	private int dimension;
 	private String levelName;
 	private int saveVersion;
+	private boolean field_27404_l;
+	private int field_27403_m;
+	private boolean field_27402_n;
+	private int field_27401_o;
 
 	public WorldInfo(NBTTagCompound var1) {
 		this.randomSeed = var1.getLong("RandomSeed");
@@ -21,13 +25,17 @@ public class WorldInfo {
 		this.spawnY = var1.getInteger("SpawnY");
 		this.spawnZ = var1.getInteger("SpawnZ");
 		this.worldTime = var1.getLong("Time");
-		this.field_22315_f = var1.getLong("LastPlayed");
+		this.lastTimePlayed = var1.getLong("LastPlayed");
 		this.sizeOnDisk = var1.getLong("SizeOnDisk");
 		this.levelName = var1.getString("LevelName");
 		this.saveVersion = var1.getInteger("version");
+		this.field_27403_m = var1.getInteger("rainTime");
+		this.field_27404_l = var1.getBoolean("raining");
+		this.field_27401_o = var1.getInteger("thunderTime");
+		this.field_27402_n = var1.getBoolean("thundering");
 		if(var1.hasKey("Player")) {
-			this.field_22313_h = var1.getCompoundTag("Player");
-			this.field_22312_i = this.field_22313_h.getInteger("Dimension");
+			this.playerTag = var1.getCompoundTag("Player");
+			this.dimension = this.playerTag.getInteger("Dimension");
 		}
 
 	}
@@ -43,21 +51,25 @@ public class WorldInfo {
 		this.spawnY = var1.spawnY;
 		this.spawnZ = var1.spawnZ;
 		this.worldTime = var1.worldTime;
-		this.field_22315_f = var1.field_22315_f;
+		this.lastTimePlayed = var1.lastTimePlayed;
 		this.sizeOnDisk = var1.sizeOnDisk;
-		this.field_22313_h = var1.field_22313_h;
-		this.field_22312_i = var1.field_22312_i;
+		this.playerTag = var1.playerTag;
+		this.dimension = var1.dimension;
 		this.levelName = var1.levelName;
 		this.saveVersion = var1.saveVersion;
+		this.field_27403_m = var1.field_27403_m;
+		this.field_27404_l = var1.field_27404_l;
+		this.field_27401_o = var1.field_27401_o;
+		this.field_27402_n = var1.field_27402_n;
 	}
 
-	public NBTTagCompound func_22299_a() {
+	public NBTTagCompound getNBTTagCompound() {
 		NBTTagCompound var1 = new NBTTagCompound();
-		this.func_22291_a(var1, this.field_22313_h);
+		this.updateTagCompound(var1, this.playerTag);
 		return var1;
 	}
 
-	public NBTTagCompound func_22305_a(List var1) {
+	public NBTTagCompound getNBTTagCompoundWithPlayer(List var1) {
 		NBTTagCompound var2 = new NBTTagCompound();
 		EntityPlayer var3 = null;
 		NBTTagCompound var4 = null;
@@ -70,22 +82,24 @@ public class WorldInfo {
 			var3.writeToNBT(var4);
 		}
 
-		this.func_22291_a(var2, var4);
+		this.updateTagCompound(var2, var4);
 		return var2;
 	}
 
-	private void func_22291_a(NBTTagCompound var1, NBTTagCompound var2) {
+	private void updateTagCompound(NBTTagCompound var1, NBTTagCompound var2) {
 		var1.setLong("RandomSeed", this.randomSeed);
 		var1.setInteger("SpawnX", this.spawnX);
 		var1.setInteger("SpawnY", this.spawnY);
 		var1.setInteger("SpawnZ", this.spawnZ);
 		var1.setLong("Time", this.worldTime);
 		var1.setLong("SizeOnDisk", this.sizeOnDisk);
-		// real epoch time, not EagRuntime.currentTimeMillis() which is a
-		// steady clock counting from app launch (would display as 1970)
 		var1.setLong("LastPlayed", System.currentTimeMillis());
 		var1.setString("LevelName", this.levelName);
 		var1.setInteger("version", this.saveVersion);
+		var1.setInteger("rainTime", this.field_27403_m);
+		var1.setBoolean("raining", this.field_27404_l);
+		var1.setInteger("thunderTime", this.field_27401_o);
+		var1.setBoolean("thundering", this.field_27402_n);
 		if(var2 != null) {
 			var1.setCompoundTag("Player", var2);
 		}
@@ -96,15 +110,15 @@ public class WorldInfo {
 		return this.randomSeed;
 	}
 
-	public int func_22293_c() {
+	public int getSpawnX() {
 		return this.spawnX;
 	}
 
-	public int func_22295_d() {
+	public int getSpawnY() {
 		return this.spawnY;
 	}
 
-	public int func_22300_e() {
+	public int getSpawnZ() {
 		return this.spawnZ;
 	}
 
@@ -112,27 +126,27 @@ public class WorldInfo {
 		return this.worldTime;
 	}
 
-	public long func_22306_g() {
+	public long getSizeOnDisk() {
 		return this.sizeOnDisk;
 	}
 
-	public NBTTagCompound func_22303_h() {
-		return this.field_22313_h;
+	public NBTTagCompound getPlayerNBTTagCompound() {
+		return this.playerTag;
 	}
 
-	public int func_22290_i() {
-		return this.field_22312_i;
+	public int getDimension() {
+		return this.dimension;
 	}
 
-	public void func_22294_a(int var1) {
+	public void setSpawnX(int var1) {
 		this.spawnX = var1;
 	}
 
-	public void func_22308_b(int var1) {
+	public void setSpawnY(int var1) {
 		this.spawnY = var1;
 	}
 
-	public void func_22298_c(int var1) {
+	public void setSpawnZ(int var1) {
 		this.spawnZ = var1;
 	}
 
@@ -140,15 +154,15 @@ public class WorldInfo {
 		this.worldTime = var1;
 	}
 
-	public void func_22297_b(long var1) {
+	public void setSizeOnDisk(long var1) {
 		this.sizeOnDisk = var1;
 	}
 
-	public void func_22309_a(NBTTagCompound var1) {
-		this.field_22313_h = var1;
+	public void setPlayerNBTTagCompound(NBTTagCompound var1) {
+		this.playerTag = var1;
 	}
 
-	public void func_22292_a(int var1, int var2, int var3) {
+	public void setSpawn(int var1, int var2, int var3) {
 		this.spawnX = var1;
 		this.spawnY = var2;
 		this.spawnZ = var3;
@@ -158,19 +172,51 @@ public class WorldInfo {
 		return this.levelName;
 	}
 
-	public void func_22287_a(String var1) {
+	public void setWorldName(String var1) {
 		this.levelName = var1;
 	}
 
-	public int func_22296_k() {
+	public int getSaveVersion() {
 		return this.saveVersion;
 	}
 
-	public void func_22289_d(int var1) {
+	public void setSaveVersion(int var1) {
 		this.saveVersion = var1;
 	}
 
-	public long func_22301_l() {
-		return this.field_22315_f;
+	public long getLastTimePlayed() {
+		return this.lastTimePlayed;
+	}
+
+	public boolean func_27396_m() {
+		return this.field_27402_n;
+	}
+
+	public void func_27398_a(boolean var1) {
+		this.field_27402_n = var1;
+	}
+
+	public int func_27400_n() {
+		return this.field_27401_o;
+	}
+
+	public void func_27399_e(int var1) {
+		this.field_27401_o = var1;
+	}
+
+	public boolean func_27397_o() {
+		return this.field_27404_l;
+	}
+
+	public void func_27394_b(boolean var1) {
+		this.field_27404_l = var1;
+	}
+
+	public int func_27393_p() {
+		return this.field_27403_m;
+	}
+
+	public void func_27395_f(int var1) {
+		this.field_27403_m = var1;
 	}
 }

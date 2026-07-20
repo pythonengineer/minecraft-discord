@@ -8,7 +8,6 @@ public class ItemBucket extends Item {
 	public ItemBucket(int var1, int var2) {
 		super(var1);
 		this.maxStackSize = 1;
-		this.maxDamage = 64;
 		this.isFull = var2;
 	}
 
@@ -80,7 +79,7 @@ public class ItemBucket extends Item {
 					}
 
 					if(var2.isAirBlock(var25, var26, var27) || !var2.getBlockMaterial(var25, var26, var27).isSolid()) {
-						if(var2.worldProvider.isHellWorld && this.isFull == Block.waterStill.blockID) {
+						if(var2.worldProvider.isHellWorld && this.isFull == Block.waterMoving.blockID) {
 							var2.playSoundEffect(var7 + 0.5D, var9 + 0.5D, var11 + 0.5D, "random.fizz", 0.5F, 2.6F + (var2.rand.nextFloat() - var2.rand.nextFloat()) * 0.8F);
 
 							for(int var28 = 0; var28 < 8; ++var28) {

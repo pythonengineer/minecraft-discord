@@ -2,36 +2,44 @@ package net.minecraft.src;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public class EntitySlime extends EntityLiving implements IMobs {
+public class EntitySlime extends EntityLiving implements IMob {
 	public float field_768_a;
 	public float field_767_b;
-	private int field_769_d = 0;
-	public int slimeSize = 1;
+	private int slimeJumpDelay = 0;
 
 	public EntitySlime(World var1) {
 		super(var1);
 		this.texture = "/mob/slime.png";
-		this.slimeSize = 1 << this.rand.nextInt(3);
+		int var2 = 1 << this.rand.nextInt(3);
 		this.yOffset = 0.0F;
-		this.field_769_d = this.rand.nextInt(20) + 10;
-		this.setSlimeSize(this.slimeSize);
+		this.slimeJumpDelay = this.rand.nextInt(20) + 10;
+		this.setSlimeSize(var2);
+	}
+
+	protected void entityInit() {
+		super.entityInit();
+		this.dataWatcher.addObject(16, new Byte((byte)1));
 	}
 
 	public void setSlimeSize(int var1) {
-		this.slimeSize = var1;
+		this.dataWatcher.updateObject(16, new Byte((byte)var1));
 		this.setSize(0.6F * (float)var1, 0.6F * (float)var1);
 		this.health = var1 * var1;
 		this.setPosition(this.posX, this.posY, this.posZ);
 	}
 
+	public int getSlimeSize() {
+		return this.dataWatcher.getWatchableObjectByte(16);
+	}
+
 	public void writeEntityToNBT(NBTTagCompound var1) {
 		super.writeEntityToNBT(var1);
-		var1.setInteger("Size", this.slimeSize - 1);
+		var1.setInteger("Size", this.getSlimeSize() - 1);
 	}
 
 	public void readEntityFromNBT(NBTTagCompound var1) {
 		super.readEntityFromNBT(var1);
-		this.slimeSize = var1.getInteger("Size") + 1;
+		this.setSlimeSize(var1.getInteger("Size") + 1);
 	}
 
 	public void onUpdate() {
@@ -39,15 +47,17 @@ public class EntitySlime extends EntityLiving implements IMobs {
 		boolean var1 = this.onGround;
 		super.onUpdate();
 		if(this.onGround && !var1) {
-			for(int var2 = 0; var2 < this.slimeSize * 8; ++var2) {
-				float var3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-				float var4 = this.rand.nextFloat() * 0.5F + 0.5F;
-				float var5 = MathHelper.sin(var3) * (float)this.slimeSize * 0.5F * var4;
-				float var6 = MathHelper.cos(var3) * (float)this.slimeSize * 0.5F * var4;
-				this.worldObj.spawnParticle("slime", this.posX + (double)var5, this.boundingBox.minY, this.posZ + (double)var6, 0.0D, 0.0D, 0.0D);
+			int var2 = this.getSlimeSize();
+
+			for(int var3 = 0; var3 < var2 * 8; ++var3) {
+				float var4 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+				float var5 = this.rand.nextFloat() * 0.5F + 0.5F;
+				float var6 = MathHelper.sin(var4) * (float)var2 * 0.5F * var5;
+				float var7 = MathHelper.cos(var4) * (float)var2 * 0.5F * var5;
+				this.worldObj.spawnParticle("slime", this.posX + (double)var6, this.boundingBox.minY, this.posZ + (double)var7, 0.0D, 0.0D, 0.0D);
 			}
 
-			if(this.slimeSize > 2) {
+			if(var2 > 2) {
 				this.worldObj.playSoundAtEntity(this, "mob.slime", this.getSoundVolume(), ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) / 0.8F);
 			}
 
@@ -58,25 +68,26 @@ public class EntitySlime extends EntityLiving implements IMobs {
 	}
 
 	protected void updatePlayerActionState() {
+		this.func_27021_X();
 		EntityPlayer var1 = this.worldObj.getClosestPlayerToEntity(this, 16.0D);
 		if(var1 != null) {
-			this.faceEntity(var1, 10.0F);
+			this.faceEntity(var1, 10.0F, 20.0F);
 		}
 
-		if(this.onGround && this.field_769_d-- <= 0) {
-			this.field_769_d = this.rand.nextInt(20) + 10;
+		if(this.onGround && this.slimeJumpDelay-- <= 0) {
+			this.slimeJumpDelay = this.rand.nextInt(20) + 10;
 			if(var1 != null) {
-				this.field_769_d /= 3;
+				this.slimeJumpDelay /= 3;
 			}
 
 			this.isJumping = true;
-			if(this.slimeSize > 1) {
+			if(this.getSlimeSize() > 1) {
 				this.worldObj.playSoundAtEntity(this, "mob.slime", this.getSoundVolume(), ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) * 0.8F);
 			}
 
 			this.field_768_a = 1.0F;
 			this.moveStrafing = 1.0F - this.rand.nextFloat() * 2.0F;
-			this.moveForward = (float)(1 * this.slimeSize);
+			this.moveForward = (float)(1 * this.getSlimeSize());
 		} else {
 			this.isJumping = false;
 			if(this.onGround) {
@@ -87,14 +98,15 @@ public class EntitySlime extends EntityLiving implements IMobs {
 	}
 
 	public void setEntityDead() {
-		if(this.slimeSize > 1 && this.health == 0) {
-			for(int var1 = 0; var1 < 4; ++var1) {
-				float var2 = ((float)(var1 % 2) - 0.5F) * (float)this.slimeSize / 4.0F;
-				float var3 = ((float)(var1 / 2) - 0.5F) * (float)this.slimeSize / 4.0F;
-				EntitySlime var4 = new EntitySlime(this.worldObj);
-				var4.setSlimeSize(this.slimeSize / 2);
-				var4.setLocationAndAngles(this.posX + (double)var2, this.posY + 0.5D, this.posZ + (double)var3, this.rand.nextFloat() * 360.0F, 0.0F);
-				this.worldObj.entityJoinedWorld(var4);
+		int var1 = this.getSlimeSize();
+		if(!this.worldObj.multiplayerWorld && var1 > 1 && this.health == 0) {
+			for(int var2 = 0; var2 < 4; ++var2) {
+				float var3 = ((float)(var2 % 2) - 0.5F) * (float)var1 / 4.0F;
+				float var4 = ((float)(var2 / 2) - 0.5F) * (float)var1 / 4.0F;
+				EntitySlime var5 = new EntitySlime(this.worldObj);
+				var5.setSlimeSize(var1 / 2);
+				var5.setLocationAndAngles(this.posX + (double)var3, this.posY + 0.5D, this.posZ + (double)var4, this.rand.nextFloat() * 360.0F, 0.0F);
+				this.worldObj.entityJoinedWorld(var5);
 			}
 		}
 
@@ -102,7 +114,8 @@ public class EntitySlime extends EntityLiving implements IMobs {
 	}
 
 	public void onCollideWithPlayer(EntityPlayer var1) {
-		if(this.slimeSize > 1 && this.canEntityBeSeen(var1) && (double)this.getDistanceToEntity(var1) < 0.6D * (double)this.slimeSize && var1.attackEntityFrom(this, this.slimeSize)) {
+		int var2 = this.getSlimeSize();
+		if(var2 > 1 && this.canEntityBeSeen(var1) && (double)this.getDistanceToEntity(var1) < 0.6D * (double)var2 && var1.attackEntityFrom(this, var2)) {
 			this.worldObj.playSoundAtEntity(this, "mob.slimeattack", 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 		}
 
@@ -117,12 +130,12 @@ public class EntitySlime extends EntityLiving implements IMobs {
 	}
 
 	protected int getDropItemId() {
-		return this.slimeSize == 1 ? Item.slimeBall.shiftedIndex : 0;
+		return this.getSlimeSize() == 1 ? Item.slimeBall.shiftedIndex : 0;
 	}
 
 	public boolean getCanSpawnHere() {
 		Chunk var1 = this.worldObj.getChunkFromBlockCoords(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ));
-		return (this.slimeSize == 1 || this.worldObj.difficultySetting > 0) && this.rand.nextInt(10) == 0 && var1.func_997_a(987234911L).nextInt(10) == 0 && this.posY < 16.0D;
+		return (this.getSlimeSize() == 1 || this.worldObj.difficultySetting > 0) && this.rand.nextInt(10) == 0 && var1.func_997_a(987234911L).nextInt(10) == 0 && this.posY < 16.0D;
 	}
 
 	protected float getSoundVolume() {

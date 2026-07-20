@@ -2,7 +2,7 @@ package net.minecraft.src;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public class EntityZombie extends EntityMobs {
+public class EntityZombie extends EntityMob {
 	public EntityZombie(World var1) {
 		super(var1);
 		this.texture = "/mob/zombie.png";

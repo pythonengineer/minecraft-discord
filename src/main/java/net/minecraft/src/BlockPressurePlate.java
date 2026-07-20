@@ -142,7 +142,7 @@ public class BlockPressurePlate extends Block {
 		return true;
 	}
 
-	public void func_237_e() {
+	public void setBlockBoundsForItemRender() {
 		float var1 = 0.5F;
 		float var2 = 2.0F / 16.0F;
 		float var3 = 0.5F;

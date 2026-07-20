@@ -23,7 +23,7 @@ public abstract class TexturePackBase {
 	public void func_6484_b(Minecraft var1) {
 	}
 
-	public void func_6483_c(Minecraft var1) {
+	public void bindThumbnailTexture(Minecraft var1) {
 	}
 
 	public InputStream func_6481_a(String var1) {

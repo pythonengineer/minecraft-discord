@@ -9,11 +9,12 @@ import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.EaglerOutputStream;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class GameSettings {
-    private static final String[] GUI_SCALES = new String[]{"options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"};
 	private static final String[] RENDER_DISTANCES = new String[]{"options.renderDistance.far", "options.renderDistance.normal", "options.renderDistance.short", "options.renderDistance.tiny"};
 	private static final String[] DIFFICULTIES = new String[]{"options.difficulty.peaceful", "options.difficulty.easy", "options.difficulty.normal", "options.difficulty.hard"};
+	private static final String[] GUISCALES = new String[]{"options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"};
 	public float musicVolume = 1.0F;
 	public float soundVolume = 1.0F;
 	public float mouseSensitivity = 0.5F;
@@ -21,18 +22,17 @@ public class GameSettings {
 	public int renderDistance = 0;
 	public boolean viewBobbing = true;
 	public boolean anaglyph = false;
+	public boolean field_27342_h = false;
 	public boolean limitFramerate = false;
 	public boolean fancyGraphics = true;
-    public boolean touchscreen;
-    public int guiScale = 3;
-	public boolean field_22278_j = true;
+	public boolean ambientOcclusion = true;
 	public String skin = "Default";
 	public KeyBinding keyBindForward = new KeyBinding("key.forward", 17);
 	public KeyBinding keyBindLeft = new KeyBinding("key.left", 30);
 	public KeyBinding keyBindBack = new KeyBinding("key.back", 31);
 	public KeyBinding keyBindRight = new KeyBinding("key.right", 32);
 	public KeyBinding keyBindJump = new KeyBinding("key.jump", 57);
-	public KeyBinding keyBindInventory = new KeyBinding("key.inventory", 23);
+	public KeyBinding keyBindInventory = new KeyBinding("key.inventory", 18);
 	public KeyBinding keyBindDrop = new KeyBinding("key.drop", 16);
 	public KeyBinding keyBindChat = new KeyBinding("key.chat", 20);
 	public KeyBinding keyBindToggleFog = new KeyBinding("key.fog", 33);
@@ -40,15 +40,17 @@ public class GameSettings {
 	public KeyBinding[] keyBindings = new KeyBinding[]{this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindToggleFog};
 	protected Minecraft mc;
 	public int difficulty = 2;
-	public boolean field_22277_y = false;
+	public boolean hideGUI = false;
 	public boolean thirdPersonView = false;
 	public boolean showDebugInfo = false;
 	public String lastServer = "";
 	public boolean field_22275_C = false;
-	public boolean field_22274_D = false;
+	public boolean smoothCamera = false;
 	public boolean field_22273_E = false;
 	public float field_22272_F = 1.0F;
 	public float field_22271_G = 1.0F;
+	public int guiScale = 0;
+    public boolean touchscreen;
 
 	public GameSettings(Minecraft var1) {
 		this.mc = var1;
@@ -98,8 +100,17 @@ public class GameSettings {
 			this.renderDistance = this.renderDistance + var2 & 3;
 		}
 
+		if(var1 == EnumOptions.GUI_SCALE) {
+			this.guiScale = this.guiScale + var2 & 3;
+		}
+
 		if(var1 == EnumOptions.VIEW_BOBBING) {
 			this.viewBobbing = !this.viewBobbing;
+		}
+
+		if(var1 == EnumOptions.ADVANCED_OPENGL) {
+			this.field_27342_h = !this.field_27342_h;
+			this.mc.renderGlobal.loadRenderers();
 		}
 
 		if(var1 == EnumOptions.ANAGLYPH) {
@@ -121,13 +132,9 @@ public class GameSettings {
 		}
 
 		if(var1 == EnumOptions.AMBIENT_OCCLUSION) {
-			this.field_22278_j = !this.field_22278_j;
+			this.ambientOcclusion = !this.ambientOcclusion;
 			this.mc.renderGlobal.loadRenderers();
 		}
-
-        if(var1 == EnumOptions.GUI_SCALE) {
-            this.guiScale = this.guiScale + var2 & 3;
-        }
 
 		this.saveOptions();
 	}
@@ -145,9 +152,11 @@ public class GameSettings {
 		case 3:
 			return this.anaglyph;
 		case 4:
-			return this.limitFramerate;
+			return this.field_27342_h;
 		case 5:
-			return this.field_22278_j;
+			return this.limitFramerate;
+		case 6:
+			return this.ambientOcclusion;
 		default:
 			return false;
 		}
@@ -163,7 +172,7 @@ public class GameSettings {
 			boolean var4 = this.getOptionOrdinalValue(var1);
 			return var4 ? var3 + var2.translateKey("options.on") : var3 + var2.translateKey("options.off");
 		} else {
-			return var1 == EnumOptions.RENDER_DISTANCE ? var3 + var2.translateKey(RENDER_DISTANCES[this.renderDistance]) : (var1 == EnumOptions.DIFFICULTY ? var3 + var2.translateKey(DIFFICULTIES[this.difficulty]) : (var1 == EnumOptions.GRAPHICS ? (this.fancyGraphics ? var3 + var2.translateKey("options.graphics.fancy") : var3 + var2.translateKey("options.graphics.fast")) : (var1 == EnumOptions.GUI_SCALE ? var3 + var2.translateKey(GUI_SCALES[this.guiScale]) : var3)));
+			return var1 == EnumOptions.RENDER_DISTANCE ? var3 + var2.translateKey(RENDER_DISTANCES[this.renderDistance]) : (var1 == EnumOptions.DIFFICULTY ? var3 + var2.translateKey(DIFFICULTIES[this.difficulty]) : (var1 == EnumOptions.GUI_SCALE ? var3 + var2.translateKey(GUISCALES[this.guiScale]) : (var1 == EnumOptions.GRAPHICS ? (this.fancyGraphics ? var3 + var2.translateKey("options.graphics.fancy") : var3 + var2.translateKey("options.graphics.fast")) : var3)));
 		}
 	}
 
@@ -171,8 +180,8 @@ public class GameSettings {
 		try {
             byte[] options = EagRuntime.getStorage("g");
             if(options == null) {
-                return;
-            }
+				return;
+			}
 
             BufferedReader var1 = new BufferedReader(
                     new InputStreamReader(new EaglerInputStream(options)));
@@ -206,9 +215,9 @@ public class GameSettings {
 					this.renderDistance = Integer.parseInt(var3[1]);
 				}
 
-                if(var3[0].equals("guiScale")) {
-                    this.guiScale = Integer.parseInt(var3[1]);
-                }
+				if(var3[0].equals("guiScale")) {
+					this.guiScale = Integer.parseInt(var3[1]);
+				}
 
 				if(var3[0].equals("bobView")) {
 					this.viewBobbing = var3[1].equals("true");
@@ -216,6 +225,10 @@ public class GameSettings {
 
 				if(var3[0].equals("anaglyph3d")) {
 					this.anaglyph = var3[1].equals("true");
+				}
+
+				if(var3[0].equals("advancedOpengl")) {
+					this.field_27342_h = var3[1].equals("true");
 				}
 
 				if(var3[0].equals("limitFramerate")) {
@@ -231,7 +244,7 @@ public class GameSettings {
 				}
 
 				if(var3[0].equals("ao")) {
-					this.field_22278_j = var3[1].equals("true");
+					this.ambientOcclusion = var3[1].equals("true");
 				}
 
 				if(var3[0].equals("skin")) {
@@ -270,13 +283,14 @@ public class GameSettings {
 			var1.println("invertYMouse:" + this.invertMouse);
 			var1.println("mouseSensitivity:" + this.mouseSensitivity);
 			var1.println("viewDistance:" + this.renderDistance);
+			var1.println("guiScale:" + this.guiScale);
 			var1.println("bobView:" + this.viewBobbing);
 			var1.println("anaglyph3d:" + this.anaglyph);
+			var1.println("advancedOpengl:" + this.field_27342_h);
 			var1.println("limitFramerate:" + this.limitFramerate);
 			var1.println("difficulty:" + this.difficulty);
 			var1.println("fancyGraphics:" + this.fancyGraphics);
-            var1.println("guiScale:" + this.guiScale);
-			var1.println("ao:" + this.field_22278_j);
+			var1.println("ao:" + this.ambientOcclusion);
 			var1.println("skin:" + this.skin);
 			var1.println("lastServer:" + this.lastServer);
 

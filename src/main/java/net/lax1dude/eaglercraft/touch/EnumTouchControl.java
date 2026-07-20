@@ -90,7 +90,7 @@ public enum EnumTouchControl {
             } else {
                 Minecraft mc = Minecraft.minecraft;
                 if (mc.thePlayer != null) {
-                    mc.func_6259_e();
+                    mc.setIngameFocus();
                 } else if(mc.currentScreen != null && !(mc.currentScreen instanceof GuiMainMenu)) {
                     mc.displayGuiScreen(null);
                 }
@@ -116,7 +116,7 @@ public enum EnumTouchControl {
 
     PAUSE(EnumTouchControlPos.TOP, -18, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
-            Minecraft.minecraft.func_6252_g();
+            Minecraft.minecraft.displayInGameMenu();
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);

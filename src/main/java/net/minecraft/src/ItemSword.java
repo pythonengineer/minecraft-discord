@@ -6,7 +6,7 @@ public class ItemSword extends Item {
 	public ItemSword(int var1, EnumToolMaterial var2) {
 		super(var1);
 		this.maxStackSize = 1;
-		this.maxDamage = var2.getMaxUses();
+		this.setMaxDamage(var2.getMaxUses());
 		this.weaponDamage = 4 + var2.getDamageVsEntity() * 2;
 	}
 
@@ -14,12 +14,14 @@ public class ItemSword extends Item {
 		return 1.5F;
 	}
 
-	public void hitEntity(ItemStack var1, EntityLiving var2) {
-		var1.damageItem(1);
+	public boolean hitEntity(ItemStack var1, EntityLiving var2, EntityLiving var3) {
+		var1.func_25190_a(1, var3);
+		return true;
 	}
 
-	public void hitBlock(ItemStack var1, int var2, int var3, int var4, int var5) {
-		var1.damageItem(2);
+	public boolean func_25008_a(ItemStack var1, int var2, int var3, int var4, int var5, EntityLiving var6) {
+		var1.func_25190_a(2, var6);
+		return true;
 	}
 
 	public int getDamageVsEntity(Entity var1) {

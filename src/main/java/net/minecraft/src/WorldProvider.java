@@ -6,12 +6,12 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 public class WorldProvider {
 	public World worldObj;
 	public WorldChunkManager worldChunkMgr;
-	public boolean field_4220_c = false;
+	public boolean isNether = false;
 	public boolean isHellWorld = false;
 	public boolean field_6478_e = false;
 	public float[] lightBrightnessTable = new float[16];
 	public int worldType = 0;
-	private float[] field_4217_f = new float[4];
+	private float[] colorsSunriseSunset = new float[4];
 
 	public final void registerWorld(World var1) {
 		this.worldObj = var1;
@@ -34,7 +34,7 @@ public class WorldProvider {
 	}
 
 	public IChunkProvider getChunkProvider() {
-		return new ChunkProviderGenerate(this.worldObj, this.worldObj.func_22138_q());
+		return new ChunkProviderGenerate(this.worldObj, this.worldObj.getRandomSeed());
 	}
 
 	public boolean canCoordinateBeSpawn(int var1, int var2) {
@@ -59,7 +59,7 @@ public class WorldProvider {
 		return var5;
 	}
 
-	public float[] func_4097_b(float var1, float var2) {
+	public float[] calcSunriseSunsetColors(float var1, float var2) {
 		float var3 = 0.4F;
 		float var4 = MathHelper.cos(var1 * (float)Math.PI * 2.0F) - 0.0F;
 		float var5 = 0.0F;
@@ -67,11 +67,11 @@ public class WorldProvider {
 			float var6 = (var4 - var5) / var3 * 0.5F + 0.5F;
 			float var7 = 1.0F - (1.0F - MathHelper.sin(var6 * (float)Math.PI)) * 0.99F;
 			var7 *= var7;
-			this.field_4217_f[0] = var6 * 0.3F + 0.7F;
-			this.field_4217_f[1] = var6 * var6 * 0.7F + 0.2F;
-			this.field_4217_f[2] = var6 * var6 * 0.0F + 0.2F;
-			this.field_4217_f[3] = var7;
-			return this.field_4217_f;
+			this.colorsSunriseSunset[0] = var6 * 0.3F + 0.7F;
+			this.colorsSunriseSunset[1] = var6 * var6 * 0.7F + 0.2F;
+			this.colorsSunriseSunset[2] = var6 * var6 * 0.0F + 0.2F;
+			this.colorsSunriseSunset[3] = var7;
+			return this.colorsSunriseSunset;
 		} else {
 			return null;
 		}

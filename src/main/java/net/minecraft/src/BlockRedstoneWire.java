@@ -102,10 +102,10 @@ public class BlockRedstoneWire extends Block {
 		}
 
 		if(var8 != var9) {
-			var1.field_1043_h = true;
+			var1.editingBlocks = true;
 			var1.setBlockMetadataWithNotify(var2, var3, var4, var9);
 			var1.markBlocksDirty(var2, var3, var4, var2, var3, var4);
-			var1.field_1043_h = false;
+			var1.editingBlocks = false;
 
 			for(var11 = 0; var11 < 4; ++var11) {
 				var12 = var2;

@@ -51,16 +51,16 @@ public class RenderPlayer extends RenderLiving {
 		this.modelArmorChestplate.field_1278_i = this.modelArmor.field_1278_i = this.modelBipedMain.field_1278_i = false;
 	}
 
-	protected void func_22015_a(EntityPlayer var1, double var2, double var4, double var6) {
-		if(Minecraft.func_22006_t() && var1 != this.renderManager.field_22188_h) {
+	protected void renderName(EntityPlayer var1, double var2, double var4, double var6) {
+		if(Minecraft.isGuiEnabled() && var1 != this.renderManager.livingPlayer) {
 			float var8 = 1.6F;
 			float var9 = (float)(1.0D / 60.0D) * var8;
-			float var10 = var1.getDistanceToEntity(this.renderManager.field_22188_h);
+			float var10 = var1.getDistanceToEntity(this.renderManager.livingPlayer);
 			float var11 = var1.isSneaking() ? 32.0F : 64.0F;
 			if(var10 < var11) {
 				String var12 = var1.username;
 				if(!var1.isSneaking()) {
-					this.func_22013_a(var1, var12, var2, var4, var6, 64);
+					this.renderLivingLabel(var1, var12, var2, var4, var6, 64);
 				} else {
 					FontRenderer var13 = this.getFontRendererFromRenderManager();
 					GL11.glPushMatrix();
@@ -97,12 +97,12 @@ public class RenderPlayer extends RenderLiving {
 
 	}
 
-	protected void func_4015_a(EntityPlayer var1, float var2) {
+	protected void renderSpecials(EntityPlayer var1, float var2) {
 		ItemStack var3 = var1.inventory.armorItemInSlot(3);
 		if(var3 != null && var3.getItem().shiftedIndex < 256) {
 			GL11.glPushMatrix();
-			this.modelBipedMain.bipedHead.func_926_b(1.0F / 16.0F);
-			if(RenderBlocks.func_1219_a(Block.blocksList[var3.itemID].getRenderType())) {
+			this.modelBipedMain.bipedHead.postRender(1.0F / 16.0F);
+			if(RenderBlocks.renderItemIn3d(Block.blocksList[var3.itemID].getRenderType())) {
 				float var4 = 10.0F / 16.0F;
 				GL11.glTranslatef(0.0F, -0.25F, 0.0F);
 				GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
@@ -132,7 +132,7 @@ public class RenderPlayer extends RenderLiving {
 			}
 		}
 
-		if(this.loadDownloadableImageTexture(var1.field_20067_q, (String)null)) {
+		if(this.loadDownloadableImageTexture(var1.playerCloakUrl, (String)null)) {
 			GL11.glPushMatrix();
 			GL11.glTranslatef(0.0F, 0.0F, 2.0F / 16.0F);
 			double var20 = var1.field_20066_r + (var1.field_20063_u - var1.field_20066_r) * (double)var2 - (var1.prevPosX + (var1.posX - var1.prevPosX) * (double)var2);
@@ -169,13 +169,13 @@ public class RenderPlayer extends RenderLiving {
 		ItemStack var21 = var1.inventory.getCurrentItem();
 		if(var21 != null) {
 			GL11.glPushMatrix();
-			this.modelBipedMain.bipedRightArm.func_926_b(1.0F / 16.0F);
+			this.modelBipedMain.bipedRightArm.postRender(1.0F / 16.0F);
 			GL11.glTranslatef(-(1.0F / 16.0F), 7.0F / 16.0F, 1.0F / 16.0F);
 			if(var1.fishEntity != null) {
 				var21 = new ItemStack(Item.stick);
 			}
 
-			if(var21.itemID < 256 && RenderBlocks.func_1219_a(Block.blocksList[var21.itemID].getRenderType())) {
+			if(var21.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var21.itemID].getRenderType())) {
 				var5 = 0.5F;
 				GL11.glTranslatef(0.0F, 3.0F / 16.0F, -(5.0F / 16.0F));
 				var5 *= 12.0F / 16.0F;
@@ -230,7 +230,7 @@ public class RenderPlayer extends RenderLiving {
 
 	protected void func_22017_a(EntityPlayer var1, float var2, float var3, float var4) {
 		if(var1.isEntityAlive() && var1.isPlayerSleeping()) {
-			GL11.glRotatef(var1.func_22059_J(), 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(var1.getBedOrientationInDegrees(), 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(this.func_172_a(var1), 0.0F, 0.0F, 1.0F);
 			GL11.glRotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else {
@@ -239,8 +239,8 @@ public class RenderPlayer extends RenderLiving {
 
 	}
 
-	protected void func_22014_a(EntityLiving var1, double var2, double var4, double var6) {
-		this.func_22015_a((EntityPlayer)var1, var2, var4, var6);
+	protected void passSpecialRender(EntityLiving var1, double var2, double var4, double var6) {
+		this.renderName((EntityPlayer)var1, var2, var4, var6);
 	}
 
 	protected void preRenderCallback(EntityLiving var1, float var2) {
@@ -252,7 +252,7 @@ public class RenderPlayer extends RenderLiving {
 	}
 
 	protected void renderEquippedItems(EntityLiving var1, float var2) {
-		this.func_4015_a((EntityPlayer)var1, var2);
+		this.renderSpecials((EntityPlayer)var1, var2);
 	}
 
 	protected void func_21004_a(EntityLiving var1, float var2, float var3, float var4) {

@@ -270,25 +270,32 @@ public class EntityFish extends Entity {
 				if(var27 > 0.0D) {
 					if(this.field_4088_k > 0) {
 						--this.field_4088_k;
-					} else if(this.rand.nextInt(500) == 0) {
-						this.field_4088_k = this.rand.nextInt(30) + 10;
-						this.motionY -= (double)0.2F;
-						this.worldObj.playSoundAtEntity(this, "random.splash", 0.25F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
-						float var29 = (float)MathHelper.floor_double(this.boundingBox.minY);
-
-						float var15;
-						int var30;
-						float var31;
-						for(var30 = 0; (float)var30 < 1.0F + this.width * 20.0F; ++var30) {
-							var15 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
-							var31 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
-							this.worldObj.spawnParticle("bubble", this.posX + (double)var15, (double)(var29 + 1.0F), this.posZ + (double)var31, this.motionX, this.motionY - (double)(this.rand.nextFloat() * 0.2F), this.motionZ);
+					} else {
+						short var29 = 500;
+						if(this.worldObj.func_27167_r(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY) + 1, MathHelper.floor_double(this.posZ))) {
+							var29 = 300;
 						}
 
-						for(var30 = 0; (float)var30 < 1.0F + this.width * 20.0F; ++var30) {
-							var15 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
-							var31 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
-							this.worldObj.spawnParticle("splash", this.posX + (double)var15, (double)(var29 + 1.0F), this.posZ + (double)var31, this.motionX, this.motionY, this.motionZ);
+						if(this.rand.nextInt(var29) == 0) {
+							this.field_4088_k = this.rand.nextInt(30) + 10;
+							this.motionY -= (double)0.2F;
+							this.worldObj.playSoundAtEntity(this, "random.splash", 0.25F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+							float var30 = (float)MathHelper.floor_double(this.boundingBox.minY);
+
+							int var15;
+							float var17;
+							float var31;
+							for(var15 = 0; (float)var15 < 1.0F + this.width * 20.0F; ++var15) {
+								var31 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
+								var17 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
+								this.worldObj.spawnParticle("bubble", this.posX + (double)var31, (double)(var30 + 1.0F), this.posZ + (double)var17, this.motionX, this.motionY - (double)(this.rand.nextFloat() * 0.2F), this.motionZ);
+							}
+
+							for(var15 = 0; (float)var15 < 1.0F + this.width * 20.0F; ++var15) {
+								var31 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
+								var17 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
+								this.worldObj.spawnParticle("splash", this.posX + (double)var31, (double)(var30 + 1.0F), this.posZ + (double)var17, this.motionX, this.motionY, this.motionZ);
+							}
 						}
 					}
 				}
@@ -357,6 +364,7 @@ public class EntityFish extends Entity {
 			var13.motionY = var5 * var11 + (double)MathHelper.sqrt_double(var9) * 0.08D;
 			var13.motionZ = var7 * var11;
 			this.worldObj.entityJoinedWorld(var13);
+			this.angler.addStat(StatList.field_25160_x, 1);
 			var1 = 1;
 		}
 

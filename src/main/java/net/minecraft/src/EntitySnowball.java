@@ -10,7 +10,7 @@ public class EntitySnowball extends Entity {
 	private int inTileSnowball = 0;
 	private boolean inGroundSnowball = false;
 	public int shakeSnowball = 0;
-	private EntityLiving field_811_g;
+	private EntityLiving thrower;
 	private int field_810_h;
 	private int field_809_i = 0;
 
@@ -30,7 +30,7 @@ public class EntitySnowball extends Entity {
 
 	public EntitySnowball(World var1, EntityLiving var2) {
 		super(var1);
-		this.field_811_g = var2;
+		this.thrower = var2;
 		this.setSize(0.25F, 0.25F);
 		this.setLocationAndAngles(var2.posX, var2.posY + (double)var2.getEyeHeight(), var2.posZ, var2.rotationYaw, var2.rotationPitch);
 		this.posX -= (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * 0.16F);
@@ -42,7 +42,7 @@ public class EntitySnowball extends Entity {
 		this.motionX = (double)(-MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * var3);
 		this.motionZ = (double)(MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * var3);
 		this.motionY = (double)(-MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI) * var3);
-		this.func_467_a(this.motionX, this.motionY, this.motionZ, 1.5F, 1.0F);
+		this.setSnowballHeading(this.motionX, this.motionY, this.motionZ, 1.5F, 1.0F);
 	}
 
 	public EntitySnowball(World var1, double var2, double var4, double var6) {
@@ -53,7 +53,7 @@ public class EntitySnowball extends Entity {
 		this.yOffset = 0.0F;
 	}
 
-	public void func_467_a(double var1, double var3, double var5, float var7, float var8) {
+	public void setSnowballHeading(double var1, double var3, double var5, float var7, float var8) {
 		float var9 = MathHelper.sqrt_double(var1 * var1 + var3 * var3 + var5 * var5);
 		var1 /= (double)var9;
 		var3 /= (double)var9;
@@ -131,7 +131,7 @@ public class EntitySnowball extends Entity {
 
 			for(int var8 = 0; var8 < var5.size(); ++var8) {
 				Entity var9 = (Entity)var5.get(var8);
-				if(var9.canBeCollidedWith() && (var9 != this.field_811_g || this.field_809_i >= 5)) {
+				if(var9.canBeCollidedWith() && (var9 != this.thrower || this.field_809_i >= 5)) {
 					float var10 = 0.3F;
 					AxisAlignedBB var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
 					MovingObjectPosition var12 = var11.func_1169_a(var15, var2);
@@ -151,7 +151,7 @@ public class EntitySnowball extends Entity {
 		}
 
 		if(var3 != null) {
-			if(var3.entityHit != null && var3.entityHit.attackEntityFrom(this.field_811_g, 0)) {
+			if(var3.entityHit != null && var3.entityHit.attackEntityFrom(this.thrower, 0)) {
 			}
 
 			for(int var16 = 0; var16 < 8; ++var16) {
@@ -186,7 +186,7 @@ public class EntitySnowball extends Entity {
 		this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
 		float var18 = 0.99F;
 		float var19 = 0.03F;
-		if(this.handleWaterMovement()) {
+		if(this.func_27013_ag()) {
 			for(int var7 = 0; var7 < 4; ++var7) {
 				float var20 = 0.25F;
 				this.worldObj.spawnParticle("bubble", this.posX - this.motionX * (double)var20, this.posY - this.motionY * (double)var20, this.posZ - this.motionZ * (double)var20, this.motionX, this.motionY, this.motionZ);
@@ -221,7 +221,7 @@ public class EntitySnowball extends Entity {
 	}
 
 	public void onCollideWithPlayer(EntityPlayer var1) {
-		if(this.inGroundSnowball && this.field_811_g == var1 && this.shakeSnowball <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow, 1))) {
+		if(this.inGroundSnowball && this.thrower == var1 && this.shakeSnowball <= 0 && var1.inventory.addItemStackToInventory(new ItemStack(Item.arrow, 1))) {
 			this.worldObj.playSoundAtEntity(this, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			var1.onItemPickup(this, 1);
 			this.setEntityDead();

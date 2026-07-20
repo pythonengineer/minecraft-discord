@@ -22,9 +22,10 @@ public class GuiScreen extends Gui {
 	protected List controlList = new ArrayList();
 	public boolean field_948_f = false;
 	protected FontRenderer fontRenderer;
+	public GuiParticle field_25091_h;
+	private GuiButton selectedButton = null;
     private int eventButton;
     private long lastMouseEvent;
-	private GuiButton selectedButton = null;
     private int touchValue;
     protected int touchModeCursorPosX = -1;
     protected int touchModeCursorPosY = -1;
@@ -41,14 +42,14 @@ public class GuiScreen extends Gui {
 	protected void keyTyped(char var1, int var2) {
 		if(var2 == 1) {
 			this.mc.displayGuiScreen((GuiScreen)null);
-			this.mc.func_6259_e();
+			this.mc.setIngameFocus();
 		}
 
 	}
 
-    public static String getClipboardString() {
+	public static String getClipboardString() {
         return EagRuntime.getClipboard();
-    }
+	}
 
 	protected void mouseClicked(int var1, int var2, int var3) {
         boolean touchMode = PointerInputAbstraction.isTouchMode();
@@ -78,12 +79,13 @@ public class GuiScreen extends Gui {
 	}
 
     protected void mouseClickMove(int mouseX, int mouseY, int mouseButton, long var4) {
-    }
+	}
 
 	protected void actionPerformed(GuiButton var1) {
 	}
 
 	public void setWorldAndResolution(Minecraft var1, int var2, int var3) {
+		this.field_25091_h = new GuiParticle(var1);
 		this.mc = var1;
 		this.fontRenderer = var1.fontRenderer;
 		this.width = var2;
@@ -104,12 +106,12 @@ public class GuiScreen extends Gui {
         }
 
         while(noTouch && Mouse.next()) {
-            this.handleMouseInput();
-        }
+			this.handleMouseInput();
+		}
 
-        while(Keyboard.next()) {
-            this.handleKeyboardInput();
-        }
+		while(Keyboard.next()) {
+			this.handleKeyboardInput();
+		}
 
 	}
 
@@ -138,7 +140,7 @@ public class GuiScreen extends Gui {
         } else if (this.eventButton != -1 && this.lastMouseEvent > 0L) {
             long l = EagRuntime.currentTimeMillis() - this.lastMouseEvent;
             this.mouseClickMove(i, j, this.eventButton, l);
-        }
+		}
 
 	}
 
@@ -194,6 +196,9 @@ public class GuiScreen extends Gui {
 	}
 
 	public void deleteWorld(boolean var1, int var2) {
+	}
+
+	public void func_27108_j() {
 	}
 
     public void touchEvent() {
@@ -326,5 +331,5 @@ public class GuiScreen extends Gui {
 
     protected boolean shouldTouchGenerateMouseEvents() {
         return true;
-    }
+	}
 }

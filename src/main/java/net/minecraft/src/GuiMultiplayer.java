@@ -5,14 +5,14 @@ import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 
 public class GuiMultiplayer extends GuiScreen {
 	private GuiScreen parentScreen;
-	private GuiDisableButton field_22111_h;
+	private GuiTextField field_22111_h;
 
 	public GuiMultiplayer(GuiScreen var1) {
 		this.parentScreen = var1;
 	}
 
 	public void updateScreen() {
-		this.field_22111_h.func_22070_b();
+		this.field_22111_h.updateCursorCounter();
 	}
 
 	public void initGui() {
@@ -31,9 +31,9 @@ public class GuiMultiplayer extends GuiScreen {
 	        }
 		}
 		((GuiButton)this.controlList.get(0)).enabled = var2.length() > 0;
-		this.field_22111_h = new GuiDisableButton(this.fontRenderer, this.width / 2 - 100, this.height / 4 - 10 + 50 + 18, 200, 20, var2);
-		this.field_22111_h.field_22082_a = true;
-		this.field_22111_h.func_22066_a(64);
+		this.field_22111_h = new GuiTextField(this, this.fontRenderer, this.width / 2 - 100, this.height / 4 - 10 + 50 + 18, 200, 20, var2);
+		this.field_22111_h.isFocused = true;
+		this.field_22111_h.setMaxStringLength(64);
 	}
 
 	public void onGuiClosed() {
@@ -45,7 +45,7 @@ public class GuiMultiplayer extends GuiScreen {
 			if(var1.id == 1) {
 				this.mc.displayGuiScreen(this.parentScreen);
 			} else if(var1.id == 0) {
-				String var2 = this.field_22111_h.func_22071_a();
+				String var2 = this.field_22111_h.getText();
 				this.mc.gameSettings.lastServer = var2.replaceAll(":", "_");
 				this.mc.gameSettings.saveOptions();
                 String s = var2.trim();
@@ -75,17 +75,17 @@ public class GuiMultiplayer extends GuiScreen {
 	}
 
 	protected void keyTyped(char var1, int var2) {
-		this.field_22111_h.func_22072_a(var1, var2);
+		this.field_22111_h.textboxKeyTyped(var1, var2);
 		if(var1 == 13 || var2 == 28) {
 			this.actionPerformed((GuiButton)this.controlList.get(0));
 		}
 
-		((GuiButton)this.controlList.get(0)).enabled = this.field_22111_h.func_22071_a().length() > 0;
+		((GuiButton)this.controlList.get(0)).enabled = this.field_22111_h.getText().length() > 0;
 	}
 
 	protected void mouseClicked(int var1, int var2, int var3) {
 		super.mouseClicked(var1, var2, var3);
-		this.field_22111_h.func_22069_a(var1, var2, var3);
+		this.field_22111_h.mouseClicked(var1, var2, var3);
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
@@ -95,7 +95,7 @@ public class GuiMultiplayer extends GuiScreen {
 		this.drawString(this.fontRenderer, var4.translateKey("multiplayer.info1"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 0, 10526880);
 		this.drawString(this.fontRenderer, var4.translateKey("multiplayer.info2"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 9, 10526880);
 		this.drawString(this.fontRenderer, var4.translateKey("multiplayer.ipinfo"), this.width / 2 - 140, this.height / 4 - 60 + 60 + 36, 10526880);
-		this.field_22111_h.func_22067_c();
+		this.field_22111_h.drawTextBox();
 		super.drawScreen(var1, var2, var3);
 	}
 
@@ -106,15 +106,15 @@ public class GuiMultiplayer extends GuiScreen {
         case CLIPBOARD_PASTE:
             String string = GuiScreen.getClipboardString();
             for (char c : string.toCharArray()) {
-                if(FontAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.field_22111_h.field_22075_h.length() < this.field_22111_h.field_22074_i || this.field_22111_h.field_22074_i == 0)) {
-                    this.field_22111_h.func_22068_a(this.field_22111_h.field_22075_h + c);
+                if(ChatAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.field_22111_h.getText().length() < this.field_22111_h.maxStringLength || this.field_22111_h.maxStringLength == 0)) {
+                    this.field_22111_h.setText(this.field_22111_h.getText() + c);
                 }
             }
 
-            ((GuiButton)this.controlList.get(0)).enabled = this.field_22111_h.func_22071_a().length() > 0;
+            ((GuiButton)this.controlList.get(0)).enabled = this.field_22111_h.getText().length() > 0;
             break;
         default:
             break;
         }
-    }
+	}
 }

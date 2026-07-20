@@ -5,7 +5,7 @@ import java.util.List;
 public interface ISaveFormat {
 	String func_22178_a();
 
-	ISaveHandler func_22174_a(String var1, boolean var2);
+	ISaveHandler getSaveLoader(String var1, boolean var2);
 
 	List func_22176_b();
 
@@ -17,7 +17,7 @@ public interface ISaveFormat {
 
 	void func_22170_a(String var1, String var2);
 
-	boolean func_22175_a(String var1);
+	boolean isOldMapFormat(String var1);
 
-	boolean func_22171_a(String var1, IProgressUpdate var2);
+	boolean convertMapFormat(String var1, IProgressUpdate var2);
 }

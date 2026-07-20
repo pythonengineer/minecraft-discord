@@ -3,7 +3,7 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class ModelRenderer {
-	private PositionTexureVertex[] corners;
+	private PositionTextureVertex[] corners;
 	private TexturedQuad[] faces;
 	private int textureOffsetX;
 	private int textureOffsetY;
@@ -29,7 +29,7 @@ public class ModelRenderer {
 	}
 
 	public void addBox(float var1, float var2, float var3, int var4, int var5, int var6, float var7) {
-		this.corners = new PositionTexureVertex[8];
+		this.corners = new PositionTextureVertex[8];
 		this.faces = new TexturedQuad[6];
 		float var8 = var1 + (float)var4;
 		float var9 = var2 + (float)var5;
@@ -46,14 +46,14 @@ public class ModelRenderer {
 			var1 = var11;
 		}
 
-		PositionTexureVertex var20 = new PositionTexureVertex(var1, var2, var3, 0.0F, 0.0F);
-		PositionTexureVertex var12 = new PositionTexureVertex(var8, var2, var3, 0.0F, 8.0F);
-		PositionTexureVertex var13 = new PositionTexureVertex(var8, var9, var3, 8.0F, 8.0F);
-		PositionTexureVertex var14 = new PositionTexureVertex(var1, var9, var3, 8.0F, 0.0F);
-		PositionTexureVertex var15 = new PositionTexureVertex(var1, var2, var10, 0.0F, 0.0F);
-		PositionTexureVertex var16 = new PositionTexureVertex(var8, var2, var10, 0.0F, 8.0F);
-		PositionTexureVertex var17 = new PositionTexureVertex(var8, var9, var10, 8.0F, 8.0F);
-		PositionTexureVertex var18 = new PositionTexureVertex(var1, var9, var10, 8.0F, 0.0F);
+		PositionTextureVertex var20 = new PositionTextureVertex(var1, var2, var3, 0.0F, 0.0F);
+		PositionTextureVertex var12 = new PositionTextureVertex(var8, var2, var3, 0.0F, 8.0F);
+		PositionTextureVertex var13 = new PositionTextureVertex(var8, var9, var3, 8.0F, 8.0F);
+		PositionTextureVertex var14 = new PositionTextureVertex(var1, var9, var3, 8.0F, 0.0F);
+		PositionTextureVertex var15 = new PositionTextureVertex(var1, var2, var10, 0.0F, 0.0F);
+		PositionTextureVertex var16 = new PositionTextureVertex(var8, var2, var10, 0.0F, 8.0F);
+		PositionTextureVertex var17 = new PositionTextureVertex(var8, var9, var10, 8.0F, 8.0F);
+		PositionTextureVertex var18 = new PositionTextureVertex(var1, var9, var10, 8.0F, 0.0F);
 		this.corners[0] = var20;
 		this.corners[1] = var12;
 		this.corners[2] = var13;
@@ -62,12 +62,12 @@ public class ModelRenderer {
 		this.corners[5] = var16;
 		this.corners[6] = var17;
 		this.corners[7] = var18;
-		this.faces[0] = new TexturedQuad(new PositionTexureVertex[]{var16, var12, var13, var17}, this.textureOffsetX + var6 + var4, this.textureOffsetY + var6, this.textureOffsetX + var6 + var4 + var6, this.textureOffsetY + var6 + var5);
-		this.faces[1] = new TexturedQuad(new PositionTexureVertex[]{var20, var15, var18, var14}, this.textureOffsetX + 0, this.textureOffsetY + var6, this.textureOffsetX + var6, this.textureOffsetY + var6 + var5);
-		this.faces[2] = new TexturedQuad(new PositionTexureVertex[]{var16, var15, var20, var12}, this.textureOffsetX + var6, this.textureOffsetY + 0, this.textureOffsetX + var6 + var4, this.textureOffsetY + var6);
-		this.faces[3] = new TexturedQuad(new PositionTexureVertex[]{var13, var14, var18, var17}, this.textureOffsetX + var6 + var4, this.textureOffsetY + 0, this.textureOffsetX + var6 + var4 + var4, this.textureOffsetY + var6);
-		this.faces[4] = new TexturedQuad(new PositionTexureVertex[]{var12, var20, var14, var13}, this.textureOffsetX + var6, this.textureOffsetY + var6, this.textureOffsetX + var6 + var4, this.textureOffsetY + var6 + var5);
-		this.faces[5] = new TexturedQuad(new PositionTexureVertex[]{var15, var16, var17, var18}, this.textureOffsetX + var6 + var4 + var6, this.textureOffsetY + var6, this.textureOffsetX + var6 + var4 + var6 + var4, this.textureOffsetY + var6 + var5);
+		this.faces[0] = new TexturedQuad(new PositionTextureVertex[]{var16, var12, var13, var17}, this.textureOffsetX + var6 + var4, this.textureOffsetY + var6, this.textureOffsetX + var6 + var4 + var6, this.textureOffsetY + var6 + var5);
+		this.faces[1] = new TexturedQuad(new PositionTextureVertex[]{var20, var15, var18, var14}, this.textureOffsetX + 0, this.textureOffsetY + var6, this.textureOffsetX + var6, this.textureOffsetY + var6 + var5);
+		this.faces[2] = new TexturedQuad(new PositionTextureVertex[]{var16, var15, var20, var12}, this.textureOffsetX + var6, this.textureOffsetY + 0, this.textureOffsetX + var6 + var4, this.textureOffsetY + var6);
+		this.faces[3] = new TexturedQuad(new PositionTextureVertex[]{var13, var14, var18, var17}, this.textureOffsetX + var6 + var4, this.textureOffsetY + 0, this.textureOffsetX + var6 + var4 + var4, this.textureOffsetY + var6);
+		this.faces[4] = new TexturedQuad(new PositionTextureVertex[]{var12, var20, var14, var13}, this.textureOffsetX + var6, this.textureOffsetY + var6, this.textureOffsetX + var6 + var4, this.textureOffsetY + var6 + var5);
+		this.faces[5] = new TexturedQuad(new PositionTextureVertex[]{var15, var16, var17, var18}, this.textureOffsetX + var6 + var4 + var6, this.textureOffsetY + var6, this.textureOffsetX + var6 + var4 + var6 + var4, this.textureOffsetY + var6 + var5);
 		if(this.mirror) {
 			for(int var19 = 0; var19 < this.faces.length; ++var19) {
 				this.faces[var19].flipFace();
@@ -120,7 +120,34 @@ public class ModelRenderer {
 		}
 	}
 
-	public void func_926_b(float var1) {
+	public void func_25122_b(float var1) {
+		if(!this.field_1402_i) {
+			if(this.showModel) {
+				if(!this.compiled) {
+					this.compileDisplayList(var1);
+				}
+
+				GL11.glPushMatrix();
+				GL11.glTranslatef(this.offsetX * var1, this.offsetY * var1, this.offsetZ * var1);
+				if(this.rotateAngleY != 0.0F) {
+					GL11.glRotatef(this.rotateAngleY * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+				}
+
+				if(this.rotateAngleX != 0.0F) {
+					GL11.glRotatef(this.rotateAngleX * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+				}
+
+				if(this.rotateAngleZ != 0.0F) {
+					GL11.glRotatef(this.rotateAngleZ * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+				}
+
+				GL11.glCallList(this.displayList);
+				GL11.glPopMatrix();
+			}
+		}
+	}
+
+	public void postRender(float var1) {
 		if(!this.field_1402_i) {
 			if(this.showModel) {
 				if(!this.compiled) {

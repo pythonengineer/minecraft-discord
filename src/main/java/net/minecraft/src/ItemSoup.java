@@ -2,7 +2,7 @@ package net.minecraft.src;
 
 public class ItemSoup extends ItemFood {
 	public ItemSoup(int var1, int var2) {
-		super(var1, var2);
+		super(var1, var2, false);
 	}
 
 	public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3) {

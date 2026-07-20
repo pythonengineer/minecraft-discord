@@ -46,6 +46,7 @@ public class NetClientHandler extends NetHandler {
 
 	public void handleLogin(Packet1Login var1) {
 		this.mc.playerController = new PlayerControllerMP(this.mc, this);
+		this.mc.field_25001_G.func_25100_a(StatList.field_25181_h, 1);
 		this.worldClient = new WorldClient(this, var1.mapSeed, var1.dimension);
 		this.worldClient.multiplayerWorld = true;
 		this.mc.changeWorld1(this.worldClient);
@@ -128,19 +129,40 @@ public class NetClientHandler extends NetHandler {
 
 	}
 
-	public void func_21146_a(Packet25 var1) {
+	public void func_27246_a(Packet71Weather var1) {
+		double var2 = (double)var1.field_27053_b / 32.0D;
+		double var4 = (double)var1.field_27057_c / 32.0D;
+		double var6 = (double)var1.field_27056_d / 32.0D;
+		EntityLightningBolt var8 = null;
+		if(var1.field_27055_e == 1) {
+			var8 = new EntityLightningBolt(this.worldClient, var2, var4, var6);
+		}
+
+		if(var8 != null) {
+			var8.serverPosX = var1.field_27053_b;
+			var8.serverPosY = var1.field_27057_c;
+			var8.serverPosZ = var1.field_27056_d;
+			var8.rotationYaw = 0.0F;
+			var8.rotationPitch = 0.0F;
+			var8.entityId = var1.field_27054_a;
+			this.worldClient.func_27159_a(var8);
+		}
+
+	}
+
+	public void func_21146_a(Packet25EntityPainting var1) {
 		EntityPainting var2 = new EntityPainting(this.worldClient, var1.xPosition, var1.yPosition, var1.zPosition, var1.direction, var1.title);
 		this.worldClient.func_712_a(var1.entityId, var2);
 	}
 
-	public void func_6498_a(Packet28 var1) {
+	public void func_6498_a(Packet28EntityVelocity var1) {
 		Entity var2 = this.getEntityByID(var1.entityId);
 		if(var2 != null) {
 			var2.setVelocity((double)var1.motionX / 8000.0D, (double)var1.motionY / 8000.0D, (double)var1.motionZ / 8000.0D);
 		}
 	}
 
-	public void func_21148_a(Packet40 var1) {
+	public void func_21148_a(Packet40EntityMetadata var1) {
 		Entity var2 = this.getEntityByID(var1.entityId);
 		if(var2 != null && var1.func_21047_b() != null) {
 			var2.getDataWatcher().updateWatchedObjectsFromList(var1.func_21047_b());
@@ -311,7 +333,7 @@ public class NetClientHandler extends NetHandler {
 		this.mc.ingameGUI.addChatMessage(var1.message);
 	}
 
-	public void handleArmAnimation(Packet18ArmAnimation var1) {
+	public void handleArmAnimation(Packet18Animation var1) {
 		Entity var2 = this.getEntityByID(var1.entityId);
 		if(var2 != null) {
 			EntityPlayer var3;
@@ -322,7 +344,7 @@ public class NetClientHandler extends NetHandler {
 				var2.performHurtAnimation();
 			} else if(var1.animate == 3) {
 				var3 = (EntityPlayer)var2;
-				var3.func_22056_a(false, false);
+				var3.wakeUpPlayer(false, false, false);
 			} else if(var1.animate == 4) {
 				var3 = (EntityPlayer)var2;
 				var3.func_6420_o();
@@ -336,7 +358,7 @@ public class NetClientHandler extends NetHandler {
 		if(var2 != null) {
 			if(var1.field_22046_e == 0) {
 				EntityPlayer var3 = (EntityPlayer)var2;
-				var3.func_22053_b(var1.field_22044_b, var1.field_22048_c, var1.field_22047_d);
+				var3.sleepInBedAt(var1.field_22044_b, var1.field_22048_c, var1.field_22047_d);
 			}
 
 		}
@@ -344,10 +366,10 @@ public class NetClientHandler extends NetHandler {
 
 	public void handleHandshake(Packet2Handshake var1) {
 		if(var1.username.equals("-")) {
-			this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 9));
+			this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 11));
 		} else {
 			try {
-				this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 9));
+                this.addToSendQueue(new Packet1Login(this.mc.session.username, this.mc.session.sessionId, 11));
 			} catch (Exception var5) {
 				var5.printStackTrace();
 				this.netManager.networkShutdown("disconnect.genericReason", new Object[]{"Internal client error: " + var5.toString()});
@@ -387,10 +409,10 @@ public class NetClientHandler extends NetHandler {
 	}
 
 	public void handleSpawnPosition(Packet6SpawnPosition var1) {
-		this.worldClient.func_22143_a(new ChunkCoordinates(var1.xPosition, var1.yPosition, var1.zPosition));
+		this.mc.thePlayer.setPlayerSpawnCoordinate(new ChunkCoordinates(var1.xPosition, var1.yPosition, var1.zPosition));
 	}
 
-	public void func_6497_a(Packet39 var1) {
+	public void func_6497_a(Packet39AttachEntity var1) {
 		Object var2 = this.getEntityByID(var1.entityId);
 		Entity var3 = this.getEntityByID(var1.vehicleEntityId);
 		if(var1.entityId == this.mc.thePlayer.entityId) {
@@ -402,7 +424,7 @@ public class NetClientHandler extends NetHandler {
 		}
 	}
 
-	public void func_9447_a(Packet38 var1) {
+	public void func_9447_a(Packet38EntityStatus var1) {
 		Entity var2 = this.getEntityByID(var1.entityId);
 		if(var2 != null) {
 			var2.handleHealthUpdate(var1.entityStatus);
@@ -414,21 +436,21 @@ public class NetClientHandler extends NetHandler {
 		return (Entity)(var1 == this.mc.thePlayer.entityId ? this.mc.thePlayer : this.worldClient.func_709_b(var1));
 	}
 
-	public void handleHealth(Packet8 var1) {
+	public void handleHealth(Packet8UpdateHealth var1) {
 		this.mc.thePlayer.setHealth(var1.healthMP);
 	}
 
-	public void func_9448_a(Packet9 var1) {
-		this.mc.respawn();
+	public void func_9448_a(Packet9Respawn var1) {
+		this.mc.respawn(true);
 	}
 
-	public void func_12245_a(Packet60 var1) {
+	public void func_12245_a(Packet60Explosion var1) {
 		Explosion var2 = new Explosion(this.mc.theWorld, (Entity)null, var1.explosionX, var1.explosionY, var1.explosionZ, var1.explosionSize);
 		var2.destroyedBlockPositions = var1.destroyedBlockPositions;
-		var2.func_12247_b();
+		var2.doExplosionB(true);
 	}
 
-	public void func_20087_a(Packet100 var1) {
+	public void func_20087_a(Packet100OpenWindow var1) {
 		if(var1.inventoryType == 0) {
 			InventoryBasic var2 = new InventoryBasic(var1.windowTitle, var1.slotsCount);
 			this.mc.thePlayer.displayGUIChest(var2);
@@ -449,7 +471,7 @@ public class NetClientHandler extends NetHandler {
 
 	}
 
-	public void func_20088_a(Packet103 var1) {
+	public void func_20088_a(Packet103SetSlot var1) {
 		if(var1.windowId == -1) {
 			this.mc.thePlayer.inventory.setItemStack(var1.myItemStack);
 		} else if(var1.windowId == 0) {
@@ -460,8 +482,8 @@ public class NetClientHandler extends NetHandler {
 
 	}
 
-	public void func_20089_a(Packet106 var1) {
-		CraftingInventoryCB var2 = null;
+	public void func_20089_a(Packet106Transaction var1) {
+		Container var2 = null;
 		if(var1.windowId == 0) {
 			var2 = this.mc.thePlayer.inventorySlots;
 		} else if(var1.windowId == this.mc.thePlayer.craftingInventory.windowId) {
@@ -473,13 +495,13 @@ public class NetClientHandler extends NetHandler {
 				var2.func_20113_a(var1.field_20028_b);
 			} else {
 				var2.func_20110_b(var1.field_20028_b);
-				this.addToSendQueue(new Packet106(var1.windowId, var1.field_20028_b, true));
+				this.addToSendQueue(new Packet106Transaction(var1.windowId, var1.field_20028_b, true));
 			}
 		}
 
 	}
 
-	public void func_20094_a(Packet104 var1) {
+	public void func_20094_a(Packet104WindowItems var1) {
 		if(var1.windowId == 0) {
 			this.mc.thePlayer.inventorySlots.putStacksInSlots(var1.itemStack);
 		} else if(var1.windowId == this.mc.thePlayer.craftingInventory.windowId) {
@@ -488,7 +510,7 @@ public class NetClientHandler extends NetHandler {
 
 	}
 
-	public void func_20093_a(Packet130 var1) {
+	public void func_20093_a(Packet130UpdateSign var1) {
 		if(this.mc.theWorld.blockExists(var1.xPosition, var1.yPosition, var1.zPosition)) {
 			TileEntity var2 = this.mc.theWorld.getBlockTileEntity(var1.xPosition, var1.yPosition, var1.zPosition);
 			if(var2 instanceof TileEntitySign) {
@@ -504,7 +526,7 @@ public class NetClientHandler extends NetHandler {
 
 	}
 
-	public void func_20090_a(Packet105 var1) {
+	public void func_20090_a(Packet105UpdateProgressbar var1) {
 		this.registerPacket(var1);
 		if(this.mc.thePlayer.craftingInventory != null && this.mc.thePlayer.craftingInventory.windowId == var1.windowId) {
 			this.mc.thePlayer.craftingInventory.func_20112_a(var1.progressBar, var1.progressBarValue);
@@ -520,11 +542,35 @@ public class NetClientHandler extends NetHandler {
 
 	}
 
-	public void func_20092_a(Packet101 var1) {
+	public void func_20092_a(Packet101CloseWindow var1) {
 		this.mc.thePlayer.func_20059_m();
 	}
 
-	public void func_21145_a(Packet54 var1) {
+	public void func_21145_a(Packet54PlayNoteBlock var1) {
 		this.mc.theWorld.playNoteAt(var1.xLocation, var1.yLocation, var1.zLocation, var1.instrumentType, var1.pitch);
+	}
+
+	public void func_25118_a(Packet70Bed var1) {
+		int var2 = var1.field_25019_b;
+		if(var2 >= 0 && var2 < Packet70Bed.field_25020_a.length && Packet70Bed.field_25020_a[var2] != null) {
+			this.mc.thePlayer.addChatMessage(Packet70Bed.field_25020_a[var2]);
+		}
+
+		if(var2 == 1) {
+			this.worldClient.func_22144_v().func_27394_b(true);
+			this.worldClient.func_27158_h(1.0F);
+		} else if(var2 == 2) {
+			this.worldClient.func_22144_v().func_27394_b(false);
+			this.worldClient.func_27158_h(0.0F);
+		}
+
+	}
+
+	public void func_27245_a(Packet200Statistic var1) {
+		((EntityClientPlayerMP)this.mc.thePlayer).func_27027_b(StatList.func_27361_a(var1.field_27052_a), var1.field_27051_b);
+	}
+
+	public boolean func_27247_c() {
+		return false;
 	}
 }

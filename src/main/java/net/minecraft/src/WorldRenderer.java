@@ -30,7 +30,7 @@ public class WorldRenderer {
 	public int field_1741_s;
 	public float field_1740_t;
 	public boolean needsUpdate;
-	public AxisAlignedBB field_1736_v;
+	public AxisAlignedBB rendererBoundingBox;
 	public int field_1735_w;
 	public boolean isVisible = true;
 	public boolean isWaitingOnOcclusionQuery;
@@ -47,11 +47,11 @@ public class WorldRenderer {
 		this.field_1740_t = MathHelper.sqrt_float((float)(this.sizeWidth * this.sizeWidth + this.sizeHeight * this.sizeHeight + this.sizeDepth * this.sizeDepth)) / 2.0F;
 		this.glRenderList = var7;
 		this.posX = -999;
-		this.func_1197_a(var3, var4, var5);
+		this.setPosition(var3, var4, var5);
 		this.needsUpdate = false;
 	}
 
-	public void func_1197_a(int var1, int var2, int var3) {
+	public void setPosition(int var1, int var2, int var3) {
 		if(var1 != this.posX || var2 != this.posY || var3 != this.posZ) {
 			this.setDontDraw();
 			this.posX = var1;
@@ -67,7 +67,7 @@ public class WorldRenderer {
 			this.field_1754_j = var2 - this.field_1751_m;
 			this.field_1753_k = var3 - this.field_1750_n;
 			float var4 = 6.0F;
-			this.field_1736_v = AxisAlignedBB.getBoundingBox((double)((float)var1 - var4), (double)((float)var2 - var4), (double)((float)var3 - var4), (double)((float)(var1 + this.sizeWidth) + var4), (double)((float)(var2 + this.sizeHeight) + var4), (double)((float)(var3 + this.sizeDepth) + var4));
+			this.rendererBoundingBox = AxisAlignedBB.getBoundingBox((double)((float)var1 - var4), (double)((float)var2 - var4), (double)((float)var3 - var4), (double)((float)(var1 + this.sizeWidth) + var4), (double)((float)(var2 + this.sizeHeight) + var4), (double)((float)(var3 + this.sizeDepth) + var4));
 			GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
 			RenderItem.renderAABB(AxisAlignedBB.getBoundingBoxFromPool((double)((float)this.field_1752_l - var4), (double)((float)this.field_1751_m - var4), (double)((float)this.field_1750_n - var4), (double)((float)(this.field_1752_l + this.sizeWidth) + var4), (double)((float)(this.field_1751_m + this.sizeHeight) + var4), (double)((float)(this.field_1750_n + this.sizeDepth) + var4)));
 			GL11.glEndList();
@@ -172,7 +172,7 @@ public class WorldRenderer {
 		}
 	}
 
-	public float distanceToEntity(Entity var1) {
+	public float distanceToEntitySquared(Entity var1) {
 		float var2 = (float)(var1.posX - (double)this.field_1746_q);
 		float var3 = (float)(var1.posY - (double)this.field_1743_r);
 		float var4 = (float)(var1.posZ - (double)this.field_1741_s);
@@ -198,14 +198,14 @@ public class WorldRenderer {
 	}
 
 	public void updateInFrustrum(ICamera var1) {
-		this.isInFrustum = var1.isBoundingBoxInFrustum(this.field_1736_v);
+		this.isInFrustum = var1.isBoundingBoxInFrustum(this.rendererBoundingBox);
 	}
 
 	public void callOcclusionQueryList() {
 		GL11.glCallList(this.glRenderList + 2);
 	}
 
-	public boolean canRender() {
+	public boolean skipAllRenderPasses() {
 		return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
 	}
 

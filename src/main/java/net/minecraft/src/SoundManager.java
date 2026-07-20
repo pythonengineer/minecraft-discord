@@ -121,7 +121,7 @@ public class SoundManager {
         }
     }
 
-    public void func_331_a(String var1, float var2, float var3, float var4, float var5, float var6) {
+    public void playStreaming(String var1, float var2, float var3, float var4, float var5, float var6) {
         if(this.options.soundVolume != 0.0F) {
             sndManager.stopSound(this.playingStreaming);
             if(var1 != null) {

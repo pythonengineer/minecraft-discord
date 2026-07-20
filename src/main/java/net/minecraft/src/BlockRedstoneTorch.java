@@ -14,7 +14,7 @@ public class BlockRedstoneTorch extends BlockTorch {
 
 	private boolean checkForBurnout(World var1, int var2, int var3, int var4, boolean var5) {
 		if(var5) {
-			torchUpdates.add(new RedstoneUpdateInfo(var2, var3, var4, var1.func_22139_r()));
+			torchUpdates.add(new RedstoneUpdateInfo(var2, var3, var4, var1.getWorldTime()));
 		}
 
 		int var6 = 0;
@@ -79,15 +79,15 @@ public class BlockRedstoneTorch extends BlockTorch {
 		}
 	}
 
-	private boolean func_22026_h(World var1, int var2, int var3, int var4) {
+	private boolean func_27036_h(World var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockMetadata(var2, var3, var4);
 		return var5 == 5 && var1.isBlockIndirectlyProvidingPowerTo(var2, var3 - 1, var4, 0) ? true : (var5 == 3 && var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 - 1, 2) ? true : (var5 == 4 && var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 + 1, 3) ? true : (var5 == 1 && var1.isBlockIndirectlyProvidingPowerTo(var2 - 1, var3, var4, 4) ? true : var5 == 2 && var1.isBlockIndirectlyProvidingPowerTo(var2 + 1, var3, var4, 5))));
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		boolean var6 = this.func_22026_h(var1, var2, var3, var4);
+		boolean var6 = this.func_27036_h(var1, var2, var3, var4);
 
-		while(torchUpdates.size() > 0 && var1.func_22139_r() - ((RedstoneUpdateInfo)torchUpdates.get(0)).updateTime > 100L) {
+		while(torchUpdates.size() > 0 && var1.getWorldTime() - ((RedstoneUpdateInfo)torchUpdates.get(0)).updateTime > 100L) {
 			torchUpdates.remove(0);
 		}
 

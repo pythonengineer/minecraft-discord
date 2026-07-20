@@ -11,8 +11,12 @@ public class EntityCreature extends EntityLiving {
 		super(var1);
 	}
 
+	protected boolean setCanWalk() {
+		return false;
+	}
+
 	protected void updatePlayerActionState() {
-		this.hasAttacked = false;
+		this.hasAttacked = this.setCanWalk();
 		float var1 = 16.0F;
 		if(this.playerToAttack == null) {
 			this.playerToAttack = this.findPlayerToAttack();
@@ -29,7 +33,7 @@ public class EntityCreature extends EntityLiving {
 		}
 
 		if(this.hasAttacked || this.playerToAttack == null || this.pathToEntity != null && this.rand.nextInt(20) != 0) {
-			if(this.pathToEntity == null && this.rand.nextInt(80) == 0 || this.rand.nextInt(80) == 0) {
+			if(!this.hasAttacked && (this.pathToEntity == null && this.rand.nextInt(80) == 0 || this.rand.nextInt(80) == 0)) {
 				boolean var21 = false;
 				int var3 = -1;
 				int var4 = -1;
@@ -58,8 +62,8 @@ public class EntityCreature extends EntityLiving {
 			this.pathToEntity = this.worldObj.getPathToEntity(this, this.playerToAttack, var1);
 		}
 
-		int var22 = MathHelper.floor_double(this.boundingBox.minY);
-		boolean var23 = this.handleWaterMovement();
+		int var22 = MathHelper.floor_double(this.boundingBox.minY + 0.5D);
+		boolean var23 = this.func_27013_ag();
 		boolean var24 = this.handleLavaMovement();
 		this.rotationPitch = 0.0F;
 		if(this.pathToEntity != null && this.rand.nextInt(100) != 0) {
@@ -116,10 +120,10 @@ public class EntityCreature extends EntityLiving {
 			}
 
 			if(this.playerToAttack != null) {
-				this.faceEntity(this.playerToAttack, 30.0F);
+				this.faceEntity(this.playerToAttack, 30.0F, 30.0F);
 			}
 
-			if(this.isCollidedHorizontally) {
+			if(this.isCollidedHorizontally && !this.hasPath()) {
 				this.isJumping = true;
 			}
 
@@ -149,5 +153,21 @@ public class EntityCreature extends EntityLiving {
 		int var2 = MathHelper.floor_double(this.boundingBox.minY);
 		int var3 = MathHelper.floor_double(this.posZ);
 		return super.getCanSpawnHere() && this.getBlockPathWeight(var1, var2, var3) >= 0.0F;
+	}
+
+	public boolean hasPath() {
+		return this.pathToEntity != null;
+	}
+
+	public void setPathToEntity(PathEntity var1) {
+		this.pathToEntity = var1;
+	}
+
+	public Entity getTarget() {
+		return this.playerToAttack;
+	}
+
+	public void setTarget(Entity var1) {
+		this.playerToAttack = var1;
 	}
 }

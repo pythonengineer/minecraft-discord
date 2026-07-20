@@ -66,5 +66,5 @@ public class GuiSlider extends GuiButton {
 
     public boolean isSliderTouchEvents() {
         return true;
-    }
+	}
 }

@@ -5,6 +5,8 @@ public interface IChunkProvider {
 
 	Chunk provideChunk(int var1, int var2);
 
+	Chunk func_538_d(int var1, int var2);
+
 	void populate(IChunkProvider var1, int var2, int var3);
 
 	boolean saveChunks(boolean var1, IProgressUpdate var2);

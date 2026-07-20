@@ -4,7 +4,7 @@ public class InventoryPlayer implements IInventory {
 	public ItemStack[] mainInventory = new ItemStack[36];
 	public ItemStack[] armorInventory = new ItemStack[4];
 	public int currentItem = 0;
-	private EntityPlayer player;
+	public EntityPlayer player;
 	private ItemStack itemStack;
 	public boolean inventoryChanged = false;
 
@@ -13,7 +13,7 @@ public class InventoryPlayer implements IInventory {
 	}
 
 	public ItemStack getCurrentItem() {
-		return this.mainInventory[this.currentItem];
+		return this.currentItem < 9 && this.currentItem >= 0 ? this.mainInventory[this.currentItem] : null;
 	}
 
 	private int getInventorySlotContainItem(int var1) {
@@ -71,7 +71,7 @@ public class InventoryPlayer implements IInventory {
 
 	}
 
-	private int func_21106_d(ItemStack var1) {
+	private int storePartialItemStack(ItemStack var1) {
 		int var2 = var1.itemID;
 		int var3 = var1.stackSize;
 		int var4 = this.storeItemStack(var1);
@@ -130,7 +130,7 @@ public class InventoryPlayer implements IInventory {
 
 	public boolean addItemStackToInventory(ItemStack var1) {
 		if(!var1.isItemDamaged()) {
-			var1.stackSize = this.func_21106_d(var1);
+			var1.stackSize = this.storePartialItemStack(var1);
 			if(var1.stackSize == 0) {
 				return true;
 			}
@@ -303,7 +303,7 @@ public class InventoryPlayer implements IInventory {
 	public void damageArmor(int var1) {
 		for(int var2 = 0; var2 < this.armorInventory.length; ++var2) {
 			if(this.armorInventory[var2] != null && this.armorInventory[var2].getItem() instanceof ItemArmor) {
-				this.armorInventory[var2].damageItem(var1);
+				this.armorInventory[var2].func_25190_a(var1, this.player);
 				if(this.armorInventory[var2].stackSize == 0) {
 					this.armorInventory[var2].func_1097_a(this.player);
 					this.armorInventory[var2] = null;

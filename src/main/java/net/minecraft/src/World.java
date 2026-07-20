@@ -22,11 +22,18 @@ public class World implements IBlockAccess {
 	private Set scheduledTickSet;
 	public List loadedTileEntityList;
 	public List playerEntities;
+	public List field_27173_e;
 	private long field_1019_F;
 	public int skylightSubtracted;
 	protected int field_9437_g;
 	protected int field_9436_h;
-	public boolean field_1043_h;
+	private float field_26901_B;
+	private float field_27171_C;
+	private float field_27170_D;
+	private float field_27169_E;
+	private int field_27168_F;
+	public int field_27172_i;
+	public boolean editingBlocks;
 	private long lockTimestamp;
 	protected int autosavePeriod;
 	public int difficultySetting;
@@ -35,14 +42,14 @@ public class World implements IBlockAccess {
 	public final WorldProvider worldProvider;
 	protected List worldAccesses;
 	protected IChunkProvider chunkProvider;
-	protected final ISaveHandler field_22147_p;
-	protected WorldInfo worldinfo;
-	public boolean field_9430_x;
-	private boolean field_22146_A;
+	protected final ISaveHandler saveHandler;
+	protected WorldInfo worldInfo;
+	public boolean findingSpawnPoint;
+	private boolean allPlayersSleeping;
 	private ArrayList field_9428_I;
 	private int field_4204_J;
 	private boolean spawnHostileMobs;
-	private boolean field_21120_L;
+	private boolean spawnPeacefulMobs;
 	static int field_9429_y = 0;
 	private Set field_9427_K;
 	private int field_9426_L;
@@ -62,11 +69,14 @@ public class World implements IBlockAccess {
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.playerEntities = new ArrayList();
+		this.field_27173_e = new ArrayList();
 		this.field_1019_F = 16777215L;
 		this.skylightSubtracted = 0;
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
 		this.field_9436_h = 1013904223;
-		this.field_1043_h = false;
+		this.field_27168_F = 0;
+		this.field_27172_i = 0;
+		this.editingBlocks = false;
 		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
@@ -75,17 +85,18 @@ public class World implements IBlockAccess {
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
 		this.spawnHostileMobs = true;
-		this.field_21120_L = true;
+		this.spawnPeacefulMobs = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
-		this.field_22147_p = var1;
-		this.worldinfo = new WorldInfo(var4, var2);
+		this.saveHandler = var1;
+		this.worldInfo = new WorldInfo(var4, var2);
 		this.worldProvider = var3;
 		var3.registerWorld(this);
 		this.chunkProvider = this.getChunkProvider();
 		this.calculateInitialSkylight();
+		this.func_27163_E();
 	}
 
 	public World(World var1, WorldProvider var2) {
@@ -97,11 +108,14 @@ public class World implements IBlockAccess {
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.playerEntities = new ArrayList();
+		this.field_27173_e = new ArrayList();
 		this.field_1019_F = 16777215L;
 		this.skylightSubtracted = 0;
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
 		this.field_9436_h = 1013904223;
-		this.field_1043_h = false;
+		this.field_27168_F = 0;
+		this.field_27172_i = 0;
+		this.editingBlocks = false;
 		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
@@ -110,18 +124,19 @@ public class World implements IBlockAccess {
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
 		this.spawnHostileMobs = true;
-		this.field_21120_L = true;
+		this.spawnPeacefulMobs = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
 		this.lockTimestamp = var1.lockTimestamp;
-		this.field_22147_p = var1.field_22147_p;
-		this.worldinfo = new WorldInfo(var1.worldinfo);
+		this.saveHandler = var1.saveHandler;
+		this.worldInfo = new WorldInfo(var1.worldInfo);
 		this.worldProvider = var2;
 		var2.registerWorld(this);
 		this.chunkProvider = this.getChunkProvider();
 		this.calculateInitialSkylight();
+		this.func_27163_E();
 	}
 
 	public World(ISaveHandler var1, String var2, long var3) {
@@ -137,11 +152,14 @@ public class World implements IBlockAccess {
 		this.scheduledTickSet = new HashSet();
 		this.loadedTileEntityList = new ArrayList();
 		this.playerEntities = new ArrayList();
+		this.field_27173_e = new ArrayList();
 		this.field_1019_F = 16777215L;
 		this.skylightSubtracted = 0;
 		this.field_9437_g = (new EaglercraftRandom()).nextInt();
 		this.field_9436_h = 1013904223;
-		this.field_1043_h = false;
+		this.field_27168_F = 0;
+		this.field_27172_i = 0;
+		this.editingBlocks = false;
 		this.lockTimestamp = EagRuntime.currentTimeMillis();
 		this.autosavePeriod = 40;
 		this.rand = new EaglercraftRandom();
@@ -150,68 +168,73 @@ public class World implements IBlockAccess {
 		this.field_9428_I = new ArrayList();
 		this.field_4204_J = 0;
 		this.spawnHostileMobs = true;
-		this.field_21120_L = true;
+		this.spawnPeacefulMobs = true;
 		this.field_9427_K = new HashSet();
 		this.field_9426_L = this.rand.nextInt(12000);
 		this.field_1012_M = new ArrayList();
 		this.multiplayerWorld = false;
-		this.field_22147_p = var1;
-		this.worldinfo = var1.func_22151_c();
-		this.isNewWorld = this.worldinfo == null;
+		this.saveHandler = var1;
+		this.worldInfo = var1.loadWorldInfo();
+		this.isNewWorld = this.worldInfo == null;
 		if(var5 != null) {
 			this.worldProvider = var5;
-		} else if(this.worldinfo != null && this.worldinfo.func_22290_i() == -1) {
+		} else if(this.worldInfo != null && this.worldInfo.getDimension() == -1) {
 			this.worldProvider = new WorldProviderHell();
 		} else {
 			this.worldProvider = new WorldProvider();
 		}
 
 		boolean var6 = false;
-		if(this.worldinfo == null) {
-			this.worldinfo = new WorldInfo(var3, var2);
+		if(this.worldInfo == null) {
+			this.worldInfo = new WorldInfo(var3, var2);
 			var6 = true;
 		} else {
-			this.worldinfo.func_22287_a(var2);
+			this.worldInfo.setWorldName(var2);
 		}
 
 		this.worldProvider.registerWorld(this);
 		this.chunkProvider = this.getChunkProvider();
 		if(var6) {
-			this.field_9430_x = true;
-			int var7 = 0;
-			byte var8 = 64;
-
-			int var9;
-			for(var9 = 0; !this.worldProvider.canCoordinateBeSpawn(var7, var9); var9 += this.rand.nextInt(64) - this.rand.nextInt(64)) {
-				var7 += this.rand.nextInt(64) - this.rand.nextInt(64);
-			}
-
-			this.worldinfo.func_22292_a(var7, var8, var9);
-			this.field_9430_x = false;
+			this.func_25098_c();
 		}
 
 		this.calculateInitialSkylight();
+		this.func_27163_E();
 	}
 
 	protected IChunkProvider getChunkProvider() {
-		IChunkLoader var1 = this.field_22147_p.func_22149_a(this.worldProvider);
+		IChunkLoader var1 = this.saveHandler.getChunkLoader(this.worldProvider);
 		return new ChunkProviderLoadOrGenerate(this, var1, this.worldProvider.getChunkProvider());
 	}
 
-	public void setSpawnLocation() {
-		if(this.worldinfo.func_22295_d() <= 0) {
-			this.worldinfo.func_22308_b(64);
+	protected void func_25098_c() {
+		this.findingSpawnPoint = true;
+		int var1 = 0;
+		byte var2 = 64;
+
+		int var3;
+		for(var3 = 0; !this.worldProvider.canCoordinateBeSpawn(var1, var3); var3 += this.rand.nextInt(64) - this.rand.nextInt(64)) {
+			var1 += this.rand.nextInt(64) - this.rand.nextInt(64);
 		}
 
-		int var1 = this.worldinfo.func_22293_c();
+		this.worldInfo.setSpawn(var1, var2, var3);
+		this.findingSpawnPoint = false;
+	}
+
+	public void setSpawnLocation() {
+		if(this.worldInfo.getSpawnY() <= 0) {
+			this.worldInfo.setSpawnY(64);
+		}
+
+		int var1 = this.worldInfo.getSpawnX();
 
 		int var2;
-		for(var2 = this.worldinfo.func_22300_e(); this.getFirstUncoveredBlock(var1, var2) == 0; var2 += this.rand.nextInt(8) - this.rand.nextInt(8)) {
+		for(var2 = this.worldInfo.getSpawnZ(); this.getFirstUncoveredBlock(var1, var2) == 0; var2 += this.rand.nextInt(8) - this.rand.nextInt(8)) {
 			var1 += this.rand.nextInt(8) - this.rand.nextInt(8);
 		}
 
-		this.worldinfo.func_22294_a(var1);
-		this.worldinfo.func_22298_c(var2);
+		this.worldInfo.setSpawnX(var1);
+		this.worldInfo.setSpawnZ(var2);
 	}
 
 	public int getFirstUncoveredBlock(int var1, int var2) {
@@ -227,17 +250,17 @@ public class World implements IBlockAccess {
 
 	public void spawnPlayerWithLoadedChunks(EntityPlayer var1) {
 		try {
-			NBTTagCompound var2 = this.worldinfo.func_22303_h();
+			NBTTagCompound var2 = this.worldInfo.getPlayerNBTTagCompound();
 			if(var2 != null) {
 				var1.readFromNBT(var2);
-				this.worldinfo.func_22309_a((NBTTagCompound)null);
+				this.worldInfo.setPlayerNBTTagCompound((NBTTagCompound)null);
 			}
 
 			if(this.chunkProvider instanceof ChunkProviderLoadOrGenerate) {
 				ChunkProviderLoadOrGenerate var3 = (ChunkProviderLoadOrGenerate)this.chunkProvider;
 				int var4 = MathHelper.floor_float((float)((int)var1.posX)) >> 4;
 				int var5 = MathHelper.floor_float((float)((int)var1.posZ)) >> 4;
-				var3.func_21110_c(var4, var5);
+				var3.setCurrentChunkOver(var4, var5);
 			}
 
 			this.entityJoinedWorld(var1);
@@ -264,7 +287,7 @@ public class World implements IBlockAccess {
 
 	private void saveLevel() {
 		this.checkSessionLock();
-		this.field_22147_p.func_22148_a(this.worldinfo, this.playerEntities);
+		this.saveHandler.saveWorldInfoAndPlayer(this.worldInfo, this.playerEntities);
 	}
 
 	public boolean func_650_a(int var1) {
@@ -427,7 +450,7 @@ public class World implements IBlockAccess {
 
 	public void markBlockNeedsUpdate(int var1, int var2, int var3) {
 		for(int var4 = 0; var4 < this.worldAccesses.size(); ++var4) {
-			((IWorldAccess)this.worldAccesses.get(var4)).func_934_a(var1, var2, var3);
+			((IWorldAccess)this.worldAccesses.get(var4)).markBlockAndNeighborsNeedsUpdate(var1, var2, var3);
 		}
 
 	}
@@ -471,7 +494,7 @@ public class World implements IBlockAccess {
 	}
 
 	private void notifyBlockOfNeighborChange(int var1, int var2, int var3, int var4) {
-		if(!this.field_1043_h && !this.multiplayerWorld) {
+		if(!this.editingBlocks && !this.multiplayerWorld) {
 			Block var5 = Block.blocksList[this.getBlockId(var1, var2, var3)];
 			if(var5 != null) {
 				var5.onNeighborBlockChange(this, var1, var2, var3, var4);
@@ -617,7 +640,7 @@ public class World implements IBlockAccess {
 						var6.setLightValue(var1, var2 & 15, var3, var4 & 15, var5);
 
 						for(int var7 = 0; var7 < this.worldAccesses.size(); ++var7) {
-							((IWorldAccess)this.worldAccesses.get(var7)).func_934_a(var2, var3, var4);
+							((IWorldAccess)this.worldAccesses.get(var7)).markBlockAndNeighborsNeedsUpdate(var2, var3, var4);
 						}
 
 					}
@@ -804,6 +827,11 @@ public class World implements IBlockAccess {
 
 	}
 
+	public boolean func_27159_a(Entity var1) {
+		this.field_27173_e.add(var1);
+		return true;
+	}
+
 	public boolean entityJoinedWorld(Entity var1) {
 		int var2 = MathHelper.floor_double(var1.posX / 16.0D);
 		int var3 = MathHelper.floor_double(var1.posZ / 16.0D);
@@ -818,7 +846,7 @@ public class World implements IBlockAccess {
 			if(var1 instanceof EntityPlayer) {
 				EntityPlayer var5 = (EntityPlayer)var1;
 				this.playerEntities.add(var5);
-				this.func_22140_w();
+				this.updateAllPlayersSleepingFlag();
 			}
 
 			this.getChunkFromChunkCoords(var2, var3).addEntity(var1);
@@ -854,7 +882,7 @@ public class World implements IBlockAccess {
 		var1.setEntityDead();
 		if(var1 instanceof EntityPlayer) {
 			this.playerEntities.remove((EntityPlayer)var1);
-			this.func_22140_w();
+			this.updateAllPlayersSleepingFlag();
 		}
 
 	}
@@ -898,7 +926,7 @@ public class World implements IBlockAccess {
 				this.field_9428_I.add(var13);
 			}
 
-			var13 = var1.func_383_b_((Entity)var15.get(var16));
+			var13 = var1.getCollisionBox((Entity)var15.get(var16));
 			if(var13 != null && var13.intersectsWith(var2)) {
 				this.field_9428_I.add(var13);
 			}
@@ -918,6 +946,10 @@ public class World implements IBlockAccess {
 			var3 = 1.0F;
 		}
 
+		var3 = 1.0F - var3;
+		var3 = (float)((double)var3 * (1.0D - (double)(this.func_27162_g(var1) * 5.0F) / 16.0D));
+		var3 = (float)((double)var3 * (1.0D - (double)(this.func_27166_f(var1) * 5.0F) / 16.0D));
+		var3 = 1.0F - var3;
 		return (int)(var3 * 11.0F);
 	}
 
@@ -942,11 +974,43 @@ public class World implements IBlockAccess {
 		var9 *= var4;
 		var10 *= var4;
 		var11 *= var4;
+		float var12 = this.func_27162_g(var2);
+		float var13;
+		float var14;
+		if(var12 > 0.0F) {
+			var13 = (var9 * 0.3F + var10 * 0.59F + var11 * 0.11F) * 0.6F;
+			var14 = 1.0F - var12 * (12.0F / 16.0F);
+			var9 = var9 * var14 + var13 * (1.0F - var14);
+			var10 = var10 * var14 + var13 * (1.0F - var14);
+			var11 = var11 * var14 + var13 * (1.0F - var14);
+		}
+
+		var13 = this.func_27166_f(var2);
+		if(var13 > 0.0F) {
+			var14 = (var9 * 0.3F + var10 * 0.59F + var11 * 0.11F) * 0.2F;
+			float var15 = 1.0F - var13 * (12.0F / 16.0F);
+			var9 = var9 * var15 + var14 * (1.0F - var15);
+			var10 = var10 * var15 + var14 * (1.0F - var15);
+			var11 = var11 * var15 + var14 * (1.0F - var15);
+		}
+
+		if(this.field_27172_i > 0) {
+			var14 = (float)this.field_27172_i - var2;
+			if(var14 > 1.0F) {
+				var14 = 1.0F;
+			}
+
+			var14 *= 0.45F;
+			var9 = var9 * (1.0F - var14) + 0.8F * var14;
+			var10 = var10 * (1.0F - var14) + 0.8F * var14;
+			var11 = var11 * (1.0F - var14) + 1.0F * var14;
+		}
+
 		return Vec3D.createVector((double)var9, (double)var10, (double)var11);
 	}
 
 	public float getCelestialAngle(float var1) {
-		return this.worldProvider.calculateCelestialAngle(this.worldinfo.getWorldTime(), var1);
+		return this.worldProvider.calculateCelestialAngle(this.worldInfo.getWorldTime(), var1);
 	}
 
 	public Vec3D func_628_d(float var1) {
@@ -963,29 +1027,45 @@ public class World implements IBlockAccess {
 		float var4 = (float)(this.field_1019_F >> 16 & 255L) / 255.0F;
 		float var5 = (float)(this.field_1019_F >> 8 & 255L) / 255.0F;
 		float var6 = (float)(this.field_1019_F & 255L) / 255.0F;
+		float var7 = this.func_27162_g(var1);
+		float var8;
+		float var9;
+		if(var7 > 0.0F) {
+			var8 = (var4 * 0.3F + var5 * 0.59F + var6 * 0.11F) * 0.6F;
+			var9 = 1.0F - var7 * 0.95F;
+			var4 = var4 * var9 + var8 * (1.0F - var9);
+			var5 = var5 * var9 + var8 * (1.0F - var9);
+			var6 = var6 * var9 + var8 * (1.0F - var9);
+		}
+
 		var4 *= var3 * 0.9F + 0.1F;
 		var5 *= var3 * 0.9F + 0.1F;
 		var6 *= var3 * 0.85F + 0.15F;
+		var8 = this.func_27166_f(var1);
+		if(var8 > 0.0F) {
+			var9 = (var4 * 0.3F + var5 * 0.59F + var6 * 0.11F) * 0.2F;
+			float var10 = 1.0F - var8 * 0.95F;
+			var4 = var4 * var10 + var9 * (1.0F - var10);
+			var5 = var5 * var10 + var9 * (1.0F - var10);
+			var6 = var6 * var10 + var9 * (1.0F - var10);
+		}
+
 		return Vec3D.createVector((double)var4, (double)var5, (double)var6);
 	}
 
-	public Vec3D func_4082_d(float var1) {
+	public Vec3D getFogColor(float var1) {
 		float var2 = this.getCelestialAngle(var1);
 		return this.worldProvider.func_4096_a(var2, var1);
 	}
 
 	public int findTopSolidBlock(int var1, int var2) {
 		Chunk var3 = this.getChunkFromBlockCoords(var1, var2);
-
-		int var4;
-		for(var4 = 127; this.getBlockMaterial(var1, var4, var2).getIsSolid() && var4 > 0; --var4) {
-		}
-
+		int var4 = 127;
 		var1 &= 15;
 
 		for(var2 &= 15; var4 > 0; --var4) {
 			int var5 = var3.getBlockID(var1, var4, var2);
-			if(var5 != 0 && (Block.blocksList[var5].blockMaterial.getIsSolid() || Block.blocksList[var5].blockMaterial.getIsLiquid())) {
+			if(var5 != 0 && Block.blocksList[var5].blockMaterial.getIsSolid()) {
 				return var4 + 1;
 			}
 		}
@@ -993,11 +1073,7 @@ public class World implements IBlockAccess {
 		return -1;
 	}
 
-	public int func_696_e(int var1, int var2) {
-		return this.getChunkFromBlockCoords(var1, var2).getHeightValue(var1 & 15, var2 & 15);
-	}
-
-	public float func_679_f(float var1) {
+	public float getStarBrightness(float var1) {
 		float var2 = this.getCelestialAngle(var1);
 		float var3 = 1.0F - (MathHelper.cos(var2 * (float)Math.PI * 2.0F) * 2.0F + 12.0F / 16.0F);
 		if(var3 < 0.0F) {
@@ -1025,7 +1101,7 @@ public class World implements IBlockAccess {
 		} else {
 			if(this.checkChunksExist(var1 - var7, var2 - var7, var3 - var7, var1 + var7, var2 + var7, var3 + var7)) {
 				if(var4 > 0) {
-					var6.setScheduledTime((long)var5 + this.worldinfo.getWorldTime());
+					var6.setScheduledTime((long)var5 + this.worldInfo.getWorldTime());
 				}
 
 				if(!this.scheduledTickSet.contains(var6)) {
@@ -1038,10 +1114,18 @@ public class World implements IBlockAccess {
 	}
 
 	public void func_633_c() {
-		this.loadedEntityList.removeAll(this.unloadedEntityList);
-
 		int var1;
 		Entity var2;
+		for(var1 = 0; var1 < this.field_27173_e.size(); ++var1) {
+			var2 = (Entity)this.field_27173_e.get(var1);
+			var2.onUpdate();
+			if(var2.isDead) {
+				this.field_27173_e.remove(var1--);
+			}
+		}
+
+		this.loadedEntityList.removeAll(this.unloadedEntityList);
+
 		int var3;
 		int var4;
 		for(var1 = 0; var1 < this.unloadedEntityList.size(); ++var1) {
@@ -1221,7 +1305,7 @@ public class World implements IBlockAccess {
 				for(int var9 = var4; var9 < var5; ++var9) {
 					for(int var10 = var6; var10 < var7; ++var10) {
 						int var11 = this.getBlockId(var8, var9, var10);
-						if(var11 == Block.fire.blockID || var11 == Block.lavaStill.blockID || var11 == Block.lavaMoving.blockID) {
+						if(var11 == Block.fire.blockID || var11 == Block.lavaMoving.blockID || var11 == Block.lavaStill.blockID) {
 							return true;
 						}
 					}
@@ -1250,7 +1334,7 @@ public class World implements IBlockAccess {
 					for(int var14 = var8; var14 < var9; ++var14) {
 						Block var15 = Block.blocksList[this.getBlockId(var12, var13, var14)];
 						if(var15 != null && var15.blockMaterial == var2) {
-							double var16 = (double)((float)(var13 + 1) - BlockFluids.setFluidHeight(this.getBlockMetadata(var12, var13, var14)));
+							double var16 = (double)((float)(var13 + 1) - BlockFluid.getPercentAir(this.getBlockMetadata(var12, var13, var14)));
 							if((double)var7 >= var16) {
 								var10 = true;
 								var15.velocityToAddToEntity(this, var12, var13, var14, var3, var11);
@@ -1262,7 +1346,7 @@ public class World implements IBlockAccess {
 
 			if(var11.lengthVector() > 0.0D) {
 				var11 = var11.normalize();
-				double var18 = 0.004D;
+				double var18 = 0.014D;
 				var3.motionX += var11.xCoord * var18;
 				var3.motionY += var11.yCoord * var18;
 				var3.motionZ += var11.zCoord * var18;
@@ -1331,8 +1415,8 @@ public class World implements IBlockAccess {
 	public Explosion newExplosion(Entity var1, double var2, double var4, double var6, float var8, boolean var9) {
 		Explosion var10 = new Explosion(this, var1, var2, var4, var6, var8);
 		var10.field_12257_a = var9;
-		var10.func_12248_a();
-		var10.func_12247_b();
+		var10.doExplosionA();
+		var10.doExplosionB(true);
 		return var10;
 	}
 
@@ -1516,27 +1600,28 @@ public class World implements IBlockAccess {
 
 	}
 
-	public void func_21114_a(boolean var1, boolean var2) {
+	public void setAllowedMobSpawns(boolean var1, boolean var2) {
 		this.spawnHostileMobs = var1;
-		this.field_21120_L = var2;
+		this.spawnPeacefulMobs = var2;
 	}
 
 	public void tick() {
+		this.func_27165_m();
 		long var2;
-		if(this.func_22142_y()) {
+		if(this.isAllPlayersFullyAsleep()) {
 			boolean var1 = false;
 			if(this.spawnHostileMobs && this.difficultySetting >= 1) {
-				var1 = SpawnerAnimals.func_22390_a(this, this.playerEntities);
+				var1 = SpawnerAnimals.performSleepSpawning(this, this.playerEntities);
 			}
 
 			if(!var1) {
-				var2 = this.worldinfo.getWorldTime() + 24000L;
-				this.worldinfo.setWorldTime(var2 - var2 % 24000L);
-				this.func_22141_x();
+				var2 = this.worldInfo.getWorldTime() + 24000L;
+				this.worldInfo.setWorldTime(var2 - var2 % 24000L);
+				this.wakeUpAllPlayers();
 			}
 		}
 
-		SpawnerAnimals.performSpawning(this, this.spawnHostileMobs, this.field_21120_L);
+		SpawnerAnimals.performSpawning(this, this.spawnHostileMobs, this.spawnPeacefulMobs);
 		this.chunkProvider.func_532_a();
 		int var4 = this.calculateSkylightSubtracted(1.0F);
 		if(var4 != this.skylightSubtracted) {
@@ -1547,17 +1632,103 @@ public class World implements IBlockAccess {
 			}
 		}
 
-		var2 = this.worldinfo.getWorldTime() + 1L;
+		var2 = this.worldInfo.getWorldTime() + 1L;
 		if(var2 % (long)this.autosavePeriod == 0L) {
 			this.saveWorld(false, (IProgressUpdate)null);
 		}
 
-		this.worldinfo.setWorldTime(var2);
+		this.worldInfo.setWorldTime(var2);
 		this.TickUpdates(false);
-		this.func_4080_j();
+		this.updateBlocksAndPlayCaveSounds();
 	}
 
-	protected void func_4080_j() {
+	private void func_27163_E() {
+		if(this.worldInfo.func_27397_o()) {
+			this.field_27171_C = 1.0F;
+			if(this.worldInfo.func_27396_m()) {
+				this.field_27169_E = 1.0F;
+			}
+		}
+
+	}
+
+	protected void func_27165_m() {
+		if(!this.worldProvider.field_6478_e) {
+			if(this.field_27168_F > 0) {
+				--this.field_27168_F;
+			}
+
+			int var1 = this.worldInfo.func_27400_n();
+			if(var1 <= 0) {
+				if(this.worldInfo.func_27396_m()) {
+					this.worldInfo.func_27399_e(this.rand.nextInt(12000) + 3600);
+				} else {
+					this.worldInfo.func_27399_e(this.rand.nextInt(168000) + 12000);
+				}
+			} else {
+				--var1;
+				this.worldInfo.func_27399_e(var1);
+				if(var1 <= 0) {
+					this.worldInfo.func_27398_a(!this.worldInfo.func_27396_m());
+				}
+			}
+
+			int var2 = this.worldInfo.func_27393_p();
+			if(var2 <= 0) {
+				if(this.worldInfo.func_27397_o()) {
+					this.worldInfo.func_27395_f(this.rand.nextInt(12000) + 12000);
+				} else {
+					this.worldInfo.func_27395_f(this.rand.nextInt(168000) + 12000);
+				}
+			} else {
+				--var2;
+				this.worldInfo.func_27395_f(var2);
+				if(var2 <= 0) {
+					this.worldInfo.func_27394_b(!this.worldInfo.func_27397_o());
+				}
+			}
+
+			this.field_26901_B = this.field_27171_C;
+			if(this.worldInfo.func_27397_o()) {
+				this.field_27171_C = (float)((double)this.field_27171_C + 0.01D);
+			} else {
+				this.field_27171_C = (float)((double)this.field_27171_C - 0.01D);
+			}
+
+			if(this.field_27171_C < 0.0F) {
+				this.field_27171_C = 0.0F;
+			}
+
+			if(this.field_27171_C > 1.0F) {
+				this.field_27171_C = 1.0F;
+			}
+
+			this.field_27170_D = this.field_27169_E;
+			if(this.worldInfo.func_27396_m()) {
+				this.field_27169_E = (float)((double)this.field_27169_E + 0.01D);
+			} else {
+				this.field_27169_E = (float)((double)this.field_27169_E - 0.01D);
+			}
+
+			if(this.field_27169_E < 0.0F) {
+				this.field_27169_E = 0.0F;
+			}
+
+			if(this.field_27169_E > 1.0F) {
+				this.field_27169_E = 1.0F;
+			}
+
+		}
+	}
+
+	private void func_27164_F() {
+		this.worldInfo.func_27395_f(0);
+		this.worldInfo.func_27394_b(false);
+		this.worldInfo.func_27399_e(0);
+		this.worldInfo.func_27398_a(false);
+	}
+
+	protected void updateBlocksAndPlayCaveSounds() {
 		this.field_9427_K.clear();
 
 		int var3;
@@ -1609,13 +1780,45 @@ public class World implements IBlockAccess {
 				}
 			}
 
+			if(this.rand.nextInt(100000) == 0 && this.func_27161_C() && this.func_27160_B()) {
+				this.field_9437_g = this.field_9437_g * 3 + this.field_9436_h;
+				var6 = this.field_9437_g >> 2;
+				var7 = var3 + (var6 & 15);
+				var8 = var4 + (var6 >> 8 & 15);
+				var9 = this.findTopSolidBlock(var7, var8);
+				if(this.func_27167_r(var7, var9, var8)) {
+					this.func_27159_a(new EntityLightningBolt(this, (double)var7, (double)var9, (double)var8));
+					this.field_27168_F = 2;
+				}
+			}
+
+			int var15;
+			if(this.rand.nextInt(16) == 0 && this.func_27161_C()) {
+				this.field_9437_g = this.field_9437_g * 3 + this.field_9436_h;
+				var6 = this.field_9437_g >> 2;
+				var7 = var6 & 15;
+				var8 = var6 >> 8 & 15;
+				var9 = this.findTopSolidBlock(var7 + var3, var8 + var4);
+				if(this.getWorldChunkManager().func_4073_a(var7 + var3, var8 + var4).func_27078_c() && var9 >= 0 && var9 < 128 && var14.getSavedLightValue(EnumSkyBlock.Block, var7, var9, var8) < 10) {
+					var10 = var14.getBlockID(var7, var9 - 1, var8);
+					var15 = var14.getBlockID(var7, var9, var8);
+					if(var15 == 0 && Block.snow.canPlaceBlockAt(this, var7 + var3, var9, var8 + var4) && var10 != 0 && var10 != Block.ice.blockID && Block.blocksList[var10].blockMaterial.getIsSolid()) {
+						this.setBlockWithNotify(var7 + var3, var9, var8 + var4, Block.snow.blockID);
+					}
+
+					if(var10 == Block.waterStill.blockID && var14.getBlockMetadata(var7, var9 - 1, var8) == 0) {
+						this.setBlockWithNotify(var7 + var3, var9 - 1, var8 + var4, Block.ice.blockID);
+					}
+				}
+			}
+
 			for(var6 = 0; var6 < 80; ++var6) {
 				this.field_9437_g = this.field_9437_g * 3 + this.field_9436_h;
 				var7 = this.field_9437_g >> 2;
 				var8 = var7 & 15;
 				var9 = var7 >> 8 & 15;
 				var10 = var7 >> 16 & 127;
-				byte var15 = var14.blocks[var8 << 11 | var9 << 7 | var10];
+				var15 = var14.blocks[var8 << 11 | var9 << 7 | var10] & 255;
 				if(Block.tickOnLoad[var15]) {
 					Block.blocksList[var15].updateTick(this, var8 + var3, var10, var9 + var4, this.rand);
 				}
@@ -1635,7 +1838,7 @@ public class World implements IBlockAccess {
 
 			for(int var3 = 0; var3 < var2; ++var3) {
 				NextTickListEntry var4 = (NextTickListEntry)this.scheduledTickTreeSet.first();
-				if(!var1 && var4.scheduledTime > this.worldinfo.getWorldTime()) {
+				if(!var1 && var4.scheduledTime > this.worldInfo.getWorldTime()) {
 					break;
 				}
 
@@ -1762,7 +1965,15 @@ public class World implements IBlockAccess {
 			var9 = null;
 		}
 
-		return var9 != null && !this.checkIfAABBIsClear(var9) ? false : (var7 != Block.waterStill && var7 != Block.waterMoving && var7 != Block.lavaStill && var7 != Block.lavaMoving && var7 != Block.fire && var7 != Block.snow ? var1 > 0 && var7 == null && var8.canPlaceBlockAt(this, var2, var3, var4) : true);
+		if(var9 != null && !this.checkIfAABBIsClear(var9)) {
+			return false;
+		} else {
+			if(var7 == Block.waterMoving || var7 == Block.waterStill || var7 == Block.lavaMoving || var7 == Block.lavaStill || var7 == Block.fire || var7 == Block.snow) {
+				var7 = null;
+			}
+
+			return var1 > 0 && var7 == null && var8.canPlaceBlockAt(this, var2, var3, var4);
+		}
 	}
 
 	public PathEntity getPathToEntity(Entity var1, Entity var2, float var3) {
@@ -1837,6 +2048,16 @@ public class World implements IBlockAccess {
 		return var11;
 	}
 
+	public EntityPlayer getPlayerEntityByName(String var1) {
+		for(int var2 = 0; var2 < this.playerEntities.size(); ++var2) {
+			if(var1.equals(((EntityPlayer)this.playerEntities.get(var2)).username)) {
+				return (EntityPlayer)this.playerEntities.get(var2);
+			}
+		}
+
+		return null;
+	}
+
 	public void setChunkData(int var1, int var2, int var3, int var4, int var5, int var6, byte[] var7) {
 		int var8 = var1 >> 4;
 		int var9 = var3 >> 4;
@@ -1886,27 +2107,27 @@ public class World implements IBlockAccess {
 	}
 
 	public void checkSessionLock() {
-		this.field_22147_p.func_22150_b();
+		this.saveHandler.func_22150_b();
 	}
 
 	public void setWorldTime(long var1) {
-		this.worldinfo.setWorldTime(var1);
+		this.worldInfo.setWorldTime(var1);
 	}
 
-	public long func_22138_q() {
-		return this.worldinfo.getRandomSeed();
+	public long getRandomSeed() {
+		return this.worldInfo.getRandomSeed();
 	}
 
-	public long func_22139_r() {
-		return this.worldinfo.getWorldTime();
+	public long getWorldTime() {
+		return this.worldInfo.getWorldTime();
 	}
 
-	public ChunkCoordinates func_22137_s() {
-		return new ChunkCoordinates(this.worldinfo.func_22293_c(), this.worldinfo.func_22295_d(), this.worldinfo.func_22300_e());
+	public ChunkCoordinates getSpawnPoint() {
+		return new ChunkCoordinates(this.worldInfo.getSpawnX(), this.worldInfo.getSpawnY(), this.worldInfo.getSpawnZ());
 	}
 
-	public void func_22143_a(ChunkCoordinates var1) {
-		this.worldinfo.func_22292_a(var1.field_22395_a, var1.field_22394_b, var1.field_22396_c);
+	public void setSpawnPoint(ChunkCoordinates var1) {
+		this.worldInfo.setSpawn(var1.x, var1.y, var1.z);
 	}
 
 	public void joinEntityInSurroundings(Entity var1) {
@@ -1980,7 +2201,7 @@ public class World implements IBlockAccess {
 
 	}
 
-	public IChunkProvider func_21118_q() {
+	public IChunkProvider getIChunkProvider() {
 		return this.chunkProvider;
 	}
 
@@ -1993,38 +2214,39 @@ public class World implements IBlockAccess {
 	}
 
 	public WorldInfo func_22144_v() {
-		return this.worldinfo;
+		return this.worldInfo;
 	}
 
-	public void func_22140_w() {
-		this.field_22146_A = !this.playerEntities.isEmpty();
+	public void updateAllPlayersSleepingFlag() {
+		this.allPlayersSleeping = !this.playerEntities.isEmpty();
 		Iterator var1 = this.playerEntities.iterator();
 
 		while(var1.hasNext()) {
 			EntityPlayer var2 = (EntityPlayer)var1.next();
 			if(!var2.isPlayerSleeping()) {
-				this.field_22146_A = false;
+				this.allPlayersSleeping = false;
 				break;
 			}
 		}
 
 	}
 
-	protected void func_22141_x() {
-		this.field_22146_A = false;
+	protected void wakeUpAllPlayers() {
+		this.allPlayersSleeping = false;
 		Iterator var1 = this.playerEntities.iterator();
 
 		while(var1.hasNext()) {
 			EntityPlayer var2 = (EntityPlayer)var1.next();
 			if(var2.isPlayerSleeping()) {
-				var2.func_22056_a(false, false);
+				var2.wakeUpPlayer(false, false, true);
 			}
 		}
 
+		this.func_27164_F();
 	}
 
-	public boolean func_22142_y() {
-		if(this.field_22146_A && !this.multiplayerWorld) {
+	public boolean isAllPlayersFullyAsleep() {
+		if(this.allPlayersSleeping && !this.multiplayerWorld) {
 			Iterator var1 = this.playerEntities.iterator();
 
 			EntityPlayer var2;
@@ -2034,11 +2256,45 @@ public class World implements IBlockAccess {
 				}
 
 				var2 = (EntityPlayer)var1.next();
-			} while(var2.func_22054_L());
+			} while(var2.isPlayerFullyAsleep());
 
 			return false;
 		} else {
 			return false;
+		}
+	}
+
+	public float func_27166_f(float var1) {
+		return (this.field_27170_D + (this.field_27169_E - this.field_27170_D) * var1) * this.func_27162_g(var1);
+	}
+
+	public float func_27162_g(float var1) {
+		return this.field_26901_B + (this.field_27171_C - this.field_26901_B) * var1;
+	}
+
+	public void func_27158_h(float var1) {
+		this.field_26901_B = var1;
+		this.field_27171_C = var1;
+	}
+
+	public boolean func_27160_B() {
+		return (double)this.func_27166_f(1.0F) > 0.9D;
+	}
+
+	public boolean func_27161_C() {
+		return (double)this.func_27162_g(1.0F) > 0.2D;
+	}
+
+	public boolean func_27167_r(int var1, int var2, int var3) {
+		if(!this.func_27161_C()) {
+			return false;
+		} else if(!this.canBlockSeeTheSky(var1, var2, var3)) {
+			return false;
+		} else if(this.findTopSolidBlock(var1, var3) > var2) {
+			return false;
+		} else {
+			BiomeGenBase var4 = this.getWorldChunkManager().func_4073_a(var1, var3);
+			return var4.func_27078_c() ? false : var4.func_27077_d();
 		}
 	}
 }

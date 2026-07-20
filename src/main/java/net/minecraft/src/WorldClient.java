@@ -9,18 +9,18 @@ public class WorldClient extends World {
 	private LinkedList field_1057_z = new LinkedList();
 	private NetClientHandler sendQueue;
 	private ChunkProviderClient field_20915_C;
-	private MCHashTable field_1055_D = new MCHashTable();
+	private MCHash field_1055_D = new MCHash();
 	private Set field_20914_E = new HashSet();
 	private Set field_1053_F = new HashSet();
 
 	public WorldClient(NetClientHandler var1, long var2, int var4) {
 		super(new SaveHandlerMP(), "MpServer", WorldProvider.func_4101_a(var4), var2);
 		this.sendQueue = var1;
-		this.func_22143_a(new ChunkCoordinates(8, 64, 8));
+		this.setSpawnPoint(new ChunkCoordinates(8, 64, 8));
 	}
 
 	public void tick() {
-		this.setWorldTime(this.func_22139_r() + 1L);
+		this.setWorldTime(this.getWorldTime() + 1L);
 		int var1 = this.calculateSkylightSubtracted(1.0F);
 		int var2;
 		if(var1 != this.skylightSubtracted) {
@@ -67,10 +67,10 @@ public class WorldClient extends World {
 	}
 
 	public void setSpawnLocation() {
-		this.func_22143_a(new ChunkCoordinates(8, 64, 8));
+		this.setSpawnPoint(new ChunkCoordinates(8, 64, 8));
 	}
 
-	protected void func_4080_j() {
+	protected void updateBlocksAndPlayCaveSounds() {
 	}
 
 	public void scheduleBlockUpdate(int var1, int var2, int var3, int var4, int var5) {

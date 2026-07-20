@@ -10,13 +10,13 @@ public class MouseHelper {
 	public MouseHelper() {
 	}
 
-	public void func_774_a() {
+	public void grabMouseCursor() {
 		Mouse.setGrabbed(true);
 		this.deltaX = 0;
 		this.deltaY = 0;
 	}
 
-	public void func_773_b() {
+	public void ungrabMouseCursor() {
 		Mouse.setGrabbed(false);
 	}
 

@@ -481,7 +481,7 @@ public class MathHelper {
         return hsbvals;
     }
 
-    public static boolean func_22282_a(String var0) {
+    public static boolean stringNullOrLengthZero(String var0) {
         return var0 == null || var0.length() == 0;
     }
 

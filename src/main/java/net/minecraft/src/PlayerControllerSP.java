@@ -26,7 +26,7 @@ public class PlayerControllerSP extends PlayerController {
 		ItemStack var8 = this.mc.thePlayer.getCurrentEquippedItem();
 		boolean var9 = this.mc.thePlayer.canHarvestBlock(Block.blocksList[var5]);
 		if(var8 != null) {
-			var8.hitBlock(var5, var1, var2, var3);
+			var8.func_25191_a(var5, var1, var2, var3, this.mc.thePlayer);
 			if(var8.stackSize == 0) {
 				var8.func_1097_a(this.mc.thePlayer);
 				this.mc.thePlayer.destroyCurrentEquippedItem();
@@ -34,7 +34,7 @@ public class PlayerControllerSP extends PlayerController {
 		}
 
 		if(var7 && var9) {
-			Block.blocksList[var5].harvestBlock(this.mc.theWorld, var1, var2, var3, var6);
+			Block.blocksList[var5].harvestBlock(this.mc.theWorld, this.mc.thePlayer, var1, var2, var3, var6);
 		}
 
 		return var7;

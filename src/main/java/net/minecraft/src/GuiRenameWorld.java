@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 
 public class GuiRenameWorld extends GuiScreen {
 	private GuiScreen field_22112_a;
-	private GuiDisableButton field_22114_h;
+	private GuiTextField field_22114_h;
 	private final String field_22113_i;
 
 	public GuiRenameWorld(GuiScreen var1, String var2) {
@@ -14,7 +14,7 @@ public class GuiRenameWorld extends GuiScreen {
 	}
 
 	public void updateScreen() {
-		this.field_22114_h.func_22070_b();
+		this.field_22114_h.updateCursorCounter();
 	}
 
 	public void initGui() {
@@ -23,12 +23,12 @@ public class GuiRenameWorld extends GuiScreen {
 		this.controlList.clear();
 		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, var1.translateKey("selectWorld.renameButton")));
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, var1.translateKey("gui.cancel")));
-		ISaveFormat var2 = this.mc.func_22004_c();
+		ISaveFormat var2 = this.mc.getSaveLoader();
 		WorldInfo var3 = var2.func_22173_b(this.field_22113_i);
 		String var4 = var3.getWorldName();
-		this.field_22114_h = new GuiDisableButton(this.fontRenderer, this.width / 2 - 100, 60, 200, 20, var4);
-		this.field_22114_h.field_22082_a = true;
-		this.field_22114_h.func_22066_a(32);
+		this.field_22114_h = new GuiTextField(this, this.fontRenderer, this.width / 2 - 100, 60, 200, 20, var4);
+		this.field_22114_h.isFocused = true;
+		this.field_22114_h.setMaxStringLength(32);
 	}
 
 	public void onGuiClosed() {
@@ -40,8 +40,8 @@ public class GuiRenameWorld extends GuiScreen {
 			if(var1.id == 1) {
 				this.mc.displayGuiScreen(this.field_22112_a);
 			} else if(var1.id == 0) {
-				ISaveFormat var2 = this.mc.func_22004_c();
-				var2.func_22170_a(this.field_22113_i, this.field_22114_h.func_22071_a().trim());
+				ISaveFormat var2 = this.mc.getSaveLoader();
+				var2.func_22170_a(this.field_22113_i, this.field_22114_h.getText().trim());
 				this.mc.displayGuiScreen(this.field_22112_a);
 			}
 
@@ -49,8 +49,8 @@ public class GuiRenameWorld extends GuiScreen {
 	}
 
 	protected void keyTyped(char var1, int var2) {
-		this.field_22114_h.func_22072_a(var1, var2);
-		((GuiButton)this.controlList.get(0)).enabled = this.field_22114_h.func_22071_a().trim().length() > 0;
+		this.field_22114_h.textboxKeyTyped(var1, var2);
+		((GuiButton)this.controlList.get(0)).enabled = this.field_22114_h.getText().trim().length() > 0;
 		if(var1 == 13 || var2 == 28) {
 			this.actionPerformed((GuiButton)this.controlList.get(0));
 		}
@@ -59,7 +59,7 @@ public class GuiRenameWorld extends GuiScreen {
 
 	protected void mouseClicked(int var1, int var2, int var3) {
 		super.mouseClicked(var1, var2, var3);
-		this.field_22114_h.func_22069_a(var1, var2, var3);
+		this.field_22114_h.mouseClicked(var1, var2, var3);
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
@@ -67,7 +67,7 @@ public class GuiRenameWorld extends GuiScreen {
 		this.drawDefaultBackground();
 		this.drawCenteredString(this.fontRenderer, var4.translateKey("selectWorld.renameTitle"), this.width / 2, this.height / 4 - 60 + 20, 16777215);
 		this.drawString(this.fontRenderer, var4.translateKey("selectWorld.enterName"), this.width / 2 - 100, 47, 10526880);
-		this.field_22114_h.func_22067_c();
+		this.field_22114_h.drawTextBox();
 		super.drawScreen(var1, var2, var3);
 	}
 
@@ -78,15 +78,15 @@ public class GuiRenameWorld extends GuiScreen {
         case CLIPBOARD_PASTE:
             String string = GuiScreen.getClipboardString();
             for (char c : string.toCharArray()) {
-                if(FontAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.field_22114_h.field_22075_h.length() < this.field_22114_h.field_22074_i || this.field_22114_h.field_22074_i == 0)) {
-                    this.field_22114_h.func_22068_a(this.field_22114_h.field_22075_h + c);
+                if(ChatAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.field_22114_h.getText().length() < this.field_22114_h.maxStringLength || this.field_22114_h.maxStringLength == 0)) {
+                    this.field_22114_h.setText(this.field_22114_h.getText() + c);
                 }
             }
 
-            ((GuiButton)this.controlList.get(0)).enabled = this.field_22114_h.func_22071_a().trim().length() > 0;
+            ((GuiButton)this.controlList.get(0)).enabled = this.field_22114_h.getText().trim().length() > 0;
             break;
         default:
             break;
         }
-    }
+	}
 }

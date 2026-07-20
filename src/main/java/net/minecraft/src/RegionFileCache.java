@@ -61,17 +61,17 @@ public class RegionFileCache {
 		return var3.func_22209_a();
 	}
 
-	public static DataInputStream func_22194_c(VFile2 var0, int var1, int var2) {
+	public static DataInputStream getChunkInputStream(VFile2 var0, int var1, int var2) {
 		RegionFile var3 = func_22193_a(var0, var1, var2);
 		return var3.func_22210_a(var1 & 31, var2 & 31);
 	}
 
-	public static DataOutputStream func_22190_d(VFile2 var0, int var1, int var2) throws IOException {
+	public static DataOutputStream getChunkOutputStream(VFile2 var0, int var1, int var2) throws IOException {
 		RegionFile var3 = func_22193_a(var0, var1, var2);
 		return var3.func_22205_b(var1 & 31, var2 & 31);
 	}
 
     public static VFile2 getFile(VFile2 var0, int var1, int var2) {
         return func_22193_a(var0, var1, var2).field_22212_b;
-    }
+	}
 }

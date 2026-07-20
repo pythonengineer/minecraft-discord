@@ -27,7 +27,7 @@ public class Explosion {
 		this.explosionZ = var7;
 	}
 
-	public void func_12248_a() {
+	public void doExplosionA() {
 		float var1 = this.explosionSize;
 		byte var2 = 16;
 
@@ -124,22 +124,21 @@ public class Explosion {
 
 	}
 
-	public void func_12247_b() {
+	public void doExplosionB(boolean var1) {
 		this.worldObj.playSoundEffect(this.explosionX, this.explosionY, this.explosionZ, "random.explode", 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
-		ArrayList var1 = new ArrayList();
-		var1.addAll(this.destroyedBlockPositions);
+		ArrayList var2 = new ArrayList();
+		var2.addAll(this.destroyedBlockPositions);
 
-		for(int var2 = var1.size() - 1; var2 >= 0; --var2) {
-			ChunkPosition var3 = (ChunkPosition)var1.get(var2);
-			int var4 = var3.x;
-			int var5 = var3.y;
-			int var6 = var3.z;
-			int var7 = this.worldObj.getBlockId(var4, var5, var6);
-
-			for(int var8 = 0; var8 < 1; ++var8) {
-				double var9 = (double)((float)var4 + this.worldObj.rand.nextFloat());
-				double var11 = (double)((float)var5 + this.worldObj.rand.nextFloat());
-				double var13 = (double)((float)var6 + this.worldObj.rand.nextFloat());
+		for(int var3 = var2.size() - 1; var3 >= 0; --var3) {
+			ChunkPosition var4 = (ChunkPosition)var2.get(var3);
+			int var5 = var4.x;
+			int var6 = var4.y;
+			int var7 = var4.z;
+			int var8 = this.worldObj.getBlockId(var5, var6, var7);
+			if(var1) {
+				double var9 = (double)((float)var5 + this.worldObj.rand.nextFloat());
+				double var11 = (double)((float)var6 + this.worldObj.rand.nextFloat());
+				double var13 = (double)((float)var7 + this.worldObj.rand.nextFloat());
 				double var15 = var9 - this.explosionX;
 				double var17 = var11 - this.explosionY;
 				double var19 = var13 - this.explosionZ;
@@ -156,10 +155,10 @@ public class Explosion {
 				this.worldObj.spawnParticle("smoke", var9, var11, var13, var15, var17, var19);
 			}
 
-			if(var7 > 0) {
-				Block.blocksList[var7].dropBlockAsItemWithChance(this.worldObj, var4, var5, var6, this.worldObj.getBlockMetadata(var4, var5, var6), 0.3F);
-				this.worldObj.setBlockWithNotify(var4, var5, var6, 0);
-				Block.blocksList[var7].onBlockDestroyedByExplosion(this.worldObj, var4, var5, var6);
+			if(var8 > 0) {
+				Block.blocksList[var8].dropBlockAsItemWithChance(this.worldObj, var5, var6, var7, this.worldObj.getBlockMetadata(var5, var6, var7), 0.3F);
+				this.worldObj.setBlockWithNotify(var5, var6, var7, 0);
+				Block.blocksList[var8].onBlockDestroyedByExplosion(this.worldObj, var5, var6, var7);
 			}
 		}
 

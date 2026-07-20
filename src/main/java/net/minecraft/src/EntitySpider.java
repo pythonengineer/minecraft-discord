@@ -2,7 +2,7 @@ package net.minecraft.src;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public class EntitySpider extends EntityMobs {
+public class EntitySpider extends EntityMob {
 	public EntitySpider(World var1) {
 		super(var1);
 		this.texture = "/mob/spider.png";
@@ -12,6 +12,10 @@ public class EntitySpider extends EntityMobs {
 
 	public double getMountedYOffset() {
 		return (double)this.height * 0.75D - 0.5D;
+	}
+
+	protected boolean canTriggerWalking() {
+		return false;
 	}
 
 	protected Entity findPlayerToAttack() {

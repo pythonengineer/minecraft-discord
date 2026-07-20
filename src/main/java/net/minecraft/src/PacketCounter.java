@@ -1,15 +1,15 @@
 package net.minecraft.src;
 
 class PacketCounter {
-	private int field_22238_a;
-	private long field_22237_b;
+	private int totalPackets;
+	private long totalBytes;
 
 	private PacketCounter() {
 	}
 
-	public void func_22236_a(int var1) {
-		++this.field_22238_a;
-		this.field_22237_b += (long)var1;
+	public void addPacket(int var1) {
+		++this.totalPackets;
+		this.totalBytes += (long)var1;
 	}
 
 	PacketCounter(Empty1 var1) {

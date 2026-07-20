@@ -14,10 +14,10 @@ public class RenderBiped extends RenderLiving {
 		ItemStack var3 = var1.getHeldItem();
 		if(var3 != null) {
 			GL11.glPushMatrix();
-			this.modelBipedMain.bipedRightArm.func_926_b(1.0F / 16.0F);
+			this.modelBipedMain.bipedRightArm.postRender(1.0F / 16.0F);
 			GL11.glTranslatef(-(1.0F / 16.0F), 7.0F / 16.0F, 1.0F / 16.0F);
 			float var4;
-			if(var3.itemID < 256 && RenderBlocks.func_1219_a(Block.blocksList[var3.itemID].getRenderType())) {
+			if(var3.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var3.itemID].getRenderType())) {
 				var4 = 0.5F;
 				GL11.glTranslatef(0.0F, 3.0F / 16.0F, -(5.0F / 16.0F));
 				var4 *= 12.0F / 16.0F;

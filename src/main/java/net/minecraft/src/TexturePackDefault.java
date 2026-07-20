@@ -27,7 +27,7 @@ public class TexturePackDefault extends TexturePackBase {
 
 	}
 
-	public void func_6483_c(Minecraft var1) {
+	public void bindThumbnailTexture(Minecraft var1) {
 		if(this.texturePackThumbnail != null && this.texturePackName < 0) {
 			this.texturePackName = var1.renderEngine.allocateAndSetupTexture(this.texturePackThumbnail);
 		}

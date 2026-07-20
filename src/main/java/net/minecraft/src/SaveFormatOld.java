@@ -1,7 +1,6 @@
 package net.minecraft.src;
 
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class SaveFormatOld implements ISaveFormat {
 			String var3 = "World" + (var2 + 1);
 			WorldInfo var4 = this.func_22173_b(var3);
 			if(var4 != null) {
-				var1.add(new SaveFormatComparator(var3, "", var4.func_22301_l(), var4.func_22306_g(), false));
+				var1.add(new SaveFormatComparator(var3, "", var4.getLastTimePlayed(), var4.getSizeOnDisk(), false));
 			}
 		}
 
@@ -42,16 +41,31 @@ public class SaveFormatOld implements ISaveFormat {
 		VFile2 var2 = new VFile2(this.field_22180_a, var1);
         VFile2 var3 = new VFile2(var2, "level.dat");
 		if(var3.exists()) {
-            try (InputStream fis = var3.getInputStream()) {
-				NBTTagCompound var4 = CompressedStreamTools.func_1138_a(fis);
-				NBTTagCompound var5 = var4.getCompoundTag("Data");
-				return new WorldInfo(var5);
-			} catch (Exception var6) {
-				var6.printStackTrace();
+			NBTTagCompound var4;
+			NBTTagCompound var5;
+			if(var3.exists()) {
+	            try (InputStream fis = var3.getInputStream()) {
+	                var4 = CompressedStreamTools.func_1138_a(fis);
+					var5 = var4.getCompoundTag("Data");
+					return new WorldInfo(var5);
+				} catch (Exception var7) {
+					var7.printStackTrace();
+				}
+			}
+
+			var3 = new VFile2(var2, "level.dat_old");
+			if(var3.exists()) {
+                try (InputStream fis = var3.getInputStream()) {
+					var4 = CompressedStreamTools.func_1138_a(fis);
+					var5 = var4.getCompoundTag("Data");
+					return new WorldInfo(var5);
+				} catch (Exception var6) {
+					var6.printStackTrace();
+				}
 			}
 		}
 
-		return null;
+        return null;
 	}
 
 	public void func_22170_a(String var1, String var2) {
@@ -90,15 +104,15 @@ public class SaveFormatOld implements ISaveFormat {
 
 	}
 
-	public ISaveHandler func_22174_a(String var1, boolean var2) {
+	public ISaveHandler getSaveLoader(String var1, boolean var2) {
 		return new SaveHandler(this.field_22180_a, var1, var2);
 	}
 
-	public boolean func_22175_a(String var1) {
+	public boolean isOldMapFormat(String var1) {
 		return false;
 	}
 
-	public boolean func_22171_a(String var1, IProgressUpdate var2) {
+	public boolean convertMapFormat(String var1, IProgressUpdate var2) {
 		return false;
 	}
 }

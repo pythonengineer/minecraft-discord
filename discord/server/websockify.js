@@ -95,12 +95,12 @@ const new_client = function (client, req) {
 
                         const usernameLen = combinedBuffer.readUint16BE(offset);
                         offset += 2;
-                        if (combinedBuffer.length - offset < usernameLen) {
+                        if (combinedBuffer.length - offset < usernameLen * 2) {
                             offset = 0;
                             break;
                         }
 
-                        offset += usernameLen;
+                        offset += usernameLen * 2;
                         target.write(combinedBuffer.slice(0, offset));
                         combinedBuffer = combinedBuffer.slice(offset);
                         offset = 0;
@@ -117,23 +117,31 @@ const new_client = function (client, req) {
 
                     const usernameLen = combinedBuffer.readUint16BE(offset);
                     offset += 2;
-                    if (combinedBuffer.length - offset < usernameLen + 2) {
+                    if (combinedBuffer.length - offset < usernameLen * 2) {
                         offset = 0;
                         break;
                     }
 
-                    username = combinedBuffer.toString('utf8', offset, offset + usernameLen).trimEnd();
-                    offset += usernameLen;
+                    username = '';
+                    for (let i = 0; i < usernameLen; i++) {
+                        username += String.fromCharCode(combinedBuffer.readUInt16BE(offset));
+                        offset += 2;
+                    }
 
+                    let tokenOffset = offset;
                     const tokenLen = combinedBuffer.readUint16BE(offset);
                     offset += 2;
-                    if (combinedBuffer.length - offset < tokenLen) {
+                    if (combinedBuffer.length - offset < tokenLen * 2) {
                         offset = 0;
                         break;
                     }
 
-                    const token = combinedBuffer.toString('utf8', offset, offset + tokenLen).trimEnd();
-                    offset += tokenLen;
+                    let token = '';
+                    for (let i = 0; i < tokenLen; i++) {
+                        token += String.fromCharCode(combinedBuffer.readUInt16BE(offset));
+                        offset += 2;
+                    }
+
                     if (packetId == 1) {
                         if (!tokens.has(token)) {
                             log('bad token auth');
@@ -141,7 +149,10 @@ const new_client = function (client, req) {
                         } else {
                             hasAuthed = true;
                             log('client auth');
-                            target.write(combinedBuffer.slice(0, offset));
+                            combinedBuffer.copy(combinedBuffer, tokenOffset, tokenOffset + 2 + (tokenLen * 2));
+                            combinedBuffer = combinedBuffer.slice(0, combinedBuffer.length - (2 + (tokenLen * 2)));
+                            target.write(combinedBuffer);
+                            break;
                         }
                     } else {
                         log('sent packet ' + packetId + ' before login');

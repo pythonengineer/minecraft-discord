@@ -5,8 +5,8 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public abstract class Render {
 	protected RenderManager renderManager;
-	private ModelBase field_195_d = new ModelBiped();
-	private RenderBlocks field_203_d = new RenderBlocks();
+	private ModelBase modelBase = new ModelBiped();
+	private RenderBlocks renderBlocks = new RenderBlocks();
 	protected float shadowSize = 0.0F;
 	protected float field_194_c = 1.0F;
 
@@ -223,7 +223,7 @@ public abstract class Render {
 			}
 		}
 
-		if(var1.func_21062_U()) {
+		if(var1.isBurning()) {
 			this.renderEntityOnFire(var1, var2, var4, var6, var9);
 		}
 

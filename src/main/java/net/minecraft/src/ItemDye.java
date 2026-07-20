@@ -9,9 +9,8 @@ public class ItemDye extends Item {
 		this.setMaxDamage(0);
 	}
 
-	public int getIconIndex(ItemStack var1) {
-		int var2 = var1.getItemDamage();
-		return this.iconIndex + var2 % 8 * 16 + var2 / 8;
+	public int func_27009_a(int var1) {
+		return this.iconIndex + var1 % 8 * 16 + var1 / 8;
 	}
 
 	public String getItemNameIS(ItemStack var1) {
@@ -28,7 +27,7 @@ public class ItemDye extends Item {
 			}
 
 			if(var8 == Block.crops.blockID) {
-				((BlockCrops)Block.crops).func_21027_c_(var3, var4, var5, var6);
+				((BlockCrops)Block.crops).fertilize(var3, var4, var5, var6);
 				--var1.stackSize;
 				return true;
 			}
@@ -41,7 +40,7 @@ public class ItemDye extends Item {
 		if(var2 instanceof EntitySheep) {
 			EntitySheep var3 = (EntitySheep)var2;
 			int var4 = BlockCloth.func_21034_c(var1.getItemDamage());
-			if(!var3.func_21072_p() && var3.getFleeceColor() != var4) {
+			if(!var3.getSheared() && var3.getFleeceColor() != var4) {
 				var3.setFleeceColor(var4);
 				--var1.stackSize;
 			}

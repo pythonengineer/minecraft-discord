@@ -2,7 +2,6 @@ package net.minecraft.src;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-
 import net.lax1dude.eaglercraft.EaglerZLIB;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import java.io.InputStream;
@@ -34,13 +33,13 @@ public class SaveConverterMcRegion extends SaveFormatOld {
 				String var7 = var6.getDirectory();
 				WorldInfo var8 = this.func_22173_b(var7);
 				if(var8 != null) {
-					boolean var9 = var8.func_22296_k() != 19132;
+					boolean var9 = var8.getSaveVersion() != 19132;
 					String var10 = var8.getWorldName();
-					if(var10 == null || MathHelper.func_22282_a(var10)) {
+					if(var10 == null || MathHelper.stringNullOrLengthZero(var10)) {
 						var10 = var7;
 					}
 
-					var1.add(new SaveFormatComparator(var7, var10, var8.func_22301_l(), var8.func_22306_g(), var9));
+					var1.add(new SaveFormatComparator(var7, var10, var8.getLastTimePlayed(), var8.getSizeOnDisk(), var9));
 				}
 			}
 		}
@@ -52,16 +51,16 @@ public class SaveConverterMcRegion extends SaveFormatOld {
 		RegionFileCache.func_22192_a();
 	}
 
-	public ISaveHandler func_22174_a(String var1, boolean var2) {
+	public ISaveHandler getSaveLoader(String var1, boolean var2) {
 		return new SaveOldDir(this.field_22180_a, var1, var2);
 	}
 
-	public boolean func_22175_a(String var1) {
+	public boolean isOldMapFormat(String var1) {
 		WorldInfo var2 = this.func_22173_b(var1);
-		return var2 != null && var2.func_22296_k() == 0;
+		return var2 != null && var2.getSaveVersion() == 0;
 	}
 
-	public boolean func_22171_a(String var1, IProgressUpdate var2) {
+	public boolean convertMapFormat(String var1, IProgressUpdate var2) {
 		var2.setLoadingProgress(0);
 		ArrayList var3 = new ArrayList();
 		ArrayList var4 = new ArrayList();
@@ -80,9 +79,9 @@ public class SaveConverterMcRegion extends SaveFormatOld {
 		this.func_22181_a(var7, var3, 0, var9, var2);
 		this.func_22181_a(var8, var5, var3.size(), var9, var2);
 		WorldInfo var10 = this.func_22173_b(var1);
-		var10.func_22289_d(19132);
-		ISaveHandler var11 = this.func_22174_a(var1, false);
-		var11.func_22152_a(var10);
+		var10.setSaveVersion(19132);
+		ISaveHandler var11 = this.getSaveLoader(var1, false);
+		var11.saveWorldInfo(var10);
 		this.func_22182_a(var4, var3.size() + var5.size(), var9, var2);
 		if(var8.exists()) {
 			this.func_22182_a(var6, var3.size() + var5.size() + var4.size(), var9, var2);
@@ -110,7 +109,7 @@ public class SaveConverterMcRegion extends SaveFormatOld {
 			VFile2 var14 = new VFile2(var1, var13[var7]);
 			VFile2 var15 = new VFile2(var14, var13[var7 + 1]);
 			if(var4.accept(var14) && var4.accept(var15) && var5.accept(var12, var12.getName())) {
-				var2.add(new FileMatcher(var12));
+				var2.add(new ChunkFile(var12));
 				if(var8.add(var14.getPath())) {
 					var3.add(var14);
 				}
@@ -125,7 +124,7 @@ public class SaveConverterMcRegion extends SaveFormatOld {
 		Iterator var7 = var2.iterator();
 
 		while(var7.hasNext()) {
-			FileMatcher var8 = (FileMatcher)var7.next();
+			ChunkFile var8 = (ChunkFile)var7.next();
 			int var9 = var8.func_22323_b();
 			int var10 = var8.func_22321_c();
 			RegionFile var11 = RegionFileCache.func_22193_a(var1, var9, var10);

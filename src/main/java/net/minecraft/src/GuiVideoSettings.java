@@ -4,7 +4,7 @@ public class GuiVideoSettings extends GuiScreen {
 	private GuiScreen field_22110_h;
 	protected String field_22107_a = "Video Settings";
 	private GameSettings field_22109_i;
-	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.LIMIT_FRAMERATE, EnumOptions.ANAGLYPH, EnumOptions.VIEW_BOBBING, EnumOptions.GUI_SCALE, EnumOptions.AMBIENT_OCCLUSION};
+	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.LIMIT_FRAMERATE, EnumOptions.ANAGLYPH, EnumOptions.VIEW_BOBBING, EnumOptions.AMBIENT_OCCLUSION, EnumOptions.GUI_SCALE, EnumOptions.ADVANCED_OPENGL};
 
 	public GuiVideoSettings(GuiScreen var1, GameSettings var2) {
 		this.field_22110_h = var1;
@@ -44,6 +44,10 @@ public class GuiVideoSettings extends GuiScreen {
 				this.mc.displayGuiScreen(this.field_22110_h);
 			}
 
+			ScaledResolution var2 = new ScaledResolution(this.mc);
+			int var3 = var2.getScaledWidth();
+			int var4 = var2.getScaledHeight();
+			this.setWorldAndResolution(this.mc, var3, var4);
 		}
 	}
 

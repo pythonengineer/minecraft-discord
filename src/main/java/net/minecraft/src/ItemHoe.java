@@ -4,7 +4,7 @@ public class ItemHoe extends Item {
 	public ItemHoe(int var1, EnumToolMaterial var2) {
 		super(var1);
 		this.maxStackSize = 1;
-		this.maxDamage = var2.getMaxUses();
+		this.setMaxDamage(var2.getMaxUses());
 	}
 
 	public boolean onItemUse(ItemStack var1, EntityPlayer var2, World var3, int var4, int var5, int var6, int var7) {
@@ -19,7 +19,7 @@ public class ItemHoe extends Item {
 				return true;
 			} else {
 				var3.setBlockWithNotify(var4, var5, var6, var10.blockID);
-				var1.damageItem(1);
+				var1.func_25190_a(1, var2);
 				if(var3.rand.nextInt(8) == 0 && var8 == Block.grass.blockID) {
 					byte var11 = 1;
 

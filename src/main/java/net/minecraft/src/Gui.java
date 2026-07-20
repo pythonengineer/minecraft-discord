@@ -5,8 +5,41 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 public class Gui {
 	protected float zLevel = 0.0F;
 
+	protected void func_27100_a(int var1, int var2, int var3, int var4) {
+		if(var2 < var1) {
+			int var5 = var1;
+			var1 = var2;
+			var2 = var5;
+		}
+
+		this.drawRect(var1, var3, var2 + 1, var3 + 1, var4);
+	}
+
+	protected void func_27099_b(int var1, int var2, int var3, int var4) {
+		if(var3 < var2) {
+			int var5 = var2;
+			var2 = var3;
+			var3 = var5;
+		}
+
+		this.drawRect(var1, var2 + 1, var1 + 1, var3, var4);
+	}
+
 	protected void drawRect(int var1, int var2, int var3, int var4, int var5) {
-		float var6 = (float)(var5 >> 24 & 255) / 255.0F;
+		int var6;
+		if(var1 < var3) {
+			var6 = var1;
+			var1 = var3;
+			var3 = var6;
+		}
+
+		if(var2 < var4) {
+			var6 = var2;
+			var2 = var4;
+			var4 = var6;
+		}
+
+		float var11 = (float)(var5 >> 24 & 255) / 255.0F;
 		float var7 = (float)(var5 >> 16 & 255) / 255.0F;
 		float var8 = (float)(var5 >> 8 & 255) / 255.0F;
 		float var9 = (float)(var5 & 255) / 255.0F;
@@ -14,7 +47,7 @@ public class Gui {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glColor4f(var7, var8, var9, var6);
+		GL11.glColor4f(var7, var8, var9, var11);
 		var10.startDrawingQuads();
 		var10.addVertex((double)var1, (double)var4, 0.0D);
 		var10.addVertex((double)var3, (double)var4, 0.0D);

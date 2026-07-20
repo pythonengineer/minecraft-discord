@@ -45,7 +45,7 @@ public class GuiSleepMP extends GuiChat {
 	private void func_22115_j() {
 		if(this.mc.thePlayer instanceof EntityClientPlayerMP) {
 			NetClientHandler var1 = ((EntityClientPlayerMP)this.mc.thePlayer).sendQueue;
-			var1.addToSendQueue(new Packet19(this.mc.thePlayer, 3));
+			var1.addToSendQueue(new Packet19EntityAction(this.mc.thePlayer, 3));
 		}
 
 	}

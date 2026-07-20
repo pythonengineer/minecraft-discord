@@ -3,9 +3,9 @@ package net.minecraft.src;
 import java.util.List;
 
 public class EntityBoat extends Entity {
-	public int field_807_a;
-	public int field_806_b;
-	public int field_808_c;
+	public int boatCurrentDamage;
+	public int boatTimeSinceHit;
+	public int boatRockDirection;
 	private int field_9394_d;
 	private double field_9393_e;
 	private double field_9392_f;
@@ -18,19 +18,22 @@ public class EntityBoat extends Entity {
 
 	public EntityBoat(World var1) {
 		super(var1);
-		this.field_807_a = 0;
-		this.field_806_b = 0;
-		this.field_808_c = 1;
+		this.boatCurrentDamage = 0;
+		this.boatTimeSinceHit = 0;
+		this.boatRockDirection = 1;
 		this.preventEntitySpawning = true;
 		this.setSize(1.5F, 0.6F);
 		this.yOffset = this.height / 2.0F;
-		this.entityWalks = false;
+	}
+
+	protected boolean canTriggerWalking() {
+		return false;
 	}
 
 	protected void entityInit() {
 	}
 
-	public AxisAlignedBB func_383_b_(Entity var1) {
+	public AxisAlignedBB getCollisionBox(Entity var1) {
 		return var1.boundingBox;
 	}
 
@@ -59,11 +62,11 @@ public class EntityBoat extends Entity {
 
 	public boolean attackEntityFrom(Entity var1, int var2) {
 		if(!this.worldObj.multiplayerWorld && !this.isDead) {
-			this.field_808_c = -this.field_808_c;
-			this.field_806_b = 10;
-			this.field_807_a += var2 * 10;
+			this.boatRockDirection = -this.boatRockDirection;
+			this.boatTimeSinceHit = 10;
+			this.boatCurrentDamage += var2 * 10;
 			this.setBeenAttacked();
-			if(this.field_807_a > 40) {
+			if(this.boatCurrentDamage > 40) {
 				int var3;
 				for(var3 = 0; var3 < 3; ++var3) {
 					this.dropItemWithOffset(Block.planks.blockID, 1, 0.0F);
@@ -83,9 +86,9 @@ public class EntityBoat extends Entity {
 	}
 
 	public void performHurtAnimation() {
-		this.field_808_c = -this.field_808_c;
-		this.field_806_b = 10;
-		this.field_807_a += this.field_807_a * 10;
+		this.boatRockDirection = -this.boatRockDirection;
+		this.boatTimeSinceHit = 10;
+		this.boatCurrentDamage += this.boatCurrentDamage * 10;
 	}
 
 	public boolean canBeCollidedWith() {
@@ -112,12 +115,12 @@ public class EntityBoat extends Entity {
 
 	public void onUpdate() {
 		super.onUpdate();
-		if(this.field_806_b > 0) {
-			--this.field_806_b;
+		if(this.boatTimeSinceHit > 0) {
+			--this.boatTimeSinceHit;
 		}
 
-		if(this.field_807_a > 0) {
-			--this.field_807_a;
+		if(this.boatCurrentDamage > 0) {
+			--this.boatCurrentDamage;
 		}
 
 		this.prevPosX = this.posX;

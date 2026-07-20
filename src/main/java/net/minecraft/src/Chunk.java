@@ -71,7 +71,7 @@ public class Chunk {
 			for(int var3 = 0; var3 < 16; ++var3) {
 				int var4 = 127;
 
-				for(int var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.lightOpacity[this.blocks[var5 + var4 - 1]] == 0; --var4) {
+				for(int var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.lightOpacity[this.blocks[var5 + var4 - 1] & 255] == 0; --var4) {
 				}
 
 				this.heightMap[var3 << 4 | var2] = (byte)var4;
@@ -95,7 +95,7 @@ public class Chunk {
 				int var4 = 127;
 
 				int var5;
-				for(var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.lightOpacity[this.blocks[var5 + var4 - 1]] == 0; --var4) {
+				for(var5 = var2 << 11 | var3 << 7; var4 > 0 && Block.lightOpacity[this.blocks[var5 + var4 - 1] & 255] == 0; --var4) {
 				}
 
 				this.heightMap[var3 << 4 | var2] = (byte)var4;
@@ -108,7 +108,7 @@ public class Chunk {
 					int var7 = 127;
 
 					do {
-						var6 -= Block.lightOpacity[this.blocks[var5 + var7]];
+						var6 -= Block.lightOpacity[this.blocks[var5 + var7] & 255];
 						if(var6 > 0) {
 							this.skylightMap.setNibble(var2, var7, var3, var6);
 						}
@@ -162,7 +162,7 @@ public class Chunk {
 			var5 = var2;
 		}
 
-		for(int var6 = var1 << 11 | var3 << 7; var5 > 0 && Block.lightOpacity[this.blocks[var6 + var5 - 1]] == 0; --var5) {
+		for(int var6 = var1 << 11 | var3 << 7; var5 > 0 && Block.lightOpacity[this.blocks[var6 + var5 - 1] & 255] == 0; --var5) {
 		}
 
 		if(var5 != var4) {
@@ -230,7 +230,7 @@ public class Chunk {
 	}
 
 	public int getBlockID(int var1, int var2, int var3) {
-		return this.blocks[var1 << 11 | var3 << 7 | var2];
+		return this.blocks[var1 << 11 | var3 << 7 | var2] & 255;
 	}
 
 	public boolean setBlockIDWithMetadata(int var1, int var2, int var3, int var4, int var5) {
@@ -242,14 +242,14 @@ public class Chunk {
 		} else {
 			int var9 = this.xPosition * 16 + var1;
 			int var10 = this.zPosition * 16 + var3;
-			this.blocks[var1 << 11 | var3 << 7 | var2] = var6;
+			this.blocks[var1 << 11 | var3 << 7 | var2] = (byte)(var6 & 255);
 			if(var8 != 0 && !this.worldObj.multiplayerWorld) {
 				Block.blocksList[var8].onBlockRemoval(this.worldObj, var9, var2, var10);
 			}
 
 			this.data.setNibble(var1, var2, var3, var5);
 			if(!this.worldObj.worldProvider.field_6478_e) {
-				if(Block.lightOpacity[var6] != 0) {
+				if(Block.lightOpacity[var6 & 255] != 0) {
 					if(var2 >= var7) {
 						this.func_1003_g(var1, var2 + 1, var3);
 					}
@@ -281,13 +281,13 @@ public class Chunk {
 		} else {
 			int var8 = this.xPosition * 16 + var1;
 			int var9 = this.zPosition * 16 + var3;
-			this.blocks[var1 << 11 | var3 << 7 | var2] = var5;
+			this.blocks[var1 << 11 | var3 << 7 | var2] = (byte)(var5 & 255);
 			if(var7 != 0) {
 				Block.blocksList[var7].onBlockRemoval(this.worldObj, var8, var2, var9);
 			}
 
 			this.data.setNibble(var1, var2, var3, 0);
-			if(Block.lightOpacity[var5] != 0) {
+			if(Block.lightOpacity[var5 & 255] != 0) {
 				if(var2 >= var6) {
 					this.func_1003_g(var1, var2 + 1, var3);
 				}
@@ -352,12 +352,12 @@ public class Chunk {
 	public void addEntity(Entity var1) {
 		this.hasEntities = true;
 		int var2 = MathHelper.floor_double(var1.posX / 16.0D);
-			int var3 = MathHelper.floor_double(var1.posZ / 16.0D);
-			if(var2 != this.xPosition || var3 != this.zPosition) {
-				System.out.println("Wrong location! " + var1);
-			}
+		int var3 = MathHelper.floor_double(var1.posZ / 16.0D);
+		if(var2 != this.xPosition || var3 != this.zPosition) {
+			System.out.println("Wrong location! " + var1);
+		}
 
-			int var4 = MathHelper.floor_double(var1.posY / 16.0D);
+		int var4 = MathHelper.floor_double(var1.posY / 16.0D);
 		if(var4 < 0) {
 			var4 = 0;
 		}
@@ -523,10 +523,10 @@ public class Chunk {
 			return false;
 		} else {
 			if(var1) {
-				if(this.hasEntities && this.worldObj.func_22139_r() != this.lastSaveTime) {
+				if(this.hasEntities && this.worldObj.getWorldTime() != this.lastSaveTime) {
 					return true;
 				}
-			} else if(this.hasEntities && this.worldObj.func_22139_r() >= this.lastSaveTime + 600L) {
+			} else if(this.hasEntities && this.worldObj.getWorldTime() >= this.lastSaveTime + 600L) {
 				return true;
 			}
 
@@ -581,10 +581,14 @@ public class Chunk {
 	}
 
 	public EaglercraftRandom func_997_a(long var1) {
-		return new EaglercraftRandom(this.worldObj.func_22138_q() + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ var1);
+		return new EaglercraftRandom(this.worldObj.getRandomSeed() + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ var1);
 	}
 
 	public boolean func_21167_h() {
 		return false;
+	}
+
+	public void func_25124_i() {
+		ChunkBlockMap.func_26002_a(this.blocks);
 	}
 }

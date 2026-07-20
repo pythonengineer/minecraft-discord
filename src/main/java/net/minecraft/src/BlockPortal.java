@@ -72,7 +72,7 @@ public class BlockPortal extends BlockBreakable {
 				}
 			}
 
-			var1.field_1043_h = true;
+			var1.editingBlocks = true;
 
 			for(var7 = 0; var7 < 2; ++var7) {
 				for(var8 = 0; var8 < 3; ++var8) {
@@ -80,7 +80,7 @@ public class BlockPortal extends BlockBreakable {
 				}
 			}
 
-			var1.field_1043_h = false;
+			var1.editingBlocks = false;
 			return true;
 		}
 	}

@@ -11,6 +11,17 @@ ambient/cave/cave10.ogg
 ambient/cave/cave11.ogg
 ambient/cave/cave12.ogg
 ambient/cave/cave13.ogg
+ambient/weather/rain1.ogg
+ambient/weather/rain2.ogg
+ambient/weather/rain3.ogg
+ambient/weather/rain4.ogg
+ambient/weather/rain5.ogg
+ambient/weather/rain6.ogg
+ambient/weather/rain7.ogg
+ambient/weather/rain8.ogg
+ambient/weather/thunder1.ogg
+ambient/weather/thunder2.ogg
+ambient/weather/thunder3.ogg
 fire/fire.ogg
 fire/ignite.ogg
 liquid/lava.ogg

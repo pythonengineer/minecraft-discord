@@ -9,7 +9,7 @@ public class Item {
 	public static Item pickaxeSteel = (new ItemPickaxe(1, EnumToolMaterial.IRON)).setIconCoord(2, 6).setItemName("pickaxeIron");
 	public static Item axeSteel = (new ItemAxe(2, EnumToolMaterial.IRON)).setIconCoord(2, 7).setItemName("hatchetIron");
 	public static Item flintAndSteel = (new ItemFlintAndSteel(3)).setIconCoord(5, 0).setItemName("flintAndSteel");
-	public static Item appleRed = (new ItemFood(4, 4)).setIconCoord(10, 0).setItemName("apple");
+	public static Item appleRed = (new ItemFood(4, 4, false)).setIconCoord(10, 0).setItemName("apple");
 	public static Item bow = (new ItemBow(5)).setIconCoord(5, 1).setItemName("bow");
 	public static Item arrow = (new Item(6)).setIconCoord(5, 2).setItemName("arrow");
 	public static Item coal = (new ItemCoal(7)).setIconCoord(7, 0).setItemName("coal");
@@ -46,7 +46,7 @@ public class Item {
 	public static Item hoeGold = (new ItemHoe(38, EnumToolMaterial.GOLD)).setIconCoord(4, 8).setItemName("hoeGold");
 	public static Item seeds = (new ItemSeeds(39, Block.crops.blockID)).setIconCoord(9, 0).setItemName("seeds");
 	public static Item wheat = (new Item(40)).setIconCoord(9, 1).setItemName("wheat");
-	public static Item bread = (new ItemFood(41, 5)).setIconCoord(9, 2).setItemName("bread");
+	public static Item bread = (new ItemFood(41, 5, false)).setIconCoord(9, 2).setItemName("bread");
 	public static Item helmetLeather = (new ItemArmor(42, 0, 0, 0)).setIconCoord(0, 0).setItemName("helmetCloth");
 	public static Item plateLeather = (new ItemArmor(43, 0, 0, 1)).setIconCoord(0, 1).setItemName("chestplateCloth");
 	public static Item legsLeather = (new ItemArmor(44, 0, 0, 2)).setIconCoord(0, 2).setItemName("leggingsCloth");
@@ -68,15 +68,15 @@ public class Item {
 	public static Item legsGold = (new ItemArmor(60, 1, 4, 2)).setIconCoord(4, 2).setItemName("leggingsGold");
 	public static Item bootsGold = (new ItemArmor(61, 1, 4, 3)).setIconCoord(4, 3).setItemName("bootsGold");
 	public static Item flint = (new Item(62)).setIconCoord(6, 0).setItemName("flint");
-	public static Item porkRaw = (new ItemFood(63, 3)).setIconCoord(7, 5).setItemName("porkchopRaw");
-	public static Item porkCooked = (new ItemFood(64, 8)).setIconCoord(8, 5).setItemName("porkchopCooked");
+	public static Item porkRaw = (new ItemFood(63, 3, true)).setIconCoord(7, 5).setItemName("porkchopRaw");
+	public static Item porkCooked = (new ItemFood(64, 8, true)).setIconCoord(8, 5).setItemName("porkchopCooked");
 	public static Item painting = (new ItemPainting(65)).setIconCoord(10, 1).setItemName("painting");
-	public static Item appleGold = (new ItemFood(66, 42)).setIconCoord(11, 0).setItemName("appleGold");
+	public static Item appleGold = (new ItemFood(66, 42, false)).setIconCoord(11, 0).setItemName("appleGold");
 	public static Item sign = (new ItemSign(67)).setIconCoord(10, 2).setItemName("sign");
 	public static Item doorWood = (new ItemDoor(68, Material.wood)).setIconCoord(11, 2).setItemName("doorWood");
 	public static Item bucketEmpty = (new ItemBucket(69, 0)).setIconCoord(10, 4).setItemName("bucket");
-	public static Item bucketWater = (new ItemBucket(70, Block.waterStill.blockID)).setIconCoord(11, 4).setItemName("bucketWater").setContainerItem(bucketEmpty);
-	public static Item bucketLava = (new ItemBucket(71, Block.lavaStill.blockID)).setIconCoord(12, 4).setItemName("bucketLava").setContainerItem(bucketEmpty);
+	public static Item bucketWater = (new ItemBucket(70, Block.waterMoving.blockID)).setIconCoord(11, 4).setItemName("bucketWater").setContainerItem(bucketEmpty);
+	public static Item bucketLava = (new ItemBucket(71, Block.lavaMoving.blockID)).setIconCoord(12, 4).setItemName("bucketLava").setContainerItem(bucketEmpty);
 	public static Item minecartEmpty = (new ItemMinecart(72, 0)).setIconCoord(7, 8).setItemName("minecart");
 	public static Item saddle = (new ItemSaddle(73)).setIconCoord(8, 6).setItemName("saddle");
 	public static Item doorSteel = (new ItemDoor(74, Material.iron)).setIconCoord(12, 2).setItemName("doorIron");
@@ -98,19 +98,20 @@ public class Item {
 	public static Item fishingRod = (new ItemFishingRod(90)).setIconCoord(5, 4).setItemName("fishingRod");
 	public static Item pocketSundial = (new Item(91)).setIconCoord(6, 4).setItemName("clock");
 	public static Item lightStoneDust = (new Item(92)).setIconCoord(9, 4).setItemName("yellowDust");
-	public static Item fishRaw = (new ItemFood(93, 2)).setIconCoord(9, 5).setItemName("fishRaw");
-	public static Item fishCooked = (new ItemFood(94, 5)).setIconCoord(10, 5).setItemName("fishCooked");
+	public static Item fishRaw = (new ItemFood(93, 2, false)).setIconCoord(9, 5).setItemName("fishRaw");
+	public static Item fishCooked = (new ItemFood(94, 5, false)).setIconCoord(10, 5).setItemName("fishCooked");
 	public static Item dyePowder = (new ItemDye(95)).setIconCoord(14, 4).setItemName("dyePowder");
 	public static Item bone = (new Item(96)).setIconCoord(12, 1).setItemName("bone").setFull3D();
 	public static Item sugar = (new Item(97)).setIconCoord(13, 0).setItemName("sugar").setFull3D();
 	public static Item cake = (new ItemReed(98, Block.cake)).setMaxStackSize(1).setIconCoord(13, 1).setItemName("cake");
-	public static Item field_22019_aY = (new ItemBed(99)).setMaxStackSize(1).setIconCoord(13, 2).setItemName("bed");
-	public static Item field_22018_aZ = (new ItemReed(100, Block.field_22021_bh)).setIconCoord(6, 5).setItemName("diode");
+	public static Item bed = (new ItemBed(99)).setMaxStackSize(1).setIconCoord(13, 2).setItemName("bed");
+	public static Item redstoneRepeater = (new ItemReed(100, Block.redstoneRepeaterIdle)).setIconCoord(6, 5).setItemName("diode");
+	public static Item cookie = (new ItemCookie(101, 1, false, 8)).setIconCoord(12, 5).setItemName("cookie");
 	public static Item record13 = (new ItemRecord(2000, "13")).setIconCoord(0, 15).setItemName("record");
 	public static Item recordCat = (new ItemRecord(2001, "cat")).setIconCoord(1, 15).setItemName("record");
 	public final int shiftedIndex;
 	protected int maxStackSize = 64;
-	protected int maxDamage = 32;
+	private int maxDamage = 0;
 	protected int iconIndex;
 	protected boolean bFull3D = false;
 	protected boolean hasSubtypes = false;
@@ -141,8 +142,12 @@ public class Item {
 		return this;
 	}
 
-	public int getIconIndex(ItemStack var1) {
+	public int func_27009_a(int var1) {
 		return this.iconIndex;
+	}
+
+	public final int getIconIndex(ItemStack var1) {
+		return this.func_27009_a(var1.getItemDamage());
 	}
 
 	public boolean onItemUse(ItemStack var1, EntityPlayer var2, World var3, int var4, int var5, int var6, int var7) {
@@ -183,10 +188,16 @@ public class Item {
 		return this;
 	}
 
-	public void hitEntity(ItemStack var1, EntityLiving var2) {
+	public boolean func_25007_g() {
+		return this.maxDamage > 0 && !this.hasSubtypes;
 	}
 
-	public void hitBlock(ItemStack var1, int var2, int var3, int var4, int var5) {
+	public boolean hitEntity(ItemStack var1, EntityLiving var2, EntityLiving var3) {
+		return false;
+	}
+
+	public boolean func_25008_a(ItemStack var1, int var2, int var3, int var4, int var5, EntityLiving var6) {
+		return false;
 	}
 
 	public int getDamageVsEntity(Entity var1) {
@@ -239,11 +250,23 @@ public class Item {
 		return this.containerItem;
 	}
 
-	public boolean func_21014_i() {
+	public boolean hasContainerItem() {
 		return this.containerItem != null;
+	}
+
+	public String func_25009_k() {
+		return StatCollector.translateToLocal(this.getItemName() + ".name");
+	}
+
+	public int func_27010_f(int var1) {
+		return 16777215;
 	}
 
     public boolean shouldUseOnTouchEagler(ItemStack itemStack) {
         return false;
-    }
+	}
+
+	static {
+		StatList.func_25151_b();
+	}
 }

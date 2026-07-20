@@ -37,6 +37,10 @@ public class EntityPlayerSP extends EntityPlayer {
 	}
 
 	public void onLivingUpdate() {
+		if(!this.mc.field_25001_G.func_27183_a(AchievementList.field_25195_b)) {
+			this.mc.field_25002_t.func_27101_b(AchievementList.field_25195_b);
+		}
+
 		this.prevTimeInPortal = this.timeInPortal;
 		if(this.inPortal) {
 			if(this.timeInPortal == 0.0F) {
@@ -129,7 +133,7 @@ public class EntityPlayerSP extends EntityPlayer {
 	}
 
 	public boolean isSneaking() {
-		return this.movementInput.sneak;
+		return this.movementInput.sneak && !this.sleeping;
 	}
 
 	public void setInPortal() {
@@ -155,13 +159,31 @@ public class EntityPlayerSP extends EntityPlayer {
 	}
 
 	public void respawnPlayer() {
-		this.mc.respawn();
+		this.mc.respawn(false);
 	}
 
 	public void func_6420_o() {
 	}
 
-	public void func_22055_b(String var1) {
+	public void addChatMessage(String var1) {
 		this.mc.ingameGUI.func_22064_c(var1);
+	}
+
+	public void addStat(StatBase var1, int var2) {
+		if(var1 != null) {
+			if(var1.func_25067_a()) {
+				Achievement var3 = (Achievement)var1;
+				if(var3.field_25076_c == null || this.mc.field_25001_G.func_27183_a(var3.field_25076_c)) {
+					if(!this.mc.field_25001_G.func_27183_a(var3)) {
+						this.mc.field_25002_t.func_27102_a(var3);
+					}
+
+					this.mc.field_25001_G.func_25100_a(var1, var2);
+				}
+			} else {
+				this.mc.field_25001_G.func_25100_a(var1, var2);
+			}
+
+		}
 	}
 }

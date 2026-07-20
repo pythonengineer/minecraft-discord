@@ -33,7 +33,7 @@ public class RegionFile {
     	        } catch (Exception e) {
                     EagRuntime.debugPrintStackTrace(e);
                     this.field_22219_c = new RandomAccessMemoryFile(new byte[65536], 0);
-    	        }
+                }
 	        } else {
                 this.field_22219_c = new RandomAccessMemoryFile(new byte[65536], 0);
 	        }

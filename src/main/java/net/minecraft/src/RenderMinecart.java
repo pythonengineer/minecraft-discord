@@ -44,14 +44,14 @@ public class RenderMinecart extends Render {
 		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
 		GL11.glRotatef(180.0F - var8, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(-var19, 0.0F, 0.0F, 1.0F);
-		float var23 = (float)var1.field_20911_b - var9;
-		float var24 = (float)var1.field_20910_a - var9;
+		float var23 = (float)var1.minecartTimeSinceHit - var9;
+		float var24 = (float)var1.minecartCurrentDamage - var9;
 		if(var24 < 0.0F) {
 			var24 = 0.0F;
 		}
 
 		if(var23 > 0.0F) {
-			GL11.glRotatef(MathHelper.sin(var23) * var23 * var24 / 10.0F * (float)var1.field_20912_c, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(MathHelper.sin(var23) * var23 * var24 / 10.0F * (float)var1.minecartRockDirection, 1.0F, 0.0F, 0.0F);
 		}
 
 		if(var1.minecartType != 0) {
@@ -61,9 +61,9 @@ public class RenderMinecart extends Render {
 			GL11.glTranslatef(0.0F, 5.0F / 16.0F, 0.0F);
 			GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
 			if(var1.minecartType == 1) {
-				(new RenderBlocks()).func_1227_a(Block.crate, 0);
+				(new RenderBlocks()).renderBlockOnInventory(Block.crate, 0);
 			} else if(var1.minecartType == 2) {
-				(new RenderBlocks()).func_1227_a(Block.stoneOvenIdle, 0);
+				(new RenderBlocks()).renderBlockOnInventory(Block.stoneOvenIdle, 0);
 			}
 
 			GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);

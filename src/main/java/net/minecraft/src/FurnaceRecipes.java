@@ -31,4 +31,8 @@ public class FurnaceRecipes {
 	public ItemStack getSmeltingResult(int var1) {
 		return (ItemStack)this.smeltingList.get(Integer.valueOf(var1));
 	}
+
+	public Map func_25194_b() {
+		return this.smeltingList;
+	}
 }

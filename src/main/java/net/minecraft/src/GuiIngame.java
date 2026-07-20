@@ -36,7 +36,7 @@ public class GuiIngame extends Gui {
 		FontRenderer var8 = this.mc.fontRenderer;
 		this.mc.entityRenderer.func_905_b();
 		GL11.glEnable(GL11.GL_BLEND);
-		if(Minecraft.func_22001_u()) {
+		if(Minecraft.isFancyGraphicsEnabled()) {
 			this.renderVignette(this.mc.thePlayer.getEntityBrightness(var1), var6, var7);
 		}
 
@@ -169,6 +169,32 @@ public class GuiIngame extends Gui {
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
 
+        if(this.recordPlayingUpFor > 0) {
+            float var25 = (float)this.recordPlayingUpFor - var1;
+            var16 = (int)(var25 * 256.0F / 20.0F);
+            if(var16 > 255) {
+                var16 = 255;
+            }
+
+            if(var16 > 0) {
+                GL11.glPushMatrix();
+                GL11.glTranslatef((float)(var6 / 2), (float)(var7 - 48), 0.0F);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                var17 = 16777215;
+                if(this.field_22065_l) {
+                    var17 = MathHelper.HSBtoRGB(var25 / 50.0F, 0.7F, 0.6F) & 16777215;
+                }
+
+                var8.drawString(this.recordPlaying, -var8.getStringWidth(this.recordPlaying) / 2, -4, var17 + (var16 << 24));
+                GL11.glDisable(GL11.GL_BLEND);
+                GL11.glPopMatrix();
+            }
+        }
+
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        drawEaglerInteractButton(var5);
+
 		onEndHotbarDraw();
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -197,7 +223,7 @@ public class GuiIngame extends Gui {
 
 		String var23;
 		if(this.mc.gameSettings.showDebugInfo) {
-			var8.drawStringWithShadow("Minecraft Beta 1.3_01 (" + this.mc.debug + ")", 2, 2, 16777215);
+			var8.drawStringWithShadow("Minecraft Beta 1.5_01 (" + this.mc.debug + ")", 2, 2, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6241_m(), 2, 12, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6262_n(), 2, 22, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6245_o(), 2, 32, 16777215);
@@ -206,30 +232,7 @@ public class GuiIngame extends Gui {
 			this.drawString(var8, "y: " + this.mc.thePlayer.posY, 2, 72, 14737632);
 			this.drawString(var8, "z: " + this.mc.thePlayer.posZ, 2, 80, 14737632);
 		} else {
-			var8.drawStringWithShadow("Minecraft Beta 1.3_01", 2, 2, 16777215);
-		}
-
-		if(this.recordPlayingUpFor > 0) {
-			float var25 = (float)this.recordPlayingUpFor - var1;
-			var16 = (int)(var25 * 256.0F / 20.0F);
-			if(var16 > 255) {
-				var16 = 255;
-			}
-
-			if(var16 > 0) {
-				GL11.glPushMatrix();
-				GL11.glTranslatef((float)(var6 / 2), (float)(var7 - 48), 0.0F);
-				GL11.glEnable(GL11.GL_BLEND);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				var17 = 16777215;
-				if(this.field_22065_l) {
-					var17 = MathHelper.HSBtoRGB(var25 / 50.0F, 0.7F, 0.6F) & 16777215;
-				}
-
-				var8.drawString(this.recordPlaying, -var8.getStringWidth(this.recordPlaying) / 2, -4, var17 + (var16 << 24));
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glPopMatrix();
-			}
+			var8.drawStringWithShadow("Minecraft Beta 1.5_01", 2, 2, 16777215);
 		}
 
 		onEndTouchGUI();
@@ -429,9 +432,43 @@ public class GuiIngame extends Gui {
 	private int currentHotbarSlotTouch = -1;
 	private long hotbarSlotTouchStart = -1l;
 	private boolean hotbarSlotTouchAlreadySelected = false;
+    private int interactButtonX = -1;
+    private int interactButtonY = -1;
+    private int interactButtonW = -1;
+    private int interactButtonH = -1;
 	private int touchVPosX = -1;
 	private int touchVPosY = -1;
 	private int touchEventUID = -1;
+
+    private void drawEaglerInteractButton(ScaledResolution parScaledResolution) {
+        if (PointerInputAbstraction.isTouchMode() && mc.objectMouseOver != null
+                && mc.objectMouseOver.typeOfHit == EnumMovingObjectType.ENTITY) {
+            int scale = parScaledResolution.getScaleFactor();
+            interactButtonW = 118 * scale;
+            interactButtonH = 20 * scale;
+            int xx = (parScaledResolution.getScaledWidth() - 118) / 2;
+            int yy = parScaledResolution.getScaledHeight() - 70;
+            interactButtonX = xx * scale;
+            interactButtonY = yy * scale;
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, TouchOverlayRenderer.spriteSheet);
+            boolean hover = touchVPosX >= interactButtonX && touchVPosY >= interactButtonY
+                    && touchVPosX < interactButtonX + interactButtonW && touchVPosY < interactButtonY + interactButtonH;
+            float f = MathHelper.clamp_float(1.0f, 0.0f, 1.0f);
+            if (f > 0.0f) {
+                GL11.glColor4f(1.0f, 1.0f, 1.0f, f);
+                drawTexturedModalRect(xx, yy, 0, hover ? 216 : 236, 118, 20);
+                GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                drawCenteredString(mc.fontRenderer, StringTranslate.getInstance().translateKey("touch.interact.entity"),
+                        parScaledResolution.getScaledWidth() / 2, yy + 6,
+                        (hover ? 16777120 : 14737632) | ((int) (f * 255.0f) << 24));
+            }
+        } else {
+            interactButtonX = -1;
+            interactButtonY = -1;
+            interactButtonW = -1;
+            interactButtonH = -1;
+        }
+    }
 
 	private int applyTouchHotbarTransformX(int posX, boolean scaled) {
 		if(scaled) {
@@ -509,6 +546,12 @@ public class GuiIngame extends Gui {
 				}
 				return true;
 			}
+            if (pointX >= interactButtonX && pointY >= interactButtonY && pointX < interactButtonX + interactButtonW
+                    && pointY < interactButtonY + interactButtonH) {
+                touchEventUID = uid;
+                mc.clickMouse(1);
+                return true;
+            }
 		}
 		return false;
 	}

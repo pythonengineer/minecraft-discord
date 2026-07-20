@@ -7,18 +7,18 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class GuiCreateWorld extends GuiScreen {
 	private GuiScreen field_22131_a;
-	private GuiDisableButton field_22134_h;
-	private GuiDisableButton field_22133_i;
-	private String field_22132_k;
-	private boolean field_22130_l;
+	private GuiTextField textboxWorldName;
+	private GuiTextField textboxSeed;
+	private String folderName;
+	private boolean createClicked;
 
 	public GuiCreateWorld(GuiScreen var1) {
 		this.field_22131_a = var1;
 	}
 
 	public void updateScreen() {
-		this.field_22134_h.func_22070_b();
-		this.field_22133_i.func_22070_b();
+		this.textboxWorldName.updateCursorCounter();
+		this.textboxSeed.updateCursorCounter();
 	}
 
 	public void initGui() {
@@ -27,30 +27,36 @@ public class GuiCreateWorld extends GuiScreen {
 		this.controlList.clear();
 		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, var1.translateKey("selectWorld.create")));
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 12, var1.translateKey("gui.cancel")));
-		this.field_22134_h = new GuiDisableButton(this.fontRenderer, this.width / 2 - 100, 60, 200, 20, var1.translateKey("selectWorld.newWorld"));
-		this.field_22134_h.field_22082_a = true;
-		this.field_22134_h.func_22066_a(32);
-		this.field_22133_i = new GuiDisableButton(this.fontRenderer, this.width / 2 - 100, 116, 200, 20, "");
+		this.textboxWorldName = new GuiTextField(this, this.fontRenderer, this.width / 2 - 100, 60, 200, 20, var1.translateKey("selectWorld.newWorld"));
+		this.textboxWorldName.isFocused = true;
+		this.textboxWorldName.setMaxStringLength(32);
+		this.textboxSeed = new GuiTextField(this, this.fontRenderer, this.width / 2 - 100, 116, 200, 20, "");
 		this.func_22129_j();
 	}
 
 	private void func_22129_j() {
-		this.field_22132_k = this.field_22134_h.func_22071_a().trim();
-		char[] var1 = FontAllowedCharacters.field_22286_b;
+		this.folderName = this.textboxWorldName.getText().trim();
+		char[] var1 = ChatAllowedCharacters.field_22286_b;
 		int var2 = var1.length;
 
 		for(int var3 = 0; var3 < var2; ++var3) {
 			char var4 = var1[var3];
-			this.field_22132_k = this.field_22132_k.replace(var4, '_');
+			this.folderName = this.folderName.replace(var4, '_');
 		}
 
-		if(MathHelper.func_22282_a(this.field_22132_k)) {
-			this.field_22132_k = "World";
+		if(MathHelper.stringNullOrLengthZero(this.folderName)) {
+			this.folderName = "World";
 		}
 
-		for(ISaveFormat var5 = this.mc.func_22004_c(); var5.func_22173_b(this.field_22132_k) != null; this.field_22132_k = this.field_22132_k + "-") {
+		this.folderName = func_25097_a(this.mc.getSaveLoader(), this.folderName);
+	}
+
+	public static String func_25097_a(ISaveFormat var0, String var1) {
+		while(var0.func_22173_b(var1) != null) {
+			var1 = var1 + "-";
 		}
 
+		return var1;
 	}
 
 	public void onGuiClosed() {
@@ -63,14 +69,14 @@ public class GuiCreateWorld extends GuiScreen {
 				this.mc.displayGuiScreen(this.field_22131_a);
 			} else if(var1.id == 0) {
 				this.mc.displayGuiScreen((GuiScreen)null);
-				if(this.field_22130_l) {
+				if(this.createClicked) {
 					return;
 				}
 
-				this.field_22130_l = true;
+				this.createClicked = true;
 				long var2 = (new EaglercraftRandom()).nextLong();
-				String var4 = this.field_22133_i.func_22071_a();
-				if(!MathHelper.func_22282_a(var4)) {
+				String var4 = this.textboxSeed.getText();
+				if(!MathHelper.stringNullOrLengthZero(var4)) {
 					try {
 						long var5 = Long.parseLong(var4);
 						if(var5 != 0L) {
@@ -82,7 +88,7 @@ public class GuiCreateWorld extends GuiScreen {
 				}
 
 				this.mc.playerController = new PlayerControllerSP(this.mc);
-				this.mc.startWorld(this.field_22132_k, this.field_22134_h.func_22071_a(), var2);
+				this.mc.startWorld(this.folderName, this.textboxWorldName.getText(), var2);
 				this.mc.displayGuiScreen((GuiScreen)null);
 			}
 
@@ -90,20 +96,24 @@ public class GuiCreateWorld extends GuiScreen {
 	}
 
 	protected void keyTyped(char var1, int var2) {
-		this.field_22134_h.func_22072_a(var1, var2);
-		this.field_22133_i.func_22072_a(var1, var2);
+		if(this.textboxWorldName.isFocused) {
+			this.textboxWorldName.textboxKeyTyped(var1, var2);
+		} else {
+			this.textboxSeed.textboxKeyTyped(var1, var2);
+		}
+
 		if(var1 == 13 || var2 == 28) {
 			this.actionPerformed((GuiButton)this.controlList.get(0));
 		}
 
-		((GuiButton)this.controlList.get(0)).enabled = this.field_22134_h.func_22071_a().length() > 0;
+		((GuiButton)this.controlList.get(0)).enabled = this.textboxWorldName.getText().length() > 0;
 		this.func_22129_j();
 	}
 
 	protected void mouseClicked(int var1, int var2, int var3) {
 		super.mouseClicked(var1, var2, var3);
-		this.field_22134_h.func_22069_a(var1, var2, var3);
-		this.field_22133_i.func_22069_a(var1, var2, var3);
+		this.textboxWorldName.mouseClicked(var1, var2, var3);
+		this.textboxSeed.mouseClicked(var1, var2, var3);
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
@@ -111,12 +121,23 @@ public class GuiCreateWorld extends GuiScreen {
 		this.drawDefaultBackground();
 		this.drawCenteredString(this.fontRenderer, var4.translateKey("selectWorld.create"), this.width / 2, this.height / 4 - 60 + 20, 16777215);
 		this.drawString(this.fontRenderer, var4.translateKey("selectWorld.enterName"), this.width / 2 - 100, 47, 10526880);
-		this.drawString(this.fontRenderer, var4.translateKey("selectWorld.resultFolder") + " " + this.field_22132_k, this.width / 2 - 100, 85, 10526880);
+		this.drawString(this.fontRenderer, var4.translateKey("selectWorld.resultFolder") + " " + this.folderName, this.width / 2 - 100, 85, 10526880);
 		this.drawString(this.fontRenderer, var4.translateKey("selectWorld.enterSeed"), this.width / 2 - 100, 104, 10526880);
 		this.drawString(this.fontRenderer, var4.translateKey("selectWorld.seedInfo"), this.width / 2 - 100, 140, 10526880);
-		this.field_22134_h.func_22067_c();
-		this.field_22133_i.func_22067_c();
+		this.textboxWorldName.drawTextBox();
+		this.textboxSeed.drawTextBox();
 		super.drawScreen(var1, var2, var3);
+	}
+
+	public void func_27108_j() {
+		if(this.textboxWorldName.isFocused) {
+			this.textboxWorldName.func_27106_a(false);
+			this.textboxSeed.func_27106_a(true);
+		} else {
+			this.textboxWorldName.func_27106_a(true);
+			this.textboxSeed.func_27106_a(false);
+		}
+
 	}
 
     public void fireInputEvent(EnumInputEvent clipboardPaste, String param) {
@@ -126,19 +147,19 @@ public class GuiCreateWorld extends GuiScreen {
         case CLIPBOARD_PASTE:
             String string = GuiScreen.getClipboardString();
             for (char c : string.toCharArray()) {
-                if(FontAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.field_22134_h.field_22075_h.length() < this.field_22134_h.field_22074_i || this.field_22134_h.field_22074_i == 0)) {
-                    this.field_22134_h.func_22068_a(this.field_22134_h.field_22075_h + c);
+                if(ChatAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.textboxWorldName.getText().length() < this.textboxWorldName.maxStringLength || this.textboxWorldName.maxStringLength == 0)) {
+                    this.textboxWorldName.setText(this.textboxWorldName.getText() + c);
                 }
-                if(FontAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.field_22133_i.field_22075_h.length() < this.field_22133_i.field_22074_i || this.field_22133_i.field_22074_i == 0)) {
-                    this.field_22133_i.func_22068_a(this.field_22133_i.field_22075_h + c);
+                if(ChatAllowedCharacters.allowedCharacters.indexOf(c) >= 0 && (this.textboxSeed.getText().length() < this.textboxSeed.maxStringLength || this.textboxSeed.maxStringLength == 0)) {
+                    this.textboxSeed.setText(this.textboxSeed.getText() + c);
                 }
             }
 
-            ((GuiButton)this.controlList.get(0)).enabled = this.field_22134_h.func_22071_a().length() > 0;
+            ((GuiButton)this.controlList.get(0)).enabled = this.textboxWorldName.getText().length() > 0;
             this.func_22129_j();
             break;
         default:
             break;
         }
-    }
+	}
 }

@@ -45,9 +45,9 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 		boolean var1 = this.isSneaking();
 		if(var1 != this.field_9381_bG) {
 			if(var1) {
-				this.sendQueue.addToSendQueue(new Packet19(this, 1));
+				this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 1));
 			} else {
-				this.sendQueue.addToSendQueue(new Packet19(this, 2));
+				this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 2));
 			}
 
 			this.field_9381_bG = var1;
@@ -118,12 +118,12 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
 	public void swingItem() {
 		super.swingItem();
-		this.sendQueue.addToSendQueue(new Packet18ArmAnimation(this, 1));
+		this.sendQueue.addToSendQueue(new Packet18Animation(this, 1));
 	}
 
 	public void respawnPlayer() {
 		this.sendInventoryChanged();
-		this.sendQueue.addToSendQueue(new Packet9());
+		this.sendQueue.addToSendQueue(new Packet9Respawn());
 	}
 
 	protected void damageEntity(int var1) {
@@ -131,7 +131,7 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 	}
 
 	public void func_20059_m() {
-		this.sendQueue.addToSendQueue(new Packet101(this.craftingInventory.windowId));
+		this.sendQueue.addToSendQueue(new Packet101CloseWindow(this.craftingInventory.windowId));
 		this.inventory.setItemStack((ItemStack)null);
 		super.func_20059_m();
 	}
@@ -144,5 +144,23 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 			this.field_21093_bH = true;
 		}
 
+	}
+
+	public void addStat(StatBase var1, int var2) {
+		if(var1 != null) {
+			if(var1.field_27088_g) {
+				super.addStat(var1, var2);
+			}
+
+		}
+	}
+
+	public void func_27027_b(StatBase var1, int var2) {
+		if(var1 != null) {
+			if(!var1.field_27088_g) {
+				super.addStat(var1, var2);
+			}
+
+		}
 	}
 }

@@ -118,7 +118,7 @@ public class EmptyChunk extends Chunk {
 	}
 
 	public EaglercraftRandom func_997_a(long var1) {
-		return new EaglercraftRandom(this.worldObj.func_22138_q() + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ var1);
+		return new EaglercraftRandom(this.worldObj.getRandomSeed() + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ var1);
 	}
 
 	public boolean func_21167_h() {

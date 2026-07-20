@@ -4,7 +4,7 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 
 public class BlockCake extends Block {
 	protected BlockCake(int var1, int var2) {
-		super(var1, var2, Material.field_21150_y);
+		super(var1, var2, Material.cakeMaterial);
 		this.setTickOnLoad(true);
 	}
 
@@ -16,7 +16,7 @@ public class BlockCake extends Block {
 		this.setBlockBounds(var7, 0.0F, var6, 1.0F - var6, var8, 1.0F - var6);
 	}
 
-	public void func_237_e() {
+	public void setBlockBoundsForItemRender() {
 		float var1 = 1.0F / 16.0F;
 		float var2 = 0.5F;
 		this.setBlockBounds(var1, 0.0F, var1, 1.0F - var1, var2, 1.0F - var1);
@@ -55,15 +55,15 @@ public class BlockCake extends Block {
 	}
 
 	public boolean blockActivated(World var1, int var2, int var3, int var4, EntityPlayer var5) {
-		this.func_21029_c(var1, var2, var3, var4, var5);
+		this.eatCakeSlice(var1, var2, var3, var4, var5);
 		return true;
 	}
 
 	public void onBlockClicked(World var1, int var2, int var3, int var4, EntityPlayer var5) {
-		this.func_21029_c(var1, var2, var3, var4, var5);
+		this.eatCakeSlice(var1, var2, var3, var4, var5);
 	}
 
-	private void func_21029_c(World var1, int var2, int var3, int var4, EntityPlayer var5) {
+	private void eatCakeSlice(World var1, int var2, int var3, int var4, EntityPlayer var5) {
 		if(var5.health < 20) {
 			var5.heal(3);
 			int var6 = var1.getBlockMetadata(var2, var3, var4) + 1;

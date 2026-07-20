@@ -77,7 +77,7 @@ public class PlayerController {
 		return var8 > 0 && Block.blocksList[var8].blockActivated(var2, var4, var5, var6, var1) ? true : (var3 == null ? false : var3.useItem(var1, var2, var4, var5, var6, var7));
 	}
 
-	public EntityPlayer func_4087_b(World var1) {
+	public EntityPlayer createPlayer(World var1) {
 		return new EntityPlayerSP(this.mc, var1, this.mc.session, var1.worldProvider.worldType);
 	}
 
@@ -89,8 +89,8 @@ public class PlayerController {
 		var1.attackTargetEntityWithCurrentItem(var2);
 	}
 
-	public ItemStack func_20085_a(int var1, int var2, int var3, int mode, EntityPlayer var4) {
-		return var4.craftingInventory.func_20116_a(var2, var3, mode, var4);
+	public ItemStack func_27174_a(int var1, int var2, int var3, int var4, EntityPlayer var5) {
+		return var5.craftingInventory.func_27280_a(var2, var3, var4, var5);
 	}
 
 	public void func_20086_a(int var1, EntityPlayer var2) {

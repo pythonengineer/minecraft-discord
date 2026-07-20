@@ -8,14 +8,14 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 public class RenderManager {
 	private Map entityRenderMap = new HashMap();
 	public static RenderManager instance = new RenderManager();
-	private FontRenderer field_1218_p;
+	private FontRenderer fontRenderer;
 	public static double renderPosX;
 	public static double renderPosY;
 	public static double renderPosZ;
 	public RenderEngine renderEngine;
 	public ItemRenderer itemRenderer;
 	public World worldObj;
-	public EntityLiving field_22188_h;
+	public EntityLiving livingPlayer;
 	public float playerViewY;
 	public float playerViewX;
 	public GameSettings options;
@@ -28,21 +28,22 @@ public class RenderManager {
 		this.entityRenderMap.put(EntityPig.class, new RenderPig(new ModelPig(), new ModelPig(0.5F), 0.7F));
 		this.entityRenderMap.put(EntitySheep.class, new RenderSheep(new ModelSheep2(), new ModelSheep1(), 0.7F));
 		this.entityRenderMap.put(EntityCow.class, new RenderCow(new ModelCow(), 0.7F));
+		this.entityRenderMap.put(EntityWolf.class, new RenderWolf(new ModelWolf(), 0.5F));
 		this.entityRenderMap.put(EntityChicken.class, new RenderChicken(new ModelChicken(), 0.3F));
 		this.entityRenderMap.put(EntityCreeper.class, new RenderCreeper());
 		this.entityRenderMap.put(EntitySkeleton.class, new RenderBiped(new ModelSkeleton(), 0.5F));
 		this.entityRenderMap.put(EntityZombie.class, new RenderBiped(new ModelZombie(), 0.5F));
 		this.entityRenderMap.put(EntitySlime.class, new RenderSlime(new ModelSlime(16), new ModelSlime(0), 0.25F));
 		this.entityRenderMap.put(EntityPlayer.class, new RenderPlayer());
-		this.entityRenderMap.put(EntityZombieSimple.class, new RenderZombieSimple(new ModelZombie(), 0.5F, 6.0F));
+		this.entityRenderMap.put(EntityGiantZombie.class, new RenderGiantZombie(new ModelZombie(), 0.5F, 6.0F));
 		this.entityRenderMap.put(EntityGhast.class, new RenderGhast());
 		this.entityRenderMap.put(EntitySquid.class, new RenderSquid(new ModelSquid(), 0.7F));
 		this.entityRenderMap.put(EntityLiving.class, new RenderLiving(new ModelBiped(), 0.5F));
 		this.entityRenderMap.put(Entity.class, new RenderEntity());
 		this.entityRenderMap.put(EntityPainting.class, new RenderPainting());
 		this.entityRenderMap.put(EntityArrow.class, new RenderArrow());
-		this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball(Item.snowball.getIconIndex((ItemStack)null)));
-		this.entityRenderMap.put(EntityEgg.class, new RenderSnowball(Item.egg.getIconIndex((ItemStack)null)));
+		this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball(Item.snowball.func_27009_a(0)));
+		this.entityRenderMap.put(EntityEgg.class, new RenderSnowball(Item.egg.func_27009_a(0)));
 		this.entityRenderMap.put(EntityFireball.class, new RenderFireball());
 		this.entityRenderMap.put(EntityItem.class, new RenderItem());
 		this.entityRenderMap.put(EntityTNTPrimed.class, new RenderTNTPrimed());
@@ -50,6 +51,7 @@ public class RenderManager {
 		this.entityRenderMap.put(EntityMinecart.class, new RenderMinecart());
 		this.entityRenderMap.put(EntityBoat.class, new RenderBoat());
 		this.entityRenderMap.put(EntityFish.class, new RenderFish());
+		this.entityRenderMap.put(EntityLightningBolt.class, new RenderLightningBolt());
 		Iterator var1 = this.entityRenderMap.values().iterator();
 
 		while(var1.hasNext()) {
@@ -73,12 +75,12 @@ public class RenderManager {
 		return this.getEntityClassRenderObject(var1.getClass());
 	}
 
-	public void func_22187_a(World var1, RenderEngine var2, FontRenderer var3, EntityLiving var4, GameSettings var5, float var6) {
+	public void cacheActiveRenderInfo(World var1, RenderEngine var2, FontRenderer var3, EntityLiving var4, GameSettings var5, float var6) {
 		this.worldObj = var1;
 		this.renderEngine = var2;
 		this.options = var5;
-		this.field_22188_h = var4;
-		this.field_1218_p = var3;
+		this.livingPlayer = var4;
+		this.fontRenderer = var3;
 		this.playerViewY = var4.prevRotationYaw + (var4.rotationYaw - var4.prevRotationYaw) * var6;
 		this.playerViewX = var4.prevRotationPitch + (var4.rotationPitch - var4.prevRotationPitch) * var6;
 		this.field_1222_l = var4.lastTickPosX + (var4.posX - var4.lastTickPosX) * (double)var6;
@@ -117,6 +119,6 @@ public class RenderManager {
 	}
 
 	public FontRenderer getFontRenderer() {
-		return this.field_1218_p;
+		return this.fontRenderer;
 	}
 }

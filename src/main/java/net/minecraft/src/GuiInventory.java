@@ -9,6 +9,12 @@ public class GuiInventory extends GuiContainer {
 	public GuiInventory(EntityPlayer var1) {
 		super(var1.inventorySlots);
 		this.field_948_f = true;
+		var1.addStat(AchievementList.field_25195_b, 1);
+	}
+
+	public void initGui() {
+	    super.initGui();
+		this.controlList.clear();
 	}
 
 	protected void drawGuiContainerForegroundLayer() {
@@ -55,5 +61,16 @@ public class GuiInventory extends GuiContainer {
 		GL11.glPopMatrix();
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL11.GL_RESCALE_NORMAL);
+	}
+
+	protected void actionPerformed(GuiButton var1) {
+		if(var1.id == 0) {
+			this.mc.displayGuiScreen(new GuiAchievements(this.mc.field_25001_G));
+		}
+
+		if(var1.id == 1) {
+			this.mc.displayGuiScreen(new GuiStats(this, this.mc.field_25001_G));
+		}
+
 	}
 }

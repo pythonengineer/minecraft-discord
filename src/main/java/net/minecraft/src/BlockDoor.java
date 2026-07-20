@@ -17,7 +17,7 @@ public class BlockDoor extends Block {
 
 	public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
 		if(var1 != 0 && var1 != 1) {
-			int var3 = this.func_312_c(var2);
+			int var3 = this.getState(var2);
 			if((var3 == 0 || var3 == 2) ^ var1 <= 3) {
 				return this.blockIndexInTexture;
 			} else {
@@ -58,7 +58,7 @@ public class BlockDoor extends Block {
 	}
 
 	public void setBlockBoundsBasedOnState(IBlockAccess var1, int var2, int var3, int var4) {
-		this.func_313_b(this.func_312_c(var1.getBlockMetadata(var2, var3, var4)));
+		this.func_313_b(this.getState(var1.getBlockMetadata(var2, var3, var4)));
 	}
 
 	public void func_313_b(int var1) {
@@ -187,11 +187,15 @@ public class BlockDoor extends Block {
 		return super.collisionRayTrace(var1, var2, var3, var4, var5, var6);
 	}
 
-	public int func_312_c(int var1) {
+	public int getState(int var1) {
 		return (var1 & 4) == 0 ? var1 - 1 & 3 : var1 & 3;
 	}
 
 	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
 		return var3 >= 127 ? false : var1.isBlockOpaqueCube(var2, var3 - 1, var4) && super.canPlaceBlockAt(var1, var2, var3, var4) && super.canPlaceBlockAt(var1, var2, var3 + 1, var4);
+	}
+
+	public static boolean func_27047_e(int var0) {
+		return (var0 & 4) != 0;
 	}
 }

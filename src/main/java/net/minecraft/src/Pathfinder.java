@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 public class Pathfinder {
 	private IBlockAccess worldMap;
 	private Path path = new Path();
-	private MCHashTable pointMap = new MCHashTable();
+	private MCHash pointMap = new MCHash();
 	private PathPoint[] pathOptions = new PathPoint[32];
 
 	public Pathfinder(IBlockAccess var1) {
@@ -78,7 +78,7 @@ public class Pathfinder {
 	private int findPathOptions(Entity var1, PathPoint var2, PathPoint var3, PathPoint var4, float var5) {
 		int var6 = 0;
 		byte var7 = 0;
-		if(this.getVerticalOffset(var1, var2.xCoord, var2.yCoord + 1, var2.zCoord, var3) > 0) {
+		if(this.getVerticalOffset(var1, var2.xCoord, var2.yCoord + 1, var2.zCoord, var3) == 1) {
 			var7 = 1;
 		}
 
@@ -107,36 +107,38 @@ public class Pathfinder {
 
 	private PathPoint getSafePoint(Entity var1, int var2, int var3, int var4, PathPoint var5, int var6) {
 		PathPoint var7 = null;
-		if(this.getVerticalOffset(var1, var2, var3, var4, var5) > 0) {
+		if(this.getVerticalOffset(var1, var2, var3, var4, var5) == 1) {
 			var7 = this.openPoint(var2, var3, var4);
 		}
 
-		if(var7 == null && var6 > 0 && this.getVerticalOffset(var1, var2, var3 + var6, var4, var5) > 0) {
+		if(var7 == null && var6 > 0 && this.getVerticalOffset(var1, var2, var3 + var6, var4, var5) == 1) {
 			var7 = this.openPoint(var2, var3 + var6, var4);
 			var3 += var6;
 		}
 
 		if(var7 != null) {
 			int var8 = 0;
+			int var9 = 0;
 
-			for(boolean var9 = false; var3 > 0; --var3) {
-				int var10 = this.getVerticalOffset(var1, var2, var3 - 1, var4, var5);
-				if(var10 <= 0) {
+			while(var3 > 0) {
+				var9 = this.getVerticalOffset(var1, var2, var3 - 1, var4, var5);
+				if(var9 != 1) {
 					break;
-				}
-
-				if(var10 < 0) {
-					return null;
 				}
 
 				++var8;
 				if(var8 >= 4) {
 					return null;
 				}
+
+				--var3;
+				if(var3 > 0) {
+					var7 = this.openPoint(var2, var3, var4);
+				}
 			}
 
-			if(var3 > 0) {
-				var7 = this.openPoint(var2, var3, var4);
+			if(var9 == -2) {
+				return null;
 			}
 		}
 
@@ -158,13 +160,27 @@ public class Pathfinder {
 		for(int var6 = var2; var6 < var2 + var5.xCoord; ++var6) {
 			for(int var7 = var3; var7 < var3 + var5.yCoord; ++var7) {
 				for(int var8 = var4; var8 < var4 + var5.zCoord; ++var8) {
-					Material var9 = this.worldMap.getBlockMaterial(var6, var7, var8);
-					if(var9.getIsSolid()) {
-						return 0;
-					}
+					int var9 = this.worldMap.getBlockId(var6, var7, var8);
+					if(var9 > 0) {
+						if(var9 != Block.doorSteel.blockID && var9 != Block.doorWood.blockID) {
+							Material var11 = Block.blocksList[var9].blockMaterial;
+							if(var11.getIsSolid()) {
+								return 0;
+							}
 
-					if(var9 == Material.water || var9 == Material.lava) {
-						return -1;
+							if(var11 == Material.water) {
+								return -1;
+							}
+
+							if(var11 == Material.lava) {
+								return -2;
+							}
+						} else {
+							int var10 = this.worldMap.getBlockMetadata(var6, var7, var8);
+							if(!BlockDoor.func_27047_e(var10)) {
+								return 0;
+							}
+						}
 					}
 				}
 			}

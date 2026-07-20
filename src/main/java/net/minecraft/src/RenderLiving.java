@@ -21,7 +21,7 @@ public class RenderLiving extends Render {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		this.mainModel.onGround = this.func_167_c(var1, var9);
-		this.mainModel.isRiding = var1.func_21063_V();
+		this.mainModel.isRiding = var1.isRiding();
 		if(this.renderPassModel != null) {
 			this.renderPassModel.isRiding = this.mainModel.isRiding;
 		}
@@ -46,6 +46,7 @@ public class RenderLiving extends Render {
 
 			this.loadDownloadableImageTexture(var1.skinUrl, var1.getEntityTexture());
 			GL11.glEnable(GL11.GL_ALPHA_TEST);
+			this.mainModel.func_25103_a(var1, var16, var15, var9);
 			this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
 			for(int var17 = 0; var17 < 4; ++var17) {
@@ -70,7 +71,7 @@ public class RenderLiving extends Render {
 					this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
 					for(int var19 = 0; var19 < 4; ++var19) {
-						if(this.shouldRenderPass(var1, var19, var9)) {
+						if(this.func_27005_b(var1, var19, var9)) {
 							GL11.glColor4f(var25, 0.0F, 0.0F, 0.4F);
 							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
@@ -86,7 +87,7 @@ public class RenderLiving extends Render {
 					this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
 					for(int var23 = 0; var23 < 4; ++var23) {
-						if(this.shouldRenderPass(var1, var23, var9)) {
+						if(this.func_27005_b(var1, var23, var9)) {
 							GL11.glColor4f(var26, var20, var21, var22);
 							this.renderPassModel.render(var16, var15, var13, var11 - var10, var12, var14);
 						}
@@ -106,7 +107,7 @@ public class RenderLiving extends Render {
 
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
-		this.func_22014_a(var1, var2, var4, var6);
+		this.passSpecialRender(var1, var2, var4, var6);
 	}
 
 	protected void func_22012_b(EntityLiving var1, double var2, double var4, double var6) {
@@ -138,6 +139,10 @@ public class RenderLiving extends Render {
 	protected void renderEquippedItems(EntityLiving var1, float var2) {
 	}
 
+	protected boolean func_27005_b(EntityLiving var1, int var2, float var3) {
+		return this.shouldRenderPass(var1, var2, var3);
+	}
+
 	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {
 		return false;
 	}
@@ -153,15 +158,15 @@ public class RenderLiving extends Render {
 	protected void preRenderCallback(EntityLiving var1, float var2) {
 	}
 
-	protected void func_22014_a(EntityLiving var1, double var2, double var4, double var6) {
-		if(Minecraft.func_22007_w()) {
-			this.func_22013_a(var1, Integer.toString(var1.entityId), var2, var4, var6, 64);
+	protected void passSpecialRender(EntityLiving var1, double var2, double var4, double var6) {
+		if(Minecraft.isDebugInfoEnabled()) {
+			this.renderLivingLabel(var1, Integer.toString(var1.entityId), var2, var4, var6, 64);
 		}
 
 	}
 
-	protected void func_22013_a(EntityLiving var1, String var2, double var3, double var5, double var7, int var9) {
-		float var10 = var1.getDistanceToEntity(this.renderManager.field_22188_h);
+	protected void renderLivingLabel(EntityLiving var1, String var2, double var3, double var5, double var7, int var9) {
+		float var10 = var1.getDistanceToEntity(this.renderManager.livingPlayer);
 		if(var10 <= (float)var9) {
 			FontRenderer var11 = this.getFontRendererFromRenderManager();
 			float var12 = 1.6F;

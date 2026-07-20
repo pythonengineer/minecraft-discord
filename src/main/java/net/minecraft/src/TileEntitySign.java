@@ -3,6 +3,7 @@ package net.minecraft.src;
 public class TileEntitySign extends TileEntity {
 	public String[] signText = new String[]{"", "", "", ""};
 	public int lineBeingEdited = -1;
+	private boolean field_25062_c = true;
 
 	public void writeToNBT(NBTTagCompound var1) {
 		super.writeToNBT(var1);
@@ -13,6 +14,7 @@ public class TileEntitySign extends TileEntity {
 	}
 
 	public void readFromNBT(NBTTagCompound var1) {
+		this.field_25062_c = false;
 		super.readFromNBT(var1);
 
 		for(int var2 = 0; var2 < 4; ++var2) {

@@ -60,6 +60,7 @@ public class ChunkLoader implements IChunkLoader {
 					var7 = loadChunkIntoWorldFromCompound(var1, var6.getCompoundTag("Level"));
 				}
 
+				var7.func_25124_i();
 				return var7;
 			} catch (Exception var8) {
 				var8.printStackTrace();
@@ -74,12 +75,11 @@ public class ChunkLoader implements IChunkLoader {
 		VFile2 var3 = this.chunkFileForXZ(var2.xPosition, var2.zPosition);
 		if(var3.exists()) {
 			WorldInfo var4 = var1.func_22144_v();
-			var4.func_22297_b(var4.func_22306_g() - var3.length());
+			var4.setSizeOnDisk(var4.getSizeOnDisk() - var3.length());
 		}
 
-		try {
-			VFile2 var10 = new VFile2(this.saveDir, "tmp_chunk.dat");
-			OutputStream var5 = var10.getOutputStream();
+        VFile2 var10 = new VFile2(this.saveDir, "tmp_chunk.dat");
+		try (OutputStream var5 = var10.getOutputStream()) {
 			NBTTagCompound var6 = new NBTTagCompound();
 			NBTTagCompound var7 = new NBTTagCompound();
 			var6.setTag("Level", var7);
@@ -92,7 +92,7 @@ public class ChunkLoader implements IChunkLoader {
 
 			var10.renameTo(var3);
 			WorldInfo var8 = var1.func_22144_v();
-			var8.func_22297_b(var8.func_22306_g() + var3.length());
+			var8.setSizeOnDisk(var8.getSizeOnDisk() + var3.length());
 		} catch (Exception var9) {
 			var9.printStackTrace();
 		}
@@ -103,7 +103,7 @@ public class ChunkLoader implements IChunkLoader {
 		var1.checkSessionLock();
 		var2.setInteger("xPos", var0.xPosition);
 		var2.setInteger("zPos", var0.zPosition);
-		var2.setLong("LastUpdate", var1.func_22139_r());
+		var2.setLong("LastUpdate", var1.getWorldTime());
 		var2.setByteArray("Blocks", var0.blocks);
 		var2.setByteArray("Data", var0.data.data);
 		var2.setByteArray("SkyLight", var0.skylightMap.data);

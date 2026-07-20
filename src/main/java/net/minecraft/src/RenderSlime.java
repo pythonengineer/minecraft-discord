@@ -28,10 +28,11 @@ public class RenderSlime extends RenderLiving {
 	}
 
 	protected void func_178_a(EntitySlime var1, float var2) {
-		float var3 = (var1.field_767_b + (var1.field_768_a - var1.field_767_b) * var2) / ((float)var1.slimeSize * 0.5F + 1.0F);
-		float var4 = 1.0F / (var3 + 1.0F);
-		float var5 = (float)var1.slimeSize;
-		GL11.glScalef(var4 * var5, 1.0F / var4 * var5, var4 * var5);
+		int var3 = var1.getSlimeSize();
+		float var4 = (var1.field_767_b + (var1.field_768_a - var1.field_767_b) * var2) / ((float)var3 * 0.5F + 1.0F);
+		float var5 = 1.0F / (var4 + 1.0F);
+		float var6 = (float)var3;
+		GL11.glScalef(var5 * var6, 1.0F / var5 * var6, var5 * var6);
 	}
 
 	protected void preRenderCallback(EntityLiving var1, float var2) {

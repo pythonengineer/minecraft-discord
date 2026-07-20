@@ -122,11 +122,11 @@ public class EntityList {
         addMapping(EntityItem.class, EntityItem::new, "Item", 1);
         addMapping(EntityPainting.class, EntityPainting::new, "Painting", 9);
         addMapping(EntityLiving.class, null, "Mob", 48);
-        addMapping(EntityMobs.class, EntityMobs::new, "Monster", 49);
+        addMapping(EntityMob.class, EntityMob::new, "Monster", 49);
         addMapping(EntityCreeper.class, EntityCreeper::new, "Creeper", 50);
         addMapping(EntitySkeleton.class, EntitySkeleton::new, "Skeleton", 51);
         addMapping(EntitySpider.class, EntitySpider::new, "Spider", 52);
-        addMapping(EntityZombieSimple.class, EntityZombieSimple::new, "Giant", 53);
+        addMapping(EntityGiantZombie.class, EntityGiantZombie::new, "Giant", 53);
         addMapping(EntityZombie.class, EntityZombie::new, "Zombie", 54);
         addMapping(EntitySlime.class, EntitySlime::new, "Slime", 55);
         addMapping(EntityGhast.class, EntityGhast::new, "Ghast", 56);
@@ -136,6 +136,7 @@ public class EntityList {
         addMapping(EntityCow.class, EntityCow::new, "Cow", 92);
         addMapping(EntityChicken.class, EntityChicken::new, "Chicken", 93);
         addMapping(EntitySquid.class, EntitySquid::new, "Squid", 94);
+        addMapping(EntityWolf.class, EntityWolf::new, "Wolf", 95);
         addMapping(EntityTNTPrimed.class, EntityTNTPrimed::new, "PrimedTnt", 20);
         addMapping(EntityFallingSand.class, EntityFallingSand::new, "FallingSand", 21);
         addMapping(EntityMinecart.class, EntityMinecart::new, "Minecart", 40);

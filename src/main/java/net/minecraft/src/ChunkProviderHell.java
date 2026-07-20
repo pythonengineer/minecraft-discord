@@ -11,7 +11,7 @@ public class ChunkProviderHell implements IChunkProvider {
 	private NoiseGeneratorOctaves field_4165_m;
 	public NoiseGeneratorOctaves field_4177_a;
 	public NoiseGeneratorOctaves field_4176_b;
-	private World field_4164_n;
+	private World worldObj;
 	private double[] field_4163_o;
 	private double[] field_4162_p = new double[256];
 	private double[] field_4161_q = new double[256];
@@ -24,7 +24,7 @@ public class ChunkProviderHell implements IChunkProvider {
 	double[] field_4171_g;
 
 	public ChunkProviderHell(World var1, long var2) {
-		this.field_4164_n = var1;
+		this.worldObj = var1;
 		this.hellRNG = new EaglercraftRandom(var2);
 		this.field_4169_i = new NoiseGeneratorOctaves(this.hellRNG, 16);
 		this.field_4168_j = new NoiseGeneratorOctaves(this.hellRNG, 16);
@@ -73,11 +73,11 @@ public class ChunkProviderHell implements IChunkProvider {
 							for(int var50 = 0; var50 < 4; ++var50) {
 								int var51 = 0;
 								if(var11 * 8 + var30 < var5) {
-									var51 = Block.lavaMoving.blockID;
+									var51 = Block.lavaStill.blockID;
 								}
 
 								if(var46 > 0.0D) {
-									var51 = Block.bloodStone.blockID;
+									var51 = Block.netherrack.blockID;
 								}
 
 								var3[var42] = (byte)var51;
@@ -113,8 +113,8 @@ public class ChunkProviderHell implements IChunkProvider {
 				boolean var10 = this.field_4161_q[var7 + var8 * 16] + this.hellRNG.nextDouble() * 0.2D > 0.0D;
 				int var11 = (int)(this.field_4160_r[var7 + var8 * 16] / 3.0D + 3.0D + this.hellRNG.nextDouble() * 0.25D);
 				int var12 = -1;
-				byte var13 = (byte)Block.bloodStone.blockID;
-				byte var14 = (byte)Block.bloodStone.blockID;
+				byte var13 = (byte)Block.netherrack.blockID;
+				byte var14 = (byte)Block.netherrack.blockID;
 
 				for(int var15 = 127; var15 >= 0; --var15) {
 					int var16 = (var8 * 16 + var7) * 128 + var15;
@@ -126,20 +126,20 @@ public class ChunkProviderHell implements IChunkProvider {
 						byte var17 = var3[var16];
 						if(var17 == 0) {
 							var12 = -1;
-						} else if(var17 == Block.bloodStone.blockID) {
+						} else if(var17 == Block.netherrack.blockID) {
 							if(var12 == -1) {
 								if(var11 <= 0) {
 									var13 = 0;
-									var14 = (byte)Block.bloodStone.blockID;
+									var14 = (byte)Block.netherrack.blockID;
 								} else if(var15 >= var4 - 4 && var15 <= var4 + 1) {
-									var13 = (byte)Block.bloodStone.blockID;
-									var14 = (byte)Block.bloodStone.blockID;
+									var13 = (byte)Block.netherrack.blockID;
+									var14 = (byte)Block.netherrack.blockID;
 									if(var10) {
 										var13 = (byte)Block.gravel.blockID;
 									}
 
 									if(var10) {
-										var14 = (byte)Block.bloodStone.blockID;
+										var14 = (byte)Block.netherrack.blockID;
 									}
 
 									if(var9) {
@@ -152,7 +152,7 @@ public class ChunkProviderHell implements IChunkProvider {
 								}
 
 								if(var15 < var4 && var13 == 0) {
-									var13 = (byte)Block.lavaMoving.blockID;
+									var13 = (byte)Block.lavaStill.blockID;
 								}
 
 								var12 = var11;
@@ -173,13 +173,17 @@ public class ChunkProviderHell implements IChunkProvider {
 
 	}
 
+	public Chunk func_538_d(int var1, int var2) {
+		return this.provideChunk(var1, var2);
+	}
+
 	public Chunk provideChunk(int var1, int var2) {
 		this.hellRNG.setSeed((long)var1 * 341873128712L + (long)var2 * 132897987541L);
 		byte[] var3 = new byte[-Short.MIN_VALUE];
 		this.func_4059_a(var1, var2, var3);
 		this.func_4058_b(var1, var2, var3);
-		this.field_4159_s.func_867_a(this, this.field_4164_n, var1, var2, var3);
-		Chunk var4 = new Chunk(this.field_4164_n, var3, var1, var2);
+		this.field_4159_s.func_867_a(this, this.worldObj, var1, var2, var3);
+		Chunk var4 = new Chunk(this.worldObj, var3, var1, var2);
 		return var4;
 	}
 
@@ -308,7 +312,7 @@ public class ChunkProviderHell implements IChunkProvider {
 			var7 = var4 + this.hellRNG.nextInt(16) + 8;
 			var8 = this.hellRNG.nextInt(120) + 4;
 			var9 = var5 + this.hellRNG.nextInt(16) + 8;
-			(new WorldGenHellLava(Block.lavaStill.blockID)).generate(this.field_4164_n, this.hellRNG, var7, var8, var9);
+			(new WorldGenHellLava(Block.lavaMoving.blockID)).generate(this.worldObj, this.hellRNG, var7, var8, var9);
 		}
 
 		var6 = this.hellRNG.nextInt(this.hellRNG.nextInt(10) + 1) + 1;
@@ -318,7 +322,7 @@ public class ChunkProviderHell implements IChunkProvider {
 			var8 = var4 + this.hellRNG.nextInt(16) + 8;
 			var9 = this.hellRNG.nextInt(120) + 4;
 			var10 = var5 + this.hellRNG.nextInt(16) + 8;
-			(new WorldGenFire()).generate(this.field_4164_n, this.hellRNG, var8, var9, var10);
+			(new WorldGenFire()).generate(this.worldObj, this.hellRNG, var8, var9, var10);
 		}
 
 		var6 = this.hellRNG.nextInt(this.hellRNG.nextInt(10) + 1);
@@ -327,28 +331,28 @@ public class ChunkProviderHell implements IChunkProvider {
 			var8 = var4 + this.hellRNG.nextInt(16) + 8;
 			var9 = this.hellRNG.nextInt(120) + 4;
 			var10 = var5 + this.hellRNG.nextInt(16) + 8;
-			(new WorldGenLightStone1()).generate(this.field_4164_n, this.hellRNG, var8, var9, var10);
+			(new WorldGenGlowStone1()).generate(this.worldObj, this.hellRNG, var8, var9, var10);
 		}
 
 		for(var7 = 0; var7 < 10; ++var7) {
 			var8 = var4 + this.hellRNG.nextInt(16) + 8;
 			var9 = this.hellRNG.nextInt(128);
 			var10 = var5 + this.hellRNG.nextInt(16) + 8;
-			(new WorldGenLightStone2()).generate(this.field_4164_n, this.hellRNG, var8, var9, var10);
+			(new WorldGenGlowStone2()).generate(this.worldObj, this.hellRNG, var8, var9, var10);
 		}
 
 		if(this.hellRNG.nextInt(1) == 0) {
 			var7 = var4 + this.hellRNG.nextInt(16) + 8;
 			var8 = this.hellRNG.nextInt(128);
 			var9 = var5 + this.hellRNG.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.mushroomBrown.blockID)).generate(this.field_4164_n, this.hellRNG, var7, var8, var9);
+			(new WorldGenFlowers(Block.mushroomBrown.blockID)).generate(this.worldObj, this.hellRNG, var7, var8, var9);
 		}
 
 		if(this.hellRNG.nextInt(1) == 0) {
 			var7 = var4 + this.hellRNG.nextInt(16) + 8;
 			var8 = this.hellRNG.nextInt(128);
 			var9 = var5 + this.hellRNG.nextInt(16) + 8;
-			(new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.field_4164_n, this.hellRNG, var7, var8, var9);
+			(new WorldGenFlowers(Block.mushroomRed.blockID)).generate(this.worldObj, this.hellRNG, var7, var8, var9);
 		}
 
 		BlockSand.fallInstantly = false;

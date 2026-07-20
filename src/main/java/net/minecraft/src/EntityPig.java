@@ -1,6 +1,6 @@
 package net.minecraft.src;
 
-public class EntityPig extends EntityAnimals {
+public class EntityPig extends EntityAnimal {
 	public EntityPig(World var1) {
 		super(var1);
 		this.texture = "/mob/pig.png";
@@ -13,12 +13,12 @@ public class EntityPig extends EntityAnimals {
 
 	public void writeEntityToNBT(NBTTagCompound var1) {
 		super.writeEntityToNBT(var1);
-		var1.setBoolean("Saddle", this.func_21068_q());
+		var1.setBoolean("Saddle", this.getSaddled());
 	}
 
 	public void readEntityFromNBT(NBTTagCompound var1) {
 		super.readEntityFromNBT(var1);
-		this.func_21069_a(var1.getBoolean("Saddle"));
+		this.setSaddled(var1.getBoolean("Saddle"));
 	}
 
 	protected String getLivingSound() {
@@ -34,7 +34,7 @@ public class EntityPig extends EntityAnimals {
 	}
 
 	public boolean interact(EntityPlayer var1) {
-		if(!this.func_21068_q() || this.worldObj.multiplayerWorld || this.riddenByEntity != null && this.riddenByEntity != var1) {
+		if(!this.getSaddled() || this.worldObj.multiplayerWorld || this.riddenByEntity != null && this.riddenByEntity != var1) {
 			return false;
 		} else {
 			var1.mountEntity(this);
@@ -43,18 +43,33 @@ public class EntityPig extends EntityAnimals {
 	}
 
 	protected int getDropItemId() {
-		return Item.porkRaw.shiftedIndex;
+		return this.fire > 0 ? Item.porkCooked.shiftedIndex : Item.porkRaw.shiftedIndex;
 	}
 
-	public boolean func_21068_q() {
+	public boolean getSaddled() {
 		return (this.dataWatcher.getWatchableObjectByte(16) & 1) != 0;
 	}
 
-	public void func_21069_a(boolean var1) {
+	public void setSaddled(boolean var1) {
 		if(var1) {
 			this.dataWatcher.updateObject(16, Byte.valueOf((byte)1));
 		} else {
 			this.dataWatcher.updateObject(16, Byte.valueOf((byte)0));
+		}
+
+	}
+
+	public void func_27014_a(EntityLightningBolt var1) {
+		EntityPigZombie var2 = new EntityPigZombie(this.worldObj);
+		var2.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+		this.worldObj.entityJoinedWorld(var2);
+		this.setEntityDead();
+	}
+
+	protected void fall(float var1) {
+		super.fall(var1);
+		if(var1 > 5.0F && this.riddenByEntity instanceof EntityPlayer) {
+			((EntityPlayer)this.riddenByEntity).func_27026_a(AchievementList.field_27375_u);
 		}
 
 	}

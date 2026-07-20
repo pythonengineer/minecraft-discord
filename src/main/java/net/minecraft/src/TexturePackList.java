@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class TexturePackList {
 	private List availableTexturePacks = new ArrayList();
@@ -18,7 +19,7 @@ public class TexturePackList {
 	public TexturePackList(Minecraft var1) {
 		this.mc = var1;
 		this.currentTexturePack = var1.gameSettings.skin;
-		this.func_6532_a();
+		this.updateAvaliableTexturePacks();
 		this.selectedTexturePack.func_6482_a();
 	}
 
@@ -36,7 +37,7 @@ public class TexturePackList {
 		}
 	}
 
-	public void func_6532_a() {
+	public void updateAvaliableTexturePacks() {
 		ArrayList var1 = new ArrayList();
 		this.selectedTexturePack = null;
 		var1.add(this.defaultTexturePack);

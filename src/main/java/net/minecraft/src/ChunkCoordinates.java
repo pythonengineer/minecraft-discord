@@ -1,17 +1,23 @@
 package net.minecraft.src;
 
 public class ChunkCoordinates implements Comparable {
-	public int field_22395_a;
-	public int field_22394_b;
-	public int field_22396_c;
+	public int x;
+	public int y;
+	public int z;
 
 	public ChunkCoordinates() {
 	}
 
 	public ChunkCoordinates(int var1, int var2, int var3) {
-		this.field_22395_a = var1;
-		this.field_22394_b = var2;
-		this.field_22396_c = var3;
+		this.x = var1;
+		this.y = var2;
+		this.z = var3;
+	}
+
+	public ChunkCoordinates(ChunkCoordinates var1) {
+		this.x = var1.x;
+		this.y = var1.y;
+		this.z = var1.z;
 	}
 
 	public boolean equals(Object var1) {
@@ -19,16 +25,23 @@ public class ChunkCoordinates implements Comparable {
 			return false;
 		} else {
 			ChunkCoordinates var2 = (ChunkCoordinates)var1;
-			return this.field_22395_a == var2.field_22395_a && this.field_22394_b == var2.field_22394_b && this.field_22396_c == var2.field_22396_c;
+			return this.x == var2.x && this.y == var2.y && this.z == var2.z;
 		}
 	}
 
 	public int hashCode() {
-		return this.field_22395_a + this.field_22396_c << 8 + this.field_22394_b << 16;
+		return this.x + this.z << 8 + this.y << 16;
 	}
 
 	public int func_22393_a(ChunkCoordinates var1) {
-		return this.field_22394_b == var1.field_22394_b ? (this.field_22396_c == var1.field_22396_c ? this.field_22395_a - var1.field_22395_a : this.field_22396_c - var1.field_22396_c) : this.field_22394_b - var1.field_22394_b;
+		return this.y == var1.y ? (this.z == var1.z ? this.x - var1.x : this.z - var1.z) : this.y - var1.y;
+	}
+
+	public double func_27439_a(int var1, int var2, int var3) {
+		int var4 = this.x - var1;
+		int var5 = this.y - var2;
+		int var6 = this.z - var3;
+		return Math.sqrt((double)(var4 * var4 + var5 * var5 + var6 * var6));
 	}
 
 	public int compareTo(Object var1) {

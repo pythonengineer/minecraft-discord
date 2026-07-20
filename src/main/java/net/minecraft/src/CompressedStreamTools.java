@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import net.lax1dude.eaglercraft.EaglerZLIB;
 
 public class CompressedStreamTools {

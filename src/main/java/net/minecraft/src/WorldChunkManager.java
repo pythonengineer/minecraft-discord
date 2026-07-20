@@ -9,22 +9,22 @@ public class WorldChunkManager {
 	public double[] temperature;
 	public double[] humidity;
 	public double[] field_4196_c;
-	public MobSpawnerBase[] field_4195_d;
+	public BiomeGenBase[] field_4195_d;
 
 	protected WorldChunkManager() {
 	}
 
 	public WorldChunkManager(World var1) {
-		this.field_4194_e = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.func_22138_q() * 9871L), 4);
-		this.field_4193_f = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.func_22138_q() * 39811L), 4);
-		this.field_4192_g = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.func_22138_q() * 543321L), 2);
+		this.field_4194_e = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.getRandomSeed() * 9871L), 4);
+		this.field_4193_f = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.getRandomSeed() * 39811L), 4);
+		this.field_4192_g = new NoiseGeneratorOctaves2(new EaglercraftRandom(var1.getRandomSeed() * 543321L), 2);
 	}
 
-	public MobSpawnerBase func_4074_a(ChunkCoordIntPair var1) {
-		return this.func_4073_a(var1.chunkXPos >> 4, var1.chunkZPos >> 4);
+	public BiomeGenBase func_4074_a(ChunkCoordIntPair var1) {
+		return this.func_4073_a(var1.chunkXPos << 4, var1.chunkZPos << 4);
 	}
 
-	public MobSpawnerBase func_4073_a(int var1, int var2) {
+	public BiomeGenBase func_4073_a(int var1, int var2) {
 		return this.func_4069_a(var1, var2, 1, 1)[0];
 	}
 
@@ -33,7 +33,7 @@ public class WorldChunkManager {
 		return this.temperature[0];
 	}
 
-	public MobSpawnerBase[] func_4069_a(int var1, int var2, int var3, int var4) {
+	public BiomeGenBase[] func_4069_a(int var1, int var2, int var3, int var4) {
 		this.field_4195_d = this.loadBlockGeneratorData(this.field_4195_d, var1, var2, var3, var4);
 		return this.field_4195_d;
 	}
@@ -70,9 +70,9 @@ public class WorldChunkManager {
 		return var1;
 	}
 
-	public MobSpawnerBase[] loadBlockGeneratorData(MobSpawnerBase[] var1, int var2, int var3, int var4, int var5) {
+	public BiomeGenBase[] loadBlockGeneratorData(BiomeGenBase[] var1, int var2, int var3, int var4, int var5) {
 		if(var1 == null || var1.length < var4 * var5) {
-			var1 = new MobSpawnerBase[var4 * var5];
+			var1 = new BiomeGenBase[var4 * var5];
 		}
 
 		this.temperature = this.field_4194_e.func_4112_a(this.temperature, (double)var2, (double)var3, var4, var4, (double)0.025F, (double)0.025F, 0.25D);
@@ -108,7 +108,7 @@ public class WorldChunkManager {
 
 				this.temperature[var6] = var15;
 				this.humidity[var6] = var17;
-				var1[var6++] = MobSpawnerBase.getBiomeFromLookup(var15, var17);
+				var1[var6++] = BiomeGenBase.getBiomeFromLookup(var15, var17);
 			}
 		}
 

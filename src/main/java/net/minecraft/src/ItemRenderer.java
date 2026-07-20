@@ -9,7 +9,7 @@ public class ItemRenderer {
 	private ItemStack itemToRender = null;
 	private float equippedProgress = 0.0F;
 	private float prevEquippedProgress = 0.0F;
-	private RenderBlocks field_1357_e = new RenderBlocks();
+	private RenderBlocks renderBlocksInstance = new RenderBlocks();
 	private int field_20099_f = -1;
 
 	public ItemRenderer(Minecraft var1) {
@@ -18,9 +18,9 @@ public class ItemRenderer {
 
 	public void renderItem(ItemStack var1) {
 		GL11.glPushMatrix();
-		if(var1.itemID < 256 && RenderBlocks.func_1219_a(Block.blocksList[var1.itemID].getRenderType())) {
+		if(var1.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var1.itemID].getRenderType())) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
-			this.field_1357_e.func_1227_a(Block.blocksList[var1.itemID], var1.getItemDamage());
+			this.renderBlocksInstance.renderBlockOnInventory(Block.blocksList[var1.itemID], var1.getItemDamage());
 		} else {
 			if(var1.itemID < 256) {
 				GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/terrain.png"));
@@ -204,13 +204,13 @@ public class ItemRenderer {
 	public void renderOverlays(float var1) {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		int var2;
-		if(this.mc.thePlayer.func_21062_U()) {
+		if(this.mc.thePlayer.isBurning()) {
 			var2 = this.mc.renderEngine.getTexture("/terrain.png");
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, var2);
 			this.renderFireInFirstPerson(var1);
 		}
 
-		if(this.mc.thePlayer.func_345_I()) {
+		if(this.mc.thePlayer.isEntityInsideOpaqueBlock()) {
 			var2 = MathHelper.floor_double(this.mc.thePlayer.posX);
 			int var3 = MathHelper.floor_double(this.mc.thePlayer.posY);
 			int var4 = MathHelper.floor_double(this.mc.thePlayer.posZ);

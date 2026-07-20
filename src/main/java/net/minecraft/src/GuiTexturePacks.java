@@ -6,12 +6,12 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class GuiTexturePacks extends GuiScreen {
-	protected GuiScreen field_6461_a;
+	protected GuiScreen guiScreen;
 	private int field_6454_o = -1;
-	private GuiTexturePackSlot field_22128_k;
+	private GuiTexturePackSlot guiTexturePackSlot;
 
 	public GuiTexturePacks(GuiScreen var1) {
-		this.field_6461_a = var1;
+		this.guiScreen = var1;
 	}
 
 	public void initGui() {
@@ -19,18 +19,18 @@ public class GuiTexturePacks extends GuiScreen {
 		this.controlList.add(new GuiSmallButton(5, this.width / 2 - 154, this.height - 48, var1.translateKey("texturePack.openFolder")));
 		this.controlList.add(new GuiSmallButton(6, this.width / 2 + 4, this.height - 48, var1.translateKey("gui.done")));
 		((GuiSmallButton)this.controlList.get(0)).enabled = false;
-		this.mc.texturePackList.func_6532_a();
-		this.field_22128_k = new GuiTexturePackSlot(this);
-		this.field_22128_k.func_22240_a(this.controlList, 7, 8);
+		this.mc.texturePackList.updateAvaliableTexturePacks();
+		this.guiTexturePackSlot = new GuiTexturePackSlot(this);
+		this.guiTexturePackSlot.registerScrollButtons(this.controlList, 7, 8);
 	}
 
 	protected void actionPerformed(GuiButton var1) {
 		if(var1.enabled) {
 			if(var1.id == 6) {
 				this.mc.renderEngine.refreshTextures();
-				this.mc.displayGuiScreen(this.field_6461_a);
+				this.mc.displayGuiScreen(this.guiScreen);
 			} else {
-				this.field_22128_k.func_22241_a(var1);
+				this.guiTexturePackSlot.actionPerformed(var1);
 			}
 
 		}
@@ -45,9 +45,9 @@ public class GuiTexturePacks extends GuiScreen {
 	}
 
 	public void drawScreen(int var1, int var2, float var3) {
-		this.field_22128_k.func_22243_a(var1, var2, var3);
+		this.guiTexturePackSlot.drawScreen(var1, var2, var3);
 		if(this.field_6454_o <= 0) {
-			this.mc.texturePackList.func_6532_a();
+			this.mc.texturePackList.updateAvaliableTexturePacks();
 			this.field_6454_o += 20;
 		}
 

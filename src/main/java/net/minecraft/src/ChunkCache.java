@@ -46,10 +46,10 @@ public class ChunkCache implements IBlockAccess {
 	}
 
 	public float getLightBrightness(int var1, int var2, int var3) {
-		return this.worldObj.worldProvider.lightBrightnessTable[this.func_4086_d(var1, var2, var3)];
+		return this.worldObj.worldProvider.lightBrightnessTable[this.getLightValue(var1, var2, var3)];
 	}
 
-	public int func_4086_d(int var1, int var2, int var3) {
+	public int getLightValue(int var1, int var2, int var3) {
 		return this.func_716_a(var1, var2, var3, true);
 	}
 

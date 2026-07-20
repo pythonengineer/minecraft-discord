@@ -12,7 +12,7 @@ public class RenderSpider extends RenderLiving {
 		return 180.0F;
 	}
 
-	protected boolean func_190_a(EntitySpider var1, int var2, float var3) {
+	protected boolean setSpiderEyeBrightness(EntitySpider var1, int var2, float var3) {
 		if(var2 != 0) {
 			return false;
 		} else if(var2 != 0) {
@@ -33,6 +33,6 @@ public class RenderSpider extends RenderLiving {
 	}
 
 	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {
-		return this.func_190_a((EntitySpider)var1, var2, var3);
+		return this.setSpiderEyeBrightness((EntitySpider)var1, var2, var3);
 	}
 }

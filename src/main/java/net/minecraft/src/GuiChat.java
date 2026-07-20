@@ -7,7 +7,7 @@ import net.lax1dude.eaglercraft.minecraft.GuiScreenVisualViewport;
 public class GuiChat extends GuiScreenVisualViewport {
 	protected String message = "";
 	private int updateCounter = 0;
-	private static final String field_20082_i = FontAllowedCharacters.allowedCharacters;
+	private static final String field_20082_i = ChatAllowedCharacters.allowedCharacters;
 
 	public void initGui() {
 		Keyboard.enableRepeatEvents(true);
@@ -28,7 +28,7 @@ public class GuiChat extends GuiScreenVisualViewport {
 			String var3 = this.message.trim();
 			if(var3.length() > 0) {
 				String var4 = this.message.trim();
-				if(!this.mc.func_22003_b(var4)) {
+				if(!this.mc.lineIsCommand(var4)) {
 					this.mc.thePlayer.sendChatMessage(var4);
 				}
 			}
@@ -85,5 +85,5 @@ public class GuiChat extends GuiScreenVisualViewport {
         default:
             break;
         }
-    }
+	}
 }

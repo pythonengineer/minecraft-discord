@@ -1,8 +1,11 @@
 package net.minecraft.src;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,8 +40,8 @@ public class NetworkManager {
 	public NetworkManager(IWebSocketClient var1, String var2, NetHandler var3) throws IOException {
 		this.networkSocket = var1;
 		this.netHandler = var3;
-		this.socketInputStream = new DataInputStream(var1.getInputStream());
-		this.socketOutputStream = new DataOutputStream(var1.getOutputStream());
+		this.socketInputStream = new DataInputStream(new BufferedInputStream(var1.getInputStream()));
+		this.socketOutputStream = new DataOutputStream(new BufferedOutputStream(var1.getOutputStream()));
 		this.readThread = new NetworkReaderThread(this, var2 + " read thread");
 		this.writeThread = new NetworkWriterThread(this, var2 + " write thread");
 		this.readThread.start();
@@ -90,6 +93,8 @@ public class NetworkManager {
 
 			if(var1) {
 				EagUtils.sleep(10L);
+			} else {
+				this.socketOutputStream.flush();
 			}
 		} catch (Exception var9) {
 			if(!this.isTerminating) {
@@ -101,7 +106,7 @@ public class NetworkManager {
 
 	private void readPacket() {
 		try {
-			Packet var1 = Packet.readPacket(this.socketInputStream);
+			Packet var1 = Packet.readPacket(this.socketInputStream, this.netHandler.func_27247_c());
 			if(var1 != null) {
 				this.readPackets.add(var1);
 			} else {

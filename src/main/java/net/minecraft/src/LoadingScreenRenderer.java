@@ -34,12 +34,10 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 		} else {
 			this.field_1007_c = var1;
 			ScaledResolution var2 = new ScaledResolution(this.mc);
-			int var3 = var2.getScaledWidth();
-			int var4 = var2.getScaledHeight();
 			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
-			GL11.glOrtho(0.0D, (double)var3, (double)var4, 0.0D, 100.0D, 300.0D);
+			GL11.glOrtho(0.0D, var2.getScaledWidth_double(), var2.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			GL11.glLoadIdentity();
 			GL11.glTranslatef(0.0F, 0.0F, -200.0F);
@@ -74,7 +72,7 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 				GL11.glMatrixMode(GL11.GL_PROJECTION);
 				GL11.glLoadIdentity();
-				GL11.glOrtho(0.0D, (double)var5, (double)var6, 0.0D, 100.0D, 300.0D);
+				GL11.glOrtho(0.0D, var4.getScaledWidth_double(), var4.getScaledHeight_double(), 0.0D, 100.0D, 300.0D);
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				GL11.glLoadIdentity();
 				GL11.glTranslatef(0.0F, 0.0F, -200.0F);

@@ -159,7 +159,7 @@ public class FontRenderer {
 				}
 
 				if(var6 < var1.length()) {
-					var11 = FontAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var6));
+					var11 = ChatAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var6));
 					if(var11 >= 0) {
 						this.buffer.put(this.fontDisplayLists + var11 + 32);
 					}
@@ -188,7 +188,7 @@ public class FontRenderer {
 				if(var1.charAt(var3) == 167) {
 					++var3;
 				} else {
-					int var4 = FontAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var3));
+					int var4 = ChatAllowedCharacters.allowedCharacters.indexOf(var1.charAt(var3));
 					if(var4 >= 0) {
 						var2 += this.charWidth[var4 + 32];
 					}
@@ -197,5 +197,61 @@ public class FontRenderer {
 
 			return var2;
 		}
+	}
+
+	public void func_27278_a(String var1, int var2, int var3, int var4, int var5) {
+		String[] var6 = var1.split(" ");
+		int var7 = 0;
+
+		while(var7 < var6.length) {
+			String var8;
+			for(var8 = var6[var7++] + " "; var7 < var6.length && this.getStringWidth(var8 + var6[var7]) < var4; var8 = var8 + var6[var7++] + " ") {
+			}
+
+			int var9;
+			for(; this.getStringWidth(var8) > var4; var8 = var8.substring(var9)) {
+				for(var9 = 0; this.getStringWidth(var8.substring(0, var9 + 1)) <= var4; ++var9) {
+				}
+
+				if(var8.substring(0, var9).trim().length() > 0) {
+					this.drawString(var8.substring(0, var9), var2, var3, var5);
+					var3 += 8;
+				}
+			}
+
+			if(var8.trim().length() > 0) {
+				this.drawString(var8, var2, var3, var5);
+				var3 += 8;
+			}
+		}
+
+	}
+
+	public int func_27277_a(String var1, int var2) {
+		String[] var3 = var1.split(" ");
+		int var4 = 0;
+		int var5 = 0;
+
+		while(var4 < var3.length) {
+			String var6;
+			for(var6 = var3[var4++] + " "; var4 < var3.length && this.getStringWidth(var6 + var3[var4]) < var2; var6 = var6 + var3[var4++] + " ") {
+			}
+
+			int var7;
+			for(; this.getStringWidth(var6) > var2; var6 = var6.substring(var7)) {
+				for(var7 = 0; this.getStringWidth(var6.substring(0, var7 + 1)) <= var2; ++var7) {
+				}
+
+				if(var6.substring(0, var7).trim().length() > 0) {
+					var5 += 8;
+				}
+			}
+
+			if(var6.trim().length() > 0) {
+				var5 += 8;
+			}
+		}
+
+		return var5;
 	}
 }

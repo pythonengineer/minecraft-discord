@@ -9,6 +9,7 @@ import net.lax1dude.eaglercraft.internal.buffer.ByteBuffer;
 import net.lax1dude.eaglercraft.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.opengl.ImageData;
+import java.io.InputStream;
 
 public class RenderEngine {
 	public static boolean useMipmaps = false;
@@ -22,10 +23,17 @@ public class RenderEngine {
 	private boolean clampTexture = false;
 	private boolean blurTexture = false;
 	private TexturePackList field_6527_k;
+	private ImageData field_25189_l = new ImageData(64, 64, true);
 
 	public RenderEngine(TexturePackList var1, GameSettings var2) {
 		this.field_6527_k = var1;
 		this.options = var2;
+        int magenta = ((255 & 0xFF) << 24) | ((255 & 0xFF) << 16) | ((0 & 0xFF) << 8) | ((255 & 0xFF) << 0);
+        int black = ((255 & 0xFF) << 24) | ((0 & 0xFF) << 16) | ((0 & 0xFF) << 8) | ((0 & 0xFF) << 0);
+        int[] missingTexture = new int[256];
+        for (int i = 0; i < 256; ++i)
+            missingTexture[i] = ((i / 16 + (i % 16)) % 2 == 0) ? magenta : black;
+        this.field_25189_l = new ImageData(16, 16, missingTexture, true);
 	}
 
 	public int getTexture(String var1) {
@@ -37,23 +45,33 @@ public class RenderEngine {
 			try {
 				this.singleIntBuffer.clear();
 				GLAllocation.generateTextureNames(this.singleIntBuffer);
-				int var5 = this.singleIntBuffer.get(0);
+				int var6 = this.singleIntBuffer.get(0);
 				if(var1.startsWith("%clamp%")) {
 					this.clampTexture = true;
-					this.setupTexture(ImageData.loadImageFile("/assets" + var1.substring(7)), var5);
+					this.setupTexture(ImageData.loadImageFile("/assets" + var1.substring(7)), var6);
 					this.clampTexture = false;
 				} else if(var1.startsWith("%blur%")) {
 					this.blurTexture = true;
-					this.setupTexture(ImageData.loadImageFile("/assets" + var1.substring(6)), var5);
+					this.setupTexture(ImageData.loadImageFile("/assets" + var1.substring(6)), var6);
 					this.blurTexture = false;
 				} else {
-					this.setupTexture(ImageData.loadImageFile("/assets" + var1), var5);
+					InputStream var7 = var2.func_6481_a(var1);
+					if(var7 == null) {
+						this.setupTexture(this.field_25189_l, var6);
+					} else {
+						this.setupTexture(ImageData.loadImageFile(var7), var6);
+					}
 				}
 
-				this.textureMap.put(var1, Integer.valueOf(var5));
-				return var5;
-			} catch (Exception var4) {
-				throw new RuntimeException("!!");
+				this.textureMap.put(var1, Integer.valueOf(var6));
+				return var6;
+			} catch (Exception var5) {
+				var5.printStackTrace();
+				GLAllocation.generateTextureNames(this.singleIntBuffer);
+				int var4 = this.singleIntBuffer.get(0);
+				this.setupTexture(this.field_25189_l, var4);
+				this.textureMap.put(var1, Integer.valueOf(var4));
+				return var4;
 			}
 		}
 	}

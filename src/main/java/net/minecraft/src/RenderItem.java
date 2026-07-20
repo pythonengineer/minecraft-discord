@@ -7,13 +7,14 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 public class RenderItem extends Render {
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	private EaglercraftRandom random = new EaglercraftRandom();
+	public boolean field_27004_a = true;
 
 	public RenderItem() {
 		this.shadowSize = 0.15F;
 		this.field_194_c = 12.0F / 16.0F;
 	}
 
-	public void func_165_a(EntityItem var1, double var2, double var4, double var6, float var8, float var9) {
+	public void doRenderItem(EntityItem var1, double var2, double var4, double var6, float var8, float var9) {
 		this.random.setSeed(187L);
 		ItemStack var10 = var1.item;
 		GL11.glPushMatrix();
@@ -37,7 +38,7 @@ public class RenderItem extends Render {
 		float var16;
 		float var17;
 		float var18;
-		if(var10.itemID < 256 && RenderBlocks.func_1219_a(Block.blocksList[var10.itemID].getRenderType())) {
+		if(var10.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var10.itemID].getRenderType())) {
 			GL11.glRotatef(var12, 0.0F, 1.0F, 0.0F);
 			this.loadTexture("/terrain.png");
 			float var27 = 0.25F;
@@ -56,7 +57,7 @@ public class RenderItem extends Render {
 					GL11.glTranslatef(var16, var17, var18);
 				}
 
-				this.renderBlocks.func_1227_a(Block.blocksList[var10.itemID], var10.getItemDamage());
+				this.renderBlocks.renderBlockOnInventory(Block.blocksList[var10.itemID], var10.getItemDamage());
 				GL11.glPopMatrix();
 			}
 		} else {
@@ -102,35 +103,49 @@ public class RenderItem extends Render {
 		GL11.glPopMatrix();
 	}
 
-	public void renderItemIntoGUI(FontRenderer var1, RenderEngine var2, ItemStack var3, int var4, int var5) {
-		if(var3 != null) {
-			if(var3.itemID < 256 && RenderBlocks.func_1219_a(Block.blocksList[var3.itemID].getRenderType())) {
-				int var6 = var3.itemID;
-				var2.bindTexture(var2.getTexture("/terrain.png"));
-				Block var7 = Block.blocksList[var6];
-				GL11.glPushMatrix();
-				GL11.glTranslatef((float)(var4 - 2), (float)(var5 + 3), 0.0F);
-				GL11.glScalef(10.0F, 10.0F, 10.0F);
-				GL11.glTranslatef(1.0F, 0.5F, 8.0F);
-				GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-				GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+	public void func_27003_a(FontRenderer var1, RenderEngine var2, int var3, int var4, int var5, int var6, int var7) {
+		if(var3 < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var3].getRenderType())) {
+			var2.bindTexture(var2.getTexture("/terrain.png"));
+			Block var12 = Block.blocksList[var3];
+			GL11.glPushMatrix();
+			GL11.glTranslatef((float)(var6 - 2), (float)(var7 + 3), -3.0F);
+			GL11.glScalef(10.0F, 10.0F, 10.0F);
+			GL11.glTranslatef(1.0F, 0.5F, 8.0F);
+			GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			if(this.field_27004_a) {
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				GL11.glScalef(1.0F, 1.0F, 1.0F);
-				this.renderBlocks.func_1227_a(var7, var3.getItemDamage());
-				GL11.glPopMatrix();
-			} else if(var3.getIconIndex() >= 0) {
-				GL11.glDisable(GL11.GL_LIGHTING);
-				if(var3.itemID < 256) {
-					var2.bindTexture(var2.getTexture("/terrain.png"));
-				} else {
-					var2.bindTexture(var2.getTexture("/gui/items.png"));
-				}
-
-				this.renderTexturedQuad(var4, var5, var3.getIconIndex() % 16 * 16, var3.getIconIndex() / 16 * 16, 16, 16);
-				GL11.glEnable(GL11.GL_LIGHTING);
 			}
 
-			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glScalef(1.0F, 1.0F, 1.0F);
+			this.renderBlocks.renderBlockOnInventory(var12, var4);
+			GL11.glPopMatrix();
+		} else if(var5 >= 0) {
+			GL11.glDisable(GL11.GL_LIGHTING);
+			if(var3 < 256) {
+				var2.bindTexture(var2.getTexture("/terrain.png"));
+			} else {
+				var2.bindTexture(var2.getTexture("/gui/items.png"));
+			}
+
+			int var8 = Item.itemsList[var3].func_27010_f(var4);
+			float var9 = (float)(var8 >> 16 & 255) / 255.0F;
+			float var10 = (float)(var8 >> 8 & 255) / 255.0F;
+			float var11 = (float)(var8 & 255) / 255.0F;
+			if(this.field_27004_a) {
+				GL11.glColor4f(var9, var10, var11, 1.0F);
+			}
+
+			this.renderTexturedQuad(var6, var7, var5 % 16 * 16, var5 / 16 * 16, 16, 16);
+			GL11.glEnable(GL11.GL_LIGHTING);
+		}
+
+		GL11.glEnable(GL11.GL_CULL_FACE);
+	}
+
+	public void renderItemIntoGUI(FontRenderer var1, RenderEngine var2, ItemStack var3, int var4, int var5) {
+		if(var3 != null) {
+			this.func_27003_a(var1, var2, var3.itemID, var3.getItemDamage(), var3.getIconIndex(), var4, var5);
 		}
 	}
 
@@ -197,6 +212,6 @@ public class RenderItem extends Render {
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.func_165_a((EntityItem)var1, var2, var4, var6, var8, var9);
+		this.doRenderItem((EntityItem)var1, var2, var4, var6, var8, var9);
 	}
 }

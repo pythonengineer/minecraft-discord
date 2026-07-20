@@ -30,12 +30,12 @@ public class BlockRedstoneRepeater extends Block {
 		int var6 = var1.getBlockMetadata(var2, var3, var4);
 		boolean var7 = this.func_22022_g(var1, var2, var3, var4, var6);
 		if(this.field_22025_c && !var7) {
-			var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.field_22021_bh.blockID, var6);
+			var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.redstoneRepeaterIdle.blockID, var6);
 		} else if(!this.field_22025_c) {
-			var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.field_22020_bi.blockID, var6);
+			var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.redstoneRepeaterActive.blockID, var6);
 			if(!var7) {
 				int var8 = (var6 & 12) >> 2;
-				var1.scheduleBlockUpdate(var2, var3, var4, Block.field_22020_bi.blockID, field_22023_b[var8] * 2);
+				var1.scheduleBlockUpdate(var2, var3, var4, Block.redstoneRepeaterActive.blockID, field_22023_b[var8] * 2);
 			}
 		}
 
@@ -139,7 +139,7 @@ public class BlockRedstoneRepeater extends Block {
 	}
 
 	public int idDropped(int var1, EaglercraftRandom var2) {
-		return Item.field_22018_aZ.shiftedIndex;
+		return Item.redstoneRepeater.shiftedIndex;
 	}
 
 	public void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {

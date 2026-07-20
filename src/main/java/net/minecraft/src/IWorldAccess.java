@@ -1,7 +1,7 @@
 package net.minecraft.src;
 
 public interface IWorldAccess {
-	void func_934_a(int var1, int var2, int var3);
+	void markBlockAndNeighborsNeedsUpdate(int var1, int var2, int var3);
 
 	void markBlockRangeNeedsUpdate(int var1, int var2, int var3, int var4, int var5, int var6);
 

@@ -15,7 +15,7 @@ public abstract class GuiContainer extends GuiScreen {
     private static RenderItem itemRenderer = new RenderItem();
     protected int xSize = 176;
     protected int ySize = 166;
-    public CraftingInventoryCB inventorySlots;
+    public Container inventorySlots;
     protected int guiLeft;
     protected int guiTop;
     private Slot clickedSlot;
@@ -40,7 +40,7 @@ public abstract class GuiContainer extends GuiScreen {
     private boolean doubleClick;
     private ItemStack shiftClickedSlot;
 
-    public GuiContainer(CraftingInventoryCB var1) {
+    public GuiContainer(Container var1) {
         this.inventorySlots = var1;
     }
 
@@ -84,10 +84,10 @@ public abstract class GuiContainer extends GuiScreen {
                 itemstack.stackSize /= 2;
             } else if (this.dragSplitting && this.dragSplittingSlots.contains(slot6) && itemstack1 != null) {
                 if (this.dragSplittingSlots.size() != 1) {
-                    if (CraftingInventoryCB.canAddItemToSlot(slot6, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slot6)) {
+                    if (Container.canAddItemToSlot(slot6, itemstack1, true) && this.inventorySlots.canDragIntoSlot(slot6)) {
                         itemstack = itemstack1.copy();
                         flag = true;
-                        CraftingInventoryCB.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack,
+                        Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack,
                                 slot6.getStack() == null ? 0 : slot6.getStack().stackSize);
                         if (itemstack.stackSize > itemstack.getItem().getItemStackLimit()) {
                             s = "" + itemstack.getItem().getItemStackLimit();
@@ -108,7 +108,7 @@ public abstract class GuiContainer extends GuiScreen {
             }
 
             if (itemstack == null) {
-                int var8 = slot6.func_775_c();
+                int var8 = slot6.getBackgroundIconIndex();
                 if(var8 >= 0) {
                     GL11.glDisable(GL11.GL_LIGHTING);
                     this.mc.renderEngine.bindTexture(this.mc.renderEngine.getTexture("/gui/items.png"));
@@ -127,7 +127,7 @@ public abstract class GuiContainer extends GuiScreen {
                 itemRenderer.renderItemOverlayIntoGUI(this.fontRenderer, this.mc.renderEngine, itemstack, i10, i11, s);
             }
 
-            if(!this.mc.gameSettings.touchscreen && this.func_20081_a(slot6, var1, var2)) {
+            if(!this.mc.gameSettings.touchscreen && this.getIsMouseOverSlot(slot6, var1, var2)) {
                 slot = slot6;
                 GL11.glDisable(GL11.GL_LIGHTING);
                 GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -180,7 +180,7 @@ public abstract class GuiContainer extends GuiScreen {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         this.drawGuiContainerForegroundLayer();
-        if(this.mc.thePlayer.inventory.getItemStack() == null && slot != null && slot.func_20005_c()) {
+        if(this.mc.thePlayer.inventory.getItemStack() == null && slot != null && slot.getHasStack()) {
             String var13 = ("" + StringTranslate.getInstance().translateNamedKey(slot.getStack().func_20109_f())).trim();
             if(var13.length() > 0) {
                 int var9 = var1 - var4 + 12;
@@ -191,9 +191,10 @@ public abstract class GuiContainer extends GuiScreen {
             }
         }
 
+        GL11.glPopMatrix();
+        super.drawScreen(var1, var2, var3);
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glPopMatrix();
     }
 
     protected void drawGuiContainerForegroundLayer() {
@@ -230,7 +231,7 @@ public abstract class GuiContainer extends GuiScreen {
                 for (int n = 0; n < basicClicks.size(); ++n) {
                     int[] click = basicClicks.get(n);
                     if (click[0] != -1) {
-                        this.mc.playerController.func_20085_a(this.inventorySlots.windowId, click[0], click[1], 0, this.mc.thePlayer);
+                        this.mc.playerController.func_27174_a(this.inventorySlots.windowId, click[0], click[1], 0, this.mc.thePlayer);
                     }
                 }
 
@@ -239,7 +240,7 @@ public abstract class GuiContainer extends GuiScreen {
         }
 
         if (slotId != -1) {
-            this.mc.playerController.func_20085_a(this.inventorySlots.windowId, slotId, clickedButton, mode, this.mc.thePlayer);
+            this.mc.playerController.func_27174_a(this.inventorySlots.windowId, slotId, clickedButton, mode, this.mc.thePlayer);
         }
     }
 
@@ -256,7 +257,7 @@ public abstract class GuiContainer extends GuiScreen {
                         this.draggedStack = this.clickedSlot.getStack().copy();
                     }
                 } else if (this.draggedStack.stackSize > 1 && slot != null
-                        && CraftingInventoryCB.canAddItemToSlot(slot, this.draggedStack, false)) {
+                        && Container.canAddItemToSlot(slot, this.draggedStack, false)) {
                     long l = EagRuntime.currentTimeMillis();
                     if (this.currentDragTargetSlot == slot) {
                         if (l - this.dragItemDropDelay > 500L) {
@@ -274,7 +275,7 @@ public abstract class GuiContainer extends GuiScreen {
             }
         } else if (this.dragSplitting && slot != null && this.mc.thePlayer.inventory.getItemStack() != null
                 && this.mc.thePlayer.inventory.getItemStack().stackSize > this.dragSplittingSlots.size()
-                && CraftingInventoryCB.canAddItemToSlot(slot, this.mc.thePlayer.inventory.getItemStack(), true) && slot.isItemValid(this.mc.thePlayer.inventory.getItemStack())
+                && Container.canAddItemToSlot(slot, this.mc.thePlayer.inventory.getItemStack(), true) && slot.isItemValid(this.mc.thePlayer.inventory.getItemStack())
                 && this.inventorySlots.canDragIntoSlot(slot)) {
             this.dragSplittingSlots.add(slot);
             this.updateDragSplitting();
@@ -289,7 +290,7 @@ public abstract class GuiContainer extends GuiScreen {
             for (Slot slot : this.dragSplittingSlots) {
                 ItemStack itemstack1 = this.mc.thePlayer.inventory.getItemStack().copy();
                 int i = slot.getStack() == null ? 0 : slot.getStack().stackSize;
-                CraftingInventoryCB.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack1, i);
+                Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, itemstack1, i);
                 if (itemstack1.stackSize > itemstack1.getItem().getItemStackLimit()) {
                     itemstack1.stackSize = itemstack1.getItem().getItemStackLimit();
                 }
@@ -395,7 +396,7 @@ public abstract class GuiContainer extends GuiScreen {
                         Slot slot2 = lst.get(n);
                         if (slot2 != null && slot2.getHasStack()
                                 && slot2.inventory == slot.inventory
-                                && CraftingInventoryCB.canAddItemToSlot(slot2, this.shiftClickedSlot, true)) {
+                                && Container.canAddItemToSlot(slot2, this.shiftClickedSlot, true)) {
                             this.handleMouseClick(slot2, this.inventorySlots.slots.indexOf(slot2), k, 1);
                         }
                     }
@@ -425,7 +426,7 @@ public abstract class GuiContainer extends GuiScreen {
                         this.draggedStack = this.clickedSlot.getStack();
                     }
 
-                    boolean flag2 = CraftingInventoryCB.canAddItemToSlot(slot, this.draggedStack, false);
+                    boolean flag2 = Container.canAddItemToSlot(slot, this.draggedStack, false);
                     if (j1 != -1 && this.draggedStack != null && flag2) {
                         this.handleMouseClick(this.clickedSlot, this.inventorySlots.slots.indexOf(this.clickedSlot), k, 0);
                         this.handleMouseClick(slot, j1, 0, 0);
@@ -487,7 +488,7 @@ public abstract class GuiContainer extends GuiScreen {
     private Slot getSlotAtPosition(int x, int y) {
         for(int i3 = 0; i3 < this.inventorySlots.slots.size(); ++i3) {
             Slot slot4 = (Slot)this.inventorySlots.slots.get(i3);
-            if(this.func_20081_a(slot4, x, y)) {
+            if(this.getIsMouseOverSlot(slot4, x, y)) {
                 return slot4;
             }
         }
@@ -495,7 +496,7 @@ public abstract class GuiContainer extends GuiScreen {
         return null;
     }
 
-    private boolean func_20081_a(Slot var1, int var2, int var3) {
+    private boolean getIsMouseOverSlot(Slot var1, int var2, int var3) {
         int var4 = (this.width - this.xSize) / 2;
         int var5 = (this.height - this.ySize) / 2;
         var2 -= var4;
@@ -519,14 +520,14 @@ public abstract class GuiContainer extends GuiScreen {
                 break;
             }
 
-            if (!CraftingInventoryCB.canAddItemToSlot(slot, heldNow, true) || !slot.isItemValid(heldNow)
+            if (!Container.canAddItemToSlot(slot, heldNow, true) || !slot.isItemValid(heldNow)
                     || !this.inventorySlots.canDragIntoSlot(slot)) {
                 continue;
             }
 
             int existing = slot.getHasStack() ? slot.getStack().stackSize : 0;
             ItemStack share = heldNow.copy();
-            CraftingInventoryCB.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, share, existing);
+            Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, share, existing);
             int target = Math.min(Math.min(share.stackSize, slot.getSlotStackLimit()), heldNow.getMaxStackSize());
             int deposit = target - existing;
             int idx = this.inventorySlots.slots.indexOf(slot);

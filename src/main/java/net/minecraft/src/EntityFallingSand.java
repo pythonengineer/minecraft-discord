@@ -20,10 +20,13 @@ public class EntityFallingSand extends Entity {
 		this.motionX = 0.0D;
 		this.motionY = 0.0D;
 		this.motionZ = 0.0D;
-		this.entityWalks = false;
 		this.prevPosX = var2;
 		this.prevPosY = var4;
 		this.prevPosZ = var6;
+	}
+
+	protected boolean canTriggerWalking() {
+		return false;
 	}
 
 	protected void entityInit() {

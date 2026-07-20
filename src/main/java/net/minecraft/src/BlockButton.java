@@ -41,13 +41,13 @@ public class BlockButton extends Block {
 		} else if(var5 == 5 && var1.isBlockOpaqueCube(var2 - 1, var3, var4)) {
 			var6 = 1;
 		} else {
-			var6 = this.func_22036_h(var1, var2, var3, var4);
+			var6 = this.getOrientation(var1, var2, var3, var4);
 		}
 
 		var1.setBlockMetadataWithNotify(var2, var3, var4, var6 + var7);
 	}
 
-	private int func_22036_h(World var1, int var2, int var3, int var4) {
+	private int getOrientation(World var1, int var2, int var3, int var4) {
 		return var1.isBlockOpaqueCube(var2 - 1, var3, var4) ? 1 : (var1.isBlockOpaqueCube(var2 + 1, var3, var4) ? 2 : (var1.isBlockOpaqueCube(var2, var3, var4 - 1) ? 3 : (var1.isBlockOpaqueCube(var2, var3, var4 + 1) ? 4 : 1)));
 	}
 
@@ -209,7 +209,7 @@ public class BlockButton extends Block {
 		}
 	}
 
-	public void func_237_e() {
+	public void setBlockBoundsForItemRender() {
 		float var1 = 3.0F / 16.0F;
 		float var2 = 2.0F / 16.0F;
 		float var3 = 2.0F / 16.0F;

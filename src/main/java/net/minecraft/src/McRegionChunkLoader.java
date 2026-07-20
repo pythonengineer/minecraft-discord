@@ -2,19 +2,18 @@ package net.minecraft.src;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-
-import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import java.io.IOException;
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class McRegionChunkLoader implements IChunkLoader {
-	private final VFile2 field_22184_a;
+	private final VFile2 worldDir;
 
 	public McRegionChunkLoader(VFile2 var1) {
-		this.field_22184_a = var1;
+		this.worldDir = var1;
 	}
 
 	public Chunk loadChunk(World var1, int var2, int var3) throws IOException {
-		DataInputStream var4 = RegionFileCache.func_22194_c(this.field_22184_a, var2, var3);
+		DataInputStream var4 = RegionFileCache.getChunkInputStream(this.worldDir, var2, var3);
 		if(var4 != null) {
 			NBTTagCompound var5 = CompressedStreamTools.func_1141_a(var4);
 			if(!var5.hasKey("Level")) {
@@ -32,6 +31,7 @@ public class McRegionChunkLoader implements IChunkLoader {
 					var6 = ChunkLoader.loadChunkIntoWorldFromCompound(var1, var5.getCompoundTag("Level"));
 				}
 
+				var6.func_25124_i();
 				return var6;
 			}
 		} else {
@@ -43,7 +43,7 @@ public class McRegionChunkLoader implements IChunkLoader {
 		var1.checkSessionLock();
 
 		try {
-			DataOutputStream var3 = RegionFileCache.func_22190_d(this.field_22184_a, var2.xPosition, var2.zPosition);
+			DataOutputStream var3 = RegionFileCache.getChunkOutputStream(this.worldDir, var2.xPosition, var2.zPosition);
 			NBTTagCompound var4 = new NBTTagCompound();
 			NBTTagCompound var5 = new NBTTagCompound();
 			var4.setTag("Level", var5);
@@ -51,7 +51,7 @@ public class McRegionChunkLoader implements IChunkLoader {
 			CompressedStreamTools.func_1139_a(var4, var3);
 			var3.close();
 			WorldInfo var6 = var1.func_22144_v();
-			var6.func_22297_b(var6.func_22306_g() + (long)RegionFileCache.func_22191_b(this.field_22184_a, var2.xPosition, var2.zPosition));
+			var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionFileCache.func_22191_b(this.worldDir, var2.xPosition, var2.zPosition));
 		} catch (Exception var7) {
 			var7.printStackTrace();
 		}

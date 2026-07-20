@@ -36,7 +36,6 @@ public class EntityFX extends Entity {
 		this.particleScale = (this.rand.nextFloat() * 0.5F + 0.5F) * 2.0F;
 		this.particleMaxAge = (int)(4.0F / (this.rand.nextFloat() * 0.9F + 0.1F));
 		this.particleAge = 0;
-		this.entityWalks = false;
 	}
 
 	public EntityFX func_407_b(float var1) {
@@ -50,6 +49,10 @@ public class EntityFX extends Entity {
 		this.setSize(0.2F * var1, 0.2F * var1);
 		this.particleScale *= var1;
 		return this;
+	}
+
+	protected boolean canTriggerWalking() {
+		return false;
 	}
 
 	protected void entityInit() {

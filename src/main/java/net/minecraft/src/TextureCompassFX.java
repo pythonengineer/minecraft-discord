@@ -10,7 +10,7 @@ public class TextureCompassFX extends TextureFX {
 	private double field_4228_j;
 
 	public TextureCompassFX(Minecraft var1) {
-		super(Item.compass.getIconIndex((ItemStack)null));
+		super(Item.compass.func_27009_a(0));
 		this.mc = var1;
 		this.tileImage = 1;
 
@@ -48,11 +48,11 @@ public class TextureCompassFX extends TextureFX {
 
 		double var20 = 0.0D;
 		if(this.mc.theWorld != null && this.mc.thePlayer != null) {
-			ChunkCoordinates var21 = this.mc.theWorld.func_22137_s();
-			double var23 = (double)var21.field_22395_a - this.mc.thePlayer.posX;
-			double var25 = (double)var21.field_22396_c - this.mc.thePlayer.posZ;
+			ChunkCoordinates var21 = this.mc.theWorld.getSpawnPoint();
+			double var23 = (double)var21.x - this.mc.thePlayer.posX;
+			double var25 = (double)var21.z - this.mc.thePlayer.posZ;
 			var20 = (double)(this.mc.thePlayer.rotationYaw - 90.0F) * Math.PI / 180.0D - Math.atan2(var25, var23);
-			if(this.mc.theWorld.worldProvider.field_4220_c) {
+			if(this.mc.theWorld.worldProvider.isNether) {
 				var20 = Math.random() * (double)((float)Math.PI) * 2.0D;
 			}
 		}

@@ -5,7 +5,7 @@ import net.lax1dude.eaglercraft.internal.IAudioResource;
 
 public class SoundPoolEntry {
     private EaglercraftSoundManager mgr;
-    public String soundName;
+	public String soundName;
     public String soundUrl;
     public boolean playStatic = false;
     public boolean queued = false;
@@ -50,5 +50,5 @@ public class SoundPoolEntry {
 
     public void finish(IAudioResource buffer) {
         this.mgr.playSoundLoaded(this, buffer);
-    }
+	}
 }

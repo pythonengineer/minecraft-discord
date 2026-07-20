@@ -8,11 +8,12 @@ public enum EnumOptions {
 	RENDER_DISTANCE("options.renderDistance", false, false),
 	VIEW_BOBBING("options.viewBobbing", false, true),
 	ANAGLYPH("options.anaglyph", false, true),
+	ADVANCED_OPENGL("options.advancedOpengl", false, true),
 	LIMIT_FRAMERATE("options.limitFramerate", false, true),
 	DIFFICULTY("options.difficulty", false, false),
 	GRAPHICS("options.graphics", false, false),
 	AMBIENT_OCCLUSION("options.ao", false, true),
-    GUI_SCALE("options.guiScale", false, false);
+	GUI_SCALE("options.guiScale", false, false);
 
 	private final boolean enumFloat;
 	private final boolean enumBoolean;

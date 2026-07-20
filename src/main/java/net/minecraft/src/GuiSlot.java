@@ -7,257 +7,312 @@ import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 import net.lax1dude.eaglercraft.EagRuntime;
 
 public abstract class GuiSlot {
-	private final Minecraft field_22264_a;
-	private final int field_22263_b;
-	private final int field_22262_c;
-	private final int field_22261_d;
-	private final int field_22260_e;
-	private final int field_22259_f;
-	private final int field_22258_g;
-	private final int field_22257_h;
-	private int field_22256_i;
-	private int field_22255_j;
-	private float field_22254_k = -2.0F;
-	private float field_22253_l;
-	private float field_22252_m;
-	private int field_22251_n = -1;
-	private long field_22250_o = 0L;
+	private final Minecraft mc;
+	private final int width;
+	private final int height;
+	protected final int top;
+	protected final int bottom;
+	private final int right;
+	private final int left;
+	protected final int posZ;
+	private int scrollUpButtonID;
+	private int scrollDownButtonID;
+	private float initialClickY = -2.0F;
+	private float scrollMultiplier;
+	private float amountScrolled;
+	private int selectedElement = -1;
+	private long lastClicked = 0L;
+	private boolean field_25123_p = true;
+	private boolean field_27262_q;
+	private int field_27261_r;
 
 	public GuiSlot(Minecraft var1, int var2, int var3, int var4, int var5, int var6) {
-		this.field_22264_a = var1;
-		this.field_22263_b = var2;
-		this.field_22262_c = var3;
-		this.field_22261_d = var4;
-		this.field_22260_e = var5;
-		this.field_22257_h = var6;
-		this.field_22258_g = 0;
-		this.field_22259_f = var2;
+		this.mc = var1;
+		this.width = var2;
+		this.height = var3;
+		this.top = var4;
+		this.bottom = var5;
+		this.posZ = var6;
+		this.left = 0;
+		this.right = var2;
 	}
 
-	protected abstract int func_22249_a();
-
-	protected abstract void func_22247_a(int var1, boolean var2);
-
-	protected abstract boolean func_22246_a(int var1);
-
-	protected abstract int func_22245_b();
-
-	protected abstract void func_22248_c();
-
-	protected abstract void func_22242_a(int var1, int var2, int var3, int var4, Tessellator var5);
-
-	public void func_22240_a(List var1, int var2, int var3) {
-		this.field_22256_i = var2;
-		this.field_22255_j = var3;
+	public void func_27258_a(boolean var1) {
+		this.field_25123_p = var1;
 	}
 
-	private void func_22244_d() {
-		int var1 = this.func_22245_b() - (this.field_22260_e - this.field_22261_d - 4);
+	protected void func_27259_a(boolean var1, int var2) {
+		this.field_27262_q = var1;
+		this.field_27261_r = var2;
+		if(!var1) {
+			this.field_27261_r = 0;
+		}
+
+	}
+
+	protected abstract int getSize();
+
+	protected abstract void elementClicked(int var1, boolean var2);
+
+	protected abstract boolean isSelected(int var1);
+
+	protected int getContentHeight() {
+		return this.getSize() * this.posZ + this.field_27261_r;
+	}
+
+	protected abstract void drawBackground();
+
+	protected abstract void drawSlot(int var1, int var2, int var3, int var4, Tessellator var5);
+
+	protected void func_27260_a(int var1, int var2, Tessellator var3) {
+	}
+
+	protected void func_27255_a(int var1, int var2) {
+	}
+
+	protected void func_27257_b(int var1, int var2) {
+	}
+
+	public int func_27256_c(int var1, int var2) {
+		int var3 = this.width / 2 - 110;
+		int var4 = this.width / 2 + 110;
+		int var5 = var2 - this.top - this.field_27261_r + (int)this.amountScrolled - 4;
+		int var6 = var5 / this.posZ;
+		return var1 >= var3 && var1 <= var4 && var6 >= 0 && var5 >= 0 && var6 < this.getSize() ? var6 : -1;
+	}
+
+	public void registerScrollButtons(List var1, int var2, int var3) {
+		this.scrollUpButtonID = var2;
+		this.scrollDownButtonID = var3;
+	}
+
+	private void bindAmountScrolled() {
+		int var1 = this.getContentHeight() - (this.bottom - this.top - 4);
 		if(var1 < 0) {
 			var1 /= 2;
 		}
 
-		if(this.field_22252_m < 0.0F) {
-			this.field_22252_m = 0.0F;
+		if(this.amountScrolled < 0.0F) {
+			this.amountScrolled = 0.0F;
 		}
 
-		if(this.field_22252_m > (float)var1) {
-			this.field_22252_m = (float)var1;
+		if(this.amountScrolled > (float)var1) {
+			this.amountScrolled = (float)var1;
 		}
 
 	}
 
-	public void func_22241_a(GuiButton var1) {
+	public void actionPerformed(GuiButton var1) {
 		if(var1.enabled) {
-			if(var1.id == this.field_22256_i) {
-				this.field_22252_m -= (float)(this.field_22257_h * 2 / 3);
-				this.field_22254_k = -2.0F;
-				this.func_22244_d();
-			} else if(var1.id == this.field_22255_j) {
-				this.field_22252_m += (float)(this.field_22257_h * 2 / 3);
-				this.field_22254_k = -2.0F;
-				this.func_22244_d();
+			if(var1.id == this.scrollUpButtonID) {
+				this.amountScrolled -= (float)(this.posZ * 2 / 3);
+				this.initialClickY = -2.0F;
+				this.bindAmountScrolled();
+			} else if(var1.id == this.scrollDownButtonID) {
+				this.amountScrolled += (float)(this.posZ * 2 / 3);
+				this.initialClickY = -2.0F;
+				this.bindAmountScrolled();
 			}
 
 		}
 	}
 
-	public void func_22243_a(int var1, int var2, float var3) {
-		this.func_22248_c();
-		int var4 = this.func_22249_a();
-		int var5 = this.field_22263_b / 2 + 124;
+	public void drawScreen(int var1, int var2, float var3) {
+		this.drawBackground();
+		int var4 = this.getSize();
+		int var5 = this.width / 2 + 124;
 		int var6 = var5 + 6;
 		int var9;
+		int var10;
 		int var11;
-		int var18;
+		int var13;
+		int var19;
 		if(Mouse.isButtonDown(0)) {
-			if(this.field_22254_k == -1.0F) {
-				if(var2 >= this.field_22261_d && var2 <= this.field_22260_e) {
-					int var7 = this.field_22263_b / 2 - 110;
-					int var8 = this.field_22263_b / 2 + 110;
-					var9 = (var2 - this.field_22261_d + (int)this.field_22252_m - 2) / this.field_22257_h;
-					if(var1 >= var7 && var1 <= var8 && var9 >= 0 && var9 < var4) {
-						boolean var10 = var9 == this.field_22251_n && EagRuntime.currentTimeMillis() - this.field_22250_o < 250L;
-						this.func_22247_a(var9, var10);
-						this.field_22251_n = var9;
-						this.field_22250_o = EagRuntime.currentTimeMillis();
+			if(this.initialClickY == -1.0F) {
+				boolean var7 = true;
+				if(var2 >= this.top && var2 <= this.bottom) {
+					int var8 = this.width / 2 - 110;
+					var9 = this.width / 2 + 110;
+					var10 = var2 - this.top - this.field_27261_r + (int)this.amountScrolled - 4;
+					var11 = var10 / this.posZ;
+					if(var1 >= var8 && var1 <= var9 && var11 >= 0 && var10 >= 0 && var11 < var4) {
+						boolean var12 = var11 == this.selectedElement && EagRuntime.currentTimeMillis() - this.lastClicked < 250L;
+						this.elementClicked(var11, var12);
+						this.selectedElement = var11;
+						this.lastClicked = EagRuntime.currentTimeMillis();
+					} else if(var1 >= var8 && var1 <= var9 && var10 < 0) {
+						this.func_27255_a(var1 - var8, var2 - this.top + (int)this.amountScrolled - 4);
+						var7 = false;
 					}
 
 					if(var1 >= var5 && var1 <= var6) {
-						this.field_22253_l = -1.0F;
-						var18 = this.func_22245_b() - (this.field_22260_e - this.field_22261_d - 4);
-						if(var18 < 1) {
-							var18 = 1;
+						this.scrollMultiplier = -1.0F;
+						var19 = this.getContentHeight() - (this.bottom - this.top - 4);
+						if(var19 < 1) {
+							var19 = 1;
 						}
 
-						var11 = (this.field_22260_e - this.field_22261_d) * (this.field_22260_e - this.field_22261_d) / this.func_22245_b();
-						if(var11 < 32) {
-							var11 = 32;
+						var13 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getContentHeight());
+						if(var13 < 32) {
+							var13 = 32;
 						}
 
-						if(var11 > this.field_22260_e - this.field_22261_d - 8) {
-							var11 = this.field_22260_e - this.field_22261_d - 8;
+						if(var13 > this.bottom - this.top - 8) {
+							var13 = this.bottom - this.top - 8;
 						}
 
-						this.field_22253_l /= (float)(this.field_22260_e - this.field_22261_d - var11) / (float)var18;
+						this.scrollMultiplier /= (float)(this.bottom - this.top - var13) / (float)var19;
 					} else {
-						this.field_22253_l = 1.0F;
+						this.scrollMultiplier = 1.0F;
 					}
 
-					this.field_22254_k = (float)var2;
+					if(var7) {
+						this.initialClickY = (float)var2;
+					} else {
+						this.initialClickY = -2.0F;
+					}
 				} else {
-					this.field_22254_k = -2.0F;
+					this.initialClickY = -2.0F;
 				}
-			} else if(this.field_22254_k >= 0.0F) {
-				this.field_22252_m -= ((float)var2 - this.field_22254_k) * this.field_22253_l;
-				this.field_22254_k = (float)var2;
+			} else if(this.initialClickY >= 0.0F) {
+				this.amountScrolled -= ((float)var2 - this.initialClickY) * this.scrollMultiplier;
+				this.initialClickY = (float)var2;
 			}
 		} else {
-			this.field_22254_k = -1.0F;
+			this.initialClickY = -1.0F;
 		}
 
-		this.func_22244_d();
+		this.bindAmountScrolled();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_FOG);
-		Tessellator var15 = Tessellator.instance;
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.field_22264_a.renderEngine.getTexture("/gui/background.png"));
+		Tessellator var16 = Tessellator.instance;
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/background.png"));
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		float var16 = 32.0F;
-		var15.startDrawingQuads();
-		var15.setColorOpaque_I(2105376);
-		var15.addVertexWithUV((double)this.field_22258_g, (double)this.field_22260_e, 0.0D, (double)((float)this.field_22258_g / var16), (double)((float)(this.field_22260_e + (int)this.field_22252_m) / var16));
-		var15.addVertexWithUV((double)this.field_22259_f, (double)this.field_22260_e, 0.0D, (double)((float)this.field_22259_f / var16), (double)((float)(this.field_22260_e + (int)this.field_22252_m) / var16));
-		var15.addVertexWithUV((double)this.field_22259_f, (double)this.field_22261_d, 0.0D, (double)((float)this.field_22259_f / var16), (double)((float)(this.field_22261_d + (int)this.field_22252_m) / var16));
-		var15.addVertexWithUV((double)this.field_22258_g, (double)this.field_22261_d, 0.0D, (double)((float)this.field_22258_g / var16), (double)((float)(this.field_22261_d + (int)this.field_22252_m) / var16));
-		var15.draw();
-
-		for(var9 = 0; var9 < var4; ++var9) {
-			var18 = this.field_22263_b / 2 - 92 - 16;
-			var11 = this.field_22261_d + 4 + var9 * this.field_22257_h - (int)this.field_22252_m;
-			byte var12 = 32;
-			if(this.func_22246_a(var9)) {
-				int var13 = this.field_22263_b / 2 - 110;
-				int var14 = this.field_22263_b / 2 + 110;
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-				var15.startDrawingQuads();
-				var15.setColorOpaque_I(8421504);
-				var15.addVertexWithUV((double)var13, (double)(var11 + var12 + 2), 0.0D, 0.0D, 1.0D);
-				var15.addVertexWithUV((double)var14, (double)(var11 + var12 + 2), 0.0D, 1.0D, 1.0D);
-				var15.addVertexWithUV((double)var14, (double)(var11 - 2), 0.0D, 1.0D, 0.0D);
-				var15.addVertexWithUV((double)var13, (double)(var11 - 2), 0.0D, 0.0D, 0.0D);
-				var15.setColorOpaque_I(0);
-				var15.addVertexWithUV((double)(var13 + 1), (double)(var11 + var12 + 1), 0.0D, 0.0D, 1.0D);
-				var15.addVertexWithUV((double)(var14 - 1), (double)(var11 + var12 + 1), 0.0D, 1.0D, 1.0D);
-				var15.addVertexWithUV((double)(var14 - 1), (double)(var11 - 1), 0.0D, 1.0D, 0.0D);
-				var15.addVertexWithUV((double)(var13 + 1), (double)(var11 - 1), 0.0D, 0.0D, 0.0D);
-				var15.draw();
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
-			}
-
-			this.func_22242_a(var9, var18, var11, var12, var15);
+		float var17 = 32.0F;
+		var16.startDrawingQuads();
+		var16.setColorOpaque_I(2105376);
+		var16.addVertexWithUV((double)this.left, (double)this.bottom, 0.0D, (double)((float)this.left / var17), (double)((float)(this.bottom + (int)this.amountScrolled) / var17));
+		var16.addVertexWithUV((double)this.right, (double)this.bottom, 0.0D, (double)((float)this.right / var17), (double)((float)(this.bottom + (int)this.amountScrolled) / var17));
+		var16.addVertexWithUV((double)this.right, (double)this.top, 0.0D, (double)((float)this.right / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
+		var16.addVertexWithUV((double)this.left, (double)this.top, 0.0D, (double)((float)this.left / var17), (double)((float)(this.top + (int)this.amountScrolled) / var17));
+		var16.draw();
+		var9 = this.width / 2 - 92 - 16;
+		var10 = this.top + 4 - (int)this.amountScrolled;
+		if(this.field_27262_q) {
+			this.func_27260_a(var9, var10, var16);
 		}
 
-		byte var17 = 4;
-		this.func_22239_a(0, this.field_22261_d, 255, 255);
-		this.func_22239_a(this.field_22260_e, this.field_22262_c, 255, 255);
+		int var14;
+		for(var11 = 0; var11 < var4; ++var11) {
+			var19 = var10 + var11 * this.posZ + this.field_27261_r;
+			var13 = this.posZ - 4;
+			if(var19 <= this.bottom && var19 + var13 >= this.top) {
+				if(this.field_25123_p && this.isSelected(var11)) {
+					var14 = this.width / 2 - 110;
+					int var15 = this.width / 2 + 110;
+					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+					var16.startDrawingQuads();
+					var16.setColorOpaque_I(8421504);
+					var16.addVertexWithUV((double)var14, (double)(var19 + var13 + 2), 0.0D, 0.0D, 1.0D);
+					var16.addVertexWithUV((double)var15, (double)(var19 + var13 + 2), 0.0D, 1.0D, 1.0D);
+					var16.addVertexWithUV((double)var15, (double)(var19 - 2), 0.0D, 1.0D, 0.0D);
+					var16.addVertexWithUV((double)var14, (double)(var19 - 2), 0.0D, 0.0D, 0.0D);
+					var16.setColorOpaque_I(0);
+					var16.addVertexWithUV((double)(var14 + 1), (double)(var19 + var13 + 1), 0.0D, 0.0D, 1.0D);
+					var16.addVertexWithUV((double)(var15 - 1), (double)(var19 + var13 + 1), 0.0D, 1.0D, 1.0D);
+					var16.addVertexWithUV((double)(var15 - 1), (double)(var19 - 1), 0.0D, 1.0D, 0.0D);
+					var16.addVertexWithUV((double)(var14 + 1), (double)(var19 - 1), 0.0D, 0.0D, 0.0D);
+					var16.draw();
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+				}
+
+				this.drawSlot(var11, var9, var19, var13, var16);
+			}
+		}
+
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		byte var18 = 4;
+		this.overlayBackground(0, this.top, 255, 255);
+		this.overlayBackground(this.bottom, this.height, 255, 255);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		var15.startDrawingQuads();
-		var15.setColorRGBA_I(0, 0);
-		var15.addVertexWithUV((double)this.field_22258_g, (double)(this.field_22261_d + var17), 0.0D, 0.0D, 1.0D);
-		var15.addVertexWithUV((double)this.field_22259_f, (double)(this.field_22261_d + var17), 0.0D, 1.0D, 1.0D);
-		var15.setColorRGBA_I(0, 255);
-		var15.addVertexWithUV((double)this.field_22259_f, (double)this.field_22261_d, 0.0D, 1.0D, 0.0D);
-		var15.addVertexWithUV((double)this.field_22258_g, (double)this.field_22261_d, 0.0D, 0.0D, 0.0D);
-		var15.draw();
-		var15.startDrawingQuads();
-		var15.setColorRGBA_I(0, 255);
-		var15.addVertexWithUV((double)this.field_22258_g, (double)this.field_22260_e, 0.0D, 0.0D, 1.0D);
-		var15.addVertexWithUV((double)this.field_22259_f, (double)this.field_22260_e, 0.0D, 1.0D, 1.0D);
-		var15.setColorRGBA_I(0, 0);
-		var15.addVertexWithUV((double)this.field_22259_f, (double)(this.field_22260_e - var17), 0.0D, 1.0D, 0.0D);
-		var15.addVertexWithUV((double)this.field_22258_g, (double)(this.field_22260_e - var17), 0.0D, 0.0D, 0.0D);
-		var15.draw();
-		var18 = this.func_22245_b() - (this.field_22260_e - this.field_22261_d - 4);
-		if(var18 > 0) {
-			var11 = (this.field_22260_e - this.field_22261_d) * (this.field_22260_e - this.field_22261_d) / this.func_22245_b();
-			if(var11 < 32) {
-				var11 = 32;
+		var16.startDrawingQuads();
+		var16.setColorRGBA_I(0, 0);
+		var16.addVertexWithUV((double)this.left, (double)(this.top + var18), 0.0D, 0.0D, 1.0D);
+		var16.addVertexWithUV((double)this.right, (double)(this.top + var18), 0.0D, 1.0D, 1.0D);
+		var16.setColorRGBA_I(0, 255);
+		var16.addVertexWithUV((double)this.right, (double)this.top, 0.0D, 1.0D, 0.0D);
+		var16.addVertexWithUV((double)this.left, (double)this.top, 0.0D, 0.0D, 0.0D);
+		var16.draw();
+		var16.startDrawingQuads();
+		var16.setColorRGBA_I(0, 255);
+		var16.addVertexWithUV((double)this.left, (double)this.bottom, 0.0D, 0.0D, 1.0D);
+		var16.addVertexWithUV((double)this.right, (double)this.bottom, 0.0D, 1.0D, 1.0D);
+		var16.setColorRGBA_I(0, 0);
+		var16.addVertexWithUV((double)this.right, (double)(this.bottom - var18), 0.0D, 1.0D, 0.0D);
+		var16.addVertexWithUV((double)this.left, (double)(this.bottom - var18), 0.0D, 0.0D, 0.0D);
+		var16.draw();
+		var19 = this.getContentHeight() - (this.bottom - this.top - 4);
+		if(var19 > 0) {
+			var13 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
+			if(var13 < 32) {
+				var13 = 32;
 			}
 
-			if(var11 > this.field_22260_e - this.field_22261_d - 8) {
-				var11 = this.field_22260_e - this.field_22261_d - 8;
+			if(var13 > this.bottom - this.top - 8) {
+				var13 = this.bottom - this.top - 8;
 			}
 
-			int var19 = (int)this.field_22252_m * (this.field_22260_e - this.field_22261_d - var11) / var18 + this.field_22261_d;
-			if(var19 < this.field_22261_d) {
-				var19 = this.field_22261_d;
+			var14 = (int)this.amountScrolled * (this.bottom - this.top - var13) / var19 + this.top;
+			if(var14 < this.top) {
+				var14 = this.top;
 			}
 
-			var15.startDrawingQuads();
-			var15.setColorRGBA_I(0, 255);
-			var15.addVertexWithUV((double)var5, (double)this.field_22260_e, 0.0D, 0.0D, 1.0D);
-			var15.addVertexWithUV((double)var6, (double)this.field_22260_e, 0.0D, 1.0D, 1.0D);
-			var15.addVertexWithUV((double)var6, (double)this.field_22261_d, 0.0D, 1.0D, 0.0D);
-			var15.addVertexWithUV((double)var5, (double)this.field_22261_d, 0.0D, 0.0D, 0.0D);
-			var15.draw();
-			var15.startDrawingQuads();
-			var15.setColorRGBA_I(8421504, 255);
-			var15.addVertexWithUV((double)var5, (double)(var19 + var11), 0.0D, 0.0D, 1.0D);
-			var15.addVertexWithUV((double)var6, (double)(var19 + var11), 0.0D, 1.0D, 1.0D);
-			var15.addVertexWithUV((double)var6, (double)var19, 0.0D, 1.0D, 0.0D);
-			var15.addVertexWithUV((double)var5, (double)var19, 0.0D, 0.0D, 0.0D);
-			var15.draw();
-			var15.startDrawingQuads();
-			var15.setColorRGBA_I(12632256, 255);
-			var15.addVertexWithUV((double)var5, (double)(var19 + var11 - 1), 0.0D, 0.0D, 1.0D);
-			var15.addVertexWithUV((double)(var6 - 1), (double)(var19 + var11 - 1), 0.0D, 1.0D, 1.0D);
-			var15.addVertexWithUV((double)(var6 - 1), (double)var19, 0.0D, 1.0D, 0.0D);
-			var15.addVertexWithUV((double)var5, (double)var19, 0.0D, 0.0D, 0.0D);
-			var15.draw();
+			var16.startDrawingQuads();
+			var16.setColorRGBA_I(0, 255);
+			var16.addVertexWithUV((double)var5, (double)this.bottom, 0.0D, 0.0D, 1.0D);
+			var16.addVertexWithUV((double)var6, (double)this.bottom, 0.0D, 1.0D, 1.0D);
+			var16.addVertexWithUV((double)var6, (double)this.top, 0.0D, 1.0D, 0.0D);
+			var16.addVertexWithUV((double)var5, (double)this.top, 0.0D, 0.0D, 0.0D);
+			var16.draw();
+			var16.startDrawingQuads();
+			var16.setColorRGBA_I(8421504, 255);
+			var16.addVertexWithUV((double)var5, (double)(var14 + var13), 0.0D, 0.0D, 1.0D);
+			var16.addVertexWithUV((double)var6, (double)(var14 + var13), 0.0D, 1.0D, 1.0D);
+			var16.addVertexWithUV((double)var6, (double)var14, 0.0D, 1.0D, 0.0D);
+			var16.addVertexWithUV((double)var5, (double)var14, 0.0D, 0.0D, 0.0D);
+			var16.draw();
+			var16.startDrawingQuads();
+			var16.setColorRGBA_I(12632256, 255);
+			var16.addVertexWithUV((double)var5, (double)(var14 + var13 - 1), 0.0D, 0.0D, 1.0D);
+			var16.addVertexWithUV((double)(var6 - 1), (double)(var14 + var13 - 1), 0.0D, 1.0D, 1.0D);
+			var16.addVertexWithUV((double)(var6 - 1), (double)var14, 0.0D, 1.0D, 0.0D);
+			var16.addVertexWithUV((double)var5, (double)var14, 0.0D, 0.0D, 0.0D);
+			var16.draw();
 		}
 
+		this.func_27257_b(var1, var2);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glShadeModel(GL11.GL_FLAT);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 
-	private void func_22239_a(int var1, int var2, int var3, int var4) {
+	private void overlayBackground(int var1, int var2, int var3, int var4) {
 		Tessellator var5 = Tessellator.instance;
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.field_22264_a.renderEngine.getTexture("/gui/background.png"));
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/background.png"));
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float var6 = 32.0F;
 		var5.startDrawingQuads();
 		var5.setColorRGBA_I(4210752, var4);
 		var5.addVertexWithUV(0.0D, (double)var2, 0.0D, 0.0D, (double)((float)var2 / var6));
-		var5.addVertexWithUV((double)this.field_22263_b, (double)var2, 0.0D, (double)((float)this.field_22263_b / var6), (double)((float)var2 / var6));
+		var5.addVertexWithUV((double)this.width, (double)var2, 0.0D, (double)((float)this.width / var6), (double)((float)var2 / var6));
 		var5.setColorRGBA_I(4210752, var3);
-		var5.addVertexWithUV((double)this.field_22263_b, (double)var1, 0.0D, (double)((float)this.field_22263_b / var6), (double)((float)var1 / var6));
+		var5.addVertexWithUV((double)this.width, (double)var1, 0.0D, (double)((float)this.width / var6), (double)((float)var1 / var6));
 		var5.addVertexWithUV(0.0D, (double)var1, 0.0D, 0.0D, (double)((float)var1 / var6));
 		var5.draw();
 	}

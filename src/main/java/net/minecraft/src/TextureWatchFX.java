@@ -11,7 +11,7 @@ public class TextureWatchFX extends TextureFX {
 	private double field_4221_k;
 
 	public TextureWatchFX(Minecraft var1) {
-		super(Item.pocketSundial.getIconIndex((ItemStack)null));
+		super(Item.pocketSundial.func_27009_a(0));
 		this.field_4225_g = var1;
 		this.tileImage = 1;
 
@@ -33,7 +33,7 @@ public class TextureWatchFX extends TextureFX {
 		if(this.field_4225_g.theWorld != null && this.field_4225_g.thePlayer != null) {
 			float var3 = this.field_4225_g.theWorld.getCelestialAngle(1.0F);
 			var1 = (double)(-var3 * (float)Math.PI * 2.0F);
-			if(this.field_4225_g.theWorld.worldProvider.field_4220_c) {
+			if(this.field_4225_g.theWorld.worldProvider.isNether) {
 				var1 = Math.random() * (double)((float)Math.PI) * 2.0D;
 			}
 		}

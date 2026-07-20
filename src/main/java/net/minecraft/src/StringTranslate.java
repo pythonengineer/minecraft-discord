@@ -1,6 +1,5 @@
 package net.minecraft.src;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -18,8 +17,28 @@ public class StringTranslate {
 	private static StringTranslate instance = new StringTranslate();
     private final Map<String, String> translateTable = Maps.newHashMap();
 
-    private StringTranslate() {
+	private StringTranslate() {
         try (InputStream inputstream = EagRuntime.getRequiredResourceStream("/assets/lang/en_US.lang")) {
+            List<String> strs = IOUtils.readLines(inputstream, StandardCharsets.UTF_8);
+            for (int i = 0, l = strs.size(); i < l; ++i) {
+                String s = strs.get(i);
+                if (!s.isEmpty() && s.charAt(0) != 35) {
+                    String[] astring = (String[]) Iterables.toArray(equalSignSplitter.split(s), String.class);
+                    if (astring != null && astring.length == 2) {
+                        String s1 = astring[0];
+                        String s2 = numericVariablePattern.matcher(astring[1]).replaceAll("%s"); // TODO: originally "%$1s"
+                                                                                                    // but must be "%s" to
+                                                                                                    // work with TeaVM
+                                                                                                    // (why?)
+                        this.translateTable.put(s1, s2);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            EagRuntime.debugPrintStackTrace(e);
+		}
+
+        try (InputStream inputstream = EagRuntime.getRequiredResourceStream("/assets/lang/stats_US.lang")) {
             List<String> strs = IOUtils.readLines(inputstream, StandardCharsets.UTF_8);
             for (int i = 0, l = strs.size(); i < l; ++i) {
                 String s = strs.get(i);
@@ -39,7 +58,7 @@ public class StringTranslate {
             EagRuntime.debugPrintStackTrace(e);
         }
 
-    }
+	}
 
 	public static StringTranslate getInstance() {
 		return instance;

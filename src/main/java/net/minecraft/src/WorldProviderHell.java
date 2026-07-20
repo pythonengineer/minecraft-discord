@@ -4,8 +4,8 @@ import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class WorldProviderHell extends WorldProvider {
 	public void registerWorldChunkManager() {
-		this.worldChunkMgr = new WorldChunkManagerHell(MobSpawnerBase.hell, 1.0D, 0.0D);
-		this.field_4220_c = true;
+		this.worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.hell, 1.0D, 0.0D);
+		this.isNether = true;
 		this.isHellWorld = true;
 		this.field_6478_e = true;
 		this.worldType = -1;
@@ -26,7 +26,7 @@ public class WorldProviderHell extends WorldProvider {
 	}
 
 	public IChunkProvider getChunkProvider() {
-		return new ChunkProviderHell(this.worldObj, this.worldObj.func_22138_q());
+		return new ChunkProviderHell(this.worldObj, this.worldObj.getRandomSeed());
 	}
 
 	public boolean canCoordinateBeSpawn(int var1, int var2) {

@@ -2,7 +2,7 @@ package net.minecraft.src;
 
 import net.lax1dude.eaglercraft.util.MathHelper;
 
-public class EntitySkeleton extends EntityMobs {
+public class EntitySkeleton extends EntityMob {
 	private static final ItemStack defaultHeldItem = new ItemStack(Item.bow, 1);
 
 	public EntitySkeleton(World var1) {
@@ -66,7 +66,7 @@ public class EntitySkeleton extends EntityMobs {
 		return Item.arrow.shiftedIndex;
 	}
 
-	protected void func_21066_o() {
+	protected void dropFewItems() {
 		int var1 = this.rand.nextInt(3);
 
 		int var2;

@@ -234,7 +234,7 @@ public class Teleporter {
 		}
 
 		for(var20 = 0; var20 < 4; ++var20) {
-			var1.field_1043_h = true;
+			var1.editingBlocks = true;
 
 			for(var21 = 0; var21 < 4; ++var21) {
 				for(var22 = -1; var22 < 4; ++var22) {
@@ -246,7 +246,7 @@ public class Teleporter {
 				}
 			}
 
-			var1.field_1043_h = false;
+			var1.editingBlocks = false;
 
 			for(var21 = 0; var21 < 4; ++var21) {
 				for(var22 = -1; var22 < 4; ++var22) {

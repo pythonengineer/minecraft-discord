@@ -102,7 +102,7 @@ public class MapGenCaves extends MapGenBase {
 							for(int var42 = var36 + 1; !var56 && var42 >= var54 - 1; --var42) {
 								var43 = (var40 * 16 + var41) * 128 + var42;
 								if(var42 >= 0 && var42 < 128) {
-									if(var3[var43] == Block.waterStill.blockID || var3[var43] == Block.waterMoving.blockID) {
+									if(var3[var43] == Block.waterMoving.blockID || var3[var43] == Block.waterStill.blockID) {
 										var56 = true;
 									}
 
@@ -133,7 +133,7 @@ public class MapGenCaves extends MapGenBase {
 
 											if(var51 == Block.stone.blockID || var51 == Block.dirt.blockID || var51 == Block.grass.blockID) {
 												if(var48 < 10) {
-													var3[var46] = (byte)Block.lavaStill.blockID;
+													var3[var46] = (byte)Block.lavaMoving.blockID;
 												} else {
 													var3[var46] = 0;
 													if(var47 && var3[var46 - 1] == Block.dirt.blockID) {

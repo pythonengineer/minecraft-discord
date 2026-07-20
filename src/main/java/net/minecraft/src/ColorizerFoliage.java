@@ -12,11 +12,11 @@ public class ColorizerFoliage {
 		return foliageBuffer[var5 << 8 | var4];
 	}
 
-	public static int func_21175_a() {
+	public static int getFoliageColorPine() {
 		return 6396257;
 	}
 
-	public static int func_21174_b() {
+	public static int getFoliageColorBirch() {
 		return 8431445;
 	}
 

@@ -1,6 +1,8 @@
 package net.minecraft.src;
 
+import java.util.Calendar;
 import net.lax1dude.eaglercraft.EaglercraftRandom;
+import net.lax1dude.eaglercraft.EagRuntime;
 
 public class ChunkProviderGenerate implements IChunkProvider {
 	private EaglercraftRandom rand;
@@ -18,7 +20,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 	private double[] gravelNoise = new double[256];
 	private double[] stoneNoise = new double[256];
 	private MapGenBase field_902_u = new MapGenCaves();
-	private MobSpawnerBase[] biomesForGeneration;
+	private BiomeGenBase[] biomesForGeneration;
 	double[] field_4185_d;
 	double[] field_4184_e;
 	double[] field_4183_f;
@@ -40,7 +42,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		this.mobSpawnerNoise = new NoiseGeneratorOctaves(this.rand, 8);
 	}
 
-	public void generateTerrain(int var1, int var2, byte[] var3, MobSpawnerBase[] var4, double[] var5) {
+	public void generateTerrain(int var1, int var2, byte[] var3, BiomeGenBase[] var4, double[] var5) {
 		byte var6 = 4;
 		byte var7 = 64;
 		int var8 = var6 + 1;
@@ -82,7 +84,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 									if(var53 < 0.5D && var13 * 8 + var32 >= var7 - 1) {
 										var55 = Block.ice.blockID;
 									} else {
-										var55 = Block.waterMoving.blockID;
+										var55 = Block.waterStill.blockID;
 									}
 								}
 
@@ -110,7 +112,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 
 	}
 
-	public void replaceBlocksForBiome(int var1, int var2, byte[] var3, MobSpawnerBase[] var4) {
+	public void replaceBlocksForBiome(int var1, int var2, byte[] var3, BiomeGenBase[] var4) {
 		byte var5 = 64;
 		double var6 = 1.0D / 32.0D;
 		this.sandNoise = this.field_909_n.generateNoiseOctaves(this.sandNoise, (double)(var1 * 16), (double)(var2 * 16), 0.0D, 16, 16, 1, var6, var6, 1.0D);
@@ -119,7 +121,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 
 		for(int var8 = 0; var8 < 16; ++var8) {
 			for(int var9 = 0; var9 < 16; ++var9) {
-				MobSpawnerBase var10 = var4[var8 + var9 * 16];
+				BiomeGenBase var10 = var4[var8 + var9 * 16];
 				boolean var11 = this.sandNoise[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 0.0D;
 				boolean var12 = this.gravelNoise[var8 + var9 * 16] + this.rand.nextDouble() * 0.2D > 3.0D;
 				int var13 = (int)(this.stoneNoise[var8 + var9 * 16] / 3.0D + 3.0D + this.rand.nextDouble() * 0.25D);
@@ -161,7 +163,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 								}
 
 								if(var17 < var5 && var15 == 0) {
-									var15 = (byte)Block.waterMoving.blockID;
+									var15 = (byte)Block.waterStill.blockID;
 								}
 
 								var14 = var13;
@@ -184,6 +186,10 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			}
 		}
 
+	}
+
+	public Chunk func_538_d(int var1, int var2) {
+		return this.provideChunk(var1, var2);
 	}
 
 	public Chunk provideChunk(int var1, int var2) {
@@ -307,11 +313,11 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		BlockSand.fallInstantly = true;
 		int var4 = var2 * 16;
 		int var5 = var3 * 16;
-		MobSpawnerBase var6 = this.worldObj.getWorldChunkManager().func_4073_a(var4 + 16, var5 + 16);
-		this.rand.setSeed(this.worldObj.func_22138_q());
+		BiomeGenBase var6 = this.worldObj.getWorldChunkManager().func_4073_a(var4 + 16, var5 + 16);
+		this.rand.setSeed(this.worldObj.getRandomSeed());
 		long var7 = this.rand.nextLong() / 2L * 2L + 1L;
 		long var9 = this.rand.nextLong() / 2L * 2L + 1L;
-		this.rand.setSeed((long)var2 * var7 + (long)var3 * var9 ^ this.worldObj.func_22138_q());
+		this.rand.setSeed((long)var2 * var7 + (long)var3 * var9 ^ this.worldObj.getRandomSeed());
 		double var11 = 0.25D;
 		int var13;
 		int var14;
@@ -320,7 +326,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			var13 = var4 + this.rand.nextInt(16) + 8;
 			var14 = this.rand.nextInt(128);
 			var15 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenLakes(Block.waterMoving.blockID)).generate(this.worldObj, this.rand, var13, var14, var15);
+			(new WorldGenLakes(Block.waterStill.blockID)).generate(this.worldObj, this.rand, var13, var14, var15);
 		}
 
 		if(this.rand.nextInt(8) == 0) {
@@ -328,7 +334,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			var14 = this.rand.nextInt(this.rand.nextInt(120) + 8);
 			var15 = var5 + this.rand.nextInt(16) + 8;
 			if(var14 < 64 || this.rand.nextInt(10) == 0) {
-				(new WorldGenLakes(Block.lavaMoving.blockID)).generate(this.worldObj, this.rand, var13, var14, var15);
+				(new WorldGenLakes(Block.lavaStill.blockID)).generate(this.worldObj, this.rand, var13, var14, var15);
 			}
 		}
 
@@ -410,31 +416,31 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			++var14;
 		}
 
-		if(var6 == MobSpawnerBase.forest) {
+		if(var6 == BiomeGenBase.forest) {
 			var14 += var13 + 5;
 		}
 
-		if(var6 == MobSpawnerBase.rainforest) {
+		if(var6 == BiomeGenBase.rainforest) {
 			var14 += var13 + 5;
 		}
 
-		if(var6 == MobSpawnerBase.seasonalForest) {
+		if(var6 == BiomeGenBase.seasonalForest) {
 			var14 += var13 + 2;
 		}
 
-		if(var6 == MobSpawnerBase.taiga) {
+		if(var6 == BiomeGenBase.taiga) {
 			var14 += var13 + 5;
 		}
 
-		if(var6 == MobSpawnerBase.desert) {
+		if(var6 == BiomeGenBase.desert) {
 			var14 -= 20;
 		}
 
-		if(var6 == MobSpawnerBase.tundra) {
+		if(var6 == BiomeGenBase.tundra) {
 			var14 -= 20;
 		}
 
-		if(var6 == MobSpawnerBase.plains) {
+		if(var6 == BiomeGenBase.plains) {
 			var14 -= 20;
 		}
 
@@ -491,7 +497,7 @@ public class ChunkProviderGenerate implements IChunkProvider {
 		}
 
 		var15 = 0;
-		if(var6 == MobSpawnerBase.desert) {
+		if(var6 == BiomeGenBase.desert) {
 			var15 += 10;
 		}
 
@@ -507,14 +513,14 @@ public class ChunkProviderGenerate implements IChunkProvider {
 			var17 = var4 + this.rand.nextInt(16) + 8;
 			var23 = this.rand.nextInt(this.rand.nextInt(120) + 8);
 			var19 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenLiquids(Block.waterStill.blockID)).generate(this.worldObj, this.rand, var17, var23, var19);
+			(new WorldGenLiquids(Block.waterMoving.blockID)).generate(this.worldObj, this.rand, var17, var23, var19);
 		}
 
 		for(var16 = 0; var16 < 20; ++var16) {
 			var17 = var4 + this.rand.nextInt(16) + 8;
 			var23 = this.rand.nextInt(this.rand.nextInt(this.rand.nextInt(112) + 8) + 8);
 			var19 = var5 + this.rand.nextInt(16) + 8;
-			(new WorldGenLiquids(Block.lavaStill.blockID)).generate(this.worldObj, this.rand, var17, var23, var19);
+			(new WorldGenLiquids(Block.lavaMoving.blockID)).generate(this.worldObj, this.rand, var17, var23, var19);
 		}
 
 		this.generatedTemperatures = this.worldObj.getWorldChunkManager().getTemperatures(this.generatedTemperatures, var4 + 8, var5 + 8, 16, 16);
@@ -528,6 +534,18 @@ public class ChunkProviderGenerate implements IChunkProvider {
 				if(var21 < 0.5D && var20 > 0 && var20 < 128 && this.worldObj.isAirBlock(var16, var20, var17) && this.worldObj.getBlockMaterial(var16, var20 - 1, var17).getIsSolid() && this.worldObj.getBlockMaterial(var16, var20 - 1, var17) != Material.ice) {
 					this.worldObj.setBlockWithNotify(var16, var20, var17, Block.snow.blockID);
 				}
+			}
+		}
+
+		Calendar var24 = Calendar.getInstance();
+		var24.setTimeInMillis(EagRuntime.currentTimeMillis());
+		if(var24.get(2) == 3 && var24.get(5) == 1) {
+			var17 = var4 + this.rand.nextInt(16) + 8;
+			var23 = this.rand.nextInt(128);
+			var19 = var5 + this.rand.nextInt(16) + 8;
+			if(this.worldObj.getBlockId(var17, var23, var19) == 0 && this.worldObj.isBlockOpaqueCube(var17, var23 - 1, var19)) {
+				System.out.println("added a chest!!");
+				this.worldObj.setBlockWithNotify(var17, var23, var19, Block.lockedChest.blockID);
 			}
 		}
 

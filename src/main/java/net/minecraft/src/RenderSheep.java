@@ -9,11 +9,11 @@ public class RenderSheep extends RenderLiving {
 	}
 
 	protected boolean func_176_a(EntitySheep var1, int var2, float var3) {
-		if(var2 == 0 && !var1.func_21072_p()) {
+		if(var2 == 0 && !var1.getSheared()) {
 			this.loadTexture("/mob/sheep_fur.png");
 			float var4 = var1.getEntityBrightness(var3);
 			int var5 = var1.getFleeceColor();
-			GL11.glColor3f(var4 * EntitySheep.field_21075_a[var5][0], var4 * EntitySheep.field_21075_a[var5][1], var4 * EntitySheep.field_21075_a[var5][2]);
+			GL11.glColor3f(var4 * EntitySheep.fleeceColorTable[var5][0], var4 * EntitySheep.fleeceColorTable[var5][1], var4 * EntitySheep.fleeceColorTable[var5][2]);
 			return true;
 		} else {
 			return false;

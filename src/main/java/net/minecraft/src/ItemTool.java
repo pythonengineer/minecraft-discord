@@ -11,7 +11,7 @@ public class ItemTool extends Item {
 		this.toolMaterial = var3;
 		this.blocksEffectiveAgainst = var4;
 		this.maxStackSize = 1;
-		this.maxDamage = var3.getMaxUses();
+		this.setMaxDamage(var3.getMaxUses());
 		this.efficiencyOnProperMaterial = var3.getEfficiencyOnProperMaterial();
 		this.damageVsEntity = var2 + var3.getDamageVsEntity();
 	}
@@ -26,12 +26,14 @@ public class ItemTool extends Item {
 		return 1.0F;
 	}
 
-	public void hitEntity(ItemStack var1, EntityLiving var2) {
-		var1.damageItem(2);
+	public boolean hitEntity(ItemStack var1, EntityLiving var2, EntityLiving var3) {
+		var1.func_25190_a(2, var3);
+		return true;
 	}
 
-	public void hitBlock(ItemStack var1, int var2, int var3, int var4, int var5) {
-		var1.damageItem(1);
+	public boolean func_25008_a(ItemStack var1, int var2, int var3, int var4, int var5, EntityLiving var6) {
+		var1.func_25190_a(1, var6);
+		return true;
 	}
 
 	public int getDamageVsEntity(Entity var1) {

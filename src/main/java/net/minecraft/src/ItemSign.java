@@ -5,7 +5,6 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 public class ItemSign extends Item {
 	public ItemSign(int var1) {
 		super(var1);
-		this.maxDamage = 64;
 		this.maxStackSize = 1;
 	}
 

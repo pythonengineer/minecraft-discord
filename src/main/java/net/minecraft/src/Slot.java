@@ -3,7 +3,7 @@ package net.minecraft.src;
 public class Slot {
 	private final int slotIndex;
 	final IInventory inventory;
-	public int field_20007_a;
+	public int slotNumber;
 	public int xDisplayPosition;
 	public int yDisplayPosition;
 
@@ -14,7 +14,7 @@ public class Slot {
 		this.yDisplayPosition = var4;
 	}
 
-	public void onPickupFromSlot() {
+	public void onPickupFromSlot(ItemStack var1) {
 		this.onSlotChanged();
 	}
 
@@ -26,13 +26,9 @@ public class Slot {
 		return this.inventory.getStackInSlot(this.slotIndex);
 	}
 
-	public boolean func_20005_c() {
+	public boolean getHasStack() {
 		return this.getStack() != null;
 	}
-
-    public boolean getHasStack() {
-        return this.getStack() != null;
-    }
 
 	public void putStack(ItemStack var1) {
 		this.inventory.setInventorySlotContents(this.slotIndex, var1);
@@ -47,11 +43,15 @@ public class Slot {
 		return this.inventory.getInventoryStackLimit();
 	}
 
-	public int func_775_c() {
+	public int getBackgroundIconIndex() {
 		return -1;
 	}
 
 	public ItemStack decrStackSize(int var1) {
 		return this.inventory.decrStackSize(this.slotIndex, var1);
+	}
+
+	public boolean func_25014_f() {
+		return false;
 	}
 }

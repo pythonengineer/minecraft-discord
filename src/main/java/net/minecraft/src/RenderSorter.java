@@ -17,8 +17,8 @@ public class RenderSorter implements Comparator {
 		} else if(var4 && !var3) {
 			return -1;
 		} else {
-			double var5 = (double)var1.distanceToEntity(this.field_4274_a);
-			double var7 = (double)var2.distanceToEntity(this.field_4274_a);
+			double var5 = (double)var1.distanceToEntitySquared(this.field_4274_a);
+			double var7 = (double)var2.distanceToEntitySquared(this.field_4274_a);
 			return var5 < var7 ? 1 : (var5 > var7 ? -1 : (var1.field_1735_w < var2.field_1735_w ? 1 : -1));
 		}
 	}

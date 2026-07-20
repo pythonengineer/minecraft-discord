@@ -9,7 +9,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 	private TileEntitySign entitySign;
 	private int updateCounter;
 	private int editLine = 0;
-	private static final String allowedCharacters = FontAllowedCharacters.allowedCharacters;
+	private static final String allowedCharacters = ChatAllowedCharacters.allowedCharacters;
 
 	public GuiEditSign(TileEntitySign var1) {
 		this.entitySign = var1;
@@ -24,7 +24,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 	public void onGuiClosed() {
 		Keyboard.enableRepeatEvents(false);
 		if(this.mc.theWorld.multiplayerWorld) {
-			this.mc.func_20001_q().addToSendQueue(new Packet130(this.entitySign.xCoord, this.entitySign.yCoord, this.entitySign.zCoord, this.entitySign.signText));
+			this.mc.func_20001_q().addToSendQueue(new Packet130UpdateSign(this.entitySign.xCoord, this.entitySign.yCoord, this.entitySign.zCoord, this.entitySign.signText));
 		}
 
 	}

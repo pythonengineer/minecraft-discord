@@ -47,57 +47,61 @@ public class BlockFire extends Block {
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		boolean var6 = var1.getBlockId(var2, var3 - 1, var4) == Block.bloodStone.blockID;
-		int var7 = var1.getBlockMetadata(var2, var3, var4);
-		if(var7 < 15) {
-			var1.setBlockMetadataWithNotify(var2, var3, var4, var7 + 1);
-			var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, this.tickRate());
-		}
-
-		if(!var6 && !this.func_263_h(var1, var2, var3, var4)) {
-			if(!var1.isBlockOpaqueCube(var2, var3 - 1, var4) || var7 > 3) {
-				var1.setBlockWithNotify(var2, var3, var4, 0);
+		boolean var6 = var1.getBlockId(var2, var3 - 1, var4) == Block.netherrack.blockID;
+		if(var6 || !var1.func_27161_C() || !var1.func_27167_r(var2, var3, var4) && !var1.func_27167_r(var2 - 1, var3, var4) && !var1.func_27167_r(var2 + 1, var3, var4) && !var1.func_27167_r(var2, var3, var4 - 1) && !var1.func_27167_r(var2, var3, var4 + 1)) {
+			int var7 = var1.getBlockMetadata(var2, var3, var4);
+			if(var7 < 15) {
+				var1.setBlockMetadataWithNotify(var2, var3, var4, var7 + 1);
+				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, this.tickRate());
 			}
 
-		} else if(!var6 && !this.canBlockCatchFire(var1, var2, var3 - 1, var4) && var7 == 15 && var5.nextInt(4) == 0) {
-			var1.setBlockWithNotify(var2, var3, var4, 0);
-		} else {
-			if(var7 % 2 == 0 && var7 > 2) {
-				this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 300, var5);
-				this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 300, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 250, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 250, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 300, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 300, var5);
+			if(!var6 && !this.func_263_h(var1, var2, var3, var4)) {
+				if(!var1.isBlockOpaqueCube(var2, var3 - 1, var4) || var7 > 3) {
+					var1.setBlockWithNotify(var2, var3, var4, 0);
+				}
 
-				for(int var8 = var2 - 1; var8 <= var2 + 1; ++var8) {
-					for(int var9 = var4 - 1; var9 <= var4 + 1; ++var9) {
-						for(int var10 = var3 - 1; var10 <= var3 + 4; ++var10) {
-							if(var8 != var2 || var10 != var3 || var9 != var4) {
-								int var11 = 100;
-								if(var10 > var3 + 1) {
-									var11 += (var10 - (var3 + 1)) * 100;
-								}
+			} else if(!var6 && !this.canBlockCatchFire(var1, var2, var3 - 1, var4) && var7 == 15 && var5.nextInt(4) == 0) {
+				var1.setBlockWithNotify(var2, var3, var4, 0);
+			} else {
+				if(var7 % 2 == 0 && var7 > 2) {
+					this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 300, var5);
+					this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 300, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 250, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 250, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 300, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 300, var5);
 
-								int var12 = this.getChanceOfNeighborsEncouragingFire(var1, var8, var10, var9);
-								if(var12 > 0 && var5.nextInt(var11) <= var12) {
-									var1.setBlockWithNotify(var8, var10, var9, this.blockID);
+					for(int var8 = var2 - 1; var8 <= var2 + 1; ++var8) {
+						for(int var9 = var4 - 1; var9 <= var4 + 1; ++var9) {
+							for(int var10 = var3 - 1; var10 <= var3 + 4; ++var10) {
+								if(var8 != var2 || var10 != var3 || var9 != var4) {
+									int var11 = 100;
+									if(var10 > var3 + 1) {
+										var11 += (var10 - (var3 + 1)) * 100;
+									}
+
+									int var12 = this.getChanceOfNeighborsEncouragingFire(var1, var8, var10, var9);
+									if(var12 > 0 && var5.nextInt(var11) <= var12 && (!var1.func_27161_C() || !var1.func_27167_r(var8, var10, var9)) && !var1.func_27167_r(var8 - 1, var10, var4) && !var1.func_27167_r(var8 + 1, var10, var9) && !var1.func_27167_r(var8, var10, var9 - 1) && !var1.func_27167_r(var8, var10, var9 + 1)) {
+										var1.setBlockWithNotify(var8, var10, var9, this.blockID);
+									}
 								}
 							}
 						}
 					}
 				}
-			}
 
-			if(var7 == 15) {
-				this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 1, var5);
-				this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 1, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 1, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 1, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 1, var5);
-				this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 1, var5);
-			}
+				if(var7 == 15) {
+					this.tryToCatchBlockOnFire(var1, var2 + 1, var3, var4, 1, var5);
+					this.tryToCatchBlockOnFire(var1, var2 - 1, var3, var4, 1, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3 - 1, var4, 1, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3 + 1, var4, 1, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3, var4 - 1, 1, var5);
+					this.tryToCatchBlockOnFire(var1, var2, var3, var4 + 1, 1, var5);
+				}
 
+			}
+		} else {
+			var1.setBlockWithNotify(var2, var3, var4, 0);
 		}
 	}
 
@@ -105,7 +109,7 @@ public class BlockFire extends Block {
 		int var7 = this.abilityToCatchFire[var1.getBlockId(var2, var3, var4)];
 		if(var6.nextInt(var5) < var7) {
 			boolean var8 = var1.getBlockId(var2, var3, var4) == Block.tnt.blockID;
-			if(var6.nextInt(2) == 0) {
+			if(var6.nextInt(2) == 0 && !var1.func_27167_r(var2, var3, var4)) {
 				var1.setBlockWithNotify(var2, var3, var4, this.blockID);
 			} else {
 				var1.setBlockWithNotify(var2, var3, var4, 0);

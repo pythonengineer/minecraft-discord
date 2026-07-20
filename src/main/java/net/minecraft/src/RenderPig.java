@@ -8,7 +8,7 @@ public class RenderPig extends RenderLiving {
 
 	protected boolean renderSaddledPig(EntityPig var1, int var2, float var3) {
 		this.loadTexture("/mob/saddle.png");
-		return var2 == 0 && var1.func_21068_q();
+		return var2 == 0 && var1.getSaddled();
 	}
 
 	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {

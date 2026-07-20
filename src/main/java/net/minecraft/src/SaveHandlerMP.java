@@ -3,20 +3,20 @@ package net.minecraft.src;
 import java.util.List;
 
 public class SaveHandlerMP implements ISaveHandler {
-	public WorldInfo func_22151_c() {
+	public WorldInfo loadWorldInfo() {
 		return null;
 	}
 
 	public void func_22150_b() {
 	}
 
-	public IChunkLoader func_22149_a(WorldProvider var1) {
+	public IChunkLoader getChunkLoader(WorldProvider var1) {
 		return null;
 	}
 
-	public void func_22148_a(WorldInfo var1, List var2) {
+	public void saveWorldInfoAndPlayer(WorldInfo var1, List var2) {
 	}
 
-	public void func_22152_a(WorldInfo var1) {
+	public void saveWorldInfo(WorldInfo var1) {
 	}
 }

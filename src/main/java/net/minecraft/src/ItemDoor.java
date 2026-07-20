@@ -8,7 +8,6 @@ public class ItemDoor extends Item {
 	public ItemDoor(int var1, Material var2) {
 		super(var1);
 		this.field_321_a = var2;
-		this.maxDamage = 64;
 		this.maxStackSize = 1;
 	}
 

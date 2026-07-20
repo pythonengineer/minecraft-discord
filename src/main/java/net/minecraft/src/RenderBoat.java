@@ -15,14 +15,14 @@ public class RenderBoat extends Render {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
 		GL11.glRotatef(180.0F - var8, 0.0F, 1.0F, 0.0F);
-		float var10 = (float)var1.field_806_b - var9;
-		float var11 = (float)var1.field_807_a - var9;
+		float var10 = (float)var1.boatTimeSinceHit - var9;
+		float var11 = (float)var1.boatCurrentDamage - var9;
 		if(var11 < 0.0F) {
 			var11 = 0.0F;
 		}
 
 		if(var10 > 0.0F) {
-			GL11.glRotatef(MathHelper.sin(var10) * var10 * var11 / 10.0F * (float)var1.field_808_c, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(MathHelper.sin(var10) * var10 * var11 / 10.0F * (float)var1.boatRockDirection, 1.0F, 0.0F, 0.0F);
 		}
 
 		this.loadTexture("/terrain.png");

@@ -11,12 +11,12 @@ public class EntitySquid extends EntityWaterMob {
 	public float field_21084_h = 0.0F;
 	public float field_21083_i = 0.0F;
 	public float field_21082_j = 0.0F;
-	private float field_21081_k = 0.0F;
+	private float randomMotionSpeed = 0.0F;
 	private float field_21080_l = 0.0F;
 	private float field_21079_m = 0.0F;
-	private float field_21078_n = 0.0F;
-	private float field_21077_o = 0.0F;
-	private float field_21076_p = 0.0F;
+	private float randomMotionVecX = 0.0F;
+	private float randomMotionVecY = 0.0F;
+	private float randomMotionVecZ = 0.0F;
 
 	public EntitySquid(World var1) {
 		super(var1);
@@ -53,7 +53,7 @@ public class EntitySquid extends EntityWaterMob {
 		return 0;
 	}
 
-	protected void func_21066_o() {
+	protected void dropFewItems() {
 		int var1 = this.rand.nextInt(3) + 1;
 
 		for(int var2 = 0; var2 < var1; ++var2) {
@@ -66,7 +66,7 @@ public class EntitySquid extends EntityWaterMob {
 		return false;
 	}
 
-	public boolean handleWaterMovement() {
+	public boolean func_27013_ag() {
 		return this.worldObj.handleMaterialAcceleration(this.boundingBox.expand(0.0D, (double)-0.6F, 0.0D), Material.water, this);
 	}
 
@@ -84,27 +84,27 @@ public class EntitySquid extends EntityWaterMob {
 			}
 		}
 
-		if(this.handleWaterMovement()) {
+		if(this.func_27013_ag()) {
 			float var1;
 			if(this.field_21085_g < (float)Math.PI) {
 				var1 = this.field_21085_g / (float)Math.PI;
 				this.field_21083_i = MathHelper.sin(var1 * var1 * (float)Math.PI) * (float)Math.PI * 0.25F;
 				if((double)var1 > 0.75D) {
-					this.field_21081_k = 1.0F;
+					this.randomMotionSpeed = 1.0F;
 					this.field_21079_m = 1.0F;
 				} else {
 					this.field_21079_m *= 0.8F;
 				}
 			} else {
 				this.field_21083_i = 0.0F;
-				this.field_21081_k *= 0.9F;
+				this.randomMotionSpeed *= 0.9F;
 				this.field_21079_m *= 0.99F;
 			}
 
 			if(!this.field_9343_G) {
-				this.motionX = (double)(this.field_21078_n * this.field_21081_k);
-				this.motionY = (double)(this.field_21077_o * this.field_21081_k);
-				this.motionZ = (double)(this.field_21076_p * this.field_21081_k);
+				this.motionX = (double)(this.randomMotionVecX * this.randomMotionSpeed);
+				this.motionY = (double)(this.randomMotionVecY * this.randomMotionSpeed);
+				this.motionZ = (double)(this.randomMotionVecZ * this.randomMotionSpeed);
 			}
 
 			var1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
@@ -131,11 +131,11 @@ public class EntitySquid extends EntityWaterMob {
 	}
 
 	protected void updatePlayerActionState() {
-		if(this.rand.nextInt(50) == 0 || !this.inWater || this.field_21078_n == 0.0F && this.field_21077_o == 0.0F && this.field_21076_p == 0.0F) {
+		if(this.rand.nextInt(50) == 0 || !this.inWater || this.randomMotionVecX == 0.0F && this.randomMotionVecY == 0.0F && this.randomMotionVecZ == 0.0F) {
 			float var1 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
-			this.field_21078_n = MathHelper.cos(var1) * 0.2F;
-			this.field_21077_o = -0.1F + this.rand.nextFloat() * 0.2F;
-			this.field_21076_p = MathHelper.sin(var1) * 0.2F;
+			this.randomMotionVecX = MathHelper.cos(var1) * 0.2F;
+			this.randomMotionVecY = -0.1F + this.rand.nextFloat() * 0.2F;
+			this.randomMotionVecZ = MathHelper.sin(var1) * 0.2F;
 		}
 
 	}
