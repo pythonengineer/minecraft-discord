@@ -15,7 +15,7 @@ public class ShapedRecipes implements IRecipe {
 		this.recipeOutput = var4;
 	}
 
-	public ItemStack func_25117_b() {
+	public ItemStack getRecipeOutput() {
 		return this.recipeOutput;
 	}
 

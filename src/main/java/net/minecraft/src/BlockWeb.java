@@ -1,12 +1,14 @@
 package net.minecraft.src;
 
+import net.lax1dude.eaglercraft.EaglercraftRandom;
+
 public class BlockWeb extends Block {
 	public BlockWeb(int var1, int var2) {
-		super(var1, var2, Material.cloth);
+		super(var1, var2, Material.field_31068_A);
 	}
 
 	public void onEntityCollidedWithBlock(World var1, int var2, int var3, int var4, Entity var5) {
-		var5.field_27016_ba = true;
+		var5.isInWeb = true;
 	}
 
 	public boolean isOpaqueCube() {
@@ -19,5 +21,13 @@ public class BlockWeb extends Block {
 
 	public int getRenderType() {
 		return 1;
+	}
+
+	public boolean renderAsNormalBlock() {
+		return false;
+	}
+
+	public int idDropped(int var1, EaglercraftRandom var2) {
+		return Item.silk.shiftedIndex;
 	}
 }

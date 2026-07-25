@@ -74,7 +74,7 @@ public class ChunkLoader implements IChunkLoader {
 		var1.checkSessionLock();
 		VFile2 var3 = this.chunkFileForXZ(var2.xPosition, var2.zPosition);
 		if(var3.exists()) {
-			WorldInfo var4 = var1.func_22144_v();
+			WorldInfo var4 = var1.getWorldInfo();
 			var4.setSizeOnDisk(var4.getSizeOnDisk() - var3.length());
 		}
 
@@ -91,7 +91,7 @@ public class ChunkLoader implements IChunkLoader {
 			}
 
 			var10.renameTo(var3);
-			WorldInfo var8 = var1.func_22144_v();
+			WorldInfo var8 = var1.getWorldInfo();
 			var8.setSizeOnDisk(var8.getSizeOnDisk() + var3.length());
 		} catch (Exception var9) {
 			var9.printStackTrace();
@@ -185,7 +185,7 @@ public class ChunkLoader implements IChunkLoader {
 				NBTTagCompound var12 = (NBTTagCompound)var10.tagAt(var11);
 				TileEntity var9 = TileEntity.createAndLoadEntity(var12);
 				if(var9 != null) {
-					var4.func_1001_a(var9);
+					var4.addTileEntity(var9);
 				}
 			}
 		}

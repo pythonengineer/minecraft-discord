@@ -40,7 +40,7 @@ public class EntitySkeleton extends EntityMob {
 			if(this.attackTime == 0) {
 				EntityArrow var7 = new EntityArrow(this.worldObj, this);
 				var7.posY += (double)1.4F;
-				double var8 = var1.posY - (double)0.2F - var7.posY;
+				double var8 = var1.posY + (double)var1.getEyeHeight() - (double)0.2F - var7.posY;
 				float var10 = MathHelper.sqrt_double(var3 * var3 + var5 * var5) * 0.2F;
 				this.worldObj.playSoundAtEntity(this, "random.bow", 1.0F, 1.0F / (this.rand.nextFloat() * 0.4F + 0.8F));
 				this.worldObj.entityJoinedWorld(var7);

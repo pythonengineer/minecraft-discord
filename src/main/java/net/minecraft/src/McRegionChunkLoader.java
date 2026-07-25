@@ -50,8 +50,8 @@ public class McRegionChunkLoader implements IChunkLoader {
 			ChunkLoader.storeChunkInCompound(var2, var1, var5);
 			CompressedStreamTools.func_1139_a(var4, var3);
 			var3.close();
-			WorldInfo var6 = var1.func_22144_v();
-			var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionFileCache.func_22191_b(this.worldDir, var2.xPosition, var2.zPosition));
+			WorldInfo var6 = var1.getWorldInfo();
+			var6.setSizeOnDisk(var6.getSizeOnDisk() + (long)RegionFileCache.getSizeDelta(this.worldDir, var2.xPosition, var2.zPosition));
 		} catch (Exception var7) {
 			var7.printStackTrace();
 		}

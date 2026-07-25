@@ -43,24 +43,45 @@ public abstract class Render {
 		GL11.glScalef(var16, var16, var16);
 		this.loadTexture("/terrain.png");
 		Tessellator var17 = Tessellator.instance;
-		float var18 = 1.0F;
-		float var19 = 0.5F;
-		float var20 = 0.0F;
-		float var21 = var1.height / var1.width;
+		float var18 = 0.5F;
+		float var19 = 0.0F;
+		float var20 = var1.height / var16;
+		float var21 = (float)(var1.posY - var1.boundingBox.minY);
 		GL11.glRotatef(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-		GL11.glTranslatef(0.0F, 0.0F, -0.4F + (float)((int)var21) * 0.02F);
+		GL11.glTranslatef(0.0F, 0.0F, -0.3F + (float)((int)var20) * 0.02F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		float var22 = 0.0F;
+		int var23 = 0;
 		var17.startDrawingQuads();
 
-		while(var21 > 0.0F) {
-			var17.addVertexWithUV((double)(var18 - var19), (double)(0.0F - var20), 0.0D, (double)var13, (double)var15);
-			var17.addVertexWithUV((double)(0.0F - var19), (double)(0.0F - var20), 0.0D, (double)var12, (double)var15);
-			var17.addVertexWithUV((double)(0.0F - var19), (double)(1.4F - var20), 0.0D, (double)var12, (double)var14);
-			var17.addVertexWithUV((double)(var18 - var19), (double)(1.4F - var20), 0.0D, (double)var13, (double)var14);
-			--var21;
-			--var20;
+		while(var20 > 0.0F) {
+			if(var23 % 2 == 0) {
+				var12 = (float)var10 / 256.0F;
+				var13 = ((float)var10 + 15.99F) / 256.0F;
+				var14 = (float)var11 / 256.0F;
+				var15 = ((float)var11 + 15.99F) / 256.0F;
+			} else {
+				var12 = (float)var10 / 256.0F;
+				var13 = ((float)var10 + 15.99F) / 256.0F;
+				var14 = (float)(var11 + 16) / 256.0F;
+				var15 = ((float)(var11 + 16) + 15.99F) / 256.0F;
+			}
+
+			if(var23 / 2 % 2 == 0) {
+				float var24 = var13;
+				var13 = var12;
+				var12 = var24;
+			}
+
+			var17.addVertexWithUV((double)(var18 - var19), (double)(0.0F - var21), (double)var22, (double)var13, (double)var15);
+			var17.addVertexWithUV((double)(-var18 - var19), (double)(0.0F - var21), (double)var22, (double)var12, (double)var15);
+			var17.addVertexWithUV((double)(-var18 - var19), (double)(1.4F - var21), (double)var22, (double)var12, (double)var14);
+			var17.addVertexWithUV((double)(var18 - var19), (double)(1.4F - var21), (double)var22, (double)var13, (double)var14);
+			var20 -= 0.45F;
+			var21 -= 0.45F;
 			var18 *= 0.9F;
-			GL11.glTranslatef(0.0F, 0.0F, -0.04F);
+			var22 += 0.03F;
+			++var23;
 		}
 
 		var17.draw();

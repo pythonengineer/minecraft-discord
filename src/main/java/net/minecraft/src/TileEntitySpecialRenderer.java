@@ -14,6 +14,9 @@ public abstract class TileEntitySpecialRenderer {
 		this.tileEntityRenderer = var1;
 	}
 
+	public void func_31069_a(World var1) {
+	}
+
 	public FontRenderer getFontRenderer() {
 		return this.tileEntityRenderer.getFontRenderer();
 	}

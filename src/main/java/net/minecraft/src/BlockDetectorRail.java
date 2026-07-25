@@ -21,7 +21,7 @@ public class BlockDetectorRail extends BlockRail {
 		if(!var1.multiplayerWorld) {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			if((var6 & 8) == 0) {
-				this.func_27046_f(var1, var2, var3, var4, var6);
+				this.setStateIfMinecartInteractsWithRail(var1, var2, var3, var4, var6);
 			}
 		}
 	}
@@ -30,7 +30,7 @@ public class BlockDetectorRail extends BlockRail {
 		if(!var1.multiplayerWorld) {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			if((var6 & 8) != 0) {
-				this.func_27046_f(var1, var2, var3, var4, var6);
+				this.setStateIfMinecartInteractsWithRail(var1, var2, var3, var4, var6);
 			}
 		}
 	}
@@ -43,7 +43,7 @@ public class BlockDetectorRail extends BlockRail {
 		return (var1.getBlockMetadata(var2, var3, var4) & 8) == 0 ? false : var5 == 1;
 	}
 
-	private void func_27046_f(World var1, int var2, int var3, int var4, int var5) {
+	private void setStateIfMinecartInteractsWithRail(World var1, int var2, int var3, int var4, int var5) {
 		boolean var6 = (var5 & 8) != 0;
 		boolean var7 = false;
 		float var8 = 2.0F / 16.0F;

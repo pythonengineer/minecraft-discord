@@ -7,5 +7,5 @@ public interface IRecipe {
 
 	int getRecipeSize();
 
-	ItemStack func_25117_b();
+	ItemStack getRecipeOutput();
 }

@@ -38,7 +38,7 @@ public class GuiOptions extends GuiScreen {
 		if(var1.enabled) {
 			if(var1.id < 100 && var1 instanceof GuiSmallButton) {
 				this.options.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
-				var1.displayString = this.options.getKeyBinding(EnumOptions.func_20137_a(var1.id));
+				var1.displayString = this.options.getKeyBinding(EnumOptions.getEnumOptions(var1.id));
 			}
 
 			if(var1.id == 101) {

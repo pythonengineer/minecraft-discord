@@ -14,9 +14,10 @@ public class WorldClient extends World {
 	private Set field_1053_F = new HashSet();
 
 	public WorldClient(NetClientHandler var1, long var2, int var4) {
-		super(new SaveHandlerMP(), "MpServer", WorldProvider.func_4101_a(var4), var2);
+		super(new SaveHandlerMP(), "MpServer", WorldProvider.getProviderForDimension(var4), var2);
 		this.sendQueue = var1;
 		this.setSpawnPoint(new ChunkCoordinates(8, 64, 8));
+		this.field_28108_z = var1.field_28118_b;
 	}
 
 	public void tick() {
@@ -80,9 +81,9 @@ public class WorldClient extends World {
 		return false;
 	}
 
-	public void func_713_a(int var1, int var2, boolean var3) {
+	public void doPreChunk(int var1, int var2, boolean var3) {
 		if(var3) {
-			this.field_20915_C.func_538_d(var1, var2);
+			this.field_20915_C.prepareChunk(var1, var2);
 		} else {
 			this.field_20915_C.func_539_c(var1, var2);
 		}
@@ -197,6 +198,45 @@ public class WorldClient extends World {
 	}
 
 	public void sendQuittingDisconnectingPacket() {
-		this.sendQueue.addToSendQueue(new Packet255KickDisconnect("Quitting"));
+		this.sendQueue.func_28117_a(new Packet255KickDisconnect("Quitting"));
+	}
+
+	protected void updateWeather() {
+		if(!this.worldProvider.hasNoSky) {
+			if(this.field_27168_F > 0) {
+				--this.field_27168_F;
+			}
+
+			this.prevRainingStrength = this.rainingStrength;
+			if(this.worldInfo.getRaining()) {
+				this.rainingStrength = (float)((double)this.rainingStrength + 0.01D);
+			} else {
+				this.rainingStrength = (float)((double)this.rainingStrength - 0.01D);
+			}
+
+			if(this.rainingStrength < 0.0F) {
+				this.rainingStrength = 0.0F;
+			}
+
+			if(this.rainingStrength > 1.0F) {
+				this.rainingStrength = 1.0F;
+			}
+
+			this.prevThunderingStrength = this.thunderingStrength;
+			if(this.worldInfo.getThundering()) {
+				this.thunderingStrength = (float)((double)this.thunderingStrength + 0.01D);
+			} else {
+				this.thunderingStrength = (float)((double)this.thunderingStrength - 0.01D);
+			}
+
+			if(this.thunderingStrength < 0.0F) {
+				this.thunderingStrength = 0.0F;
+			}
+
+			if(this.thunderingStrength > 1.0F) {
+				this.thunderingStrength = 1.0F;
+			}
+
+		}
 	}
 }

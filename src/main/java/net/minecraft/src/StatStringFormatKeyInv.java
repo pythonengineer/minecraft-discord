@@ -4,13 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
 
 public class StatStringFormatKeyInv implements IStatStringFormat {
-	final Minecraft field_27344_a;
+	final Minecraft mc;
 
 	public StatStringFormatKeyInv(Minecraft var1) {
-		this.field_27344_a = var1;
+		this.mc = var1;
 	}
 
-	public String func_27343_a(String var1) {
-		return String.format(var1, new Object[]{Keyboard.getKeyName(this.field_27344_a.gameSettings.keyBindInventory.keyCode)});
+	public String formatString(String var1) {
+		return String.format(var1, new Object[]{Keyboard.getKeyName(this.mc.gameSettings.keyBindInventory.keyCode)});
 	}
 }

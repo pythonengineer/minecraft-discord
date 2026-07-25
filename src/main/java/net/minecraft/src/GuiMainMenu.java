@@ -16,7 +16,7 @@ public class GuiMainMenu extends GuiScreen {
 	private static final EaglercraftRandom rand = new EaglercraftRandom();
 	private float updateCounter = 0.0F;
 	private String splashText = "missingno";
-	private GuiButton field_25096_l;
+	private GuiButton multiplayerButton;
 
 	public GuiMainMenu() {
 		try {
@@ -64,7 +64,7 @@ public class GuiMainMenu extends GuiScreen {
 		StringTranslate var2 = StringTranslate.getInstance();
 		int var4 = this.height / 4 + 48;
 		this.controlList.add(new GuiButton(1, this.width / 2 - 100, var4, var2.translateKey("menu.singleplayer")));
-		this.controlList.add(this.field_25096_l = new GuiButton(2, this.width / 2 - 100, var4 + 24, var2.translateKey("menu.multiplayer")));
+		this.controlList.add(this.multiplayerButton = new GuiButton(2, this.width / 2 - 100, var4 + 24, var2.translateKey("menu.multiplayer")));
 		this.controlList.add(new GuiButton(3, this.width / 2 - 100, var4 + 48, var2.translateKey("menu.mods")));
 		if(this.mc.hideQuitButton) {
 			this.controlList.add(new GuiButton(0, this.width / 2 - 100, var4 + 72, var2.translateKey("menu.options")));
@@ -74,7 +74,7 @@ public class GuiMainMenu extends GuiScreen {
 		}
 
 		if(this.mc.session == null) {
-			this.field_25096_l.enabled = false;
+			this.multiplayerButton.enabled = false;
 		}
 
 	}
@@ -121,7 +121,7 @@ public class GuiMainMenu extends GuiScreen {
 		GL11.glScalef(var8, var8, var8);
 		this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, 16776960);
 		GL11.glPopMatrix();
-		this.drawString(this.fontRenderer, "Minecraft Beta 1.5_01", 2, 2, 5263440);
+		this.drawString(this.fontRenderer, "Minecraft Beta 1.7.3", 2, 2, 5263440);
 		String var9 = "Copyright Mojang AB. Do not distribute.";
 		this.drawString(this.fontRenderer, var9, this.width - this.fontRenderer.getStringWidth(var9) - 2, this.height - 10, 16777215);
 		super.drawScreen(var1, var2, var3);

@@ -9,12 +9,12 @@ public class ChunkCoordIntPair {
 		this.chunkZPos = var2;
 	}
 
-	public static int func_22011_a(int var0, int var1) {
+	public static int chunkXZ2Int(int var0, int var1) {
 		return (var0 < 0 ? Integer.MIN_VALUE : 0) | (var0 & Short.MAX_VALUE) << 16 | (var1 < 0 ? -Short.MIN_VALUE : 0) | var1 & Short.MAX_VALUE;
 	}
 
 	public int hashCode() {
-		return func_22011_a(this.chunkXPos, this.chunkZPos);
+		return chunkXZ2Int(this.chunkXPos, this.chunkZPos);
 	}
 
 	public boolean equals(Object var1) {

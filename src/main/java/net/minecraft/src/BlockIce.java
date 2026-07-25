@@ -17,10 +17,11 @@ public class BlockIce extends BlockBreakable {
 		return super.shouldSideBeRendered(var1, var2, var3, var4, 1 - var5);
 	}
 
-	public void onBlockRemoval(World var1, int var2, int var3, int var4) {
-		Material var5 = var1.getBlockMaterial(var2, var3 - 1, var4);
-		if(var5.getIsSolid() || var5.getIsLiquid()) {
-			var1.setBlockWithNotify(var2, var3, var4, Block.waterMoving.blockID);
+	public void harvestBlock(World var1, EntityPlayer var2, int var3, int var4, int var5, int var6) {
+		super.harvestBlock(var1, var2, var3, var4, var5, var6);
+		Material var7 = var1.getBlockMaterial(var3, var4 - 1, var5);
+		if(var7.getIsSolid() || var7.getIsLiquid()) {
+			var1.setBlockWithNotify(var3, var4, var5, Block.waterMoving.blockID);
 		}
 
 	}
@@ -35,5 +36,9 @@ public class BlockIce extends BlockBreakable {
 			var1.setBlockWithNotify(var2, var3, var4, Block.waterStill.blockID);
 		}
 
+	}
+
+	public int getMobilityFlag() {
+		return 0;
 	}
 }

@@ -43,7 +43,7 @@ public class Packet71Weather extends Packet {
 	}
 
 	public void processPacket(NetHandler var1) {
-		var1.func_27246_a(this);
+		var1.handleWeather(this);
 	}
 
 	public int getPacketSize() {

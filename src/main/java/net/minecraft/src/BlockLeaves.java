@@ -12,6 +12,10 @@ public class BlockLeaves extends BlockLeavesBase {
 		this.setTickOnLoad(true);
 	}
 
+	public int getRenderColor(int var1) {
+		return (var1 & 1) == 1 ? ColorizerFoliage.getFoliageColorPine() : ((var1 & 2) == 2 ? ColorizerFoliage.getFoliageColorBirch() : ColorizerFoliage.func_31073_c());
+	}
+
 	public int colorMultiplier(IBlockAccess var1, int var2, int var3, int var4) {
 		int var5 = var1.getBlockMetadata(var2, var3, var4);
 		if((var5 & 1) == 1) {
@@ -130,7 +134,7 @@ public class BlockLeaves extends BlockLeavesBase {
 
 				var12 = this.adjacentTreeBlocks[var11 * var10 + var11 * var9 + var11];
 				if(var12 >= 0) {
-					var1.setBlockMetadataWithNotify(var2, var3, var4, var6 & -9);
+					var1.setBlockMetadata(var2, var3, var4, var6 & -9);
 				} else {
 					this.removeLeaves(var1, var2, var3, var4);
 				}
@@ -150,6 +154,16 @@ public class BlockLeaves extends BlockLeavesBase {
 
 	public int idDropped(int var1, EaglercraftRandom var2) {
 		return Block.sapling.blockID;
+	}
+
+	public void harvestBlock(World var1, EntityPlayer var2, int var3, int var4, int var5, int var6) {
+		if(!var1.multiplayerWorld && var2.getCurrentEquippedItem() != null && var2.getCurrentEquippedItem().itemID == Item.shears.shiftedIndex) {
+			var2.addStat(StatList.mineBlockStatArray[this.blockID], 1);
+			this.dropBlockAsItem_do(var1, var3, var4, var5, new ItemStack(Block.leaves.blockID, 1, var6 & 3));
+		} else {
+			super.harvestBlock(var1, var2, var3, var4, var5, var6);
+		}
+
 	}
 
 	protected int damageDropped(int var1) {

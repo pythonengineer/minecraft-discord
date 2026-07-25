@@ -61,7 +61,7 @@ public class GuiScreen extends Gui {
 
 				if(var5.mousePressed(this.mc, var1, var2)) {
 					this.selectedButton = var5;
-					this.mc.sndManager.func_337_a("random.click", 1.0F, 1.0F);
+					this.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
 					this.actionPerformed(var5);
 				}
 			}
@@ -198,8 +198,9 @@ public class GuiScreen extends Gui {
 	public void deleteWorld(boolean var1, int var2) {
 	}
 
-	public void func_27108_j() {
+	public void selectNextField() {
 	}
+
 
     public void touchEvent() {
         this.handleTouchInput();

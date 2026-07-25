@@ -35,13 +35,16 @@ public class TileEntityMobSpawner extends TileEntity {
 				this.yaw -= 360.0D;
 			}
 
-			if(this.delay == -1) {
-				this.updateDelay();
-			}
+			if(!this.worldObj.multiplayerWorld) {
+				if(this.delay == -1) {
+					this.updateDelay();
+				}
 
-			if(this.delay > 0) {
-				--this.delay;
-			} else {
+				if(this.delay > 0) {
+					--this.delay;
+					return;
+				}
+
 				byte var7 = 4;
 
 				for(int var8 = 0; var8 < var7; ++var8) {
@@ -77,9 +80,9 @@ public class TileEntityMobSpawner extends TileEntity {
 						}
 					}
 				}
-
-				super.updateEntity();
 			}
+
+			super.updateEntity();
 		}
 	}
 

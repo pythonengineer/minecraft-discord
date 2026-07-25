@@ -1,8 +1,10 @@
 package net.minecraft.src;
 
 public class MaterialLiquid extends Material {
-	public MaterialLiquid() {
-		this.func_27284_f();
+	public MaterialLiquid(MapColor var1) {
+		super(var1);
+		this.setIsGroundCover();
+		this.setNoPushMobility();
 	}
 
 	public boolean getIsLiquid() {

@@ -118,7 +118,7 @@ public class GuiSelectWorld extends GuiScreen {
 			this.deleting = false;
 			if(var1) {
 				ISaveFormat var3 = this.mc.getSaveLoader();
-				var3.func_22177_c();
+				var3.flushCache();
 				var3.func_22172_c(this.getSaveFileName(var2));
 				this.loadSaves();
 			}

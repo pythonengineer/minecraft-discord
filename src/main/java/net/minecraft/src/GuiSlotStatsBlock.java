@@ -16,11 +16,11 @@ class GuiSlotStatsBlock extends GuiSlotStats {
 			StatCrafting var3 = (StatCrafting)var2.next();
 			boolean var4 = false;
 			int var5 = var3.func_25072_b();
-			if(GuiStats.func_27142_c(var1).func_27184_a(var3) > 0) {
+			if(GuiStats.func_27142_c(var1).writeStat(var3) > 0) {
 				var4 = true;
-			} else if(StatList.field_25172_A[var5] != null && GuiStats.func_27142_c(var1).func_27184_a(StatList.field_25172_A[var5]) > 0) {
+			} else if(StatList.field_25172_A[var5] != null && GuiStats.func_27142_c(var1).writeStat(StatList.field_25172_A[var5]) > 0) {
 				var4 = true;
-			} else if(StatList.field_25158_z[var5] != null && GuiStats.func_27142_c(var1).func_27184_a(StatList.field_25158_z[var5]) > 0) {
+			} else if(StatList.field_25158_z[var5] != null && GuiStats.func_27142_c(var1).writeStat(StatList.field_25158_z[var5]) > 0) {
 				var4 = true;
 			}
 

@@ -154,3 +154,5 @@ step/wood1.ogg
 step/wood2.ogg
 step/wood3.ogg
 step/wood4.ogg
+tile/piston/in.ogg
+tile/piston/out.ogg

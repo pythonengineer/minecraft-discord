@@ -3,6 +3,7 @@ package net.minecraft.src;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,6 +33,10 @@ public class NBTTagCompound extends NBTBase {
 
 			this.tagMap.put(var2.getKey(), var2);
 		}
+	}
+
+	public Collection func_28110_c() {
+		return this.tagMap.values();
 	}
 
 	public byte getType() {

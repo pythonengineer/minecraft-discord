@@ -7,14 +7,14 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 	public NetClientHandler sendQueue;
 	private int field_9380_bx = 0;
 	private boolean field_21093_bH = false;
-	private double field_9379_by;
+	private double oldPosX;
 	private double field_9378_bz;
-	private double field_9377_bA;
-	private double field_9376_bB;
-	private float field_9385_bC;
-	private float field_9384_bD;
+	private double oldPosY;
+	private double oldPosZ;
+	private float oldRotationYaw;
+	private float oldRotationPitch;
 	private boolean field_9382_bF = false;
-	private boolean field_9381_bG = false;
+	private boolean wasSneaking = false;
 	private int field_12242_bI = 0;
 
 	public EntityClientPlayerMP(Minecraft var1, World var2, Session var3, NetClientHandler var4) {
@@ -43,22 +43,22 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 		}
 
 		boolean var1 = this.isSneaking();
-		if(var1 != this.field_9381_bG) {
+		if(var1 != this.wasSneaking) {
 			if(var1) {
 				this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 1));
 			} else {
 				this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 2));
 			}
 
-			this.field_9381_bG = var1;
+			this.wasSneaking = var1;
 		}
 
-		double var2 = this.posX - this.field_9379_by;
+		double var2 = this.posX - this.oldPosX;
 		double var4 = this.boundingBox.minY - this.field_9378_bz;
-		double var6 = this.posY - this.field_9377_bA;
-		double var8 = this.posZ - this.field_9376_bB;
-		double var10 = (double)(this.rotationYaw - this.field_9385_bC);
-		double var12 = (double)(this.rotationPitch - this.field_9384_bD);
+		double var6 = this.posY - this.oldPosY;
+		double var8 = this.posZ - this.oldPosZ;
+		double var10 = (double)(this.rotationYaw - this.oldRotationYaw);
+		double var12 = (double)(this.rotationPitch - this.oldRotationPitch);
 		boolean var14 = var4 != 0.0D || var6 != 0.0D || var2 != 0.0D || var8 != 0.0D;
 		boolean var15 = var10 != 0.0D || var12 != 0.0D;
 		if(this.ridingEntity != null) {
@@ -89,15 +89,15 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
 		this.field_9382_bF = this.onGround;
 		if(var14) {
-			this.field_9379_by = this.posX;
+			this.oldPosX = this.posX;
 			this.field_9378_bz = this.boundingBox.minY;
-			this.field_9377_bA = this.posY;
-			this.field_9376_bB = this.posZ;
+			this.oldPosY = this.posY;
+			this.oldPosZ = this.posZ;
 		}
 
 		if(var15) {
-			this.field_9385_bC = this.rotationYaw;
-			this.field_9384_bD = this.rotationPitch;
+			this.oldRotationYaw = this.rotationYaw;
+			this.oldRotationPitch = this.rotationPitch;
 		}
 
 	}
@@ -123,17 +123,17 @@ public class EntityClientPlayerMP extends EntityPlayerSP {
 
 	public void respawnPlayer() {
 		this.sendInventoryChanged();
-		this.sendQueue.addToSendQueue(new Packet9Respawn());
+		this.sendQueue.addToSendQueue(new Packet9Respawn((byte)this.dimension));
 	}
 
 	protected void damageEntity(int var1) {
 		this.health -= var1;
 	}
 
-	public void func_20059_m() {
+	public void closeScreen() {
 		this.sendQueue.addToSendQueue(new Packet101CloseWindow(this.craftingInventory.windowId));
 		this.inventory.setItemStack((ItemStack)null);
-		super.func_20059_m();
+		super.closeScreen();
 	}
 
 	public void setHealth(int var1) {

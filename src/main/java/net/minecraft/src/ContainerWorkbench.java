@@ -42,14 +42,15 @@ public class ContainerWorkbench extends Container {
 
 	public void onCraftGuiClosed(EntityPlayer var1) {
 		super.onCraftGuiClosed(var1);
-
-		for(int var2 = 0; var2 < 9; ++var2) {
-			ItemStack var3 = this.craftMatrix.getStackInSlot(var2);
-			if(var3 != null) {
-				var1.dropPlayerItem(var3);
+		if(!this.field_20133_c.multiplayerWorld) {
+			for(int var2 = 0; var2 < 9; ++var2) {
+				ItemStack var3 = this.craftMatrix.getStackInSlot(var2);
+				if(var3 != null) {
+					var1.dropPlayerItem(var3);
+				}
 			}
-		}
 
+		}
 	}
 
 	public boolean isUsableByPlayer(EntityPlayer var1) {

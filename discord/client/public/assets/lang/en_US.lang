@@ -91,7 +91,7 @@ options.renderDistance.far=Far
 options.viewBobbing=View Bobbing
 options.ao=Smooth Lighting
 options.anaglyph=3D Anaglyph
-options.limitFramerate=Limit Framerate
+options.framerateLimit=Performance
 options.difficulty=Difficulty
 options.difficulty.peaceful=Peaceful
 options.difficulty.easy=Easy
@@ -106,6 +106,10 @@ options.guiScale.small=Small
 options.guiScale.normal=Normal
 options.guiScale.large=Large
 options.advancedOpengl=Advanced OpenGL
+
+performance.max=Max FPS
+performance.balanced=Balanced
+performance.powersaver=Power saver
 
 controls.title=Controls
 
@@ -251,7 +255,7 @@ tile.cactus.name=Cactus
 tile.cactus.desc=
 tile.clay.name=Clay
 tile.clay.desc=
-tile.reeds.name=Reeds
+tile.reeds.name=Sugar cane
 tile.reeds.desc=
 tile.jukebox.name=Jukebox
 tile.jukebox.desc=
@@ -318,6 +322,16 @@ tile.bed.noSleep=You can only sleep at night
 tile.bed.notValid=Your home bed was missing or obstructed
 tile.lockedchest.name=Locked chest
 tile.lockedchest.desc=
+tile.trapdoor.name=Trapdoor
+tile.trapdoor.desc=
+tile.web.name=Cobweb
+tile.web.desc=
+tile.stonebricksmooth.name=Stone Bricks
+tile.stonebricksmooth.desc=
+tile.pistonBase.name=Piston
+tile.pistonBase.desc=
+tile.pistonStickyBase.name=Sticky Piston
+tile.pistonStickyBase.desc=
 
 item.shovelIron.name=Iron Shovel
 item.shovelIron.desc=
@@ -557,5 +571,11 @@ item.bed.name=Bed
 item.bed.desc=
 item.diode.name=Redstone Repeater
 item.diode.desc=
+item.map.name=Map
+item.map.desc=
+item.leaves.name=Leaves
+item.leaves.desc=
+item.shears.name=Shears
+item.shears.desc=
 
 touch.interact.entity=Interact

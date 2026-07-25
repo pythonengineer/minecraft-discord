@@ -13,7 +13,7 @@ public class ShapelessRecipes implements IRecipe {
 		this.recipeItems = var2;
 	}
 
-	public ItemStack func_25117_b() {
+	public ItemStack getRecipeOutput() {
 		return this.recipeOutput;
 	}
 

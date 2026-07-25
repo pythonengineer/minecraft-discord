@@ -6,11 +6,11 @@ import net.lax1dude.eaglercraft.util.MathHelper;
 public class BlockRedstoneRepeater extends Block {
 	public static final double[] field_22024_a = new double[]{-0.0625D, 1.0D / 16.0D, 0.1875D, 0.3125D};
 	private static final int[] field_22023_b = new int[]{1, 2, 3, 4};
-	private final boolean field_22025_c;
+	private final boolean isRepeaterPowered;
 
 	protected BlockRedstoneRepeater(int var1, boolean var2) {
-		super(var1, 102, Material.circuits);
-		this.field_22025_c = var2;
+		super(var1, 6, Material.circuits);
+		this.isRepeaterPowered = var2;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 2.0F / 16.0F, 1.0F);
 	}
 
@@ -19,19 +19,19 @@ public class BlockRedstoneRepeater extends Block {
 	}
 
 	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return !var1.isBlockOpaqueCube(var2, var3 - 1, var4) ? false : super.canPlaceBlockAt(var1, var2, var3, var4);
+		return !var1.isBlockNormalCube(var2, var3 - 1, var4) ? false : super.canPlaceBlockAt(var1, var2, var3, var4);
 	}
 
 	public boolean canBlockStay(World var1, int var2, int var3, int var4) {
-		return !var1.isBlockOpaqueCube(var2, var3 - 1, var4) ? false : super.canBlockStay(var1, var2, var3, var4);
+		return !var1.isBlockNormalCube(var2, var3 - 1, var4) ? false : super.canBlockStay(var1, var2, var3, var4);
 	}
 
 	public void updateTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		int var6 = var1.getBlockMetadata(var2, var3, var4);
 		boolean var7 = this.func_22022_g(var1, var2, var3, var4, var6);
-		if(this.field_22025_c && !var7) {
+		if(this.isRepeaterPowered && !var7) {
 			var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.redstoneRepeaterIdle.blockID, var6);
-		} else if(!this.field_22025_c) {
+		} else if(!this.isRepeaterPowered) {
 			var1.setBlockAndMetadataWithNotify(var2, var3, var4, Block.redstoneRepeaterActive.blockID, var6);
 			if(!var7) {
 				int var8 = (var6 & 12) >> 2;
@@ -42,7 +42,7 @@ public class BlockRedstoneRepeater extends Block {
 	}
 
 	public int getBlockTextureFromSideAndMetadata(int var1, int var2) {
-		return var1 == 0 ? (this.field_22025_c ? 99 : 115) : (var1 == 1 ? (this.field_22025_c ? 147 : 131) : 5);
+		return var1 == 0 ? (this.isRepeaterPowered ? 99 : 115) : (var1 == 1 ? (this.isRepeaterPowered ? 147 : 131) : 5);
 	}
 
 	public boolean shouldSideBeRendered(IBlockAccess var1, int var2, int var3, int var4, int var5) {
@@ -62,7 +62,7 @@ public class BlockRedstoneRepeater extends Block {
 	}
 
 	public boolean isPoweringTo(IBlockAccess var1, int var2, int var3, int var4, int var5) {
-		if(!this.field_22025_c) {
+		if(!this.isRepeaterPowered) {
 			return false;
 		} else {
 			int var6 = var1.getBlockMetadata(var2, var3, var4) & 3;
@@ -78,9 +78,9 @@ public class BlockRedstoneRepeater extends Block {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			boolean var7 = this.func_22022_g(var1, var2, var3, var4, var6);
 			int var8 = (var6 & 12) >> 2;
-			if(this.field_22025_c && !var7) {
+			if(this.isRepeaterPowered && !var7) {
 				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, field_22023_b[var8] * 2);
-			} else if(!this.field_22025_c && var7) {
+			} else if(!this.isRepeaterPowered && var7) {
 				var1.scheduleBlockUpdate(var2, var3, var4, this.blockID, field_22023_b[var8] * 2);
 			}
 
@@ -91,13 +91,13 @@ public class BlockRedstoneRepeater extends Block {
 		int var6 = var5 & 3;
 		switch(var6) {
 		case 0:
-			return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 + 1, 3);
+			return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 + 1, 3) || var1.getBlockId(var2, var3, var4 + 1) == Block.redstoneWire.blockID && var1.getBlockMetadata(var2, var3, var4 + 1) > 0;
 		case 1:
-			return var1.isBlockIndirectlyProvidingPowerTo(var2 - 1, var3, var4, 4);
+			return var1.isBlockIndirectlyProvidingPowerTo(var2 - 1, var3, var4, 4) || var1.getBlockId(var2 - 1, var3, var4) == Block.redstoneWire.blockID && var1.getBlockMetadata(var2 - 1, var3, var4) > 0;
 		case 2:
-			return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 - 1, 2);
+			return var1.isBlockIndirectlyProvidingPowerTo(var2, var3, var4 - 1, 2) || var1.getBlockId(var2, var3, var4 - 1) == Block.redstoneWire.blockID && var1.getBlockMetadata(var2, var3, var4 - 1) > 0;
 		case 3:
-			return var1.isBlockIndirectlyProvidingPowerTo(var2 + 1, var3, var4, 5);
+			return var1.isBlockIndirectlyProvidingPowerTo(var2 + 1, var3, var4, 5) || var1.getBlockId(var2 + 1, var3, var4) == Block.redstoneWire.blockID && var1.getBlockMetadata(var2 + 1, var3, var4) > 0;
 		default:
 			return false;
 		}
@@ -143,7 +143,7 @@ public class BlockRedstoneRepeater extends Block {
 	}
 
 	public void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
-		if(this.field_22025_c) {
+		if(this.isRepeaterPowered) {
 			int var6 = var1.getBlockMetadata(var2, var3, var4);
 			double var7 = (double)((float)var2 + 0.5F) + (double)(var5.nextFloat() - 0.5F) * 0.2D;
 			double var9 = (double)((float)var3 + 0.4F) + (double)(var5.nextFloat() - 0.5F) * 0.2D;

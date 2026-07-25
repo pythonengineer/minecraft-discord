@@ -37,12 +37,12 @@ public class RenderPlayer extends RenderLiving {
 		return false;
 	}
 
-	public void func_188_a(EntityPlayer var1, double var2, double var4, double var6, float var8, float var9) {
+	public void renderPlayer(EntityPlayer var1, double var2, double var4, double var6, float var8, float var9) {
 		ItemStack var10 = var1.inventory.getCurrentItem();
 		this.modelArmorChestplate.field_1278_i = this.modelArmor.field_1278_i = this.modelBipedMain.field_1278_i = var10 != null;
 		this.modelArmorChestplate.isSneak = this.modelArmor.isSneak = this.modelBipedMain.isSneak = var1.isSneaking();
 		double var11 = var4 - (double)var1.yOffset;
-		if(var1.isSneaking()) {
+		if(var1.isSneaking() && !(var1 instanceof EntityPlayerSP)) {
 			var11 -= 0.125D;
 		}
 
@@ -60,7 +60,11 @@ public class RenderPlayer extends RenderLiving {
 			if(var10 < var11) {
 				String var12 = var1.username;
 				if(!var1.isSneaking()) {
-					this.renderLivingLabel(var1, var12, var2, var4, var6, 64);
+					if(var1.isPlayerSleeping()) {
+						this.renderLivingLabel(var1, var12, var2, var4 - 1.5D, var6, 64);
+					} else {
+						this.renderLivingLabel(var1, var12, var2, var4, var6, 64);
+					}
 				} else {
 					FontRenderer var13 = this.getFontRendererFromRenderManager();
 					GL11.glPushMatrix();
@@ -109,7 +113,7 @@ public class RenderPlayer extends RenderLiving {
 				GL11.glScalef(var4, -var4, var4);
 			}
 
-			this.renderManager.itemRenderer.renderItem(var3);
+			this.renderManager.itemRenderer.renderItem(var1, var3);
 			GL11.glPopMatrix();
 		}
 
@@ -158,6 +162,10 @@ public class RenderPlayer extends RenderLiving {
 
 			float var18 = var1.field_775_e + (var1.field_774_f - var1.field_775_e) * var2;
 			var15 += MathHelper.sin((var1.prevDistanceWalkedModified + (var1.distanceWalkedModified - var1.prevDistanceWalkedModified) * var2) * 6.0F) * 32.0F * var18;
+			if(var1.isSneaking()) {
+				var15 += 25.0F;
+			}
+
 			GL11.glRotatef(6.0F + var16 / 2.0F + var15, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(var17 / 2.0F, 0.0F, 0.0F, 1.0F);
 			GL11.glRotatef(-var17 / 2.0F, 0.0F, 1.0F, 0.0F);
@@ -202,7 +210,7 @@ public class RenderPlayer extends RenderLiving {
 				GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
 			}
 
-			this.renderManager.itemRenderer.renderItem(var21);
+			this.renderManager.itemRenderer.renderItem(var1, var21);
 			GL11.glPopMatrix();
 		}
 
@@ -231,10 +239,10 @@ public class RenderPlayer extends RenderLiving {
 	protected void func_22017_a(EntityPlayer var1, float var2, float var3, float var4) {
 		if(var1.isEntityAlive() && var1.isPlayerSleeping()) {
 			GL11.glRotatef(var1.getBedOrientationInDegrees(), 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(this.func_172_a(var1), 0.0F, 0.0F, 1.0F);
+			GL11.glRotatef(this.getDeathMaxRotation(var1), 0.0F, 0.0F, 1.0F);
 			GL11.glRotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else {
-			super.func_21004_a(var1, var2, var3, var4);
+			super.rotateCorpse(var1, var2, var3, var4);
 		}
 
 	}
@@ -255,7 +263,7 @@ public class RenderPlayer extends RenderLiving {
 		this.renderSpecials((EntityPlayer)var1, var2);
 	}
 
-	protected void func_21004_a(EntityLiving var1, float var2, float var3, float var4) {
+	protected void rotateCorpse(EntityLiving var1, float var2, float var3, float var4) {
 		this.func_22017_a((EntityPlayer)var1, var2, var3, var4);
 	}
 
@@ -264,10 +272,10 @@ public class RenderPlayer extends RenderLiving {
 	}
 
 	public void doRenderLiving(EntityLiving var1, double var2, double var4, double var6, float var8, float var9) {
-		this.func_188_a((EntityPlayer)var1, var2, var4, var6, var8, var9);
+		this.renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
 	}
 
 	public void doRender(Entity var1, double var2, double var4, double var6, float var8, float var9) {
-		this.func_188_a((EntityPlayer)var1, var2, var4, var6, var8, var9);
+		this.renderPlayer((EntityPlayer)var1, var2, var4, var6, var8, var9);
 	}
 }

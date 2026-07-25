@@ -36,7 +36,7 @@ public class GuiCreateWorld extends GuiScreen {
 
 	private void func_22129_j() {
 		this.folderName = this.textboxWorldName.getText().trim();
-		char[] var1 = ChatAllowedCharacters.field_22286_b;
+		char[] var1 = ChatAllowedCharacters.allowedCharactersArray;
 		int var2 = var1.length;
 
 		for(int var3 = 0; var3 < var2; ++var3) {
@@ -48,10 +48,10 @@ public class GuiCreateWorld extends GuiScreen {
 			this.folderName = "World";
 		}
 
-		this.folderName = func_25097_a(this.mc.getSaveLoader(), this.folderName);
+		this.folderName = generateUnusedFolderName(this.mc.getSaveLoader(), this.folderName);
 	}
 
-	public static String func_25097_a(ISaveFormat var0, String var1) {
+	public static String generateUnusedFolderName(ISaveFormat var0, String var1) {
 		while(var0.func_22173_b(var1) != null) {
 			var1 = var1 + "-";
 		}
@@ -129,13 +129,13 @@ public class GuiCreateWorld extends GuiScreen {
 		super.drawScreen(var1, var2, var3);
 	}
 
-	public void func_27108_j() {
+	public void selectNextField() {
 		if(this.textboxWorldName.isFocused) {
-			this.textboxWorldName.func_27106_a(false);
-			this.textboxSeed.func_27106_a(true);
+			this.textboxWorldName.setFocused(false);
+			this.textboxSeed.setFocused(true);
 		} else {
-			this.textboxWorldName.func_27106_a(true);
-			this.textboxSeed.func_27106_a(false);
+			this.textboxWorldName.setFocused(true);
+			this.textboxSeed.setFocused(false);
 		}
 
 	}

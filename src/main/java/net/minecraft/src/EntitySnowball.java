@@ -11,8 +11,8 @@ public class EntitySnowball extends Entity {
 	private boolean inGroundSnowball = false;
 	public int shakeSnowball = 0;
 	private EntityLiving thrower;
-	private int field_810_h;
-	private int field_809_i = 0;
+	private int ticksInGroundSnowball;
+	private int ticksInAirSnowball = 0;
 
 	public EntitySnowball(World var1) {
 		super(var1);
@@ -47,7 +47,7 @@ public class EntitySnowball extends Entity {
 
 	public EntitySnowball(World var1, double var2, double var4, double var6) {
 		super(var1);
-		this.field_810_h = 0;
+		this.ticksInGroundSnowball = 0;
 		this.setSize(0.25F, 0.25F);
 		this.setPosition(var2, var4, var6);
 		this.yOffset = 0.0F;
@@ -70,7 +70,7 @@ public class EntitySnowball extends Entity {
 		float var10 = MathHelper.sqrt_double(var1 * var1 + var5 * var5);
 		this.prevRotationYaw = this.rotationYaw = (float)(Math.atan2(var1, var5) * 180.0D / (double)((float)Math.PI));
 		this.prevRotationPitch = this.rotationPitch = (float)(Math.atan2(var3, (double)var10) * 180.0D / (double)((float)Math.PI));
-		this.field_810_h = 0;
+		this.ticksInGroundSnowball = 0;
 	}
 
 	public void setVelocity(double var1, double var3, double var5) {
@@ -97,8 +97,8 @@ public class EntitySnowball extends Entity {
 		if(this.inGroundSnowball) {
 			int var1 = this.worldObj.getBlockId(this.xTileSnowball, this.yTileSnowball, this.zTileSnowball);
 			if(var1 == this.inTileSnowball) {
-				++this.field_810_h;
-				if(this.field_810_h == 1200) {
+				++this.ticksInGroundSnowball;
+				if(this.ticksInGroundSnowball == 1200) {
 					this.setEntityDead();
 				}
 
@@ -109,10 +109,10 @@ public class EntitySnowball extends Entity {
 			this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionY *= (double)(this.rand.nextFloat() * 0.2F);
 			this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
-			this.field_810_h = 0;
-			this.field_809_i = 0;
+			this.ticksInGroundSnowball = 0;
+			this.ticksInAirSnowball = 0;
 		} else {
-			++this.field_809_i;
+			++this.ticksInAirSnowball;
 		}
 
 		Vec3D var15 = Vec3D.createVector(this.posX, this.posY, this.posZ);
@@ -131,7 +131,7 @@ public class EntitySnowball extends Entity {
 
 			for(int var8 = 0; var8 < var5.size(); ++var8) {
 				Entity var9 = (Entity)var5.get(var8);
-				if(var9.canBeCollidedWith() && (var9 != this.thrower || this.field_809_i >= 5)) {
+				if(var9.canBeCollidedWith() && (var9 != this.thrower || this.ticksInAirSnowball >= 5)) {
 					float var10 = 0.3F;
 					AxisAlignedBB var11 = var9.boundingBox.expand((double)var10, (double)var10, (double)var10);
 					MovingObjectPosition var12 = var11.func_1169_a(var15, var2);
@@ -186,7 +186,7 @@ public class EntitySnowball extends Entity {
 		this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
 		float var18 = 0.99F;
 		float var19 = 0.03F;
-		if(this.func_27013_ag()) {
+		if(this.isInWater()) {
 			for(int var7 = 0; var7 < 4; ++var7) {
 				float var20 = 0.25F;
 				this.worldObj.spawnParticle("bubble", this.posX - this.motionX * (double)var20, this.posY - this.motionY * (double)var20, this.posZ - this.motionZ * (double)var20, this.motionX, this.motionY, this.motionZ);

@@ -13,8 +13,8 @@ import net.lax1dude.eaglercraft.EagRuntime;
 public abstract class Packet {
 	private static Map packetIdToClassMap = new HashMap();
 	private static Map packetClassToIdMap = new HashMap();
-	private static Set field_26906_c = new HashSet();
-	private static Set field_26905_d = new HashSet();
+	private static Set clientPacketIdList = new HashSet();
+	private static Set serverPacketIdList = new HashSet();
 	public final long creationTimeMillis = EagRuntime.currentTimeMillis();
 	public boolean isChunkDataPacket = false;
 	private static HashMap packetStats;
@@ -29,11 +29,11 @@ public abstract class Packet {
 			packetIdToClassMap.put(Integer.valueOf(var0), var3);
 			packetClassToIdMap.put(var3, Integer.valueOf(var0));
 			if(var1) {
-				field_26906_c.add(Integer.valueOf(var0));
+				clientPacketIdList.add(Integer.valueOf(var0));
 			}
 
 			if(var2) {
-				field_26905_d.add(Integer.valueOf(var0));
+				serverPacketIdList.add(Integer.valueOf(var0));
 			}
 
 		}
@@ -65,7 +65,7 @@ public abstract class Packet {
 				return null;
 			}
 
-			if(var1 && !field_26905_d.contains(Integer.valueOf(var6)) || !var1 && !field_26906_c.contains(Integer.valueOf(var6))) {
+			if(var1 && !serverPacketIdList.contains(Integer.valueOf(var6)) || !var1 && !clientPacketIdList.contains(Integer.valueOf(var6))) {
 				throw new IOException("Bad packet id " + var6);
 			}
 
@@ -99,7 +99,7 @@ public abstract class Packet {
 		var0.writePacketData(var1);
 	}
 
-	public static void func_27049_a(String var0, DataOutputStream var1) throws IOException {
+	public static void writeString(String var0, DataOutputStream var1) throws IOException {
 		if(var0.length() > Short.MAX_VALUE) {
 			throw new IOException("String too big");
 		} else {
@@ -108,7 +108,7 @@ public abstract class Packet {
 		}
 	}
 
-	public static String func_27048_a(DataInputStream var0, int var1) throws IOException {
+	public static String readString(DataInputStream var0, int var1) throws IOException {
 		short var2 = var0.readShort();
 		if(var2 > var1) {
 			throw new IOException("Received string length longer than maximum allowed (" + var2 + " > " + var1 + ")");
@@ -177,6 +177,7 @@ public abstract class Packet {
 		addIdClassMapping(53, true, false, Packet53BlockChange.class);
 		addIdClassMapping(54, true, false, Packet54PlayNoteBlock.class);
 		addIdClassMapping(60, true, false, Packet60Explosion.class);
+		addIdClassMapping(61, true, false, Packet61DoorChange.class);
 		addIdClassMapping(70, true, false, Packet70Bed.class);
 		addIdClassMapping(71, true, false, Packet71Weather.class);
 		addIdClassMapping(100, true, false, Packet100OpenWindow.class);
@@ -187,6 +188,7 @@ public abstract class Packet {
 		addIdClassMapping(105, true, false, Packet105UpdateProgressbar.class);
 		addIdClassMapping(106, true, true, Packet106Transaction.class);
 		addIdClassMapping(130, true, true, Packet130UpdateSign.class);
+		addIdClassMapping(131, true, false, Packet131MapData.class);
 		addIdClassMapping(200, true, false, Packet200Statistic.class);
 		addIdClassMapping(255, true, true, Packet255KickDisconnect.class);
 		packetStats = new HashMap();

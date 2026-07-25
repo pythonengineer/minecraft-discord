@@ -6,20 +6,13 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 	private Chunk blankChunk;
 	private IChunkProvider chunkProvider;
 	private IChunkLoader chunkLoader;
-	private Chunk[] chunks = new Chunk[1024];
+	private Chunk[] chunks;
 	private World worldObj;
-	int lastQueriedChunkXPos = -999999999;
-	int lastQueriedChunkZPos = -999999999;
+	int lastQueriedChunkXPos;
+	int lastQueriedChunkZPos;
 	private Chunk lastQueriedChunk;
 	private int curChunkX;
 	private int curChunkY;
-
-	public ChunkProviderLoadOrGenerate(World var1, IChunkLoader var2, IChunkProvider var3) {
-		this.blankChunk = new EmptyChunk(var1, new byte[-Short.MIN_VALUE], 0, 0);
-		this.worldObj = var1;
-		this.chunkLoader = var2;
-		this.chunkProvider = var3;
-	}
 
 	public void setCurrentChunkOver(int var1, int var2) {
 		this.curChunkX = var1;
@@ -44,7 +37,7 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 		}
 	}
 
-	public Chunk func_538_d(int var1, int var2) {
+	public Chunk prepareChunk(int var1, int var2) {
 		return this.provideChunk(var1, var2);
 	}
 
@@ -206,19 +199,19 @@ public class ChunkProviderLoadOrGenerate implements IChunkProvider {
 		return true;
 	}
 
-	public boolean func_532_a() {
+	public boolean unload100OldestChunks() {
 		if(this.chunkLoader != null) {
 			this.chunkLoader.func_814_a();
 		}
 
-		return this.chunkProvider.func_532_a();
+		return this.chunkProvider.unload100OldestChunks();
 	}
 
-	public boolean func_536_b() {
+	public boolean canSave() {
 		return true;
 	}
 
-	public String toString() {
+	public String makeString() {
 		return "ChunkCache: " + this.chunks.length;
 	}
 }

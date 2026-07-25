@@ -2,13 +2,12 @@ package net.minecraft.src;
 
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import net.lax1dude.eaglercraft.util.MathHelper;
-
-public class WorldProvider {
+public abstract class WorldProvider {
 	public World worldObj;
 	public WorldChunkManager worldChunkMgr;
 	public boolean isNether = false;
 	public boolean isHellWorld = false;
-	public boolean field_6478_e = false;
+	public boolean hasNoSky = false;
 	public float[] lightBrightnessTable = new float[16];
 	public int worldType = 0;
 	private float[] colorsSunriseSunset = new float[4];
@@ -100,7 +99,15 @@ public class WorldProvider {
 		return true;
 	}
 
-	public static WorldProvider func_4101_a(int var0) {
-		return (WorldProvider)(var0 == 0 ? new WorldProvider() : (var0 == -1 ? new WorldProviderHell() : null));
+	public static WorldProvider getProviderForDimension(int var0) {
+		return (WorldProvider)(var0 == -1 ? new WorldProviderHell() : (var0 == 0 ? new WorldProviderSurface() : (var0 == 1 ? new WorldProviderSky() : null)));
+	}
+
+	public float getCloudHeight() {
+		return 108.0F;
+	}
+
+	public boolean func_28112_c() {
+		return true;
 	}
 }

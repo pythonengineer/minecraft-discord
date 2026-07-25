@@ -8,7 +8,7 @@ public class RenderSheep extends RenderLiving {
 		this.setRenderPassModel(var2);
 	}
 
-	protected boolean func_176_a(EntitySheep var1, int var2, float var3) {
+	protected boolean setWoolColorAndRender(EntitySheep var1, int var2, float var3) {
 		if(var2 == 0 && !var1.getSheared()) {
 			this.loadTexture("/mob/sheep_fur.png");
 			float var4 = var1.getEntityBrightness(var3);
@@ -21,6 +21,6 @@ public class RenderSheep extends RenderLiving {
 	}
 
 	protected boolean shouldRenderPass(EntityLiving var1, int var2, float var3) {
-		return this.func_176_a((EntitySheep)var1, var2, var3);
+		return this.setWoolColorAndRender((EntitySheep)var1, var2, var3);
 	}
 }

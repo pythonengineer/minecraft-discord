@@ -7,9 +7,9 @@ public class ModelRenderer {
 	private TexturedQuad[] faces;
 	private int textureOffsetX;
 	private int textureOffsetY;
-	public float offsetX;
-	public float offsetY;
-	public float offsetZ;
+	public float rotationPointX;
+	public float rotationPointY;
+	public float rotationPointZ;
 	public float rotateAngleX;
 	public float rotateAngleY;
 	public float rotateAngleZ;
@@ -76,10 +76,10 @@ public class ModelRenderer {
 
 	}
 
-	public void setPosition(float var1, float var2, float var3) {
-		this.offsetX = var1;
-		this.offsetY = var2;
-		this.offsetZ = var3;
+	public void setRotationPoint(float var1, float var2, float var3) {
+		this.rotationPointX = var1;
+		this.rotationPointY = var2;
+		this.rotationPointZ = var3;
 	}
 
 	public void render(float var1) {
@@ -90,16 +90,16 @@ public class ModelRenderer {
 				}
 
 				if(this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
-					if(this.offsetX == 0.0F && this.offsetY == 0.0F && this.offsetZ == 0.0F) {
+					if(this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F) {
 						GL11.glCallList(this.displayList);
 					} else {
-						GL11.glTranslatef(this.offsetX * var1, this.offsetY * var1, this.offsetZ * var1);
+						GL11.glTranslatef(this.rotationPointX * var1, this.rotationPointY * var1, this.rotationPointZ * var1);
 						GL11.glCallList(this.displayList);
-						GL11.glTranslatef(-this.offsetX * var1, -this.offsetY * var1, -this.offsetZ * var1);
+						GL11.glTranslatef(-this.rotationPointX * var1, -this.rotationPointY * var1, -this.rotationPointZ * var1);
 					}
 				} else {
 					GL11.glPushMatrix();
-					GL11.glTranslatef(this.offsetX * var1, this.offsetY * var1, this.offsetZ * var1);
+					GL11.glTranslatef(this.rotationPointX * var1, this.rotationPointY * var1, this.rotationPointZ * var1);
 					if(this.rotateAngleZ != 0.0F) {
 						GL11.glRotatef(this.rotateAngleZ * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
 					}
@@ -120,7 +120,7 @@ public class ModelRenderer {
 		}
 	}
 
-	public void func_25122_b(float var1) {
+	public void renderWithRotation(float var1) {
 		if(!this.field_1402_i) {
 			if(this.showModel) {
 				if(!this.compiled) {
@@ -128,7 +128,7 @@ public class ModelRenderer {
 				}
 
 				GL11.glPushMatrix();
-				GL11.glTranslatef(this.offsetX * var1, this.offsetY * var1, this.offsetZ * var1);
+				GL11.glTranslatef(this.rotationPointX * var1, this.rotationPointY * var1, this.rotationPointZ * var1);
 				if(this.rotateAngleY != 0.0F) {
 					GL11.glRotatef(this.rotateAngleY * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
 				}
@@ -155,11 +155,11 @@ public class ModelRenderer {
 				}
 
 				if(this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
-					if(this.offsetX != 0.0F || this.offsetY != 0.0F || this.offsetZ != 0.0F) {
-						GL11.glTranslatef(this.offsetX * var1, this.offsetY * var1, this.offsetZ * var1);
+					if(this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F) {
+						GL11.glTranslatef(this.rotationPointX * var1, this.rotationPointY * var1, this.rotationPointZ * var1);
 					}
 				} else {
-					GL11.glTranslatef(this.offsetX * var1, this.offsetY * var1, this.offsetZ * var1);
+					GL11.glTranslatef(this.rotationPointX * var1, this.rotationPointY * var1, this.rotationPointZ * var1);
 					if(this.rotateAngleZ != 0.0F) {
 						GL11.glRotatef(this.rotateAngleZ * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
 					}

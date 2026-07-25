@@ -22,7 +22,7 @@ public class GuiIngame extends Gui {
 	private String recordPlaying = "";
 	private int recordPlayingUpFor = 0;
 	private boolean field_22065_l = false;
-	public float field_6446_b;
+	public float damageGuiPartialTime;
 	float prevVignetteBrightness = 1.0F;
 
 	public GuiIngame(Minecraft var1) {
@@ -77,8 +77,8 @@ public class GuiIngame extends Gui {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
 		this.drawTexturedModalRect(var6 / 2 - 91 - 1 + var11.currentItem * 20, var7 - 22 - 1, 0, 22, 24, 22);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
-		boolean var12 = this.mc.thePlayer.field_9306_bj / 3 % 2 == 1;
-		if(this.mc.thePlayer.field_9306_bj < 10) {
+		boolean var12 = this.mc.thePlayer.heartsLife / 3 % 2 == 1;
+		if(this.mc.thePlayer.heartsLife < 10) {
 			var12 = false;
 		}
 
@@ -156,7 +156,7 @@ public class GuiIngame extends Gui {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 		GL11.glPushMatrix();
-		GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
+		GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
 		RenderHelper.enableStandardItemLighting();
 		GL11.glPopMatrix();
 
@@ -219,11 +219,14 @@ public class GuiIngame extends Gui {
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 
-		onBeginTouchGUI();
-
 		String var23;
 		if(this.mc.gameSettings.showDebugInfo) {
-			var8.drawStringWithShadow("Minecraft Beta 1.5_01 (" + this.mc.debug + ")", 2, 2, 16777215);
+			GL11.glPushMatrix();
+			if(Minecraft.hasPaidCheckTime > 0L) {
+				GL11.glTranslatef(0.0F, 32.0F, 0.0F);
+			}
+
+			var8.drawStringWithShadow("Minecraft Beta 1.7.3 (" + this.mc.debug + ")", 2, 2, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6241_m(), 2, 12, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6262_n(), 2, 22, 16777215);
 			var8.drawStringWithShadow(this.mc.func_6245_o(), 2, 32, 16777215);
@@ -231,11 +234,9 @@ public class GuiIngame extends Gui {
 			this.drawString(var8, "x: " + this.mc.thePlayer.posX, 2, 64, 14737632);
 			this.drawString(var8, "y: " + this.mc.thePlayer.posY, 2, 72, 14737632);
 			this.drawString(var8, "z: " + this.mc.thePlayer.posZ, 2, 80, 14737632);
-		} else {
-			var8.drawStringWithShadow("Minecraft Beta 1.5_01", 2, 2, 16777215);
+			this.drawString(var8, "f: " + (MathHelper.floor_double((double)(this.mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3), 2, 88, 14737632);
+			GL11.glPopMatrix();
 		}
-
-		onEndTouchGUI();
 
 		byte var26 = 10;
 		boolean var31 = false;
@@ -335,9 +336,12 @@ public class GuiIngame extends Gui {
 	}
 
 	private void renderPortalOverlay(float var1, int var2, int var3) {
-		var1 *= var1;
-		var1 *= var1;
-		var1 = var1 * 0.8F + 0.2F;
+		if(var1 < 1.0F) {
+			var1 *= var1;
+			var1 *= var1;
+			var1 = var1 * 0.8F + 0.2F;
+		}
+
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(false);
@@ -395,6 +399,10 @@ public class GuiIngame extends Gui {
 
 	}
 
+	public void clearChatMessages() {
+		this.chatMessageList.clear();
+	}
+
 	public void addChatMessage(String var1) {
 		while(this.mc.fontRenderer.getStringWidth(var1) > 320) {
 			int var2;
@@ -419,7 +427,7 @@ public class GuiIngame extends Gui {
 		this.field_22065_l = true;
 	}
 
-	public void func_22064_c(String var1) {
+	public void addChatMessageTranslate(String var1) {
 		StringTranslate var2 = StringTranslate.getInstance();
 		String var3 = var2.translateKey(var1);
 		this.addChatMessage(var3);
@@ -483,19 +491,6 @@ public class GuiIngame extends Gui {
 			return (posY + this.mc.scaledResolution.getScaledHeight() / 2) * 2 / 3;
 		} else {
 			return (posY + this.mc.displayHeight / 2) * 2 / 3;
-		}
-	}
-
-	private void onBeginTouchGUI() {
-		if(PointerInputAbstraction.isTouchMode()) {
-			GL11.glPushMatrix();
-			GL11.glScalef(1.5f, 1.5f, 1.5f);
-		}
-	}
-
-	private void onEndTouchGUI() {
-		if(PointerInputAbstraction.isTouchMode()) {
-			GL11.glPopMatrix();
 		}
 	}
 

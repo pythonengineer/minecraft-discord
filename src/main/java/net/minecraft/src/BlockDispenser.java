@@ -4,6 +4,8 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class BlockDispenser extends BlockContainer {
+	private EaglercraftRandom random = new EaglercraftRandom();
+
 	protected BlockDispenser(int var1) {
 		super(var1, Material.rock);
 		this.blockIndexInTexture = 45;
@@ -76,65 +78,56 @@ public class BlockDispenser extends BlockContainer {
 
 	private void dispenseItem(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {
 		int var6 = var1.getBlockMetadata(var2, var3, var4);
-		float var9 = 0.0F;
-		float var10 = 0.0F;
+		byte var9 = 0;
+		byte var10 = 0;
 		if(var6 == 3) {
-			var10 = 1.0F;
+			var10 = 1;
 		} else if(var6 == 2) {
-			var10 = -1.0F;
+			var10 = -1;
 		} else if(var6 == 5) {
-			var9 = 1.0F;
+			var9 = 1;
 		} else {
-			var9 = -1.0F;
+			var9 = -1;
 		}
 
 		TileEntityDispenser var11 = (TileEntityDispenser)var1.getBlockTileEntity(var2, var3, var4);
 		ItemStack var12 = var11.getRandomStackFromInventory();
-		double var13 = (double)var2 + (double)var9 * 0.5D + 0.5D;
+		double var13 = (double)var2 + (double)var9 * 0.6D + 0.5D;
 		double var15 = (double)var3 + 0.5D;
-		double var17 = (double)var4 + (double)var10 * 0.5D + 0.5D;
+		double var17 = (double)var4 + (double)var10 * 0.6D + 0.5D;
 		if(var12 == null) {
-			var1.playSoundEffect((double)var2, (double)var3, (double)var4, "random.click", 1.0F, 1.2F);
+			var1.func_28106_e(1001, var2, var3, var4, 0);
 		} else {
-			double var20;
 			if(var12.itemID == Item.arrow.shiftedIndex) {
 				EntityArrow var19 = new EntityArrow(var1, var13, var15, var17);
 				var19.setArrowHeading((double)var9, (double)0.1F, (double)var10, 1.1F, 6.0F);
+				var19.doesArrowBelongToPlayer = true;
 				var1.entityJoinedWorld(var19);
-				var1.playSoundEffect((double)var2, (double)var3, (double)var4, "random.bow", 1.0F, 1.2F);
+				var1.func_28106_e(1002, var2, var3, var4, 0);
 			} else if(var12.itemID == Item.egg.shiftedIndex) {
-				EntityEgg var34 = new EntityEgg(var1, var13, var15, var17);
-				var34.setEggHeading((double)var9, (double)0.1F, (double)var10, 1.1F, 6.0F);
-				var1.entityJoinedWorld(var34);
-				var1.playSoundEffect((double)var2, (double)var3, (double)var4, "random.bow", 1.0F, 1.2F);
+				EntityEgg var22 = new EntityEgg(var1, var13, var15, var17);
+				var22.setEggHeading((double)var9, (double)0.1F, (double)var10, 1.1F, 6.0F);
+				var1.entityJoinedWorld(var22);
+				var1.func_28106_e(1002, var2, var3, var4, 0);
 			} else if(var12.itemID == Item.snowball.shiftedIndex) {
-				EntitySnowball var35 = new EntitySnowball(var1, var13, var15, var17);
-				var35.setSnowballHeading((double)var9, (double)0.1F, (double)var10, 1.1F, 6.0F);
-				var1.entityJoinedWorld(var35);
-				var1.playSoundEffect((double)var2, (double)var3, (double)var4, "random.bow", 1.0F, 1.2F);
+				EntitySnowball var23 = new EntitySnowball(var1, var13, var15, var17);
+				var23.setSnowballHeading((double)var9, (double)0.1F, (double)var10, 1.1F, 6.0F);
+				var1.entityJoinedWorld(var23);
+				var1.func_28106_e(1002, var2, var3, var4, 0);
 			} else {
-				EntityItem var36 = new EntityItem(var1, var13, var15 - 0.3D, var17, var12);
-				var20 = var5.nextDouble() * 0.1D + 0.2D;
-				var36.motionX = (double)var9 * var20;
-				var36.motionY = (double)0.2F;
-				var36.motionZ = (double)var10 * var20;
-				var36.motionX += var5.nextGaussian() * (double)0.0075F * 6.0D;
-				var36.motionY += var5.nextGaussian() * (double)0.0075F * 6.0D;
-				var36.motionZ += var5.nextGaussian() * (double)0.0075F * 6.0D;
-				var1.entityJoinedWorld(var36);
-				var1.playSoundEffect((double)var2, (double)var3, (double)var4, "random.click", 1.0F, 1.0F);
+				EntityItem var24 = new EntityItem(var1, var13, var15 - 0.3D, var17, var12);
+				double var20 = var5.nextDouble() * 0.1D + 0.2D;
+				var24.motionX = (double)var9 * var20;
+				var24.motionY = (double)0.2F;
+				var24.motionZ = (double)var10 * var20;
+				var24.motionX += var5.nextGaussian() * (double)0.0075F * 6.0D;
+				var24.motionY += var5.nextGaussian() * (double)0.0075F * 6.0D;
+				var24.motionZ += var5.nextGaussian() * (double)0.0075F * 6.0D;
+				var1.entityJoinedWorld(var24);
+				var1.func_28106_e(1000, var2, var3, var4, 0);
 			}
 
-			for(int var37 = 0; var37 < 10; ++var37) {
-				var20 = var5.nextDouble() * 0.2D + 0.01D;
-				double var22 = var13 + (double)var9 * 0.01D + (var5.nextDouble() - 0.5D) * (double)var10 * 0.5D;
-				double var24 = var15 + (var5.nextDouble() - 0.5D) * 0.5D;
-				double var26 = var17 + (double)var10 * 0.01D + (var5.nextDouble() - 0.5D) * (double)var9 * 0.5D;
-				double var28 = (double)var9 * var20 + var5.nextGaussian() * 0.01D;
-				double var30 = -0.03D + var5.nextGaussian() * 0.01D;
-				double var32 = (double)var10 * var20 + var5.nextGaussian() * 0.01D;
-				var1.spawnParticle("smoke", var22, var24, var26, var28, var30, var32);
-			}
+			var1.func_28106_e(2000, var2, var3, var4, var9 + 1 + (var10 + 1) * 3);
 		}
 
 	}
@@ -178,5 +171,35 @@ public class BlockDispenser extends BlockContainer {
 			var1.setBlockMetadataWithNotify(var2, var3, var4, 4);
 		}
 
+	}
+
+	public void onBlockRemoval(World var1, int var2, int var3, int var4) {
+		TileEntityDispenser var5 = (TileEntityDispenser)var1.getBlockTileEntity(var2, var3, var4);
+
+		for(int var6 = 0; var6 < var5.getSizeInventory(); ++var6) {
+			ItemStack var7 = var5.getStackInSlot(var6);
+			if(var7 != null) {
+				float var8 = this.random.nextFloat() * 0.8F + 0.1F;
+				float var9 = this.random.nextFloat() * 0.8F + 0.1F;
+				float var10 = this.random.nextFloat() * 0.8F + 0.1F;
+
+				while(var7.stackSize > 0) {
+					int var11 = this.random.nextInt(21) + 10;
+					if(var11 > var7.stackSize) {
+						var11 = var7.stackSize;
+					}
+
+					var7.stackSize -= var11;
+					EntityItem var12 = new EntityItem(var1, (double)((float)var2 + var8), (double)((float)var3 + var9), (double)((float)var4 + var10), new ItemStack(var7.itemID, var11, var7.getItemDamage()));
+					float var13 = 0.05F;
+					var12.motionX = (double)((float)this.random.nextGaussian() * var13);
+					var12.motionY = (double)((float)this.random.nextGaussian() * var13 + 0.2F);
+					var12.motionZ = (double)((float)this.random.nextGaussian() * var13);
+					var1.entityJoinedWorld(var12);
+				}
+			}
+		}
+
+		super.onBlockRemoval(var1, var2, var3, var4);
 	}
 }

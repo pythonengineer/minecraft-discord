@@ -87,7 +87,7 @@ abstract class GuiSlotStats extends GuiSlot {
 
 		if(this.field_27268_b >= 0) {
 			this.func_27266_c(this.field_27268_b);
-			GuiStats.func_27149_g(this.field_27269_g).sndManager.func_337_a("random.click", 1.0F, 1.0F);
+			GuiStats.func_27149_g(this.field_27269_g).sndManager.playSoundFX("random.click", 1.0F, 1.0F);
 		}
 
 	}
@@ -105,7 +105,7 @@ abstract class GuiSlotStats extends GuiSlot {
 	protected void func_27265_a(StatCrafting var1, int var2, int var3, boolean var4) {
 		String var5;
 		if(var1 != null) {
-			var5 = var1.func_27084_a(GuiStats.func_27142_c(this.field_27269_g).func_27184_a(var1));
+			var5 = var1.func_27084_a(GuiStats.func_27142_c(this.field_27269_g).writeStat(var1));
 			this.field_27269_g.drawString(GuiStats.func_27133_h(this.field_27269_g), var5, var2 - GuiStats.func_27137_i(this.field_27269_g).getStringWidth(var5), var3 + 5, var4 ? 16777215 : 9474192);
 		} else {
 			var5 = "-";

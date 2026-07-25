@@ -8,10 +8,10 @@ public class EntityWolf extends EntityAnimal {
 	private boolean looksWithInterest = false;
 	private float field_25048_b;
 	private float field_25054_c;
-	private boolean field_25053_f;
+	private boolean isWolfShaking;
 	private boolean field_25052_g;
 	private float timeWolfIsShaking;
-	private float field_25050_i;
+	private float prevTimeWolfIsShaking;
 
 	public EntityWolf(World var1) {
 		super(var1);
@@ -55,7 +55,7 @@ public class EntityWolf extends EntityAnimal {
 		String var2 = var1.getString("Owner");
 		if(var2.length() > 0) {
 			this.setWolfOwner(var2);
-			this.func_25038_d(true);
+			this.setWolfTamed(true);
 		}
 
 	}
@@ -65,7 +65,7 @@ public class EntityWolf extends EntityAnimal {
 	}
 
 	protected String getLivingSound() {
-		return this.isWolfAngry() ? "mob.wolf.growl" : (this.rand.nextInt(3) == 0 ? (this.isWolfTamed() && this.dataWatcher.func_25115_b(18) < 10 ? "mob.wolf.whine" : "mob.wolf.panting") : "mob.wolf.bark");
+		return this.isWolfAngry() ? "mob.wolf.growl" : (this.rand.nextInt(3) == 0 ? (this.isWolfTamed() && this.dataWatcher.getWatchableObjectInt(18) < 10 ? "mob.wolf.whine" : "mob.wolf.panting") : "mob.wolf.bark");
 	}
 
 	protected String getHurtSound() {
@@ -93,7 +93,7 @@ public class EntityWolf extends EntityAnimal {
 				if(var2 > 5.0F) {
 					this.getPathOrWalkableBlock(var3, var2);
 				}
-			} else if(!this.func_27013_ag()) {
+			} else if(!this.isInWater()) {
 				this.setWolfSitting(true);
 			}
 		} else if(this.playerToAttack == null && !this.hasPath() && !this.isWolfTamed() && this.worldObj.rand.nextInt(100) == 0) {
@@ -103,7 +103,7 @@ public class EntityWolf extends EntityAnimal {
 			}
 		}
 
-		if(this.func_27013_ag()) {
+		if(this.isInWater()) {
 			this.setWolfSitting(false);
 		}
 
@@ -116,7 +116,7 @@ public class EntityWolf extends EntityAnimal {
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
 		this.looksWithInterest = false;
-		if(this.func_25025_V() && !this.hasPath() && !this.isWolfAngry()) {
+		if(this.hasCurrentTarget() && !this.hasPath() && !this.isWolfAngry()) {
 			Entity var1 = this.getCurrentTarget();
 			if(var1 instanceof EntityPlayer) {
 				EntityPlayer var2 = (EntityPlayer)var1;
@@ -131,10 +131,10 @@ public class EntityWolf extends EntityAnimal {
 			}
 		}
 
-		if(!this.field_9343_G && this.field_25053_f && !this.field_25052_g && !this.hasPath() && this.onGround) {
+		if(!this.isMultiplayerEntity && this.isWolfShaking && !this.field_25052_g && !this.hasPath() && this.onGround) {
 			this.field_25052_g = true;
 			this.timeWolfIsShaking = 0.0F;
-			this.field_25050_i = 0.0F;
+			this.prevTimeWolfIsShaking = 0.0F;
 			this.worldObj.func_9425_a(this, (byte)8);
 		}
 
@@ -153,22 +153,22 @@ public class EntityWolf extends EntityAnimal {
 			this.numTicksToChaseTarget = 10;
 		}
 
-		if(this.func_27012_af()) {
-			this.field_25053_f = true;
+		if(this.isWet()) {
+			this.isWolfShaking = true;
 			this.field_25052_g = false;
 			this.timeWolfIsShaking = 0.0F;
-			this.field_25050_i = 0.0F;
-		} else if((this.field_25053_f || this.field_25052_g) && this.field_25052_g) {
+			this.prevTimeWolfIsShaking = 0.0F;
+		} else if((this.isWolfShaking || this.field_25052_g) && this.field_25052_g) {
 			if(this.timeWolfIsShaking == 0.0F) {
 				this.worldObj.playSoundAtEntity(this, "mob.wolf.shake", this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
 			}
 
-			this.field_25050_i = this.timeWolfIsShaking;
+			this.prevTimeWolfIsShaking = this.timeWolfIsShaking;
 			this.timeWolfIsShaking += 0.05F;
-			if(this.field_25050_i >= 2.0F) {
-				this.field_25053_f = false;
+			if(this.prevTimeWolfIsShaking >= 2.0F) {
+				this.isWolfShaking = false;
 				this.field_25052_g = false;
-				this.field_25050_i = 0.0F;
+				this.prevTimeWolfIsShaking = 0.0F;
 				this.timeWolfIsShaking = 0.0F;
 			}
 
@@ -186,16 +186,16 @@ public class EntityWolf extends EntityAnimal {
 
 	}
 
-	public boolean func_25039_v() {
-		return this.field_25053_f;
+	public boolean getWolfShaking() {
+		return this.isWolfShaking;
 	}
 
-	public float func_25043_b_(float var1) {
-		return 12.0F / 16.0F + (this.field_25050_i + (this.timeWolfIsShaking - this.field_25050_i) * var1) / 2.0F * 0.25F;
+	public float getShadingWhileShaking(float var1) {
+		return 12.0F / 16.0F + (this.prevTimeWolfIsShaking + (this.timeWolfIsShaking - this.prevTimeWolfIsShaking) * var1) / 2.0F * 0.25F;
 	}
 
-	public float func_25042_a(float var1, float var2) {
-		float var3 = (this.field_25050_i + (this.timeWolfIsShaking - this.field_25050_i) * var1 + var2) / 1.8F;
+	public float getShakeAngle(float var1, float var2) {
+		float var3 = (this.prevTimeWolfIsShaking + (this.timeWolfIsShaking - this.prevTimeWolfIsShaking) * var1 + var2) / 1.8F;
 		if(var3 < 0.0F) {
 			var3 = 0.0F;
 		} else if(var3 > 1.0F) {
@@ -205,7 +205,7 @@ public class EntityWolf extends EntityAnimal {
 		return MathHelper.sin(var3 * (float)Math.PI) * MathHelper.sin(var3 * (float)Math.PI * 11.0F) * 0.15F * (float)Math.PI;
 	}
 
-	public float func_25033_c(float var1) {
+	public float getInterestedAngle(float var1) {
 		return (this.field_25054_c + (this.field_25048_b - this.field_25054_c) * var1) * 0.15F * (float)Math.PI;
 	}
 
@@ -226,7 +226,7 @@ public class EntityWolf extends EntityAnimal {
 
 			for(int var7 = 0; var7 <= 4; ++var7) {
 				for(int var8 = 0; var8 <= 4; ++var8) {
-					if((var7 < 1 || var8 < 1 || var7 > 3 || var8 > 3) && this.worldObj.isBlockOpaqueCube(var4 + var7, var6 - 1, var5 + var8) && !this.worldObj.isBlockOpaqueCube(var4 + var7, var6, var5 + var8) && !this.worldObj.isBlockOpaqueCube(var4 + var7, var6 + 1, var5 + var8)) {
+					if((var7 < 1 || var8 < 1 || var7 > 3 || var8 > 3) && this.worldObj.isBlockNormalCube(var4 + var7, var6 - 1, var5 + var8) && !this.worldObj.isBlockNormalCube(var4 + var7, var6, var5 + var8) && !this.worldObj.isBlockNormalCube(var4 + var7, var6 + 1, var5 + var8)) {
 						this.setLocationAndAngles((double)((float)(var4 + var7) + 0.5F), (double)var6, (double)((float)(var5 + var8) + 0.5F), this.rotationYaw, this.rotationPitch);
 						return;
 					}
@@ -238,7 +238,7 @@ public class EntityWolf extends EntityAnimal {
 
 	}
 
-	protected boolean setCanWalk() {
+	protected boolean isMovementCeased() {
 		return this.isWolfSitting() || this.field_25052_g;
 	}
 
@@ -277,7 +277,7 @@ public class EntityWolf extends EntityAnimal {
 					}
 				}
 			} else if(var1 != this && var1 != null) {
-				if(this.isWolfTamed() && var1 instanceof EntityPlayer && ((EntityPlayer)var1).username.equals(this.getWolfOwner())) {
+				if(this.isWolfTamed() && var1 instanceof EntityPlayer && ((EntityPlayer)var1).username.equalsIgnoreCase(this.getWolfOwner())) {
 					return true;
 				}
 
@@ -325,7 +325,7 @@ public class EntityWolf extends EntityAnimal {
 
 				if(!this.worldObj.multiplayerWorld) {
 					if(this.rand.nextInt(3) == 0) {
-						this.func_25038_d(true);
+						this.setWolfTamed(true);
 						this.setPathToEntity((PathEntity)null);
 						this.setWolfSitting(true);
 						this.health = 20;
@@ -343,7 +343,7 @@ public class EntityWolf extends EntityAnimal {
 		} else {
 			if(var2 != null && Item.itemsList[var2.itemID] instanceof ItemFood) {
 				ItemFood var3 = (ItemFood)Item.itemsList[var2.itemID];
-				if(var3.getIsWolfsFavoriteMeat() && this.dataWatcher.func_25115_b(18) < 20) {
+				if(var3.getIsWolfsFavoriteMeat() && this.dataWatcher.getWatchableObjectInt(18) < 20) {
 					--var2.stackSize;
 					if(var2.stackSize <= 0) {
 						var1.inventory.setInventorySlotContents(var1.inventory.currentItem, (ItemStack)null);
@@ -354,7 +354,7 @@ public class EntityWolf extends EntityAnimal {
 				}
 			}
 
-			if(var1.username.equals(this.getWolfOwner())) {
+			if(var1.username.equalsIgnoreCase(this.getWolfOwner())) {
 				if(!this.worldObj.multiplayerWorld) {
 					this.setWolfSitting(!this.isWolfSitting());
 					this.isJumping = false;
@@ -391,15 +391,15 @@ public class EntityWolf extends EntityAnimal {
 		} else if(var1 == 8) {
 			this.field_25052_g = true;
 			this.timeWolfIsShaking = 0.0F;
-			this.field_25050_i = 0.0F;
+			this.prevTimeWolfIsShaking = 0.0F;
 		} else {
 			super.handleHealthUpdate(var1);
 		}
 
 	}
 
-	public float func_25037_z() {
-		return this.isWolfAngry() ? (float)Math.PI * 0.49F : (this.isWolfTamed() ? (0.55F - (float)(20 - this.dataWatcher.func_25115_b(18)) * 0.02F) * (float)Math.PI : (float)Math.PI * 0.2F);
+	public float setTailRotation() {
+		return this.isWolfAngry() ? (float)Math.PI * 0.49F : (this.isWolfTamed() ? (0.55F - (float)(20 - this.dataWatcher.getWatchableObjectInt(18)) * 0.02F) * (float)Math.PI : (float)Math.PI * 0.2F);
 	}
 
 	public int getMaxSpawnedInChunk() {
@@ -407,7 +407,7 @@ public class EntityWolf extends EntityAnimal {
 	}
 
 	public String getWolfOwner() {
-		return this.dataWatcher.func_25116_c(17);
+		return this.dataWatcher.getWatchableObjectString(17);
 	}
 
 	public void setWolfOwner(String var1) {
@@ -446,7 +446,7 @@ public class EntityWolf extends EntityAnimal {
 		return (this.dataWatcher.getWatchableObjectByte(16) & 4) != 0;
 	}
 
-	public void func_25038_d(boolean var1) {
+	public void setWolfTamed(boolean var1) {
 		byte var2 = this.dataWatcher.getWatchableObjectByte(16);
 		if(var1) {
 			this.dataWatcher.updateObject(16, Byte.valueOf((byte)(var2 | 4)));

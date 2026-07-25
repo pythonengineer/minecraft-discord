@@ -18,8 +18,12 @@ public class ChunkProviderClient implements IChunkProvider {
 	}
 
 	public boolean chunkExists(int var1, int var2) {
-		ChunkCoordIntPair var3 = new ChunkCoordIntPair(var1, var2);
-		return this.chunkMapping.containsKey(var3);
+		if(this != null) {
+			return true;
+		} else {
+			ChunkCoordIntPair var3 = new ChunkCoordIntPair(var1, var2);
+			return this.chunkMapping.containsKey(var3);
+		}
 	}
 
 	public void func_539_c(int var1, int var2) {
@@ -32,7 +36,7 @@ public class ChunkProviderClient implements IChunkProvider {
 		this.field_889_c.remove(var3);
 	}
 
-	public Chunk func_538_d(int var1, int var2) {
+	public Chunk prepareChunk(int var1, int var2) {
 		ChunkCoordIntPair var3 = new ChunkCoordIntPair(var1, var2);
 		byte[] var4 = new byte[-Short.MIN_VALUE];
 		Chunk var5 = new Chunk(this.worldObj, var4, var1, var2);
@@ -52,18 +56,18 @@ public class ChunkProviderClient implements IChunkProvider {
 		return true;
 	}
 
-	public boolean func_532_a() {
+	public boolean unload100OldestChunks() {
 		return false;
 	}
 
-	public boolean func_536_b() {
+	public boolean canSave() {
 		return false;
 	}
 
 	public void populate(IChunkProvider var1, int var2, int var3) {
 	}
 
-	public String toString() {
+	public String makeString() {
 		return "MultiplayerChunkCache: " + this.chunkMapping.size();
 	}
 }

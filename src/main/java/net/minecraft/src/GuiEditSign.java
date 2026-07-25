@@ -24,7 +24,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 	public void onGuiClosed() {
 		Keyboard.enableRepeatEvents(false);
 		if(this.mc.theWorld.multiplayerWorld) {
-			this.mc.func_20001_q().addToSendQueue(new Packet130UpdateSign(this.entitySign.xCoord, this.entitySign.yCoord, this.entitySign.zCoord, this.entitySign.signText));
+			this.mc.getSendQueue().addToSendQueue(new Packet130UpdateSign(this.entitySign.xCoord, this.entitySign.yCoord, this.entitySign.zCoord, this.entitySign.signText));
 		}
 
 	}
@@ -66,7 +66,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 		this.drawDefaultBackground();
 		this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 40, 16777215);
 		GL11.glPushMatrix();
-		GL11.glTranslatef((float)(this.width / 2), (float)(this.height / 2), 50.0F);
+		GL11.glTranslatef((float)(this.width / 2), 0.0F, 50.0F);
 		float var4 = 93.75F;
 		GL11.glScalef(-var4, -var4, -var4);
 		GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
@@ -74,7 +74,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 		if(var5 == Block.signPost) {
 			float var6 = (float)(this.entitySign.getBlockMetadata() * 360) / 16.0F;
 			GL11.glRotatef(var6, 0.0F, 1.0F, 0.0F);
-			GL11.glTranslatef(0.0F, 5.0F / 16.0F, 0.0F);
+			GL11.glTranslatef(0.0F, -1.0625F, 0.0F);
 		} else {
 			int var8 = this.entitySign.getBlockMetadata();
 			float var7 = 0.0F;
@@ -91,7 +91,7 @@ public class GuiEditSign extends GuiScreenVisualViewport {
 			}
 
 			GL11.glRotatef(var7, 0.0F, 1.0F, 0.0F);
-			GL11.glTranslatef(0.0F, 5.0F / 16.0F, 0.0F);
+			GL11.glTranslatef(0.0F, -1.0625F, 0.0F);
 		}
 
 		if(this.updateCounter / 6 % 2 == 0) {

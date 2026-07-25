@@ -238,4 +238,20 @@ public class EntityPainting extends Entity {
 
 		this.func_412_b(this.direction);
 	}
+
+	public void moveEntity(double var1, double var3, double var5) {
+		if(!this.worldObj.multiplayerWorld && var1 * var1 + var3 * var3 + var5 * var5 > 0.0D) {
+			this.setEntityDead();
+			this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+		}
+
+	}
+
+	public void addVelocity(double var1, double var3, double var5) {
+		if(!this.worldObj.multiplayerWorld && var1 * var1 + var3 * var3 + var5 * var5 > 0.0D) {
+			this.setEntityDead();
+			this.worldObj.entityJoinedWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.painting)));
+		}
+
+	}
 }

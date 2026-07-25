@@ -61,7 +61,7 @@ public abstract class GuiContainer extends GuiScreen {
         int var5 = (this.height - this.ySize) / 2;
         this.drawGuiContainerBackgroundLayer(var3);
         GL11.glPushMatrix();
-        GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
+        GL11.glRotatef(120.0F, 1.0F, 0.0F, 0.0F);
         RenderHelper.enableStandardItemLighting();
         GL11.glPopMatrix();
         GL11.glPushMatrix();
@@ -181,7 +181,7 @@ public abstract class GuiContainer extends GuiScreen {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         this.drawGuiContainerForegroundLayer();
         if(this.mc.thePlayer.inventory.getItemStack() == null && slot != null && slot.getHasStack()) {
-            String var13 = ("" + StringTranslate.getInstance().translateNamedKey(slot.getStack().func_20109_f())).trim();
+            String var13 = ("" + StringTranslate.getInstance().translateNamedKey(slot.getStack().getItemName())).trim();
             if(var13.length() > 0) {
                 int var9 = var1 - var4 + 12;
                 int var10 = var2 - var5 - 12;
@@ -204,7 +204,7 @@ public abstract class GuiContainer extends GuiScreen {
 
     protected void keyTyped(char var1, int var2) {
         if(var2 == 1 || var2 == this.mc.gameSettings.keyBindInventory.keyCode) {
-            this.mc.thePlayer.func_20059_m();
+            this.mc.thePlayer.closeScreen();
         }
 
     }
@@ -544,6 +544,11 @@ public abstract class GuiContainer extends GuiScreen {
             primaryTouchPoint = -1;
             mouseMovedOrUp(lastTouchX, lastTouchY, 0);
         }
+
+        if(!this.mc.thePlayer.isEntityAlive() || this.mc.thePlayer.isDead) {
+            this.mc.thePlayer.closeScreen();
+        }
+
     }
 
     protected float getTouchModeScale() {

@@ -1,9 +1,11 @@
 package net.minecraft.src;
 
-import net.lax1dude.eaglercraft.opengl.ImageData;
-
 public class ColorizerFoliage {
-	private static final int[] foliageBuffer = new int[65536];
+	private static int[] foliageBuffer = new int[65536];
+
+	public static void func_28152_a(int[] var0) {
+		foliageBuffer = var0;
+	}
 
 	public static int getFoliageColor(double var0, double var2) {
 		var2 *= var0;
@@ -20,13 +22,7 @@ public class ColorizerFoliage {
 		return 8431445;
 	}
 
-	static {
-		try {
-			ImageData var0 = ImageData.loadImageFile("/assets/misc/foliagecolor.png");
-			var0.getRGB(0, 0, 256, 256, foliageBuffer, 0, 256);
-		} catch (Exception var1) {
-			var1.printStackTrace();
-		}
-
+	public static int func_31073_c() {
+		return 4764952;
 	}
 }

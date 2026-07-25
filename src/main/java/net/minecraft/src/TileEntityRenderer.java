@@ -24,6 +24,7 @@ public class TileEntityRenderer {
 	private TileEntityRenderer() {
 		this.specialRendererMap.put(TileEntitySign.class, new TileEntitySignRenderer());
 		this.specialRendererMap.put(TileEntityMobSpawner.class, new TileEntityMobSpawnerRenderer());
+		this.specialRendererMap.put(TileEntityPiston.class, new TileEntityRendererPiston());
 		Iterator var1 = this.specialRendererMap.values().iterator();
 
 		while(var1.hasNext()) {
@@ -52,7 +53,10 @@ public class TileEntityRenderer {
 	}
 
 	public void cacheActiveRenderInfo(World var1, RenderEngine var2, FontRenderer var3, EntityLiving var4, float var5) {
-		this.worldObj = var1;
+		if(this.worldObj != var1) {
+			this.func_31072_a(var1);
+		}
+
 		this.renderEngine = var2;
 		this.entityLivingPlayer = var4;
 		this.fontRenderer = var3;
@@ -76,6 +80,19 @@ public class TileEntityRenderer {
 		TileEntitySpecialRenderer var9 = this.getSpecialRendererForEntity(var1);
 		if(var9 != null) {
 			var9.renderTileEntityAt(var1, var2, var4, var6, var8);
+		}
+
+	}
+
+	public void func_31072_a(World var1) {
+		this.worldObj = var1;
+		Iterator var2 = this.specialRendererMap.values().iterator();
+
+		while(var2.hasNext()) {
+			TileEntitySpecialRenderer var3 = (TileEntitySpecialRenderer)var2.next();
+			if(var3 != null) {
+				var3.func_31069_a(var1);
+			}
 		}
 
 	}

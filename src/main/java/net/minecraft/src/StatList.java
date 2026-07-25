@@ -13,33 +13,33 @@ public class StatList {
 	public static List field_25187_b = new ArrayList();
 	public static List field_25186_c = new ArrayList();
 	public static List field_25185_d = new ArrayList();
-	public static StatBase field_25184_e = (new StatBasic(1000, StatCollector.translateToLocal("stat.startGame"))).func_27082_h().func_25068_c();
-	public static StatBase field_25183_f = (new StatBasic(1001, StatCollector.translateToLocal("stat.createWorld"))).func_27082_h().func_25068_c();
-	public static StatBase field_25182_g = (new StatBasic(1002, StatCollector.translateToLocal("stat.loadWorld"))).func_27082_h().func_25068_c();
-	public static StatBase field_25181_h = (new StatBasic(1003, StatCollector.translateToLocal("stat.joinMultiplayer"))).func_27082_h().func_25068_c();
-	public static StatBase field_25180_i = (new StatBasic(1004, StatCollector.translateToLocal("stat.leaveGame"))).func_27082_h().func_25068_c();
-	public static StatBase field_25179_j = (new StatBasic(1100, StatCollector.translateToLocal("stat.playOneMinute"), StatBase.field_27086_j)).func_27082_h().func_25068_c();
-	public static StatBase field_25178_k = (new StatBasic(2000, StatCollector.translateToLocal("stat.walkOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_25177_l = (new StatBasic(2001, StatCollector.translateToLocal("stat.swimOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_25176_m = (new StatBasic(2002, StatCollector.translateToLocal("stat.fallOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_25175_n = (new StatBasic(2003, StatCollector.translateToLocal("stat.climbOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_25174_o = (new StatBasic(2004, StatCollector.translateToLocal("stat.flyOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_25173_p = (new StatBasic(2005, StatCollector.translateToLocal("stat.diveOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_27364_r = (new StatBasic(2006, StatCollector.translateToLocal("stat.minecartOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_27363_s = (new StatBasic(2007, StatCollector.translateToLocal("stat.boatOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_27362_t = (new StatBasic(2008, StatCollector.translateToLocal("stat.pigOneCm"), StatBase.field_27085_k)).func_27082_h().func_25068_c();
-	public static StatBase field_25171_q = (new StatBasic(2010, StatCollector.translateToLocal("stat.jump"))).func_27082_h().func_25068_c();
-	public static StatBase field_25168_r = (new StatBasic(2011, StatCollector.translateToLocal("stat.drop"))).func_27082_h().func_25068_c();
-	public static StatBase field_25167_s = (new StatBasic(2020, StatCollector.translateToLocal("stat.damageDealt"))).func_25068_c();
-	public static StatBase field_25165_t = (new StatBasic(2021, StatCollector.translateToLocal("stat.damageTaken"))).func_25068_c();
-	public static StatBase field_25163_u = (new StatBasic(2022, StatCollector.translateToLocal("stat.deaths"))).func_25068_c();
-	public static StatBase field_25162_v = (new StatBasic(2023, StatCollector.translateToLocal("stat.mobKills"))).func_25068_c();
-	public static StatBase field_25161_w = (new StatBasic(2024, StatCollector.translateToLocal("stat.playerKills"))).func_25068_c();
-	public static StatBase field_25160_x = (new StatBasic(2025, StatCollector.translateToLocal("stat.fishCaught"))).func_25068_c();
-	public static StatBase[] field_25159_y = func_25153_a("stat.mineBlock", 16777216);
-	public static StatBase[] field_25158_z = null;
-	public static StatBase[] field_25172_A = null;
-	public static StatBase[] field_25170_B = null;
+	public static StatBase startGameStat = (new StatBasic(1000, StatCollector.translateToLocal("stat.startGame"))).func_27082_h().registerStat();
+	public static StatBase createWorldStat = (new StatBasic(1001, StatCollector.translateToLocal("stat.createWorld"))).func_27082_h().registerStat();
+	public static StatBase loadWorldStat = (new StatBasic(1002, StatCollector.translateToLocal("stat.loadWorld"))).func_27082_h().registerStat();
+	public static StatBase joinMultiplayerStat = (new StatBasic(1003, StatCollector.translateToLocal("stat.joinMultiplayer"))).func_27082_h().registerStat();
+	public static StatBase leaveGameStat = (new StatBasic(1004, StatCollector.translateToLocal("stat.leaveGame"))).func_27082_h().registerStat();
+	public static StatBase minutesPlayedStat = (new StatBasic(1100, StatCollector.translateToLocal("stat.playOneMinute"), StatBase.field_27086_j)).func_27082_h().registerStat();
+	public static StatBase distanceWalkedStat = (new StatBasic(2000, StatCollector.translateToLocal("stat.walkOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceSwumStat = (new StatBasic(2001, StatCollector.translateToLocal("stat.swimOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceFallenStat = (new StatBasic(2002, StatCollector.translateToLocal("stat.fallOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceClimbedStat = (new StatBasic(2003, StatCollector.translateToLocal("stat.climbOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceFlownStat = (new StatBasic(2004, StatCollector.translateToLocal("stat.flyOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceDoveStat = (new StatBasic(2005, StatCollector.translateToLocal("stat.diveOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceByMinecartStat = (new StatBasic(2006, StatCollector.translateToLocal("stat.minecartOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceByBoatStat = (new StatBasic(2007, StatCollector.translateToLocal("stat.boatOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase distanceByPigStat = (new StatBasic(2008, StatCollector.translateToLocal("stat.pigOneCm"), StatBase.field_27085_k)).func_27082_h().registerStat();
+	public static StatBase jumpStat = (new StatBasic(2010, StatCollector.translateToLocal("stat.jump"))).func_27082_h().registerStat();
+	public static StatBase dropStat = (new StatBasic(2011, StatCollector.translateToLocal("stat.drop"))).func_27082_h().registerStat();
+	public static StatBase damageDealtStat = (new StatBasic(2020, StatCollector.translateToLocal("stat.damageDealt"))).registerStat();
+	public static StatBase damageTakenStat = (new StatBasic(2021, StatCollector.translateToLocal("stat.damageTaken"))).registerStat();
+	public static StatBase deathsStat = (new StatBasic(2022, StatCollector.translateToLocal("stat.deaths"))).registerStat();
+	public static StatBase mobKillsStat = (new StatBasic(2023, StatCollector.translateToLocal("stat.mobKills"))).registerStat();
+	public static StatBase playerKillsStat = (new StatBasic(2024, StatCollector.translateToLocal("stat.playerKills"))).registerStat();
+	public static StatBase fishCaughtStat = (new StatBasic(2025, StatCollector.translateToLocal("stat.fishCaught"))).registerStat();
+	public static StatBase[] mineBlockStatArray = func_25153_a("stat.mineBlock", 16777216);
+	public static StatBase[] field_25158_z;
+	public static StatBase[] field_25172_A;
+	public static StatBase[] field_25170_B;
 	private static boolean field_25166_D;
 	private static boolean field_25164_E;
 
@@ -63,14 +63,14 @@ public class StatList {
 	public static void func_25157_c() {
 		if(field_25166_D && field_25164_E) {
 			HashSet var0 = new HashSet();
-			Iterator var1 = CraftingManager.getInstance().func_25193_b().iterator();
+			Iterator var1 = CraftingManager.getInstance().getRecipeList().iterator();
 
 			while(var1.hasNext()) {
 				IRecipe var2 = (IRecipe)var1.next();
-				var0.add(Integer.valueOf(var2.func_25117_b().itemID));
+				var0.add(Integer.valueOf(var2.getRecipeOutput().itemID));
 			}
 
-			var1 = FurnaceRecipes.smelting().func_25194_b().values().iterator();
+			var1 = FurnaceRecipes.smelting().getSmeltingList().values().iterator();
 
 			while(var1.hasNext()) {
 				ItemStack var4 = (ItemStack)var1.next();
@@ -83,8 +83,8 @@ public class StatList {
 			while(var1.hasNext()) {
 				Integer var5 = (Integer)var1.next();
 				if(Item.itemsList[var5.intValue()] != null) {
-					String var3 = StatCollector.translateToLocalFormatted("stat.craftItem", new Object[]{Item.itemsList[var5.intValue()].func_25009_k()});
-					field_25158_z[var5.intValue()] = (new StatCrafting(16842752 + var5.intValue(), var3, var5.intValue())).func_25068_c();
+					String var3 = StatCollector.translateToLocalFormatted("stat.craftItem", new Object[]{Item.itemsList[var5.intValue()].getStatName()});
+					field_25158_z[var5.intValue()] = (new StatCrafting(16842752 + var5.intValue(), var3, var5.intValue())).registerStat();
 				}
 			}
 
@@ -96,9 +96,9 @@ public class StatList {
 		StatBase[] var2 = new StatBase[256];
 
 		for(int var3 = 0; var3 < 256; ++var3) {
-			if(Block.blocksList[var3] != null && Block.blocksList[var3].func_27033_k()) {
-				String var4 = StatCollector.translateToLocalFormatted(var0, new Object[]{Block.blocksList[var3].func_25016_i()});
-				var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).func_25068_c();
+			if(Block.blocksList[var3] != null && Block.blocksList[var3].getEnableStats()) {
+				String var4 = StatCollector.translateToLocalFormatted(var0, new Object[]{Block.blocksList[var3].translateBlockName()});
+				var2[var3] = (new StatCrafting(var1 + var3, var4, var3)).registerStat();
 				field_25185_d.add((StatCrafting)var2[var3]);
 			}
 		}
@@ -114,8 +114,8 @@ public class StatList {
 
 		for(int var5 = var3; var5 < var4; ++var5) {
 			if(Item.itemsList[var5] != null) {
-				String var6 = StatCollector.translateToLocalFormatted(var1, new Object[]{Item.itemsList[var5].func_25009_k()});
-				var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).func_25068_c();
+				String var6 = StatCollector.translateToLocalFormatted(var1, new Object[]{Item.itemsList[var5].getStatName()});
+				var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
 				if(var5 >= Block.blocksList.length) {
 					field_25186_c.add((StatCrafting)var0[var5]);
 				}
@@ -132,9 +132,9 @@ public class StatList {
 		}
 
 		for(int var5 = var3; var5 < var4; ++var5) {
-			if(Item.itemsList[var5] != null && Item.itemsList[var5].func_25007_g()) {
-				String var6 = StatCollector.translateToLocalFormatted(var1, new Object[]{Item.itemsList[var5].func_25009_k()});
-				var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).func_25068_c();
+			if(Item.itemsList[var5] != null && Item.itemsList[var5].isDamagable()) {
+				String var6 = StatCollector.translateToLocalFormatted(var1, new Object[]{Item.itemsList[var5].getStatName()});
+				var0[var5] = (new StatCrafting(var2 + var5, var6, var5)).registerStat();
 			}
 		}
 

@@ -5,12 +5,12 @@ import net.minecraft.client.Minecraft;
 
 public class TextureCompassFX extends TextureFX {
 	private Minecraft mc;
-	private int[] field_4230_h = new int[256];
+	private int[] compassIconImageData = new int[256];
 	private double field_4229_i;
 	private double field_4228_j;
 
 	public TextureCompassFX(Minecraft var1) {
-		super(Item.compass.func_27009_a(0));
+		super(Item.compass.getIconFromDamage(0));
 		this.mc = var1;
 		this.tileImage = 1;
 
@@ -18,7 +18,7 @@ public class TextureCompassFX extends TextureFX {
 			ImageData var2 = ImageData.loadImageFile("/assets/gui/items.png");
 			int var3 = this.iconIndex % 16 * 16;
 			int var4 = this.iconIndex / 16 * 16;
-			var2.getRGB(var3, var4, 16, 16, this.field_4230_h, 0, 16);
+			var2.getRGB(var3, var4, 16, 16, this.compassIconImageData, 0, 16);
 		} catch (Exception var5) {
 			var5.printStackTrace();
 		}
@@ -27,10 +27,10 @@ public class TextureCompassFX extends TextureFX {
 
 	public void onTick() {
 		for(int var1 = 0; var1 < 256; ++var1) {
-			int var2 = this.field_4230_h[var1] >> 24 & 255;
-			int var3 = this.field_4230_h[var1] >> 16 & 255;
-			int var4 = this.field_4230_h[var1] >> 8 & 255;
-			int var5 = this.field_4230_h[var1] >> 0 & 255;
+			int var2 = this.compassIconImageData[var1] >> 24 & 255;
+			int var3 = this.compassIconImageData[var1] >> 16 & 255;
+			int var4 = this.compassIconImageData[var1] >> 8 & 255;
+			int var5 = this.compassIconImageData[var1] >> 0 & 255;
 			if(this.anaglyphEnabled) {
 				int var6 = (var3 * 30 + var4 * 59 + var5 * 11) / 100;
 				int var7 = (var3 * 30 + var4 * 70) / 100;

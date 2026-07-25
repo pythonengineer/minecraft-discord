@@ -9,7 +9,7 @@ public class PlayerControllerSP extends PlayerController {
 	private float curBlockDamage = 0.0F;
 	private float prevBlockDamage = 0.0F;
 	private float field_1069_h = 0.0F;
-	private int field_1068_i = 0;
+	private int blockHitWait = 0;
 
 	public PlayerControllerSP(Minecraft var1) {
 		super(var1);
@@ -26,7 +26,7 @@ public class PlayerControllerSP extends PlayerController {
 		ItemStack var8 = this.mc.thePlayer.getCurrentEquippedItem();
 		boolean var9 = this.mc.thePlayer.canHarvestBlock(Block.blocksList[var5]);
 		if(var8 != null) {
-			var8.func_25191_a(var5, var1, var2, var3, this.mc.thePlayer);
+			var8.onDestroyBlock(var5, var1, var2, var3, this.mc.thePlayer);
 			if(var8.stackSize == 0) {
 				var8.func_1097_a(this.mc.thePlayer);
 				this.mc.thePlayer.destroyCurrentEquippedItem();
@@ -41,6 +41,7 @@ public class PlayerControllerSP extends PlayerController {
 	}
 
 	public void clickBlock(int var1, int var2, int var3, int var4) {
+		this.mc.theWorld.onBlockHit(this.mc.thePlayer, var1, var2, var3, var4);
 		int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
 		if(var5 > 0 && this.curBlockDamage == 0.0F) {
 			Block.blocksList[var5].onBlockClicked(this.mc.theWorld, var1, var2, var3, this.mc.thePlayer);
@@ -52,14 +53,14 @@ public class PlayerControllerSP extends PlayerController {
 
 	}
 
-	public void func_6468_a() {
+	public void resetBlockRemoving() {
 		this.curBlockDamage = 0.0F;
-		this.field_1068_i = 0;
+		this.blockHitWait = 0;
 	}
 
 	public void sendBlockRemoving(int var1, int var2, int var3, int var4) {
-		if(this.field_1068_i > 0) {
-			--this.field_1068_i;
+		if(this.blockHitWait > 0) {
+			--this.blockHitWait;
 		} else {
 			if(var1 == this.field_1074_c && var2 == this.field_1073_d && var3 == this.field_1072_e) {
 				int var5 = this.mc.theWorld.getBlockId(var1, var2, var3);
@@ -70,7 +71,7 @@ public class PlayerControllerSP extends PlayerController {
 				Block var6 = Block.blocksList[var5];
 				this.curBlockDamage += var6.blockStrength(this.mc.thePlayer);
 				if(this.field_1069_h % 4.0F == 0.0F && var6 != null) {
-					this.mc.sndManager.playSound(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.func_1147_b() + 1.0F) / 8.0F, var6.stepSound.func_1144_c() * 0.5F);
+					this.mc.sndManager.playSound(var6.stepSound.func_1145_d(), (float)var1 + 0.5F, (float)var2 + 0.5F, (float)var3 + 0.5F, (var6.stepSound.getVolume() + 1.0F) / 8.0F, var6.stepSound.getPitch() * 0.5F);
 				}
 
 				++this.field_1069_h;
@@ -79,7 +80,7 @@ public class PlayerControllerSP extends PlayerController {
 					this.curBlockDamage = 0.0F;
 					this.prevBlockDamage = 0.0F;
 					this.field_1069_h = 0.0F;
-					this.field_1068_i = 5;
+					this.blockHitWait = 5;
 				}
 			} else {
 				this.curBlockDamage = 0.0F;
@@ -95,12 +96,12 @@ public class PlayerControllerSP extends PlayerController {
 
 	public void setPartialTime(float var1) {
 		if(this.curBlockDamage <= 0.0F) {
-			this.mc.ingameGUI.field_6446_b = 0.0F;
-			this.mc.renderGlobal.field_1450_i = 0.0F;
+			this.mc.ingameGUI.damageGuiPartialTime = 0.0F;
+			this.mc.renderGlobal.damagePartialTime = 0.0F;
 		} else {
 			float var2 = this.prevBlockDamage + (this.curBlockDamage - this.prevBlockDamage) * var1;
-			this.mc.ingameGUI.field_6446_b = var2;
-			this.mc.renderGlobal.field_1450_i = var2;
+			this.mc.ingameGUI.damageGuiPartialTime = var2;
+			this.mc.renderGlobal.damagePartialTime = var2;
 		}
 
 	}

@@ -3,7 +3,7 @@ package net.minecraft.src;
 import net.lax1dude.eaglercraft.lwjgl.opengl.GL11;
 
 public class RenderTNTPrimed extends Render {
-	private RenderBlocks field_196_d = new RenderBlocks();
+	private RenderBlocks blockRenderer = new RenderBlocks();
 
 	public RenderTNTPrimed() {
 		this.shadowSize = 0.5F;
@@ -31,14 +31,14 @@ public class RenderTNTPrimed extends Render {
 
 		var10 = (1.0F - ((float)var1.fuse - var9 + 1.0F) / 100.0F) * 0.8F;
 		this.loadTexture("/terrain.png");
-		this.field_196_d.renderBlockOnInventory(Block.tnt, 0);
+		this.blockRenderer.renderBlockOnInventory(Block.tnt, 0, var1.getEntityBrightness(var9));
 		if(var1.fuse / 5 % 2 == 0) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, var10);
-			this.field_196_d.renderBlockOnInventory(Block.tnt, 0);
+			this.blockRenderer.renderBlockOnInventory(Block.tnt, 0, 1.0F);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glEnable(GL11.GL_LIGHTING);

@@ -8,7 +8,7 @@ import net.lax1dude.eaglercraft.EaglercraftRandom;
 import net.lax1dude.eaglercraft.util.MathHelper;
 
 public class Explosion {
-	public boolean field_12257_a = false;
+	public boolean isFlaming = false;
 	private EaglercraftRandom ExplosionRNG = new EaglercraftRandom();
 	private World worldObj;
 	public double explosionX;
@@ -108,7 +108,7 @@ public class Explosion {
 		this.explosionSize = var1;
 		ArrayList var32 = new ArrayList();
 		var32.addAll(this.destroyedBlockPositions);
-		if(this.field_12257_a) {
+		if(this.isFlaming) {
 			for(int var34 = var32.size() - 1; var34 >= 0; --var34) {
 				ChunkPosition var35 = (ChunkPosition)var32.get(var34);
 				int var36 = var35.x;

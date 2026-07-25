@@ -2,14 +2,16 @@ package net.minecraft.src;
 
 public class EntityDiggingFX extends EntityFX {
 	private Block field_4082_a;
+	private int field_32001_o = 0;
 
-	public EntityDiggingFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12, Block var14) {
+	public EntityDiggingFX(World var1, double var2, double var4, double var6, double var8, double var10, double var12, Block var14, int var15, int var16) {
 		super(var1, var2, var4, var6, var8, var10, var12);
 		this.field_4082_a = var14;
-		this.particleTextureIndex = var14.blockIndexInTexture;
+		this.particleTextureIndex = var14.getBlockTextureFromSideAndMetadata(0, var16);
 		this.particleGravity = var14.blockParticleGravity;
 		this.particleRed = this.particleGreen = this.particleBlue = 0.6F;
 		this.particleScale /= 2.0F;
+		this.field_32001_o = var15;
 	}
 
 	public EntityDiggingFX func_4041_a(int var1, int var2, int var3) {

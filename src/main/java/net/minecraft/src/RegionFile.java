@@ -2,86 +2,86 @@ package net.minecraft.src;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
+import java.io.InputStream;
 import net.lax1dude.eaglercraft.EagRuntime;
 import net.lax1dude.eaglercraft.EaglerInputStream;
 import net.lax1dude.eaglercraft.EaglerZLIB;
 import net.lax1dude.eaglercraft.RandomAccessMemoryFile;
 
 public class RegionFile {
-	private static final byte[] field_22213_a = new byte[4096];
-	final VFile2 field_22212_b;
-	private RandomAccessMemoryFile field_22219_c;
-	private final int[] field_22218_d = new int[1024];
+	private static final byte[] emptySector = new byte[4096];
+	final VFile2 fileName;
+	private RandomAccessMemoryFile dataFile;
+	private final int[] offsets = new int[1024];
 	private final int[] field_22217_e = new int[1024];
-	private ArrayList field_22216_f;
-	private int field_22215_g;
+	private ArrayList sectorFree;
+	private int sizeDelta;
 
 	public RegionFile(VFile2 var1) {
-		this.field_22212_b = var1;
-		this.func_22204_b("REGION LOAD " + this.field_22212_b);
-		this.field_22215_g = 0;
+		this.fileName = var1;
+		this.debugln("REGION LOAD " + this.fileName);
+		this.sizeDelta = 0;
 
 		try {
 	        if (var1.exists()) {
     	        try (InputStream fis = var1.getInputStream()) {
     	            byte[] buffer = EaglerInputStream.inputStreamToBytes(fis);
-    	            this.field_22219_c = new RandomAccessMemoryFile(buffer, buffer.length);
+    	            this.dataFile = new RandomAccessMemoryFile(buffer, buffer.length);
     	        } catch (Exception e) {
                     EagRuntime.debugPrintStackTrace(e);
-                    this.field_22219_c = new RandomAccessMemoryFile(new byte[65536], 0);
+                    this.dataFile = new RandomAccessMemoryFile(new byte[65536], 0);
                 }
 	        } else {
-                this.field_22219_c = new RandomAccessMemoryFile(new byte[65536], 0);
+                this.dataFile = new RandomAccessMemoryFile(new byte[65536], 0);
 	        }
 
 			int var2;
-			if(this.field_22219_c.length() < 4096L) {
+			if(this.dataFile.length() < 4096L) {
 				for(var2 = 0; var2 < 1024; ++var2) {
-					this.field_22219_c.writeInt(0);
+					this.dataFile.writeInt(0);
 				}
 
 				for(var2 = 0; var2 < 1024; ++var2) {
-					this.field_22219_c.writeInt(0);
+					this.dataFile.writeInt(0);
 				}
 
-				this.field_22215_g += 8192;
+				this.sizeDelta += 8192;
 			}
 
-			if((this.field_22219_c.length() & 4095L) != 0L) {
-				for(var2 = 0; (long)var2 < (this.field_22219_c.length() & 4095L); ++var2) {
-					this.field_22219_c.write(0);
+			if((this.dataFile.length() & 4095L) != 0L) {
+				for(var2 = 0; (long)var2 < (this.dataFile.length() & 4095L); ++var2) {
+					this.dataFile.write(0);
 				}
 			}
 
-			var2 = (int)this.field_22219_c.length() / 4096;
-			this.field_22216_f = new ArrayList(var2);
+			var2 = (int)this.dataFile.length() / 4096;
+			this.sectorFree = new ArrayList(var2);
 
 			int var3;
 			for(var3 = 0; var3 < var2; ++var3) {
-				this.field_22216_f.add(Boolean.valueOf(true));
+				this.sectorFree.add(Boolean.valueOf(true));
 			}
 
-			this.field_22216_f.set(0, Boolean.valueOf(false));
-			this.field_22216_f.set(1, Boolean.valueOf(false));
-			this.field_22219_c.seek(0);
+			this.sectorFree.set(0, Boolean.valueOf(false));
+			this.sectorFree.set(1, Boolean.valueOf(false));
+			this.dataFile.seek(0);
 
 			int var4;
 			for(var3 = 0; var3 < 1024; ++var3) {
-				var4 = this.field_22219_c.readInt();
-				this.field_22218_d[var3] = var4;
-				if(var4 != 0 && (var4 >> 8) + (var4 & 255) <= this.field_22216_f.size()) {
+				var4 = this.dataFile.readInt();
+				this.offsets[var3] = var4;
+				if(var4 != 0 && (var4 >> 8) + (var4 & 255) <= this.sectorFree.size()) {
 					for(int var5 = 0; var5 < (var4 & 255); ++var5) {
-						this.field_22216_f.set((var4 >> 8) + var5, Boolean.valueOf(false));
+						this.sectorFree.set((var4 >> 8) + var5, Boolean.valueOf(false));
 					}
 				}
 			}
 
 			for(var3 = 0; var3 < 1024; ++var3) {
-				var4 = this.field_22219_c.readInt();
+				var4 = this.dataFile.readInt();
 				this.field_22217_e[var3] = var4;
 			}
 		} catch (Exception var6) {
@@ -91,86 +91,86 @@ public class RegionFile {
 	}
 
 	public synchronized int func_22209_a() {
-		int var1 = this.field_22215_g;
-		this.field_22215_g = 0;
+		int var1 = this.sizeDelta;
+		this.sizeDelta = 0;
 		return var1;
 	}
 
 	private void func_22211_a(String var1) {
 	}
 
-	private void func_22204_b(String var1) {
+	private void debugln(String var1) {
 		this.func_22211_a(var1 + "\n");
 	}
 
 	private void func_22199_a(String var1, int var2, int var3, String var4) {
-		this.func_22211_a("REGION " + var1 + " " + this.field_22212_b.getName() + "[" + var2 + "," + var3 + "] = " + var4);
+		this.func_22211_a("REGION " + var1 + " " + this.fileName.getName() + "[" + var2 + "," + var3 + "] = " + var4);
 	}
 
 	private void func_22197_a(String var1, int var2, int var3, int var4, String var5) {
-		this.func_22211_a("REGION " + var1 + " " + this.field_22212_b.getName() + "[" + var2 + "," + var3 + "] " + var4 + "B = " + var5);
+		this.func_22211_a("REGION " + var1 + " " + this.fileName.getName() + "[" + var2 + "," + var3 + "] " + var4 + "B = " + var5);
 	}
 
-	private void func_22201_b(String var1, int var2, int var3, String var4) {
+	private void debugln(String var1, int var2, int var3, String var4) {
 		this.func_22199_a(var1, var2, var3, var4 + "\n");
 	}
 
-	public synchronized DataInputStream func_22210_a(int var1, int var2) {
-		if(this.func_22206_d(var1, var2)) {
-			this.func_22201_b("READ", var1, var2, "out of bounds");
+	public synchronized DataInputStream getChunkDataInputStream(int var1, int var2) {
+		if(this.outOfBounds(var1, var2)) {
+			this.debugln("READ", var1, var2, "out of bounds");
 			return null;
 		} else {
 			try {
-				int var3 = this.func_22207_e(var1, var2);
+				int var3 = this.getOffset(var1, var2);
 				if(var3 == 0) {
 					return null;
 				} else {
 					int var4 = var3 >> 8;
 					int var5 = var3 & 255;
-					if(var4 + var5 > this.field_22216_f.size()) {
-						this.func_22201_b("READ", var1, var2, "invalid sector");
+					if(var4 + var5 > this.sectorFree.size()) {
+						this.debugln("READ", var1, var2, "invalid sector");
 						return null;
 					} else {
-						this.field_22219_c.seek(var4 * 4096);
-						int var6 = this.field_22219_c.readInt();
+						this.dataFile.seek(var4 * 4096);
+						int var6 = this.dataFile.readInt();
 						if(var6 > 4096 * var5) {
-							this.func_22201_b("READ", var1, var2, "invalid length: " + var6 + " > 4096 * " + var5);
+							this.debugln("READ", var1, var2, "invalid length: " + var6 + " > 4096 * " + var5);
 							return null;
 						} else {
-							byte var7 = this.field_22219_c.readByte();
+							byte var7 = this.dataFile.readByte();
 							byte[] var8;
 							DataInputStream var9;
 							if(var7 == 1) {
 								var8 = new byte[var6 - 1];
-								this.field_22219_c.read(var8);
+								this.dataFile.read(var8);
 								var9 = new DataInputStream(EaglerZLIB.newGZIPInputStream(new EaglerInputStream(var8)));
 								return var9;
 							} else if(var7 == 2) {
 								var8 = new byte[var6 - 1];
-								this.field_22219_c.read(var8);
+								this.dataFile.read(var8);
 								var9 = new DataInputStream(EaglerZLIB.newInflaterInputStream(new EaglerInputStream(var8)));
 								return var9;
 							} else {
-								this.func_22201_b("READ", var1, var2, "unknown version " + var7);
+								this.debugln("READ", var1, var2, "unknown version " + var7);
 								return null;
 							}
 						}
 					}
 				}
 			} catch (Exception var10) {
-				this.func_22201_b("READ", var1, var2, "exception");
+				this.debugln("READ", var1, var2, "exception");
 				return null;
 			}
 		}
 	}
 
-	public DataOutputStream func_22205_b(int var1, int var2) throws IOException {
-		return this.func_22206_d(var1, var2) ? null : new DataOutputStream(EaglerZLIB.newDeflaterOutputStream(new RegionFileChunkBuffer(this, var1, var2)));
+	public DataOutputStream getChunkDataOutputStream(int var1, int var2) throws IOException {
+		return this.outOfBounds(var1, var2) ? null : new DataOutputStream(EaglerZLIB.newDeflaterOutputStream(new RegionFileChunkBuffer(this, var1, var2)));
 	}
 
-	protected synchronized void func_22203_a(int var1, int var2, byte[] var3, int var4) {
+	protected synchronized void write(int var1, int var2, byte[] var3, int var4) {
 		try {
-			int var5 = this.func_22207_e(var1, var2);
+			int var5 = this.getOffset(var1, var2);
 			int var6 = var5 >> 8;
 			int var7 = var5 & 255;
 			int var8 = (var4 + 5) / 4096 + 1;
@@ -180,25 +180,25 @@ public class RegionFile {
 
 			if(var6 != 0 && var7 == var8) {
 				this.func_22197_a("SAVE", var1, var2, var4, "rewrite");
-				this.func_22200_a(var6, var3, var4);
+				this.write(var6, var3, var4);
 			} else {
 				int var9;
 				for(var9 = 0; var9 < var7; ++var9) {
-					this.field_22216_f.set(var6 + var9, Boolean.valueOf(true));
+					this.sectorFree.set(var6 + var9, Boolean.valueOf(true));
 				}
 
-				var9 = this.field_22216_f.indexOf(Boolean.valueOf(true));
+				var9 = this.sectorFree.indexOf(Boolean.valueOf(true));
 				int var10 = 0;
 				int var11;
 				if(var9 != -1) {
-					for(var11 = var9; var11 < this.field_22216_f.size(); ++var11) {
+					for(var11 = var9; var11 < this.sectorFree.size(); ++var11) {
 						if(var10 != 0) {
-							if(((Boolean)this.field_22216_f.get(var11)).booleanValue()) {
+							if(((Boolean)this.sectorFree.get(var11)).booleanValue()) {
 								++var10;
 							} else {
 								var10 = 0;
 							}
-						} else if(((Boolean)this.field_22216_f.get(var11)).booleanValue()) {
+						} else if(((Boolean)this.sectorFree.get(var11)).booleanValue()) {
 							var9 = var11;
 							var10 = 1;
 						}
@@ -212,26 +212,26 @@ public class RegionFile {
 				if(var10 >= var8) {
 					this.func_22197_a("SAVE", var1, var2, var4, "reuse");
 					var6 = var9;
-					this.func_22198_a(var1, var2, var9 << 8 | var8);
+					this.setOffset(var1, var2, var9 << 8 | var8);
 
 					for(var11 = 0; var11 < var8; ++var11) {
-						this.field_22216_f.set(var6 + var11, Boolean.valueOf(false));
+						this.sectorFree.set(var6 + var11, Boolean.valueOf(false));
 					}
 
-					this.func_22200_a(var6, var3, var4);
+					this.write(var6, var3, var4);
 				} else {
 					this.func_22197_a("SAVE", var1, var2, var4, "grow");
-					this.field_22219_c.seek(this.field_22219_c.length());
-					var6 = this.field_22216_f.size();
+					this.dataFile.seek(this.dataFile.length());
+					var6 = this.sectorFree.size();
 
 					for(var11 = 0; var11 < var8; ++var11) {
-						this.field_22219_c.write(field_22213_a);
-						this.field_22216_f.add(Boolean.valueOf(false));
+						this.dataFile.write(emptySector);
+						this.sectorFree.add(Boolean.valueOf(false));
 					}
 
-					this.field_22215_g += 4096 * var8;
-					this.func_22200_a(var6, var3, var4);
-					this.func_22198_a(var1, var2, var6 << 8 | var8);
+					this.sizeDelta += 4096 * var8;
+					this.write(var6, var3, var4);
+					this.setOffset(var1, var2, var6 << 8 | var8);
 				}
 			}
 
@@ -244,39 +244,39 @@ public class RegionFile {
 	}
 
 	private void flushToDisk() {
-		this.field_22212_b.setAllBytes(this.field_22219_c.getByteArray());
+		this.fileName.setAllBytes(this.dataFile.getByteArray());
 	}
 
-	private void func_22200_a(int var1, byte[] var2, int var3) throws IOException {
-		this.func_22204_b(" " + var1);
-		this.field_22219_c.seek(var1 * 4096);
-		this.field_22219_c.writeInt(var3 + 1);
-		this.field_22219_c.writeByte(2);
-		this.field_22219_c.write(var2, 0, var3);
+	private void write(int var1, byte[] var2, int var3) throws IOException {
+		this.debugln(" " + var1);
+		this.dataFile.seek(var1 * 4096);
+		this.dataFile.writeInt(var3 + 1);
+		this.dataFile.writeByte(2);
+		this.dataFile.write(var2, 0, var3);
 	}
 
-	private boolean func_22206_d(int var1, int var2) {
+	private boolean outOfBounds(int var1, int var2) {
 		return var1 < 0 || var1 >= 32 || var2 < 0 || var2 >= 32;
 	}
 
-	private int func_22207_e(int var1, int var2) {
-		return this.field_22218_d[var1 + var2 * 32];
+	private int getOffset(int var1, int var2) {
+		return this.offsets[var1 + var2 * 32];
 	}
 
 	public boolean func_22202_c(int var1, int var2) {
-		return this.func_22207_e(var1, var2) != 0;
+		return this.getOffset(var1, var2) != 0;
 	}
 
-	private void func_22198_a(int var1, int var2, int var3) throws IOException {
-		this.field_22218_d[var1 + var2 * 32] = var3;
-		this.field_22219_c.seek((var1 + var2 * 32) * 4);
-		this.field_22219_c.writeInt(var3);
+	private void setOffset(int var1, int var2, int var3) throws IOException {
+		this.offsets[var1 + var2 * 32] = var3;
+		this.dataFile.seek((var1 + var2 * 32) * 4);
+		this.dataFile.writeInt(var3);
 	}
 
 	private void func_22208_b(int var1, int var2, int var3) throws IOException {
 		this.field_22217_e[var1 + var2 * 32] = var3;
-		this.field_22219_c.seek(4096 + (var1 + var2 * 32) * 4);
-		this.field_22219_c.writeInt(var3);
+		this.dataFile.seek(4096 + (var1 + var2 * 32) * 4);
+		this.dataFile.writeInt(var3);
 	}
 
 	public synchronized void func_22196_b() throws IOException {

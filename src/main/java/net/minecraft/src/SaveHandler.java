@@ -11,18 +11,20 @@ public class SaveHandler implements ISaveHandler {
 	private static final Logger logger = Logger.getLogger("Minecraft");
 	private final VFile2 saveDirectory;
 	private final VFile2 playersDirectory;
+    private final VFile2 field_28114_d;
 	private final long now = System.currentTimeMillis();
 
 	public SaveHandler(VFile2 var1, String var2, boolean var3) {
 		this.saveDirectory = new VFile2(var1, var2);
 		this.playersDirectory = new VFile2(this.saveDirectory, "players");
+        this.field_28114_d = new VFile2(this.saveDirectory, "data");
 		this.func_22154_d();
 	}
 
 	private void func_22154_d() {
         VFile2 var1 = new VFile2(this.saveDirectory, "session.lock");
 	    try (DataOutputStream var2 = new DataOutputStream(var1.getOutputStream())) {
-				var2.writeLong(this.now);
+			var2.writeLong(this.now);
 		} catch (Exception var7) {
 			var7.printStackTrace();
 			throw new RuntimeException("Failed to check session lock, aborting");
@@ -36,9 +38,9 @@ public class SaveHandler implements ISaveHandler {
 	public void func_22150_b() {
         VFile2 var1 = new VFile2(this.saveDirectory, "session.lock");
         try (DataInputStream var2 = new DataInputStream(var1.getInputStream())) {
-				if(var2.readLong() != this.now) {
-					throw new MinecraftException("The save is being accessed from another location, aborting");
-				}
+			if(var2.readLong() != this.now) {
+				throw new MinecraftException("The save is being accessed from another location, aborting");
+			}
 		} catch (Exception var7) {
 			throw new MinecraftException("Failed to check session lock, aborting");
 		}
@@ -96,19 +98,19 @@ public class SaveHandler implements ISaveHandler {
 			return;
 		}
 
-			if(var6.exists()) {
-				var6.delete();
-			}
+		if(var6.exists()) {
+			var6.delete();
+		}
 
-			var7.renameTo(var6);
-			if(var7.exists()) {
-				var7.delete();
-			}
+		var7.renameTo(var6);
+		if(var7.exists()) {
+			var7.delete();
+		}
 
-			var5.renameTo(var7);
-			if(var5.exists()) {
-				var5.delete();
-			}
+		var5.renameTo(var7);
+		if(var5.exists()) {
+			var5.delete();
+		}
 	}
 
 	public void saveWorldInfo(WorldInfo var1) {
@@ -126,18 +128,22 @@ public class SaveHandler implements ISaveHandler {
 			return;
 		}
 
-			if(var5.exists()) {
-				var5.delete();
-			}
+		if(var5.exists()) {
+			var5.delete();
+		}
 
-			var6.renameTo(var5);
-			if(var6.exists()) {
-				var6.delete();
-			}
+		var6.renameTo(var5);
+		if(var6.exists()) {
+			var6.delete();
+		}
 
-			var4.renameTo(var6);
-			if(var4.exists()) {
-				var4.delete();
-			}
+		var4.renameTo(var6);
+		if(var4.exists()) {
+			var4.delete();
+		}
 	}
+
+    public VFile2 func_28113_a(String var1) {
+        return new VFile2(this.field_28114_d, var1 + ".dat");
+    }
 }

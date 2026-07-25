@@ -3,12 +3,12 @@ package net.minecraft.src;
 public class GuiVideoSettings extends GuiScreen {
 	private GuiScreen field_22110_h;
 	protected String field_22107_a = "Video Settings";
-	private GameSettings field_22109_i;
-	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.LIMIT_FRAMERATE, EnumOptions.ANAGLYPH, EnumOptions.VIEW_BOBBING, EnumOptions.AMBIENT_OCCLUSION, EnumOptions.GUI_SCALE, EnumOptions.ADVANCED_OPENGL};
+	private GameSettings guiGameSettings;
+	private static EnumOptions[] field_22108_k = new EnumOptions[]{EnumOptions.GRAPHICS, EnumOptions.RENDER_DISTANCE, EnumOptions.AMBIENT_OCCLUSION, EnumOptions.FRAMERATE_LIMIT, EnumOptions.ANAGLYPH, EnumOptions.VIEW_BOBBING, EnumOptions.GUI_SCALE, EnumOptions.ADVANCED_OPENGL};
 
 	public GuiVideoSettings(GuiScreen var1, GameSettings var2) {
 		this.field_22110_h = var1;
-		this.field_22109_i = var2;
+		this.guiGameSettings = var2;
 	}
 
 	public void initGui() {
@@ -21,9 +21,9 @@ public class GuiVideoSettings extends GuiScreen {
 		for(int var5 = 0; var5 < var4; ++var5) {
 			EnumOptions var6 = var3[var5];
 			if(!var6.getEnumFloat()) {
-				this.controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.field_22109_i.getKeyBinding(var6)));
+				this.controlList.add(new GuiSmallButton(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.guiGameSettings.getKeyBinding(var6)));
 			} else {
-				this.controlList.add(new GuiSlider(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.field_22109_i.getKeyBinding(var6), this.field_22109_i.getOptionFloatValue(var6)));
+				this.controlList.add(new GuiSlider(var6.returnEnumOrdinal(), this.width / 2 - 155 + var2 % 2 * 160, this.height / 6 + 24 * (var2 >> 1), var6, this.guiGameSettings.getKeyBinding(var6), this.guiGameSettings.getOptionFloatValue(var6)));
 			}
 
 			++var2;
@@ -35,8 +35,8 @@ public class GuiVideoSettings extends GuiScreen {
 	protected void actionPerformed(GuiButton var1) {
 		if(var1.enabled) {
 			if(var1.id < 100 && var1 instanceof GuiSmallButton) {
-				this.field_22109_i.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
-				var1.displayString = this.field_22109_i.getKeyBinding(EnumOptions.func_20137_a(var1.id));
+				this.guiGameSettings.setOptionValue(((GuiSmallButton)var1).returnEnumOptions(), 1);
+				var1.displayString = this.guiGameSettings.getKeyBinding(EnumOptions.getEnumOptions(var1.id));
 			}
 
 			if(var1.id == 200) {

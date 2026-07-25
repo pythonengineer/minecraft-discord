@@ -57,7 +57,7 @@ public class BlockSnow extends Block {
 		var15.delayBeforeCanPickup = 10;
 		var1.entityJoinedWorld(var15);
 		var1.setBlockWithNotify(var3, var4, var5, 0);
-		var2.addStat(StatList.field_25159_y[this.blockID], 1);
+		var2.addStat(StatList.mineBlockStatArray[this.blockID], 1);
 	}
 
 	public int idDropped(int var1, EaglercraftRandom var2) {

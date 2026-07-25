@@ -28,7 +28,7 @@ public class Packet54PlayNoteBlock extends Packet {
 	}
 
 	public void processPacket(NetHandler var1) {
-		var1.func_21145_a(this);
+		var1.handleNotePlay(this);
 	}
 
 	public int getPacketSize() {

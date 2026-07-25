@@ -1,5 +1,7 @@
 package net.minecraft.src;
 
+import net.lax1dude.eaglercraft.EagUtils;
+
 class NetworkReaderThread extends Thread {
 	final NetworkManager netManager;
 
@@ -14,23 +16,25 @@ class NetworkReaderThread extends Thread {
 			++NetworkManager.numReadThreads;
 		}
 
-		while(true) {
+        while(true) {
 			boolean var12 = false;
 
 			try {
 				var12 = true;
-				if(NetworkManager.isRunning(this.netManager)) {
-					if(!NetworkManager.isServerTerminating(this.netManager)) {
-						NetworkManager.readNetworkPacket(this.netManager);
-						continue;
-					}
-
+				if(!NetworkManager.isRunning(this.netManager)) {
 					var12 = false;
 					break;
 				}
 
-				var12 = false;
-				break;
+				if(NetworkManager.isServerTerminating(this.netManager)) {
+					var12 = false;
+					break;
+				}
+
+				while(NetworkManager.readNetworkPacket(this.netManager)) {
+				}
+
+                EagUtils.sleep(100L);
 			} finally {
 				if(var12) {
 					Object var5 = NetworkManager.threadSyncObject;

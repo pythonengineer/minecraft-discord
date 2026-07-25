@@ -14,5 +14,6 @@ public class RecipesTools {
 			}
 		}
 
+		var1.addRecipe(new ItemStack(Item.shears), new Object[]{" #", "# ", Character.valueOf('#'), Item.ingotIron});
 	}
 }

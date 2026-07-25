@@ -41,23 +41,23 @@ public class RenderItem extends Render {
 		if(var10.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var10.itemID].getRenderType())) {
 			GL11.glRotatef(var12, 0.0F, 1.0F, 0.0F);
 			this.loadTexture("/terrain.png");
-			float var27 = 0.25F;
-			if(!Block.blocksList[var10.itemID].renderAsNormalBlock() && var10.itemID != Block.stairSingle.blockID) {
-				var27 = 0.5F;
+			float var28 = 0.25F;
+			if(!Block.blocksList[var10.itemID].renderAsNormalBlock() && var10.itemID != Block.stairSingle.blockID && Block.blocksList[var10.itemID].getRenderType() != 16) {
+				var28 = 0.5F;
 			}
 
-			GL11.glScalef(var27, var27, var27);
+			GL11.glScalef(var28, var28, var28);
 
-			for(int var28 = 0; var28 < var13; ++var28) {
+			for(int var29 = 0; var29 < var13; ++var29) {
 				GL11.glPushMatrix();
-				if(var28 > 0) {
-					var16 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var27;
-					var17 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var27;
-					var18 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var27;
+				if(var29 > 0) {
+					var16 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+					var17 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var28;
+					var18 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var28;
 					GL11.glTranslatef(var16, var17, var18);
 				}
 
-				this.renderBlocks.renderBlockOnInventory(Block.blocksList[var10.itemID], var10.getItemDamage());
+				this.renderBlocks.renderBlockOnInventory(Block.blocksList[var10.itemID], var10.getItemDamage(), var1.getEntityBrightness(var9));
 				GL11.glPopMatrix();
 			}
 		} else {
@@ -77,13 +77,25 @@ public class RenderItem extends Render {
 			float var20 = 1.0F;
 			float var21 = 0.5F;
 			float var22 = 0.25F;
+			int var23;
+			float var24;
+			float var25;
+			float var26;
+			if(this.field_27004_a) {
+				var23 = Item.itemsList[var10.itemID].getColorFromDamage(var10.getItemDamage());
+				var24 = (float)(var23 >> 16 & 255) / 255.0F;
+				var25 = (float)(var23 >> 8 & 255) / 255.0F;
+				var26 = (float)(var23 & 255) / 255.0F;
+				float var27 = var1.getEntityBrightness(var9);
+				GL11.glColor4f(var24 * var27, var25 * var27, var26 * var27, 1.0F);
+			}
 
-			for(int var23 = 0; var23 < var13; ++var23) {
+			for(var23 = 0; var23 < var13; ++var23) {
 				GL11.glPushMatrix();
 				if(var23 > 0) {
-					float var24 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
-					float var25 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
-					float var26 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+					var24 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+					var25 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+					var26 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
 					GL11.glTranslatef(var24, var25, var26);
 				}
 
@@ -103,22 +115,30 @@ public class RenderItem extends Render {
 		GL11.glPopMatrix();
 	}
 
-	public void func_27003_a(FontRenderer var1, RenderEngine var2, int var3, int var4, int var5, int var6, int var7) {
+	public void drawItemIntoGui(FontRenderer var1, RenderEngine var2, int var3, int var4, int var5, int var6, int var7) {
+		float var11;
 		if(var3 < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var3].getRenderType())) {
 			var2.bindTexture(var2.getTexture("/terrain.png"));
-			Block var12 = Block.blocksList[var3];
+			Block var14 = Block.blocksList[var3];
 			GL11.glPushMatrix();
 			GL11.glTranslatef((float)(var6 - 2), (float)(var7 + 3), -3.0F);
 			GL11.glScalef(10.0F, 10.0F, 10.0F);
-			GL11.glTranslatef(1.0F, 0.5F, 8.0F);
+			GL11.glTranslatef(1.0F, 0.5F, 1.0F);
+			GL11.glScalef(1.0F, 1.0F, -1.0F);
 			GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			int var15 = Item.itemsList[var3].getColorFromDamage(var4);
+			var11 = (float)(var15 >> 16 & 255) / 255.0F;
+			float var12 = (float)(var15 >> 8 & 255) / 255.0F;
+			float var13 = (float)(var15 & 255) / 255.0F;
 			if(this.field_27004_a) {
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				GL11.glColor4f(var11, var12, var13, 1.0F);
 			}
 
-			GL11.glScalef(1.0F, 1.0F, 1.0F);
-			this.renderBlocks.renderBlockOnInventory(var12, var4);
+			GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+			this.renderBlocks.field_31088_b = this.field_27004_a;
+			this.renderBlocks.renderBlockOnInventory(var14, var4, 1.0F);
+			this.renderBlocks.field_31088_b = true;
 			GL11.glPopMatrix();
 		} else if(var5 >= 0) {
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -128,10 +148,10 @@ public class RenderItem extends Render {
 				var2.bindTexture(var2.getTexture("/gui/items.png"));
 			}
 
-			int var8 = Item.itemsList[var3].func_27010_f(var4);
+			int var8 = Item.itemsList[var3].getColorFromDamage(var4);
 			float var9 = (float)(var8 >> 16 & 255) / 255.0F;
 			float var10 = (float)(var8 >> 8 & 255) / 255.0F;
-			float var11 = (float)(var8 & 255) / 255.0F;
+			var11 = (float)(var8 & 255) / 255.0F;
 			if(this.field_27004_a) {
 				GL11.glColor4f(var9, var10, var11, 1.0F);
 			}
@@ -145,7 +165,7 @@ public class RenderItem extends Render {
 
 	public void renderItemIntoGUI(FontRenderer var1, RenderEngine var2, ItemStack var3, int var4, int var5) {
 		if(var3 != null) {
-			this.func_27003_a(var1, var2, var3.itemID, var3.getItemDamage(), var3.getIconIndex(), var4, var5);
+			this.drawItemIntoGui(var1, var2, var3.itemID, var3.getItemDamage(), var3.getIconIndex(), var4, var5);
 		}
 	}
 

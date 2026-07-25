@@ -2,6 +2,7 @@ package net.lax1dude.eaglercraft.touch;
 
 import net.lax1dude.eaglercraft.minecraft.EnumInputEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.GameSettings;
 import net.minecraft.src.GuiChat;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.GuiMainMenu;
@@ -136,6 +137,9 @@ public enum EnumTouchControl {
 
     F3(EnumTouchControlPos.TOP, 144, 0, 36, (enumIn, x, y) -> {
         if (!TouchControls.isPressed(enumIn)) {
+            Minecraft mc = Minecraft.minecraft;
+            GameSettings gameSettings = mc.gameSettings;
+            gameSettings.showDebugInfo = !gameSettings.showDebugInfo;
         }
     }, (enumIn, x, y, pressed, res) -> {
         GL11.glBindTexture(TouchOverlayRenderer.spriteSheet);
@@ -434,8 +438,8 @@ public enum EnumTouchControl {
                 } else {
                     CHAT.setVisible(renderer, false);
                 }
-                F3.setVisible(renderer, false);
-                F5.setVisible(renderer, false);
+                F3.setVisible(renderer, true);
+                F5.setVisible(renderer, true);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);
@@ -464,8 +468,8 @@ public enum EnumTouchControl {
                 } else {
                     CHAT.setVisible(renderer, false);
                 }
-                F3.setVisible(renderer, false);
-                F5.setVisible(renderer, false);
+                F3.setVisible(renderer, true);
+                F5.setVisible(renderer, true);
                 PASTE.setVisible(renderer, false);
                 COPY.setVisible(renderer, false);
                 PICK.setVisible(renderer, true);

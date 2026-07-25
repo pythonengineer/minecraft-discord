@@ -7,7 +7,7 @@ public class WorldProviderHell extends WorldProvider {
 		this.worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.hell, 1.0D, 0.0D);
 		this.isNether = true;
 		this.isHellWorld = true;
-		this.field_6478_e = true;
+		this.hasNoSky = true;
 		this.worldType = -1;
 	}
 

@@ -21,6 +21,10 @@ public class RenderLiving extends Render {
 		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		this.mainModel.onGround = this.func_167_c(var1, var9);
+		if(this.renderPassModel != null) {
+			this.renderPassModel.onGround = this.mainModel.onGround;
+		}
+
 		this.mainModel.isRiding = var1.isRiding();
 		if(this.renderPassModel != null) {
 			this.renderPassModel.isRiding = this.mainModel.isRiding;
@@ -32,7 +36,7 @@ public class RenderLiving extends Render {
 			float var12 = var1.prevRotationPitch + (var1.rotationPitch - var1.prevRotationPitch) * var9;
 			this.func_22012_b(var1, var2, var4, var6);
 			float var13 = this.func_170_d(var1, var9);
-			this.func_21004_a(var1, var13, var10, var9);
+			this.rotateCorpse(var1, var13, var10, var9);
 			float var14 = 1.0F / 16.0F;
 			GL11.glEnable(GL11.GL_RESCALE_NORMAL);
 			GL11.glScalef(-1.0F, -1.0F, 1.0F);
@@ -46,7 +50,7 @@ public class RenderLiving extends Render {
 
 			this.loadDownloadableImageTexture(var1.skinUrl, var1.getEntityTexture());
 			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			this.mainModel.func_25103_a(var1, var16, var15, var9);
+			this.mainModel.setLivingAnimations(var1, var16, var15, var9);
 			this.mainModel.render(var16, var15, var13, var11 - var10, var12, var14);
 
 			for(int var17 = 0; var17 < 4; ++var17) {
@@ -114,7 +118,7 @@ public class RenderLiving extends Render {
 		GL11.glTranslatef((float)var2, (float)var4, (float)var6);
 	}
 
-	protected void func_21004_a(EntityLiving var1, float var2, float var3, float var4) {
+	protected void rotateCorpse(EntityLiving var1, float var2, float var3, float var4) {
 		GL11.glRotatef(180.0F - var3, 0.0F, 1.0F, 0.0F);
 		if(var1.deathTime > 0) {
 			float var5 = ((float)var1.deathTime + var4 - 1.0F) / 20.0F * 1.6F;
@@ -123,7 +127,7 @@ public class RenderLiving extends Render {
 				var5 = 1.0F;
 			}
 
-			GL11.glRotatef(var5 * this.func_172_a(var1), 0.0F, 0.0F, 1.0F);
+			GL11.glRotatef(var5 * this.getDeathMaxRotation(var1), 0.0F, 0.0F, 1.0F);
 		}
 
 	}
@@ -147,7 +151,7 @@ public class RenderLiving extends Render {
 		return false;
 	}
 
-	protected float func_172_a(EntityLiving var1) {
+	protected float getDeathMaxRotation(EntityLiving var1) {
 		return 90.0F;
 	}
 

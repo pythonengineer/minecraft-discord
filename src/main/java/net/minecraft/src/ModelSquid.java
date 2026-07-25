@@ -8,7 +8,7 @@ public class ModelSquid extends ModelBase {
 		byte var1 = -16;
 		this.squidBody = new ModelRenderer(0, 0);
 		this.squidBody.addBox(-6.0F, -8.0F, -6.0F, 12, 16, 12);
-		this.squidBody.offsetY += (float)(24 + var1);
+		this.squidBody.rotationPointY += (float)(24 + var1);
 
 		for(int var2 = 0; var2 < this.squidTentacles.length; ++var2) {
 			this.squidTentacles[var2] = new ModelRenderer(48, 0);
@@ -16,9 +16,9 @@ public class ModelSquid extends ModelBase {
 			float var5 = (float)Math.cos(var3) * 5.0F;
 			float var6 = (float)Math.sin(var3) * 5.0F;
 			this.squidTentacles[var2].addBox(-1.0F, 0.0F, -1.0F, 2, 18, 2);
-			this.squidTentacles[var2].offsetX = var5;
-			this.squidTentacles[var2].offsetZ = var6;
-			this.squidTentacles[var2].offsetY = (float)(31 + var1);
+			this.squidTentacles[var2].rotationPointX = var5;
+			this.squidTentacles[var2].rotationPointZ = var6;
+			this.squidTentacles[var2].rotationPointY = (float)(31 + var1);
 			var3 = (double)var2 * Math.PI * -2.0D / (double)this.squidTentacles.length + Math.PI * 0.5D;
 			this.squidTentacles[var2].rotateAngleY = (float)var3;
 		}

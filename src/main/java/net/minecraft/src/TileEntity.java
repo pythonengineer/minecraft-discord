@@ -10,6 +10,7 @@ public class TileEntity {
 	public int xCoord;
 	public int yCoord;
 	public int zCoord;
+	protected boolean field_31007_h;
 
 	private static void addMapping(Class var0, String var1) {
 		if(classToNameMap.containsKey(var1)) {
@@ -84,12 +85,26 @@ public class TileEntity {
 		return Block.blocksList[this.worldObj.getBlockId(this.xCoord, this.yCoord, this.zCoord)];
 	}
 
+	public boolean func_31006_g() {
+		return this.field_31007_h;
+	}
+
+	public void func_31005_i() {
+		this.field_31007_h = true;
+	}
+
+	public void func_31004_j() {
+		this.field_31007_h = false;
+	}
+
 	static {
 		addMapping(TileEntityFurnace.class, "Furnace");
 		addMapping(TileEntityChest.class, "Chest");
+		addMapping(TileEntityRecordPlayer.class, "RecordPlayer");
 		addMapping(TileEntityDispenser.class, "Trap");
 		addMapping(TileEntitySign.class, "Sign");
 		addMapping(TileEntityMobSpawner.class, "MobSpawner");
 		addMapping(TileEntityNote.class, "Music");
+		addMapping(TileEntityPiston.class, "Piston");
 	}
 }

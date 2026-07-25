@@ -5,6 +5,9 @@ import net.minecraft.src.AxisAlignedBB;
 import net.minecraft.src.Block;
 import net.minecraft.src.ChunkCoordinates;
 import net.minecraft.src.ChunkProviderLoadOrGenerate;
+import net.minecraft.src.ColorizerFoliage;
+import net.minecraft.src.ColorizerGrass;
+import net.minecraft.src.ColorizerWater;
 import net.minecraft.src.EffectRenderer;
 import net.minecraft.src.EntityClientPlayerMP;
 import net.minecraft.src.EntityLiving;
@@ -20,6 +23,7 @@ import net.minecraft.src.GuiAchievement;
 import net.minecraft.src.GuiChat;
 import net.minecraft.src.GuiConflictWarning;
 import net.minecraft.src.GuiConnecting;
+import net.minecraft.src.GuiErrorScreen;
 import net.minecraft.src.GuiGameOver;
 import net.minecraft.src.GuiIngame;
 import net.minecraft.src.GuiIngameMenu;
@@ -71,7 +75,6 @@ import net.minecraft.src.UnexpectedThrowable;
 import net.minecraft.src.Vec3D;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldProvider;
-import net.minecraft.src.WorldProviderHell;
 import net.minecraft.src.WorldRenderer;
 import net.lax1dude.eaglercraft.lwjgl.LWJGLException;
 import net.lax1dude.eaglercraft.lwjgl.input.Keyboard;
@@ -95,9 +98,11 @@ import net.lax1dude.eaglercraft.util.ReportedException;
 import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 
 public class Minecraft implements Runnable {
+	public static byte[] field_28006_b = new byte[10485760];
 	private static Minecraft theMinecraft;
 	public PlayerController playerController;
 	private boolean fullscreen = false;
+	private boolean hasCrashed = false;
 	public int displayWidth;
 	public int displayHeight;
 	private OpenGlCapsChecker glCapabilities;
@@ -110,19 +115,19 @@ public class Minecraft implements Runnable {
 	public Session session = null;
 	public String minecraftUri;
 	public boolean hideQuitButton = true;
-	public volatile boolean isWorldLoaded = false;
+	public volatile boolean isGamePaused = false;
 	public RenderEngine renderEngine;
 	public FontRenderer fontRenderer;
 	public GuiScreen currentScreen = null;
 	public LoadingScreenRenderer loadingScreen = new LoadingScreenRenderer(this);
-	public EntityRenderer entityRenderer = new EntityRenderer(this);
+	public EntityRenderer entityRenderer;
 	private int ticksRan = 0;
-	private int field_6282_S = 0;
-	private int field_9236_T;
-	private int field_9235_U;
-	public GuiAchievement field_25002_t = new GuiAchievement(this);
+	private int leftClickCounter = 0;
+	private int tempDisplayWidth;
+	private int tempDisplayHeight;
+	public GuiAchievement guiAchievement = new GuiAchievement(this);
 	public GuiIngame ingameGUI;
-	public boolean field_6307_v = false;
+	public boolean skipRenderWorld = false;
 	public ModelBiped field_9242_w = new ModelBiped(0.0F);
 	public MovingObjectPosition objectMouseOver = null;
 	public GameSettings gameSettings;
@@ -133,7 +138,8 @@ public class Minecraft implements Runnable {
 	public static long[] frameTimes = new long[512];
 	public static long[] tickTimes = new long[512];
 	public static int numRecordedFrameTimes = 0;
-	public StatFileWriter field_25001_G;
+	public static long hasPaidCheckTime = 0L;
+	public StatFileWriter statFileWriter;
 	public String serverName;
 	public int serverPort;
 	private TextureWaterFX textureWaterFX = new TextureWaterFX();
@@ -143,10 +149,10 @@ public class Minecraft implements Runnable {
 	boolean isTakingScreenshot = false;
 	long prevFrameTime = -1L;
 	public boolean inGameHasFocus = false;
-	private int field_6302_aa = 0;
+	private int mouseTicksRan = 0;
 	public boolean isRaining = false;
 	long systemTime = EagRuntime.currentTimeMillis();
-	private int field_6300_ab = 0;
+	private int joinPlayerCounter = 0;
 	public boolean mouseGrabSupported = false;
 	public int rightClickDelayTimer = 0;
 	public float displayDPI = 1.0f;
@@ -156,8 +162,8 @@ public class Minecraft implements Runnable {
 
 	public Minecraft(int var4, int var5, boolean var6) {
 		StatList.func_27360_a();
-		this.field_9236_T = var4;
-		this.field_9235_U = var5;
+		this.tempDisplayWidth = var4;
+		this.tempDisplayHeight = var5;
 		this.fullscreen = var6;
 		this.displayWidth = var4;
 		this.displayHeight = var5;
@@ -166,6 +172,11 @@ public class Minecraft implements Runnable {
 		this.gameSettings = new GameSettings(this);
 		this.sndManager.loadSoundSettings(this.gameSettings);
 		this.sndManager.registerSounds();
+	}
+
+	public void onMinecraftCrash(UnexpectedThrowable var1) {
+		this.hasCrashed = true;
+		this.displayUnexpectedThrowable(var1);
 	}
 
 	public void displayUnexpectedThrowable(UnexpectedThrowable var1) {
@@ -196,7 +207,7 @@ public class Minecraft implements Runnable {
 
         this.displayDPI = Math.max(Math.min(Display.getDPI(), 2.0f), 1.0f);
 
-		Display.setTitle("Minecraft Beta 1.5_01");
+		Display.setTitle("Minecraft Beta 1.7.3");
 
 		try {
 			Display.create();
@@ -211,18 +222,22 @@ public class Minecraft implements Runnable {
 			Display.create();
 		}
 
-		RenderManager.instance.itemRenderer = new ItemRenderer(this);
 		this.saveLoader = new SaveConverterMcRegion(new VFile2("saves"));
 		this.texturePackList = new TexturePackList(this);
 		this.renderEngine = new RenderEngine(this.texturePackList, this.gameSettings);
 		this.fontRenderer = new FontRenderer(this.gameSettings, "/font/default.png", this.renderEngine);
-		this.field_25001_G = new StatFileWriter(this.session, new VFile2("stats"));
-		AchievementList.field_25195_b.func_27092_a(new StatStringFormatKeyInv(this));
-        Display.update();
+		ColorizerWater.func_28182_a(this.renderEngine.func_28149_a("/misc/watercolor.png"));
+		ColorizerGrass.func_28181_a(this.renderEngine.func_28149_a("/misc/grasscolor.png"));
+		ColorizerFoliage.func_28152_a(this.renderEngine.func_28149_a("/misc/foliagecolor.png"));
+		this.entityRenderer = new EntityRenderer(this);
+		RenderManager.instance.itemRenderer = new ItemRenderer(this);
+		this.statFileWriter = new StatFileWriter(this.session, new VFile2("stats"));
+		AchievementList.openInventory.setStatStringFormatter(new StatStringFormatKeyInv(this));
+		Display.update();
 		this.loadScreen();
 		Keyboard.create();
 		Mouse.create();
-        this.mouseHelper = new MouseHelper();
+		this.mouseHelper = new MouseHelper();
 
 		this.checkGLError("Pre startup");
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -327,14 +342,18 @@ public class Minecraft implements Runnable {
 			}
 
 			if(var1 instanceof GuiMainMenu) {
-				this.field_25001_G.func_27175_b();
+				this.statFileWriter.func_27175_b();
 			}
 
-			this.field_25001_G.func_27182_c();
+			this.statFileWriter.syncStats();
 			if(var1 == null && this.theWorld == null) {
 				var1 = new GuiMainMenu();
 			} else if(var1 == null && this.thePlayer.health <= 0) {
 				var1 = new GuiGameOver();
+			}
+
+			if(var1 instanceof GuiMainMenu) {
+				this.ingameGUI.clearChatMessages();
 			}
 
 			this.currentScreen = (GuiScreen)var1;
@@ -344,7 +363,7 @@ public class Minecraft implements Runnable {
 				int var3 = var2.getScaledWidth();
 				int var4 = var2.getScaledHeight();
 				((GuiScreen)var1).setWorldAndResolution(this, var3, var4);
-				this.field_6307_v = false;
+				this.skipRenderWorld = false;
 			} else {
 				this.setIngameFocus();
 			}
@@ -359,16 +378,14 @@ public class Minecraft implements Runnable {
 			System.out.println("########## GL ERROR ##########");
 			System.out.println("@ " + var1);
 			System.out.println(var2 + ": " + var3);
-			EagRuntime.exit();
 		}
 
 	}
 
 	public void shutdownMinecraftApplet() {
-		this.field_25001_G.func_27175_b();
-		this.field_25001_G.func_27182_c();
-
 		try {
+			this.statFileWriter.func_27175_b();
+			this.statFileWriter.syncStats();
 			System.out.println("Stopping!");
 
 			try {
@@ -386,7 +403,10 @@ public class Minecraft implements Runnable {
 			Keyboard.destroy();
 		} finally {
 			Display.destroy();
+			if(!this.hasCrashed) {
 			EagRuntime.exit();
+			}
+
 		}
 
 		System.gc();
@@ -397,8 +417,8 @@ public class Minecraft implements Runnable {
 
 		try {
 			this.startGame();
-		} catch (Exception var15) {
-			CrashReport crashreport1 = new CrashReport("Failed to start game", var15);
+		} catch (Exception var17) {
+			CrashReport crashreport1 = new CrashReport("Failed to start game", var17);
 			this.displayCrashReport(crashreport1);
 			return;
 		}
@@ -408,106 +428,111 @@ public class Minecraft implements Runnable {
 			int var3 = 0;
 
 			while(this.running) {
-				AxisAlignedBB.clearBoundingBoxPool();
-				Vec3D.initialize();
-				if(Display.isCloseRequested()) {
-					this.shutdown();
-				}
-
-				if(this.isWorldLoaded && this.theWorld != null) {
-					float var4 = this.timer.renderPartialTicks;
-					this.timer.updateTimer();
-					this.timer.renderPartialTicks = var4;
-				} else {
-					this.timer.updateTimer();
-				}
-
-				long var19 = EagRuntime.nanoTime();
-
-                Display.checkContextLost();
-
-                PointerInputAbstraction.runGameLoop();
-                this.gameSettings.touchscreen = PointerInputAbstraction.isTouchMode();
-
-				for(int var6 = 0; var6 < this.timer.elapsedTicks; ++var6) {
-					++this.ticksRan;
-
-					try {
-						this.runTick();
-					} catch (MinecraftException var14) {
-						this.theWorld = null;
-						this.changeWorld1((World)null);
-						this.displayGuiScreen(new GuiConflictWarning());
+				try {
+					AxisAlignedBB.clearBoundingBoxPool();
+					Vec3D.initialize();
+					if(Display.isCloseRequested()) {
+						this.shutdown();
 					}
 
-                    if (var6 < this.timer.elapsedTicks - 1) {
-                        PointerInputAbstraction.runGameLoop();
-					}
-				}
-
-				long var20 = EagRuntime.nanoTime() - var19;
-				this.checkGLError("Pre render");
-                GL11.optimize();
-				RenderBlocks.field_27406_a = this.gameSettings.fancyGraphics;
-				this.sndManager.func_338_a(this.thePlayer, this.timer.renderPartialTicks);
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
-				if(this.theWorld != null && !this.theWorld.multiplayerWorld) {
-					this.theWorld.func_6465_g();
-				}
-
-				if(this.theWorld != null && this.theWorld.multiplayerWorld) {
-					this.theWorld.func_6465_g();
-				}
-
-				if(this.gameSettings.limitFramerate) {
-					EagUtils.sleep(5L);
-				}
-
-				if(!Keyboard.isKeyDown(Keyboard.KEY_F7)) {
-                    this.updateDisplay();
-				}
-
-				if(!this.field_6307_v) {
-					if(this.playerController != null) {
-						this.playerController.setPartialTime(this.timer.renderPartialTicks);
+					if(this.isGamePaused && this.theWorld != null) {
+						float var4 = this.timer.renderPartialTicks;
+						this.timer.updateTimer();
+						this.timer.renderPartialTicks = var4;
+					} else {
+						this.timer.updateTimer();
 					}
 
-					this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
-				}
+					long var23 = EagRuntime.nanoTime();
 
-                this.entityRenderer.func_905_b();
-                touchOverlayRenderer.render(this.displayWidth, this.displayHeight, this.scaledResolution);
-                GL11.disableBlend();
+                    Display.checkContextLost();
 
-				if(!Display.isActive()) {
-					if(this.fullscreen) {
-						this.toggleFullscreen();
+                    PointerInputAbstraction.runGameLoop();
+                    this.gameSettings.touchscreen = PointerInputAbstraction.isTouchMode();
+
+					for(int var6 = 0; var6 < this.timer.elapsedTicks; ++var6) {
+						++this.ticksRan;
+
+						try {
+							this.runTick();
+						} catch (MinecraftException var16) {
+							this.theWorld = null;
+							this.changeWorld1((World)null);
+							this.displayGuiScreen(new GuiConflictWarning());
+						}
+
+                        if (var6 < this.timer.elapsedTicks - 1) {
+                            PointerInputAbstraction.runGameLoop();
+						}
 					}
 
-					EagUtils.sleep(10L);
-				}
+					long var24 = EagRuntime.nanoTime() - var23;
+					this.checkGLError("Pre render");
+                    GL11.optimize();
+					RenderBlocks.fancyGrass = this.gameSettings.fancyGraphics;
+					this.sndManager.func_338_a(this.thePlayer, this.timer.renderPartialTicks);
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+					if(this.theWorld != null) {
+						this.theWorld.updatingLighting();
+					}
 
-				if(this.gameSettings.showDebugInfo) {
-					this.displayDebugInfo(var20);
-				} else {
-					this.prevFrameTime = EagRuntime.nanoTime();
-				}
+					if(!Keyboard.isKeyDown(Keyboard.KEY_F7)) {
+						this.updateDisplay();
+					}
 
-				this.field_25002_t.func_25080_a();
-				Thread.yield();
-				if(Keyboard.isKeyDown(Keyboard.KEY_F7)) {
-                    this.updateDisplay();
-				}
+					if(this.thePlayer != null && this.thePlayer.isEntityInsideOpaqueBlock()) {
+						this.gameSettings.thirdPersonView = false;
+					}
 
-				this.screenshotListener();
+					if(!this.skipRenderWorld) {
+						if(this.playerController != null) {
+							this.playerController.setPartialTime(this.timer.renderPartialTicks);
+						}
 
-				this.checkGLError("Post render");
-				++var3;
+						this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
+					}
 
-				for(this.isWorldLoaded = !this.isMultiplayerWorld() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame(); EagRuntime.currentTimeMillis() >= var1 + 1000L; var3 = 0) {
-					this.debug = var3 + " fps, " + WorldRenderer.chunksUpdated + " chunk updates";
-					WorldRenderer.chunksUpdated = 0;
-					var1 += 1000L;
+                    this.entityRenderer.func_905_b();
+                    touchOverlayRenderer.render(this.displayWidth, this.displayHeight, this.scaledResolution);
+                    GL11.disableBlend();
+
+					if(!Display.isActive()) {
+						if(this.fullscreen) {
+							this.toggleFullscreen();
+						}
+
+						EagUtils.sleep(10L);
+					}
+
+					if(this.gameSettings.showDebugInfo) {
+						this.displayDebugInfo(var24);
+					} else {
+						this.prevFrameTime = EagRuntime.nanoTime();
+					}
+
+					this.guiAchievement.updateAchievementWindow();
+					Thread.yield();
+					if(Keyboard.isKeyDown(Keyboard.KEY_F7)) {
+						this.updateDisplay();
+					}
+
+					this.screenshotListener();
+					this.checkGLError("Post render");
+					++var3;
+
+					for(this.isGamePaused = !this.isMultiplayerWorld() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame(); EagRuntime.currentTimeMillis() >= var1 + 1000L; var3 = 0) {
+						this.debug = var3 + " fps, " + WorldRenderer.chunksUpdated + " chunk updates";
+						WorldRenderer.chunksUpdated = 0;
+						var1 += 1000L;
+					}
+				} catch (MinecraftException var18) {
+					this.theWorld = null;
+					this.changeWorld1((World)null);
+					this.displayGuiScreen(new GuiConflictWarning());
+				} catch (OutOfMemoryError var19) {
+					this.func_28002_e();
+					this.displayGuiScreen(new GuiErrorScreen());
+					System.gc();
 				}
 			}
         } catch (ContextLostError err) {
@@ -515,13 +540,37 @@ public class Minecraft implements Runnable {
         } catch (ReportedException reportedexception) {
             this.displayCrashReport(reportedexception.getCrashReport());
         } catch (Throwable throwable1) {
-			this.theWorld = null;
+			this.func_28002_e();
+			throwable1.printStackTrace();
             CrashReport crashreport1 = new CrashReport("Unexpected error", throwable1);
             this.displayCrashReport(crashreport1);
 		} finally {
 			this.shutdownMinecraftApplet();
 		}
 
+	}
+
+	public void func_28002_e() {
+		try {
+			field_28006_b = new byte[0];
+			this.renderGlobal.func_28137_f();
+		} catch (Throwable var4) {
+		}
+
+		try {
+			System.gc();
+			AxisAlignedBB.func_28196_a();
+			Vec3D.func_28215_a();
+		} catch (Throwable var3) {
+		}
+
+		try {
+			System.gc();
+			this.changeWorld1((World)null);
+		} catch (Throwable var2) {
+		}
+
+		System.gc();
 	}
 
 	private void screenshotListener() {
@@ -681,7 +730,8 @@ public class Minecraft implements Runnable {
 				this.mouseHelper.grabMouseCursor();
                 }
 				this.displayGuiScreen((GuiScreen)null);
-				this.field_6302_aa = this.ticksRan + 10000;
+				this.leftClickCounter = 10000;
+				this.mouseTicksRan = this.ticksRan + 10000;
 			}
 		}
 	}
@@ -707,7 +757,11 @@ public class Minecraft implements Runnable {
 
 	private void func_6254_a(int var1, boolean var2) {
 		if(!this.playerController.field_1064_b) {
-			if(var1 != 0 || this.field_6282_S <= 0) {
+			if(!var2) {
+				this.leftClickCounter = 0;
+			}
+
+			if(var1 != 0 || this.leftClickCounter <= 0) {
 				if(var2 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == EnumMovingObjectType.TILE && var1 == 0) {
 					int var3 = this.objectMouseOver.blockX;
 					int var4 = this.objectMouseOver.blockY;
@@ -715,7 +769,7 @@ public class Minecraft implements Runnable {
 					this.playerController.sendBlockRemoving(var3, var4, var5, this.objectMouseOver.sideHit);
 					this.effectRenderer.addBlockHitEffects(var3, var4, var5, this.objectMouseOver.sideHit);
 				} else {
-					this.playerController.func_6468_a();
+					this.playerController.resetBlockRemoving();
 				}
 
 			}
@@ -723,7 +777,7 @@ public class Minecraft implements Runnable {
 	}
 
 	public void clickMouse(int var1) {
-		if(var1 != 0 || this.field_6282_S <= 0) {
+		if(var1 != 0 || this.leftClickCounter <= 0) {
 			if(var1 == 0) {
 				this.thePlayer.swingItem();
 			}
@@ -731,50 +785,46 @@ public class Minecraft implements Runnable {
 			boolean var2 = true;
 			if(this.objectMouseOver == null) {
 				if(var1 == 0 && !(this.playerController instanceof PlayerControllerTest)) {
-					this.field_6282_S = 10;
+					this.leftClickCounter = 10;
 				}
 			} else if(this.objectMouseOver.typeOfHit == EnumMovingObjectType.ENTITY) {
 				if(var1 == 0) {
-					this.playerController.func_6472_b(this.thePlayer, this.objectMouseOver.entityHit);
+					this.playerController.attackEntity(this.thePlayer, this.objectMouseOver.entityHit);
 				}
 
 				if(var1 == 1) {
-					this.playerController.func_6475_a(this.thePlayer, this.objectMouseOver.entityHit);
+					this.playerController.interactWithEntity(this.thePlayer, this.objectMouseOver.entityHit);
 				}
 			} else if(this.objectMouseOver.typeOfHit == EnumMovingObjectType.TILE) {
 				int var3 = this.objectMouseOver.blockX;
 				int var4 = this.objectMouseOver.blockY;
 				int var5 = this.objectMouseOver.blockZ;
 				int var6 = this.objectMouseOver.sideHit;
-				Block var7 = Block.blocksList[this.theWorld.getBlockId(var3, var4, var5)];
 				if(var1 == 0) {
-					this.theWorld.onBlockHit(var3, var4, var5, this.objectMouseOver.sideHit);
-					if(var7 != Block.bedrock || this.thePlayer.field_9371_f >= 100) {
-						this.playerController.clickBlock(var3, var4, var5, this.objectMouseOver.sideHit);
-					}
+					this.playerController.clickBlock(var3, var4, var5, this.objectMouseOver.sideHit);
 				} else {
-					ItemStack var8 = this.thePlayer.inventory.getCurrentItem();
-					int var9 = var8 != null ? var8.stackSize : 0;
-					if(this.playerController.sendPlaceBlock(this.thePlayer, this.theWorld, var8, var3, var4, var5, var6)) {
+					ItemStack var7 = this.thePlayer.inventory.getCurrentItem();
+					int var8 = var7 != null ? var7.stackSize : 0;
+					if(this.playerController.sendPlaceBlock(this.thePlayer, this.theWorld, var7, var3, var4, var5, var6)) {
 						var2 = false;
 						this.thePlayer.swingItem();
 					}
 
-					if(var8 == null) {
+					if(var7 == null) {
 						return;
 					}
 
-					if(var8.stackSize == 0) {
+					if(var7.stackSize == 0) {
 						this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-					} else if(var8.stackSize != var9) {
+					} else if(var7.stackSize != var8) {
 						this.entityRenderer.itemRenderer.func_9449_b();
 					}
 				}
 			}
 
 			if(var2 && var1 == 1) {
-				ItemStack var10 = this.thePlayer.inventory.getCurrentItem();
-				if(var10 != null && this.playerController.sendUseItem(this.thePlayer, this.theWorld, var10)) {
+				ItemStack var9 = this.thePlayer.inventory.getCurrentItem();
+				if(var9 != null && this.playerController.sendUseItem(this.thePlayer, this.theWorld, var9)) {
 					this.entityRenderer.itemRenderer.func_9450_c();
 				}
 			}
@@ -785,7 +835,6 @@ public class Minecraft implements Runnable {
 	public void toggleFullscreen() {
 		try {
 			this.fullscreen = !this.fullscreen;
-			System.out.println("Toggle fullscreen!");
 			if(this.fullscreen) {
 				Display.setDisplayMode(Display.getDesktopDisplayMode());
 				this.displayWidth = Display.getDisplayMode().getWidth();
@@ -798,8 +847,8 @@ public class Minecraft implements Runnable {
 					this.displayHeight = 1;
 				}
 			} else {
-                this.displayWidth = Display.getWidth();
-                this.displayHeight = Display.getHeight();
+				this.displayWidth = this.tempDisplayWidth;
+				this.displayHeight = this.tempDisplayHeight;
 
 				if(this.displayWidth <= 0) {
 					this.displayWidth = 1;
@@ -808,24 +857,14 @@ public class Minecraft implements Runnable {
 				if(this.displayHeight <= 0) {
 					this.displayHeight = 1;
 				}
-
-                Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
-			}
-
-			this.setIngameNotInFocus();
-			Display.setFullscreen(this.fullscreen);
-            this.updateDisplay();
-            EagUtils.sleep(1000L);
-			if(this.fullscreen) {
-				this.setIngameFocus();
 			}
 
 			if(this.currentScreen != null) {
-				this.setIngameNotInFocus();
 				this.resize(this.displayWidth, this.displayHeight);
 			}
 
-			System.out.println("Size: " + this.displayWidth + ", " + this.displayHeight);
+			Display.setFullscreen(this.fullscreen);
+			this.updateDisplay();
 		} catch (Exception var2) {
 			var2.printStackTrace();
 		}
@@ -913,7 +952,14 @@ public class Minecraft implements Runnable {
 
 	}
 
+	private void func_28001_B() {
+	}
+
 	public void runTick() {
+		if(this.ticksRan == 6000) {
+			this.func_28001_B();
+		}
+
         if (this.rightClickDelayTimer > 0) {
             --this.rightClickDelayTimer;
         }
@@ -923,7 +969,7 @@ public class Minecraft implements Runnable {
             this.displayInGameMenu();
         }
 
-		this.field_25001_G.func_27178_d();
+		this.statFileWriter.func_27178_d();
 		this.ingameGUI.updateTick();
 		this.entityRenderer.getMouseOver(1.0F);
 		int var3;
@@ -937,13 +983,13 @@ public class Minecraft implements Runnable {
 			}
 		}
 
-		if(!this.isWorldLoaded && this.theWorld != null) {
+		if(!this.isGamePaused && this.theWorld != null) {
 			this.playerController.updateController();
 		}
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png"));
-		if(!this.isWorldLoaded) {
-			this.renderEngine.func_1067_a();
+		if(!this.isGamePaused) {
+			this.renderEngine.updateDynamicTextures();
 		}
 
 		if(this.currentScreen == null && this.thePlayer != null) {
@@ -957,7 +1003,8 @@ public class Minecraft implements Runnable {
 		}
 
 		if(this.currentScreen != null) {
-			this.field_6302_aa = this.ticksRan + 10000;
+			this.leftClickCounter = 10000;
+			this.mouseTicksRan = this.ticksRan + 10000;
 		}
 
 		if(this.currentScreen != null) {
@@ -1049,12 +1096,12 @@ public class Minecraft implements Runnable {
                     if(this.currentScreen == null) {
                         if(Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
                             this.clickMouse(0);
-                            this.field_6302_aa = this.ticksRan;
+                            this.mouseTicksRan = this.ticksRan;
                         }
 
                         if(Mouse.getEventButton() == 1 && Mouse.getEventButtonState()) {
                             this.clickMouse(1);
-                            this.field_6302_aa = this.ticksRan;
+                            this.mouseTicksRan = this.ticksRan;
                         }
 
                         if(Mouse.getEventButton() == 2 && Mouse.getEventButtonState()) {
@@ -1070,8 +1117,8 @@ public class Minecraft implements Runnable {
                 }
             }
 
-            if(this.field_6282_S > 0) {
-                --this.field_6282_S;
+            if(this.leftClickCounter > 0) {
+                --this.leftClickCounter;
             }
 
             processTouchMine();
@@ -1143,7 +1190,7 @@ public class Minecraft implements Runnable {
                     this.clickMouse(1);
                 } else {
                     this.clickMouse(0);
-                    this.field_6302_aa = this.ticksRan;
+                    this.mouseTicksRan = this.ticksRan;
                 }
                 wasMiningTouch = true;
             }
@@ -1154,14 +1201,14 @@ public class Minecraft implements Runnable {
 			}
 
 			if(this.currentScreen == null) {
-                if((Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.field_6302_aa) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
+                if((Mouse.isButtonDown(0) || miningTouch) && (float)(this.ticksRan - this.mouseTicksRan) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
 					this.clickMouse(0);
-					this.field_6302_aa = this.ticksRan;
+					this.mouseTicksRan = this.ticksRan;
 				}
 
-                if((Mouse.isButtonDown(1) || miningTouch) && (float)(this.ticksRan - this.field_6302_aa) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
+                if((Mouse.isButtonDown(1) || miningTouch) && (float)(this.ticksRan - this.mouseTicksRan) >= this.timer.ticksPerSecond / 4.0F && this.inGameHasFocus) {
 					this.clickMouse(1);
-					this.field_6302_aa = this.ticksRan;
+					this.mouseTicksRan = this.ticksRan;
 				}
             }
 
@@ -1170,9 +1217,9 @@ public class Minecraft implements Runnable {
 
 		if(this.theWorld != null) {
 			if(this.thePlayer != null) {
-				++this.field_6300_ab;
-				if(this.field_6300_ab == 30) {
-					this.field_6300_ab = 0;
+				++this.joinPlayerCounter;
+				if(this.joinPlayerCounter == 30) {
+					this.joinPlayerCounter = 0;
 					this.theWorld.joinEntityInSurroundings(this.thePlayer);
 				}
 			}
@@ -1182,32 +1229,32 @@ public class Minecraft implements Runnable {
 				this.theWorld.difficultySetting = 3;
 			}
 
-			if(!this.isWorldLoaded) {
+			if(!this.isGamePaused) {
 				this.entityRenderer.updateRenderer();
 			}
 
-			if(!this.isWorldLoaded) {
+			if(!this.isGamePaused) {
 				this.renderGlobal.updateClouds();
 			}
 
-			if(!this.isWorldLoaded) {
+			if(!this.isGamePaused) {
 				if(this.theWorld.field_27172_i > 0) {
 					--this.theWorld.field_27172_i;
 				}
 
-				this.theWorld.func_633_c();
+				this.theWorld.updateEntities();
 			}
 
-			if(!this.isWorldLoaded || this.isMultiplayerWorld()) {
+			if(!this.isGamePaused || this.isMultiplayerWorld()) {
 				this.theWorld.setAllowedMobSpawns(this.gameSettings.difficulty > 0, true);
 				this.theWorld.tick();
 			}
 
-			if(!this.isWorldLoaded && this.theWorld != null) {
+			if(!this.isGamePaused && this.theWorld != null) {
 				this.theWorld.randomDisplayUpdates(MathHelper.floor_double(this.thePlayer.posX), MathHelper.floor_double(this.thePlayer.posY), MathHelper.floor_double(this.thePlayer.posZ));
 			}
 
-			if(!this.isWorldLoaded) {
+			if(!this.isGamePaused) {
 				this.effectRenderer.updateEffects();
 			}
 		}
@@ -1235,12 +1282,12 @@ public class Minecraft implements Runnable {
 			World var6 = null;
 			var6 = new World(var5, var2, var3);
 			if(var6.isNewWorld) {
-				this.field_25001_G.func_25100_a(StatList.field_25183_f, 1);
-				this.field_25001_G.func_25100_a(StatList.field_25184_e, 1);
+				this.statFileWriter.readStat(StatList.createWorldStat, 1);
+				this.statFileWriter.readStat(StatList.startGameStat, 1);
 				this.changeWorld2(var6, "Generating level");
 			} else {
-				this.field_25001_G.func_25100_a(StatList.field_25182_g, 1);
-				this.field_25001_G.func_25100_a(StatList.field_25184_e, 1);
+				this.statFileWriter.readStat(StatList.loadWorldStat, 1);
+				this.statFileWriter.readStat(StatList.startGameStat, 1);
 				this.changeWorld2(var6, "Loading level");
 			}
 		}
@@ -1248,6 +1295,7 @@ public class Minecraft implements Runnable {
 	}
 
 	public void usePortal() {
+		System.out.println("Toggling dimension!!");
 		if(this.thePlayer.dimension == -1) {
 			this.thePlayer.dimension = 0;
 		} else {
@@ -1264,24 +1312,33 @@ public class Minecraft implements Runnable {
 			var1 /= var5;
 			var3 /= var5;
 			this.thePlayer.setLocationAndAngles(var1, this.thePlayer.posY, var3, this.thePlayer.rotationYaw, this.thePlayer.rotationPitch);
-			this.theWorld.updateEntityWithOptionalForce(this.thePlayer, false);
+			if(this.thePlayer.isEntityAlive()) {
+				this.theWorld.updateEntityWithOptionalForce(this.thePlayer, false);
+			}
+
 			var7 = null;
-			var7 = new World(this.theWorld, new WorldProviderHell());
+			var7 = new World(this.theWorld, WorldProvider.getProviderForDimension(-1));
 			this.changeWorld(var7, "Entering the Nether", this.thePlayer);
 		} else {
 			var1 *= var5;
 			var3 *= var5;
 			this.thePlayer.setLocationAndAngles(var1, this.thePlayer.posY, var3, this.thePlayer.rotationYaw, this.thePlayer.rotationPitch);
-			this.theWorld.updateEntityWithOptionalForce(this.thePlayer, false);
+			if(this.thePlayer.isEntityAlive()) {
+				this.theWorld.updateEntityWithOptionalForce(this.thePlayer, false);
+			}
+
 			var7 = null;
-			var7 = new World(this.theWorld, new WorldProvider());
+			var7 = new World(this.theWorld, WorldProvider.getProviderForDimension(0));
 			this.changeWorld(var7, "Leaving the Nether", this.thePlayer);
 		}
 
 		this.thePlayer.worldObj = this.theWorld;
-		this.thePlayer.setLocationAndAngles(var1, this.thePlayer.posY, var3, this.thePlayer.rotationYaw, this.thePlayer.rotationPitch);
-		this.theWorld.updateEntityWithOptionalForce(this.thePlayer, false);
-		(new Teleporter()).func_4107_a(this.theWorld, this.thePlayer);
+		if(this.thePlayer.isEntityAlive()) {
+			this.thePlayer.setLocationAndAngles(var1, this.thePlayer.posY, var3, this.thePlayer.rotationYaw, this.thePlayer.rotationPitch);
+			this.theWorld.updateEntityWithOptionalForce(this.thePlayer, false);
+			(new Teleporter()).func_4107_a(this.theWorld, this.thePlayer);
+		}
+
 	}
 
 	public void changeWorld1(World var1) {
@@ -1293,14 +1350,14 @@ public class Minecraft implements Runnable {
 	}
 
 	public void changeWorld(World var1, String var2, EntityPlayer var3) {
-		this.field_25001_G.func_27175_b();
-		this.field_25001_G.func_27182_c();
+		this.statFileWriter.func_27175_b();
+		this.statFileWriter.syncStats();
 		this.renderViewEntity = null;
 		this.loadingScreen.printText(var2);
 		this.loadingScreen.displayLoadingString("");
 		this.sndManager.playStreaming((String)null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		if(this.theWorld != null) {
-			this.theWorld.func_651_a(this.loadingScreen);
+			this.theWorld.saveWorldIndirectly(this.loadingScreen);
 		}
 
 		this.theWorld = var1;
@@ -1329,7 +1386,7 @@ public class Minecraft implements Runnable {
 
 			this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
 			if(this.renderGlobal != null) {
-				this.renderGlobal.func_946_a(var1);
+				this.renderGlobal.changeWorld(var1);
 			}
 
 			if(this.effectRenderer != null) {
@@ -1338,7 +1395,7 @@ public class Minecraft implements Runnable {
 
 			this.playerController.func_6473_b(this.thePlayer);
 			if(var3 != null) {
-				var1.func_6464_c();
+				var1.emptyMethod1();
 			}
 
 			IChunkProvider var4 = var1.getIChunkProvider();
@@ -1351,7 +1408,7 @@ public class Minecraft implements Runnable {
 
 			var1.spawnPlayerWithLoadedChunks(this.thePlayer);
 			if(var1.isNewWorld) {
-				var1.func_651_a(this.loadingScreen);
+				var1.saveWorldIndirectly(this.loadingScreen);
 			}
 
 			this.renderViewEntity = this.thePlayer;
@@ -1394,7 +1451,7 @@ public class Minecraft implements Runnable {
 				this.loadingScreen.setLoadingProgress(var3++ * 100 / var4);
 				this.theWorld.getBlockId(var6.x + var10, 64, var6.z + var8);
 
-				while(this.theWorld.func_6465_g()) {
+				while(this.theWorld.updatingLighting()) {
 				}
 			}
 		}
@@ -1409,11 +1466,11 @@ public class Minecraft implements Runnable {
 	}
 
 	public String func_6241_m() {
-		return this.renderGlobal.func_953_b();
+		return this.renderGlobal.getDebugInfoRenders();
 	}
 
 	public String func_6262_n() {
-		return this.renderGlobal.func_957_c();
+		return this.renderGlobal.getDebugInfoEntities();
 	}
 
 	public String func_21002_o() {
@@ -1424,56 +1481,57 @@ public class Minecraft implements Runnable {
 		return "P: " + this.effectRenderer.getStatistics() + ". T: " + this.theWorld.func_687_d();
 	}
 
-	public void respawn(boolean var1) {
-		if(!this.theWorld.worldProvider.canRespawnHere()) {
+	public void respawn(boolean var1, int var2) {
+		if(!this.theWorld.multiplayerWorld && !this.theWorld.worldProvider.canRespawnHere()) {
 			this.usePortal();
 		}
 
-		ChunkCoordinates var2 = null;
 		ChunkCoordinates var3 = null;
-		boolean var4 = true;
+		ChunkCoordinates var4 = null;
+		boolean var5 = true;
 		if(this.thePlayer != null && !var1) {
-			var2 = this.thePlayer.getPlayerSpawnCoordinate();
-			if(var2 != null) {
-				var3 = EntityPlayer.func_25060_a(this.theWorld, var2);
-				if(var3 == null) {
+			var3 = this.thePlayer.getPlayerSpawnCoordinate();
+			if(var3 != null) {
+				var4 = EntityPlayer.func_25060_a(this.theWorld, var3);
+				if(var4 == null) {
 					this.thePlayer.addChatMessage("tile.bed.notValid");
 				}
 			}
 		}
 
-		if(var3 == null) {
-			var3 = this.theWorld.getSpawnPoint();
-			var4 = false;
+		if(var4 == null) {
+			var4 = this.theWorld.getSpawnPoint();
+			var5 = false;
 		}
 
-		IChunkProvider var5 = this.theWorld.getIChunkProvider();
-		if(var5 instanceof ChunkProviderLoadOrGenerate) {
-			ChunkProviderLoadOrGenerate var6 = (ChunkProviderLoadOrGenerate)var5;
-			var6.setCurrentChunkOver(var3.x >> 4, var3.z >> 4);
+		IChunkProvider var6 = this.theWorld.getIChunkProvider();
+		if(var6 instanceof ChunkProviderLoadOrGenerate) {
+			ChunkProviderLoadOrGenerate var7 = (ChunkProviderLoadOrGenerate)var6;
+			var7.setCurrentChunkOver(var4.x >> 4, var4.z >> 4);
 		}
 
 		this.theWorld.setSpawnLocation();
 		this.theWorld.updateEntityList();
-		int var7 = 0;
+		int var8 = 0;
 		if(this.thePlayer != null) {
-			var7 = this.thePlayer.entityId;
+			var8 = this.thePlayer.entityId;
 			this.theWorld.setEntityDead(this.thePlayer);
 		}
 
 		this.renderViewEntity = null;
 		this.thePlayer = (EntityPlayerSP)this.playerController.createPlayer(this.theWorld);
+		this.thePlayer.dimension = var2;
 		this.renderViewEntity = this.thePlayer;
 		this.thePlayer.preparePlayerToSpawn();
-		if(var4) {
-			this.thePlayer.setPlayerSpawnCoordinate(var2);
-			this.thePlayer.setLocationAndAngles((double)((float)var3.x + 0.5F), (double)((float)var3.y + 0.1F), (double)((float)var3.z + 0.5F), 0.0F, 0.0F);
+		if(var5) {
+			this.thePlayer.setPlayerSpawnCoordinate(var3);
+			this.thePlayer.setLocationAndAngles((double)((float)var4.x + 0.5F), (double)((float)var4.y + 0.1F), (double)((float)var4.z + 0.5F), 0.0F, 0.0F);
 		}
 
 		this.playerController.flipPlayer(this.thePlayer);
 		this.theWorld.spawnPlayerWithLoadedChunks(this.thePlayer);
 		this.thePlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
-		this.thePlayer.entityId = var7;
+		this.thePlayer.entityId = var8;
 		this.thePlayer.func_6420_o();
 		this.playerController.func_6473_b(this.thePlayer);
 		this.func_6255_d("Respawning");
@@ -1483,7 +1541,7 @@ public class Minecraft implements Runnable {
 
 	}
 
-	public NetClientHandler func_20001_q() {
+	public NetClientHandler getSendQueue() {
 		return this.thePlayer instanceof EntityClientPlayerMP ? ((EntityClientPlayerMP)this.thePlayer).sendQueue : null;
 	}
 

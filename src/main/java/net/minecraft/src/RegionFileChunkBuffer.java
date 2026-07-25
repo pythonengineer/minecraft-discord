@@ -15,6 +15,6 @@ class RegionFileChunkBuffer extends EaglerOutputStream {
 	}
 
 	public void close() {
-		this.field_22284_a.func_22203_a(this.field_22283_b, this.field_22285_c, this.buf, this.count);
+		this.field_22284_a.write(this.field_22283_b, this.field_22285_c, this.buf, this.count);
 	}
 }

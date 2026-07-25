@@ -5,7 +5,6 @@ import net.lax1dude.eaglercraft.internal.vfs2.VFile2;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -31,12 +30,21 @@ public class StatsSyncher {
 	private int field_27426_m = 0;
 
 	public StatsSyncher(Session var1, StatFileWriter var2, VFile2 var3) {
-		this.field_27434_e = new VFile2(var3, "stats_" + var1.username + "_unsent.dat");
-		this.field_27433_f = new VFile2(var3, "stats_" + var1.username + ".dat");
-		this.field_27430_i = new VFile2(var3, "stats_" + var1.username + "_unsent.old");
-		this.field_27429_j = new VFile2(var3, "stats_" + var1.username + ".old");
-		this.field_27432_g = new VFile2(var3, "stats_" + var1.username + "_unsent.tmp");
-		this.field_27431_h = new VFile2(var3, "stats_" + var1.username + ".tmp");
+		this.field_27434_e = new VFile2(var3, "stats_" + var1.username.toLowerCase() + "_unsent.dat");
+		this.field_27433_f = new VFile2(var3, "stats_" + var1.username.toLowerCase() + ".dat");
+		this.field_27430_i = new VFile2(var3, "stats_" + var1.username.toLowerCase() + "_unsent.old");
+		this.field_27429_j = new VFile2(var3, "stats_" + var1.username.toLowerCase() + ".old");
+		this.field_27432_g = new VFile2(var3, "stats_" + var1.username.toLowerCase() + "_unsent.tmp");
+		this.field_27431_h = new VFile2(var3, "stats_" + var1.username.toLowerCase() + ".tmp");
+        if(!var1.username.toLowerCase().equals(var1.username)) {
+            this.func_28214_a(var3, "stats_" + var1.username + "_unsent.dat", this.field_27434_e);
+            this.func_28214_a(var3, "stats_" + var1.username + ".dat", this.field_27433_f);
+            this.func_28214_a(var3, "stats_" + var1.username + "_unsent.old", this.field_27430_i);
+            this.func_28214_a(var3, "stats_" + var1.username + ".old", this.field_27429_j);
+            this.func_28214_a(var3, "stats_" + var1.username + "_unsent.tmp", this.field_27432_g);
+            this.func_28214_a(var3, "stats_" + var1.username + ".tmp", this.field_27431_h);
+        }
+
 		this.field_27435_d = var2;
 		this.field_27428_k = var1;
 		if(this.field_27434_e.exists() || EagRuntime.getStorage(this.field_27434_e.getName()) != null) {
@@ -45,6 +53,18 @@ public class StatsSyncher {
 
 		this.func_27418_a();
 	}
+
+    private void func_28214_a(VFile2 var1, String var2, VFile2 var3) {
+        VFile2 var4 = new VFile2(var1, var2);
+        if(var4.exists() && !var3.exists()) {
+            var4.renameTo(var3);
+        }
+
+        if(EagRuntime.getStorage(var4.getName()) != null) {
+            EagRuntime.setStorage(var3.getName(), EagRuntime.getStorage(var4.getName()));
+            EagRuntime.setStorage(var4.getName(), null);
+        }
+    }
 
 	private Map func_27415_a(VFile2 var1, VFile2 var2, VFile2 var3) {
 		return (var1.exists() || EagRuntime.getStorage(var1.getName()) != null) ? this.func_27408_a(var1) : ((var3.exists() || EagRuntime.getStorage(var3.getName()) != null) ? this.func_27408_a(var3) : ((var2.exists() || EagRuntime.getStorage(var2.getName()) != null) ? this.func_27408_a(var2) : null));
@@ -147,7 +167,7 @@ public class StatsSyncher {
 		}
 	}
 
-	public void func_27407_b(Map var1) {
+	public void syncStatsFileWithMap(Map var1) {
 		int var2 = 30;
 
 		while(this.field_27438_a) {

@@ -204,7 +204,6 @@ public abstract class Container {
                                 slot7.putStack(itemstack10);
                                 var3.inventory.setItemStack(itemstack9);
                             }
-                        } else if (itemstack9.getItem() == itemstack10.getItem() && itemstack10.getMaxStackSize() > 1) {
                         } else if (itemstack9.getItem() == itemstack10.getItem() && itemstack10.getMaxStackSize() > 1
                                 && (!itemstack9.getHasSubtypes()
                                         || itemstack9.getItemDamage() == itemstack10.getItemDamage())) {
@@ -589,7 +588,7 @@ public abstract class Container {
             i = endIndex - 1;
         }
 
-        if (true) { //stack.isStackable()) {
+        if (stack.isStackable()) {
             while (stack.stackSize > 0 && (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex)) {
                 Slot slot = (Slot) this.slots.get(i);
                 ItemStack itemstack = slot.getStack();

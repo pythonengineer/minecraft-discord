@@ -33,7 +33,7 @@ public class GuiMultiplayer extends GuiScreen {
 		((GuiButton)this.controlList.get(0)).enabled = var2.length() > 0;
 		this.field_22111_h = new GuiTextField(this, this.fontRenderer, this.width / 2 - 100, this.height / 4 - 10 + 50 + 18, 200, 20, var2);
 		this.field_22111_h.isFocused = true;
-		this.field_22111_h.setMaxStringLength(64);
+		this.field_22111_h.setMaxStringLength(128);
 	}
 
 	public void onGuiClosed() {
@@ -45,10 +45,29 @@ public class GuiMultiplayer extends GuiScreen {
 			if(var1.id == 1) {
 				this.mc.displayGuiScreen(this.parentScreen);
 			} else if(var1.id == 0) {
-				String var2 = this.field_22111_h.getText();
+				String var2 = this.field_22111_h.getText().trim();
 				this.mc.gameSettings.lastServer = var2.replaceAll(":", "_");
 				this.mc.gameSettings.saveOptions();
-                String s = var2.trim();
+				String[] var3 = var2.split(":");
+				if(var2.startsWith("[")) {
+					int var4 = var2.indexOf("]");
+					if(var4 > 0) {
+						String var5 = var2.substring(1, var4);
+						String var6 = var2.substring(var4 + 1).trim();
+						if(var6.startsWith(":") && var6.length() > 0) {
+							var6 = var6.substring(1);
+							var3 = new String[]{var5, var6};
+						} else {
+							var3 = new String[]{var5};
+						}
+					}
+				}
+
+				if(var3.length > 2) {
+					var3 = new String[]{var2};
+				}
+
+                String s = String.join(":", var3).trim();
                 String proto = "ws";
                 int i = 0;
                 if (s.startsWith("wss://")) {
@@ -66,7 +85,7 @@ public class GuiMultiplayer extends GuiScreen {
 		}
 	}
 
-	private int func_4067_a(String var1, int var2) {
+	private int parseIntWithDefault(String var1, int var2) {
 		try {
 			return Integer.parseInt(var1.trim());
 		} catch (Exception var4) {

@@ -67,10 +67,10 @@ public class EmptyChunk extends Chunk {
 	public void addEntity(Entity var1) {
 	}
 
-	public void func_1015_b(Entity var1) {
+	public void removeEntity(Entity var1) {
 	}
 
-	public void func_1016_a(Entity var1, int var2) {
+	public void removeEntityAtIndex(Entity var1, int var2) {
 	}
 
 	public boolean canBlockSeeTheSky(int var1, int var2, int var3) {
@@ -81,7 +81,7 @@ public class EmptyChunk extends Chunk {
 		return null;
 	}
 
-	public void func_1001_a(TileEntity var1) {
+	public void addTileEntity(TileEntity var1) {
 	}
 
 	public void setChunkBlockTileEntity(int var1, int var2, int var3, TileEntity var4) {

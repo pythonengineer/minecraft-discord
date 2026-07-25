@@ -89,7 +89,7 @@ public final class ItemStack {
 		return this.getItem().getItemStackLimit();
 	}
 
-	public boolean func_21180_d() {
+	public boolean isStackable() {
 		return this.getMaxStackSize() > 1 && (!this.isItemStackDamageable() || !this.isItemDamaged());
 	}
 
@@ -113,11 +113,15 @@ public final class ItemStack {
 		return this.itemDamage;
 	}
 
+	public void setItemDamage(int var1) {
+		this.itemDamage = var1;
+	}
+
 	public int getMaxDamage() {
 		return Item.itemsList[this.itemID].getMaxDamage();
 	}
 
-	public void func_25190_a(int var1, Entity var2) {
+	public void damageItem(int var1, Entity var2) {
 		if(this.isItemStackDamageable()) {
 			this.itemDamage += var1;
 			if(this.itemDamage > this.getMaxDamage()) {
@@ -144,8 +148,8 @@ public final class ItemStack {
 
 	}
 
-	public void func_25191_a(int var1, int var2, int var3, int var4, EntityPlayer var5) {
-		boolean var6 = Item.itemsList[this.itemID].func_25008_a(this, var1, var2, var3, var4, var5);
+	public void onDestroyBlock(int var1, int var2, int var3, int var4, EntityPlayer var5) {
+		boolean var6 = Item.itemsList[this.itemID].onBlockDestroyed(this, var1, var2, var3, var4, var5);
 		if(var6) {
 			var5.addStat(StatList.field_25172_A[this.itemID], 1);
 		}
@@ -183,11 +187,32 @@ public final class ItemStack {
 		return this.itemID == var1.itemID && this.itemDamage == var1.itemDamage;
 	}
 
-	public String func_20109_f() {
+	public String getItemName() {
 		return Item.itemsList[this.itemID].getItemNameIS(this);
+	}
+
+	public static ItemStack copyItemStack(ItemStack var0) {
+		return var0 == null ? null : var0.copy();
 	}
 
 	public String toString() {
 		return this.stackSize + "x" + Item.itemsList[this.itemID].getItemName() + "@" + this.itemDamage;
+	}
+
+	public void updateAnimation(World var1, Entity var2, int var3, boolean var4) {
+		if(this.animationsToGo > 0) {
+			--this.animationsToGo;
+		}
+
+		Item.itemsList[this.itemID].onUpdate(this, var1, var2, var3, var4);
+	}
+
+	public void onCrafting(World var1, EntityPlayer var2) {
+		var2.addStat(StatList.field_25158_z[this.itemID], this.stackSize);
+		Item.itemsList[this.itemID].onCreated(this, var1, var2);
+	}
+
+	public boolean isStackEqual(ItemStack var1) {
+		return this.itemID == var1.itemID && this.stackSize == var1.stackSize && this.itemDamage == var1.itemDamage;
 	}
 }

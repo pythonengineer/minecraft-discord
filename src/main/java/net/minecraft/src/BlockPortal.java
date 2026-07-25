@@ -45,7 +45,6 @@ public class BlockPortal extends BlockBreakable {
 			var6 = 1;
 		}
 
-		System.out.println(var5 + ", " + var6);
 		if(var5 == var6) {
 			return false;
 		} else {
@@ -119,7 +118,17 @@ public class BlockPortal extends BlockBreakable {
 	}
 
 	public boolean shouldSideBeRendered(IBlockAccess var1, int var2, int var3, int var4, int var5) {
-		return true;
+		if(var1.getBlockId(var2, var3, var4) == this.blockID) {
+			return false;
+		} else {
+			boolean var6 = var1.getBlockId(var2 - 1, var3, var4) == this.blockID && var1.getBlockId(var2 - 2, var3, var4) != this.blockID;
+			boolean var7 = var1.getBlockId(var2 + 1, var3, var4) == this.blockID && var1.getBlockId(var2 + 2, var3, var4) != this.blockID;
+			boolean var8 = var1.getBlockId(var2, var3, var4 - 1) == this.blockID && var1.getBlockId(var2, var3, var4 - 2) != this.blockID;
+			boolean var9 = var1.getBlockId(var2, var3, var4 + 1) == this.blockID && var1.getBlockId(var2, var3, var4 + 2) != this.blockID;
+			boolean var10 = var6 || var7;
+			boolean var11 = var8 || var9;
+			return var10 && var5 == 4 ? true : (var10 && var5 == 5 ? true : (var11 && var5 == 2 ? true : var11 && var5 == 3));
+		}
 	}
 
 	public int quantityDropped(EaglercraftRandom var1) {
@@ -131,9 +140,10 @@ public class BlockPortal extends BlockBreakable {
 	}
 
 	public void onEntityCollidedWithBlock(World var1, int var2, int var3, int var4, Entity var5) {
-		if(!var1.multiplayerWorld) {
+		if(var5.ridingEntity == null && var5.riddenByEntity == null) {
 			var5.setInPortal();
 		}
+
 	}
 
 	public void randomDisplayTick(World var1, int var2, int var3, int var4, EaglercraftRandom var5) {

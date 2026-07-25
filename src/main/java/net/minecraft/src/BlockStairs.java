@@ -148,10 +148,6 @@ public class BlockStairs extends Block {
 		this.modelBlock.dropBlockAsItemWithChance(var1, var2, var3, var4, var5, var6);
 	}
 
-	public void dropBlockAsItem(World var1, int var2, int var3, int var4, int var5) {
-		this.modelBlock.dropBlockAsItem(var1, var2, var3, var4, var5);
-	}
-
 	public void onEntityWalking(World var1, int var2, int var3, int var4, Entity var5) {
 		this.modelBlock.onEntityWalking(var1, var2, var3, var4, var5);
 	}

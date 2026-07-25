@@ -1,8 +1,9 @@
 package net.minecraft.src;
 
 public class MaterialTransparent extends Material {
-	public MaterialTransparent() {
-		this.func_27284_f();
+	public MaterialTransparent(MapColor var1) {
+		super(var1);
+		this.setIsGroundCover();
 	}
 
 	public boolean isSolid() {

@@ -14,6 +14,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Objects;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -69,7 +71,11 @@ public class PlatformApplication {
 
     public static void setLocalStorage(String name, byte[] data, boolean hooks) {
         if (data == null) {
-            (new File("_mcstorage." + name + ".dat")).delete();
+            try {
+                if (Arrays.stream(Objects.requireNonNull(new File("_mcstorage." + name + ".dat").getParentFile().list()))
+                    .anyMatch(("_mcstorage." + name + ".dat")::equals)) new File("_mcstorage." + name + ".dat").delete();
+            } catch (NullPointerException e) {
+            }
         } else {
             try (FileOutputStream f = new FileOutputStream(new File("_mcstorage." + name + ".dat"))) {
                 f.write(data);

@@ -24,21 +24,25 @@ public class BlockButton extends Block {
 		return false;
 	}
 
+	public boolean canPlaceBlockOnSide(World var1, int var2, int var3, int var4, int var5) {
+		return var5 == 2 && var1.isBlockNormalCube(var2, var3, var4 + 1) ? true : (var5 == 3 && var1.isBlockNormalCube(var2, var3, var4 - 1) ? true : (var5 == 4 && var1.isBlockNormalCube(var2 + 1, var3, var4) ? true : var5 == 5 && var1.isBlockNormalCube(var2 - 1, var3, var4)));
+	}
+
 	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return var1.isBlockOpaqueCube(var2 - 1, var3, var4) ? true : (var1.isBlockOpaqueCube(var2 + 1, var3, var4) ? true : (var1.isBlockOpaqueCube(var2, var3, var4 - 1) ? true : var1.isBlockOpaqueCube(var2, var3, var4 + 1)));
+		return var1.isBlockNormalCube(var2 - 1, var3, var4) ? true : (var1.isBlockNormalCube(var2 + 1, var3, var4) ? true : (var1.isBlockNormalCube(var2, var3, var4 - 1) ? true : var1.isBlockNormalCube(var2, var3, var4 + 1)));
 	}
 
 	public void onBlockPlaced(World var1, int var2, int var3, int var4, int var5) {
 		int var6 = var1.getBlockMetadata(var2, var3, var4);
 		int var7 = var6 & 8;
 		var6 &= 7;
-		if(var5 == 2 && var1.isBlockOpaqueCube(var2, var3, var4 + 1)) {
+		if(var5 == 2 && var1.isBlockNormalCube(var2, var3, var4 + 1)) {
 			var6 = 4;
-		} else if(var5 == 3 && var1.isBlockOpaqueCube(var2, var3, var4 - 1)) {
+		} else if(var5 == 3 && var1.isBlockNormalCube(var2, var3, var4 - 1)) {
 			var6 = 3;
-		} else if(var5 == 4 && var1.isBlockOpaqueCube(var2 + 1, var3, var4)) {
+		} else if(var5 == 4 && var1.isBlockNormalCube(var2 + 1, var3, var4)) {
 			var6 = 2;
-		} else if(var5 == 5 && var1.isBlockOpaqueCube(var2 - 1, var3, var4)) {
+		} else if(var5 == 5 && var1.isBlockNormalCube(var2 - 1, var3, var4)) {
 			var6 = 1;
 		} else {
 			var6 = this.getOrientation(var1, var2, var3, var4);
@@ -48,26 +52,26 @@ public class BlockButton extends Block {
 	}
 
 	private int getOrientation(World var1, int var2, int var3, int var4) {
-		return var1.isBlockOpaqueCube(var2 - 1, var3, var4) ? 1 : (var1.isBlockOpaqueCube(var2 + 1, var3, var4) ? 2 : (var1.isBlockOpaqueCube(var2, var3, var4 - 1) ? 3 : (var1.isBlockOpaqueCube(var2, var3, var4 + 1) ? 4 : 1)));
+		return var1.isBlockNormalCube(var2 - 1, var3, var4) ? 1 : (var1.isBlockNormalCube(var2 + 1, var3, var4) ? 2 : (var1.isBlockNormalCube(var2, var3, var4 - 1) ? 3 : (var1.isBlockNormalCube(var2, var3, var4 + 1) ? 4 : 1)));
 	}
 
 	public void onNeighborBlockChange(World var1, int var2, int var3, int var4, int var5) {
 		if(this.func_305_h(var1, var2, var3, var4)) {
 			int var6 = var1.getBlockMetadata(var2, var3, var4) & 7;
 			boolean var7 = false;
-			if(!var1.isBlockOpaqueCube(var2 - 1, var3, var4) && var6 == 1) {
+			if(!var1.isBlockNormalCube(var2 - 1, var3, var4) && var6 == 1) {
 				var7 = true;
 			}
 
-			if(!var1.isBlockOpaqueCube(var2 + 1, var3, var4) && var6 == 2) {
+			if(!var1.isBlockNormalCube(var2 + 1, var3, var4) && var6 == 2) {
 				var7 = true;
 			}
 
-			if(!var1.isBlockOpaqueCube(var2, var3, var4 - 1) && var6 == 3) {
+			if(!var1.isBlockNormalCube(var2, var3, var4 - 1) && var6 == 3) {
 				var7 = true;
 			}
 
-			if(!var1.isBlockOpaqueCube(var2, var3, var4 + 1) && var6 == 4) {
+			if(!var1.isBlockNormalCube(var2, var3, var4 + 1) && var6 == 4) {
 				var7 = true;
 			}
 

@@ -1,5 +1,9 @@
 package net.minecraft.src;
 
+import java.io.IOException;
+
+import net.lax1dude.eaglercraft.EagUtils;
+
 class NetworkWriterThread extends Thread {
 	final NetworkManager netManager;
 
@@ -14,19 +18,34 @@ class NetworkWriterThread extends Thread {
 			++NetworkManager.numWriteThreads;
 		}
 
-		while(true) {
-			boolean var11 = false;
+        while(true) {
+			boolean var13 = false;
 
 			try {
-				var11 = true;
+				var13 = true;
 				if(!NetworkManager.isRunning(this.netManager)) {
-					var11 = false;
+					var13 = false;
 					break;
 				}
 
-				NetworkManager.sendNetworkPacket(this.netManager);
+				while(NetworkManager.sendNetworkPacket(this.netManager)) {
+				}
+
+				EagUtils.sleep(100L);
+
+				try {
+					if(NetworkManager.func_28140_f(this.netManager) != null) {
+						NetworkManager.func_28140_f(this.netManager).flush();
+					}
+				} catch (IOException var18) {
+					if(!NetworkManager.func_28138_e(this.netManager)) {
+						NetworkManager.func_30005_a(this.netManager, var18);
+					}
+
+					var18.printStackTrace();
+				}
 			} finally {
-				if(var11) {
+				if(var13) {
 					Object var5 = NetworkManager.threadSyncObject;
 					synchronized(var5) {
 						--NetworkManager.numWriteThreads;

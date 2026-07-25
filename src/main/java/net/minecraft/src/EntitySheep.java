@@ -17,19 +17,39 @@ public class EntitySheep extends EntityAnimal {
 	}
 
 	public boolean attackEntityFrom(Entity var1, int var2) {
-		if(!this.worldObj.multiplayerWorld && !this.getSheared() && var1 instanceof EntityLiving) {
-			this.setSheared(true);
-			int var3 = 1 + this.rand.nextInt(3);
+		return super.attackEntityFrom(var1, var2);
+	}
 
-			for(int var4 = 0; var4 < var3; ++var4) {
-				EntityItem var5 = this.entityDropItem(new ItemStack(Block.cloth.blockID, 1, this.getFleeceColor()), 1.0F);
-				var5.motionY += (double)(this.rand.nextFloat() * 0.05F);
-				var5.motionX += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-				var5.motionZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
-			}
+	protected void dropFewItems() {
+		if(!this.getSheared()) {
+			this.entityDropItem(new ItemStack(Block.cloth.blockID, 1, this.getFleeceColor()), 0.0F);
 		}
 
-		return super.attackEntityFrom(var1, var2);
+	}
+
+	protected int getDropItemId() {
+		return Block.cloth.blockID;
+	}
+
+	public boolean interact(EntityPlayer var1) {
+		ItemStack var2 = var1.inventory.getCurrentItem();
+		if(var2 != null && var2.itemID == Item.shears.shiftedIndex && !this.getSheared()) {
+			if(!this.worldObj.multiplayerWorld) {
+				this.setSheared(true);
+				int var3 = 2 + this.rand.nextInt(3);
+
+				for(int var4 = 0; var4 < var3; ++var4) {
+					EntityItem var5 = this.entityDropItem(new ItemStack(Block.cloth.blockID, 1, this.getFleeceColor()), 1.0F);
+					var5.motionY += (double)(this.rand.nextFloat() * 0.05F);
+					var5.motionX += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
+					var5.motionZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
+				}
+			}
+
+			var2.damageItem(1, var1);
+		}
+
+		return false;
 	}
 
 	public void writeEntityToNBT(NBTTagCompound var1) {

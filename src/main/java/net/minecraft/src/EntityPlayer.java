@@ -24,13 +24,17 @@ public abstract class EntityPlayer extends EntityLiving {
 	public double field_20062_v;
 	public double field_20061_w;
 	protected boolean sleeping;
-	private ChunkCoordinates bedChunkCoordinates;
+	public ChunkCoordinates bedChunkCoordinates;
 	private int sleepTimer;
 	public float field_22063_x;
 	public float field_22062_y;
 	public float field_22061_z;
 	private ChunkCoordinates playerSpawnCoordinate;
-	private ChunkCoordinates field_26907_d;
+	private ChunkCoordinates startMinecartRidingCoordinate;
+	public int timeUntilPortal = 20;
+	protected boolean inPortal = false;
+	public float timeInPortal;
+	public float prevTimeInPortal;
 	private int damageRemainder = 0;
 	public EntityFish fishEntity = null;
 
@@ -60,10 +64,12 @@ public abstract class EntityPlayer extends EntityLiving {
 				this.sleepTimer = 100;
 			}
 
-			if(!this.isInBed()) {
-				this.wakeUpPlayer(true, true, false);
-			} else if(!this.worldObj.multiplayerWorld && this.worldObj.isDaytime()) {
-				this.wakeUpPlayer(false, true, true);
+			if(!this.worldObj.multiplayerWorld) {
+				if(!this.isInBed()) {
+					this.wakeUpPlayer(true, true, false);
+				} else if(this.worldObj.isDaytime()) {
+					this.wakeUpPlayer(false, true, true);
+				}
 			}
 		} else if(this.sleepTimer > 0) {
 			++this.sleepTimer;
@@ -74,7 +80,7 @@ public abstract class EntityPlayer extends EntityLiving {
 
 		super.onUpdate();
 		if(!this.worldObj.multiplayerWorld && this.craftingInventory != null && !this.craftingInventory.isUsableByPlayer(this)) {
-			this.func_20059_m();
+			this.closeScreen();
 			this.craftingInventory = this.inventorySlots;
 		}
 
@@ -112,9 +118,9 @@ public abstract class EntityPlayer extends EntityLiving {
 		this.field_20063_u += var1 * 0.25D;
 		this.field_20061_w += var5 * 0.25D;
 		this.field_20062_v += var3 * 0.25D;
-		this.addStat(StatList.field_25179_j, 1);
+		this.addStat(StatList.minutesPlayedStat, 1);
 		if(this.ridingEntity == null) {
-			this.field_26907_d = null;
+			this.startMinecartRidingCoordinate = null;
 		}
 
 	}
@@ -123,7 +129,7 @@ public abstract class EntityPlayer extends EntityLiving {
 		return this.health <= 0 || this.isPlayerSleeping();
 	}
 
-	protected void func_20059_m() {
+	protected void closeScreen() {
 		this.craftingInventory = this.inventorySlots;
 	}
 
@@ -139,7 +145,7 @@ public abstract class EntityPlayer extends EntityLiving {
 		super.updateRidden();
 		this.field_775_e = this.field_774_f;
 		this.field_774_f = 0.0F;
-		this.func_27024_i(this.posX - var1, this.posY - var3, this.posZ - var5);
+		this.addMountedMovementStat(this.posX - var1, this.posY - var3, this.posZ - var5);
 	}
 
 	public void preparePlayerToSpawn() {
@@ -153,7 +159,7 @@ public abstract class EntityPlayer extends EntityLiving {
 	protected void updatePlayerActionState() {
 		if(this.isSwinging) {
 			++this.swingProgressInt;
-			if(this.swingProgressInt == 8) {
+			if(this.swingProgressInt >= 8) {
 				this.swingProgressInt = 0;
 				this.isSwinging = false;
 			}
@@ -194,7 +200,7 @@ public abstract class EntityPlayer extends EntityLiving {
 				for(int var4 = 0; var4 < var3.size(); ++var4) {
 					Entity var5 = (Entity)var3.get(var4);
 					if(!var5.isDead) {
-						this.func_451_h(var5);
+						this.collideWithPlayer(var5);
 					}
 				}
 			}
@@ -202,7 +208,7 @@ public abstract class EntityPlayer extends EntityLiving {
 
 	}
 
-	private void func_451_h(Entity var1) {
+	private void collideWithPlayer(Entity var1) {
 		var1.onCollideWithPlayer(this);
 	}
 
@@ -228,15 +234,15 @@ public abstract class EntityPlayer extends EntityLiving {
 		}
 
 		this.yOffset = 0.1F;
-		this.addStat(StatList.field_25163_u, 1);
+		this.addStat(StatList.deathsStat, 1);
 	}
 
 	public void addToPlayerScore(Entity var1, int var2) {
 		this.score += var2;
 		if(var1 instanceof EntityPlayer) {
-			this.addStat(StatList.field_25161_w, 1);
+			this.addStat(StatList.playerKillsStat, 1);
 		} else {
-			this.addStat(StatList.field_25162_v, 1);
+			this.addStat(StatList.mobKillsStat, 1);
 		}
 
 	}
@@ -275,7 +281,7 @@ public abstract class EntityPlayer extends EntityLiving {
 			}
 
 			this.joinEntityItemWithWorld(var3);
-			this.addStat(StatList.field_25168_r, 1);
+			this.addStat(StatList.dropStat, 1);
 		}
 	}
 
@@ -350,11 +356,11 @@ public abstract class EntityPlayer extends EntityLiving {
 	}
 
 	public boolean attackEntityFrom(Entity var1, int var2) {
-		this.field_9344_ag = 0;
+		this.entityAge = 0;
 		if(this.health <= 0) {
 			return false;
 		} else {
-			if(this.isPlayerSleeping()) {
+			if(this.isPlayerSleeping() && !this.worldObj.multiplayerWorld) {
 				this.wakeUpPlayer(true, true, false);
 			}
 
@@ -384,7 +390,7 @@ public abstract class EntityPlayer extends EntityLiving {
 					this.alertWolves((EntityLiving)var3, false);
 				}
 
-				this.addStat(StatList.field_25165_t, var2);
+				this.addStat(StatList.damageTakenStat, var2);
 				return super.attackEntityFrom(var1, var2);
 			}
 		}
@@ -458,8 +464,8 @@ public abstract class EntityPlayer extends EntityLiving {
 					var2.func_1097_a(this);
 					this.destroyCurrentEquippedItem();
 				}
-				}
 			}
+		}
 
 	}
 
@@ -502,7 +508,7 @@ public abstract class EntityPlayer extends EntityLiving {
 					this.alertWolves((EntityLiving)var1, true);
 				}
 
-				this.addStat(StatList.field_25167_s, var2);
+				this.addStat(StatList.damageDealtStat, var2);
 			}
 		}
 
@@ -530,54 +536,60 @@ public abstract class EntityPlayer extends EntityLiving {
 	}
 
 	public EnumStatus sleepInBedAt(int var1, int var2, int var3) {
-		if(!this.isPlayerSleeping() && this.isEntityAlive()) {
+		if(!this.worldObj.multiplayerWorld) {
+			if(this.isPlayerSleeping() || !this.isEntityAlive()) {
+				return EnumStatus.OTHER_PROBLEM;
+			}
+
 			if(this.worldObj.worldProvider.isNether) {
 				return EnumStatus.NOT_POSSIBLE_HERE;
-			} else if(this.worldObj.isDaytime()) {
+			}
+
+			if(this.worldObj.isDaytime()) {
 				return EnumStatus.NOT_POSSIBLE_NOW;
-			} else if(Math.abs(this.posX - (double)var1) <= 3.0D && Math.abs(this.posY - (double)var2) <= 2.0D && Math.abs(this.posZ - (double)var3) <= 3.0D) {
-				this.setSize(0.2F, 0.2F);
-				this.yOffset = 0.2F;
-				if(this.worldObj.blockExists(var1, var2, var3)) {
-					int var4 = this.worldObj.getBlockMetadata(var1, var2, var3);
-					int var5 = BlockBed.getDirectionFromMetadata(var4);
-					float var6 = 0.5F;
-					float var7 = 0.5F;
-					switch(var5) {
-					case 0:
-						var7 = 0.9F;
-						break;
-					case 1:
-						var6 = 0.1F;
-						break;
-					case 2:
-						var7 = 0.1F;
-						break;
-					case 3:
-						var6 = 0.9F;
-					}
+			}
 
-					this.func_22052_e(var5);
-					this.setPosition((double)((float)var1 + var6), (double)((float)var2 + 15.0F / 16.0F), (double)((float)var3 + var7));
-				} else {
-					this.setPosition((double)((float)var1 + 0.5F), (double)((float)var2 + 15.0F / 16.0F), (double)((float)var3 + 0.5F));
-				}
-
-				this.sleeping = true;
-				this.sleepTimer = 0;
-				this.bedChunkCoordinates = new ChunkCoordinates(var1, var2, var3);
-				this.motionX = this.motionZ = this.motionY = 0.0D;
-				if(!this.worldObj.multiplayerWorld) {
-					this.worldObj.updateAllPlayersSleepingFlag();
-				}
-
-				return EnumStatus.OK;
-			} else {
+			if(Math.abs(this.posX - (double)var1) > 3.0D || Math.abs(this.posY - (double)var2) > 2.0D || Math.abs(this.posZ - (double)var3) > 3.0D) {
 				return EnumStatus.TOO_FAR_AWAY;
 			}
-		} else {
-			return EnumStatus.OTHER_PROBLEM;
 		}
+
+		this.setSize(0.2F, 0.2F);
+		this.yOffset = 0.2F;
+		if(this.worldObj.blockExists(var1, var2, var3)) {
+			int var4 = this.worldObj.getBlockMetadata(var1, var2, var3);
+			int var5 = BlockBed.getDirectionFromMetadata(var4);
+			float var6 = 0.5F;
+			float var7 = 0.5F;
+			switch(var5) {
+			case 0:
+				var7 = 0.9F;
+				break;
+			case 1:
+				var6 = 0.1F;
+				break;
+			case 2:
+				var7 = 0.1F;
+				break;
+			case 3:
+				var6 = 0.9F;
+			}
+
+			this.func_22052_e(var5);
+			this.setPosition((double)((float)var1 + var6), (double)((float)var2 + 15.0F / 16.0F), (double)((float)var3 + var7));
+		} else {
+			this.setPosition((double)((float)var1 + 0.5F), (double)((float)var2 + 15.0F / 16.0F), (double)((float)var3 + 0.5F));
+		}
+
+		this.sleeping = true;
+		this.sleepTimer = 0;
+		this.bedChunkCoordinates = new ChunkCoordinates(var1, var2, var3);
+		this.motionX = this.motionZ = this.motionY = 0.0D;
+		if(!this.worldObj.multiplayerWorld) {
+			this.worldObj.updateAllPlayersSleepingFlag();
+		}
+
+		return EnumStatus.OK;
 	}
 
 	private void func_22052_e(int var1) {
@@ -637,10 +649,10 @@ public abstract class EntityPlayer extends EntityLiving {
 
 	public static ChunkCoordinates func_25060_a(World var0, ChunkCoordinates var1) {
 		IChunkProvider var2 = var0.getIChunkProvider();
-		var2.func_538_d(var1.x - 3 >> 4, var1.z - 3 >> 4);
-		var2.func_538_d(var1.x + 3 >> 4, var1.z - 3 >> 4);
-		var2.func_538_d(var1.x - 3 >> 4, var1.z + 3 >> 4);
-		var2.func_538_d(var1.x + 3 >> 4, var1.z + 3 >> 4);
+		var2.prepareChunk(var1.x - 3 >> 4, var1.z - 3 >> 4);
+		var2.prepareChunk(var1.x + 3 >> 4, var1.z - 3 >> 4);
+		var2.prepareChunk(var1.x - 3 >> 4, var1.z + 3 >> 4);
+		var2.prepareChunk(var1.x + 3 >> 4, var1.z + 3 >> 4);
 		if(var0.getBlockId(var1.x, var1.y, var1.z) != Block.blockBed.blockID) {
 			return null;
 		} else {
@@ -696,7 +708,7 @@ public abstract class EntityPlayer extends EntityLiving {
 
 	}
 
-	public void func_27026_a(StatBase var1) {
+	public void triggerAchievement(StatBase var1) {
 		this.addStat(var1, 1);
 	}
 
@@ -705,7 +717,7 @@ public abstract class EntityPlayer extends EntityLiving {
 
 	protected void jump() {
 		super.jump();
-		this.addStat(StatList.field_25171_q, 1);
+		this.addStat(StatList.jumpStat, 1);
 	}
 
 	public void moveEntityWithHeading(float var1, float var2) {
@@ -722,47 +734,47 @@ public abstract class EntityPlayer extends EntityLiving {
 			if(this.isInsideOfMaterial(Material.water)) {
 				var7 = Math.round(MathHelper.sqrt_double(var1 * var1 + var3 * var3 + var5 * var5) * 100.0F);
 				if(var7 > 0) {
-					this.addStat(StatList.field_25173_p, var7);
+					this.addStat(StatList.distanceDoveStat, var7);
 				}
-			} else if(this.func_27013_ag()) {
+			} else if(this.isInWater()) {
 				var7 = Math.round(MathHelper.sqrt_double(var1 * var1 + var5 * var5) * 100.0F);
 				if(var7 > 0) {
-					this.addStat(StatList.field_25177_l, var7);
+					this.addStat(StatList.distanceSwumStat, var7);
 				}
 			} else if(this.isOnLadder()) {
 				if(var3 > 0.0D) {
-					this.addStat(StatList.field_25175_n, (int)Math.round(var3 * 100.0D));
+					this.addStat(StatList.distanceClimbedStat, (int)Math.round(var3 * 100.0D));
 				}
 			} else if(this.onGround) {
 				var7 = Math.round(MathHelper.sqrt_double(var1 * var1 + var5 * var5) * 100.0F);
 				if(var7 > 0) {
-					this.addStat(StatList.field_25178_k, var7);
+					this.addStat(StatList.distanceWalkedStat, var7);
 				}
 			} else {
 				var7 = Math.round(MathHelper.sqrt_double(var1 * var1 + var5 * var5) * 100.0F);
 				if(var7 > 25) {
-					this.addStat(StatList.field_25174_o, var7);
+					this.addStat(StatList.distanceFlownStat, var7);
 				}
 			}
 
 		}
 	}
 
-	private void func_27024_i(double var1, double var3, double var5) {
+	private void addMountedMovementStat(double var1, double var3, double var5) {
 		if(this.ridingEntity != null) {
 			int var7 = Math.round(MathHelper.sqrt_double(var1 * var1 + var3 * var3 + var5 * var5) * 100.0F);
 			if(var7 > 0) {
 				if(this.ridingEntity instanceof EntityMinecart) {
-					this.addStat(StatList.field_27364_r, var7);
-					if(this.field_26907_d == null) {
-						this.field_26907_d = new ChunkCoordinates(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ));
-					} else if(this.field_26907_d.func_27439_a(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) >= 1000.0D) {
-						this.addStat(AchievementList.field_27379_q, 1);
+					this.addStat(StatList.distanceByMinecartStat, var7);
+					if(this.startMinecartRidingCoordinate == null) {
+						this.startMinecartRidingCoordinate = new ChunkCoordinates(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ));
+					} else if(this.startMinecartRidingCoordinate.getSqDistanceTo(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) >= 1000.0D) {
+						this.addStat(AchievementList.onARail, 1);
 					}
 				} else if(this.ridingEntity instanceof EntityBoat) {
-					this.addStat(StatList.field_27363_s, var7);
+					this.addStat(StatList.distanceByBoatStat, var7);
 				} else if(this.ridingEntity instanceof EntityPig) {
-					this.addStat(StatList.field_27362_t, var7);
+					this.addStat(StatList.distanceByPigStat, var7);
 				}
 			}
 		}
@@ -771,18 +783,36 @@ public abstract class EntityPlayer extends EntityLiving {
 
 	protected void fall(float var1) {
 		if(var1 >= 2.0F) {
-			this.addStat(StatList.field_25176_m, (int)Math.round((double)var1 * 100.0D));
+			this.addStat(StatList.distanceFallenStat, (int)Math.round((double)var1 * 100.0D));
 		}
 
 		super.fall(var1);
 	}
 
-	public void func_27015_a(EntityLiving var1) {
+	public void onKillEntity(EntityLiving var1) {
 		if(var1 instanceof EntityMob) {
-			this.func_27026_a(AchievementList.field_27377_s);
+			this.triggerAchievement(AchievementList.killEnemy);
 		}
 
 	}
+
+	public int getItemIcon(ItemStack var1) {
+		int var2 = super.getItemIcon(var1);
+		if(var1.itemID == Item.fishingRod.shiftedIndex && this.fishEntity != null) {
+			var2 = var1.getIconIndex() + 16;
+		}
+
+		return var2;
+	}
+
+	public void setInPortal() {
+		if(this.timeUntilPortal > 0) {
+			this.timeUntilPortal = 10;
+		} else {
+			this.inPortal = true;
+		}
+	}
+
 
     public void dropOneItem(boolean flag) {
         this.dropPlayerItem(this.inventory.decrStackSize(this.inventory.currentItem,

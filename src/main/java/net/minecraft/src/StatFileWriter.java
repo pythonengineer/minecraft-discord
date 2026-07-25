@@ -16,11 +16,11 @@ public class StatFileWriter {
 	private Map field_25102_a = new HashMap();
 	private Map field_25101_b = new HashMap();
 	private boolean field_27189_c = false;
-	private StatsSyncher field_27188_d;
+	private StatsSyncher statsSyncher;
 
 	public StatFileWriter(Session var1, VFile2 var2) {
 		VFile2 var3 = new VFile2(var2, "stats");
-		List<VFile2> var4 = var2.listFiles(true);
+		List<VFile2> var4 = var2.listFiles(false);
 		int var5 = var4.size();
 
 		for(int var6 = 0; var6 < var5; ++var6) {
@@ -34,16 +34,16 @@ public class StatFileWriter {
 			}
 		}
 
-		this.field_27188_d = new StatsSyncher(var1, this, var3);
+		this.statsSyncher = new StatsSyncher(var1, this, var3);
 	}
 
-	public void func_25100_a(StatBase var1, int var2) {
-		this.func_27186_a(this.field_25101_b, var1, var2);
-		this.func_27186_a(this.field_25102_a, var1, var2);
+	public void readStat(StatBase var1, int var2) {
+		this.writeStatToMap(this.field_25101_b, var1, var2);
+		this.writeStatToMap(this.field_25102_a, var1, var2);
 		this.field_27189_c = true;
 	}
 
-	private void func_27186_a(Map var1, StatBase var2, int var3) {
+	private void writeStatToMap(Map var1, StatBase var2, int var3) {
 		Integer var4 = (Integer)var1.get(var2);
 		int var5 = var4 == null ? 0 : var4.intValue();
 		var1.put(var2, Integer.valueOf(var5 + var3));
@@ -60,8 +60,8 @@ public class StatFileWriter {
 
 			while(var2.hasNext()) {
 				StatBase var3 = (StatBase)var2.next();
-				this.func_27186_a(this.field_25101_b, var3, ((Integer)var1.get(var3)).intValue());
-				this.func_27186_a(this.field_25102_a, var3, ((Integer)var1.get(var3)).intValue());
+				this.writeStatToMap(this.field_25101_b, var3, ((Integer)var1.get(var3)).intValue());
+				this.writeStatToMap(this.field_25102_a, var3, ((Integer)var1.get(var3)).intValue());
 			}
 
 		}
@@ -88,7 +88,7 @@ public class StatFileWriter {
 
 			while(var2.hasNext()) {
 				StatBase var3 = (StatBase)var2.next();
-				this.func_27186_a(this.field_25101_b, var3, ((Integer)var1.get(var3)).intValue());
+				this.writeStatToMap(this.field_25101_b, var3, ((Integer)var1.get(var3)).intValue());
 			}
 
 		}
@@ -114,7 +114,7 @@ public class StatFileWriter {
 				if(var12 == null) {
 					System.out.println(var10 + " is not a valid stat");
 				} else {
-					var3.append(StatList.func_27361_a(var10).field_25069_f).append(",");
+					var3.append(StatList.func_27361_a(var10).statGuid).append(",");
 					var3.append(var11).append(",");
 					var1.put(var12, Integer.valueOf(var11));
 				}
@@ -157,7 +157,7 @@ public class StatFileWriter {
 			}
 
 			var3.append("\r\n    {\"").append(var7.statId).append("\":").append(var2.get(var7));
-			var4.append(var7.field_25069_f).append(",");
+			var4.append(var7.statGuid).append(",");
 			var4.append(var2.get(var7)).append(",");
 		}
 
@@ -172,31 +172,31 @@ public class StatFileWriter {
 		return var3.toString();
 	}
 
-	public boolean func_27183_a(Achievement var1) {
-		return this.field_25102_a.containsKey(var1);
-	}
+    public boolean hasAchievementUnlocked(Achievement var1) {
+        return this.field_25102_a.containsKey(var1);
+    }
 
-	public boolean func_27181_b(Achievement var1) {
-		return var1.field_25076_c == null || this.func_27183_a(var1.field_25076_c);
-	}
+    public boolean func_27181_b(Achievement var1) {
+        return var1.parentAchievement == null || this.hasAchievementUnlocked(var1.parentAchievement);
+    }
 
-	public int func_27184_a(StatBase var1) {
-		Integer var2 = (Integer)this.field_25102_a.get(var1);
-		return var2 == null ? 0 : var2.intValue();
-	}
+    public int writeStat(StatBase var1) {
+        Integer var2 = (Integer)this.field_25102_a.get(var1);
+        return var2 == null ? 0 : var2.intValue();
+    }
 
-	public void func_27175_b() {
-	}
+    public void func_27175_b() {
+    }
 
-	public void func_27182_c() {
-		this.field_27188_d.func_27407_b(this.func_27176_a());
-	}
+    public void syncStats() {
+        this.statsSyncher.syncStatsFileWithMap(this.func_27176_a());
+    }
 
-	public void func_27178_d() {
-		if(this.field_27189_c && this.field_27188_d.func_27420_b()) {
-			this.field_27188_d.func_27424_a(this.func_27176_a());
-		}
+    public void func_27178_d() {
+        if(this.field_27189_c && this.statsSyncher.func_27420_b()) {
+            this.statsSyncher.func_27424_a(this.func_27176_a());
+        }
 
-		this.field_27188_d.func_27425_c();
-	}
+        this.statsSyncher.func_27425_c();
+    }
 }

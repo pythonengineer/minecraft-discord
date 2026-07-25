@@ -40,12 +40,14 @@ public class ItemBlock extends Item {
 
 		if(var1.stackSize == 0) {
 			return false;
-		} else if(var3.canBlockBePlacedAt(this.blockID, var4, var5, var6, false)) {
+		} else if(var5 == 127 && Block.blocksList[this.blockID].blockMaterial.isSolid()) {
+			return false;
+		} else if(var3.canBlockBePlacedAt(this.blockID, var4, var5, var6, false, var7)) {
 			Block var8 = Block.blocksList[this.blockID];
-			if(var3.setBlockAndMetadataWithNotify(var4, var5, var6, this.blockID, this.func_21012_a(var1.getItemDamage()))) {
+			if(var3.setBlockAndMetadataWithNotify(var4, var5, var6, this.blockID, this.getPlacedBlockMetadata(var1.getItemDamage()))) {
 				Block.blocksList[this.blockID].onBlockPlaced(var3, var4, var5, var6, var7);
 				Block.blocksList[this.blockID].onBlockPlacedBy(var3, var4, var5, var6, var2);
-				var3.playSoundEffect((double)((float)var4 + 0.5F), (double)((float)var5 + 0.5F), (double)((float)var6 + 0.5F), var8.stepSound.func_1145_d(), (var8.stepSound.func_1147_b() + 1.0F) / 2.0F, var8.stepSound.func_1144_c() * 0.8F);
+				var3.playSoundEffect((double)((float)var4 + 0.5F), (double)((float)var5 + 0.5F), (double)((float)var6 + 0.5F), var8.stepSound.func_1145_d(), (var8.stepSound.getVolume() + 1.0F) / 2.0F, var8.stepSound.getPitch() * 0.8F);
 				--var1.stackSize;
 			}
 
